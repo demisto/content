@@ -474,3 +474,29 @@ def test_group_dn_escape_characters():
         group_dn('group(group)', '')
 
         mock.assert_called_with('(&(objectClass=group)(cn=group\\28group\\29))', '')
+
+
+def test_search__no_control_exist(mocker):
+    """
+    Given:
+         No control key in the result
+    When:
+        Run any search query
+    Then:
+        The result return 'no entries' instead of throw exception
+
+    """
+    import Active_Directory_Query
+
+    class ConnectionMocker:
+        entries = []
+        result = {}
+
+        def search(self, *args, **kwargs):
+            return
+
+    mocker.patch.object(demisto, 'results')
+    Active_Directory_Query.conn = ConnectionMocker()
+    Active_Directory_Query.search_users('dc=test,dc=test_1', page_size=20)
+
+    assert '**No entries.**' in demisto.results.call_args[0][0]['HumanReadable']

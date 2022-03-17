@@ -1,0 +1,106 @@
+{
+    "alertTotalCount": 1,
+    "alerts": [
+        {
+            "uid": "234567890123456789012345",
+            "status": "unread",
+            "watcherUid": "12345678901234567890123456789012",
+            "watcherGroupUid": "11111111-2222-3333-4444-555555555555",
+            "foundTime": 1635161687376,
+            "instantMessage": {
+                "data": {
+                    "message": {
+                        "uid": "34567890123456789012345678901234",
+                        "text": "<article class=\"chatMessage\"><p>Part 1 sell part2</p></article>",
+                        "attachments": [
+                            {
+                                "size": 76178,
+                                "height": 841,
+                                "uid": "test1/test2/1234/567",
+                                "type": "image/jpeg",
+                                "width": 1280,
+                                "original_url": "https://api.test1234.org/tester/1234567890123456789/2345678901234567890"
+                            }
+                        ]
+                    },
+                    "channel": {
+                        "name": "TEST CHANNEL",
+                        "url": "https://a.bc/atestmarket",
+                        "registration_date": 1635145746000,
+                        "uid": "45678901234567890123456789012345"
+                    },
+                    "server": {
+                        "uid": "56789012345678901234567890123456",
+                        "service_type": "TestService"
+                    },
+                    "actor": {
+                        "uid": "67890123456789012345678901234567"
+                    }
+                },
+                "last_updated": 1635154395580,
+                "activity": {
+                    "first": 1634753956000,
+                    "last": 1634753956000
+                }
+            },
+            "highlights": [
+                {
+                    "field": "data.message.text.whitespace",
+                    "chunks": [
+                        {
+                            "text": "Part 1 "
+                        },
+                        {
+                            "hl": "sell"
+                        },
+                        {
+                            "text": " part 2"
+                        }
+                    ]
+                },
+                {
+                    "field": "data.message.text",
+                    "chunks": [
+                        {
+                            "text": "Part 1 "
+                        },
+                        {
+                            "hl": "sell"
+                        },
+                        {
+                            "text": " part 2"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "watcherGroups": [
+        {
+            "name": "Test Watcher Group 1",
+            "muted": false,
+            "uid": "11111111-2222-3333-4444-555555555555",
+            "type": "owned_by_me",
+            "owner": "Me",
+            "watchers": [
+                {
+                    "uid": "12345678901234567890123456789012",
+                    "description": "Watcher on \"sell\"",
+                    "notificationChannel": "email",
+                    "notificationFrequency": "immediately",
+                    "muted": false,
+                    "type": "search",
+                    "patterns": [
+                        {
+                            "types": "IM",
+                            "pattern": "sell"
+                        }
+                    ],
+                    "dataSets": [
+                        "messagingServices"
+                    ]
+                }
+            ]
+        }
+    ]
+}

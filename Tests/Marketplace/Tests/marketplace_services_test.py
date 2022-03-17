@@ -1,3 +1,6 @@
+
+# type: ignore[attr-defined]
+
 import shutil
 import pytest
 import json
@@ -11,6 +14,9 @@ from distutils.version import LooseVersion
 from freezegun import freeze_time
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple, Any
+
+# pylint: disable=no-member
+
 
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
@@ -936,7 +942,7 @@ This is visible
             return TestChangelogCreation.dummy_pack_changelog(CHANGELOG_DATA_INITIAL_VERSION)
         if path == 'changelog_new_exist':
             return TestChangelogCreation.dummy_pack_changelog(CHANGELOG_DATA_MULTIPLE_VERSIONS)
-        if path == 'changelog_not_exist' or path == 'metadata_not_exist':
+        if path in ['changelog_not_exist', 'metadata_not_exist']:
             return path_to_non_existing_changelog
 
     @freeze_time("2020-11-04T13:34:14.75Z")

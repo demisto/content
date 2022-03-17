@@ -241,5 +241,21 @@ GET_ISSUE_RESPONSE = {
                     'created': '2021-04-04T12:49:42.881+0300', 'size': 8225,
                     'mimeType': 'application/json',
                     }],
-               'aggregatetimeestimate': None, 'summary': 'test master1', 'creator': {}
-               }}
+               'aggregatetimeestimate': None, 'summary': 'test master1', 
+               'creator': {
+                    "accountId": "557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76",
+                    "accountType": "atlassian",
+                    "active": True,
+                    "avatarUrls": {
+                        "16x16": "",
+                        "24x24": "",
+                        "32x32": "",
+                        "48x48": ""
+                    },
+                    "displayName": "jon doe",
+                    "emailAddress": "admin@demistodev.com",
+                    "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=id",
+                    "timeZone": "Asia"
+                }
+    }
+}

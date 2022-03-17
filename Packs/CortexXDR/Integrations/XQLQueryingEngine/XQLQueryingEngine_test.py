@@ -1,3 +1,4 @@
+import gzip
 import json
 import io
 from freezegun import freeze_time
@@ -375,27 +376,28 @@ def test_get_process_causality_network_activity_query():
 
 @pytest.mark.parametrize(
     'time_to_convert,expected',
-    [("3 seconds", 3000),
-     ("7 minutes", 420000),
-     ("5 hours", 18000000),
-     ("7 months", 18316800000),
-     ("2 years", 63158400000),
+    [("3 seconds", {'relativeTime': 3000}),
+     ("7 minutes", {'relativeTime': 420000}),
+     ("5 hours", {'relativeTime': 18000000}),
+     ("7 months", {'relativeTime': 18316800000}),
+     ("2 years", {'relativeTime': 63158400000}),
+     ("between 2021-01-01 00:00:00Z and 2021-02-01 12:34:56Z", {'from': 1609459200000, 'to': 1612182896000}),
      ]
 )
 @freeze_time('2021-08-26')
-def test_convert_relative_time_to_milliseconds(time_to_convert, expected):
+def test_convert_timeframe_string_to_json(time_to_convert, expected):
     """
     Given:
-    - A relative time to convert.
+    - A relative time or time range to convert.
 
     When:
-    - Calling convert_relative_time_to_milliseconds function.
+    - Calling convert_timeframe_string_to_json function.
 
     Then:
     - Ensure the returned timestamp is correct.
     """
 
-    response = XQLQueryingEngine.convert_relative_time_to_milliseconds(time_to_convert=time_to_convert)
+    response = XQLQueryingEngine.convert_timeframe_string_to_json(time_to_convert=time_to_convert)
 
     assert response == expected
 
@@ -418,27 +420,6 @@ def test_start_xql_query_valid(mocker):
     mocker.patch.object(CLIENT, 'start_xql_query', return_value='execution_id')
     response = XQLQueryingEngine.start_xql_query(CLIENT, args=args)
     assert response == 'execution_id'
-
-
-def test_start_xql_query_invalid(mocker):
-    """
-    Given:
-    - An invalid query to search.
-
-    When:
-    - Calling start_xql_query function.
-
-    Then:
-    - Ensure an error is returned.
-    """
-    args = {
-        'query': 'test_query // Some Note',
-        'time_frame': '1 year'
-    }
-    mocker.patch.object(CLIENT, 'start_xql_query', return_value='execution_id')
-    with pytest.raises(Exception) as exc:
-        XQLQueryingEngine.start_xql_query(CLIENT, args=args)
-    assert str(exc.value) == 'Please remove notes (//) from query'
 
 
 def test_get_xql_query_results_success_under_1000(mocker):
@@ -824,6 +805,56 @@ def test_get_xql_query_results_polling_command_success_more_than_1000(mocker):
     assert command_result.outputs == {'status': 'SUCCESS', 'number_of_results': 1500, 'query_name': '',
                                       'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
                                       'results': {'stream_id': 'test_stream_id'}, 'execution_id': 'query_id_mock'}
+
+
+def test_get_xql_query_results_polling_command_success_more_than_1000_results_parse_to_context(mocker):
+    """
+    Given:
+    - A query that has a successful status and the number of results is more than 1000.
+
+    When:
+    - Calling get_xql_query_results_polling_command function with 'parse_result_file_to_context' argument set to True.
+
+    Then:
+    - Ensure returned command results are correct.
+    - Ensure the results were parsed to context instead of being extracted to a file.
+
+    """
+    query = 'MOCK_QUERY'
+    mock_response = {'status': 'SUCCESS',
+                     'number_of_results': 1500,
+                     'query_cost': {'376699223': 0.0031591666666666665},
+                     'remaining_quota': 1000.0,
+                     'results': {'stream_id': 'test_stream_id'},
+                     'execution_id': 'query_id_mock'}
+    # The results that should be parsed to context instead of being extracted to a file:
+    expected_results_in_context = [
+        {"_time": "2021-10-14 03:59:09.793 UTC", "event_id": "123", "_vendor": "PANW", "_product": "XDR agent",
+         "insert_timestamp": "2021-10-14 04:02:12.883114 UTC"},
+        {"_time": "2021-10-14 03:59:09.809 UTC", "event_id": "234", "_vendor": "PANW", "_product": "XDR agent",
+         "insert_timestamp": "2021-10-14 04:02:12.883114 UTC"},
+        {"_time": "2021-10-14 04:00:27.78 UTC", "event_id": "456", "_vendor": "PANW", "_product": "XDR agent",
+         "insert_timestamp": "2021-10-14 04:04:34.332563 UTC"},
+        {"_time": "2021-10-14 04:00:27.797 UTC", "event_id": "567", "_vendor": "PANW", "_product": "XDR agent",
+         "insert_timestamp": "2021-10-14 04:04:34.332563 UTC"}
+    ]
+    # Creates the mocked data which returns from 'XQLQueryingEngine.get_xql_query_results' command:
+    mock_file_data = b''
+    for item in expected_results_in_context:
+        mock_file_data += json.dumps(item).encode('utf-8')
+        mock_file_data += b'\n'
+    compressed_mock_file_data = gzip.compress(mock_file_data)
+
+    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, compressed_mock_file_data))
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
+    results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query,
+                                                                               'parse_result_file_to_context': True})
+
+    assert results.outputs.get('results', []) == expected_results_in_context, \
+        'There might be a problem in parsing the results into the context'
+    assert results.outputs == {'status': 'SUCCESS', 'number_of_results': 1500, 'query_name': '',
+                               'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
+                               'results': expected_results_in_context, 'execution_id': 'query_id_mock'}
 
 
 def test_get_xql_query_results_polling_command_pending(mocker):

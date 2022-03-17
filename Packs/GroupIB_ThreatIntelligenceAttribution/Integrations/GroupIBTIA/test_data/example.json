@@ -1,431 +1,521 @@
 {
-    "compromised/account": {
-        "botId": null,
-        "client": {
-            "ipv4": {
-                "asn": null,
-                "city": null,
-                "countryCode": null,
-                "countryName": null,
-                "ip": "0.0.0.0",
-                "provider": null,
-                "region": null
-            }
-        },
-        "cnc": {
-            "cnc": "http://some.ru",
-            "domain": "some.ru",
-            "ipv4": {
-                "asn": "AS35278 Sprinthost.ru LLC",
-                "city": "Moscow",
-                "countryCode": "RU",
-                "countryName": "Russian Federation",
-                "ip": "11.11.11.11",
-                "provider": "Sprinthost.ru LLC",
-                "region": "Moscow City"
-            },
-            "ipv6": null,
-            "url": "http://some.ru"
-        },
-        "dateCompromised": null,
-        "dateDetected": "2019-12-12T09:51:07+00:00",
-        "device": null,
-        "domain": "some.ru",
-        "dropEmail": {
-            "domain": null,
-            "email": "",
-            "ipv4": {
-                "asn": null,
-                "city": null,
-                "countryCode": null,
-                "countryName": null,
-                "ip": null,
-                "provider": null,
-                "region": null
-            }
-        },
-        "evaluation": {
-            "admiraltyCode": "A2",
-            "credibility": 80,
-            "reliability": 100,
-            "severity": "red",
-            "tlp": "red",
-            "ttl": 90
-        },
-        "id": "253b9a136f0d574149fc43691eaf7ae27aff141a",
-        "isFavourite": false,
-        "isHidden": false,
-        "login": "some@gmail.ru",
-        "malware": {
-            "id": "411ac9df6c5515922a56e30013e8b8b366eeec80",
-            "name": "PredatorStealer"
-        },
-        "oldId": "396792583",
-        "password": "@jd0123123fhb_aawq",
-        "person": {
-            "address": null,
-            "birthday": null,
-            "city": null,
-            "countryCode": null,
-            "email": null,
-            "name": null,
-            "passport": null,
-            "phone": null,
-            "state": null,
-            "taxNumber": null,
-            "zip": null
-        },
-        "port": null,
-        "portalLink": "https://bt.group-ib.com/cd/accounts?searchValue=id:253b9a136f0d574149fc43691eaf7ae27aff141a",
-        "seqUpdate": 1614919893874,
-        "sourceType": "Botnet",
-        "threatActor": {
-            "country": null,
-            "id": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
-            "isAPT": false,
-            "name": "FRK48"
-        }
-    },
-    "compromised/card": {
-        "baseName": "United States",
-        "cardInfo": {
-            "cvv": null,
-            "dump": null,
-            "issuer": {
-                "countryCode": "US",
-                "countryName": "UNITED STATES",
-                "issuer": "SOME BANK"
-            },
-            "number": "545123XXXXXXXXXX",
-            "system": "VISA",
-            "type": "CLASSIC",
-            "validThru": "09/2025"
-        },
-        "client": {
-            "ipv4": {
-                "asn": null,
-                "city": null,
-                "countryCode": null,
-                "countryName": null,
-                "ip": null,
-                "provider": null,
-                "region": null
-            }
-        },
-        "cnc": {
-            "cnc": "mandarincc.pw",
-            "domain": "mandarincc.pw",
-            "ipv4": {
-                "asn": null,
-                "city": "San Francisco",
-                "countryCode": "US",
-                "countryName": "United States",
-                "ip": "11.11.11.11",
-                "provider": "Cloudflare",
-                "region": "California"
-            },
-            "ipv6": null,
-            "url": null
-        },
-        "dateCompromised": "2019-12-12T10:41:00+00:00",
-        "dateDetected": "2019-12-12T10:57:49+00:00",
-        "evaluation": {
-            "admiraltyCode": "A2",
-            "credibility": 80,
-            "reliability": 90,
-            "severity": "red",
-            "tlp": "red",
-            "ttl": 90
-        },
-        "externalId": "12312",
-        "id": "ecda6f4dc85596f447314ce01e2152db9c9d3cbc",
-        "isFavourite": false,
-        "isHidden": false,
-        "malware": {"id": "53013c863116aae720581ff2aa2b4f92d3cb2bd7", "name": "mandarincc"},
-        "oldId": "396798216",
-        "owner": {
-            "address": null,
-            "birthday": null,
-            "city": "Something",
-            "countryCode": "US",
-            "email": null,
-            "name": "Gary Oldman",
-            "passport": null,
-            "phone": "932876",
-            "state": "Ohio",
-            "taxNumber": null,
-            "zip": null
-        },
-        "portalLink": "https://bt.group-ib.com/cd/cards?searchValue=id:ecda6f4dc85596f447314ce01e2152db9c9d3cbc",
-        "price": {"currency": "USD", "value": "13213"},
-        "seqUpdate": 1614923910464,
-        "serviceCode": null,
-        "sourceType": "Card shop",
-        "threatActor": {
-            "country": null,
-            "id": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
-            "isAPT": false,
-            "name": "FRK48"
-        },
-        "track": []
-    },
-    "bp/phishing": {
-        "dateBlocked": null,
-        "dateDetected": "2021-01-14T11:21:34+00:00",
-        "evaluation": {
-            "admiraltyCode": "A2",
-            "credibility": 80,
-            "reliability": 90,
-            "severity": "red",
-            "tlp": "amber",
-            "ttl": 30
-        },
-        "history": [
+    "compromised/account": [
+        [
             {
-                "date": "2021-01-13T11:20:50+00:00",
-                "field": "Detected",
-                "reason": "In response",
-                "reporter": "Group-IB Intelligence",
-                "value": "In response"
-            },
-            {
-                "date": "2021-01-14T11:20:50+00:00",
-                "field": "Status has been changed",
-                "reason": "-",
-                "reporter": "Group-IB Intelligence",
-                "value": "In response"
-            }
-        ],
-        "id": "fce7f92d0b64946cf890842d083953649b259952",
-        "ipv4": {
-            "asn": null,
-            "city": "Some city",
-            "countryCode": "CA",
-            "countryName": "Canada",
-            "ip": "11.11.11.11",
-            "provider": "Some provider",
-            "region": "NA"
-        },
-        "isFavourite": false,
-        "isHidden": false,
-        "oldId": "396798526",
-        "phishingDomain": {
-            "domain": "some.ru",
-            "local": "some.ru",
-            "dateRegistered": "2013-11-15 13:41:30",
-            "title": "",
-            "registrar": "Some"
-        },
-        "portalLink": "https://bt.group-ib.com/attacks/phishing?searchValue=id:fce7f92d0b64946cf890842d083953649b259952",
-        "seqUpdate": 1614925293641,
-        "status": "In response",
-        "targetBrand": "Some brand",
-        "targetCategory": "Finance > Banking",
-        "targetCountryName": null,
-        "targetDomain": "some.ru",
-        "type": "Phishing",
-        "url": "https://some.ru"
-    },
-    "bp/phishing_kit": {
-        "dateDetected": "2021-01-14T12:10:41+00:00",
-        "dateFirstSeen": "2021-01-14T13:10:41+00:00",
-        "dateLastSeen": "2021-01-14T14:12:17+00:00",
-        "downloadedFrom": [
-            {
-                "date": "2021-01-21 10:10:41",
-                "url": "https://some.ru",
+                "botId": null,
+                "client": {
+                    "ipv4": {
+                        "asn": null,
+                        "city": null,
+                        "countryCode": null,
+                        "countryName": null,
+                        "ip": "0.0.0.0",
+                        "provider": null,
+                        "region": null
+                    }
+                },
+                "cnc": {
+                    "cnc": "http://some.ru",
+                    "domain": "some.ru",
+                    "ipv4": {
+                        "asn": "AS35278 Sprinthost.ru LLC",
+                        "city": "Moscow",
+                        "countryCode": "RU",
+                        "countryName": "Russian Federation",
+                        "ip": "11.11.11.11",
+                        "provider": "Sprinthost.ru LLC",
+                        "region": "Moscow City"
+                    },
+                    "ipv6": null,
+                    "url": "http://some.ru"
+                },
+                "dateCompromised": null,
+                "dateDetected": "2019-12-12T09:51:07+00:00",
+                "device": null,
                 "domain": "some.ru",
-                "fileName": "show.zip"
-            },
-            {
-                "date": "2021-01-21 10:10:41",
-                "url": "https://some.ru",
-                "domain": "some.ru",
-                "fileName": "show.zip"
-            },
-            {
-                "date": "2021-01-21 10:10:41",
-                "url": "https://some.ru",
-                "domain": "some.ru",
-                "fileName": "show.zip"
-            }
-        ],
-        "emails": [],
-        "evaluation": {
-            "admiraltyCode": "B2",
-            "credibility": 70,
-            "reliability": 80,
-            "severity": "orange",
-            "tlp": "amber",
-            "ttl": 30
-        },
-        "hash": "8d7ea805fe20d6d77f57e2f0cadd17b1",
-        "id": "044f3f2cb599228c1882884eb77eb073f68a25f2",
-        "isFavourite": false,
-        "isHidden": false,
-        "oldId": "396793696",
-        "path": "https://tap.group-ib.com/api/api/v2/web/attacks/phishing_kit/044f3f2cb599228c1882884eb77eb073f68a25f2/file/95b61a1df152012abb79c3951ed98680e0bd917bbcf1d440e76b66a120292c76",
-        "portalLink": "https://bt.group-ib.com/attacks/phishing_kit?searchValue=id:044f3f2cb599228c1882884eb77eb073f68a25f2",
-        "seqUpdate": 1614921031175,
-        "targetBrand": [],
-        "tsFirstSeen": null,
-        "tsLastSeen": null,
-        "variables": null
-    },
-    "osi/git_leak": {
-        "dateDetected": "2021-01-21T08:56:11+00:00",
-        "dateUpdated": "1561036415",
-        "evaluation": {
-            "admiraltyCode": "A6",
-            "credibility": 100,
-            "reliability": 100,
-            "severity": "green",
-            "tlp": "amber",
-            "ttl": 30
-        },
-        "file": "https://bt.group-ib.com/api/v2/osi/git_leak/f201c253ac71f7d78db39fa111a2af9d7ee7a3f7/bWFpbi01NDA4YWY0MDE2ZTVmZDFjYTZlYWQzNThjYzNiMmI0YjYwNWY1NGY2ODU4Yzc4YmVmMGNlYmUyZGVlMDZmMDhm",
-        "id": "f201c253ac71f7d78db39fa111a2af9d7ee7a3f7",
-        "matchesType": ["keyword"],
-        "matchesTypeCount": {
-            "card": 0,
-            "cisco": 0,
-            "commonKeywords": 0,
-            "domain": 0,
-            "dsn": 0,
-            "email": 0,
-            "google": 0,
-            "ip": 0,
-            "keyword": 1,
-            "login": 0,
-            "metasploit": 0,
-            "nmap": 0,
-            "pgp": 0,
-            "sha": 0,
-            "slackAPI": 0,
-            "ssh": 0
-        },
-        "name": "conf/nginx/sites-available/whatsinmyyogurt",
-        "repository": "openfoodfacts/openfoodfacts-server",
-        "revisions": [
-            {
-                "bind": [{"bindBy": "cert", "data": "cert", "type": "keyword"}],
-                "data": null,
-                "file": "https://bt.group-ib.com/api/v2/osi/git_leak/f201c253ac71f7d78db39fa111a2af9d7ee7a3f7/cmV2aXNpb24tZmlsZS01NDA4YWY0MDE2ZTVmZDFjYTZlYWQzNThjYzNiMmI0YjYwNWY1NGY2ODU4Yzc4YmVmMGNlYmUyZGVlMDZmMDhm",
-                "fileDiff": "https://bt.group-ib.com/api/v2/osi/git_leak/f201c253ac71f7d78db39fa111a2af9d7ee7a3f7/cmV2aXNpb24tZmlsZURpZmYtNTQwOGFmNDAxNmU1ZmQxY2E2ZWFkMzU4Y2MzYjJiNGI2MDVmNTRmNjg1OGM3OGJlZjBjZWJlMmRlZTA2ZjA4Zg==",
-                "hash": "029eef2ec6e7a16d958f4ae666b7295f427f123b",
-                "info": {
-                    "authorEmail": "some@gmail.ru",
-                    "authorName": "sadsdsa",
-                    "dateCreated": "2019-06-20T13:13:35+00:00"
+                "dropEmail": {
+                    "domain": null,
+                    "email": "",
+                    "ipv4": {
+                        "asn": null,
+                        "city": null,
+                        "countryCode": null,
+                        "countryName": null,
+                        "ip": null,
+                        "provider": null,
+                        "region": null
+                    }
+                },
+                "evaluation": {
+                    "admiraltyCode": "A2",
+                    "credibility": 80,
+                    "reliability": 100,
+                    "severity": "red",
+                    "tlp": "red",
+                    "ttl": 90
+                },
+                "id": "253b9a136f0d574149fc43691eaf7ae27aff141a",
+                "isFavourite": false,
+                "isHidden": false,
+                "login": "some@gmail.ru",
+                "malware": {
+                    "id": "411ac9df6c5515922a56e30013e8b8b366eeec80",
+                    "name": "PredatorStealer"
+                },
+                "oldId": "396792583",
+                "password": "@jd0123123fhb_aawq",
+                "person": {
+                    "address": null,
+                    "birthday": null,
+                    "city": null,
+                    "countryCode": null,
+                    "email": null,
+                    "name": null,
+                    "passport": null,
+                    "phone": null,
+                    "state": null,
+                    "taxNumber": null,
+                    "zip": null
+                },
+                "port": null,
+                "portalLink": "https://bt.group-ib.com/cd/accounts?searchValue=id:253b9a136f0d574149fc43691eaf7ae27aff141a",
+                "seqUpdate": 1614919893874,
+                "sourceType": "Botnet",
+                "threatActor": {
+                    "country": null,
+                    "id": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
+                    "isAPT": false,
+                    "name": "FRK48"
                 }
             }
         ],
-        "seqUpdate": 1611219371626093,
-        "source": "github"
-    },
-    "osi/public_leak": {
-        "bind": [],
-        "created": "2020-10-05T17:51:31+03:00",
-        "data": "Pasted at: 05/10/2020 15:45",
-        "displayOptions": null,
-        "evaluation": {
-            "admiraltyCode": "C3",
-            "credibility": 50,
-            "reliability": 50,
-            "severity": "orange",
-            "tlp": "amber",
-            "ttl": 30
-        },
-        "hash": "a9a5b5cb9b971a2a037e3a0a30654185ea148095",
-        "id": "a9a5b5cb9b971a2a037e3a0a30654185ea148095",
-        "language": "c",
-        "linkList": [
+        1614919893874
+    ],
+    "compromised/card": [
+        [
             {
-                "author": "whaaaaaat",
-                "dateDetected": "2020-10-05T17:51:31+03:00",
-                "datePublished": "2020-10-05T17:45:46+03:00",
-                "hash": "3066db9f57b7997607208fedc45d7203029d9cb3",
-                "itemSource": "api",
-                "link": "https://some.ru",
-                "sequenceUpdate": null,
-                "size": 345,
-                "source": "some.ru",
-                "status": 1,
-                "title": "Hashed Email With Exclude"
+                "baseName": "United States",
+                "cardInfo": {
+                    "cvv": null,
+                    "dump": null,
+                    "issuer": {
+                        "countryCode": "US",
+                        "countryName": "UNITED STATES",
+                        "issuer": "SOME BANK"
+                    },
+                    "number": "545123XXXXXXXXXX",
+                    "system": "VISA",
+                    "type": "CLASSIC",
+                    "validThru": "09/2025"
+                },
+                "client": {
+                    "ipv4": {
+                        "asn": null,
+                        "city": null,
+                        "countryCode": null,
+                        "countryName": null,
+                        "ip": null,
+                        "provider": null,
+                        "region": null
+                    }
+                },
+                "cnc": {
+                    "cnc": "mandarincc.pw",
+                    "domain": "mandarincc.pw",
+                    "ipv4": {
+                        "asn": null,
+                        "city": "San Francisco",
+                        "countryCode": "US",
+                        "countryName": "United States",
+                        "ip": "11.11.11.11",
+                        "provider": "Cloudflare",
+                        "region": "California"
+                    },
+                    "ipv6": null,
+                    "url": null
+                },
+                "dateCompromised": "2019-12-12T10:41:00+00:00",
+                "dateDetected": "2019-12-12T10:57:49+00:00",
+                "evaluation": {
+                    "admiraltyCode": "A2",
+                    "credibility": 80,
+                    "reliability": 90,
+                    "severity": "red",
+                    "tlp": "red",
+                    "ttl": 90
+                },
+                "externalId": "12312",
+                "id": "ecda6f4dc85596f447314ce01e2152db9c9d3cbc",
+                "isFavourite": false,
+                "isHidden": false,
+                "malware": {"id": "53013c863116aae720581ff2aa2b4f92d3cb2bd7", "name": "mandarincc"},
+                "oldId": "396798216",
+                "owner": {
+                    "address": null,
+                    "birthday": null,
+                    "city": "Something",
+                    "countryCode": "US",
+                    "email": null,
+                    "name": "Gary Oldman",
+                    "passport": null,
+                    "phone": "932876",
+                    "state": "Ohio",
+                    "taxNumber": null,
+                    "zip": null
+                },
+                "portalLink": "https://bt.group-ib.com/cd/cards?searchValue=id:ecda6f4dc85596f447314ce01e2152db9c9d3cbc",
+                "price": {"currency": "USD", "value": "13213"},
+                "seqUpdate": 1614923910464,
+                "serviceCode": null,
+                "sourceType": "Card shop",
+                "threatActor": {
+                    "country": null,
+                    "id": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
+                    "isAPT": false,
+                    "name": "FRK48"
+                },
+                "track": []
             }
         ],
-        "matches": {
-            "email": {
+        1614923910464
+    ],
+    "bp/phishing": [
+        [
+            {
+                "dateBlocked": null,
+                "dateDetected": "2021-01-14T11:21:34+00:00",
+                "evaluation": {
+                    "admiraltyCode": "A2",
+                    "credibility": 80,
+                    "reliability": 90,
+                    "severity": "red",
+                    "tlp": "amber",
+                    "ttl": 30
+                },
+                "history": [
+                    {
+                        "date": "2021-01-13T11:20:50+00:00",
+                        "field": "Detected",
+                        "reason": "In response",
+                        "reporter": "Group-IB Intelligence",
+                        "value": "In response"
+                    },
+                    {
+                        "date": "2021-01-14T11:20:50+00:00",
+                        "field": "Status has been changed",
+                        "reason": "-",
+                        "reporter": "Group-IB Intelligence",
+                        "value": "In response"
+                    }
+                ],
+                "id": "fce7f92d0b64946cf890842d083953649b259952",
+                "ipv4": {
+                    "asn": null,
+                    "city": "Some city",
+                    "countryCode": "CA",
+                    "countryName": "Canada",
+                    "ip": "11.11.11.11",
+                    "provider": "Some provider",
+                    "region": "NA"
+                },
+                "isFavourite": false,
+                "isHidden": false,
+                "oldId": "396798526",
+                "phishingDomain": {
+                    "domain": "some.ru",
+                    "local": "some.ru",
+                    "dateRegistered": "2013-11-15 13:41:30",
+                    "title": "",
+                    "registrar": "Some"
+                },
+                "portalLink": "https://bt.group-ib.com/attacks/phishing?searchValue=id:fce7f92d0b64946cf890842d083953649b259952",
+                "seqUpdate": 1614925293641,
+                "status": "In response",
+                "targetBrand": "Some brand",
+                "targetCategory": "Finance > Banking",
+                "targetCountryName": null,
+                "targetDomain": "some.ru",
+                "type": "Phishing",
+                "url": "https://some.ru"
+            }
+        ],
+        1614925293641
+    ],
+    "bp/phishing_kit": [
+        [
+            {
+                "dateDetected": "2021-01-14T12:10:41+00:00",
+                "dateFirstSeen": "2021-01-14T13:10:41+00:00",
+                "dateLastSeen": "2021-01-14T14:12:17+00:00",
+                "downloadedFrom": [
+                    {
+                        "date": "2021-01-21 10:10:41",
+                        "url": "https://some.ru",
+                        "domain": "some.ru",
+                        "fileName": "show.zip"
+                    },
+                    {
+                        "date": "2021-01-21 10:10:41",
+                        "url": "https://some.ru",
+                        "domain": "some.ru",
+                        "fileName": "show.zip"
+                    },
+                    {
+                        "date": "2021-01-21 10:10:41",
+                        "url": "https://some.ru",
+                        "domain": "some.ru",
+                        "fileName": "show.zip"
+                    }
+                ],
+                "emails": [],
+                "evaluation": {
+                    "admiraltyCode": "B2",
+                    "credibility": 70,
+                    "reliability": 80,
+                    "severity": "orange",
+                    "tlp": "amber",
+                    "ttl": 30
+                },
+                "hash": "8d7ea805fe20d6d77f57e2f0cadd17b1",
+                "id": "044f3f2cb599228c1882884eb77eb073f68a25f2",
+                "isFavourite": false,
+                "isHidden": false,
+                "oldId": "396793696",
+                "path": "https://tap.group-ib.com/api/api/v2/web/attacks/phishing_kit/044f3f2cb599228c1882884eb77eb073f68a25f2/file/95b61a1df152012abb79c3951ed98680e0bd917bbcf1d440e76b66a120292c76",
+                "portalLink": "https://bt.group-ib.com/attacks/phishing_kit?searchValue=id:044f3f2cb599228c1882884eb77eb073f68a25f2",
+                "seqUpdate": 1614921031175,
+                "targetBrand": [],
+                "tsFirstSeen": null,
+                "tsLastSeen": null,
+                "variables": null
+            }
+        ],
+        1614921031175
+    ],
+    "osi/git_leak": [
+        [
+            {
+                "dateDetected": "2021-01-21T08:56:11+00:00",
+                "dateUpdated": "1561036415",
+                "evaluation": {
+                    "admiraltyCode": "A6",
+                    "credibility": 100,
+                    "reliability": 100,
+                    "severity": "green",
+                    "tlp": "amber",
+                    "ttl": 30
+                },
+                "file": "https://bt.group-ib.com/api/v2/osi/git_leak/f201c253ac71f7d78db39fa111a2af9d7ee7a3f7/bWFpbi01NDA4YWY0MDE2ZTVmZDFjYTZlYWQzNThjYzNiMmI0YjYwNWY1NGY2ODU4Yzc4YmVmMGNlYmUyZGVlMDZmMDhm",
+                "id": "f201c253ac71f7d78db39fa111a2af9d7ee7a3f7",
+                "matchesType": ["keyword"],
+                "matchesTypeCount": {
+                    "card": 0,
+                    "cisco": 0,
+                    "commonKeywords": 0,
+                    "domain": 0,
+                    "dsn": 0,
+                    "email": 0,
+                    "google": 0,
+                    "ip": 0,
+                    "keyword": 1,
+                    "login": 0,
+                    "metasploit": 0,
+                    "nmap": 0,
+                    "pgp": 0,
+                    "sha": 0,
+                    "slackAPI": 0,
+                    "ssh": 0
+                },
+                "name": "conf/nginx/sites-available/whatsinmyyogurt",
+                "repository": "openfoodfacts/openfoodfacts-server",
+                "revisions": [
+                    {
+                        "bind": [{"bindBy": "cert", "data": "cert", "type": "keyword"}],
+                        "data": null,
+                        "file": "https://bt.group-ib.com/api/v2/osi/git_leak/f201c253ac71f7d78db39fa111a2af9d7ee7a3f7/cmV2aXNpb24tZmlsZS01NDA4YWY0MDE2ZTVmZDFjYTZlYWQzNThjYzNiMmI0YjYwNWY1NGY2ODU4Yzc4YmVmMGNlYmUyZGVlMDZmMDhm",
+                        "fileDiff": "https://bt.group-ib.com/api/v2/osi/git_leak/f201c253ac71f7d78db39fa111a2af9d7ee7a3f7/cmV2aXNpb24tZmlsZURpZmYtNTQwOGFmNDAxNmU1ZmQxY2E2ZWFkMzU4Y2MzYjJiNGI2MDVmNTRmNjg1OGM3OGJlZjBjZWJlMmRlZTA2ZjA4Zg==",
+                        "hash": "029eef2ec6e7a16d958f4ae666b7295f427f123b",
+                        "info": {
+                            "authorEmail": "some@gmail.ru",
+                            "authorName": "sadsdsa",
+                            "dateCreated": "2019-06-20T13:13:35+00:00"
+                        }
+                    }
+                ],
+                "seqUpdate": 1611219371626093,
+                "source": "github"
+            }
+        ],
+        1611219371626093
+    ],
+    "osi/public_leak": [
+        [
+            {
+                "bind": [],
+                "created": "2020-10-05T17:51:31+03:00",
+                "data": "Pasted at: 05/10/2020 15:45",
+                "displayOptions": null,
+                "evaluation": {
+                    "admiraltyCode": "C3",
+                    "credibility": 50,
+                    "reliability": 50,
+                    "severity": "orange",
+                    "tlp": "amber",
+                    "ttl": 30
+                },
+                "hash": "a9a5b5cb9b971a2a037e3a0a30654185ea148095",
+                "id": "a9a5b5cb9b971a2a037e3a0a30654185ea148095",
+                "language": "c",
+                "linkList": [
+                    {
+                        "author": "whaaaaaat",
+                        "dateDetected": "2020-10-05T17:51:31+03:00",
+                        "datePublished": "2020-10-05T17:45:46+03:00",
+                        "hash": "3066db9f57b7997607208fedc45d7203029d9cb3",
+                        "itemSource": "api",
+                        "link": "https://some.ru",
+                        "sequenceUpdate": null,
+                        "size": 345,
+                        "source": "some.ru",
+                        "status": 1,
+                        "title": "Hashed Email With Exclude"
+                    }
+                ],
+                "matches": {
+                    "email": {
+                        "email": [
+                            "some@gmail.ru"
+                        ]
+                    }
+                },
+                "oldId": null,
+                "portalLink": "https://bt.group-ib.com/osi/public_leak?searchValue=id:a9a5b5cb9b971a2a037e3a0a30654186ea248094",
+                "seqUpdate": 1601909532153438,
+                "size": "345 B",
+                "updated": "2020-10-05T17:51:31+03:00",
+                "useful": 1
+            }
+        ],
+        1601909532153438
+    ],
+    "malware/targeted_malware": [
+        [
+            {
+                "date": "2021-01-21T06:49:12+00:00",
+                "dateAnalyzeEnded": "2021-01-21T09:53:23+00:00",
+                "dateAnalyzeStarted": "2021-01-21T09:49:12+00:00",
+                "evaluation": {
+                    "admiraltyCode": "A1",
+                    "credibility": 100,
+                    "reliability": 100,
+                    "severity": "red",
+                    "tlp": "red",
+                    "ttl": null
+                },
+                "fileName": "some.txt",
+                "fileType": "data",
+                "fileVersion": null,
+                "hasReport": true,
+                "id": "5bbd38acf0b9e4f04123af494d485f6c49221e98",
+                "injectDump": "saasadasdd",
+                "injectMd5": "971cca2a0f04ced4crb8218624d88de2",
+                "isFavourite": false,
+                "isHidden": false,
+                "malware": {
+                    "id": "b69fc9d439d2fd41e98a7e3c60b9a55340012eb6",
+                    "name": "Cobalt Strike"
+                },
+                "md5": "11702f92313f5f5123d129809ca4f83d",
+                "oldId": "396793259",
+                "portalLink": "https://bt.group-ib.com/targeted_malware/Cobalt Strike/sample/5bbd38acf0b9e4f04123af494d485f6c49221e98/show",
+                "seqUpdate": 1614920439682,
+                "sha1": "93fce6228be5557c69d8eeaab5a5a2a643e7d450",
+                "sha256": "630c88ca1d583f05283707730da5b1f4423807cd80cab108821157ad341b5003",
+                "size": 208178,
+                "source": "Sandbox service",
+                "threatActor": {
+                    "country": null,
+                    "id": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
+                    "isAPT": false,
+                    "name": "FRK48"
+                }
+            }
+        ],
+        1614920439682
+    ],
+    "compromised/breached": [
+        [
+            {
+                "addInfo": {
+                    "address": [
+                        ""
+                    ]
+                },
                 "email": [
-                    "some@gmail.ru"
-                ]
+                    "some@gmail.com"
+                ],
+                "id": [
+                    "277c4112d348c91f6dabe9467f0d11dd"
+                ],
+                "leakName": "some.com",
+                "password": [
+                    "CD91C480FDE9D7ACB8AC4B78310EA2ED",
+                    "1390DDDFA28AE085D23518A035707231"
+                ],
+                "updateTime": "2021-06-12T03:02:00",
+                "uploadTime": "2021-06-12T03:02:00"
             }
-        },
-        "oldId": null,
-        "portalLink": "https://bt.group-ib.com/osi/public_leak?searchValue=id:a9a5b5cb9b971a2a037e3a0a30654186ea248094",
-        "seqUpdate": 1601909532153438,
-        "size": "345 B",
-        "updated": "2020-10-05T17:51:31+03:00",
-        "useful": 1
-    },
-    "malware/targeted_malware": {
-        "date": "2021-01-21T06:49:12+00:00",
-        "dateAnalyzeEnded": "2021-01-21T09:53:23+00:00",
-        "dateAnalyzeStarted": "2021-01-21T09:49:12+00:00",
-        "evaluation": {
-            "admiraltyCode": "A1",
-            "credibility": 100,
-            "reliability": 100,
-            "severity": "red",
-            "tlp": "red",
-            "ttl": null
-        },
-        "fileName": "some.txt",
-        "fileType": "data",
-        "fileVersion": null,
-        "hasReport": true,
-        "id": "5bbd38acf0b9e4f04123af494d485f6c49221e98",
-        "injectDump": "saasadasdd",
-        "injectMd5": "971cca2a0f04ced4crb8218624d88de2",
-        "isFavourite": false,
-        "isHidden": false,
-        "malware": {
-            "id": "b69fc9d439d2fd41e98a7e3c60b9a55340012eb6",
-            "name": "Cobalt Strike"
-        },
-        "md5": "11702f92313f5f5123d129809ca4f83d",
-        "oldId": "396793259",
-        "portalLink": "https://bt.group-ib.com/targeted_malware/Cobalt Strike/sample/5bbd38acf0b9e4f04123af494d485f6c49221e98/show",
-        "seqUpdate": 1614920439682,
-        "sha1": "93fce6228be5557c69d8eeaab5a5a2a643e7d450",
-        "sha256": "630c88ca1d583f05283707730da5b1f4423807cd80cab108821157ad341b5003",
-        "size": 208178,
-        "source": "Sandbox service",
-        "threatActor": {
-            "country": null,
-            "id": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
-            "isAPT": false,
-            "name": "FRK48"
+        ],
+        {
+            "starting_date_from": "2020-01-01",
+            "page": 0,
+            "starting_date_to": "2021-01-01",
+            "current_date_to": "2021-01-01"
         }
-    },
-    "compromised/breached": {
-        "addInfo": {
-            "address": [
-                ""
-            ]
-        },
-        "email": [
-            "some@gmail.com"
+    ],
+    "bp/domain": [
+        [
+            {
+                "id": 14940404,
+                "ts_create": "2016-07-19 20:04:01",
+                "ts_update": "2021-01-01 00:35:46",
+                "attrs": {
+                    "domain": "some.ru",
+                    "date_registered": null,
+                    "date_expired": null,
+                    "tld": "de",
+                    "detection_rate": "0/68",
+                    "name_server": [
+                        "Server"
+                    ],
+                    "person": "Person",
+                    "address": "Address",
+                    "phone": "Phone",
+                    "organization": null,
+                    "registrar": null,
+                    "page_title": "Title",
+                    "email": "some@gmail.com",
+                    "favicon_md5": "38f5f976255a663bced929bb3c252880",
+                    "status": "Status",
+                    "type": "Type",
+                    "server_ip": "11.11.11.11",
+                    "server_ip_asn": "ASN",
+                    "server_ip_city": "City",
+                    "server_ip_country_code": "Code",
+                    "server_ip_country_name": "Country",
+                    "server_ip_provider": "Provider",
+                    "server_ip_region": "Region",
+                    "ip_history": [],
+                    "keywords": [
+                        "keywords"
+                    ],
+                    "history": [],
+                    "screenshot": "https://bt.group-ib.com/?module=brand_domain_screenshot&action=data&id=14940404",
+                    "html": "https://bt.group-ib.com/?module=brand_domain_html&action=download&id=14940404",
+                    "favicon": "https://bt.group-ib.com/?module=brand_domain_favicon&action=data&id=14940404"
+                }
+            }
         ],
-        "id": [
-            "277c4112d348c91f6dabe9467f0d11dd"
-        ],
-        "leakName": "some.com",
-        "password": [
-            "CD91C480FDE9D7ACB8AC4B78310EA2ED",
-            "1390DDDFA28AE085D23518A035707231"
-        ],
-        "updateTime": "2021-06-12T03:02:00",
-        "uploadTime": "2021-06-12T03:02:00"
-    }
+        3684188313
+    ]
 }

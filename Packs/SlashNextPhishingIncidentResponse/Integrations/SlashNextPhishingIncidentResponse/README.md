@@ -62,9 +62,11 @@
 <ol>
   <li>ip</li>
   <li>domain</li>
+  <li>url</li>
   <li>slashnext-host-reputation</li>
   <li>slashnext-host-report</li>
   <li>slashnext-host-urls</li>
+  <li>slashnext-url-reputation</li>
   <li>slashnext-url-scan</li>
   <li>slashnext-url-scan-sync</li>
   <li>slashnext-scan-report</li>
@@ -449,7 +451,278 @@
 </table>
 </p>
 
-<h3>3. slashnext-host-reputation</h3>
+<h3>3. url</h3>
+<hr>
+<p>Queries the SlashNext Cloud database and retrieves the reputation of a url.</p>
+<h5>Base Command</h5>
+<p>
+  <code>url</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>url</td>
+      <td>The url to look up in the SlashNext Threat Intelligence database.</td>
+      <td>Required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>DBotScore.Indicator</td>
+      <td>string</td>
+      <td>The indicator that was tested</td>
+    </tr>
+    <tr>
+      <td>DBotScore.Type</td>
+      <td>string</td>
+      <td>Indicator type</td>
+    </tr>
+    <tr>
+      <td>DBotScore.Vendor</td>
+      <td>string</td>
+      <td>Vendor used to calculate the score</td>
+    </tr>
+    <tr>
+      <td>DBotScore.Score</td>
+      <td>number</td>
+      <td>The actual score</td>
+    </tr>
+    <tr>
+      <td>URL.Data</td>
+      <td>string</td>
+      <td>URL reported</td>
+    </tr>
+    <tr>
+      <td>URL.Malicious.Vendor</td>
+      <td>string</td>
+      <td>For malicious URLs, the vendor that made the decision</td>
+    </tr>
+    <tr>
+      <td>URL.Malicious.Description</td>
+      <td>string</td>
+      <td>For malicious URLs, the reason that the vendor made the decision</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Value</td>
+      <td>string</td>
+      <td>Value of the Indicator of Compromise (IoC)</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Type</td>
+      <td>string</td>
+      <td>Type of the Indicator of Compromise (IoC)</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Verdict</td>
+      <td>string</td>
+      <td>SlashNext Phishing Incident Response verdict on the IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.ThreatStatus</td>
+      <td>string</td>
+      <td>Threat status of the IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.ThreatName</td>
+      <td>string</td>
+      <td>Name of the threat posed by the IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.ThreatType</td>
+      <td>string</td>
+      <td>Type of the threat posed by the IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.FirstSeen</td>
+      <td>date</td>
+      <td>Time when the IoC was first observed</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.LastSeen</td>
+      <td>date</td>
+      <td>Time when the IoC was last observed</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Final.Value</td>
+      <td>string</td>
+      <td>Final IoC value in case original IoC is a redirector to same domain</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Final.Type</td>
+      <td>string</td>
+      <td>Type of the final IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Final.Verdict</td>
+      <td>string</td>
+      <td>SlashNext Phishing Incident Response verdict on the final IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.Value</td>
+      <td>string</td>
+      <td>Landing IoC value in case original IoC is a redirector to different domain</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.Type</td>
+      <td>string</td>
+      <td>Type of the landing IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.Verdict</td>
+      <td>string</td>
+      <td>SlashNext Phishing Incident Response verdict on the landing IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.ThreatStatus</td>
+      <td>string</td>
+      <td>Threat status of the landing IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.ThreatName</td>
+      <td>string</td>
+      <td>Name of the threat posed by the landing IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.ThreatType</td>
+      <td>string</td>
+      <td>Type of the threat posed by the landing IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.FirstSeen</td>
+      <td>date</td>
+      <td>Time when the landing IoC was first observed</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.LastSeen</td>
+      <td>date</td>
+      <td>Time when the landing IoC was last observed</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!url url=www.google.com</code>
+</p>
+<h5>Context Example</h5>
+<pre>
+{
+    "DBotScore": [
+        {
+            "Indicator": "http://www.google.com/",
+            "Score": 1,
+            "Type": "url",
+            "Vendor": "SlashNext Phishing Incident Response"
+        },
+        {
+            "Indicator": "https://www.google.com/?gws_rd=ssl",
+            "Score": 1,
+            "Type": "url",
+            "Vendor": "SlashNext Phishing Incident Response"
+        }
+    ],
+    "SlashNext.URL": {
+        "Final": {
+            "Type": "Final URL",
+            "Value": "https://www.google.com/?gws_rd=ssl",
+            "Verdict": "Benign"
+        },
+        "FirstSeen": "08-26-2019 17:29:38 UTC",
+        "LastSeen": "08-26-2019 19:41:19 UTC",
+        "ThreatName": "N/A",
+        "ThreatStatus": "N/A",
+        "ThreatType": "N/A",
+        "Type": "Scanned URL",
+        "Value": "http://www.google.com/",
+        "Verdict": "Benign"
+    },
+    "URL": [
+        {
+            "Data": "http://www.google.com/"
+        },
+        {
+            "Data": "https://www.google.com/?gws_rd=ssl"
+        }
+    ]
+}
+</pre>
+<h5>Human Readable Output</h5>
+<p>
+<h3>SlashNext Phishing Incident Response - URL Lookup</h3>
+<h5>url = http://www.google.com/</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Value</strong></th>
+      <th><strong>Type</strong></th>
+      <th><strong>Verdict</strong></th>
+      <th><strong>ThreatStatus</strong></th>
+      <th><strong>ThreatName</strong></th>
+      <th><strong>ThreatType</strong></th>
+      <th><strong>FirstSeen</strong></th>
+      <th><strong>LastSeen</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> http://www.google.com/ </td>
+      <td> Scanned URL </td>
+      <td> Benign </td>
+      <td> N/A </td>
+      <td> N/A </td>
+      <td> N/A </td>
+      <td> 08-26-2019 17:29:38 UTC </td>
+      <td> 08-26-2019 19:41:19 UTC </td>
+    </tr>
+    <tr>
+      <td> --------> https://www.google.com/?gws_rd=ssl </td>
+      <td> Final URL </td>
+      <td> Benign </td>
+      <td>  </td>
+      <td>  </td>
+      <td>  </td>
+      <td>  </td>
+      <td>  </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<h3>4. slashnext-host-reputation</h3>
 <hr>
 <p>Search in SlashNext Cloud database and retrieve reputation of a host.</p>
 <h5>Base Command</h5>
@@ -692,7 +965,7 @@
 </table>
 </p>
 
-<h3>4. slashnext-host-report</h3>
+<h3>5. slashnext-host-report</h3>
 <hr>
 <p>Search in SlashNext Cloud database and retrieve a detailed report for a host and associated URL.</p>
 <h5>Base Command</h5>
@@ -997,7 +1270,7 @@ Forensics: Webpage Rendered Text for the Scanned URL = http://www.google.com/was
 </p>
 </p>
 
-<h3>5. slashnext-host-urls</h3>
+<h3>6. slashnext-host-urls</h3>
 <hr>
 <p>Search in SlashNext Cloud database and retrieve list of all URLs associated with the specified host.</p>
 <h5>Base Command</h5>
@@ -1668,7 +1941,278 @@ Forensics: Webpage Rendered Text for the Scanned URL = http://www.google.com/was
 </table>
 </p>
 
-<h3>6. slashnext-url-scan</h3>
+<h3>7. slashnext-url-reputation</h3>
+<hr>
+<p>Queries the SlashNext Cloud database and retrieves the reputation of a url.</p>
+<h5>Base Command</h5>
+<p>
+  <code>slashnext-url-reputation</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>url</td>
+      <td>The url to look up in the SlashNext Threat Intelligence database.</td>
+      <td>Required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>DBotScore.Indicator</td>
+      <td>string</td>
+      <td>The indicator that was tested</td>
+    </tr>
+    <tr>
+      <td>DBotScore.Type</td>
+      <td>string</td>
+      <td>Indicator type</td>
+    </tr>
+    <tr>
+      <td>DBotScore.Vendor</td>
+      <td>string</td>
+      <td>Vendor used to calculate the score</td>
+    </tr>
+    <tr>
+      <td>DBotScore.Score</td>
+      <td>number</td>
+      <td>The actual score</td>
+    </tr>
+    <tr>
+      <td>URL.Data</td>
+      <td>string</td>
+      <td>URL reported</td>
+    </tr>
+    <tr>
+      <td>URL.Malicious.Vendor</td>
+      <td>string</td>
+      <td>For malicious URLs, the vendor that made the decision</td>
+    </tr>
+    <tr>
+      <td>URL.Malicious.Description</td>
+      <td>string</td>
+      <td>For malicious URLs, the reason that the vendor made the decision</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Value</td>
+      <td>string</td>
+      <td>Value of the Indicator of Compromise (IoC)</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Type</td>
+      <td>string</td>
+      <td>Type of the Indicator of Compromise (IoC)</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Verdict</td>
+      <td>string</td>
+      <td>SlashNext Phishing Incident Response verdict on the IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.ThreatStatus</td>
+      <td>string</td>
+      <td>Threat status of the IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.ThreatName</td>
+      <td>string</td>
+      <td>Name of the threat posed by the IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.ThreatType</td>
+      <td>string</td>
+      <td>Type of the threat posed by the IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.FirstSeen</td>
+      <td>date</td>
+      <td>Time when the IoC was first observed</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.LastSeen</td>
+      <td>date</td>
+      <td>Time when the IoC was last observed</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Final.Value</td>
+      <td>string</td>
+      <td>Final IoC value in case original IoC is a redirector to same domain</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Final.Type</td>
+      <td>string</td>
+      <td>Type of the final IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Final.Verdict</td>
+      <td>string</td>
+      <td>SlashNext Phishing Incident Response verdict on the final IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.Value</td>
+      <td>string</td>
+      <td>Landing IoC value in case original IoC is a redirector to different domain</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.Type</td>
+      <td>string</td>
+      <td>Type of the landing IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.Verdict</td>
+      <td>string</td>
+      <td>SlashNext Phishing Incident Response verdict on the landing IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.ThreatStatus</td>
+      <td>string</td>
+      <td>Threat status of the landing IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.ThreatName</td>
+      <td>string</td>
+      <td>Name of the threat posed by the landing IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.ThreatType</td>
+      <td>string</td>
+      <td>Type of the threat posed by the landing IoC</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.FirstSeen</td>
+      <td>date</td>
+      <td>Time when the landing IoC was first observed</td>
+    </tr>
+    <tr>
+      <td>SlashNext.URL.Landing.LastSeen</td>
+      <td>date</td>
+      <td>Time when the landing IoC was last observed</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!slashnext-url-reputation url=www.google.com</code>
+</p>
+<h5>Context Example</h5>
+<pre>
+{
+    "DBotScore": [
+        {
+            "Indicator": "http://www.google.com/",
+            "Score": 1,
+            "Type": "url",
+            "Vendor": "SlashNext Phishing Incident Response"
+        },
+        {
+            "Indicator": "https://www.google.com/?gws_rd=ssl",
+            "Score": 1,
+            "Type": "url",
+            "Vendor": "SlashNext Phishing Incident Response"
+        }
+    ],
+    "SlashNext.URL": {
+        "Final": {
+            "Type": "Final URL",
+            "Value": "https://www.google.com/?gws_rd=ssl",
+            "Verdict": "Benign"
+        },
+        "FirstSeen": "08-26-2019 17:29:38 UTC",
+        "LastSeen": "08-26-2019 19:41:19 UTC",
+        "ThreatName": "N/A",
+        "ThreatStatus": "N/A",
+        "ThreatType": "N/A",
+        "Type": "Scanned URL",
+        "Value": "http://www.google.com/",
+        "Verdict": "Benign"
+    },
+    "URL": [
+        {
+            "Data": "http://www.google.com/"
+        },
+        {
+            "Data": "https://www.google.com/?gws_rd=ssl"
+        }
+    ]
+}
+</pre>
+<h5>Human Readable Output</h5>
+<p>
+<h3>SlashNext Phishing Incident Response - URL Reputation</h3>
+<h5>url = http://www.google.com/</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Value</strong></th>
+      <th><strong>Type</strong></th>
+      <th><strong>Verdict</strong></th>
+      <th><strong>ThreatStatus</strong></th>
+      <th><strong>ThreatName</strong></th>
+      <th><strong>ThreatType</strong></th>
+      <th><strong>FirstSeen</strong></th>
+      <th><strong>LastSeen</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> http://www.google.com/ </td>
+      <td> Scanned URL </td>
+      <td> Benign </td>
+      <td> N/A </td>
+      <td> N/A </td>
+      <td> N/A </td>
+      <td> 08-26-2019 17:29:38 UTC </td>
+      <td> 08-26-2019 19:41:19 UTC </td>
+    </tr>
+    <tr>
+      <td> --------> https://www.google.com/?gws_rd=ssl </td>
+      <td> Final URL </td>
+      <td> Benign </td>
+      <td>  </td>
+      <td>  </td>
+      <td>  </td>
+      <td>  </td>
+      <td>  </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<h3>8. slashnext-url-scan</h3>
 <hr>
 <p>Perform a real-time URL scan with SlashNext cloud-based SEER Engine. If the specified URL already exists in the cloud database, scan results will get returned immediately. If not, this command will submit a URL scan request and return with ‘check back later’ message along with a unique Scan ID. User can check results of this scan with ‘slashnext-scan-report’ command after 60 seconds or later using the retuned Scan ID</p>
 <h5>Base Command</h5>
@@ -1958,7 +2502,7 @@ Forensics: Webpage Rendered Text for the Scanned URL = http://www.google.com/was
 </table>
 </p>
 
-<h3>7. slashnext-url-scan-sync</h3>
+<h3>9. slashnext-url-scan-sync</h3>
 <hr>
 <p>Perform a real-time URL scan with SlashNext cloud-based SEER Engine in a blocking mode. If the specified URL already exists in the cloud database, scan result will get returned immediately. If not, this command will submit a URL scan request and wait for the scan to finish. The scan may take up to 60 seconds to finish.</p>
 <h5>Base Command</h5>
@@ -2253,7 +2797,7 @@ Forensics: Webpage Rendered Text for the Scanned URL = http://www.google.com/was
 </table>
 </p>
 
-<h3>8. slashnext-scan-report</h3>
+<h3>10. slashnext-scan-report</h3>
 <hr>
 <p>Retrieve URL scan results against a previous Scan request. If the scan is finished, result will be retuned immediately; otherwise a ‘check back later’ message will be returned.</p>
 <h5>Base Command</h5>
@@ -2543,7 +3087,7 @@ Forensics: Webpage Rendered Text for the Scanned URL = http://www.google.com/was
 </table>
 </p>
 
-<h3>9. slashnext-download-screenshot</h3>
+<h3>11. slashnext-download-screenshot</h3>
 <hr>
 <p>Download webpage screenshot against a previous URL Scan request.</p>
 <h5>Base Command</h5>
@@ -2596,7 +3140,7 @@ Forensics: Webpage Screenshot for URL Scan ID = 48ae7b06-5915-4633-bc51-2cfaa003
 </p>
 </p>
 
-<h3>10. slashnext-download-html</h3>
+<h3>12. slashnext-download-html</h3>
 <hr>
 <p>Download webpage HTML against a previous URL Scan request.</p>
 <h5>Base Command</h5>
@@ -2644,7 +3188,7 @@ Forensics: Webpage HTML for URL Scan ID = 48ae7b06-5915-4633-bc51-2cfaa0036742
 </p>
 </p>
 
-<h3>11. slashnext-download-text</h3>
+<h3>13. slashnext-download-text</h3>
 <hr>
 <p>Download  webpage text against a previous URL Scan request.</p>
 <h5>Base Command</h5>
@@ -2692,7 +3236,7 @@ Forensics: Webpage Rendered Text for URL Scan ID = 48ae7b06-5915-4633-bc51-2cfaa
 </p>
 </p>
 
-<h3>12. slashnext-api-quota</h3>
+<h3>14. slashnext-api-quota</h3>
 <hr>
 <p>Queries the SlashNext cloud database and retrieves the details of API quota.</p>
 <h5>Base Command</h5>

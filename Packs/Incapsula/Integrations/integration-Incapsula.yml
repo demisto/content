@@ -596,9 +596,9 @@ script:
       required: true
       description: The id of the rule (either a security or an acl rule), e.g api.acl.blacklisted_ips. See other examples below
     - name: whitelist_id
-      description: The id (an integer) of the whitelist to be set. This field is optional - in case no id is supplied, a new whitelist will be created
+      description: The id (an integer) of the allow list to be set. This field is optional - in case no id is supplied, a new allow list will be created
     - name: delete_whitelist
-      description: An optional boolean parameter, in case it is set to "true" and a whitelist id is sent, then the whitelist will be deleted
+      description: An optional boolean parameter, in case it is set to "true" and a allow list id is sent, then the allow list will be deleted
     - name: urls
       description: A comma separated list of resource paths. For example, /home and /admin/index.html are resource paths, however http://www.example.com/home is not. Each URL should be encoded separately using percent encoding as specified by RFC 3986 (http://tools.ietf.org/html/rfc3986#section-2.1). An empty URL list will remove all URLs
     - name: countries
@@ -615,7 +615,7 @@ script:
       description: A comma seperated list of encoded user agents
     - name: user_agents
       description: A comma seperated list of encoded user agents
-    description: Use this operation to set whitelists to security rules or ACLs. To update an existing whitelist, send its ID in the id parameter. If the id parameter does not exist a new whitelist will be created
+    description: Use this operation to set allow lists to security rules or ACLs. To update an existing allow list, send its ID in the id parameter. If the id parameter does not exist a new allow list will be created
   - name: incap-delete-site
     arguments:
     - name: site_id

@@ -3,7 +3,6 @@ import json
 import time
 import traceback
 from copy import deepcopy
-from threading import Lock
 from typing import Callable, Dict, List, Optional
 from urllib import parse
 
@@ -27,12 +26,12 @@ FAILURE_SLEEP = 15           # sleep between consecutive failures events fetch
 FETCH_SLEEP = 60                    # sleep between fetches
 BATCH_SIZE = 100                    # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10   # max amount of IPs to enrich per offense
-LOCK_WAIT_TIME = 0.5                # time to wait for lock.acquire
 MAX_WORKERS = 8                     # max concurrent workers used for events enriching
 DOMAIN_ENRCH_FLG = "True"           # when set to true, will try to enrich offense and assets with domain names
 RULES_ENRCH_FLG = "True"            # when set to true, will try to enrich offense with rule names
 MAX_FETCH_EVENT_RETIRES = 3         # max iteration to try search the events of an offense
 SLEEP_FETCH_EVENT_RETIRES = 10      # sleep between iteration to try search the events of an offense
+DEFAULT_EVENTS_TIMEOUT = 30         # default timeout for the events in minutes
 
 ADVANCED_PARAMETER_NAMES = [
     "EVENTS_INTERVAL_SECS",
@@ -46,7 +45,8 @@ ADVANCED_PARAMETER_NAMES = [
     "RULES_ENRCH_FLG",
     "MAX_FETCH_EVENT_RETIRES",
     "SLEEP_FETCH_EVENT_RETIRES",
-    "REQUEST_TIMEOUT"
+    "REQUEST_TIMEOUT",
+    "DEFAULT_EVENTS_TIMEOUT"
 ]
 
 """ GLOBAL VARS """
@@ -190,7 +190,6 @@ class QRadarClient:
         )
         if not (self._username and self._password):
             raise Exception("Please provide a username/password or an API token.")
-        self.lock = Lock()
 
     @property
     def server(self):
@@ -643,17 +642,11 @@ def epoch_to_iso(ms_passed_since_epoch):
     return ms_passed_since_epoch
 
 
-def print_debug_msg(msg, lock: Lock = None):
+def print_debug_msg(msg):
     """
-    Prints a debug message with QRadarMsg prefix, while handling lock.acquire (if available)
+    Prints a debug message with QRadarMsg prefix
     """
-    debug_msg = f"QRadarMsg - {msg}"
-    if lock:
-        if lock.acquire(timeout=LOCK_WAIT_TIME):
-            demisto.debug(debug_msg)
-            lock.release()
-    else:
-        demisto.debug(debug_msg)
+    demisto.debug(f"QRadarMsg - {msg}")
 
 
 def filter_dict_null(d):
@@ -763,9 +756,7 @@ def enrich_offense_with_events(
             offense, additional_where, events_columns, events_limit, client,
         )
     except Exception as e:
-        print_debug_msg(
-            f"Failed events fetch for offense {offense['id']}: {str(e)}.", client.lock,
-        )
+        print_debug_msg(f"Failed events fetch for offense {offense['id']}: {str(e)}.")
         return offense
 
 
@@ -781,9 +772,6 @@ def perform_offense_events_enrichment(
                 enrich offense with event
         return offense
     """
-    if is_reset_triggered(client.lock):
-        return offense
-
     # decreasing 1 minute from the start_time to avoid the case where the minute queried in the start_time and the
     # end_time is equal
     offense_start_time = offense["start_time"] - 60 * 1000
@@ -792,7 +780,7 @@ def perform_offense_events_enrichment(
         f"{additional_where} limit {events_limit} START '{offense_start_time}'"
     )
     events_query = {"headers": "", "query_expression": query_expression}
-    print_debug_msg(f'Starting events fetch for offense {offense["id"]}.', client.lock)
+    print_debug_msg(f'Starting events fetch for offense {offense["id"]}.')
     try:
         # retry to check if we got all the event (its not an error retry)
         for i in range(MAX_FETCH_EVENT_RETIRES):
@@ -808,10 +796,7 @@ def perform_offense_events_enrichment(
                 break
             time.sleep(SLEEP_FETCH_EVENT_RETIRES)
     except Exception as e:
-        print_debug_msg(
-            f'Failed fetching event for offense {offense["id"]}: {str(e)}.',
-            client.lock,
-        )
+        print_debug_msg(f'Failed fetching event for offense {offense["id"]}: {str(e)}.')
     finally:
         return offense
 
@@ -829,18 +814,13 @@ def try_poll_offense_events_with_retry(
     start_time = time.time()
     while not (query_status in TERMINATING_SEARCH_STATUSES or failures >= max_retries):
         try:
-            if is_reset_triggered(client.lock):
-                return []
-
             raw_search = client.get_search(search_id)
             query_status = raw_search.get("status")
             # failures are relevant only when consecutive
             failures = 0
             if query_status in TERMINATING_SEARCH_STATUSES:
                 raw_search_results = client.get_search_results(search_id)
-                print_debug_msg(
-                    f"Events fetched for offense {offense_id}.", client.lock
-                )
+                print_debug_msg(f"Events fetched for offense {offense_id}.")
                 events = raw_search_results.get("events", [])
                 for event in events:
                     try:
@@ -854,10 +834,7 @@ def try_poll_offense_events_with_retry(
                 # prepare next run
                 elapsed = time.time() - start_time
                 if elapsed >= FETCH_SLEEP:  # print status debug every fetch sleep (or after)
-                    print_debug_msg(
-                        f"Still fetching offense {offense_id} events, search_id: {search_id}.",
-                        client.lock,
-                    )
+                    print_debug_msg(f"Still fetching offense {offense_id} events, search_id: {search_id}.")
                     start_time = time.time()
                 time.sleep(EVENTS_INTERVAL_SECS)
         except Exception as e:
@@ -937,7 +914,7 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query):
     offense_id = get_minimum_id_to_fetch(offense_id, user_query)
     raw_offenses, fetch_query = seek_fetchable_offenses(client, offense_id, user_query)
     if raw_offenses:
-        print_debug_msg(f"Fetched {fetch_query}successfully.", client.lock)
+        print_debug_msg(f"Fetched {fetch_query} successfully.")
 
     return raw_offenses
 
@@ -977,7 +954,7 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
                 if tries % 10 == 0:
                     last_run = get_integration_context(SYNC_CONTEXT)
                     last_run["id"] = end_offense_id
-                    set_integration_context(last_run, SYNC_CONTEXT)
+                    set_integration_context(last_run, sync=SYNC_CONTEXT)
             else:
                 latest_offense_fnd = True
     if isinstance(raw_offenses, list):
@@ -990,21 +967,17 @@ def fetch_incidents_long_running_samples():
     return last_run.get("samples", [])  # type: ignore [attr-defined]
 
 
-def is_reset_triggered(lock, handle_reset=False):
+def is_reset_triggered():
     """
     Returns if reset signal is set. If handle_reset=True, will also reset the integration context
     """
-    if lock.acquire(timeout=LOCK_WAIT_TIME):
-        ctx = get_integration_context(SYNC_CONTEXT)
-        if ctx and RESET_KEY in ctx:
-            if handle_reset:
-                print_debug_msg("Reset fetch-incidents.")
-                set_integration_context(
-                    {"samples": ctx.get("samples", [])}, sync=SYNC_CONTEXT
-                )
-            lock.release()
-            return True
-        lock.release()
+    ctx = get_integration_context(SYNC_CONTEXT)
+    if ctx and RESET_KEY in ctx:
+        print_debug_msg("Reset fetch-incidents.")
+        set_integration_context(
+            {"samples": ctx.get("samples", [])}, sync=SYNC_CONTEXT
+        )
+        return True
     return False
 
 
@@ -1041,10 +1014,19 @@ def fetch_incidents_long_running_events(
                 events_limit=events_limit,
             )
         )
-    for future in concurrent.futures.as_completed(futures):
-        enriched_offenses.append(future.result())
-
-    if is_reset_triggered(client.lock, handle_reset=True):
+    try:
+        for future in concurrent.futures.as_completed(futures, timeout=DEFAULT_EVENTS_TIMEOUT * 60):
+            enriched_offenses.append(future.result())
+    except concurrent.futures.TimeoutError:
+        print_debug_msg("Timed out while waiting for events")
+        raw_offenses_ids = {offense['id'] for offense in raw_offenses} or set()
+        enriched_offenses_ids = {offense['id'] for offense in enriched_offenses} or set()
+        missing_ids = raw_offenses_ids - enriched_offenses_ids
+        if missing_ids:
+            for offense in raw_offenses:
+                if offense['id'] in missing_ids:
+                    enriched_offenses.append(offense)
+    if is_reset_triggered():
         return
 
     enriched_offenses.sort(key=lambda offense: offense.get("id", 0))
@@ -1092,7 +1074,7 @@ def fetch_incidents_long_running_no_events(
         print_debug_msg("Enriched offenses successfully.")
 
     # handle reset signal
-    if is_reset_triggered(client.lock, handle_reset=True):
+    if is_reset_triggered():
         return
 
     incidents_batch = create_incidents(raw_offenses, incident_type)
@@ -2026,7 +2008,7 @@ def fetch_loop_with_events(
 ):
     while True:
         try:
-            is_reset_triggered(client.lock, handle_reset=True)
+            is_reset_triggered()
 
             print_debug_msg("Starting fetch loop with events.")
             fetch_incidents_long_running_events(
@@ -2048,7 +2030,7 @@ def fetch_loop_with_events(
 def fetch_loop_no_events(client: QRadarClient, incident_type, user_query, ip_enrich, asset_enrich):
     while True:
         try:
-            is_reset_triggered(client.lock, handle_reset=True)
+            is_reset_triggered()
 
             print_debug_msg("Starting fetch loop with no events.")
             fetch_incidents_long_running_no_events(
@@ -2341,6 +2323,7 @@ def main():
         elif command == "fetch-incidents":
             demisto.incidents(fetch_incidents_long_running_samples())
         elif command == "long-running-execution":
+            support_multithreading()
             long_running_main(
                 client,
                 incident_type,

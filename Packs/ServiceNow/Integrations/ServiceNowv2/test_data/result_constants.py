@@ -25,6 +25,20 @@ EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS = {
     'sys_created_by': 'admin'
 }
 
+EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS = {
+    'Active': 'true',
+    'CreatedOn': '2019-09-05 00:42:29',
+    'Creator': 'test',
+    'ID': 'sys_id',
+    'Number': 'INC0000039',
+    'OpenedAt': '2019-09-05 00:41:01',
+    'OpenedBy': 'test',
+    'Priority': '4 - Low',
+    'State': '1',
+    'Summary': 'Trouble getting to Oregon mail server',
+    'opened_by': {'link': 'demisto.com'}
+}
+
 EXPECTED_MULTIPLE_TICKET_CONTEXT = [
     {
         'Active': 'true',

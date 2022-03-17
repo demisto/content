@@ -1,0 +1,17 @@
+{
+  "statusCode": 400,
+  "data": {
+    "authorized": true,
+    "valid": false,
+    "errors": [
+      {
+        "message": {
+          "translation": "Trashable Content must be trashed before it can be purged",
+          "args": []
+        }
+      }
+    ],
+    "successful": false
+  },
+  "message": "com.atlassian.confluence.api.service.exceptions.BadRequestException: Unable to purge content with id: ContentId{id=2064771}"
+}

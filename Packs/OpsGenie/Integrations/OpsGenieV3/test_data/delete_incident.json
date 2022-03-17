@@ -1,0 +1,11 @@
+{
+    "action": "Delete",
+    "alertId": "d40ab9e9-4efd-4134-a171-090b28d53d31-1612957220180",
+    "alias": "d40ab9e9-4efd-4134-a171-090b28d53d31-1612957220180",
+    "integrationId": "26aaa576-0434-4b17-bc39-602a02fe417c",
+    "isSuccess": true,
+    "processedAt": "2021-02-10T11:40:25.46Z",
+    "requestId": "903b3ff7-1e6e-4eb5-b494-49b6dc4136e1",
+    "status": "Deleted incident",
+    "success": true
+}

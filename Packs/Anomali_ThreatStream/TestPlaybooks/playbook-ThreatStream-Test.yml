@@ -5,49 +5,52 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fc7f961f-504d-4fcc-8a07-3c26f6df2d5e
+    taskid: 9142f6d7-807e-4f13-8351-6672535148fa
     type: start
     task:
-      id: fc7f961f-504d-4fcc-8a07-3c26f6df2d5e
+      id: 9142f6d7-807e-4f13-8351-6672535148fa
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "24"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 50
+          "y": -390
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: a63d2665-4c06-40ab-8e99-e8f852fe58d6
+    taskid: e67ebe31-7e70-47b8-897a-bc1e17226101
     type: regular
     task:
-      id: a63d2665-4c06-40ab-8e99-e8f852fe58d6
+      id: e67ebe31-7e70-47b8-897a-bc1e17226101
       version: -1
       name: Check Domain Reputation
       description: Checks the reputation of the domain name.
-      script: Anomali ThreatStream v2|||domain
+      script: Anomali ThreatStream v3|||domain
       type: regular
       iscommand: true
-      brand: Anomali ThreatStream v2
+      brand: Anomali ThreatStream v3
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       domain:
-        simple: dropwellsfargo.com
-      include_inactive: {}
-      threshold: {}
+        simple: szqylwjzq.biz
+      include_inactive:
+        simple: "True"
     separatecontext: false
     view: |-
       {
@@ -59,12 +62,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 0f5880f2-d4bd-4259-8249-435f64f83237
+    taskid: bf4ba0da-661b-400e-82b9-debadd531039
     type: condition
     task:
-      id: 0f5880f2-d4bd-4259-8249-435f64f83237
+      id: bf4ba0da-661b-400e-82b9-debadd531039
       version: -1
       name: 'Validate  Domain Context '
       type: condition
@@ -97,65 +102,69 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 45924a26-d219-455b-8a9d-e29c50b22a55
+    taskid: 8da949ba-e939-4a9c-830e-fdff167f5c34
     type: regular
     task:
-      id: 45924a26-d219-455b-8a9d-e29c50b22a55
+      id: 8da949ba-e939-4a9c-830e-fdff167f5c34
       version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
+      name: Import IOC to Threat Stream
+      description: Imports indicators (observables) into ThreatStream. Approval is
+        not required for the imported data. You must have the Approve Intel user permission
+        to import without approval using the API.
+      script: '|||threatstream-import-indicator-without-approval'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
       - "1"
       - "7"
       - "5"
-      - "9"
       - "11"
+      - "9"
     scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+      classification:
+        simple: private
+      file_id:
+        simple: ${File.EntryID}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 195
+          "y": 120
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: fdb43b47-9197-4d9b-889a-32780f2d2736
+    taskid: bc96def5-01d7-42e9-80e7-ef22da8baf6a
     type: regular
     task:
-      id: fdb43b47-9197-4d9b-889a-32780f2d2736
+      id: bc96def5-01d7-42e9-80e7-ef22da8baf6a
       version: -1
       name: Check IP Reputation
       description: Checks the reputation of the given IP.
-      script: Anomali ThreatStream v2|||ip
+      script: Anomali ThreatStream v3|||ip
       type: regular
       iscommand: true
-      brand: Anomali ThreatStream v2
+      brand: Anomali ThreatStream v3
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
-      include_inactive: {}
+      include_inactive:
+        simple: "True"
       ip:
-        simple: 116.101.134.118
-      threshold: {}
+        simple: 78.78.78.67
     separatecontext: false
     view: |-
       {
@@ -167,12 +176,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 80d76444-f1f6-4f70-8d84-cba74e694e70
+    taskid: 591136e6-2a0a-46f7-882c-15807e341822
     type: condition
     task:
-      id: 80d76444-f1f6-4f70-8d84-cba74e694e70
+      id: 591136e6-2a0a-46f7-882c-15807e341822
       version: -1
       name: Validate IP context
       type: condition
@@ -205,27 +216,29 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: f194386e-d684-40d8-89f1-caa03d398aaf
+    taskid: 03dc3c53-0ea8-413c-8bdb-4d357bf05f4f
     type: regular
     task:
-      id: f194386e-d684-40d8-89f1-caa03d398aaf
+      id: 03dc3c53-0ea8-413c-8bdb-4d357bf05f4f
       version: -1
       name: Check URL reputation
       description: Checks the reputation of the given URL.
-      script: Anomali ThreatStream v2|||url
+      script: Anomali ThreatStream v3|||url
       type: regular
       iscommand: true
-      brand: Anomali ThreatStream v2
+      brand: Anomali ThreatStream v3
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
-      include_inactive: {}
-      threshold: {}
+      include_inactive:
+        simple: "True"
       url:
-        simple: http://www.myronnhammond.club/godaddy/
+        simple: http://www.ujhy1.com/
     separatecontext: false
     view: |-
       {
@@ -237,12 +250,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 03b8a721-5ce0-42f1-8dad-8301302c8d6b
+    taskid: e6cb05e5-53d6-488a-8f80-55df7471f636
     type: condition
     task:
-      id: 03b8a721-5ce0-42f1-8dad-8301302c8d6b
+      id: e6cb05e5-53d6-488a-8f80-55df7471f636
       version: -1
       name: Validate URL Reputation
       type: condition
@@ -275,27 +290,29 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: c980650f-528a-4da8-83e1-ce1b5bab6de6
+    taskid: 3fe1cdeb-3df9-42b2-8472-2bf464d66d0b
     type: regular
     task:
-      id: c980650f-528a-4da8-83e1-ce1b5bab6de6
+      id: 3fe1cdeb-3df9-42b2-8472-2bf464d66d0b
       version: -1
       name: Check email reputation
       description: Checks the reputation of the given email address.
-      script: Anomali ThreatStream v2|||threatstream-email-reputation
+      script: Anomali ThreatStream v3|||threatstream-email-reputation
       type: regular
       iscommand: true
-      brand: Anomali ThreatStream v2
+      brand: Anomali ThreatStream v3
     nexttasks:
       '#none#':
       - "10"
     scriptarguments:
       email:
-        simple: tatimouzo1@aliceadsl.fr
-      include_inactive: {}
-      threshold: {}
+        simple: email_test@domain.com
+      include_inactive:
+        simple: "True"
     separatecontext: false
     view: |-
       {
@@ -307,12 +324,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 3504392f-9844-40f8-8647-e96f5ee9ed96
+    taskid: f6f12b98-7aa8-48a3-8ca7-ffdc8adb6d56
     type: condition
     task:
-      id: 3504392f-9844-40f8-8647-e96f5ee9ed96
+      id: f6f12b98-7aa8-48a3-8ca7-ffdc8adb6d56
       version: -1
       name: Validate Email Reputation
       type: condition
@@ -345,31 +364,29 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 6eba16b2-245a-4445-8ee9-3ce4ccce2b97
+    taskid: f05b5035-1746-44ff-83ae-9d47b52d022a
     type: regular
     task:
-      id: 6eba16b2-245a-4445-8ee9-3ce4ccce2b97
+      id: f05b5035-1746-44ff-83ae-9d47b52d022a
       version: -1
-      name: Check MD5 reputation
-      description: Checks the reputation of the given md5 of the file.
-      script: Anomali ThreatStream v2|||file
+      name: Check file reputation
+      description: Checks the reputation of the given SHA256 of the file.
+      script: Anomali ThreatStream v3|||file
       type: regular
       iscommand: true
-      brand: Anomali ThreatStream v2
+      brand: Anomali ThreatStream v3
     nexttasks:
       '#none#':
       - "12"
     scriptarguments:
       file:
-        simple: ae56db90749f05ee3b6ea1daed4279a2
+        simple: 1d37556b8aeb5cb5fbf08cd5b4790075
       include_inactive:
-        simple: fal
-      md5:
-        simple: fc0f4799549242c437cd480c85cb5e16cfdc0c3df622cc31ed9745a45a61df28
-      threshold:
-        simple: low
+        simple: "True"
     separatecontext: false
     view: |-
       {
@@ -381,12 +398,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 07e11822-3e70-4240-8520-3b0de9660e7e
+    taskid: a8a9b78c-2718-4cc2-873d-4b2b76fdfe4d
     type: condition
     task:
-      id: 07e11822-3e70-4240-8520-3b0de9660e7e
+      id: a8a9b78c-2718-4cc2-873d-4b2b76fdfe4d
       version: -1
       name: Validate  File reputation
       type: condition
@@ -402,7 +421,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: File.MD5
+              simple: File.SHA256
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -419,12 +438,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 080844f3-77bb-4a02-8945-adda77b736d5
+    taskid: 8f374640-9a3e-49a8-80cb-a5e4e2371261
     type: regular
     task:
-      id: 080844f3-77bb-4a02-8945-adda77b736d5
+      id: 8f374640-9a3e-49a8-80cb-a5e4e2371261
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -438,10 +459,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -453,17 +470,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: d0e02c2b-f3ae-4028-8e06-394b30e16a24
+    taskid: 4b023b7c-02de-4103-814e-8154f916b6ac
     type: title
     task:
-      id: d0e02c2b-f3ae-4028-8e06-394b30e16a24
+      id: 4b023b7c-02de-4103-814e-8154f916b6ac
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -475,38 +495,28 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: 8a564967-696c-45a1-8878-ccc7ad76095a
+    taskid: 03f5d9cd-a68a-48d0-85ff-3cd5fcf1bd75
     type: regular
     task:
-      id: 8a564967-696c-45a1-8878-ccc7ad76095a
+      id: 03f5d9cd-a68a-48d0-85ff-3cd5fcf1bd75
       version: -1
       name: Get Indicator by ID
-      description: Return filtered indicators from ThreatStream. If query is defined, it overides all othe arguments that were passed to the command.
-      script: Anomali ThreatStream v2|||threatstream-get-indicators
+      description: Return filtered indicators from ThreatStream. If query is defined,
+        it overides all othe arguments that were passed to the command.
+      script: Anomali ThreatStream v3|||threatstream-get-indicators
       type: regular
       iscommand: true
-      brand: Anomali ThreatStream v2
+      brand: Anomali ThreatStream v3
     nexttasks:
       '#none#':
       - "16"
     scriptarguments:
-      asn: {}
-      confidence: {}
-      country: {}
-      created_ts: {}
       id:
-        simple: "51685266655"
-      indicator_severity: {}
-      indicator_value: {}
-      is_public: {}
-      limit: {}
-      org: {}
-      query: {}
-      status: {}
-      tags_name: {}
-      type: {}
+        simple: "231017344"
     separatecontext: false
     view: |-
       {
@@ -518,12 +528,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: 1bd9bca8-99dd-48f5-8a25-936bdac9f84b
+    taskid: 316490d4-ac60-45c6-88c5-5cd18a5a4a84
     type: condition
     task:
-      id: 1bd9bca8-99dd-48f5-8a25-936bdac9f84b
+      id: 316490d4-ac60-45c6-88c5-5cd18a5a4a84
       version: -1
       name: Validate Indicator Context
       type: condition
@@ -543,7 +555,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 144.172.153.165
+              simple: y.gp
       - - operator: isEqualString
           left:
             value:
@@ -551,7 +563,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: low
+              simple: very-high
     view: |-
       {
         "position": {
@@ -562,12 +574,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 7753be8f-33a9-4850-8637-7d3a0194bd95
+    taskid: a452d599-b462-418e-827f-b04e2289facb
     type: regular
     task:
-      id: 7753be8f-33a9-4850-8637-7d3a0194bd95
+      id: a452d599-b462-418e-827f-b04e2289facb
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -583,10 +597,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -598,12 +608,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 3718724c-3a29-4dd1-8baa-ab341b48f1c5
+    taskid: b1e56aa5-31e9-442a-8ce6-cf45068919e0
     type: regular
     task:
-      id: 3718724c-3a29-4dd1-8baa-ab341b48f1c5
+      id: b1e56aa5-31e9-442a-8ce6-cf45068919e0
       version: -1
       name: Get Actor list
       description: Returns a list of Threat Model.
@@ -630,19 +642,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: 1cf2edbb-8111-40fc-8846-334725252316
+    taskid: 3eaadf02-9952-4985-894a-b6e5feefc550
     type: regular
     task:
-      id: 1cf2edbb-8111-40fc-8846-334725252316
+      id: 3eaadf02-9952-4985-894a-b6e5feefc550
       version: -1
       name: Get Indicator By Model Actor
-      description: Returns a list of indecators associated with the specified model and model's id.
-      script: Anomali ThreatStream v2|||threatstream-get-indicators-by-model
+      description: Returns a list of indecators associated with the specified model
+        and model's id.
+      script: Anomali ThreatStream v3|||threatstream-get-indicators-by-model
       type: regular
       iscommand: true
-      brand: Anomali ThreatStream v2
+      brand: Anomali ThreatStream v3
     nexttasks:
       '#none#':
       - "14"
@@ -664,19 +679,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: 3c20a3d1-e9b6-4ac7-8d08-3ecc55fb4a77
+    taskid: 0be289ab-4e5d-4d96-80bc-902f06f4bad4
     type: regular
     task:
-      id: 3c20a3d1-e9b6-4ac7-8d08-3ecc55fb4a77
+      id: 0be289ab-4e5d-4d96-80bc-902f06f4bad4
       version: -1
       name: Get Passive DNS
       description: Returns enrichment data for Domain or IP for availabe observables.
-      script: Anomali ThreatStream v2|||threatstream-get-passive-dns
+      script: Anomali ThreatStream v3|||threatstream-get-passive-dns
       type: regular
       iscommand: true
-      brand: Anomali ThreatStream v2
+      brand: Anomali ThreatStream v3
     nexttasks:
       '#none#':
       - "21"
@@ -698,12 +715,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: 76f4c20c-7b08-4069-81a1-4df99561219d
+    taskid: fc5263b7-65ac-455f-81a7-b07bd9e16dec
     type: condition
     task:
-      id: 76f4c20c-7b08-4069-81a1-4df99561219d
+      id: fc5263b7-65ac-455f-81a7-b07bd9e16dec
       version: -1
       name: Validate Passive DNS Context
       type: condition
@@ -756,19 +775,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: 0d6b3cee-cc30-4eec-8279-24358a721c3e
+    taskid: e2f08e38-6a69-4ec9-87c8-c375d4a08a8f
     type: regular
     task:
-      id: 0d6b3cee-cc30-4eec-8279-24358a721c3e
+      id: e2f08e38-6a69-4ec9-87c8-c375d4a08a8f
       version: -1
       name: Get Campaign List
       description: Returns a list of Threat Model.
-      script: Anomali ThreatStream v2|||threatstream-get-model-list
+      script: Anomali ThreatStream v3|||threatstream-get-model-list
       type: regular
       iscommand: true
-      brand: Anomali ThreatStream v2
+      brand: Anomali ThreatStream v3
     nexttasks:
       '#none#':
       - "23"
@@ -788,19 +809,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: b9be25a2-478c-48ce-8aed-ea8d7d75ba47
+    taskid: ca8dcc22-5987-48c9-81ce-5e2e78a49015
     type: regular
     task:
-      id: b9be25a2-478c-48ce-8aed-ea8d7d75ba47
+      id: ca8dcc22-5987-48c9-81ce-5e2e78a49015
       version: -1
       name: Get Indicator By Model Campaing
-      description: Returns a list of indecators associated with the specified model and model's id.
-      script: Anomali ThreatStream v2|||threatstream-get-indicators-by-model
+      description: Returns a list of indecators associated with the specified model
+        and model's id.
+      script: Anomali ThreatStream v3|||threatstream-get-indicators-by-model
       type: regular
       iscommand: true
-      brand: Anomali ThreatStream v2
+      brand: Anomali ThreatStream v3
     nexttasks:
       '#none#':
       - "14"
@@ -822,18 +846,140 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 59f1526a-cdea-41c1-886c-4ae2e44ef57e
+    type: regular
+    task:
+      id: 59f1526a-cdea-41c1-886c-4ae2e44ef57e
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: bbf5b6ad-5ae5-403e-81ee-baaf1bf8e252
+    type: regular
+    task:
+      id: bbf5b6ad-5ae5-403e-81ee-baaf1bf8e252
+      version: -1
+      name: Create IOC file data
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data:
+        simple: |-
+          {
+              "objects": [
+                  {
+                      "email": "email_test@domain.com",
+                      "itype": "compromised_email",
+                      "confidence": 50
+                  },
+                  {
+                      "srcip": "78.78.78.67",
+                      "classification": "private",
+                      "itype": "bot_ip",
+                      "confidence": 50,
+                      "severity": "low"
+                  },
+                  {
+                      "domain": "szqylwjzq.biz",
+                      "classification": "private",
+                      "itype": "mal_domain",
+                      "confidence": 95,
+                      "severity": "very-high"
+                  },
+                  {
+                      "url": "http://www.ujhy1.com/",
+                      "classification": "private",
+                      "itype": "mal_url",
+                      "confidence": 80,
+                      "severity": "high"
+                  },
+                  {
+                      "md5": "1d37556b8aeb5cb5fbf08cd5b4790075",
+                      "classification": "private",
+                      "itype": "apt_md5",
+                      "confidence": 50,
+                      "severity": "medium"
+                  }
+              ],
+              "meta": {
+                  "confidence": 50,
+                  "classification": "Private",
+                  "allow_unresolved": true,
+                  "tags": [
+                      "test1",
+                      "test2"
+                  ]
+              }
+          }
+      filename:
+        simple: ioc_data
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1785,
+        "height": 2225,
         "width": 2100,
         "x": 50,
-        "y": 50
+        "y": -390
       }
     }
   }
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

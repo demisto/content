@@ -149,6 +149,7 @@ class PackFolders(enum.Enum):
     GENERIC_TYPES = "GenericTypes"
     LISTS = 'Lists'
     PREPROCESS_RULES = "PreProcessRules"
+    JOBS = 'Jobs'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -158,7 +159,7 @@ class PackFolders(enum.Enum):
             PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
             PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value,
             PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value, PackFolders.GENERIC_MODULES.value,
-            PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value
+            PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value
         }
 
     @classmethod
@@ -174,7 +175,7 @@ class PackFolders(enum.Enum):
             PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
             PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
             PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
-            PackFolders.PREPROCESS_RULES.value
+            PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value
         }
 
 

@@ -8,4 +8,4 @@ ignore=BA110
 ignore=BA101
 
 [file:HelloWorld.yml]
-ignore=BA111
+ignore=BA111,IN145

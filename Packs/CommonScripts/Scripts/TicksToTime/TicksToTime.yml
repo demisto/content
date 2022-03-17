@@ -1,0 +1,20 @@
+commonfields:
+  id: ticksToTime
+  version: -1
+name: ticksToTime
+script: ''
+type: javascript
+tags:
+- Utility
+comment: 'Converting time in Ticks to readable time. Ticks are used to represent time
+  by some vendors, most commonly by Microsoft. '
+enabled: true
+args:
+- name: ticks
+  required: true
+  default: true
+  description: Time in ticks
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests

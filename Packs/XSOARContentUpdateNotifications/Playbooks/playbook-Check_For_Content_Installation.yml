@@ -13,6 +13,9 @@ outputs:
     only those that are specified in the filter need to be updated for this to return
     as True.
   type: boolean
+- contextPath: ContentDataPreCheck
+  description: This will return the names of packs that were not updated successfully.
+  type: unknown
 starttaskid: "0"
 tasks:
   "0":

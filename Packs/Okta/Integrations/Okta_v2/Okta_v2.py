@@ -216,7 +216,7 @@ class Client(BaseClient):
                 'EventSeverity': log.get('severity'),
                 'Client': f"{browser} on {os} {device}",
                 'RequestIP': log.get('client', {}).get('ipAddress'),
-                'ChainIP': log.get('request', {}).get('ipChain')[0].get('ip'),
+                'ChainIP': [ip_chain.get('ip') for ip_chain in log.get('request', {}).get('ipChain', [])],
                 'Targets': targets or '-',
                 'Time': time_published
             }

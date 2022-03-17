@@ -1,11 +1,11 @@
 [file:playbook-Search_Endpoints_By_Hash_-_Carbon_Black_Protection.yml]
-ignore=BA101
+ignore=BA101,PB107
 
 [file:playbook-Carbon_black_Protection_Rapid_IOC_Hunting.yml]
 ignore=BA101
 
 [file:CarbonBlackProtect.yml]
-ignore=IN126
+ignore=IN126,IN145
 
 [file:README.md]
 ignore=RM104

@@ -2,7 +2,7 @@
     "name": "Sepio",
     "description": "Get Agent, Switches and Events from your Sepio Prime",
     "support": "partner",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "Sepio",
     "url": "https://sepio.systems/contact-us/",
     "email": "support@sepio.systems",
@@ -20,5 +20,9 @@
     "githubUser": [
         "SepioSystems"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

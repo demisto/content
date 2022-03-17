@@ -2,12 +2,14 @@
     "name": "Claroty",
     "description": "Use the Claroty CTD to manage assets and alerts.",
     "support": "partner",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.13",
     "author": "Claroty",
     "url": "",
     "email": "support@claroty.com",
     "created": "2020-03-11T12:58:02Z",
-    "categories": [],
+    "categories": [
+        "Network Security"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [
@@ -16,5 +18,9 @@
     "githubUser": [
         "asaf96"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

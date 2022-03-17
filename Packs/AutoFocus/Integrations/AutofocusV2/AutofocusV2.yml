@@ -1115,7 +1115,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The SHA256 hash of the file.
+      description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
       isArray: true
       name: file
       required: true
@@ -1385,7 +1385,7 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: false
   longRunning: false
   longRunningPort: false

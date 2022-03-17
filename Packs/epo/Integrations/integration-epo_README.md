@@ -263,26 +263,26 @@ Find systems in the System Tree - by group ID or by search
 
 ##### Context Output
 
-|Path|Type|Description|
-|--- |--- |--- |
-|Endpoint.Name|string|Endpoint name.|
-|Endpoint.Domain|string|Endpoint domain.|
-|Endpoint.Hostname|string|Endpoint hostname.|
-|Endpoint.IPAddress|string|Endpoint IP address.|
-|Endpoint.OS|string|Endpoint OS.|
-|Endpoint.OSVersion|string|Endpoint OS version.|
-|Endpoint.Processor|string|Processor model.|
-|Endpoint.Processors|number|Number of processors.|
-|Endpoint.Memory|number|Endpoint memory.|
-|McAfee.ePO.Endpoint.Name|string|Endpoint name.|
-|McAfee.ePO.Endpoint.Domain|string|Endpoint domain.|
-|McAfee.ePO.Endpoint.Hostname|string|Endpoint hostname.|
-|McAfee.ePO.Endpoint.IPAddress|string|Endpoint IP address.|
-|McAfee.ePO.Endpoint.OS|string|Endpoint OS.|
-|McAfee.ePO.Endpoint.OSVersion|string|Endpoint OS version.|
-|McAfee.ePO.Endpoint.Processor|string|Processor model.|
-|McAfee.ePO.Endpoint.Processors|number|Number of processors|
-|McAfee.ePO.Endpoint.Memory|number|Endpoint memory.|
+| Path                             |Type|Description|
+|----------------------------------|--- |--- |
+| Endpoint.Name                    |string|Endpoint name.|
+| Endpoint.Domain                  |string|Endpoint domain.|
+| Endpoint.Hostname                |string|Endpoint hostname.|
+| Endpoint.IPAddress               |string|Endpoint IP address.|
+| Endpoint.OS                      |string|Endpoint OS.|
+| Endpoint.OSVersion               |string|Endpoint OS version.|
+| Endpoint.Processor               |string|Processor model.|
+| Endpoint.Processors              |number|Number of processors.|
+| Endpoint.Memory                  |number|Endpoint memory.|
+| McAfee.ePO.Endpoint.ComputerName |string|Endpoint name.|
+| McAfee.ePO.Endpoint.Domain       |string|Endpoint domain.|
+| McAfee.ePO.Endpoint.Hostname     |string|Endpoint hostname.|
+| McAfee.ePO.Endpoint.IPAddress    |string|Endpoint IP address.|
+| McAfee.ePO.Endpoint.OS           |string|Endpoint OS.|
+| McAfee.ePO.Endpoint.OSVersion    |string|Endpoint OS version.|
+| McAfee.ePO.Endpoint.Processor    |string|Processor model.|
+| McAfee.ePO.Endpoint.Processors   |number|Number of processors|
+| McAfee.ePO.Endpoint.Memory       |number|Endpoint memory.|
 
 ### 8. epo-command
 
@@ -503,26 +503,26 @@ Finds systems in the system tree.
 
 ##### Context Output
 
-|Path|Type|Description|
-|--- |--- |--- |
-|Endpoint.Name|string|Endpoint name.|
-|Endpoint.Domain|string|Endpoint domain.|
-|Endpoint.Hostname|string|Endpoint hostname.|
-|Endpoint.IPAddress|string|Endpoint IP address.|
-|Endpoint.OS|string|Endpoint OS.|
-|Endpoint.OSVersion|string|Endpoint OS version.|
-|Endpoint.Processor|string|Processor model.|
-|Endpoint.Processors|number|Number of processors.|
-|Endpoint.Memory|number|Endpoint memory.|
-|McAfee.ePO.Endpoint.Name|string|Endpoint name.|
-|McAfee.ePO.Endpoint.Domain|string|Endpoint domain.|
-|McAfee.ePO.Endpoint.Hostname|string|Endpoint hostname.|
-|McAfee.ePO.Endpoint.IPAddress|string|Endpoint IP address.|
-|McAfee.ePO.Endpoint.OS|string|Endpoint OS.|
-|McAfee.ePO.Endpoint.OSVersion|string|Endpoint OS version.|
-|McAfee.ePO.Endpoint.Processor|string|Processor model.|
-|McAfee.ePO.Endpoint.Processors|number|Number of processors.|
-|McAfee.ePO.Endpoint.Memory|number|Endpoint memory.|
+| Path                             |Type|Description|
+|----------------------------------|--- |--- |
+| Endpoint.Name                    |string|Endpoint name.|
+| Endpoint.Domain                  |string|Endpoint domain.|
+| Endpoint.Hostname                |string|Endpoint hostname.|
+| Endpoint.IPAddress               |string|Endpoint IP address.|
+| Endpoint.OS                      |string|Endpoint OS.|
+| Endpoint.OSVersion               |string|Endpoint OS version.|
+| Endpoint.Processor               |string|Processor model.|
+| Endpoint.Processors              |number|Number of processors.|
+| Endpoint.Memory                  |number|Endpoint memory.|
+| McAfee.ePO.Endpoint.ComputerName |string|Endpoint name.|
+| McAfee.ePO.Endpoint.Domain       |string|Endpoint domain.|
+| McAfee.ePO.Endpoint.Hostname     |string|Endpoint hostname.|
+| McAfee.ePO.Endpoint.IPAddress    |string|Endpoint IP address.|
+| McAfee.ePO.Endpoint.OS           |string|Endpoint OS.|
+| McAfee.ePO.Endpoint.OSVersion    |string|Endpoint OS version.|
+| McAfee.ePO.Endpoint.Processor    |string|Processor model.|
+| McAfee.ePO.Endpoint.Processors   |number|Number of processors.|
+| McAfee.ePO.Endpoint.Memory       |number|Endpoint memory.|
 
 
 ##### Human Readable Output

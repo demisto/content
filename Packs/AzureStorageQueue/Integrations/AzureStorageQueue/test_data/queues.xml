@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EnumerationResults ServiceEndpoint="https://xsoar.queue.core.windows.net/">
+    <Queues>
+        <Queue>
+            <Name>my-queue</Name>
+        </Queue>
+        <Queue>
+            <Name>test</Name>
+        </Queue>
+        <Queue>
+            <Name>xsoar-test</Name>
+        </Queue>
+    </Queues>
+    <NextMarker/>
+</EnumerationResults>

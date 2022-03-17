@@ -1,5 +1,8 @@
 [file:Hunting]
-ignore=PA116
+ignore=PA116,PA129
+
+[file:pack_metadata.json]
+ignore=PA129
 
 [file:README.md]
 ignore=RM104

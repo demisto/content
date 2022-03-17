@@ -49,7 +49,7 @@
         {
           "Indicator": "1.1.1.1",
           "Type": "ip",
-          "Vendor": "ipinfo_v2",
+          "Vendor": "IPinfo",
           "Score": 0,
           "Reliability": "C - Fairly reliable"
         }
@@ -85,7 +85,7 @@
         "entityBType": "Domain",
         "fields": {},
         "reliability": "C - Fairly reliable",
-        "brand": "ipinfo_v2"
+        "brand": "IPinfo"
       }
     ]
   },
@@ -130,7 +130,7 @@
         {
           "Indicator": "1.1.1.1",
           "Type": "ip",
-          "Vendor": "ipinfo_v2",
+          "Vendor": "IPinfo",
           "Score": 0,
           "Reliability": "C - Fairly reliable"
         }

@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM106
+
+[file:FeedAlienVaultOTXTaxii.yml]
+ignore=IN145

@@ -100,7 +100,8 @@ RESULTS.update({
                         '"systemSeverity": 2}'}]),
 })
 COLLECTION_NAMES = ['compromised/account', 'compromised/card', 'osi/git_leak', 'osi/public_leak',
-                    'bp/phishing', 'bp/phishing_kit', 'malware/targeted_malware', "compromised/breached"]
+                    'bp/phishing', 'bp/phishing_kit', 'malware/targeted_malware', "compromised/breached",
+                    'bp/domain']
 
 
 @pytest.fixture(scope='function', params=COLLECTION_NAMES, ids=COLLECTION_NAMES)
@@ -110,7 +111,7 @@ def session_fixture(request):
 
 def test_fetch_incidents_command(mocker, session_fixture):
     collection_name, client = session_fixture
-    mocker.patch.object(client, 'create_generator', return_value=[[RAW_JSON[collection_name]]])
+    mocker.patch.object(client, 'create_poll_generator', return_value=[RAW_JSON[collection_name]])
     result = fetch_incidents_command(client=client, last_run={}, first_fetch_time='3 days',
                                      incident_collections=[collection_name], requests_count=1)
     assert result == tuple(RESULTS[collection_name])

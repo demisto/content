@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<QueueMessagesList>
+    <QueueMessage>
+        <MessageId>222222222</MessageId>
+        <InsertionTime>Sun, 22 Aug 2021 13:00:49 GMT</InsertionTime>
+        <ExpirationTime>Sun, 29 Aug 2021 13:00:49 GMT</ExpirationTime>
+        <DequeueCount>1</DequeueCount>
+        <MessageText>test-message</MessageText>
+    </QueueMessage>
+</QueueMessagesList>

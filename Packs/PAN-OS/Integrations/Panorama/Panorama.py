@@ -86,6 +86,10 @@ class PAN_OS_Not_Found(Exception):
         pass
 
 
+class InvalidUrlLengthException(Exception):
+    pass
+
+
 def http_request(uri: str, method: str, headers: dict = {},
                  body: dict = {}, params: dict = {}, files: dict = None, is_pcap: bool = False) -> Any:
     """
@@ -119,15 +123,18 @@ def http_request(uri: str, method: str, headers: dict = {},
     # handle non success
     if json_result['response']['@status'] != 'success':
         if 'msg' in json_result['response'] and 'line' in json_result['response']['msg']:
+            response_msg = json_result['response']['msg']['line']
             # catch non existing object error and display a meaningful message
-            if json_result['response']['msg']['line'] == 'No such node':
+            if response_msg == 'No such node':
                 raise Exception(
                     'Object was not found, verify that the name is correct and that the instance was committed.')
 
             #  catch urlfiltering error and display a meaningful message
-            elif str(json_result['response']['msg']['line']).find('test -> url') != -1:
+            elif str(response_msg).find('test -> url') != -1:
                 if DEVICE_GROUP:
                     raise Exception('URL filtering commands are only available on Firewall devices.')
+                if 'Node can be at most 1278 characters' in response_msg:
+                    raise InvalidUrlLengthException('URL Node can be at most 1278 characters.')
                 raise Exception('The URL filtering license is either expired or not active.'
                                 ' Please contact your PAN-OS representative.')
 
@@ -497,13 +504,43 @@ def panorama_command(args: dict):
 @logger
 def panorama_commit(args):
     command: str = ''
+    partial_command: str = ''
+    is_partial = False
     if device_group := args.get('device-group'):
         command += f'<device-group><entry name="{device_group}"/></device-group>'
+
+    admin_name = args.get('admin_name')
+    if admin_name:
+        is_partial = True
+        partial_command += f'<admin><member>{admin_name}</member></admin>'
+
+    force_commit = argToBoolean(args.get('force_commit')) if args.get('force_commit') else None
+    if force_commit:
+        command += '<force></force>'
+
+    exclude_device_network = args.get('exclude_device_network_configuration')
+    exclude_device_network_configuration = argToBoolean(exclude_device_network) if exclude_device_network else None
+    if exclude_device_network_configuration:
+        is_partial = True
+        partial_command += '<device-and-network>excluded</device-and-network>'
+
+    exclude_shared_objects_str = args.get('exclude_shared_objects')
+    exclude_shared_objects = argToBoolean(exclude_shared_objects_str) if exclude_shared_objects_str else None
+    if exclude_shared_objects:
+        is_partial = True
+        partial_command += '<shared-object>excluded</shared-object>'
+
+    if is_partial:
+        command = f'{command}<partial>{partial_command}</partial>'
+
     params = {
         'type': 'commit',
         'cmd': f'<commit>{command}</commit>',
         'key': API_KEY
     }
+    if is_partial:
+        params['action'] = 'partial'
+
     result = http_request(
         URL,
         'POST',
@@ -603,6 +640,11 @@ def panorama_commit_status_command(args: dict):
 def panorama_push_to_device_group(args: dict):
     command: str = ''
     command += f'<device-group><entry name="{DEVICE_GROUP}"/></device-group>'
+
+    serial_number = args.get('serial_number')
+    if serial_number:
+        command = f'<device-group><entry name="{DEVICE_GROUP}"><devices><entry name="{serial_number}"/>' \
+                  f'</devices></entry></device-group>'
 
     if argToBoolean(args.get('validate-only', 'false')):
         command += '<validate-only>yes</validate-only>'
@@ -2286,17 +2328,25 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
     categories_dict_hr: Dict[str, list] = {}
     command_results: List[CommandResults] = []
     for url in urls:
-        category = panorama_get_url_category(url_cmd, url)
-        if category in categories_dict:
-            categories_dict[category].append(url)
-            categories_dict_hr[category].append(url)
-        else:
-            categories_dict[category] = [url]
-            categories_dict_hr[category] = [url]
-        context_urls = populate_url_filter_category_from_context(category)
-        categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
+        err_readable_output = None
+        try:
+            category = panorama_get_url_category(url_cmd, url)
+            if category in categories_dict:
+                categories_dict[category].append(url)
+                categories_dict_hr[category].append(url)
+            else:
+                categories_dict[category] = [url]
+                categories_dict_hr[category] = [url]
+            context_urls = populate_url_filter_category_from_context(category)
+            categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
 
-        score = calculate_dbot_score(category.lower(), additional_suspicious, additional_malicious)
+            score = calculate_dbot_score(category.lower(), additional_suspicious, additional_malicious)
+
+        except InvalidUrlLengthException as e:
+            score = 0
+            category = None
+            err_readable_output = str(e)
+
         dbot_score = Common.DBotScore(
             indicator=url,
             indicator_type=DBotScoreType.URL,
@@ -2308,9 +2358,10 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
             dbot_score=dbot_score,
             category=category
         )
+        readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
         command_results.append(CommandResults(
             indicator=url_obj,
-            readable_output=tableToMarkdown('URL', url_obj.to_context())
+            readable_output=readable_output
         ))
 
     url_category_output_hr = []
@@ -2694,23 +2745,23 @@ def prettify_rule(rule: dict):
         pretty_rule['DeviceGroup'] = DEVICE_GROUP
     if '@loc' in rule:
         pretty_rule['Location'] = rule['@loc']
-    if 'category' in rule and 'member' in rule['category']:
+    if isinstance(rule.get('category'), dict) and 'member' in rule['category']:
         pretty_rule['CustomUrlCategory'] = rule['category']['member']
-    if 'application' in rule and 'member' in rule['application']:
+    if isinstance(rule.get('application'), dict) and 'member' in rule['application']:
         pretty_rule['Application'] = rule['application']['member']
-    if 'destination' in rule and 'member' in rule['destination']:
+    if isinstance(rule.get('destination'), dict) and 'member' in rule['destination']:
         pretty_rule['Destination'] = rule['destination']['member']
-    if 'from' in rule and 'member' in rule['from']:
+    if isinstance(rule.get('from'), dict) and 'member' in rule['from']:
         pretty_rule['From'] = rule['from']['member']
-    if 'service' in rule and 'member' in rule['service']:
+    if isinstance(rule.get('service'), dict) and 'member' in rule['service']:
         pretty_rule['Service'] = rule['service']['member']
-    if 'to' in rule and 'member' in rule['to']:
+    if isinstance(rule.get('to'), dict) and 'member' in rule['to']:
         pretty_rule['To'] = rule['to']['member']
-    if 'source' in rule and 'member' in rule['source']:
+    if isinstance(rule.get('source'), dict) and 'member' in rule['source']:
         pretty_rule['Source'] = rule['source']['member']
-    if 'tag' in rule and 'member' in rule['tag']:
+    if isinstance(rule.get('tag'), dict) and 'member' in rule['tag']:
         pretty_rule['Tags'] = rule['tag']['member']
-    if 'log-setting' in rule and '#text' in rule['log-setting']:
+    if isinstance(rule.get('log-setting'), dict) and '#text' in rule['log-setting']:
         pretty_rule['LogForwardingProfile'] = rule['log-setting']['#text']
 
     return pretty_rule
@@ -2904,10 +2955,11 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
         return []
 
     result = response.get('response').get('result')
-    if '@dirtyId' in result:
+    current_object = result.get(element_to_change, {})
+    if '@dirtyId' in result or '@dirtyId' in current_object:
         LOG(f'Found uncommitted item:\n{result}')
-        raise Exception('Please commit the instance prior to editing the Security rule.')
-    current_object = result.get(element_to_change)
+        raise DemistoException('Please commit the instance prior to editing the Security rule.')
+
     if 'list' in current_object:
         current_objects_items = argToList(current_object['list']['member'])
     elif 'member' in current_object:
@@ -2991,7 +3043,6 @@ def panorama_edit_rule_command(args: dict):
             'action': 'edit',
             'key': API_KEY
         }
-
         if element_to_change in ['action', 'description', 'log-setting']:
             params['element'] = add_argument_open(element_value, element_to_change, False)
         elif element_to_change in ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag']:
@@ -3002,6 +3053,7 @@ def panorama_edit_rule_command(args: dict):
         elif element_to_change == 'profile-setting':
             params['element'] = add_argument_profile_setting(element_value, 'profile-setting')
         else:
+            # element_to_change == 'disabled'
             params['element'] = add_argument_yes_no(element_value, element_to_change)
 
         if DEVICE_GROUP:
@@ -5595,9 +5647,9 @@ def prettify_data_filtering_rule(rule: Dict) -> Dict:
     pretty_rule = {
         'Name': rule.get('@name')
     }
-    if 'application' in rule and 'member' in rule['application']:
+    if isinstance(rule.get('application'), dict) and 'member' in rule['application']:
         pretty_rule['Application'] = rule['application']['member']
-    if 'file-type' in rule and 'member' in rule['file-type']:
+    if isinstance(rule.get('file-type'), dict) and 'member' in rule['file-type']:
         pretty_rule['File-type'] = rule['file-type']['member']
     if 'direction' in rule:
         pretty_rule['Direction'] = rule['direction']
@@ -5943,19 +5995,19 @@ def prettify_profile_rule(rule: Dict) -> Dict:
         'Name': rule['@name'],
         'Action': rule['action']
     }
-    if 'application' in rule and 'member' in rule['application']:
+    if isinstance(rule.get('application'), dict) and 'member' in rule['application']:
         pretty_rule['Application'] = rule['application']['member']
-    if 'file-type' in rule and 'member' in rule['file-type']:
+    if isinstance(rule.get('file-type'), dict) and 'member' in rule['file-type']:
         pretty_rule['File-type'] = rule['file-type']['member']
     if 'wildfire-action' in rule:
         pretty_rule['WildFire-action'] = rule['wildfire-action']
-    if 'category' in rule and 'member' in rule['category']:
+    if isinstance(rule.get('category'), dict) and 'member' in rule['category']:
         pretty_rule['Category'] = rule['category']['member']
     elif 'category' in rule:
         pretty_rule['Category'] = rule['category']
-    if 'severity' in rule and 'member' in rule['severity']:
+    if isinstance(rule.get('severity'), dict) and 'member' in rule['severity']:
         pretty_rule['Severity'] = rule['severity']['member']
-    if 'threat-name' in rule and 'member' in rule['threat-name']:
+    if isinstance(rule.get('threat-name'), dict) and 'member' in rule['threat-name']:
         pretty_rule['Threat-name'] = rule['threat-name']['member']
     elif 'threat-name' in rule:
         pretty_rule['Threat-name'] = rule['threat-name']
@@ -5963,7 +6015,7 @@ def prettify_profile_rule(rule: Dict) -> Dict:
         pretty_rule['Packet-capture'] = rule['packet-capture']
     if '@maxver' in rule:
         pretty_rule['Max_version'] = rule['@maxver']
-    if 'sinkhole' in rule:
+    if isinstance(rule.get('sinkhole'), dict):
         pretty_rule['Sinkhole'] = {}
         if 'ipv4-address' in rule['sinkhole']:
             pretty_rule['Sinkhole']['IPV4'] = rule['sinkhole']['ipv4-address']
@@ -5971,9 +6023,9 @@ def prettify_profile_rule(rule: Dict) -> Dict:
             pretty_rule['Sinkhole']['IPV6'] = rule['sinkhole']['ipv6-address']
     if 'host' in rule:
         pretty_rule['Host'] = rule['host']
-    if 'cve' in rule and 'member' in rule['cve']:
+    if isinstance(rule.get('cve'), dict) and 'member' in rule['cve']:
         pretty_rule['CVE'] = rule['cve']['member']
-    if 'vendor-id' in rule and 'member' in rule['vendor-id']:
+    if isinstance(rule.get('vendor-id'), dict) and 'member' in rule['vendor-id']:
         pretty_rule['Vendor-id'] = rule['vendor-id']['member']
     if 'analysis' in rule:
         pretty_rule['Analysis'] = rule['analysis']
@@ -6186,9 +6238,9 @@ def prettify_wildfire_rule(rule: Dict) -> Dict:
     pretty_rule = {
         'Name': rule['@name'],
     }
-    if 'application' in rule and 'member' in rule['application']:
+    if isinstance(rule.get('application'), dict) and 'member' in rule['application']:
         pretty_rule['Application'] = rule['application']['member']
-    if 'file-type' in rule and 'member' in rule['file-type']:
+    if isinstance(rule.get('file-type'), dict) and 'member' in rule['file-type']:
         pretty_rule['File-type'] = rule['file-type']['member']
     if 'analysis' in rule:
         pretty_rule['Analysis'] = rule['analysis']
@@ -6980,7 +7032,9 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
         raise DemistoException('Set a port for the instance')
 
     URL = params.get('server', '').rstrip('/:') + ':' + params.get('port', '') + '/api/'
-    API_KEY = str(params.get('key'))
+    API_KEY = str(params.get('key')) or str((params.get('credentials') or {}).get('password', ''))  # type: ignore
+    if not API_KEY:
+        raise Exception('API Key must be provided.')
     USE_SSL = not params.get('insecure')
     USE_URL_FILTERING = params.get('use_url_filtering')
 
@@ -7126,8 +7180,8 @@ def main():
     try:
         args = demisto.args()
         params = demisto.params()
-        additional_malicious = argToList(demisto.params().get('additional_malicious'))
-        additional_suspicious = argToList(demisto.params().get('additional_suspicious'))
+        additional_malicious = argToList(params.get('additional_malicious'))
+        additional_suspicious = argToList(params.get('additional_suspicious'))
         initialize_instance(args=args, params=params)
         LOG(f'Command being called is: {demisto.command()}')
 
@@ -7492,7 +7546,7 @@ def main():
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
     except Exception as err:
-        return_error(str(err))
+        return_error(str(err), error=traceback.format_exc())
 
     finally:
         LOG.print_log()

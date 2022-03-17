@@ -12,7 +12,6 @@ from datetime import datetime as dt
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
 # disable-secrets-detection-start
 # Whether compromised websites are considered malicious or not. See the blacklists output in
 # https://urlhaus-api.abuse.ch/
@@ -74,7 +73,7 @@ def query_payload_information(hash_type, api_url, use_ssl, hash):
 
 
 def download_malware_sample(sha256, api_url, use_ssl):
-    return http_request('GET', f'download/{sha256}', api_url=api_url, use_ssl=use_ssl,)
+    return http_request('GET', f'download/{sha256}', api_url=api_url, use_ssl=use_ssl)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -117,7 +116,13 @@ def calculate_dbot_score(blacklists, threshold, compromised_is_malicious):
 def url_command(**kwargs):
     url = demisto.args().get('url')
 
-    url_information = query_url_information(url, kwargs.get('api_url'), kwargs.get('use_ssl')).json()
+    try:
+        url_information = query_url_information(url, kwargs.get('api_url'), kwargs.get('use_ssl')).json()
+    except UnicodeEncodeError:
+        return_results(CommandResults(
+            readable_output="Service Does not support special characters.",
+        ))
+        return
 
     ec = {
         'URL': {

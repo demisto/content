@@ -2,21 +2,15 @@ id: Process Microsoft's Anti-Spam Headers
 version: -1
 name: Process Microsoft's Anti-Spam Headers
 description: |-
-  This playbook stores the SCL, BCL and PCL scores (if exists) to the associated incident fields (Phishing SCL Score, Phishing PCL Score, Phishing BCL Score).
-  It also does the following:
-  1) Sets the email classification to "spam" if the "SCL" score is equal or higher than 5.
-  2) Sets the incident severity according to the playbook inputs (default is: PCL/BCL - Medium, SCL - Low). The severity of the incident is set only when one (or more) of the following occurs:
-  - PCL (Phishing Confidence Level) score is between and including 4-8: The message content is likely to be phishing.
-  - BCL (Bulk complaint level) score is between and including 4-7: The message is from a bulk sender that generates a mixed number of complaints. Between and including 8-9: The message is from a bulk sender that generates a high number of complaints.
-  - SCL (Spam confidence level) score is between and including 5-6: Spam filtering marked the message as Spam. 9: Spam filtering marked the message as High confidence spam)
-
-  For further information on SCL/BCL/PCL, see the following Microsoft documentation:
-
-  https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide
-
-  https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/bulk-complaint-level-values?view=o365-worldwide
-
-  https://docs.microsoft.com/en-us/exchange/antispam-and-antimalware/antispam-protection/antispam-stamps?view=exchserver-2019
+        This playbook stores the SCL, BCL, and PCL scores if they exist to the associated incident fields (Phishing SCL Score, Phishing PCL Score, and Phishing BCL Score).
+        It also does the following:
+        1) Sets the email classification to "spam" if the SCL score is equal to or greater than 5.
+        2) Sets the incident severity according to the playbook inputs (default is: PCL/BCL - Medium, SCL - Low). The severity of the incident is set only when one (or more) of the following occurs:
+          - PCL (Phishing Confidence Level) For a score between and including 4-8: The message content is likely to be phishing.
+          - [BCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/bulk-complaint-level-values?view=o365-worldwide) (Bulk Complaint Level) For a score between and including 4-7: The message is from a bulk sender that generates a mixed number of complaints. 
+            For a score between and including 8-9: The message is from a bulk sender that generates a high number of complaints.
+          - [SCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide) (Spam Confidence Level) For a score between and including 5-6: Spam filtering marks the message as spam. 
+            For a score of 9: Spam filtering marks the message as high confidence spam. See [anti-spam stamps](https://docs.microsoft.com/en-us/exchange/antispam-and-antimalware/antispam-protection/antispam-stamps?view=exchserver-2019).
 starttaskid: "0"
 tasks:
   "0":
@@ -133,7 +127,7 @@ tasks:
       id: 455f7bbe-da60-444d-854b-93ea59d1f921
       version: -1
       name: Set PCL score
-      description: commands.local.cmd.set.incident
+      description: Sets the value of the "phishingpclscore" incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -155,6 +149,8 @@ tasks:
                 value:
                   simple: X-MS-Exchange-Organization-PCL
           accessor: headervalue
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -176,7 +172,7 @@ tasks:
       id: e3df5fa2-ce9b-4e7f-8200-1f2c8b41e7a1
       version: -1
       name: Set MicrosoftHeadersSeverityCheck (Medium)
-      description: Sets the Microsoft Headers BCL-PC severity in context.
+      description: Sets the Microsoft Headers BCL-PCL severity in context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -210,7 +206,7 @@ tasks:
       id: 21500b48-153f-433b-82e8-7328125a8ace
       version: -1
       name: Set Email Classification to "Spam"
-      description: commands.local.cmd.set.incident
+      description: Sets the "emailclassification" incident field value to "Spam".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -513,7 +509,7 @@ tasks:
       id: a18f7a54-ee16-4951-8376-5b9494b542d0
       version: -1
       name: Set SCL-Exchange score
-      description: Sets the spam confidence level (SCL) value in the context after extraction.
+      description: Sets the Spam Confidence Level (SCL) value in the context after extraction.
       scriptName: Set
       type: regular
       iscommand: false
@@ -537,6 +533,8 @@ tasks:
                 value:
                   simple: X-MS-Exchange-Organization-SCL
           accessor: headervalue
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -558,7 +556,7 @@ tasks:
       id: 81a87f1b-7d8e-489e-88a0-e77ca32c0a6d
       version: -1
       name: Set SCL-Forefront score
-      description: Set the SCL (spam) value in context after extraction.
+      description: Sets the Spam Confidence Level (SCL) value in context after extraction.
       scriptName: Set
       type: regular
       iscommand: false
@@ -603,6 +601,7 @@ tasks:
               regex:
                 value:
                   simple: '[5-9]'
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -703,7 +702,7 @@ tasks:
       id: 13d15274-9037-49d9-89d8-231c8acf4296
       version: -1
       name: Set SCL score
-      description: commands.local.cmd.set.incident
+      description: Sets the value of the "phishingsclscore" incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -735,7 +734,7 @@ tasks:
       id: b174d8b2-6573-4774-8198-c02bda8a5222
       version: -1
       name: Set SCL score
-      description: commands.local.cmd.set.incident
+      description: Sets the value of the "phishingsclscore" incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -973,7 +972,7 @@ tasks:
       id: be2701ca-09a6-4c67-84a3-f463fa5507ea
       version: -1
       name: Set PCL Severity
-      description: Sets the PCL (phishing) severity in context.
+      description: Sets the Phishing Confidence Level (PCL) severity in context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1007,7 +1006,7 @@ tasks:
       id: 930c7725-5436-4f12-8eb2-aeb4ad5a9a19
       version: -1
       name: Set BCL Severity
-      description: Sets the BCL (bulk) severity in context.
+      description: Sets the Bulk Complaint Level (BCL) severity in context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1148,7 +1147,7 @@ tasks:
       id: 6987092a-727c-4df0-8d23-e1dbdc33a4e3
       version: -1
       name: Set BCL score
-      description: commands.local.cmd.set.incident
+      description: Sets the value of the "phishingbclscore" incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1191,6 +1190,7 @@ tasks:
               regex:
                 value:
                   simple: '[5-9]'
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1343,37 +1343,37 @@ inputs:
     simple: "2"
   required: true
   description: |-
-    Set the minimum severity of an incident with a BCL (bulk sender) that has a score equal to or higher than 4.
+    Sets the minimum severity of an incident with a Bulk Complaint Level (BCL) score equal to or greater than 4.
 
-    Available values: 0 (Unknown), 1 (Low), 2 (Medium), 3 (High), 4 (Critical).
+    Possible values: 0 (Unknown), 1 (Low), 2 (Medium), 3 (High), 4 (Critical).
   playbookInputQuery:
 - key: PCL-Severity
   value:
     simple: "2"
   required: true
   description: |-
-    Set the minimum severity of an incident with a PCL (phishing) that has a score equal to or higher than 4.
+    Sets the minimum severity of an incident with a Phishing Confidence Level (PCL) score equal to or greater than 4.
 
-    Available values: 0 (Unknown), 1 (Low), 2 (Medium), 3 (High), 4 (Critical).
+    Possible values: 0 (Unknown), 1 (Low), 2 (Medium), 3 (High), 4 (Critical).
   playbookInputQuery:
 - key: SCL-Severity
   value:
     simple: "1"
   required: true
   description: |-
-    Set the minimum severity of an incident with a SCL (spam) that has a score equal to or higher than 5.
+    Sets the minimum severity of an incident with a Spam Confidence Level (SCL) score equal to or greater than 5.
 
-    Available values: 0 (Unknown), 1 (Low), 2 (Medium), 3 (High), 4 (Critical).
+    Possible values: 0 (Unknown), 1 (Low), 2 (Medium), 3 (High), 4 (Critical).
   playbookInputQuery:
 outputs:
 - contextPath: Email.MicrosoftHeadersSeverityCheck
   description: |
     Possible Values:
 
-    Medium: PCL or BCL scores are equal to or higher than 4.
+    Medium: PCL or BCL scores are equal to or greater than 4.
 
-    High: BCL score is equal to or higher than 8.
-  type: unknown
+    High: BCL score is equal to or greater than 8.
+  type: string
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

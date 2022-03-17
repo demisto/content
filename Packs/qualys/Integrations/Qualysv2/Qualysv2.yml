@@ -2354,7 +2354,7 @@ script:
       description: Status of the restricted ips feature.
     description: Get the list of restricted IPs within the user's subscription.
     execution: true
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false

@@ -1,0 +1,35 @@
+{
+    "id": "incident_jiraissuekey",
+    "version": -1,
+    "modified": "2021-10-21T08:34:28.348247718Z",
+    "name": "Jira Issue Key",
+    "ownerOnly": false,
+    "cliName": "jiraissuekey",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Jira Incident",
+        "Jira Create Issue and Mirror"
+    ],
+    "systemAssociatedTypes": [
+        "Jira Incident",
+        "Jira Create Issue and Mirror"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

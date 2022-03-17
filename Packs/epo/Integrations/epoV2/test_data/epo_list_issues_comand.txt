@@ -1,0 +1,2 @@
+OK:
+[ { "activityLog" : [ { "date" : "2021-05-09T03:36:56-07:00", "details" : "", "dirty" : true, "id" : 1, "issueId" : 1, "title" : "Issue Created", "username" : "admin" } ], "assignee" : null, "assigneeName" : "dxl", "createdDate" : "2021-05-09T03:36:56-07:00", "creatorName" : "admin", "description" : "aaaa", "dueDate" : null, "id" : 1, "name" : "aaaa", "priority" : "MEDIUM", "resolution" : "NONE", "severity" : "LOWEST", "state" : "NEW", "subtype" : null, "ticketId" : null, "ticketServerName" : null, "type" : "issue.type.untyped" } ]

@@ -2,7 +2,7 @@
     "name": "VirusTotal - Private API",
     "description": "Analyze suspicious hashes, URLs, domains and IP addresses",
     "support": "partner",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.13",
     "author": "VirusTotal",
     "url": "https://www.virustotal.com",
     "email": "contact@virustotal.com",
@@ -12,5 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

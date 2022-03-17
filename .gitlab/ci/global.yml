@@ -140,6 +140,8 @@
   needs: []
   stage: unittests-and-validations
   artifacts:
+    reports:
+      cobertura: /builds/xsoar/content/artifacts/coverage_report/coverage.xml
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/unit-tests
@@ -184,12 +186,19 @@
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
-          if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-            python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name $ARTIFACTS_FOLDER/coverage_report/coverage.json --minimal_file_name $ARTIFACTS_FOLDER/coverage_report/coverage_data.json -cov $ARTIFACTS_FOLDER/coverage_report/.coverage
-          fi
+          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
+        fi
+        if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
+          if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
+            demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --allowed-coverage-degradation-percentage 100
+            if [[ -n "${NIGHTLY}" && "$CI_COMMIT_BRANCH" == "master" ]]; then
+              python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name $ARTIFACTS_FOLDER/coverage_report/coverage.json --minimal_file_name $ARTIFACTS_FOLDER/coverage_report/coverage-min.json
+            fi  
+          else
+            demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type html,xml --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
+          fi
         fi
       fi
     - section_end "Run Unit Testing and Lint"
@@ -237,14 +246,7 @@
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
         echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
       else
-        echo "Run flake8 on all excluding Packs (Integrations and Scripts) - they will be handled in linting"
-        ./Tests/scripts/pyflake.sh *.py
-        # do not run pyflake on venv or content-test-conf awsinstancetool
-        find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv -o -path ./Tests \) | xargs ./Tests/scripts/pyflake.sh
-        ./Tests/scripts/pyflake.sh ./Tests/*.py
-        find ./Tests -maxdepth 1 -type d -not \( -path ./Tests -o -path ./Tests/scripts \) | xargs ./Tests/scripts/pyflake.sh
-        ./Tests/scripts/pyflake.sh ./Tests/scripts/*.py
-        find ./Tests/scripts -maxdepth 1 -type d -not \( -path ./Tests/scripts -o -path ./Tests/scripts/awsinstancetool \) | xargs ./Tests/scripts/pyflake.sh
+        ./Tests/scripts/linters_runner.sh
         ./Tests/scripts/validate.sh
       fi
     - section_end "Validate Files and Yaml"

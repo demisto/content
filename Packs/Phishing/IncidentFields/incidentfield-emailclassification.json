@@ -16,7 +16,6 @@
  "neverSetAsRequired": false,
  "isReadOnly": false,
  "selectValues": [
-  "",
   "Legitimate",
   "Spam",
   "Malicious"
@@ -29,7 +28,8 @@
  "group": 0,
  "hidden": false,
  "associatedTypes": [
-  "Phishing"
+  "Phishing",
+  "Phishing Alerts"
  ],
  "systemAssociatedTypes": null,
  "associatedToAll": false,

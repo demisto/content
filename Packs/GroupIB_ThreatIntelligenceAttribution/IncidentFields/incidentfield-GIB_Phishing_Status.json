@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Brand Protection Phishing"
+        "GIB Brand Protection Phishing",
+        "GIB Brand Protection Domain"
     ],
     "caseInsensitive": true,
     "cliName": "gibphishingstatus",

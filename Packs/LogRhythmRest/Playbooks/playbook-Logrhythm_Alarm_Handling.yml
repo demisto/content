@@ -1,0 +1,190 @@
+id: Logrhythm Alarm Handling
+version: -1
+name: Logrhythm Alarm Handling
+description: "This playbook is triggered by fetching a LogRhythm alarm incident. \n\
+  The playbook executes the commands: lr-alarms-list, lr-alarm-summary and lr-users-list\
+  \ to get more useful data for the alarm."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 08c05195-414a-4cd1-830f-d2fa8351c14b
+    type: start
+    task:
+      id: 08c05195-414a-4cd1-830f-d2fa8351c14b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7179c454-dd90-4084-802d-1264818aab9f
+    type: regular
+    task:
+      id: 7179c454-dd90-4084-802d-1264818aab9f
+      version: -1
+      name: Get alarm summary
+      description: Get alarm summary by alarm ID.
+      script: '|||lr-alarm-summary'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      alarm_id:
+        complex:
+          root: incident.labels
+          accessor: alarmId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ea52259b-a1e5-4602-839c-39129ba9e40c
+    type: regular
+    task:
+      id: ea52259b-a1e5-4602-839c-39129ba9e40c
+      version: -1
+      name: Get user
+      description: Returns user records based on the permissions of the currently
+        logged in user and the specified criteria.
+      script: '|||lr-users-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      user_ids:
+        complex:
+          root: LogRhythm.Alarm
+          accessor: personId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b11fe582-5fae-4c18-8c8d-d127105dd743
+    type: regular
+    task:
+      id: b11fe582-5fae-4c18-8c8d-d127105dd743
+      version: -1
+      name: Get alarm data
+      description: Get alarm details using the filter criteria.
+      script: '|||lr-alarms-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      alarm_id:
+        complex:
+          root: incident.labels
+          accessor: alarmId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7baf093b-7540-4471-81f9-0b6e586aaf1f
+    type: title
+    task:
+      id: 7baf093b-7540-4471-81f9-0b6e586aaf1f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No test
+fromversion: 5.5.0

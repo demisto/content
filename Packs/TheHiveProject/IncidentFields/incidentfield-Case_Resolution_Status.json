@@ -18,7 +18,6 @@
   "ownerOnly": false,
   "required": false,
   "selectValues": [
-    "",
     "Indeterminate",
     "FalsePositive",
     "TruePositive",

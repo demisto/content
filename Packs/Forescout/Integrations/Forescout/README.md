@@ -57,6 +57,7 @@
 <li><strong>Web API Username (see Detailed Instructions (?))</strong></li>
 <li><strong>Data Exchange (DEX) Username (see Detailed Instructions (?))</strong></li>
 <li><strong>Data Exchange (DEX) Account (see Detailed Instructions (?))</strong></li>
+<li><strong>HTTP Timeout (default is 60 seconds)</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
@@ -181,86 +182,86 @@
 <pre>{
     "Forescout.Host": [
         {
-            "MACAddress": "000c29e9e452", 
-            "IPAddress": "192.168.1.44", 
+            "MACAddress": "000c29e9e452",
+            "IPAddress": "192.168.1.44",
             "ID": "3232235820"
-        }, 
+        },
         {
-            "MACAddress": "000c297cc5ae", 
-            "IPAddress": "192.168.1.125", 
+            "MACAddress": "000c297cc5ae",
+            "IPAddress": "192.168.1.125",
             "ID": "3232235901"
-        }, 
+        },
         {
-            "MACAddress": "005056a1ad60", 
-            "IPAddress": "192.168.1.52", 
+            "MACAddress": "005056a1ad60",
+            "IPAddress": "192.168.1.52",
             "ID": "3232235828"
-        }, 
+        },
         {
-            "MACAddress": "000c29497e4e", 
-            "IPAddress": "192.168.1.119", 
+            "MACAddress": "000c29497e4e",
+            "IPAddress": "192.168.1.119",
             "ID": "3232235895"
-        }, 
+        },
         {
-            "MACAddress": "000000000000", 
-            "IPAddress": "192.168.1.8", 
+            "MACAddress": "000000000000",
+            "IPAddress": "192.168.1.8",
             "ID": "3232235784"
-        }, 
+        },
         {
-            "MACAddress": null, 
-            "IPAddress": "192.168.1.1", 
+            "MACAddress": null,
+            "IPAddress": "192.168.1.1",
             "ID": "3232235777"
-        }, 
+        },
         {
-            "MACAddress": "005056b1488d", 
-            "IPAddress": "192.168.1.31", 
+            "MACAddress": "005056b1488d",
+            "IPAddress": "192.168.1.31",
             "ID": "3232235807"
-        }, 
+        },
         {
-            "MACAddress": "005056b1a93f", 
-            "IPAddress": "192.168.1.17", 
+            "MACAddress": "005056b1a93f",
+            "IPAddress": "192.168.1.17",
             "ID": "3232235793"
-        }, 
+        },
         {
-            "MACAddress": null, 
-            "IPAddress": "192.168.1.212", 
+            "MACAddress": null,
+            "IPAddress": "192.168.1.212",
             "ID": "3232235988"
         }
-    ], 
+    ],
     "Endpoint": [
         {
-            "MACAddress": "000c29e9e452", 
+            "MACAddress": "000c29e9e452",
             "IPAddress": "192.168.1.44"
-        }, 
+        },
         {
-            "MACAddress": "000c297cc5ae", 
+            "MACAddress": "000c297cc5ae",
             "IPAddress": "192.168.1.125"
-        }, 
+        },
         {
-            "MACAddress": "005056a1ad60", 
+            "MACAddress": "005056a1ad60",
             "IPAddress": "192.168.1.52"
-        }, 
+        },
         {
-            "MACAddress": "000c29497e4e", 
+            "MACAddress": "000c29497e4e",
             "IPAddress": "192.168.1.119"
-        }, 
+        },
         {
-            "MACAddress": "000000000000", 
+            "MACAddress": "000000000000",
             "IPAddress": "192.168.1.8"
-        }, 
+        },
         {
-            "MACAddress": null, 
+            "MACAddress": null,
             "IPAddress": "192.168.1.1"
-        }, 
+        },
         {
-            "MACAddress": "005056b1488d", 
+            "MACAddress": "005056b1488d",
             "IPAddress": "192.168.1.31"
-        }, 
+        },
         {
-            "MACAddress": "005056b1a93f", 
+            "MACAddress": "005056b1a93f",
             "IPAddress": "192.168.1.17"
-        }, 
+        },
         {
-            "MACAddress": null, 
+            "MACAddress": null,
             "IPAddress": "192.168.1.212"
         }
     ]
@@ -428,69 +429,69 @@
 <pre>{
     "Forescout.HostField": [
         {
-            "Name": "nbthost", 
-            "Type": "string", 
-            "Description": "Indicates the NetBIOS hostname of the host.", 
+            "Name": "nbthost",
+            "Type": "string",
+            "Description": "Indicates the NetBIOS hostname of the host.",
             "Label": "NetBIOS Hostname"
-        }, 
+        },
         {
-            "Name": "hostname", 
-            "Type": "string", 
-            "Description": "Indicates the DNS name of the host.", 
+            "Name": "hostname",
+            "Type": "string",
+            "Description": "Indicates the DNS name of the host.",
             "Label": "DNS Name"
-        }, 
+        },
         {
-            "Name": "aws_instance_public_dns", 
-            "Type": "string", 
-            "Description": "The public hostname of the EC2 instance, which resolves to the public IP address or Elastic IP address of the instance.", 
+            "Name": "aws_instance_public_dns",
+            "Type": "string",
+            "Description": "The public hostname of the EC2 instance, which resolves to the public IP address or Elastic IP address of the instance.",
             "Label": "EC2 Public DNS"
-        }, 
+        },
         {
-            "Name": "dhcp_hostname", 
-            "Type": "string", 
-            "Description": "The device Host Name as advertised by DHCP", 
+            "Name": "dhcp_hostname",
+            "Type": "string",
+            "Description": "The device Host Name as advertised by DHCP",
             "Label": "DHCP Hostname"
-        }, 
+        },
         {
-            "Name": "linux_hostname", 
-            "Type": "string", 
-            "Description": "Indicates a hostname. Use of this property requires that the host is managed by CounterACT via SecureConnector or remotely.", 
+            "Name": "linux_hostname",
+            "Type": "string",
+            "Description": "Indicates a hostname. Use of this property requires that the host is managed by CounterACT via SecureConnector or remotely.",
             "Label": "Linux Hostname"
-        }, 
+        },
         {
-            "Name": "mac_hostname", 
-            "Type": "string", 
-            "Description": "Indicates a hostname. Use of this property requires that the host is managed by CounterACT via SecureConnector or remotely.", 
+            "Name": "mac_hostname",
+            "Type": "string",
+            "Description": "Indicates a hostname. Use of this property requires that the host is managed by CounterACT via SecureConnector or remotely.",
             "Label": "Macintosh Hostname"
-        }, 
+        },
         {
-            "Name": "sw_hostname", 
-            "Type": "string", 
-            "Description": "The switch name as defined in the switch", 
+            "Name": "sw_hostname",
+            "Type": "string",
+            "Description": "The switch name as defined in the switch",
             "Label": "Switch Hostname"
-        }, 
+        },
         {
-            "Name": "wifi_end_point_host_name", 
-            "Type": "string", 
-            "Description": "", 
+            "Name": "wifi_end_point_host_name",
+            "Type": "string",
+            "Description": "",
             "Label": "WiFi End Point Hostname"
-        }, 
+        },
         {
-            "Name": "vmware_guest_host", 
-            "Type": "string", 
-            "Description": "Indicates the hostname of the guest operating system. VMware Tools must be running on the endpoint to resolve this property.", 
+            "Name": "vmware_guest_host",
+            "Type": "string",
+            "Description": "Indicates the hostname of the guest operating system. VMware Tools must be running on the endpoint to resolve this property.",
             "Label": "Virtual Machine Guest Hostname"
-        }, 
+        },
         {
-            "Name": "vmware_esxi_hostname", 
-            "Type": "string", 
-            "Description": "Indicates the hostname of the ESXi server.", 
+            "Name": "vmware_esxi_hostname",
+            "Type": "string",
+            "Description": "Indicates the hostname of the ESXi server.",
             "Label": "VMware ESXi Server Name"
-        }, 
+        },
         {
-            "Name": "wifi_client_hostname", 
-            "Type": "string", 
-            "Description": "Indicates the user name of the client.", 
+            "Name": "wifi_client_hostname",
+            "Type": "string",
+            "Description": "Indicates the user name of the client.",
             "Label": "WLAN Client Username"
         }
     ]
@@ -914,12 +915,12 @@
 <div class="cl-preview-section">
 <pre>{
     "Forescout.Host": {
-        "MACAddress": null, 
-        "IPAddress": "192.168.1.212", 
+        "MACAddress": null,
+        "IPAddress": "192.168.1.212",
         "ID": "3232235988"
-    }, 
+    },
     "Endpoint": {
-        "MACAddress": null, 
+        "MACAddress": null,
         "IPAddress": "192.168.1.212"
     }
 }
@@ -1021,150 +1022,150 @@
 <pre>{
     "Forescout.Policy": [
         {
-            "Name": "Primary Classification", 
-            "Description": "", 
+            "Name": "Primary Classification",
+            "Description": "",
             "Rule": [
                 {
-                    "Name": "CounterACT Devices", 
-                    "Description": "", 
+                    "Name": "CounterACT Devices",
+                    "Description": "",
                     "ID": "-1203369125012565008"
-                }, 
+                },
                 {
-                    "Name": "NAT Devices", 
-                    "Description": "When a device is NAT, its other classifications may be inaccurate. Therefore, we put the NAT detection first.", 
+                    "Name": "NAT Devices",
+                    "Description": "When a device is NAT, its other classifications may be inaccurate. Therefore, we put the NAT detection first.",
                     "ID": "-5021668745466479821"
-                }, 
+                },
                 {
-                    "Name": "Printers", 
-                    "Description": "", 
+                    "Name": "Printers",
+                    "Description": "",
                     "ID": "-275357014618763061"
-                }, 
+                },
                 {
-                    "Name": "VoIP Devices", 
-                    "Description": "", 
+                    "Name": "VoIP Devices",
+                    "Description": "",
                     "ID": "4202614624411873493"
-                }, 
+                },
                 {
-                    "Name": "Networking Equipment", 
-                    "Description": "", 
+                    "Name": "Networking Equipment",
+                    "Description": "",
                     "ID": "195929949297431248"
-                }, 
+                },
                 {
-                    "Name": "Storage", 
-                    "Description": "", 
+                    "Name": "Storage",
+                    "Description": "",
                     "ID": "-6750955562195414496"
-                }, 
+                },
                 {
-                    "Name": "Windows", 
-                    "Description": "", 
+                    "Name": "Windows",
+                    "Description": "",
                     "ID": "-6030907744367556977"
-                }, 
+                },
                 {
-                    "Name": "Macintosh", 
-                    "Description": "", 
+                    "Name": "Macintosh",
+                    "Description": "",
                     "ID": "2278199708439440583"
-                }, 
+                },
                 {
-                    "Name": "Linux\\Unix", 
-                    "Description": "", 
+                    "Name": "Linux\\Unix",
+                    "Description": "",
                     "ID": "-7562731206926229799"
-                }, 
+                },
                 {
-                    "Name": "Mobile Devices", 
-                    "Description": "", 
+                    "Name": "Mobile Devices",
+                    "Description": "",
                     "ID": "4030118542035508409"
-                }, 
+                },
                 {
-                    "Name": "Approved Misc Devices", 
-                    "Description": "", 
+                    "Name": "Approved Misc Devices",
+                    "Description": "",
                     "ID": "168049340370707647"
-                }, 
+                },
                 {
-                    "Name": "Multiple Profile Matches", 
-                    "Description": "Endpoints matching this sub-rule could not have either their Function or Operating System determined due to conflicting profile matches.\n\nInvestigate the devices in this sub-rule and either manually classify them or build additional sub-rules to classify them based on patterns you observe. View the values Suggested Function and Suggested Operating System properties to discover the conflicting profile matches.", 
+                    "Name": "Multiple Profile Matches",
+                    "Description": "Endpoints matching this sub-rule could not have either their Function or Operating System determined due to conflicting profile matches.\n\nInvestigate the devices in this sub-rule and either manually classify them or build additional sub-rules to classify them based on patterns you observe. View the values Suggested Function and Suggested Operating System properties to discover the conflicting profile matches.",
                     "ID": "8701509617393717735"
-                }, 
+                },
                 {
-                    "Name": "Other Known Function", 
-                    "Description": "", 
+                    "Name": "Other Known Function",
+                    "Description": "",
                     "ID": "-642863379250182254"
-                }, 
+                },
                 {
-                    "Name": "Other Known Operating System", 
-                    "Description": "", 
+                    "Name": "Other Known Operating System",
+                    "Description": "",
                     "ID": "-4200038946418694277"
-                }, 
+                },
                 {
-                    "Name": "Other Known Vendor", 
-                    "Description": "", 
+                    "Name": "Other Known Vendor",
+                    "Description": "",
                     "ID": "150826048313755731"
-                }, 
+                },
                 {
-                    "Name": "Unclassified", 
-                    "Description": "", 
+                    "Name": "Unclassified",
+                    "Description": "",
                     "ID": "-8959326502596556700"
                 }
-            ], 
+            ],
             "ID": "2101168655015691125"
-        }, 
+        },
         {
-            "Name": "Corporate/Guest Control", 
-            "Description": "", 
+            "Name": "Corporate/Guest Control",
+            "Description": "",
             "Rule": [
                 {
-                    "Name": "Corporate Hosts", 
-                    "Description": "", 
+                    "Name": "Corporate Hosts",
+                    "Description": "",
                     "ID": "2240420499151482925"
-                }, 
+                },
                 {
-                    "Name": "Signed-in Guests", 
-                    "Description": "", 
+                    "Name": "Signed-in Guests",
+                    "Description": "",
                     "ID": "1248354759835029874"
-                }, 
+                },
                 {
-                    "Name": "Guest Hosts", 
-                    "Description": "", 
+                    "Name": "Guest Hosts",
+                    "Description": "",
                     "ID": "9151906460028315616"
                 }
-            ], 
+            ],
             "ID": "-7733328397206852516"
-        }, 
+        },
         {
-            "Name": "Antivirus Compliance", 
-            "Description": "", 
+            "Name": "Antivirus Compliance",
+            "Description": "",
             "Rule": [
                 {
-                    "Name": "Not Manageable", 
-                    "Description": "Optional step: Make Windows machines managable by installing the Secure Connector", 
+                    "Name": "Not Manageable",
+                    "Description": "Optional step: Make Windows machines managable by installing the Secure Connector",
                     "ID": "7661917523791823306"
-                }, 
+                },
                 {
-                    "Name": "AV Not Installed", 
-                    "Description": "Antivirus is not installed.", 
+                    "Name": "AV Not Installed",
+                    "Description": "Antivirus is not installed.",
                     "ID": "-2012169476997908764"
-                }, 
+                },
                 {
-                    "Name": "AV Not Running", 
-                    "Description": "Antivirus is not running.", 
+                    "Name": "AV Not Running",
+                    "Description": "Antivirus is not running.",
                     "ID": "8013197435392890209"
-                }, 
+                },
                 {
-                    "Name": "AV Not Updated", 
-                    "Description": "Antivirus is not updated.", 
+                    "Name": "AV Not Updated",
+                    "Description": "Antivirus is not updated.",
                     "ID": "6048295467368903309"
-                }, 
+                },
                 {
-                    "Name": "Compliant", 
-                    "Description": "", 
+                    "Name": "Compliant",
+                    "Description": "",
                     "ID": "-7389372863827790785"
                 }
-            ], 
+            ],
             "ID": "-4928940807449738209"
-        }, 
+        },
         {
-            "Name": "sadfsafg", 
-            "Description": "asdf", 
-            "Rule": [], 
+            "Name": "sadfsafg",
+            "Description": "asdf",
+            "Rule": [],
             "ID": "267720461254861999"
         }
     ]

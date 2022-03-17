@@ -548,12 +548,13 @@ def get_mitre_value_from_id(client, args):
         collection_data = Collection(collection_url, verify=client.verify, proxies=client.proxies)
 
         tc_source = TAXIICollectionSource(collection_data)
-        attack_pattern_name = tc_source.query([
+        attack_pattern_obj = tc_source.query([
             Filter("external_references.external_id", "=", attack_id),
             Filter("type", "=", "attack-pattern")
-        ])[0]['name']
+        ])
+        attack_pattern_name = attack_pattern_obj[0]['name'] if attack_pattern_obj else None
 
-        if len(attack_id) > 5:  # sub-technique
+        if attack_pattern_name and len(attack_id) > 5:  # sub-technique
             parent_name = tc_source.query([
                 Filter("external_references.external_id", "=", attack_id[:5]),
                 Filter("type", "=", "attack-pattern")
@@ -562,7 +563,7 @@ def get_mitre_value_from_id(client, args):
 
         if attack_pattern_name:
             attack_values.append({'id': attack_id, 'value': attack_pattern_name})
-            break
+
     if attack_values:
         return CommandResults(
             outputs=attack_values,

@@ -27,7 +27,6 @@ variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   FEATURE_BRANCH_NAME: "v4.5.0"
   IFRA_ENV_TYPE: "Content-Env"
-  SKIP_PRIVATE_BUILD: "true"  # Remove this when https://github.com/demisto/etc/issues/36775 is done.
   GIT_DEPTH: 0
   GET_SOURCES_ATTEMPTS: 3  # see https://docs.gitlab.com/ee/ci/runners/configure_runners.html#job-stages-attempts
   ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"

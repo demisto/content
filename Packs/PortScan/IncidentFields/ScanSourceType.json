@@ -16,7 +16,6 @@
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
-        "",
         "Internal",
         "External"
     ],

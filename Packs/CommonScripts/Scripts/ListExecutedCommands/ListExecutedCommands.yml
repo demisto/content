@@ -1,0 +1,22 @@
+commonfields:
+  id: listExecutedCommands
+  version: -1
+name: listExecutedCommands
+script: ''
+type: javascript
+tags:
+- Utility
+comment: Lists  executed commands in War Room
+enabled: true
+args:
+- name: source
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - Manual
+  - Playbook
+  - All
+  description: Source of commands to list - user, playbook or both
+  defaultValue: All
+scripttarget: 0
+fromversion: 5.0.0

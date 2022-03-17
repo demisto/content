@@ -1,2 +1,5 @@
 [file:classifier-mapper-incoming-Infinipoint.json]
 ignore=BA101
+
+[file:Infinipoint.yml]
+ignore=IN145

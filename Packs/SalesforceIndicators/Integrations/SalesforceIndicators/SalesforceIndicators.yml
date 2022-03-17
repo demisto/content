@@ -138,7 +138,7 @@ script:
   - arguments: []
     name: salesforce-get-indicators
     description: 'Executes the fetch-indicators command'
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: true
   runonce: false
   script: ''

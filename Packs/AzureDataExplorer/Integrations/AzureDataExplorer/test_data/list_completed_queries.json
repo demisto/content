@@ -1,0 +1,417 @@
+{
+    "Tables": [
+        {
+            "TableName": "Table_0",
+            "Columns": [
+                {
+                    "ColumnName": "ClientActivityId",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Text",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Database",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "StartedOn",
+                    "DataType": "DateTime",
+                    "ColumnType": "datetime"
+                },
+                {
+                    "ColumnName": "LastUpdatedOn",
+                    "DataType": "DateTime",
+                    "ColumnType": "datetime"
+                },
+                {
+                    "ColumnName": "Duration",
+                    "DataType": "TimeSpan",
+                    "ColumnType": "timespan"
+                },
+                {
+                    "ColumnName": "State",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "RootActivityId",
+                    "DataType": "Guid",
+                    "ColumnType": "guid"
+                },
+                {
+                    "ColumnName": "User",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "FailureReason",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "TotalCpu",
+                    "DataType": "TimeSpan",
+                    "ColumnType": "timespan"
+                },
+                {
+                    "ColumnName": "CacheStatistics",
+                    "DataType": "Object",
+                    "ColumnType": "dynamic"
+                },
+                {
+                    "ColumnName": "Application",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "MemoryPeak",
+                    "DataType": "Int64",
+                    "ColumnType": "long"
+                },
+                {
+                    "ColumnName": "ScannedExtentsStatistics",
+                    "DataType": "Object",
+                    "ColumnType": "dynamic"
+                },
+                {
+                    "ColumnName": "Principal",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "ClientRequestProperties",
+                    "DataType": "Object",
+                    "ColumnType": "dynamic"
+                },
+                {
+                    "ColumnName": "ResultSetStatistics",
+                    "DataType": "Object",
+                    "ColumnType": "dynamic"
+                },
+                {
+                    "ColumnName": "WorkloadGroup",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                }
+            ],
+            "Rows": [
+                [
+                    "KPC.execute;43b2bbf0-1d81-4c6d-9312-3fb93ae84d50",
+                    "StormEvents | take 10",
+                    "Samples",
+                    "2021-10-14T12:24:51.4749931Z",
+                    "2021-10-14T12:24:51.4749931Z",
+                    "00:00:00",
+                    "Completed",
+                    "badacb20-aaea-4874-a710-27cbdfb922d8",
+                    "dataExplorer@qmasterslabgmail.onmicrosoft.com",
+                    "[none]",
+                    "00:00:00",
+                    {
+                        "Memory": {
+                            "Hits": 0,
+                            "Misses": 0
+                        },
+                        "Disk": {
+                            "Hits": 0,
+                            "Misses": 0
+                        },
+                        "Shards": {
+                            "Hot": {
+                                "HitBytes": 517324,
+                                "MissBytes": 0,
+                                "RetrieveBytes": 0
+                            },
+                            "Cold": {
+                                "HitBytes": 0,
+                                "MissBytes": 0,
+                                "RetrieveBytes": 0
+                            },
+                            "BypassBytes": 0
+                        }
+                    },
+                    "",
+                    1144768,
+                    {
+                        "MinDataScannedTime": "2016-03-17T08:24:02.6259906Z",
+                        "MaxDataScannedTime": "2016-03-17T08:24:02.6259906Z",
+                        "TotalExtentsCount": 1,
+                        "ScannedExtentsCount": 1,
+                        "TotalRowsCount": 59066,
+                        "ScannedRowsCount": 10
+                    },
+                    "aaduser=0cd1dcb9-3fa1-4470-b5f9-c9f2574a0c4d;0dd6c060-d39a-4e06-873c-48a43c2e24dd",
+                    {
+                        "SecurityTokenPresent": true,
+                        "AuthorizationScheme": "Bearer",
+                        "RequestHostName": "https://help.kusto.windows.net:443/",
+                        "LocalClusterName": "https://help.kusto.windows.net/",
+                        "OriginClusterName": "https://help.kusto.windows.net/",
+                        "Options": {
+                            "api_version": "v2",
+                            "request_readonly": true,
+                            "servertimeout": 2400000000,
+                            "servertimeoutorigin": "Gateway",
+                            "query_datascope": 1,
+                            "query_fanout_nodes_percent": 100,
+                            "query_fanout_threads_percent": 100,
+                            "maxmemoryconsumptionperiterator": 5368709120,
+                            "max_memory_consumption_per_query_per_node": 2000000000,
+                            "truncationmaxsize": 67108864,
+                            "truncationmaxrecords": 500000
+                        }
+                    },
+                    {
+                        "TableCount": 2,
+                        "TablesStatistics": [
+                            {
+                                "RowCount": 10,
+                                "TableSize": 11473
+                            },
+                            {
+                                "RowCount": 2,
+                                "TableSize": 1269
+                            }
+                        ]
+                    },
+                    "default"
+                ],
+                [
+                    "KPC.execute;463b6d97-09ef-4d06-99f8-b4ee21fc6620",
+                    "StormEvents | take 20",
+                    "Samples",
+                    "2021-10-14T12:26:30.2024346Z",
+                    "2021-10-14T12:26:30.2024346Z",
+                    "00:00:00",
+                    "Completed",
+                    "b73ee83f-32ec-4d43-85f2-3217bebfdf72",
+                    "dataExplorer@qmasterslabgmail.onmicrosoft.com",
+                    "[none]",
+                    "00:00:00",
+                    {
+                        "Memory": {
+                            "Hits": 0,
+                            "Misses": 0
+                        },
+                        "Disk": {
+                            "Hits": 0,
+                            "Misses": 0
+                        },
+                        "Shards": {
+                            "Hot": {
+                                "HitBytes": 517324,
+                                "MissBytes": 0,
+                                "RetrieveBytes": 0
+                            },
+                            "Cold": {
+                                "HitBytes": 0,
+                                "MissBytes": 0,
+                                "RetrieveBytes": 0
+                            },
+                            "BypassBytes": 0
+                        }
+                    },
+                    "",
+                    2622688,
+                    {
+                        "MinDataScannedTime": "2016-03-17T08:24:02.6259906Z",
+                        "MaxDataScannedTime": "2016-03-17T08:24:02.6259906Z",
+                        "TotalExtentsCount": 1,
+                        "ScannedExtentsCount": 1,
+                        "TotalRowsCount": 59066,
+                        "ScannedRowsCount": 10
+                    },
+                    "aaduser=0cd1dcb9-3fa1-4470-b5f9-c9f2574a0c4d;0dd6c060-d39a-4e06-873c-48a43c2e24dd",
+                    {
+                        "SecurityTokenPresent": true,
+                        "AuthorizationScheme": "Bearer",
+                        "RequestHostName": "https://help.kusto.windows.net:443/",
+                        "LocalClusterName": "https://help.kusto.windows.net/",
+                        "OriginClusterName": "https://help.kusto.windows.net/",
+                        "Options": {
+                            "api_version": "v2",
+                            "request_readonly": true,
+                            "servertimeout": 2400000000,
+                            "servertimeoutorigin": "Gateway",
+                            "query_datascope": 1,
+                            "query_fanout_nodes_percent": 100,
+                            "query_fanout_threads_percent": 100,
+                            "maxmemoryconsumptionperiterator": 5368709120,
+                            "max_memory_consumption_per_query_per_node": 2000000000,
+                            "truncationmaxsize": 67108864,
+                            "truncationmaxrecords": 500000
+                        }
+                    },
+                    {
+                        "TableCount": 2,
+                        "TablesStatistics": [
+                            {
+                                "RowCount": 10,
+                                "TableSize": 11473
+                            },
+                            {
+                                "RowCount": 2,
+                                "TableSize": 1269
+                            }
+                        ]
+                    },
+                    "default"
+                ]
+            ]
+        },
+        {
+            "TableName": "Table_1",
+            "Columns": [
+                {
+                    "ColumnName": "Value",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                }
+            ],
+            "Rows": [
+                [
+                    "{\"Visualization\":null,\"Title\":null,\"XColumn\":null,\"Series\":null,\"YColumns\":null,\"AnomalyColumns\":null,\"XTitle\":null,\"YTitle\":null,\"XAxis\":null,\"YAxis\":null,\"Legend\":null,\"YSplit\":null,\"Accumulate\":false,\"IsQuerySorted\":false,\"Kind\":null,\"Ymin\":\"NaN\",\"Ymax\":\"NaN\"}"
+                ]
+            ]
+        },
+        {
+            "TableName": "Table_2",
+            "Columns": [
+                {
+                    "ColumnName": "Timestamp",
+                    "DataType": "DateTime",
+                    "ColumnType": "datetime"
+                },
+                {
+                    "ColumnName": "Severity",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "SeverityName",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "StatusCode",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "StatusDescription",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Count",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "RequestId",
+                    "DataType": "Guid",
+                    "ColumnType": "guid"
+                },
+                {
+                    "ColumnName": "ActivityId",
+                    "DataType": "Guid",
+                    "ColumnType": "guid"
+                },
+                {
+                    "ColumnName": "SubActivityId",
+                    "DataType": "Guid",
+                    "ColumnType": "guid"
+                },
+                {
+                    "ColumnName": "ClientActivityId",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                }
+            ],
+            "Rows": [
+                [
+                    "2021-10-18T15:37:20.8792306Z",
+                    4,
+                    "Info",
+                    0,
+                    "Query completed successfully",
+                    2,
+                    "50932e75-25ca-443d-9ed7-50f53ed41564",
+                    "50932e75-25ca-443d-9ed7-50f53ed41564",
+                    "f385fc92-2c3f-46aa-88ea-270910c72ceb",
+                    "xsoar-ofek"
+                ],
+                [
+                    "2021-10-18T15:37:20.8790077Z",
+                    6,
+                    "Stats",
+                    0,
+                    "{\"ExecutionTime\":0.0155872,\"resource_usage\":{\"cache\":{\"memory\":{\"hits\":0,\"misses\":0,\"total\":0},\"disk\":{\"hits\":0,\"misses\":0,\"total\":0},\"shards\":{\"hot\":{\"hitbytes\":529612,\"missbytes\":0,\"retrievebytes\":0},\"cold\":{\"hitbytes\":0,\"missbytes\":0,\"retrievebytes\":0},\"bypassbytes\":0}},\"cpu\":{\"user\":\"00:00:00.0156250\",\"kernel\":\"00:00:00\",\"total cpu\":\"00:00:00.0156250\"},\"memory\":{\"peak_per_node\":7547920},\"network\":{\"inter_cluster_total_bytes\":9845,\"intra_cluster_total_bytes\":0}},\"input_dataset_statistics\":{\"extents\":{\"total\":39,\"scanned\":13,\"scanned_min_datetime\":\"2021-09-21T14:53:42.9520125Z\",\"scanned_max_datetime\":\"2021-10-18T15:36:38.0029369Z\"},\"rows\":{\"total\":260833,\"scanned\":61891},\"rowstores\":{\"scanned_rows\":0,\"scanned_values_size\":0},\"shards\":{\"queries_generic\":1,\"queries_specialized\":0}},\"dataset_statistics\":[{\"table_row_count\":2,\"table_size\":3381}]}",
+                    1,
+                    "50932e75-25ca-443d-9ed7-50f53ed41564",
+                    "50932e75-25ca-443d-9ed7-50f53ed41564",
+                    "f385fc92-2c3f-46aa-88ea-270910c72ceb",
+                    "xsoar-ofek"
+                ]
+            ]
+        },
+        {
+            "TableName": "Table_3",
+            "Columns": [
+                {
+                    "ColumnName": "Ordinal",
+                    "DataType": "Int64",
+                    "ColumnType": "long"
+                },
+                {
+                    "ColumnName": "Kind",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Name",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Id",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "PrettyName",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                }
+            ],
+            "Rows": [
+                [
+                    0,
+                    "QueryResult",
+                    "PrimaryResult",
+                    "84822f85-4133-425c-b713-6d6e442b4820",
+                    ""
+                ],
+                [
+                    1,
+                    "QueryProperties",
+                    "@ExtendedProperties",
+                    "9a477f68-96f8-4f48-811f-e464d47f4241",
+                    ""
+                ],
+                [
+                    2,
+                    "QueryStatus",
+                    "QueryStatus",
+                    "00000000-0000-0000-0000-000000000000",
+                    ""
+                ]
+            ]
+        }
+    ]
+}

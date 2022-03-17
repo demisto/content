@@ -42,6 +42,7 @@ The EWS integration can be used for the following use cases.
         Note: To use this functionality, your account must have impersonation rights or delegation for the account specified. For more information on impersonation rights see ‘Additional Information’ section below.
     *   **Name of the folder from which to fetch incidents**: Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing. Please note, if Exchange is configured with an international flavor `Inbox` will be named according to the configured language.
     *   **Public Folder**
+    *   **Access Type**: Run the commands using `Delegate` or `Impersonation` access types.
     *   **Use system proxy settings**
     *   **Trust any certificate (not secure)**  
     *   **Timeout (in seconds) for HTTP requests to Exchange Server**

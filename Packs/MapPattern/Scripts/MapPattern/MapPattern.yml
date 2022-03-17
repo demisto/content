@@ -1,38 +1,15 @@
-args:
-- description: The value to modify.
-  name: value
-  required: true
-- description: A JSON dictionary that contains key:value pairs that represent the
-    "Condition":"Outcome".
-  name: mappings
-  required: true
-- auto: PREDEFINED
-  defaultValue: literal
-  description: 'The default algorithm for pattern match. Available algorithm: literal,wildcard,regex
-    and regmatch.'
-  name: algorithm
-  predefined:
-  - literal
-  - wildcard
-  - regex
-  - regmatch
-- auto: PREDEFINED
-  defaultValue: "true"
-  description: Set to true for caseless comparison, otherwise false.
-  name: caseless
-  predefined:
-  - "true"
-  - "false"
-- auto: PREDEFINED
-  defaultValue: first_match
-  description: The option to choose which value matched to return.
-  name: priority
-  predefined:
-  - first_match
-  - last_match
-- description: '`demisto` context: Input . (single dot) on `From previous tasks` to
-    enable to extract the context data.'
-  name: context
+commonfields:
+  id: MapPattern
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+name: MapPattern
+script: ''
+type: python
+tags:
+- transformer
+- string
 comment: |-
   This transformer will take in a value and transform it based on multiple condition expressions (wildcard, regex, etc) defined in a JSON dictionary structure. The key:value pair of the JSON dictionary should be:
 
@@ -52,21 +29,58 @@ comment: |-
 
   The transformer will return the value matched to a pattern following to the priority.
   When unmatched or the input value is structured (dict or list), it will simply return the input value.
-commonfields:
-  id: MapPattern
-  version: -1
-dockerimage: demisto/python3:3.9.7.24076
 enabled: true
-name: MapPattern
-runas: DBotWeakRole
-runonce: false
-script: ''
+args:
+- name: value
+  description: The value to modify.
+- name: mappings
+  required: true
+  description: A JSON dictionary that contains key:value pairs that represent the
+    "Condition":"Outcome".
+- name: algorithm
+  auto: PREDEFINED
+  predefined:
+  - literal
+  - wildcard
+  - regex
+  - regmatch
+  - dt
+  description: 'The default algorithm for pattern match. Available algorithm: literal,wildcard,regex,regmatch
+    and dt.'
+  defaultValue: literal
+- name: caseless
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Set to true for caseless comparison, otherwise false.
+  defaultValue: "true"
+- name: priority
+  auto: PREDEFINED
+  predefined:
+  - first_match
+  - last_match
+  description: The option to choose which value matched to return.
+  defaultValue: first_match
+- name: context
+  description: '`demisto` context: Input . (single dot) on `From previous tasks` to
+    enable to extract the context data.'
+- name: flags
+  description: The comma separated flags for pattern matching in regex. "dotall" (s),
+    "multiline" (m), "ignorecase" (i) and "unicode" (u) are supported. This will apply
+    to all the algorithms.
+- name: compare_fields
+  description: Set to true if you want pattern matching for each field, otherwise
+    false.
+  defaultValue: "false"
+- name: wildcards
+  description: The list of the special patterns which match to any values regardless
+    of algorithm.
 scripttarget: 0
 subtype: python3
-tags:
-- transformer
-- string
-type: python
+runonce: false
+dockerimage: demisto/python3:3.9.8.24399
+runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

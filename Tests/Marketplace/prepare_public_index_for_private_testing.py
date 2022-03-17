@@ -4,7 +4,6 @@ import sys
 import shutil
 import json
 import argparse
-import logging
 from zipfile import ZipFile
 from contextlib import contextmanager
 from datetime import datetime
@@ -12,6 +11,7 @@ from Tests.private_build.upload_packs_private import download_and_extract_index,
     extract_packs_artifacts
 from Tests.Marketplace.marketplace_services import init_storage_client
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 MAX_SECONDS_TO_WAIT_FOR_LOCK = 600
 LOCK_FILE_PATH = 'lock.txt'
@@ -115,7 +115,7 @@ def option_handler():
     parser.add_argument('-e', '--extract_public_index_path', help="Full path of folder to extract the public index",
                         required=True)
     parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
-                        required=False),
+                        required=False)
     parser.add_argument('-p', '--pack_name', help="Modified pack to upload to gcs.")
     parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
     parser.add_argument('-ea', '--extract_artifacts_path', help="Full path of folder to extract wanted packs",
@@ -189,7 +189,7 @@ def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
 
 
 def main():
-    install_logging('prepare_public_index_for_private_testing.log')
+    install_logging('prepare_public_index_for_private_testing.log', logger=logging)
     upload_config = option_handler()
     service_account = upload_config.service_account
     build_number = upload_config.ci_build_number
@@ -222,7 +222,8 @@ def main():
         private_packs, private_index_path, private_index_blob = update_index_with_priced_packs(private_storage_bucket,
                                                                                                extract_destination_path,
                                                                                                public_index_folder_path,
-                                                                                               changed_pack, True)
+                                                                                               changed_pack, True,
+                                                                                               storage_base_path)
         private_packs = add_private_packs_from_dummy_index(private_packs, dummy_index_blob)
         upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
                               private_packs)

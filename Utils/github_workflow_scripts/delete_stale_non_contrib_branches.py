@@ -42,7 +42,7 @@ def get_non_contributor_stale_branch_names(repo: Repository) -> List[str]:  # no
                 elapsed_days = (now - last_commit_datetime).days
                 # print(f'{elapsed_days=}')
                 if elapsed_days >= 60:
-                    associated_open_prs = branch.commit.get_pulls()
+                    associated_open_prs = branch.commit.get_pulls()  # type: ignore[attr-defined]
                     associated_open_prs = [pr for pr in associated_open_prs if pr.state == 'open']
                     if len(associated_open_prs) < 1:
                         branch_names.append(branch.name)

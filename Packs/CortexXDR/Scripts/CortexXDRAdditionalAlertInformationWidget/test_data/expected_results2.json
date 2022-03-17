@@ -1,0 +1,70 @@
+[
+  {
+    "Alert Full Description": "desc1",
+    "Detection Module": [
+      "Cloud"
+    ],
+    "Vendor": "Amazon",
+    "Provider": "AWS",
+    "Log Name": "cloudtrail",
+    "Event Type": "AwsApiCall",
+    "Caller IP": "1.1.1.1",
+    "Caller IP Geo Location": "NL",
+    "Resource Type": "CERTIFICATE_AUTHORITY",
+    "Identity Name": "bob-test",
+    "Operation Name": "ENUMERATE",
+    "Operation Status": "PERMISSION_DENIED",
+    "User Agent": "Boto3/1.13.12 Python/3.9.2 Linux/5.10.0-kali7-cloud-amd64 Botocore/1.16.12"
+  },
+  {
+    "Alert Full Description": "desc2",
+    "Detection Module": [
+      "Cloud"
+    ],
+    "Vendor": "Amazon",
+    "Provider": "AWS",
+    "Log Name": "cloudtrail",
+    "Event Type": "AwsApiCall",
+    "Caller IP": "1.1.1.1",
+    "Caller IP Geo Location": "NL",
+    "Resource Type": "IDENTITY_ACCESS_MANAGEMENT",
+    "Identity Name": "bob-test",
+    "Operation Name": "GET",
+    "Operation Status": "SUCCESS",
+    "User Agent": "aws-cli/1.19.1 Python/3.9.2 Linux/5.10.0-kali7-cloud-amd64 botocore/1.16.12"
+  },
+  {
+    "Alert Full Description": "desc3",
+    "Detection Module": [
+      "Cloud"
+    ],
+    "Vendor": "Amazon",
+    "Provider": "AWS",
+    "Log Name": "cloudtrail",
+    "Event Type": "AwsApiCall",
+    "Caller IP": "1.1.1.1",
+    "Caller IP Geo Location": "NL",
+    "Resource Type": "IDENTITY_ACCESS_MANAGEMENT",
+    "Identity Name": "bob-test",
+    "Operation Name": "GET",
+    "Operation Status": "SUCCESS",
+    "User Agent": "aws-cli/1.19.1 Python/3.9.2 Linux/5.10.0-kali7-cloud-amd64 botocore/1.16.12"
+  },
+  {
+    "Alert Full Description": "desc4",
+    "Detection Module": [
+      "Cloud"
+    ],
+    "Vendor": "Amazon",
+    "Provider": "AWS",
+    "Log Name": "cloudtrail",
+    "Event Type": "AwsApiCall",
+    "Caller IP": "1.1.1.1",
+    "Caller IP Geo Location": "NL",
+    "Resource Type": "CERTIFICATE_AUTHORITY",
+    "Identity Name": "bob-test",
+    "Operation Name": "ENUMERATE",
+    "Operation Status": "PERMISSION_DENIED",
+    "User Agent": "Boto3/1.13.12 Python/3.9.2 Linux/5.10.0-kali7-cloud-amd64 Botocore/1.16.12"
+  }
+]

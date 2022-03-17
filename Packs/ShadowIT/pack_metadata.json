@@ -21,9 +21,9 @@
     "keywords": [
         "Prisma Cloud",
         "Public Cloud",
-	"Expanse",
-	"TIM",
-	"Unsanctioned"
+        "Expanse",
+        "TIM",
+        "Unsanctioned"
     ],
     "dependencies": {
         "Active_Directory_Query": {
@@ -34,5 +34,9 @@
             "mandatory": false,
             "display_name": "Mail Sender (New)"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

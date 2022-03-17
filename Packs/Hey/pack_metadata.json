@@ -21,5 +21,9 @@
             "mandatory": true,
             "display_name": "GetServerURL"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

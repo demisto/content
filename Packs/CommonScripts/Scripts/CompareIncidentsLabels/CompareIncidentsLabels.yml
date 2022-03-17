@@ -11,7 +11,12 @@ args:
   name: incident_id_2
   required: true
   secret: false
-comment: Compares the labels of two incidents. Returns the labels that are unique to each incident.
+comment: |-
+  Compares the labels of two incidents. Returns the labels that are unique to each incident.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 commonfields:
   id: CompareIncidentsLabels
   version: -1
@@ -24,9 +29,8 @@ tags:
 timeout: '0'
 type: python
 subtype: python2
-runas: DBotRole
 runonce: false
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398
 tests:
 - CompareIncidentsLabels-test-playbook

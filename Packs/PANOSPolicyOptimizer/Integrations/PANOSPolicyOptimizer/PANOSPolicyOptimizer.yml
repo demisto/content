@@ -60,7 +60,7 @@ script:
     outputs:
     - contextPath: PanOS.PolicyOptimizer.NoApps
       description: Contains information about the rules that have no apps specified.
-        i.e., Source, Destination, etc.
+        For example, Source and Destination.
       type: Unknown
   - deprecated: false
     description: Gets the unused apps.
@@ -73,7 +73,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '30'
-      description: The time frame in days for which to show the unused rules. Default is 30.
+      description: The time frame in days to show the unused rules.
       isArray: false
       name: timeframe
       required: false
@@ -81,7 +81,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Unused
-      description: Rule usage type. The values by which you want to filter.
+      description: Rule usage type to filter by. Can be Unused, Used, or Any.
       isArray: false
       name: usage
       predefined:
@@ -92,16 +92,18 @@ script:
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Whether to exclude rules reset during the last x days, where x is the value defined in the timeframe argument. It will not exclude rules by default.
+      description: Whether to exclude rules reset during the last x days, where x
+        is the value defined in the timeframe argument. It will not exclude rules
+        by default.
       isArray: false
       name: exclude
       predefined:
-        - 'false'
-        - 'true'
+      - 'false'
+      - 'true'
       required: false
       secret: false
     deprecated: false
-    description: Gets unused, used, or any rules
+    description: Gets unused, used, or any rules.
     execution: false
     name: pan-os-po-get-rules
     outputs:
@@ -140,7 +142,7 @@ script:
     description: Gets a specific dynamic address group.
     execution: false
     name: pan-os-get-dag
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false

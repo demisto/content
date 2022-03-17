@@ -1,8 +1,8 @@
 import pytest
-
-from AWSILM import Client, main, get_group_command, create_group_command, update_group_command, delete_group_command
-from IAMApiModule import *
 import requests_mock
+from AWSILM import Client, main, get_group_command, create_group_command, update_group_command, delete_group_command
+
+from IAMApiModule import *
 
 userUri = '/scim/v2/Users/'
 groupUri = '/scim/v2/Groups/'
@@ -53,7 +53,11 @@ def get_outputs_from_user_profile(user_profile):
 
 
 class TestGetUserCommand:
-    def test_existing_user(self):
+
+    @pytest.mark.parametrize('args, mock_url', [({'user-profile': {'userName': 'mock_user_name'}}, userUri),
+                                                ({'user-profile': {'userName': 'mock_user_name', 'id': 'mock_id'}},
+                                                 f'{userUri}mock_id')])
+    def test_existing_user(self, args, mock_url):
         """
         Given:
             - An app client object
@@ -61,16 +65,22 @@ class TestGetUserCommand:
         When:
             - The user exists in the application
             - Calling function get_user_command
+        Cases:
+        Case a: Calling user command with valid username in user profile.
+        Case b: Calling user command with valid username and valid id in user profile.
+
         Then:
             - Ensure the resulted User Profile object holds the correct user details
+        Case a: Ensure the URL corresponding to username is called.
+        Case b: Ensure the URL corresponding to ID is called.
         """
+        from AWSILM import SUPPORTED_GET_USER_IAM_ATTRIBUTES
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
-            m.get(userUri, json={"totalResults": 1, "Resources": [APP_USER_OUTPUT]})
+            m.get(mock_url, json={"totalResults": 1, "Resources": [APP_USER_OUTPUT]})
 
-            user_profile = IAMCommand(attr='username').get_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=SUPPORTED_GET_USER_IAM_ATTRIBUTES).get_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -94,12 +104,12 @@ class TestGetUserCommand:
             - Ensure the resulted User Profile object holds information about an unsuccessful result.
         """
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}}
+        args = {'user-profile': {'userName': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 0, "Resources": []})
 
-            user_profile = IAMCommand(attr='username').get_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['userName']).get_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -123,20 +133,20 @@ class TestGetUserCommand:
         mocker.patch.object(demisto, 'error')
 
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}}
+        args = {'user-profile': {'userName': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
             m.get(f'{userUri}?filter=userName eq "mock_user_name"', status_code=500,
                   json={"detail": "INTERNAL SERVER ERROR"})
 
-            user_profile = IAMCommand(attr='username').get_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['userName']).get_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
         assert outputs.get('action') == IAMActions.GET_USER
         assert outputs.get('success') is False
         assert outputs.get('errorCode') == 500
-        assert outputs.get('errorMessage') == 'INTERNAL SERVER ERROR'
+        assert 'INTERNAL SERVER ERROR' in outputs.get('errorMessage')
 
 
 class TestCreateUserCommand:
@@ -151,13 +161,13 @@ class TestCreateUserCommand:
             - Ensure a User Profile object with the user data is returned
         """
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}}
+        args = {'user-profile': {'userName': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 0, "Resources": []})
             m.post(userUri, json=APP_USER_OUTPUT)
 
-            user_profile = IAMCommand(attr='username').create_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['userName']).create_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -182,14 +192,14 @@ class TestCreateUserCommand:
             - Ensure the command is considered successful and the user is still disabled
         """
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}, 'allow-enable': 'false'}
+        args = {'user-profile': {'userName': 'mock_user_name'}, 'allow-enable': 'false'}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 1, "Resources": [APP_USER_OUTPUT]})
             m.get(f'{userUri}mock_id', json=APP_USER_OUTPUT)
             m.patch(f'{userUri}mock_id', json=APP_UPDATED_USER_OUTPUT)
 
-            user_profile = IAMCommand(attr='username').create_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['userName']).create_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -218,13 +228,14 @@ class TestUpdateUserCommand:
             - Ensure a User Profile object with the user data is returned
         """
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}}
+        args = {'user-profile': {'userName': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 0, "Resources": []})
             m.post(userUri, json=APP_USER_OUTPUT)
 
-            user_profile = IAMCommand(create_if_not_exists=True, attr='username').update_user(client, args)
+            user_profile = IAMCommand(create_if_not_exists=True, get_user_iam_attrs=['userName']).update_user(client,
+                                                                                                              args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -248,9 +259,9 @@ class TestUpdateUserCommand:
             - Ensure the command is considered successful and skipped
         """
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}}
+        args = {'user-profile': {'userName': 'mock_user_name'}}
 
-        user_profile = IAMCommand(is_update_enabled=False, attr='username').update_user(client, args)
+        user_profile = IAMCommand(is_update_enabled=False, get_user_iam_attrs=['userName']).update_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -272,7 +283,7 @@ class TestUpdateUserCommand:
             - Ensure the user is enabled at the end of the command execution.
         """
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}, 'allow-enable': 'true'}
+        args = {'user-profile': {'userName': 'mock_user_name'}, 'allow-enable': 'true'}
 
         with requests_mock.Mocker() as m:
             m.get('https://test.com/scim/v2/Users/?filter=userName eq "mock_user_name"',
@@ -280,7 +291,7 @@ class TestUpdateUserCommand:
             m.get(f'{userUri}mock_id', json=APP_DISABLED_USER_OUTPUT)
             m.patch(f'{userUri}mock_id', json=APP_UPDATED_USER_OUTPUT)
 
-            user_profile = IAMCommand(attr='username').update_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['userName']).update_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -307,12 +318,12 @@ class TestDisableUserCommand:
             - Ensure the command is considered successful and skipped
         """
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}}
+        args = {'user-profile': {'userName': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 0, "Resources": []})
 
-            user_profile = IAMCommand(attr='username').disable_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['userName']).disable_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -433,7 +444,7 @@ class TestCreateGroupCommand:
 
         assert mock_result.call_args.kwargs['outputs']['details'] == APP_GROUP_OUTPUT
 
-    def test_group_already_exist(self, mocker):
+    def test_group_already_exist(self):
         """
         Given:
             - An app client object
@@ -591,23 +602,11 @@ def test_get_mapping_fields_command__runs_the_all_integration_flow(mocker):
         - Ensure a GetMappingFieldsResponse object that contains the application fields is returned
     """
     import demistomock as demisto
+    from AWSILM import AWS_DEFAULT_SCHEMA_MAPPING
     mocker.patch.object(demisto, 'command', return_value='get-mapping-fields')
     mocker.patch.object(demisto, 'params', return_value={'url': 'http://example.com', 'tenant_id': 'tenant'})
     mock_result = mocker.patch('AWSILM.return_results')
-
-    schema = {
-        'result': [
-            {'name': 'field1', 'description': 'desc1'},
-            {'name': 'field2', 'description': 'desc2'},
-        ]
-    }
-
-    with requests_mock.Mocker() as m:
-        m.get('http://example.com/tenant/schema', json=schema)
-
-        main()
-
+    main()
     mapping = mock_result.call_args.args[0].extract_mapping()
 
-    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field1') == 'desc1'
-    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field2') == 'desc2'
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}) == AWS_DEFAULT_SCHEMA_MAPPING

@@ -12,3 +12,6 @@ ignore=RM106
 
 [file:playbook-CVE-2021-1675_-_PrintNightmare.yml]
 ignore=BA101
+
+[file:pack_metadata.json]
+ignore=PA129

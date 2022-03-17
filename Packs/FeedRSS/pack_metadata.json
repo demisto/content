@@ -2,7 +2,7 @@
     "name": "RSS Feed",
     "description": "RSS Feed reader, imports new articles as Report indicator.  All rss fields (e.g. author, published, tags) are available.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "",
@@ -14,5 +14,9 @@
         "TIM"
     ],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

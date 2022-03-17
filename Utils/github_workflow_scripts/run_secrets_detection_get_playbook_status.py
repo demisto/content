@@ -13,7 +13,7 @@ from demisto_sdk.commands.common.constants import PB_Status
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # ----- Constants ----- #
-DEFAULT_TIMEOUT = 60 * 5
+DEFAULT_TIMEOUT = 60 * 12
 SLEEP_WAIT_SECONDS = 10
 GOLD_SERVER_URL = "https://content-gold.paloaltonetworks.com"
 
@@ -28,11 +28,7 @@ def get_playbook_state(client: demisto_client, inv_id: str):
         print('Failed to get investigation playbook state, error trying to communicate with demisto server')
         return PB_Status.FAILED
 
-    try:
-        state = investigation_playbook['state']
-        return state
-    except:  # noqa: E722
-        return PB_Status.NOT_SUPPORTED_VERSION
+    return investigation_playbook.get('state', PB_Status.NOT_SUPPORTED_VERSION)
 
 
 def wait_for_playbook_to_complete(investigation_id, client):
@@ -57,7 +53,7 @@ def wait_for_playbook_to_complete(investigation_id, client):
             break
 
         if playbook_state == PB_Status.FAILED:
-            print(f'Secrets playbook was failed as secrets were found. To investigate go to: {investigation_url}.')
+            print(f'Secrets playbook was failed as secrets were found. To investigate go to: {investigation_url}')
             sys.exit(1)
 
         if time.time() > timeout:

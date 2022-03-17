@@ -1,0 +1,428 @@
+{
+    "id": "Cybersixgill Actionable Alerts",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 30,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Cybersixgill Actionable Alerts",
+    "layout": [
+        {
+            "id": "ad35f090-4c2f-11ec-8b15-219135434cfd",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "ad35f090-4c2f-11ec-8b15-219135434cfd",
+            "w": 8,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2020-08-13T11:52:53.11051388Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Actionable Alerts - Timeline",
+                "prevName": "Active Incidents - Line chart",
+                "dataType": "incidents",
+                "widgetType": "line",
+                "query": "type:\"Cybersixgill Actionable Alerts\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "occurred(d)",
+                        "type"
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "f84363f0-4c30-11ec-8b15-219135434cfd",
+            "forceRange": false,
+            "x": 8,
+            "y": 0,
+            "i": "f84363f0-4c30-11ec-8b15-219135434cfd",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "5732ab49-1e15-449a-812c-688bb45850bf",
+                "version": 1,
+                "modified": "2021-11-23T07:42:32.447581194Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cybersixgill Threat Level",
+                "prevName": "Cybersixgill Threat Level",
+                "dataType": "incidents",
+                "widgetType": "column",
+                "query": "cybersixgillthreatlevel:emerging or cybersixgillthreatlevel:imminent",
+                "sort": [],
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "cybersixgillthreatlevel"
+                    ],
+                    "legend": [
+                        {
+                            "color": "#F50057",
+                            "name": "imminent"
+                        },
+                        {
+                            "color": "#295AFF",
+                            "name": "emerging"
+                        }
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "size": 0,
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "41dd2da0-4c33-11ec-8b15-219135434cfd",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "41dd2da0-4c33-11ec-8b15-219135434cfd",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "0a1446bc-27d7-4606-8947-105acd3a5d18",
+                "version": 1,
+                "modified": "2021-11-23T07:59:11.916167412Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cybersixgill Alerts by Status",
+                "prevName": "Cybersixgill Alerts by Status",
+                "dataType": "incidents",
+                "widgetType": "column",
+                "query": "cybersixgillstatus:*",
+                "sort": [],
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "cybersixgillstatus"
+                    ],
+                    "legend": [
+                        {
+                            "color": "#FF8411",
+                            "name": "treatment required"
+                        },
+                        {
+                            "color": "#FED22C",
+                            "name": "in treatment"
+                        },
+                        {
+                            "color": "#229D80",
+                            "name": "resolved"
+                        }
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "size": 0,
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "6d977bd0-4c33-11ec-8b15-219135434cfd",
+            "forceRange": false,
+            "x": 6,
+            "y": 3,
+            "i": "6d977bd0-4c33-11ec-8b15-219135434cfd",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "0a1446bc-27d7-4606-8947-105acd3a5d18",
+                "version": 1,
+                "modified": "2021-11-23T07:59:11.916167412Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cybersixgill Alerts by Threat Type",
+                "prevName": "Cybersixgill Alerts by Status",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "cybersixgillthreattype:\"Brand Protection\" or cybersixgillthreattype:\"Compromised Accounts\" or cybersixgillthreattype:\"Data Leak\" or cybersixgillthreattype:\"DDoS Attack\" or cybersixgillthreattype:Defacement or cybersixgillthreattype:Fraud or cybersixgillthreattype:\"Insider Threat\" or cybersixgillthreattype:Malware or cybersixgillthreattype:Phishing or cybersixgillthreattype:\"Trend Anomaly\" or cybersixgillthreattype:\"Vulnerability Exploit\" or cybersixgillthreattype:\"Web Attack\"",
+                "sort": [],
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "cybersixgillthreattype"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "size": 0,
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "a3a0cbf0-4c33-11ec-8b15-219135434cfd",
+            "forceRange": false,
+            "x": 6,
+            "y": 6,
+            "i": "a3a0cbf0-4c33-11ec-8b15-219135434cfd",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "0a1446bc-27d7-4606-8947-105acd3a5d18",
+                "version": 1,
+                "modified": "2021-11-23T07:59:11.916167412Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Top 10 Triggered Assets",
+                "prevName": "Cybersixgill Alerts by Status",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "cybersixgilltriggeredassets:*",
+                "sort": [],
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "cybersixgilltriggeredassets"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "size": 10,
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "d3371bd0-4c33-11ec-8b15-219135434cfd",
+            "forceRange": false,
+            "x": 0,
+            "y": 6,
+            "i": "d3371bd0-4c33-11ec-8b15-219135434cfd",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "0a1446bc-27d7-4606-8947-105acd3a5d18",
+                "version": 1,
+                "modified": "2021-11-23T07:59:11.916167412Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Sources",
+                "prevName": "Cybersixgill Alerts by Status",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "cybersixgillsite:*",
+                "sort": [],
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "cybersixgillsite"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "size": 0,
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "fca33440-4c33-11ec-8b15-219135434cfd",
+            "forceRange": false,
+            "x": 0,
+            "y": 9,
+            "i": "fca33440-4c33-11ec-8b15-219135434cfd",
+            "w": 12,
+            "h": 3,
+            "widget": {
+                "id": "0a1446bc-27d7-4606-8947-105acd3a5d18",
+                "version": 1,
+                "modified": "2021-11-23T07:59:11.916167412Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Threat Actors",
+                "prevName": "Cybersixgill Alerts by Status",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "cybersixgillactor:*",
+                "sort": [],
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "cybersixgillactor"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "size": 0,
+                "category": ""
+            },
+            "reflectDimensions": true
+        }
+    ],
+    "fromVersion": "6.0.0",
+    "description": "",
+    "isPredefined": true
+}

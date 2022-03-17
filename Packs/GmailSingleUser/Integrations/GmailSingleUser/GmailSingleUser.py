@@ -898,9 +898,20 @@ class Client:
         encoded_message = base64.urlsafe_b64encode(message.as_bytes())
         command_args = {'raw': encoded_message.decode()}
 
-        service = self.get_service('gmail', 'v1')
-        result = (service.users().messages().send(userId=emailfrom, body=command_args).execute())
-        return result
+        return self.send_email_request(email_from=emailfrom, body=command_args)
+
+    def send_email_request(self, email_from: str, body: dict) -> dict:
+        """
+        Request to sends a mail through Gmail.
+
+        Args:
+            email_from (str): the email to send an email from.
+            body (dict): email body.
+
+        Returns:
+            dict: the email send response.
+        """
+        return self.get_service('gmail', 'v1').users().messages().send(userId=email_from, body=body).execute()
 
     def generate_auth_link(self) -> Tuple[str, str]:
         """Generate an auth2 link.

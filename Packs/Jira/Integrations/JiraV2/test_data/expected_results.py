@@ -2,7 +2,19 @@ QUERY_ISSUE_RESULT = {'Ticket(val.Id == obj.Id)':
     [
         {
             'Id': '12652', 'Key': 'VIK-3', 'Summary': 'JiraTestMohitM', 'Status': 'To Do', 'Assignee': 'null(null)',
-            'Creator': 'jon doe(admin@demistodev.com)'
+            'Creator': 'jon doe(admin@demistodev.com)', 'Priority': 'High', 'ProjectName': 'VikTest', 'DueDate': None,
+            'Created': '2019-05-04T00:44:31.743+0300', 'LastSeen': None, 'LastUpdate': '2019-05-15T21:24:07.222+0300'
+        }
+    ]
+}
+
+GET_ISSUE_OUTPUTS_RESULT = {'Ticket(val.Id == obj.Id)':
+    [
+        {
+            'Id': '19141', 'Key': 'VIK-238', 'Summary': 'test master1', 'Status': 'To Do', 'Assignee': 'null(null)',
+            'Creator': 'jon doe(admin@demistodev.com)', 'Priority': 'Medium', 'ProjectName': 'VikTest', 'DueDate': None,
+            'Created': '2021-04-04T12:25:48.114+0300', 'LastSeen': None, 'LastUpdate': '2021-04-04T12:49:43.546+0300',
+            'attachment': 'entry_artifact_5@317.json'
         }
     ]
 }
@@ -25,7 +37,7 @@ GET_JIRA_ISSUE_RES = {
             "name": "High",
             "id": "2"
         },
-
+        "lastViewed": "2020-12-17T12:38:30.006+0200",
         "labels": [
 
         ],

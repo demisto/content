@@ -25,10 +25,12 @@
  "hidden": false,
  "associatedTypes": [
   "Phishing",
+  "Phishing Alerts",
   "Email Communication"
  ],
  "systemAssociatedTypes": [
   "Phishing",
+  "Phishing Alerts",
   "Email Communication"
  ],
  "associatedToAll": false,

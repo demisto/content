@@ -8,8 +8,8 @@ Full documentation for this integration is available in the [reference docs](htt
 You need to grant Cortex XSOAR authorization to access Azure Log Analytics.
 
 1. Access the [authorization flow](https://oproxy.demisto.ninja/ms-azure-log-analytics). 
-2. Click the **Start Authorization Process** button and you will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. 
-3. Click the **Accept** button and you will receive your ID, token, and key. You will need to enter these when you configure the Azure Log Analytics integration instance in Cortex XSOAR.
+2. Click the **Start Authorization Process** button, and you will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. 
+3. Click the **Accept** button, and you will receive your ID, token, and key. You will need to enter these when you configure the Azure Log Analytics integration instance in Cortex XSOAR.
 
 ## Authorize Cortex XSOAR for Azure Log Analytics (self-deployed configuration)
 
@@ -23,7 +23,7 @@ Follow these steps for a self-deployed configuration.
 ```https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&resource=https://management.core.windows.net&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI```
 4. Enter the link and you will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
-5. Copy the ***AUTH_CODE*** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization code** parameter. 
+5. Copy the ***AUTH_CODE*** (without the “code=” prefix, and the session_state parameter) and paste it in your instance configuration under the **Authorization code** parameter. 
 6. Enter your client ID in the ***ID*** parameter. 
 7. Enter your client secret in the ***Key*** parameter.
 8. Enter your tenant ID in the ***Token*** parameter.
@@ -31,6 +31,4 @@ Follow these steps for a self-deployed configuration.
 
 ## Get the additional instance parameters
 
-To get the ***Subscription ID***, ***Workspace Name***, ***Workspace ID*** and ***Resource Group*** parameters, navigate in the Azure Portal to ***Azure Sentinel > YOUR-WORKSPACE > Settings*** and click on ***Workspace Settings*** tab.
-
-Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
+To get the ***Subscription ID***, ***Workspace Name***, ***Workspace ID*** and ***Resource Group*** parameters, navigate in the Azure Portal to ***Log Analytics workspaces > YOUR-WORKSPACE > Settings*** and click on ***Workspace Settings*** tab.
