@@ -14,24 +14,23 @@ def main():
     from google.cloud import storage
     storage_client = storage.Client()
 
-    bucket = storage_client.bucket('xsoar-ci-artifacts')
-
-    blob = bucket.blob('content-locks-xsiam/queue')
+    bucket = storage_client.bucket('marketplace-v2-dist-dev')
+    blob = bucket.blob('upload-flow/builds-xsiam/')
     blob.upload_from_string('')
-    logging.info('Created file queue')
+    logging.info('Created folder for xsiambuilds')
 
-    blob = bucket.blob('content-locks-xsiam/TestMachines')
-    blob.upload_from_string(STR)
-    logging.info('Created file TestMachines')
-
-    s = blob.download_as_string()
-    logging.info(f'{s=}')
-
-    blob = bucket.blob('content-locks-xsiam/test123')
+    blob = bucket.blob('upload-flow/builds-xsiam/xsoar-content-1/')
     blob.upload_from_string('')
-    logging.info('Created file test123')
-    blob.delete()
-    logging.info('Deleted file test123')
+    logging.info('Created folder xsoar-content-1')
+    #
+    # s = blob.download_as_string()
+    # logging.info(f'{s=}')
+    #
+    # blob = bucket.blob('content-locks-xsiam/test123')
+    # blob.upload_from_string('')
+    # logging.info('Created file test123')
+    # blob.delete()
+    # logging.info('Deleted file test123')
 
     # blob = bucket.blob('content-locks/test123')
     # blob.delete()
