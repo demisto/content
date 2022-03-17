@@ -393,7 +393,8 @@ def main():
     certificate_thumbprint: str = params.get('certificate_thumbprint', '')
     private_key: str = params.get('private_key', '')
     if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided')
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
     elif not enc_key and not (certificate_thumbprint and private_key):
         raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 

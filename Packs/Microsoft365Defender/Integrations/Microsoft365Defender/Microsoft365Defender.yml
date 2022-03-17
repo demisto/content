@@ -33,7 +33,7 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
-- additionalinfo: Used for certificate Authentication. As appears when registering the certificate to the App.
+- additionalinfo: Used for certificate Authentication. As appears in the "Certificates & secrets" page of the App.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
@@ -344,7 +344,7 @@ script:
     - contextPath: Microsoft365Defender.Hunt.results.
       description: The results of the query.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.27243
+  dockerimage: demisto/crypto:1.0.0.27590
   feed: false
   isfetch: true
   longRunning: false

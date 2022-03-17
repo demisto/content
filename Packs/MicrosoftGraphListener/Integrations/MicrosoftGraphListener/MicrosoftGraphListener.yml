@@ -13,9 +13,9 @@ configuration:
   type: 4
 - display: Key or Client Secret - see Detailed Instructions (?)
   name: enc_key
-  required: true
+  required: false
   type: 4
-- additionalinfo: Used for certificate Authentication. As appears when registering the certificate to the App.
+- additionalinfo: Used for certificate Authentication. As appears in the "Certificates & secrets" page of the App.
   display: Certificate Thumbprint (optional for self-deployed Azure app)
   name: certificate_thumbprint
   required: false
@@ -530,7 +530,7 @@ script:
     description: Tests connectivity of the email.
     execution: false
     name: msgraph-mail-test
-  dockerimage: demisto/crypto:1.0.0.27243
+  dockerimage: demisto/crypto:1.0.0.27590
   isfetch: true
   longRunning: false
   longRunningPort: false

@@ -57,7 +57,7 @@ Follow these steps for a self-deployed configuration:
     | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
     | Tenant ID (for Client Credentials mode) | Tenant ID | False |
     | Client Secret (for Client Credentials mode) | Encryption key given by the admin | False |
-    | Certificate Thumbprint | Used for certificate Authentication. As appears when registering the certificate to the App. | False |
+    | Certificate Thumbprint | Used for certificate Authentication. As appears in the "Certificates & secrets" page of the App. | False |
     | Private Key | Used for certificate Authentication. The private key of the registered Certificate. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |

@@ -184,7 +184,7 @@ class EWSClient:
         client_secret = kwargs.get('client_secret') or (kwargs.get('credentials') or {}).get('password')
 
         if not self_deployed and not client_secret:
-            raise DemistoException('Key must be provided')
+            raise DemistoException('Key / Application Secret must be provided.')
         elif not client_secret and not (certificate_thumbprint and private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
         elif not client_id:

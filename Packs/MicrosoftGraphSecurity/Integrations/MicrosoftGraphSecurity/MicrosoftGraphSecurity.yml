@@ -21,7 +21,7 @@ configuration:
   name: enc_key
   required: false
   type: 4
-- additionalinfo: Used for certificate Authentication. As appears when registering the certificate to the App.
+- additionalinfo: Used for certificate Authentication. As appears in the "Certificates & secrets" page of the App.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
@@ -351,7 +351,7 @@ script:
     - contextPath: MsGraph.User.Name
       description: User name
       type: string
-  dockerimage: demisto/crypto:1.0.0.27243
+  dockerimage: demisto/crypto:1.0.0.27590
   feed: false
   isfetch: true
   longRunning: false

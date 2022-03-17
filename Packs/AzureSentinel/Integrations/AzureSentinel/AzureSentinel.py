@@ -1359,7 +1359,9 @@ def main():
             resource_group_name=params.get('resourceGroupName', ''),
             workspace_name=params.get('workspaceName', ''),
             verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False)
+            proxy=params.get('proxy', False),
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key
         )
 
         commands = {

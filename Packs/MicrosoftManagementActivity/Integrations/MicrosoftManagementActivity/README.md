@@ -31,7 +31,7 @@ Moreover, enter your client secret as the “Key” parameter and your client ID
 | base_url | Base URL | False |
 | auth_id | ID \(received from the authorization step \- see Detailed Instructions \(?\) section\) | False |
 | enc_key | Key \(received from the authorization step \- see Detailed Instructions \(?\) section\) | False |
-| Certificate Thumbprint | Used for certificate Authentication. As appears when registering the certificate to the App. | Falser |
+| Certificate Thumbprint | Used for certificate Authentication. As appears in the "Certificates & secrets" page of the App. | Falser |
 | Private Key | Used for certificate Authentication. The private key of the registered Certificate. | False |
 | refresh_token | Token \(received from the authorization step \- see Detailed Instructions \(?\) section\) | False |
 | self_deployed | Use a self\-deployed Azure application | False |

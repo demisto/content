@@ -696,9 +696,11 @@ def main():
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
     if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided')
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
     elif not enc_key and not (certificate_thumbprint and private_key):
-        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be providedFor further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
     ok_codes = (200, 201, 202, 204)
 
     commands = {
@@ -726,7 +728,8 @@ def main():
         client = MsGraphClient(
             base_url=base_url, tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME,
             verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, server=server,
-            subscription_id=subscription_id)
+            subscription_id=subscription_id, certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key)
 
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
         return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)

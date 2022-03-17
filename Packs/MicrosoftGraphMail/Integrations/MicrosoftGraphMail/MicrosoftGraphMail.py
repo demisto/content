@@ -1612,7 +1612,8 @@ def main():
     private_key: str = params.get('private_key', '')
 
     if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided.')
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
     elif not enc_key and not (certificate_thumbprint and private_key):
         raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
     if not auth_and_token_url:
@@ -1628,7 +1629,7 @@ def main():
     timeout = arg_to_number(params.get('timeout', '10') or '10')
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
-                                          use_ssl, proxy, ok_codes, mailbox_to_fetch,folder_to_fetch,
+                                          use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
                                           first_fetch_interval, emails_fetch_limit, timeout, endpoint,
                                           certificate_thumbprint=certificate_thumbprint,
                                           private_key=private_key,

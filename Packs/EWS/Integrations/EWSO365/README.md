@@ -38,7 +38,7 @@ The EWS integration can be used for the following use cases.
     *   **ID / Application ID**: ID recieved from https://oproxy.demisto.ninja/ms-ews-o365 app registration, or a self deployed Application ID.
     *   **Token / Tenant ID**: Token recieved from https://oproxy.demisto.ninja/ms-ews-o365 app registration, or a self deployed Application Tenant ID.
     *   **Key / Application Secret**: Key recieved from https://oproxy.demisto.ninja/ms-ews-o365 app registration, or a self deployed Application Secret.
-    *   **Certificate Thumbprint**: Used for certificate Authentication. As appears when registering the certificate to the App.
+    *   **Certificate Thumbprint**: Used for certificate Authentication. As appears in the "Certificates & secrets" page of the App.
     *   **Private Key**: Used for certificate Authentication. The private key of the registered Certificate.
     *   **Email Address**: Mailbox to run commands on, and to fetch incidents from. This argument can take various user accounts in your organization. Usually is used as phishing mailbox.  
         Note: To use this functionality, your account must have impersonation rights or delegation for the account specified. For more information on impersonation rights see ‘Additional Information’ section below.

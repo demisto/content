@@ -1278,7 +1278,7 @@ def main() -> None:
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
         if not client_secret and not (certificate_thumbprint and private_key):
-            raise DemistoException('Client Secret or Certificate Thumbprint and Private Key must be provided.')
+            raise DemistoException('Client Secret or Certificate Thumbprint and Private Key must be provided. For further information see https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
 
         requests.packages.urllib3.disable_warnings()
         client: KeyVaultClient = KeyVaultClient(tenant_id=params.get('tenant_id', None),

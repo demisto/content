@@ -22,7 +22,7 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
-- additionalinfo: Used for certificate Authentication. As appears when registering the certificate to the App.
+- additionalinfo: Used for certificate Authentication. As appears in the "Certificates & secrets" page of the App.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false

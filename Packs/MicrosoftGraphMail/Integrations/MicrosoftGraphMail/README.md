@@ -30,7 +30,7 @@ The query parameter '$filter' is not supported when using the 'search' parameter
 | auth_id | The ID (received from the admin consent - see the Detailed Instructions (?) section). | True |
 | tenant_id | The token (received from the admin consent - see the Detailed Instructions (?) section). | True |
 | enc_key | The Key (received from the admin consent - see the Detailed Instructions (?) section). | False |
-| Certificate Thumbprint | Used for certificate Authentication. As appears when registering the certificate to the App. | False |
+| Certificate Thumbprint | Used for certificate Authentication. As appears in the "Certificates & secrets" page of the App. | False |
 | Private Key | Used for certificate Authentication. The private key of the registered Certificate. | False |
 | isFetch | The fetched incidents. | False |
 | mailbox_to_fetch | The email address from which to fetch incidents (e.g. "example<span\>>@demisto.com"). | False |
