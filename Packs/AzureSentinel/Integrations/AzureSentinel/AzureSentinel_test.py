@@ -13,7 +13,7 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents
+    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -1254,6 +1254,31 @@ class TestHappyPath:
         # validate
         assert next_run.get('last_fetch_ids') == expected_result.get('last_fetch_ids')
         assert next_run.get('last_incident_number') == expected_result.get('last_incident_number')
+
+    def test_last_run_in_fetch_incidents(self, mocker):
+        """
+        Given: - AzureSentinel client, last_fetched_ids array, last_run, first_fetch_time, and a minimum severity.
+
+        When:
+            - Calling the fetch_incidents command.
+
+        Then:
+            - Validate the call_args had the correct filter.
+        """
+        # prepare
+        client = mock_client()
+        last_run = {'last_fetch_time': '2022-03-16T13:01:08Z',
+                    'last_fetch_ids': []}
+        first_fetch_time = '3 days'
+        mocker.patch('AzureSentinel.process_incidents', return_value=({}, []))
+        mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENTS_OUTPUT)
+
+        # run
+        next_run, _ = fetch_incidents(client, last_run, first_fetch_time, 0)
+        call_args = client.http_request.call_args[1]
+
+        # validate
+        assert 'properties/createdTimeUtc ge' in call_args.get("params").get("$filter")
 
 
 class TestEdgeCases:
