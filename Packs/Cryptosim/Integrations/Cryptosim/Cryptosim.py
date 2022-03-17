@@ -197,7 +197,6 @@ def main() -> None:
     :rtype:
     """
     params = demisto.params()
-    params = demisto.params()
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
