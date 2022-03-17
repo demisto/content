@@ -12,7 +12,8 @@ configuration:
   name: auth_id
   required: true
   type: 4
-- display: Token (received from the admin consent - see Detailed Instructions (?) section)
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
   name: tenant_id
   required: true
   type: 4
@@ -43,7 +44,10 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The resource group of the virtual machines. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+      description: The resource group of the virtual machines. To see all the resource
+        groups associated with your subscription, run the `azure-list-resource-groups`
+        command. If none are present, navigate to the Azure Web Portal to create resource
+        groups.
       isArray: false
       name: resource_group
       required: true
@@ -76,13 +80,18 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Resource Group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+      description: Resource Group to which the virtual machine belongs. To see all
+        the resource groups associated with your subscription, run the `azure-list-resource-groups`
+        command. If none are present, navigate to the Azure Web Portal to create resource
+        groups.
       isArray: false
       name: resource_group
       required: true
       secret: false
     - default: false
-      description: Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+      description: Name of the virtual machine to power on. To see all virtual machines
+        and their associated names for a specific resource group, run the `azure-vm-list-instances`
+        command.
       isArray: false
       name: virtual_machine_name
       required: true
@@ -103,13 +112,18 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+      description: The resource group to which the virtual machine belongs. To see
+        all the resource groups associated with your subscription, run the `azure-list-resource-groups`
+        command. If none are present, navigate to the Azure Web Portal to create resource
+        groups.
       isArray: false
       name: resource_group
       required: true
       secret: false
     - default: false
-      description: The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+      description: The name of the virtual machine to power off. To see all virtual
+        machines with their associated names for a specific resource group, run the
+        `azure-vm-list-instances` command.
       isArray: false
       name: virtual_machine_name
       required: true
@@ -130,13 +144,18 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+      description: The resource group to which the virtual machine belongs. To see
+        all the resource groups associated with your subscription, run the `azure-list-resource-groups`
+        command. If none are present, navigate to the Azure Web Portal to create resource
+        groups.
       isArray: false
       name: resource_group
       required: true
       secret: false
     - default: false
-      description: The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+      description: The name of the virtual machine you want to view the details of.
+        To see all the virtual machines with their associated names for a specific
+        resource group, run the `azure-vm-list-instances` command.
       isArray: false
       name: virtual_machine_name
       required: true
@@ -170,9 +189,15 @@ script:
     - contextPath: Azure.Compute.ResourceGroup
       description: The resource group to which the virtual machine belongs.
       type: string
+    - contextPath: Azure.Compute.NetworkInterfaces
+      description: The list of network interfaces attached to this machine.
+      type: Unknown
   - arguments:
     - default: false
-      description: The resource group to which the new virtual machine will belong. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+      description: The resource group to which the new virtual machine will belong.
+        To see all the resource groups associated with your subscription, run the
+        `azure-list-resource-groups` command. If none are present, navigate to the
+        Azure Web Portal to create resource groups.
       isArray: false
       name: resource_group
       required: true
@@ -223,14 +248,22 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the Network Interface to link the virtual machine with. A Network Interface has to be created in the Azure Portal. Note that the virtual machine's location property must match that of the Network Interface you choose to link it to. To see a list of available Network Interfaces visit the Azure Web Portal, navigate to the search bar at the top of the page, type "network interfaces", and in the dynamic drop-down menu that appears, click the 'Network interfaces' option that appears under the 'Services' category. If none are present, you will need to create a new Network Interface which you can do by clicking the '+Add' button towards the top left of the page and following the instructions. For more information regarding Network Interfaces, see the Azure documentation at https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface.
+      description: The name of the Network Interface to link the virtual machine with.
+        Note that the virtual machine's location property must match that of the Network
+        Interface you choose to link it to. To see a list of available Network Interfaces
+        visit the Azure Web Portal, navigate to the search bar at the top of the page,
+        type "network interfaces", and in the dynamic drop-down menu that appears,
+        click the 'Network interfaces' option that appears under the 'Services' category.
+        If none are present, you will need to create a new Network Interface.
       isArray: false
       name: nic_name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The name of a VirtualMachineSize, which determines the size of the deployed virtual machine. For more information, see the Azure documentation at https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/listavailablesizes#virtualmachinesize.
+      description: The name of a VirtualMachineSize, which determines the size of
+        the deployed virtual machine. For more information, see the Azure documentation
+        at https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/listavailablesizes#virtualmachinesize.
       isArray: false
       name: vm_size
       predefined:
@@ -268,28 +301,46 @@ script:
       secret: false
     - default: false
       defaultValue: 2016-Datacenter
-      description: SKU of the OS image to be used. To see a list of available SKUs, visit your Azure Web Portal, click the symbol that looks similar to a '>' on the top bar of the page. This should open a cloud shell, make sure it is a bash shell. At the command prompt enter `az vm image list-skus` along with the appropriate arguments that it will prompt you with to display the list of VM image SKUs available in the Azure Marketplace.
+      description: SKU of the OS image to be used. To see a list of available SKUs,
+        visit your Azure Web Portal, click the symbol that looks similar to a '>'
+        on the top bar of the page. This should open a cloud shell, make sure it is
+        a bash shell. At the command prompt enter `az vm image list-skus` along with
+        the appropriate arguments that it will prompt you with to display the list
+        of VM image SKUs available in the Azure Marketplace.
       isArray: false
       name: sku
       required: false
       secret: false
     - default: false
       defaultValue: MicrosoftWindowsServer
-      description: Name of the publisher of the OS image. To see a list of available publishers, visit your Azure Web Portal, click the symbol that looks similar to a '>' on the top bar of the page which should open a cloud shell, make sure it is a bash shell. At the command prompt enter `az vm image list-publishers` along with the appropriate arguments that it will prompt you with to display the list of VM image publishers available in the Azure Marketplace.
+      description: Name of the publisher of the OS image. To see a list of available
+        publishers, visit your Azure Web Portal, click the symbol that looks similar
+        to a '>' on the top bar of the page which should open a cloud shell, make
+        sure it is a bash shell. At the command prompt enter `az vm image list-publishers`
+        along with the appropriate arguments that it will prompt you with to display
+        the list of VM image publishers available in the Azure Marketplace.
       isArray: false
       name: publisher
       required: false
       secret: false
     - default: false
       defaultValue: latest
-      description: Version of the image to use. The supported formats are Major.Minor.Build or 'latest'. Major, Minor, and Build are decimal numbers. Specify 'latest' to use the latest version of an image available at deploy time.
+      description: Version of the image to use. The supported formats are Major.Minor.Build
+        or 'latest'. Major, Minor, and Build are decimal numbers. Specify 'latest'
+        to use the latest version of an image available at deploy time.
       isArray: false
       name: version
       required: false
       secret: false
     - default: false
       defaultValue: WindowsServer
-      description: Specifies the offer of the platform image or marketplace image used to create the virtual machine. To see a list of available offers, visit your Azure Web Portal, click the symbol that looks similar to a '>' on the top bar of the page which should open a cloud shell, make sure it is a bash shell. At the command prompt enter `az vm image list-offers` along with the appropriate arguments that it will prompt you with to display the list of VM image offers available in the Azure Marketplace.
+      description: Specifies the offer of the platform image or marketplace image
+        used to create the virtual machine. To see a list of available offers, visit
+        your Azure Web Portal, click the symbol that looks similar to a '>' on the
+        top bar of the page which should open a cloud shell, make sure it is a bash
+        shell. At the command prompt enter `az vm image list-offers` along with the
+        appropriate arguments that it will prompt you with to display the list of
+        VM image offers available in the Azure Marketplace.
       isArray: false
       name: offer
       required: false
@@ -336,7 +387,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used.
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
       isArray: false
       name: subscription_id
       required: false
@@ -360,13 +412,18 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+      description: The resource group to which the virtual machine belongs. To see
+        all the resource groups associated with your subscription, run the `azure-list-resource-groups`
+        command. If none are present, navigate to the Azure Web Portal to create resource
+        groups.
       isArray: false
       name: resource_group
       required: true
       secret: false
     - default: false
-      description: The name of the virtual machine to delete. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+      description: The name of the virtual machine to delete. To see all the virtual
+        machines with their associated names for a specific resource group, run the
+        `azure-vm-list-instances` command.
       isArray: false
       name: virtual_machine_name
       required: false
@@ -389,14 +446,256 @@ script:
     - contextPath: Azure.Subscription.State
       description: The state of the subscription.
       type: String
+  - arguments:
+    - default: false
+      description: The resource group to which the network interface belongs. To see
+        all the resource groups associated with your subscription, run the `azure-list-resource-groups`
+        command. If none are present, navigate to the Azure Web Portal to create resource
+        groups.
+      isArray: false
+      name: resource_group
+      required: true
+      secret: false
+    - default: false
+      description: The name of the network interface you want to view the details
+        o
+      isArray: false
+      name: nic_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the properties of a given network interface.
+    execution: false
+    name: azure-vm-get-nic-details
+    outputs:
+    - contextPath: Azure.NetworkInterfaces.AttachedVirtualMachine
+      description: The attached virtual machine to this interface.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IsPrimaryInterface
+      description: True if this interface is a primary interface of the attached VM.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.NICType
+      description: The interface type.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.ConfigID
+      description: The interface ipconfig id.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.ConfigName
+      description: The interface ipconfig name.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PrivateIPAddress
+      description: The interface private ip addresse.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressID
+      description: The interface public ip address id.
+      type: Unknown
+    - contextPath: Azure.NetworkInterfaces.MACAddress
+      description: The interface mac address.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.Name
+      description: The interface name.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.ResourceGroup
+      description: The interface resource group.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.NetworkSecurityGroup.id
+      description: The interface network security group id.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.Location
+      description: The interface location.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.ID
+      description: The interface id.
+      type: String
+  - arguments:
+    - default: false
+      description: The resource group to which the ip address belongs. To see all
+        the resource groups associated with your subscription, run the `azure-list-resource-groups`
+        command. If none are present, navigate to the Azure Web Portal to create resource
+        groups.
+      isArray: false
+      name: resource_group
+      required: true
+      secret: false
+    - default: false
+      description: The ip address name.
+      isArray: false
+      name: address_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the properties of a given public ip address.
+    execution: false
+    name: azure-vm-get-public-ip-details
+    outputs:
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddress
+      description: The public ip address.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressFQDN
+      description: The address FQDN.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressAllocationMethod
+      description: The address allocation methond.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicConfigID
+      description: The address configuration id.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.ResourceGroup
+      description: The address resource group.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressDomainName
+      description: The address domain name.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressVersion
+      description: The address version.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.Location
+      description: The address location.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicConfigName
+      description: The address config name.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressID
+      description: The address id.
+      type: String
+  - arguments:
+    - default: false
+      description: The resource group to which the new network interface will belong.
+        To see all the resource groups associated with your subscription, run the
+        `azure-list-resource-groups` command. If none are present, navigate to the
+        Azure Web Portal to create resource groups.
+      isArray: false
+      name: resource_group
+      required: true
+      secret: false
+    - default: false
+      description: The network interface name.
+      isArray: false
+      name: nic_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The location in which to create the network interface.
+      isArray: false
+      name: nic_location
+      predefined:
+      - westus2
+      - westus
+      - westindia
+      - westeurope
+      - westcentralus
+      - uksouth
+      - ukwest
+      - southeastasia
+      - northcentralus
+      - northeurope
+      - southcentralus
+      - southindia
+      - francesouth
+      - francecentral
+      - japaneast
+      - japanwest
+      - koreacentral
+      - koreasouth
+      - brazilsouth
+      - canadacentral
+      - canadaeast
+      - centralindia
+      - eastus2
+      - eastasia
+      - westus
+      - centralus
+      - eastus
+      - australiacentral
+      - australiacentral2
+      - australiaeast
+      - australiasoutheast
+      required: true
+      secret: false
+    - default: false
+      description: The virtual network name of the inteface.
+      isArray: false
+      name: vnet_name
+      required: true
+      secret: false
+    - default: false
+      description: The subnet name of the inteface.
+      isArray: false
+      name: subnet_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Dynamic
+      description: The address assignment method, the default is Dynamic.
+      isArray: false
+      name: address_assignment_method
+      predefined:
+      - Static
+      - Dynamic
+      required: false
+      secret: false
+    - default: false
+      description: The private ip address of the interface incase you chose to use
+        the static assignment method.
+      isArray: false
+      name: private_ip_address
+      required: false
+      secret: false
+    - default: false
+      description: The ip address config name.
+      isArray: false
+      name: ip_config_name
+      required: true
+      secret: false
+    - default: false
+      description: The network security group of the interface.
+      isArray: false
+      name: network_security_group
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a virtual machine network interface. the specified OS image.
+    execution: false
+    name: azure-vm-create-nic
+    outputs:
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.ConfigID
+      description: The interface ipconfig id.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.ConfigName
+      description: The interface ipconfig name.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PrivateIPAddress
+      description: The interface private ip addresse.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressID
+      description: The interface public ip address id.
+      type: Unknown
+    - contextPath: Azure.NetworkInterfaces.Name
+      description: The interface name.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.ResourceGroup
+      description: The interface resource group.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.NetworkSecurityGroup.id
+      description: The interface network security group id.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.Location
+      description: The interface location.
+      type: String
+    - contextPath: Azure.NetworkInterfaces.ID
+      description: The interface id.
+      type: String
   dockerimage: demisto/crypto:1.0.0.27243
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - Azure Compute - Test
 fromversion: 5.0.0
