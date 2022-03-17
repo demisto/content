@@ -1303,6 +1303,24 @@ def test_debug_logger_replace_strs(mocker):
         assert s not in msg
 
 
+def test_add_sensitive_log_strs(mocker):
+    """
+    Given:
+       - Debug mode command
+    When
+       - Adding sensitive strings to the log
+    Then
+       - Ensure that both LOG and _requests_logger mask the sensitive str
+    """
+    sensitive_str = '%%This_is_API_key%%'
+    from CommonServerPython import add_sensitive_log_strs, LOG
+    mocker.patch('CommonServerPython._requests_logger', DebugLogger())
+    CommonServerPython._requests_logger.log_start_debug()
+    add_sensitive_log_strs(sensitive_str)
+    assert sensitive_str not in LOG(sensitive_str)
+    assert sensitive_str not in CommonServerPython._requests_logger.int_logger(sensitive_str)
+
+
 def test_build_curl_post_noproxy():
     """
     Given:
