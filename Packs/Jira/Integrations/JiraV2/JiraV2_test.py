@@ -1326,16 +1326,16 @@ def test_get_attachment_data_url_processing(mocker, requests_mock):
 
 
 attribute_mock_response_email_exists = [
-        {'self': 'https://test.atlassian.net',
-         'accountId': 'TEST-ID',
-         'accountType': 'atlassian',
-         'emailAddress': 'some_email@mail.com',
-         'avatarUrls': {},
-         'displayName': 'some user',
-         'active': True,
-         'timeZone': 'Asia',
-         'locale': 'en_US'
-         }]
+    {'self': 'https://test.atlassian.net',
+     'accountId': 'TEST-ID',
+     'accountType': 'atlassian',
+     'emailAddress': 'some_email@mail.com',
+     'avatarUrls': {},
+     'displayName': 'some user',
+     'active': True,
+     'timeZone': 'Asia',
+     'locale': 'en_US'
+     }]
 
 attribute_mock_response_no_email = [
     {'self': 'https://test.atlassian.net',
@@ -1371,6 +1371,7 @@ attribute_mock_response_no_email_multiple = [
      'locale': 'en_US'
      }
 ]
+
 
 @pytest.mark.parametrize('mock_response, expected_output', [(attribute_mock_response_email_exists, 'TEST-ID'),
                                                             (attribute_mock_response_no_email, 'TEST-ID'),

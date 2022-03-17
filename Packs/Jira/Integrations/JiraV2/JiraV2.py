@@ -331,7 +331,7 @@ def get_account_id_from_attribute(
         if not users:
             return f'No Account ID was found for attribute: {attribute}.'
         if len(users) == 1:
-            account_ids = {users[0].get('name')} if is_jirav2api=='true' else {users[0].get('accountId')}
+            account_ids = {users[0].get('name')} if is_jirav2api == 'true' else {users[0].get('accountId')}
         else:
             demisto.debug(f'Account IDs found:\n {account_ids}')
             return f'Multiple account IDs were found for attribute: {attribute}.\n' \
