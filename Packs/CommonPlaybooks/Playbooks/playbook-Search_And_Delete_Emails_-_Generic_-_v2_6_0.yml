@@ -1077,5 +1077,5 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromServerVersion: 6.0.0
-toServerVersion: 6.0.9
+fromversion: 6.0.0
+toversion: 6.0.9
