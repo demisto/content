@@ -2843,4 +2843,4 @@ inputs:
 outputs: []
 tests:
 - Phishing v2 - Test - Incident Starter
-fromversion: 6.1.0
+fromServerVersion: 6.1.0
