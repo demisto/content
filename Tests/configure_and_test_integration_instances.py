@@ -67,6 +67,8 @@ AVOID_DOCKER_IMAGE_VALIDATION = {
 ID_SET_PATH = './artifacts/id_set.json'
 XSOAR_BUILD_TYPE = "XSOAR"
 XSIAM_BUILD_TYPE = "XSIAM"
+MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
+MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
 
 
 class Running(IntEnum):
@@ -86,9 +88,10 @@ class Server:
 
 class XSIAMServer(Server):
 
-    def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id):
+    def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name):
         # TODO
         super().__init__()
+        self.name = name
         self.api_key = api_key
         self.server_numeric_version = server_numeric_version
         self.base_url = base_url
@@ -682,11 +685,13 @@ class XSIAMBuild(Build):
 
     def __init__(self, options):
         super().__init__(options)
+        self.xsiam_machine = options.xsiam_machine
         self.xsiam_servers = get_json_file(options.xsiam_servers_path)
         self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
             self.get_xsiam_configuration(options.xsiam_machine, self.xsiam_servers)
 
-        self.servers = [XSIAMServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id)]
+        self.servers = [XSIAMServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
+                                    self.xsiam_machine)]
 
     @staticmethod
     def get_xsiam_configuration(xsiam_machine, xsiam_servers):
@@ -717,9 +722,15 @@ class XSIAMBuild(Build):
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number):
         # Todo: "Need to copy from:
-        #  marketplace-ci-build/content/builds/xsiam-build-instances/$CI_BUILD_ID/marketplacev2/
-        #  to marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID/"
-        pass
+        #  gs://marketplace-ci-build/content/builds/xsiam-build-instances/$CI_BUILD_ID/marketplacev2
+        #  to gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID
+        logging.info('Copying build bucket to xsiam_instance_bucket.')
+        from_bucket = f'gs://{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/marketplacev2'
+        for server in servers:
+            to_bucket = f'gs://{MARKETPLACE_XSIAM_BUCKETS}/{server.name}'
+            cmd = f'gsutil -m cp -r "{from_bucket}" "{to_bucket}"'
+            subprocess.run(cmd.split())
+        logging.info('Finished copying successfully.')
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         # no need to run this cuncurrently since we have only one server
