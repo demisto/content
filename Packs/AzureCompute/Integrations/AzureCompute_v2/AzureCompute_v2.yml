@@ -687,7 +687,7 @@ script:
     - contextPath: Azure.NetworkInterfaces.ID
       description: The interface id.
       type: String
-  dockerimage: demisto/crypto:1.0.0.27243
+  dockerimage: demisto/crypto:1.0.0.27590
   feed: false
   isfetch: false
   longRunning: false
