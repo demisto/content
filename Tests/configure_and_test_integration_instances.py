@@ -648,8 +648,8 @@ class XSOARBuild(Build):
         for server in servers:
             server.add_server_configuration(config, 'failed to configure marketplace custom url ', True)
         logging.success('Updated marketplace url and restarted servers')
-        logging.info('sleeping for 60 seconds')
-        sleep(60)
+        logging.info('sleeping for 90 seconds')
+        sleep(90)
 
     @staticmethod
     def get_servers(ami_env):

@@ -327,6 +327,7 @@ create_gcp_folders:
     - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
     - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_MARKET_KEY" >> $BASH_ENV
     - source $BASH_ENV
+    - echo "Need to copy from: marketplace-ci-build/content/builds/xsiam-build-instances/$CI_BUILD_ID/marketplacev2/ to marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID/"
     - python3 ./Tests/gcp_update.py
     - exit $EXIT_CODE
 

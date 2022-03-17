@@ -15,13 +15,13 @@ def main():
     storage_client = storage.Client()
 
     bucket = storage_client.bucket('marketplace-v2-dist-dev')
-    blob = bucket.blob('upload-flow/builds-xsiam/')
-    blob.upload_from_string('')
-    logging.info('Created folder for xsiambuilds')
+    # blob = bucket.blob('upload-flow/builds-xsiam/')
+    # blob.upload_from_string('')
+    # logging.info('Created folder for xsiambuilds')
 
-    blob = bucket.blob('upload-flow/builds-xsiam/xsoar-content-1/')
+    blob = bucket.blob('upload-flow/builds-xsiam/qa2-test-9997333835008/')
     blob.upload_from_string('')
-    logging.info('Created folder xsoar-content-1')
+    logging.info('Created folder qa2-test-9997333835008')
     #
     # s = blob.download_as_string()
     # logging.info(f'{s=}')
