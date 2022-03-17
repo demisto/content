@@ -8,7 +8,7 @@ tags:
 - transformer
 - string
 - Utility
-comment: Extract a value from between two other values.
+comment: Extract a string from an existing string.
 enabled: true
 args:
 - name: value
