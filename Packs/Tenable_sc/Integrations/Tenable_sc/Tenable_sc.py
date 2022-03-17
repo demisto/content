@@ -979,7 +979,6 @@ def list_plugins(name, plugin_type, cve):
 
 
 def get_vulnearbilites(scan_results_id):
-    # query = create_query(scan_results_id, 'vulnipdetail')
     query = {
         'scanID': scan_results_id,
         'tool': 'vulndetails',
@@ -989,7 +988,6 @@ def get_vulnearbilites(scan_results_id):
     if not query or 'response' not in query:
         return 'Could not get vulnerabilites query'
 
-    # analysis = get_analysis(query['response']['id'], scan_results_id)
     analysis = get_analysis(query, scan_results_id)
 
     if not analysis or 'response' not in analysis:
@@ -1025,22 +1023,6 @@ def get_vulnearbilites(scan_results_id):
     mapped_vulns.sort(key=lambda r: sv_level[r['Severity']])
 
     return mapped_vulns
-
-
-def create_query(scan_id, tool, query_filters=None):
-    path = 'query'
-
-    body = {
-        'name': 'scan ' + scan_id + ' query',
-        'type': 'vuln',
-        'tool': tool,
-        'scanID': scan_id
-    }
-
-    if query_filters:
-        body['filters'] = query_filters
-
-    return send_request(path, method='post', body=body)
 
 
 def get_analysis(query, scan_results_id):
