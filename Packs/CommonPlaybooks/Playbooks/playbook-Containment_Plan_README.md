@@ -1,4 +1,4 @@
-This playbook handles all the incident containment actions available with Cortex XSIAM, including the following tasks:
+This playbook handles all the alert containment actions available with Cortex XSIAM, including the following tasks:
 * Isolate endpoint
 * Disable account
 * Quarantine file
