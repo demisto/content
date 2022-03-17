@@ -82,7 +82,7 @@ class Client(BaseClient):
         self.ms_client = MicrosoftClient(self_deployed=self.self_deployed,
                                          tenant_id=self.tenant_id,
                                          auth_id=self.auth_and_token_url,
-                                         enc_key=self.enc_key,
+                                         enc_key=self.enc_key if isinstance(self.enc_key, str) else '',
                                          app_name=APP_NAME,
                                          base_url=base_url,
                                          grant_type=AUTHORIZATION_CODE,

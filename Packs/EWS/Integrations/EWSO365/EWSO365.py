@@ -197,7 +197,7 @@ class EWSClient:
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id,
             auth_id=client_id,
-            enc_key=client_secret,
+            enc_key=client_secret if isinstance(client_secret, str) else '',
             app_name=APP_NAME,
             base_url=self.ews_server,
             verify=not insecure,

@@ -145,7 +145,7 @@ def main() -> None:  # pragma: no cover
         client = MsGraphClient(
             app_id=params.get('app_id'),
             scope=scope,
-            app_secret=app_secret,
+            app_secret=app_secret if isinstance(app_secret, str) else '',
             tenant_id=params.get('tenant_id'),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),

@@ -54,7 +54,7 @@ GRAPH_BASE_ENDPOINTS = {
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
                  auth_id: str = '',
-                 enc_key: str = '',
+                 enc_key: Optional[str] = '',
                  token_retrieval_url: str = '{endpoint}/{tenant_id}/oauth2/v2.0/token',
                  app_name: str = '',
                  refresh_token: str = '',
