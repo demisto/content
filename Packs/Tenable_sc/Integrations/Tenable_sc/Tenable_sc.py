@@ -979,12 +979,18 @@ def list_plugins(name, plugin_type, cve):
 
 
 def get_vulnearbilites(scan_results_id):
-    query = create_query(scan_results_id, 'vulnipdetail')
+    # query = create_query(scan_results_id, 'vulnipdetail')
+    query = {
+        'scanID': scan_results_id,
+        'tool': 'vulndetails',
+        'type': 'vuln',
+    }
 
     if not query or 'response' not in query:
         return 'Could not get vulnerabilites query'
 
-    analysis = get_analysis(query['response']['id'], scan_results_id)
+    # analysis = get_analysis(query['response']['id'], scan_results_id)
+    analysis = get_analysis(query, scan_results_id)
 
     if not analysis or 'response' not in analysis:
         return 'Could not get vulnerabilites analysis'
