@@ -5283,7 +5283,7 @@ script:
     execution: true
     name: microsoft-atp-live-response-cancel-action
     outputs: []
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: demisto/crypto:1.0.0.27590
   feed: false
   isfetch: true
   longRunning: false
