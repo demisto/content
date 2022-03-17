@@ -716,7 +716,9 @@ class XSIAMBuild(Build):
 
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number):
-        # Todo: check how to do it in xsiam
+        # Todo: "Need to copy from:
+        #  marketplace-ci-build/content/builds/xsiam-build-instances/$CI_BUILD_ID/marketplacev2/
+        #  to marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID/"
         pass
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
