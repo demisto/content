@@ -35,7 +35,7 @@ class Client(BaseClient):
         }
 
         return self._http_request("POST", url_suffix="correlationalertswithlogs",
-                                    data=json.dumps(parameters))
+                                  data=json.dumps(parameters))
 
     def correlations(self):
         return self._http_request("GET", data={}, url_suffix="correlations")
@@ -101,13 +101,12 @@ def fetch_incidents(client: Client):
 
     max_results = arg_to_number(arg=demisto.params().get('max_fetch'), arg_name='max_fetch', required=False)
 
-
     first_fetch_time = arg_to_datetime(demisto.params().get('first_fetch')).isoformat()
 
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('last_fetch', first_fetch_time)
 
-    incidentsList=[]
+    incidentsList = []
     alert_response = client.correlation_alerts(end_time=last_fetch)
     incident_data = alert_response['Data']
 
@@ -117,10 +116,10 @@ def fetch_incidents(client: Client):
             break
 
         incident_name = inc['CorrelationAlert']['NAME']
-        time_stamp = inc['CorrelationAlert']['CREATEDATE']+"Z"
+        time_stamp = inc['CorrelationAlert']['CREATEDATE'] + "Z"
 
         severity_level = int(inc['CorrelationAlert']['RISK'])
-        if severity_level >=0 and severity_level <= 5:
+        if severity_level >= 0 and severity_level <= 5:
             severity = 1
         elif severity_level > 5 and severity_level <= 7:
             severity = 2
@@ -145,18 +144,20 @@ def fetch_incidents(client: Client):
         }
 
         incidentsList.append(incident)
-        
+
         created_incident = datetime.strptime(time_stamp, DATE_FORMAT)
-        last_fetch = datetime.strptime(last_fetch,DATE_FORMAT)
+        last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
         if created_incident > last_fetch:
             last_fetch = created_incident
-
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': last_fetch}
     return next_run, incidentsList
 
+
 ''' HELPERS '''
+
+
 def get_client(params):
     authorization = params.get('credentials').get(
         'identifier') + ":" + params.get('credentials').get('password')
@@ -172,7 +173,7 @@ def get_client(params):
     # get the service API url
     base_url = urljoin(params.get('url'), '/api/service/')
     proxy = params.get('proxy', False)
-    
+
     client = Client(
         base_url=base_url,
         verify=False,
@@ -180,7 +181,9 @@ def get_client(params):
         proxy=proxy)
     return client
 
+
 ''' MAIN FUNCTION '''
+
 
 def main() -> None:
     """main function, parses params and runs command functions

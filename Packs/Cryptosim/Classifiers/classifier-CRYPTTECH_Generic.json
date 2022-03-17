@@ -1,158 +1,138 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "Crypttech Generic Mapper is mapper that convert CRYPTOSIM's keys to XSOAR's incident columns.",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "3567f136-eaf2-4ad1-872a-f53672c3a9eb",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 4,
-	"mapping": {
-		"Cryptosim CorrelationAlert": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Alert ID": {
-					"simple": "ID"
-				},
-				"App message": {
-					"simple": "MESSAGE"
-				},
-				"Category ID": {
-					"simple": "catid"
-				},
-				"Correlation ID": {
-					"simple": "CORRELATIONID"
-				},
-				"Destination IP": {
-					"simple": "DST_IP"
-				},
-				"Destination Port": {
-					"simple": "DST_PORT"
-				},
-				"Device Name": {
-					"simple": "dvcname"
-				},
-				"Event Start Date": {
-					"simple": "EVENTSTARTDATE"
-				},
-				"File Name": {
-					"simple": "fname"
-				},
-				"Log Date": {
-					"simple": "date1"
-				},
-				"Log Type": {
-					"simple": "type"
-				},
-				"Plugin ID": {
-					"simple": "plgid"
-				},
-				"Protocol": {
-					"simple": "proto"
-				},
-				"Rule Name": {
-					"simple": "NAME"
-				},
-				"Source IP": {
-					"simple": "SRC_IP"
-				},
-				"Source Port": {
-					"simple": "SRC_PORT"
-				},
-				"Source Status": {
-					"simple": "substatus"
-				},
-				"Source Username": {
-					"simple": "suser"
-				},
-				"Sub Category": {
-					"simple": "cat"
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Alert ID": {
-					"simple": "ID"
-				},
-				"App message": {
-					"simple": "MESSAGE"
-				},
-				"Category ID": {
-					"simple": "catid"
-				},
-				"Correlation ID": {
-					"simple": "CORRELATIONID"
-				},
-				"Destination IP": {
-					"simple": "DST_IP"
-				},
-				"Destination Port": {
-					"simple": "DST_PORT"
-				},
-				"Device Name": {
-					"simple": "dvcname"
-				},
-				"Event Start Date": {
-					"simple": "EVENTSTARTDATE"
-				},
-				"File Name": {
-					"simple": "fname"
-				},
-				"Log Date": {
-					"simple": "date1"
-				},
-				"Log Type": {
-					"simple": "type"
-				},
-				"Plugin ID": {
-					"simple": "plgid"
-				},
-				"Protocol": {
-					"simple": "proto"
-				},
-				"Rule Name": {
-					"simple": "NAME"
-				},
-				"Source IP": {
-					"simple": "SRC_IP"
-				},
-				"Source Port": {
-					"simple": "SRC_PORT"
-				},
-				"Source Status": {
-					"simple": "substatus"
-				},
-				"Source Username": {
-					"simple": "suser"
-				},
-				"Sub Category": {
-					"simple": "cat"
-				},
-				"details": {
-					"simple": "MESSAGE"
-				}
-			}
-		}
-	},
-	"name": "CRYPTTECH Generic",
-	"nameRaw": "CRYPTTECH Generic",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "Crypttech Generic Mapper is mapper that convert CRYPTOSIM's keys to XSOAR's incident columns.",
+    "feed": false,
+    "id": "CRYPTTECH Generic",
+    "mapping": {
+        "Cryptosim CorrelationAlert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "ID"
+                },
+                "App message": {
+                    "simple": "MESSAGE"
+                },
+                "Category ID": {
+                    "simple": "catid"
+                },
+                "Correlation ID": {
+                    "simple": "CORRELATIONID"
+                },
+                "Destination IP": {
+                    "simple": "DST_IP"
+                },
+                "Destination Port": {
+                    "simple": "DST_PORT"
+                },
+                "Device Name": {
+                    "simple": "dvcname"
+                },
+                "Event Start Date": {
+                    "simple": "EVENTSTARTDATE"
+                },
+                "File Name": {
+                    "simple": "fname"
+                },
+                "Log Date": {
+                    "simple": "date1"
+                },
+                "Log Type": {
+                    "simple": "type"
+                },
+                "Plugin ID": {
+                    "simple": "plgid"
+                },
+                "Protocol": {
+                    "simple": "proto"
+                },
+                "Rule Name": {
+                    "simple": "NAME"
+                },
+                "Source IP": {
+                    "simple": "SRC_IP"
+                },
+                "Source Port": {
+                    "simple": "SRC_PORT"
+                },
+                "Source Status": {
+                    "simple": "substatus"
+                },
+                "Source Username": {
+                    "simple": "suser"
+                },
+                "Sub Category": {
+                    "simple": "cat"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "ID"
+                },
+                "App message": {
+                    "simple": "MESSAGE"
+                },
+                "Category ID": {
+                    "simple": "catid"
+                },
+                "Correlation ID": {
+                    "simple": "CORRELATIONID"
+                },
+                "Destination IP": {
+                    "simple": "DST_IP"
+                },
+                "Destination Port": {
+                    "simple": "DST_PORT"
+                },
+                "Device Name": {
+                    "simple": "dvcname"
+                },
+                "Event Start Date": {
+                    "simple": "EVENTSTARTDATE"
+                },
+                "File Name": {
+                    "simple": "fname"
+                },
+                "Log Date": {
+                    "simple": "date1"
+                },
+                "Log Type": {
+                    "simple": "type"
+                },
+                "Plugin ID": {
+                    "simple": "plgid"
+                },
+                "Protocol": {
+                    "simple": "proto"
+                },
+                "Rule Name": {
+                    "simple": "NAME"
+                },
+                "Source IP": {
+                    "simple": "SRC_IP"
+                },
+                "Source Port": {
+                    "simple": "SRC_PORT"
+                },
+                "Source Status": {
+                    "simple": "substatus"
+                },
+                "Source Username": {
+                    "simple": "suser"
+                },
+                "Sub Category": {
+                    "simple": "cat"
+                },
+                "details": {
+                    "simple": "MESSAGE"
+                }
+            }
+        }
+    },
+    "name": "CRYPTTECH Generic",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
