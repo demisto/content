@@ -6,6 +6,7 @@ name: Handle False Positive Alerts
 ]
 description: |
   This playbook handles false positive alerts.
+  The playbook will create an alert exclusion, exception or add a file to allowlist based on the alert fields and playbook inputs.
 starttaskid: "0"
 tasks:
   "0":

@@ -4,7 +4,8 @@ name: Enrichment for Verdict
 "marketplaces": [
     "marketplacev2"
 ]
-description: This playbook performs enrichment on different IOC types, and returns the information needed to establish the alert's verdict.
+description: This playbook checks the closing reason of previous alerts and performs enrichment on different IOC types.
+  Then it returns the information needed to establish the alert's verdict.
 starttaskid: "0"
 tasks:
   "0":
