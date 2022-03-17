@@ -25,6 +25,7 @@ HEADERS_BY_NAME = {
     'compliance': ['type', 'id', 'description']
 }
 MAX_API_LIMIT = 50
+TEST = "JUST A TEST"
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
