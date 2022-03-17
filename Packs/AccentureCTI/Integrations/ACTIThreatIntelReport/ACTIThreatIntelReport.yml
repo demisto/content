@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ACTI Threat Intelligence Report Nirmal
+  id: ACTI Threat Intelligence Report
   version: -1
 configuration:
 - display: URL
@@ -39,8 +39,8 @@ configuration:
   required: false
   type: 8
 description: ACTI Threat Intelligence Report fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
-display: ACTI Threat Intelligence Report Nirmal
-name: ACTI Threat Intelligence Report Nirmal
+display: ACTI Threat Intelligence Report
+name: ACTI Threat Intelligence Report
 script:
   commands:
   - name: acti-getThreatIntelReport
