@@ -1,0 +1,29 @@
+{
+    "id": "Cryptosim Correlation Alerts Type",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Cryptosim Correlation Alerts Type",
+    "prevName": "Cryptosim Correlation Alerts Type",
+    "color": "#3d8b10",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Cryptosim Correlation Alerts",
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.0.0"
+}
