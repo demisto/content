@@ -189,14 +189,14 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     assert incidents == [
         {
             'name': 'Varonis alert 4FDB86C2-D78F-47EC-A1B1-74C4268A8A60',
-            'occurred': '2022-02-12T13:59:00.000Z',
+            'occurred': '2022-02-12T13:59:00Z',
             'rawJSON': json.dumps(expected_outputs['Alert'][0]),
             'type': 'Varonis DSP Incident',
             'severity': 3,
         },
         {
             'name': 'Varonis alert D99AEA15-7F17-46FC-A249-942B974377D6',
-            'occurred': '2022-02-12T13:59:00.000Z',
+            'occurred': '2022-02-12T13:59:00Z',
             'rawJSON': json.dumps(expected_outputs['Alert'][1]),
             'type': 'Varonis DSP Incident',
             'severity': 3,

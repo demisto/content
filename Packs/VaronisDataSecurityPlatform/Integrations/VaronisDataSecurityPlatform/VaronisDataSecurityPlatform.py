@@ -838,10 +838,10 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
 
         for alert in alerts:
             guid = alert['ID']
-            timestamp = date_to_timestamp(alert['Time'])
+            alert_time = alert['Time']
             incident = {
                 'name': f'Varonis alert {guid}',
-                'occurred': timestamp_to_datestring(timestamp),
+                'occurred': f'{alert_time}Z',
                 'rawJSON': json.dumps(alert),
                 'type': 'Varonis DSP Incident',
                 'severity': convert_to_demisto_severity(alert['Severity']),
