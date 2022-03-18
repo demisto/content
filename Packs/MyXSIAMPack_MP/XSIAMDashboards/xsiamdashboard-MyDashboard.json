@@ -1,9 +1,8 @@
 {
   "dashboards_data": [
     {
-      "name": "Dashboard For Export",
+      "name": "New Import test ",
       "description": null,
-      "created_by": "vfintushal@paloaltonetworks.com",
       "status": "ENABLED",
       "sharing": "PUBLIC",
       "layout": [
@@ -23,13 +22,11 @@
                 "viewOptions": {
                   "type": "table",
                   "commands": [
-
                   ]
                 },
                 "gridRawStorageInfo": {
                   "sort": null,
                   "coldefs": {
-
                   },
                   "rowHeight": "{\"rowHeight\":40,\"gridRowsHeight\":\"medium-row\"}",
                   "columnWidth": null
@@ -49,13 +46,12 @@
                 "viewOptions": {
                   "type": "table",
                   "commands": [
-
                   ]
                 }
               }
             },
             {
-              "key": "xql_1618303947369",
+              "key": "xql_1618303947361",
               "data": {
                 "type": "Custom XQL",
                 "width": 33.3333333333,
@@ -115,13 +111,13 @@
         }
       ],
       "default_dashboard_id": 1,
-      "global_id": "ce27311ce69c41b0b4a84c7888b34851"
+      "global_id": "ce27311ce69c41b1b4a84c7888b34852"
     }
   ],
   "widgets_data": [
     {
-      "key": "xql_1618303947369",
-      "title": "CUS XQL 222",
+      "widget_key": "xql_1618303947361",
+      "title": "New XQL test",
       "creation_time": 1618303947369,
       "description": "",
       "data": {
@@ -150,11 +146,12 @@
           "xdr_data"
         ],
         "query_uses_library": false
-      }
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
     },
     {
-      "key": "xql_1624365753840",
-      "title": "Who cares",
+      "widget_key": "xql_1624365753840",
+      "title": "Who cares number 2",
       "creation_time": 1624365753840,
       "description": null,
       "data": {
@@ -183,10 +180,11 @@
           "xqlrdpwithunusualprocesstest_json"
         ],
         "query_uses_library": false
-      }
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
     },
     {
-      "key": "xql_1625391762082",
+      "widget_key": "xql_1625391762082",
       "title": "Ole Bole",
       "creation_time": 1625391762082,
       "description": null,
@@ -216,10 +214,11 @@
           "xqlrdpwithunusualprocesstest_json"
         ],
         "query_uses_library": false
-      }
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
     },
     {
-      "key": "xql_1646052781404",
+      "widget_key": "xql_1646052781404",
       "title": "Some fake",
       "creation_time": 1646052781404,
       "description": null,
@@ -241,7 +240,8 @@
           "endpoints"
         ],
         "query_uses_library": false
-      }
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
     }
   ]
 }
