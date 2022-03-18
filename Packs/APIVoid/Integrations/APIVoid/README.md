@@ -1,5 +1,5 @@
 APIVoid wraps up a number of services such as ipvoid & urlvoid
-This integration was integrated and tested with version 1 of APIVoid
+This integration was integrated and tested with version 01 of APIVoid
 
 ## Configure APIVoid on Cortex XSOAR
 
