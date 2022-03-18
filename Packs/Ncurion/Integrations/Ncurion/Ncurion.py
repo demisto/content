@@ -105,31 +105,30 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int])-> Tu
     log_list = loglist(base_url, access_token, refresh_token, headers1)
     log_server_id = [e["id"] for e in log_list if e["is_connected"] == True]
     last_fetch = last_run.get('last_fetch', None)
-
+    if last_fetch = None:
+        params1 = {"start": f"None", "end": f"{now_time}", "size": max_fetch}
+    else:
+        params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
+        
     if len(log_server_id) == 0:
         return_output('ok')
     else:
-            max_fetch = demisto.params().get('max_fetch')
-            #incidents: List[Dict[str, Any]] = []
-            incidents = []
-            now_time = datetime.datetime.utcnow()
-            params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
-            verify_certificate = not demisto.params().get('insecure', False)
-
-            for i in log_server_id:
-
-                base_url_log = base_url + f'/logapi/api/v1/logserver/search/alert/search/{i}'
-
-                response_log = requests.request("GET", base_url_log, headers=headers1, params=params1, verify=verify_certificate)
-                data = response_log.json()
-                for hit in data:
-                    incident = {
-                        'name': hit['alert']['category'] + hit['alert']['signature'],
-                        'occured': hit['@timestamp'],
-                        'rawJSON': json.dumps(hit)
-                    }
-                    incidents.append(incident)
-
+        max_fetch = demisto.params().get('max_fetch')
+        #incidents: List[Dict[str, Any]] = []
+        incidents = []
+        now_time = datetime.datetime.utcnow()
+        verify_certificate = not demisto.params().get('insecure', False)
+        for i in log_server_id:
+            base_url_log = base_url + f'/logapi/api/v1/logserver/search/alert/search/{i}'
+            response_log = requests.request("GET", base_url_log, headers=headers1, params=params1, verify=verify_certificate)
+            data = response_log.json()
+            for hit in data:
+                incident = {
+                    'name': hit['alert']['category'] + hit['alert']['signature'],
+                    'occured': hit['@timestamp'],
+                    'rawJSON': json.dumps(hit)
+                }
+                incidents.append(incident)
     next_run = {'last_fetch': f'{now_time}'}
 
     logout = json.dumps({
