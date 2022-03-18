@@ -6,7 +6,6 @@ Note that adding code to CommonServerUserPython can override functions in Common
 # If you change this section, make sure you update the line offset magic number
 from __future__ import print_function
 
-import ast
 import base64
 import gc
 import json
@@ -9037,9 +9036,7 @@ def get_pack_version(pack_name=''):
     The version can be retrieved either by a pack name, script name or integration name.
     To get the version of any pack just send the pack name as mentioned in the pack metadata file as a func argument.
 
-    To get the version of a script/integration just call the function without pack_name.
-    The version of the pack that the script/integration is part of will be returned.
-
+    To get the version of a pack in which a script/integration is part of, just call the function without pack_name.
 
     Args:
         pack_name (str): the pack name as mentioned in the pack metadata file to query its version.
@@ -9047,17 +9044,22 @@ def get_pack_version(pack_name=''):
 
     Returns:
         str: the requested pack version, empty string in-case not found.
-
     """
-
     def _get_packs_by_query(_body_request):
         packs_body_response = demisto.internalHttpRequest(
-            'POST', '/contentpacks/marketplace/search', json.dumps(body_request)
+            'POST', uri='/contentpacks/marketplace/search', body=json.dumps(body_request)
         )
-        packs_body_response = json.loads(ast.literal_eval(json.dumps(packs_body_response.get('body'))))
-        return packs_body_response.get('packs') or []
+        return _load_response(_response=packs_body_response.get('body')).get('packs') or []
+
+    def _load_response(_response):
+        try:
+            return json.loads(_response)
+        except json.JSONDecodeError:
+            demisto.debug('Unable to load response {response}'.format(response=_response))
+            return {}
 
     def _extract_current_pack_version(_packs, _query_type, _entity_name):
+        # in case we have more than 1 pack returned from the search, need to make sure to retrieve the correct pack
         if query_type == 'automation' or query_type == 'integration':
             for pack in _packs:
                 for content_entity in (pack.get('contentItems') or {}).get(_query_type) or []:
@@ -9070,14 +9072,16 @@ def get_pack_version(pack_name=''):
         return ''
 
     def _extract_integration_display_name(_integration_brand):
-        integrations = demisto.internalHttpRequest(
-            'POST', '/settings/integration/search', json.dumps({})
-        ).get('configurations') or []
+        integrations_body_response = demisto.internalHttpRequest(
+            'POST', uri='/settings/integration/search', body=json.dumps({})
+        )
+        integrations_body_response = _load_response(_response=integrations_body_response.get('body'))
+        integrations = integrations_body_response.get('configurations') or []
 
         for integration in integrations:
-            integration_display = integration.get('display')
-            if integration.get('id') == _integration_brand and integration_display:
-                return integration_display
+            integration_display_name = integration.get('display')
+            if integration.get('id') == _integration_brand and integration_display_name:
+                return integration_display_name
         return ''
     # query by pack name
     if pack_name:
@@ -9086,7 +9090,7 @@ def get_pack_version(pack_name=''):
         query_type = 'pack'
     # query by integration name
     elif demisto.callingContext.get('integration'):  # True means its integration, False means its script/automation.
-        entity_name = demisto.callingContext.get('IntegrationBrand') or ''
+        entity_name = (demisto.callingContext.get('context') or {}).get('IntegrationBrand') or ''
         body_request = {'integrationsQuery': entity_name}
         query_type = 'integration'
     # query by script/automation name
@@ -9095,17 +9099,23 @@ def get_pack_version(pack_name=''):
         body_request = {'automationQuery': entity_name}
         query_type = 'automation'
 
-    packs = _get_packs_by_query(_body_request=body_request)
-    pack_version = _extract_current_pack_version(_packs=packs, _query_type=query_type, _entity_name=entity_name)
+    pack_version = _extract_current_pack_version(
+        _packs=_get_packs_by_query(_body_request=body_request),
+        _query_type=query_type,
+        _entity_name=entity_name
+    )
     if not pack_version and query_type == 'integration':
-        body_request['integrationsQuery'] = _extract_integration_display_name(_integration_brand=entity_name)
+        # handle the case where the display name of the integration is not the same as the integration brand
+        integration_display = _extract_integration_display_name(_integration_brand=entity_name)
+        if integration_display:
+            body_request['integrationsQuery'] = integration_display
 
-        return _extract_current_pack_version(
-            _packs=_get_packs_by_query(_body_request=body_request),
-            _query_type=query_type,
-            _entity_name=entity_name
-        )
-
+            return _extract_current_pack_version(
+                _packs=_get_packs_by_query(_body_request=body_request),
+                _query_type=query_type,
+                _entity_name=integration_display
+            )
+        return ''
     return pack_version
 
 
