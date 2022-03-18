@@ -821,7 +821,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
 
         alert_guids: List[str] = alert_ids['AlertGuids']
         last_fetched_id = alert_ids['LatestAlertId']
-        next_run['last_fetched_id'] = last_fetched_id
+        if last_fetched_id != 0:
+            next_run['last_fetched_id'] = last_fetched_id
 
         if len(alert_guids) == 0:
             demisto.debug('API returned no alerts')
