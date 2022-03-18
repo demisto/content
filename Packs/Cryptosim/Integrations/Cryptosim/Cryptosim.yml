@@ -1,7 +1,7 @@
 category: Analytics & SIEM
 commonfields:
   id: Cryptosim
-  version: -1
+  version: 6.0.0
 configuration:
 - display: Your server URL
   name: url
@@ -144,3 +144,4 @@ script:
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+
