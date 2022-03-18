@@ -9340,7 +9340,7 @@ def dataclasses_to_command_results(result: Any, empty_result_message: str = "No 
     if hasattr(result, "_outputs_key_field"):
         extra_args["outputs_key_field"] = getattr(result, "_outputs_key_field")
 
-    readable_output = tableToMarkdown(title, summary_list)
+    readable_output = tableToMarkdown(title, summary_list, removeNull=True)
     command_result = CommandResults(
         outputs_prefix=output_prefix,
         outputs=outputs,
