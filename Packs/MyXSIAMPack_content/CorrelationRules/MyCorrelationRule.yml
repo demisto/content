@@ -1,3 +1,4 @@
+global_rule_id: some-guid
 alert_category: PERSISTENCE
 alert_description: host $agent_id reached $dest_count destinations
 alert_fields:

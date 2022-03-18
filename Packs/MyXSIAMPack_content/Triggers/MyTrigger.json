@@ -1,15 +1,15 @@
 {
-  "RULE_ID": "uuid-32-here-1",
-  "PLAYBOOK_ID": "<ID_OF_PLAYBOOK-ALPHNUMERIC-STRING-1>",
-  "SUGGESTION_REASON": "it is a good playbook for these alerts",
-  "DESCRIPTION": "trigger description",
-  "ALERTS_FILTER": {
+  "trigger_id": "uuid-32-here-1",
+  "playbook_id": "<ID_OF_PLAYBOOK-ALPHNUMERIC-STRING-1>",
+  "suggestion_reason": "it is a good playbook for these alerts",
+  "description": "trigger description",
+  "alerts_filter": {
     "filter": {
-      "AND": [
+      "and": [
         {
-          "SEARCH_FIELD": "alert_source",
-          "SEARCH_TYPE": "EQ",
-          "SEARCH_VALUE": "FW"
+          "search_field": "alert_source",
+          "search_type": "EQ",
+          "search_value": "FW"
         }
       ]
     }
