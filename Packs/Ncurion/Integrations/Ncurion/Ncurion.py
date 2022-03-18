@@ -105,7 +105,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int])-> Tu
     log_list = loglist(base_url, access_token, refresh_token, headers1)
     log_server_id = [e["id"] for e in log_list if e["is_connected"] == True]
     last_fetch = last_run.get('last_fetch', None)
-    if last_fetch = None:
+    if (last_fetch is None):
         params1 = {"start": f"None", "end": f"{now_time}", "size": max_fetch}
     else:
         params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
