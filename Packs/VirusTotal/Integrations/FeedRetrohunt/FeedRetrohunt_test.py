@@ -1,4 +1,7 @@
-from FeedRetrohunt import Client, fetch_indicators_command
+from FeedRetrohunt import Client, fetch_indicators_command, main
+import demistomock as demisto
+from unittest.mock import call
+
 
 MOCK_VT_JOBS = {
     "data": [
@@ -108,3 +111,51 @@ def test_fetch_indicators_command(mocker):
 
     assert fields['sha256'] == 'bd59949c6cbe8bd00ad114e2c1c8f4e2e79f90a818d4eddfbd76194e111c9ebb'
     assert fields['ssdeep'] == '49152:QnaMSPbcBVQej/1INRx+TSqTdX1HkQWRdhn:QaPoBhz1aRxcSUDkLdh'
+
+
+def test_main_manual_command(mocker):
+    params = {
+        'tlp_color': None,
+        'feedTags': [],
+        'credentials': {'password': 'xxx'},
+    }
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='vt-retrohunt-get-indicators')
+    list_jobs_mock = mocker.patch.object(Client, 'list_job_matches')
+
+    main()
+
+    assert list_jobs_mock.call_args == call(40, '')
+
+
+def test_main_default_command(mocker):
+    params = {
+        'tlp_color': None,
+        'feedTags': [],
+        'credentials': {'password': 'xxx'},
+        'limit': 7,
+        'filter': 'Wannacry',
+    }
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+    list_jobs_mock = mocker.patch.object(Client, 'list_job_matches')
+
+    main()
+
+    assert list_jobs_mock.call_args == call(40, '')
+
+
+def test_main_test_command(mocker):
+    params = {
+        'credentials': {'password': 'xxx'}
+    }
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    list_jobs_mock = mocker.patch.object(Client, 'list_job_matches')
+
+    main()
+
+    assert list_jobs_mock.call_count == 1
