@@ -1,0 +1,17 @@
+{
+    "name": "Anomali ThreatStream v4",
+    "description": "Extension of Anomali Threatstream v3 with a plethora of additional commands",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Chris Collins",
+    "url": "",
+    "email": "",
+    "created": "2022-03-18T18:30:11Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "fetsoc"
+    ]
+}
