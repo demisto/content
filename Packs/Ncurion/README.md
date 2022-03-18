@@ -15,5 +15,3 @@ Product introduce
 4. It uses the latest network virtualization technology to collect packets with high performance even in virtualized environments.
 5. It provides Json-style detection logs and easily works with SIEMs such as SPRINK and ELASTIC.
 
-
-[![Ncurion Link](http://ncurity.com/img/sub_visual_4.jpg "NCURION")](http://ncurity.com/sub/2_11.php/)
