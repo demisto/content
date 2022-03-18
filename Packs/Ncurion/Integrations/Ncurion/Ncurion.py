@@ -100,7 +100,7 @@ def get_log_list(base_url, username, password):
     return_results(results)
 
 
-def fetch_incidents(base_url, username, password, last_run: Dict[str, int], first_fetch_time: Optional[int])-> Tuple[Dict[str, int], List[dict]]:
+def fetch_incidents(base_url, username, password, last_run: Dict[str, int])-> Tuple[Dict[str, int], List[dict]]:
     access_token, refresh_token, headers1 = login(base_url, username, password)
     log_list = loglist(base_url, access_token, refresh_token, headers1)
     log_server_id = [e["id"] for e in log_list if e["is_connected"] == True]
@@ -156,7 +156,7 @@ def main():
     base_url = params.get('base_url')
     username = params.get('username')
     password = params.get('password')
-
+    '''
     first_fetch_time = arg_to_datetime(
         arg=demisto.params().get('first_fetch', '3 days'),
         arg_name='First fetch time',
@@ -164,6 +164,7 @@ def main():
     )
     first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
     assert isinstance(first_fetch_timestamp, int)
+    '''
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
@@ -182,8 +183,7 @@ def main():
         elif command == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
                 base_url, username, password,
-                last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_timestamp
+                last_run=demisto.getLastRun()
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
