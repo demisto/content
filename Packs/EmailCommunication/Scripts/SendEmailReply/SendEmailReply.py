@@ -422,9 +422,10 @@ def get_mailbox_from_incident_labels(labels):
     Returns:
         The mailbox label.
     """
-    for label in labels:
-        if label.get('type') == 'Mailbox':
-            return label.get('value')
+    if labels:
+        for label in labels:
+            if label.get('type') == 'Mailbox':
+                return label.get('value')
     return None
 
 
