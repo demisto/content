@@ -1,4 +1,4 @@
-fromversion: 3.6
+fromversion: 3.3
 rules: >
   [RULE:extract_hipmatch_only_fields]
   alter endpoint_device_name = json_extract_scalar(endpoint_device_name, "$.string"),
