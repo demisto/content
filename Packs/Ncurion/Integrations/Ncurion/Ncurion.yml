@@ -58,6 +58,7 @@ name: Ncurion
 script:
   commands:
   - arguments: []
+    description: Get the Ncurion Log server list  
     name: ncurion-get-log-list
     outputs:
   dockerimage: demisto/python3:3.9.5.21272
