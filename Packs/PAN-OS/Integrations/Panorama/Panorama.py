@@ -7667,7 +7667,7 @@ class Topology:
         """
         Returns an iterable of firewalls in the topology
 
-        :param filter_str: The filter string to filter he devices on
+        :param filter_string: The filter string to filter he devices on
         """
         firewall_objects = Topology.filter_devices(self.firewall_objects, filter_string)
         if not firewall_objects:
@@ -7680,7 +7680,7 @@ class Topology:
         """
         Returns an iterable for all devices in the topology
 
-        :param filter_str: The filter string to filter he devices on
+        :param filter_string: The filter string to filter he devices on
         """
         all_devices = {**self.firewall_objects, **self.panorama_objects}
         all_devices = Topology.filter_devices(all_devices, filter_string)
@@ -7695,7 +7695,7 @@ class Topology:
         """
         Filters all devices and returns a dictionary of matching.
 
-        :param filter_str: The filter string to filter he devices on
+        :param filter_string: The filter string to filter he devices on
         """
         return Topology.filter_devices({**self.firewall_objects, **self.panorama_objects}, filter_string)
 
@@ -8779,10 +8779,7 @@ class UniversalCommand:
             summary_data.append(dataclass_from_element(device, ShowSystemInfoSummaryData,
                                                        response.find("./result/system")))
 
-        return ShowSystemInfoCommandResult(
-            result_data=result_data,
-            summary_data=summary_data
-        )
+        return ShowSystemInfoCommandResult(result_data=result_data, summary_data=summary_data)
 
     @staticmethod
     def get_available_software(topology: Topology,
@@ -8799,9 +8796,7 @@ class UniversalCommand:
             for version_dict in device.software.versions.values():
                 summary_data.append(dataclass_from_dict(device, version_dict, SoftwareVersion))
 
-        return SoftwareVersionCommandResult(
-            summary_data=summary_data
-        )
+        return SoftwareVersionCommandResult(summary_data=summary_data)
 
     @staticmethod
     def download_software(topology: Topology, version: str,
@@ -8823,9 +8818,7 @@ class UniversalCommand:
                 started=True
             ))
 
-        return DownloadSoftwareCommandResult(
-            summary_data=result
-        )
+        return DownloadSoftwareCommandResult(summary_data=result)
 
     @staticmethod
     def install_software(topology: Topology, version: str,
@@ -8847,9 +8840,7 @@ class UniversalCommand:
                 started=True
             ))
 
-        return InstallSoftwareCommandResult(
-            summary_data=result
-        )
+        return InstallSoftwareCommandResult(summary_data=result)
 
     @staticmethod
     def reboot(topology: Topology, hostid: str) -> RestartSystemCommandResult:
@@ -8867,9 +8858,7 @@ class UniversalCommand:
                 started=True
             ))
 
-        return RestartSystemCommandResult(
-            summary_data=result
-        )
+        return RestartSystemCommandResult(summary_data=result)
 
     @staticmethod
     def commit(topology: Topology, device_filter_string: Optional[str] = None) -> List[CommitStatus]:
@@ -8942,10 +8931,7 @@ class UniversalCommand:
         devices: dict = topology.get_by_filter_str(hostid)
         # first check if the system exists in the topology; if not, we've failed to connect altogether
         if not devices:
-            return CheckSystemStatus(
-                hostid=hostid,
-                up=False
-            )
+            return CheckSystemStatus(hostid=hostid, up=False)
 
         show_system_info = UniversalCommand.get_system_info(topology, hostid)
         show_system_info_result = show_system_info.result_data[0]
@@ -8955,10 +8941,7 @@ class UniversalCommand:
                 up=False
             )
 
-        return CheckSystemStatus(
-            hostid=hostid,
-            up=True
-        )
+        return CheckSystemStatus(hostid=hostid, up=True)
 
     @staticmethod
     def show_jobs(topology: Topology, device_filter_str: Optional[str] = None, job_type: Optional[str] = None,
@@ -9201,10 +9184,7 @@ class FirewallCommand:
                     route_count=route_count
                 ))
 
-        return ShowRoutingRouteCommandResult(
-            summary_data=summary_data,
-            result_data=result_data
-        )
+        return ShowRoutingRouteCommandResult(summary_data=summary_data, result_data=result_data)
 
 
 """
