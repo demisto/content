@@ -3,7 +3,7 @@ import sys
 import time
 import argparse
 from time import sleep
-from distutils.version import LooseVersion
+from packaging.version import Version
 from typing import Any
 
 from Tests.scripts.utils import logging_wrapper as logging
@@ -211,7 +211,7 @@ def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_t
     test_from_version = t.get('fromversion', '0.0.0')
     test_to_version = t.get('toversion', '99.99.99')
 
-    if not LooseVersion(test_from_version) <= LooseVersion(server_numeric_version) <= LooseVersion(test_to_version):
+    if not Version(test_from_version) <= Version(server_numeric_version) <= Version(test_to_version):
         warning_message = f'Test {test_message} ignored due to version mismatch ' \
                           f'(test versions: {test_from_version}-{test_to_version})'
         logging.warning(warning_message)

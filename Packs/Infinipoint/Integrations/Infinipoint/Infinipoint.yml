@@ -826,7 +826,7 @@ script:
       description: Query ID, e.g 9b071f4c-da87-409c-9cd1-59a275e52c9d
       required: true
     - name: target
-      description: Target devices ID,e.g ["4f16532e-d41a-4b78-9a5c-946d3d3619ca"]
+      description: Target devices ID,e.g ['4f16532e-d41a-4b78-9a5c-946d3d3619ca']
       isArray: true
     outputs:
     - contextPath: Infinipoint.Scripts.execute.actionId

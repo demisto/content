@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "remoteagenthostname",
+    "closeForm": false,
+    "content": true,
+    "description": "",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_remoteagenthostname",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Remote Agent Hostname",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "dst_agent_hostname"
+}

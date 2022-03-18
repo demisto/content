@@ -1,0 +1,88 @@
+{
+  "cidr": null,
+  "createdOn": "2019-10-04T18:13:30.941+00:00",
+  "customerId": 765432,
+  "customerName": "Sample Customer",
+  "id": "765432:DNA#DEVICE:AW2X-hCmXdgvNlcDpVGf",
+  "ips": [
+    "10.103.201.47"
+  ],
+  "lastActivity": null,
+  "name": "host.example.com",
+  "networkInterfaces": [
+    {
+      "gateway": null,
+      "hostnames": [
+        "host.example.com"
+      ],
+      "ip": "10.103.201.47",
+      "macAddress": null,
+      "macVendor": null,
+      "subnet": null
+    }
+  ],
+  "notes": [],
+  "os": null,
+  "services": [
+    {
+      "applicationName": null,
+      "applicationProtocol": null,
+      "port": 80,
+      "transportProtocol": "tcp"
+    },
+    {
+      "applicationName": null,
+      "applicationProtocol": "sunrpcportmap",
+      "port": 111,
+      "transportProtocol": "tcp"
+        },
+    {
+      "applicationName": null,
+      "applicationProtocol": "sunrpcportmap",
+      "port": 111,
+      "transportProtocol": "udp"
+    },
+    {
+      "applicationName": null,
+      "applicationProtocol": "ntp",
+      "port": 123,
+      "transportProtocol": "udp"
+    },
+    {
+      "applicationName": null,
+      "applicationProtocol": "snmp",
+      "port": 161,
+      "transportProtocol": "udp"
+    },
+    {
+      "applicationName": null,
+      "applicationProtocol": null,
+      "port": 443,
+      "transportProtocol": "tcp"
+    },
+    {
+      "applicationName": null,
+      "applicationProtocol": "mysql",
+      "port": 3306,
+      "transportProtocol": "tcp"
+    },
+    {
+      "applicationName": null,
+      "applicationProtocol": null,
+      "port": 5672,
+      "transportProtocol": "tcp"
+    },
+    {
+      "applicationName": null,
+      "applicationProtocol": "snmp",
+      "port": 16161,
+      "transportProtocol": "udp"
+    }
+  ],
+  "sourceSystem": "DNA",
+  "status": null,
+  "tags": [],
+  "type": "Device",
+  "updatedOn": "2019-10-04T19:09:59.907+00:00",
+  "uri": null
+}

@@ -1,0 +1,56 @@
+{
+	"reply":{
+		"script_name":"snippet script",
+		"script_description":null,
+		"script_parameters":[
+
+		],
+		"date_created":"2020-03-29 13:21:59",
+		"scope":"win_10and 21 other endpoints",
+		"error_message":"",
+		"results":[
+			{
+				"endpoint_name":"<name>",
+				"endpoint_ip_address":[
+					"<IP address>"
+				],
+				"endpoint_status":"LOST",
+				"domain":"aaaa",
+				"endpoint_id":"<endpoint ID>",
+				"execution_status":"PENDING",
+				"standard_output":null,
+				"retrieved_files":0,
+				"failed_files":0,
+				"retention_date":null
+			},
+			{
+				"endpoint_name":"<name>",
+				"endpoint_ip_address":[
+					"<IP address>"
+				],
+				"endpoint_status":"LOST",
+				"domain":"<domain name>",
+				"endpoint_id":"<endpoint ID>",
+				"execution_status":"PENDING",
+				"standard_output":null,
+				"retrieved_files":0,
+				"failed_files":0,
+				"retention_date":null
+			},
+			{
+				"endpoint_name":"<name>",
+				"endpoint_ip_address":[
+					"<IP address>"
+				],
+				"endpoint_status":"DISCONNECTED",
+				"domain":"WORKGROUP",
+				"endpoint_id":"<endpoint ID>",
+				"execution_status":"PENDING",
+				"standard_output":null,
+				"retrieved_files":0,
+				"failed_files":0,
+				"retention_date":null
+			}
+		]
+	}
+}

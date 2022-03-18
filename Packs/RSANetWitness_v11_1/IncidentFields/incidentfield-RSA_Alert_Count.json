@@ -1,0 +1,30 @@
+{
+    "id": "incident_rsaalertcount",
+    "version": -1,
+    "modified": "2021-12-23T16:40:48.684809+02:00",
+    "name": "RSA Alert Count",
+    "ownerOnly": false,
+    "cliName": "rsaalertcount",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Netwitness Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

@@ -13,11 +13,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* panorama
-* panorama-commit-status
-* panorama-push-status
-* panorama-push-to-device-group
-* panorama-commit
+* pan-os
+* pan-os-commit-status
+* pan-os-push-status
+* pan-os-push-to-device-group
+* pan-os-commit
 
 ## Playbook Inputs
 ---

@@ -1,0 +1,544 @@
+id: 'Change Management'
+version: -1
+name: 'Change Management'
+description: |-
+  If you are using PAN-OS/Panorama firewall and Jira or ServiceNow as a ticketing system this playbook is a perfect match for your change management for Firewall process.
+  This playbook can be triggered by 2 different options - a fetch from ServiceNow or Jira - and will help you manage and automate your change management process.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d4e1ffe5-c829-4ac6-84eb-c326f108f5b6
+    type: start
+    task:
+      id: d4e1ffe5-c829-4ac6-84eb-c326f108f5b6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 8be6bb83-2565-455c-8b84-0b36de101cc7
+    type: playbook
+    task:
+      id: 8be6bb83-2565-455c-8b84-0b36de101cc7
+      version: -1
+      name: ServiceNow Change Management
+      description: "If you are using PAN-OS/Panorama firewall and ServiceNow as a\
+        \ ticketing system, this playbook is a perfect match for your change management\
+        \ for firewall process.\nThis playbook is triggered by a fetch from ServiceNow\
+        \ and will help you manage and automate your change management process.  \
+        \   "
+      playbookName: ServiceNow Change Management
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Action:
+        complex:
+          root: inputs.Action
+      Application:
+        complex:
+          root: inputs.Application
+      Description:
+        complex:
+          root: inputs.Description
+      Limit:
+        complex:
+          root: inputs.Limit
+      Log_forwarding:
+        complex:
+          root: inputs.Log_forwarding
+      Profile_setting:
+        complex:
+          root: inputs.Profile_setting
+      Protocol:
+        complex:
+          root: inputs.Protocol
+      Rule_position:
+        complex:
+          root: inputs.Rule_position
+      Rulename:
+        complex:
+          root: inputs.Rulename
+      SecurityTeamEmail:
+        complex:
+          root: inputs.SecurityTeamEmail
+      Service:
+        complex:
+          root: inputs.Service
+      Target:
+        complex:
+          root: inputs.Target
+      TestConfigurations:
+        complex:
+          root: inputs.TestConfigurations
+      TestInstance:
+        complex:
+          root: inputs.TestInstance
+      TicketSummary:
+        complex:
+          root: inputs.TicketSummary
+      Time-generated:
+        complex:
+          root: inputs.Time_generated
+      Vsys:
+        complex:
+          root: inputs.Vsys
+      addr-dst:
+        complex:
+          root: inputs.addr-dst
+      addr-src:
+        complex:
+          root: inputs.addr-src
+      log_type:
+        complex:
+          root: inputs.log_type
+      port-dst:
+        complex:
+          root: inputs.port-dst
+      query:
+        complex:
+          root: inputs.query
+      zone-dst:
+        complex:
+          root: inputs.zone-dst
+      zone-src:
+        complex:
+          root: inputs.zone-src
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d8954865-57c4-472f-8157-2c9ec31fd59f
+    type: condition
+    task:
+      id: d8954865-57c4-472f-8157-2c9ec31fd59f
+      version: -1
+      name: What was the incident trigger?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      Jira:
+      - "5"
+      ServicenNow:
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: Jira
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.sourceBrand
+            iscontext: true
+          right:
+            value:
+              simple: jira-v2
+    - label: ServicenNow
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.sourceBrand
+            iscontext: true
+          right:
+            value:
+              simple: ServiceNow v2
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e2959013-70b7-4e83-847d-21a2b6108b46
+    type: title
+    task:
+      id: e2959013-70b7-4e83-847d-21a2b6108b46
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: dcbca05c-4279-4a7b-894d-d89707e77035
+    type: playbook
+    task:
+      id: dcbca05c-4279-4a7b-894d-d89707e77035
+      version: -1
+      name: Jira Change Management
+      description: |-
+        If you are using PAN-OS/Panorama firewall and Jira as a ticketing system, this playbook will be a perfect match for your change management for firewall process.
+        This playbook is triggered by a fetch from Jira and will help you manage and automate you change management process.
+      playbookName: Jira Change Management
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Action:
+        complex:
+          root: inputs.Action
+      Application:
+        complex:
+          root: inputs.Application
+      Closing_status_approved:
+        complex:
+          root: inputs.Closing_status_approved
+      Closing_status_rejected:
+        complex:
+          root: inputs.Closing_status_rejected
+      Description:
+        complex:
+          root: inputs.Description
+      Limit:
+        complex:
+          root: inputs.Limit
+      Log_forwarding:
+        complex:
+          root: inputs.Log_forwarding
+      Profile_setting:
+        complex:
+          root: inputs.Profile_setting
+      Protocol:
+        complex:
+          root: inputs.Protocol
+      Rule_position:
+        complex:
+          root: inputs.Rule_position
+      Rulename:
+        complex:
+          root: inputs.Rulename
+      SecurityTeamEmail:
+        complex:
+          root: inputs.SecurityTeamEmail
+      Service:
+        complex:
+          root: inputs.Service
+      Target:
+        complex:
+          root: inputs.Target
+      TestConfigurations:
+        complex:
+          root: inputs.TestConfigurations
+      TestInstance:
+        complex:
+          root: inputs.TestInstance
+      TicketSummary:
+        complex:
+          root: inputs.TicketSummary
+      Time-generated:
+        complex:
+          root: inputs.Time_generated
+      Vsys:
+        complex:
+          root: inputs.Vsys
+      addr-dst:
+        complex:
+          root: inputs.addr-dst
+      addr-src:
+        complex:
+          root: inputs.addr-src
+      log_type:
+        complex:
+          root: inputs.log_type
+      port-dst:
+        complex:
+          root: inputs.port-dst
+      query:
+        complex:
+          root: inputs.query
+      zone-dst:
+        complex:
+          root: inputs.zone-dst
+      zone-src:
+        complex:
+          root: inputs.zone-src
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 475,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_2_ServicenNow": 0.46
+    },
+    "paper": {
+      "dimensions": {
+        "height": 550,
+        "width": 805,
+        "x": 50,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: TicketSummary
+  value:
+    complex:
+      root: incident
+      accessor: details
+  required: false
+  description: Provide a summery for your firewall change request.
+  playbookInputQuery:
+- key: SecurityTeamEmail
+  value: {}
+  required: false
+  description: The email of the security team that approves the firewall requests.
+  playbookInputQuery:
+- key: log_type
+  value:
+    simple: traffic
+  required: false
+  description: 'Log type to query. Can be: traffic, threat, wildfire, url or data-filtering.'
+  playbookInputQuery:
+- key: query
+  value: {}
+  required: false
+  description: The query string by which to match criteria for the logs. This is similar
+    to the query provided in the web interface under the Monitor tab when viewing
+    the logs.
+  playbookInputQuery:
+- key: Query_logs
+  value:
+    simple: "Yes"
+  required: false
+  description: By providing the value "Yes" to this input, the "Panorama Query Logs"
+    playbook will be activated.
+  playbookInputQuery:
+- key: addr-src
+  value:
+    complex:
+      root: incident
+      accessor: sourceips
+  required: false
+  description: The source address for the change request.
+  playbookInputQuery:
+- key: addr-dst
+  value:
+    complex:
+      root: incident
+      accessor: destinationips
+  required: false
+  description: The destination address for the change request.
+  playbookInputQuery:
+- key: port-dst
+  value:
+    complex:
+      root: incident
+      accessor: dstports
+  required: false
+  description: The destination ports for the change request.
+  playbookInputQuery:
+- key: zone-src
+  value:
+    complex:
+      root: incident
+      accessor: sourcenetworks
+  required: false
+  description: The relevant firewall source zone for the change request.
+  playbookInputQuery:
+- key: zone-dst
+  value:
+    complex:
+      root: incident
+      accessor: destinationnetworks
+  required: false
+  description: The relevant firewall destination zone for the change request.
+  playbookInputQuery:
+- key: Action
+  value:
+    complex:
+      root: incident
+      accessor: policyactions
+  required: false
+  description: 'The action for the change request (such as: allow, drop, deny)'
+  playbookInputQuery:
+- key: Protocol
+  value:
+    complex:
+      root: incident
+      accessor: protocol
+  required: false
+  description: The relevant IP protocol for the change request.
+  playbookInputQuery:
+- key: Log_forwarding
+  value: {}
+  required: false
+  description: Log forwarding profile.
+  playbookInputQuery:
+- key: Profile_setting
+  value: {}
+  required: false
+  description: A profile setting group.
+  playbookInputQuery:
+- key: Service
+  value:
+    complex:
+      root: incident
+      accessor: protocolnames
+  required: false
+  description: A comma-separated list of service object names for the rule.
+  playbookInputQuery:
+- key: Application
+  value: {}
+  required: false
+  description: A comma-separated list of application object names for the rule to
+    create.
+  playbookInputQuery:
+- key: Target
+  value: {}
+  required: false
+  description: Target number of the firewall. Use only for a Panorama instance.
+  playbookInputQuery:
+- key: Vsys
+  value: {}
+  required: false
+  description: Target vsys of the firewall. Use only for a Panorama instance.
+  playbookInputQuery:
+- key: Rulename
+  value: {}
+  required: false
+  description: Name of the rule to create.
+  playbookInputQuery:
+- key: Rule_position
+  value: {}
+  required: false
+  description: |-
+    Pre rule or Post rule (Panorama instances).
+    Possible options:
+    - post-rulebase
+    - pre-rulebase
+  playbookInputQuery:
+- key: Description
+  value: {}
+  required: false
+  description: Set the description of the ticket.
+  playbookInputQuery:
+- key: Time_generated
+  value: {}
+  required: false
+  description: 'The time the log was generated from the timestamp and prior to it.
+    For example: "2019/08/11 01:10:44".'
+  playbookInputQuery:
+- key: TestConfigurations
+  value: {}
+  required: false
+  description: 'By providing YES to this input, the requested firewall rule will be
+    tested in your test environment. '
+  playbookInputQuery:
+- key: TestInstance
+  value: {}
+  required: false
+  description: The instance name of the firewall in the DEV environment for testing
+    the new rule.
+  playbookInputQuery:
+- key: Closing_status_approved
+  value: {}
+  required: false
+  description: The closing status in Jira is changing in the project templates. Please
+    provide the relevant closing status if the issue was approved.
+  playbookInputQuery:
+- key: Closing_status_rejected
+  value: {}
+  required: false
+  description: The closing status in Jira is changing in the  project templates. Please
+    provide the relevant closing status if the issue was rejected.
+  playbookInputQuery:
+- key: Limit
+  value: {}
+  required: false
+  description: "Maximum number of API requests that the \nPanoramaSecurityPolicyMatchWrapper\
+    \ script will send.\nThe default is 500."
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.1.0

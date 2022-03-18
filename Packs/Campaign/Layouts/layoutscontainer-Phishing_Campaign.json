@@ -430,32 +430,16 @@
                                 "startCol": 0
                             },
                             {
-                                "args": {
-                                    "body": {
-                                        "complex": {
-                                            "accessor": "campaignemailbody",
-                                            "filters": [],
-                                            "root": "incident",
-                                            "transformers": []
-                                        }
-                                    },
-                                    "subject": {
-                                        "complex": {
-                                            "accessor": "campaignemailsubject",
-                                            "filters": [],
-                                            "root": "incident",
-                                            "transformers": []
-                                        }
-                                    },
-                                    "to": {
-                                        "complex": {
-                                            "accessor": "campaignemailto",
-                                            "filters": [],
-                                            "root": "incident",
-                                            "transformers": []
-                                        }
-                                    }
-                                },
+                                "endCol": 2,
+                                "fieldId": "campaignemailsenderinstance",
+                                "height": 22,
+                                "id": "2d20bc00-6e03-11ec-8818-73c00a708d03",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
                                 "dropEffect": "move",
                                 "endCol": 3,
                                 "fieldId": "",
@@ -464,7 +448,7 @@
                                 "index": 4,
                                 "listId": "pfjeh5flj3-5bc36bf0-bcad-11eb-98fe-53f79cf41cac",
                                 "name": "Send Email",
-                                "scriptId": "EWS Mail Sender|||send-mail",
+                                "scriptId": "SendEmailToCampaignRecipients",
                                 "sectionItemType": "button",
                                 "startCol": 1
                             }

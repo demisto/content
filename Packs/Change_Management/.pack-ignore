@@ -1,0 +1,8 @@
+[file:playbook-PAN-OS_edit_policy.yml]
+ignore=PB105
+
+[file:playbook-Jira_Change_Management.yml]
+ignore=PB106
+
+[file:playbook-ServiceNow_Change_Management.yml]
+ignore=PB106

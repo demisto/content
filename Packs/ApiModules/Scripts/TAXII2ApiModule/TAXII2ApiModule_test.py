@@ -25,8 +25,10 @@ with open('test_data/id_to_object_test.json', 'r') as f:
     id_to_object = json.load(f)
 with open('test_data/parsed_stix_objects.json', 'r') as f:
     parsed_objects = json.load(f)
-with open('test_data/objects_envelopes.json', 'r') as f:
-    envelopes = json.load(f)
+with open('test_data/objects_envelopes_v21.json', 'r') as f:
+    envelopes_v21 = json.load(f)
+with open('test_data/objects_envelopes_v20.json', 'r') as f:
+    envelopes_v20 = json.load(f)
 
 
 class MockCollection:
@@ -333,12 +335,58 @@ class TestFetchingStixObjects:
         assert len(actual) == 14
         assert actual == expected
 
-    def test_load_stix_objects_from_envelope(self):
+    def test_load_stix_objects_from_envelope_v21(self):
+        """
+        Scenario: Test loading of STIX objects from envelope for v2.1
+
+        Given:
+        - Envelope with indicators, arranged by object type.
+
+        When:
+        - load_stix_objects_from_envelope is called
+
+        Then: - Load and parse objects from the envelope according to their object type and ignore
+        extension-definition objects.
+
+        """
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
-        objects_envelopes = envelopes
+        objects_envelopes = envelopes_v21
         mock_client.id_to_object = id_to_object
 
         result = mock_client.load_stix_objects_from_envelope(objects_envelopes, -1)
+        assert mock_client.id_to_object == id_to_object
+        assert result == parsed_objects
 
+    def test_load_stix_objects_from_envelope_v20(self):
+        """
+        Scenario: Test loading of STIX objects from envelope for v2.0
+
+        Given:
+        - Envelope with indicators, arranged by object type.
+
+        When:
+        - parse_generator_type_envelope is called (skipping condition from load_stix_objects_from_envelope).
+
+        Then: - Load and parse objects from the envelope according to their object type and ignore
+        extension-definition objects.
+
+        """
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
+        objects_envelopes = envelopes_v20
+        mock_client.id_to_object = id_to_object
+
+        parse_stix_2_objects = {
+            "indicator": mock_client.parse_indicator,
+            "attack-pattern": mock_client.parse_attack_pattern,
+            "malware": mock_client.parse_malware,
+            "report": mock_client.parse_report,
+            "course-of-action": mock_client.parse_course_of_action,
+            "campaign": mock_client.parse_campaign,
+            "intrusion-set": mock_client.parse_intrusion_set,
+            "tool": mock_client.parse_tool,
+            "threat-actor": mock_client.parse_threat_actor,
+            "infrastructure": mock_client.parse_infrastructure
+        }
+        result = mock_client.parse_generator_type_envelope(objects_envelopes, parse_stix_2_objects)
         assert mock_client.id_to_object == id_to_object
         assert result == parsed_objects

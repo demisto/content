@@ -68,6 +68,7 @@ Checks the reputation of the given IP address.
 | ThreatStream.IP.Status | String | The status assigned to the indicator. | 
 | ThreatStream.IP.Organization | String | The name of the business that owns the IP address associated with the indicator. | 
 | ThreatStream.IP.Source | String | The indicator source. | 
+| ThreatStream.IP.IType | String | The iType of the indicator associated with the specified model. | 
 | IP.Malicious.Vendor | String | The vendor that reported the indicator as malicious. | 
 | ThreatStream.IP.Tags | Unknown | Tags assigned to the IP. | 
 | IP.Tags | Unknown | List of IP Tags. | 
@@ -122,6 +123,7 @@ for time in UTC time. |
 | ThreatStream.Domain.Status | String | The status assigned to the indicator. | 
 | ThreatStream.Domain.Organization | String | The name of the business that owns the IP address associated with the indicator. | 
 | ThreatStream.Domain.Source | String | The indicator source. | 
+| ThreatStream.Domain.IType | String | The iType of the indicator associated with the specified model. | 
 | Domain.Malicious.Vendor | String | The vendor that reported the indicator as malicious. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
@@ -193,7 +195,8 @@ for time in UTC time. |
             "Tags": [
                 "malware"
             ],
-            "Type": "domain"
+            "Type": "domain",
+            "IType": "spam_domain"
         }
     }
 }
@@ -249,6 +252,7 @@ Checks the reputation of the given hash of the file.
 for time in UTC time. | 
 | ThreatStream.File.Source | String | The indicator source. | 
 | ThreatStream.File.Tags | Unknown | Tags assigned to the file. | 
+| ThreatStream.File.IType | String | The iType of the indicator associated with the specified model. | 
 | File.Tags | Unknown | List of file tags. | 
 | File.ThreatTypes | Unknown | Threat types associated with the file. | 
 
@@ -289,7 +293,8 @@ for time in UTC time. |
             "Tags": [
                 "apt"
             ],
-            "Type": "SHA256"
+            "Type": "SHA256",
+            "IType": "apt_sha256"
         }
     }
 }
@@ -1319,6 +1324,7 @@ for time in UTC time. |
 | ThreatStream.URL.Source | String | The indicator source. | 
 | ThreatStream.URL.Severity | String | The indicator severity \("very-high", "high", "medium", or "low"\). | 
 | ThreatStream.URL.Tags | Unknown | Tags assigned to the URL. | 
+| ThreatStream.URL.IType | String | The iType of the indicator associated with the specified model. | 
 | URL.Tags | Unknown | List of URL tags. | 
 | URL.ThreatTypes | Unknown | Threat types associated with the url. | 
 

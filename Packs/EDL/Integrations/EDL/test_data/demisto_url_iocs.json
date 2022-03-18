@@ -1,0 +1,695 @@
+[
+    {
+        "id": "18110",
+        "version": 11,
+        "modified": "2020-02-04T16:44:52.358425+02:00",
+        "sortValues": null,
+        "comments": [
+            {
+                "id": "39d19b83-1677-4959-83e8-22e8f9abadc3",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "sortValues": null,
+                "content": "Created",
+                "user": "@DBot",
+                "created": "2020-01-28T08:30:05.163127+02:00",
+                "type": "IndicatorCommentTimeLine",
+                "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                "entryId": "",
+                "category": ""
+            },
+            {
+                "id": "c027c546-b2db-46e0-87f8-e215d0870e6a",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "sortValues": null,
+                "content": "Removed from feed",
+                "user": "@DBot",
+                "created": "2020-01-30T10:26:38.00783+02:00",
+                "type": "IndicatorCommentTimeLine",
+                "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                "entryId": "",
+                "category": ""
+            },
+            {
+                "id": "5a81e246-d97f-433f-8afb-22dd23524eed",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "sortValues": null,
+                "content": "Sighted",
+                "user": "@DBot",
+                "created": "2020-02-04T14:25:58.842189+02:00",
+                "type": "IndicatorCommentTimeLine",
+                "source": "AutoFocus Feed.AutoFocus Feed_instance_2",
+                "entryId": "",
+                "category": ""
+            },
+            {
+                "id": "effbb259-9490-4f55-80ae-65bd970028b6",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "sortValues": null,
+                "content": "Sighted",
+                "user": "@DBot",
+                "created": "2020-02-04T16:44:51.816595+02:00",
+                "type": "IndicatorCommentTimeLine",
+                "source": "AutoFocus Feed.AutoFocus Feed_instance_3",
+                "entryId": "",
+                "category": ""
+            },
+            {
+                "id": "22df7296-15a2-480f-8abd-143c562f20c5",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "sortValues": null,
+                "content": "Reputation changed from null to Bad",
+                "user": "@DBot",
+                "created": "2020-02-04T16:44:51.919333+02:00",
+                "type": "IndicatorCommentTimeLine",
+                "source": "AutoFocus Feed.AutoFocus Feed_instance_3",
+                "entryId": "",
+                "category": ""
+            }
+        ],
+        "account": "",
+        "timestamp": "2020-01-28T08:30:05.241089+02:00",
+        "indicator_type": "URL",
+        "value": "1.2.3.4:89/wget",
+        "sourceInstances": [
+            "AutoFocus Feed_instance_1",
+            "AutoFocus Feed_instance_2",
+            "AutoFocus Feed_instance_3"
+        ],
+        "sourceBrands": [
+            "AutoFocus Feed"
+        ],
+        "investigationIDs": [],
+        "lastSeen": "0001-01-01T00:00:00Z",
+        "firstSeen": "0001-01-01T00:00:00Z",
+        "lastSeenEntryID": "API",
+        "firstSeenEntryID": "API",
+        "score": 3,
+        "manualScore": false,
+        "manualSetTime": "0001-01-01T00:00:00Z",
+        "insightCache": null,
+        "moduleToFeedMap": {
+            "533a4468-c5e9-4be2-855e-0794b5730a34": {
+                "reliability": "A - Completely reliable",
+                "fetchTime": "2020-02-04T14:18:12+02:00",
+                "sourceBrand": "AutoFocus Feed",
+                "sourceInstance": "AutoFocus Feed_instance_2",
+                "moduleId": "",
+                "expirationPolicy": "indicatorType",
+                "expirationInterval": 20160,
+                "bypassExclusionList": false,
+                "score": 0,
+                "classifierVersion": 0,
+                "feedConfig": null,
+                "type": "URL",
+                "value": "1.2.3.4:89/wget",
+                "timestamp": "0001-01-01T00:00:00Z",
+                "fields": null,
+                "modifiedTime": "2020-02-04T14:18:12+02:00",
+                "ExpirationSource": {
+                    "setTime": "2020-02-04T14:25:58.842175+02:00",
+                    "source": "indicatorType",
+                    "user": "",
+                    "brand": "AutoFocus Feed",
+                    "instance": "AutoFocus Feed_instance_2",
+                    "moduleId": "",
+                    "expirationPolicy": "interval",
+                    "expirationInterval": 43200
+                },
+                "rawJSON": null,
+                "isEnrichment": false
+            },
+            "AutoFocus Feed.AutoFocus Feed_instance_1": {
+                "reliability": "F - Reliability cannot be judged",
+                "fetchTime": "2020-01-28T08:29:52+02:00",
+                "sourceBrand": "AutoFocus Feed",
+                "sourceInstance": "AutoFocus Feed_instance_1",
+                "moduleId": "",
+                "expirationPolicy": "indicatorType",
+                "expirationInterval": 0,
+                "bypassExclusionList": false,
+                "score": 0,
+                "classifierVersion": 0,
+                "feedConfig": null,
+                "type": "URL",
+                "value": "1.2.3.4:89/wget",
+                "timestamp": "0001-01-01T00:00:00Z",
+                "fields": null,
+                "modifiedTime": "2020-01-28T08:29:52+02:00",
+                "ExpirationSource": {
+                    "setTime": "2020-01-28T08:30:05.126187+02:00",
+                    "source": "indicatorType",
+                    "user": "",
+                    "brand": "AutoFocus Feed",
+                    "instance": "AutoFocus Feed_instance_1",
+                    "moduleId": "",
+                    "expirationPolicy": "never",
+                    "expirationInterval": 0
+                },
+                "rawJSON": null,
+                "isEnrichment": false
+            },
+            "cfedb8c8-ab0b-4ce2-8274-61082c6c41dc": {
+                "reliability": "A - Completely reliable",
+                "fetchTime": "2020-02-04T16:44:15+02:00",
+                "sourceBrand": "AutoFocus Feed",
+                "sourceInstance": "AutoFocus Feed_instance_3",
+                "moduleId": "",
+                "expirationPolicy": "suddenDeath",
+                "expirationInterval": 20160,
+                "bypassExclusionList": false,
+                "score": 3,
+                "classifierVersion": 0,
+                "feedConfig": null,
+                "type": "URL",
+                "value": "1.2.3.4:89/wget",
+                "timestamp": "0001-01-01T00:00:00Z",
+                "fields": null,
+                "modifiedTime": "2020-02-04T16:44:15+02:00",
+                "ExpirationSource": {
+                    "setTime": "2020-02-04T16:44:51.816592+02:00",
+                    "source": "indicatorType",
+                    "user": "",
+                    "brand": "AutoFocus Feed",
+                    "instance": "AutoFocus Feed_instance_3",
+                    "moduleId": "",
+                    "expirationPolicy": "interval",
+                    "expirationInterval": 43200
+                },
+                "rawJSON": null,
+                "isEnrichment": false
+            }
+        },
+        "isShared": false,
+        "expiration": "2020-03-05T16:44:15+02:00",
+        "manualExpirationTime": "0001-01-01T00:00:00Z",
+        "expirationStatus": "active",
+        "expirationSource": {
+            "setTime": "2020-02-04T16:44:51.816592+02:00",
+            "source": "indicatorType",
+            "user": "",
+            "brand": "AutoFocus Feed",
+            "instance": "AutoFocus Feed_instance_3",
+            "moduleId": "",
+            "expirationPolicy": "interval",
+            "expirationInterval": 43200
+        },
+        "deletedFeedFetchTime": "0001-01-01T00:00:00Z",
+        "calculatedTime": "2020-01-28T08:30:05.241089+02:00",
+        "lastReputationRun": "0001-01-01T00:00:00Z",
+        "comment": "",
+        "manuallyEditedFields": null,
+        "modifiedTime": "2020-02-04T16:44:15+02:00",
+        "CustomFields": {"proxysgcategory": "category1", "test": "test"}
+    },
+    {
+        "id": "235529",
+        "version": 1,
+        "modified": "2020-03-01T11:54:00.537455+02:00",
+        "sortValues": null,
+        "CustomFields": {"proxysgcategory": "category2", "test": "test"},
+        "comments": [
+            {
+                "id": "db27537a-b396-4ec2-8e7a-19c8e08f2e3c",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "sortValues": null,
+                "content": "Created",
+                "user": "@DBot",
+                "created": "2020-02-24T14:32:13.152352+02:00",
+                "type": "IndicatorCommentTimeLine",
+                "source": "@DBot",
+                "entryId": "",
+                "category": "Sighting"
+            },
+            {
+                "id": "098ef07f-dfdc-46cb-83c1-9268e14361a0",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "sortValues": null,
+                "content": "Sighted",
+                "user": "@DBot",
+                "created": "2020-02-24T14:33:11.46982+02:00",
+                "type": "IndicatorCommentTimeLine",
+                "source": "Alien Vault OTX TAXII Feed.Alien Vault OTX TAXII Feed_instance_1",
+                "entryId": "",
+                "category": "Sighting"
+            }
+        ],
+        "account": "",
+        "timestamp": "2020-02-24T14:32:14.031792+02:00",
+        "indicator_type": "URL",
+        "value": "https://www.demisto.com/cool",
+        "sourceInstances": [
+            "AutoFocus V2",
+            "VirusTotal",
+            "Alien Vault OTX TAXII Feed_instance_1"
+        ],
+        "sourceBrands": [
+            "AutoFocus V2",
+            "VirusTotal",
+            "Alien Vault OTX TAXII Feed"
+        ],
+        "investigationIDs": [
+            "99f96547-c492-48d1-84bc-070759449a5d"
+        ],
+        "lastSeen": "2020-03-01T11:54:00.506912+02:00",
+        "firstSeen": "2020-02-24T14:32:13.877731+02:00",
+        "lastSeenEntryID": "6805@99f96547-c492-48d1-84bc-070759449a5d",
+        "firstSeenEntryID": "6679@99f96547-c492-48d1-84bc-070759449a5d",
+        "score": 3,
+        "manualScore": false,
+        "manualSetTime": "0001-01-01T00:00:00Z",
+        "insightCache": {
+            "id": "https://www.demisto.com/cool",
+            "version": 3,
+            "modified": "2020-03-01T11:53:57.141515+02:00",
+            "sortValues": null,
+            "scores": {
+                "AutoFocus V2": {
+                    "score": 3,
+                    "content": "### AutoFocus V2 URL reputation for: https://www.demisto.com/cool\n|Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Wildfirerelatedsampleverdictcounts|\n|---|---|---|---|---|\n| URL | https://www.demisto.com/cool | PAN_DB: MALWARE |  |  |\n",
+                    "contentFormat": "markdown",
+                    "timestamp": "2020-03-01T11:53:57.141497+02:00",
+                    "scoreChangeTimestamp": "2020-02-24T14:32:12.184984+02:00",
+                    "isTypedIndicator": false,
+                    "type": "url",
+                    "context": {
+                        "AutoFocus.URL(val.IndicatorValue === obj.IndicatorValue)": [
+                            {
+                                "IndicatorType": "URL",
+                                "IndicatorValue": "https://www.demisto.com/cool",
+                                "LatestPanVerdicts": {
+                                    "PAN_DB": "MALWARE"
+                                },
+                                "SeenBy": [],
+                                "WildfireRelatedSampleVerdictCounts": {}
+                            }
+                        ],
+                        "DBotScore": [
+                            {
+                                "Indicator": "https://www.demisto.com/cool",
+                                "Score": 3,
+                                "Type": "url",
+                                "Vendor": "AutoFocus V2"
+                            }
+                        ],
+                        "URL(val.Data && val.Data == obj.Data)": [
+                            {
+                                "Data": "https://www.demisto.com/cool",
+                                "Malicious": {
+                                    "Vendor": "AutoFocus V2"
+                                }
+                            }
+                        ]
+                    }
+                },
+                "VirusTotal": {
+                    "score": 2,
+                    "content": "## VirusTotal URL Reputation for: https://www.demisto.com/cool\nLast scan date: *2020-02-21 02:49:27*\nTotal scans: **72**\nPositive scans: **9**\nVT Link: [https://www.demisto.com/cool](https://www.virustotal.com/url/9327dba6048752b51c9d8e1d76cf2b6df7a34efdd4fae7ff51ac4c9e3abe2d8d/analysis/1582253367/)\n",
+                    "contentFormat": "markdown",
+                    "timestamp": "2020-02-24T14:32:07.64722+02:00",
+                    "scoreChangeTimestamp": "2020-02-24T14:32:07.64722+02:00",
+                    "isTypedIndicator": false,
+                    "type": "url",
+                    "context": {
+                        "DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)": {
+                            "Indicator": "https://www.demisto.com/cool",
+                            "Score": 2,
+                            "Type": "url",
+                            "Vendor": "VirusTotal"
+                        },
+                        "URL(val.Data && val.Data === obj.Data)": {
+                            "Data": "https://www.demisto.com/cool",
+                            "DetectionEngines": 72,
+                            "PositiveDetections": 9,
+                            "VirusTotal": {
+                                "ScanID": "9327dba6048752b51c9d8e1d76cf2b6df7a34efdd4fae7ff51ac4c9e3abe2d8d-1582253367",
+                                "vtLink": "https://www.virustotal.com/url/9327dba6048752b51c9d8e1d76cf2b6df7a34efdd4fae7ff51ac4c9e3abe2d8d/analysis/1582253367/"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "moduleToFeedMap": {
+            "402de2a6-1cb5-47f7-8b49-3470928c5afe": {
+                "reliability": "C - Fairly reliable",
+                "fetchTime": "2020-02-24T14:33:00+02:00",
+                "sourceBrand": "Alien Vault OTX TAXII Feed",
+                "sourceInstance": "Alien Vault OTX TAXII Feed_instance_1",
+                "moduleId": "402de2a6-1cb5-47f7-8b49-3470928c5afe",
+                "expirationPolicy": "indicatorType",
+                "expirationInterval": 20160,
+                "bypassExclusionList": false,
+                "score": 3,
+                "classifierVersion": 1,
+                "feedConfig": null,
+                "type": "URL",
+                "value": "https://www.demisto.com/cool",
+                "timestamp": "0001-01-01T00:00:00Z",
+                "fields": null,
+                "modifiedTime": "2020-02-24T14:33:00+02:00",
+                "ExpirationSource": {
+                    "setTime": "2020-02-24T14:33:11.469812+02:00",
+                    "source": "indicatorType",
+                    "user": "",
+                    "brand": "Alien Vault OTX TAXII Feed",
+                    "instance": "Alien Vault OTX TAXII Feed_instance_1",
+                    "moduleId": "402de2a6-1cb5-47f7-8b49-3470928c5afe",
+                    "expirationPolicy": "indicatorType",
+                    "expirationInterval": 43200
+                },
+                "rawJSON": null,
+                "isEnrichment": false
+            },
+            "AutoFocus V2": {
+                "reliability": "A+ - 3rd party enrichment",
+                "fetchTime": "2020-03-01T11:53:57.141497+02:00",
+                "sourceBrand": "AutoFocus V2",
+                "sourceInstance": "AutoFocus V2",
+                "moduleId": "AutoFocus V2",
+                "expirationPolicy": "indicatorType",
+                "expirationInterval": 0,
+                "bypassExclusionList": false,
+                "score": 3,
+                "classifierVersion": 0,
+                "feedConfig": null,
+                "type": "URL",
+                "value": "https://www.demisto.com/cool",
+                "timestamp": "0001-01-01T00:00:00Z",
+                "fields": null,
+                "modifiedTime": "0001-01-01T00:00:00Z",
+                "ExpirationSource": {
+                    "setTime": "2020-03-01T11:54:00.491058+02:00",
+                    "source": "indicatorType",
+                    "user": "",
+                    "brand": "AutoFocus V2",
+                    "instance": "AutoFocus V2",
+                    "moduleId": "AutoFocus V2",
+                    "expirationPolicy": "indicatorType",
+                    "expirationInterval": 43200
+                },
+                "rawJSON": null,
+                "isEnrichment": true
+            },
+            "VirusTotal": {
+                "reliability": "A+ - 3rd party enrichment",
+                "fetchTime": "2020-02-24T14:32:07.64722+02:00",
+                "sourceBrand": "VirusTotal",
+                "sourceInstance": "VirusTotal",
+                "moduleId": "VirusTotal",
+                "expirationPolicy": "indicatorType",
+                "expirationInterval": 0,
+                "bypassExclusionList": false,
+                "score": 2,
+                "classifierVersion": 0,
+                "feedConfig": null,
+                "type": "URL",
+                "value": "https://www.demisto.com/cool",
+                "timestamp": "0001-01-01T00:00:00Z",
+                "fields": null,
+                "modifiedTime": "0001-01-01T00:00:00Z",
+                "ExpirationSource": {
+                    "setTime": "2020-03-01T11:54:00.491081+02:00",
+                    "source": "indicatorType",
+                    "user": "",
+                    "brand": "VirusTotal",
+                    "instance": "VirusTotal",
+                    "moduleId": "VirusTotal",
+                    "expirationPolicy": "indicatorType",
+                    "expirationInterval": 43200
+                },
+                "rawJSON": null,
+                "isEnrichment": true
+            }
+        },
+        "isShared": false,
+        "expiration": "2020-03-31T12:54:00.491058+03:00",
+        "manualExpirationTime": "0001-01-01T00:00:00Z",
+        "expirationStatus": "active",
+        "expirationSource": {
+            "setTime": "2020-03-01T11:54:00.491058+02:00",
+            "source": "indicatorType",
+            "user": "",
+            "brand": "AutoFocus V2",
+            "instance": "AutoFocus V2",
+            "moduleId": "AutoFocus V2",
+            "expirationPolicy": "indicatorType",
+            "expirationInterval": 43200
+        },
+        "deletedFeedFetchTime": "0001-01-01T00:00:00Z",
+        "calculatedTime": "2020-03-01T11:54:00.506912+02:00",
+        "lastReputationRun": "2020-03-01T11:53:57.155776+02:00",
+        "comment": "",
+        "manuallyEditedFields": null,
+        "modifiedTime": "2020-03-01T11:53:57.141497+02:00"
+    },
+    {
+        "id": "235529",
+        "proxysgcategory": "category1",
+        "version": 1,
+        "modified": "2020-03-01T11:54:00.537455+02:00",
+        "sortValues": null,
+        "comments": [
+            {
+                "id": "db27537a-b396-4ec2-8e7a-19c8e08f2e3c",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "sortValues": null,
+                "content": "Created",
+                "user": "@DBot",
+                "created": "2020-02-24T14:32:13.152352+02:00",
+                "type": "IndicatorCommentTimeLine",
+                "source": "@DBot",
+                "entryId": "",
+                "category": "Sighting"
+            },
+            {
+                "id": "098ef07f-dfdc-46cb-83c1-9268e14361a0",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "sortValues": null,
+                "content": "Sighted",
+                "user": "@DBot",
+                "created": "2020-02-24T14:33:11.46982+02:00",
+                "type": "IndicatorCommentTimeLine",
+                "source": "Alien Vault OTX TAXII Feed.Alien Vault OTX TAXII Feed_instance_1",
+                "entryId": "",
+                "category": "Sighting"
+            }
+        ],
+        "account": "",
+        "timestamp": "2020-02-24T14:32:14.031792+02:00",
+        "indicator_type": "URL",
+        "value": "https://www.demisto.com/*cool",
+        "sourceInstances": [
+            "AutoFocus V2",
+            "VirusTotal",
+            "Alien Vault OTX TAXII Feed_instance_1"
+        ],
+        "sourceBrands": [
+            "AutoFocus V2",
+            "VirusTotal",
+            "Alien Vault OTX TAXII Feed"
+        ],
+        "investigationIDs": [
+            "99f96547-c492-48d1-84bc-070759449a5d"
+        ],
+        "lastSeen": "2020-03-01T11:54:00.506912+02:00",
+        "firstSeen": "2020-02-24T14:32:13.877731+02:00",
+        "lastSeenEntryID": "6805@99f96547-c492-48d1-84bc-070759449a5d",
+        "firstSeenEntryID": "6679@99f96547-c492-48d1-84bc-070759449a5d",
+        "score": 3,
+        "manualScore": false,
+        "manualSetTime": "0001-01-01T00:00:00Z",
+        "insightCache": {
+            "id": "https://www.demisto.com/cool",
+            "version": 3,
+            "modified": "2020-03-01T11:53:57.141515+02:00",
+            "sortValues": null,
+            "scores": {
+                "AutoFocus V2": {
+                    "score": 3,
+                    "content": "### AutoFocus V2 URL reputation for: https://www.demisto.com/cool\n|Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Wildfirerelatedsampleverdictcounts|\n|---|---|---|---|---|\n| URL | https://www.demisto.com/cool | PAN_DB: MALWARE |  |  |\n",
+                    "contentFormat": "markdown",
+                    "timestamp": "2020-03-01T11:53:57.141497+02:00",
+                    "scoreChangeTimestamp": "2020-02-24T14:32:12.184984+02:00",
+                    "isTypedIndicator": false,
+                    "type": "url",
+                    "context": {
+                        "AutoFocus.URL(val.IndicatorValue === obj.IndicatorValue)": [
+                            {
+                                "IndicatorType": "URL",
+                                "IndicatorValue": "https://www.demisto.com/cool",
+                                "LatestPanVerdicts": {
+                                    "PAN_DB": "MALWARE"
+                                },
+                                "SeenBy": [],
+                                "WildfireRelatedSampleVerdictCounts": {}
+                            }
+                        ],
+                        "DBotScore": [
+                            {
+                                "Indicator": "https://www.demisto.com/cool",
+                                "Score": 3,
+                                "Type": "url",
+                                "Vendor": "AutoFocus V2"
+                            }
+                        ],
+                        "URL(val.Data && val.Data == obj.Data)": [
+                            {
+                                "Data": "https://www.demisto.com/cool",
+                                "Malicious": {
+                                    "Vendor": "AutoFocus V2"
+                                }
+                            }
+                        ]
+                    }
+                },
+                "VirusTotal": {
+                    "score": 2,
+                    "content": "## VirusTotal URL Reputation for: https://www.demisto.com/cool\nLast scan date: *2020-02-21 02:49:27*\nTotal scans: **72**\nPositive scans: **9**\nVT Link: [https://www.demisto.com/cool](https://www.virustotal.com/url/9327dba6048752b51c9d8e1d76cf2b6df7a34efdd4fae7ff51ac4c9e3abe2d8d/analysis/1582253367/)\n",
+                    "contentFormat": "markdown",
+                    "timestamp": "2020-02-24T14:32:07.64722+02:00",
+                    "scoreChangeTimestamp": "2020-02-24T14:32:07.64722+02:00",
+                    "isTypedIndicator": false,
+                    "type": "url",
+                    "context": {
+                        "DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)": {
+                            "Indicator": "https://www.demisto.com/cool",
+                            "Score": 2,
+                            "Type": "url",
+                            "Vendor": "VirusTotal"
+                        },
+                        "URL(val.Data && val.Data === obj.Data)": {
+                            "Data": "https://www.demisto.com/cool",
+                            "DetectionEngines": 72,
+                            "PositiveDetections": 9,
+                            "VirusTotal": {
+                                "ScanID": "9327dba6048752b51c9d8e1d76cf2b6df7a34efdd4fae7ff51ac4c9e3abe2d8d-1582253367",
+                                "vtLink": "https://www.virustotal.com/url/9327dba6048752b51c9d8e1d76cf2b6df7a34efdd4fae7ff51ac4c9e3abe2d8d/analysis/1582253367/"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "moduleToFeedMap": {
+            "402de2a6-1cb5-47f7-8b49-3470928c5afe": {
+                "reliability": "C - Fairly reliable",
+                "fetchTime": "2020-02-24T14:33:00+02:00",
+                "sourceBrand": "Alien Vault OTX TAXII Feed",
+                "sourceInstance": "Alien Vault OTX TAXII Feed_instance_1",
+                "moduleId": "402de2a6-1cb5-47f7-8b49-3470928c5afe",
+                "expirationPolicy": "indicatorType",
+                "expirationInterval": 20160,
+                "bypassExclusionList": false,
+                "score": 3,
+                "classifierVersion": 1,
+                "feedConfig": null,
+                "type": "URL",
+                "value": "https://www.demisto.com/cool",
+                "timestamp": "0001-01-01T00:00:00Z",
+                "fields": null,
+                "modifiedTime": "2020-02-24T14:33:00+02:00",
+                "ExpirationSource": {
+                    "setTime": "2020-02-24T14:33:11.469812+02:00",
+                    "source": "indicatorType",
+                    "user": "",
+                    "brand": "Alien Vault OTX TAXII Feed",
+                    "instance": "Alien Vault OTX TAXII Feed_instance_1",
+                    "moduleId": "402de2a6-1cb5-47f7-8b49-3470928c5afe",
+                    "expirationPolicy": "indicatorType",
+                    "expirationInterval": 43200
+                },
+                "rawJSON": null,
+                "isEnrichment": false
+            },
+            "AutoFocus V2": {
+                "reliability": "A+ - 3rd party enrichment",
+                "fetchTime": "2020-03-01T11:53:57.141497+02:00",
+                "sourceBrand": "AutoFocus V2",
+                "sourceInstance": "AutoFocus V2",
+                "moduleId": "AutoFocus V2",
+                "expirationPolicy": "indicatorType",
+                "expirationInterval": 0,
+                "bypassExclusionList": false,
+                "score": 3,
+                "classifierVersion": 0,
+                "feedConfig": null,
+                "type": "URL",
+                "value": "https://www.demisto.com/cool",
+                "timestamp": "0001-01-01T00:00:00Z",
+                "fields": null,
+                "modifiedTime": "0001-01-01T00:00:00Z",
+                "ExpirationSource": {
+                    "setTime": "2020-03-01T11:54:00.491058+02:00",
+                    "source": "indicatorType",
+                    "user": "",
+                    "brand": "AutoFocus V2",
+                    "instance": "AutoFocus V2",
+                    "moduleId": "AutoFocus V2",
+                    "expirationPolicy": "indicatorType",
+                    "expirationInterval": 43200
+                },
+                "rawJSON": null,
+                "isEnrichment": true
+            },
+            "VirusTotal": {
+                "reliability": "A+ - 3rd party enrichment",
+                "fetchTime": "2020-02-24T14:32:07.64722+02:00",
+                "sourceBrand": "VirusTotal",
+                "sourceInstance": "VirusTotal",
+                "moduleId": "VirusTotal",
+                "expirationPolicy": "indicatorType",
+                "expirationInterval": 0,
+                "bypassExclusionList": false,
+                "score": 2,
+                "classifierVersion": 0,
+                "feedConfig": null,
+                "type": "URL",
+                "value": "https://www.demisto.com/*cool",
+                "timestamp": "0001-01-01T00:00:00Z",
+                "fields": null,
+                "modifiedTime": "0001-01-01T00:00:00Z",
+                "ExpirationSource": {
+                    "setTime": "2020-03-01T11:54:00.491081+02:00",
+                    "source": "indicatorType",
+                    "user": "",
+                    "brand": "VirusTotal",
+                    "instance": "VirusTotal",
+                    "moduleId": "VirusTotal",
+                    "expirationPolicy": "indicatorType",
+                    "expirationInterval": 43200
+                },
+                "rawJSON": null,
+                "isEnrichment": true
+            }
+        },
+        "isShared": false,
+        "expiration": "2020-03-31T12:54:00.491058+03:00",
+        "manualExpirationTime": "0001-01-01T00:00:00Z",
+        "expirationStatus": "active",
+        "expirationSource": {
+            "setTime": "2020-03-01T11:54:00.491058+02:00",
+            "source": "indicatorType",
+            "user": "",
+            "brand": "AutoFocus V2",
+            "instance": "AutoFocus V2",
+            "moduleId": "AutoFocus V2",
+            "expirationPolicy": "indicatorType",
+            "expirationInterval": 43200
+        },
+        "deletedFeedFetchTime": "0001-01-01T00:00:00Z",
+        "calculatedTime": "2020-03-01T11:54:00.506912+02:00",
+        "lastReputationRun": "2020-03-01T11:53:57.155776+02:00",
+        "comment": "",
+        "manuallyEditedFields": null,
+        "modifiedTime": "2020-03-01T11:53:57.141497+02:00"
+    }
+]

@@ -1,0 +1,25 @@
+commonfields:
+  id: IntezerRunScanner
+  version: -1
+name: IntezerRunScanner
+script: ''
+type: javascript
+tags:
+- agent
+- forensics
+comment: Running the Intezer Endpoint Analysis Scanner
+enabled: true
+args:
+- name: api_key
+  required: true
+  secret: true
+  description: 'The Intezer API key '
+- name: endpoint_analysis_id
+  required: true
+  description: The endpoint analysis id
+scripttarget: 1
+runonce: false
+runas: Administrator
+tests:
+- no test
+fromversion: 5.0.0

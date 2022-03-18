@@ -13,5 +13,9 @@
     "keywords": [],
     "githubUser": [
         "os-groot"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

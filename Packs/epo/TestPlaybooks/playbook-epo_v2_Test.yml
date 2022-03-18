@@ -1,6 +1,5 @@
 id: McAfee ePO v2 Test
-version: 31
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: McAfee ePO v2 Test
 description: This is a test playbook it runs as part of the build process
 starttaskid: "0"
@@ -1420,6 +1419,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {

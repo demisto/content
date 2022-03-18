@@ -1,0 +1,3 @@
+Follow this guide to generate access keys: [https://help.sumologic.com/Manage/Security/Access_Keys](https://help.sumologic.com/Manage/Security/Access_Keys).
+For the URL argument, take a look here: [https://help.sumologic.com/APIs/01Collector_Management_API/Sumo_Logic_Endpoints](https://help.sumologic.com/APIs/01Collector_Management_API/Sumo_Logic_Endpoints)
+For a list of possible values for the **timeZone** parameter, refer to the **TZ database name** column in this [Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) article.

@@ -1,10 +1,15 @@
-import pytest
+import re
+
 import Qualysv2
-from Qualysv2 import is_empty_result, format_and_validate_response,\
-    parse_two_keys_dict, create_ip_list_dicts, build_args_dict, handle_general_result,\
-    change_dict_keys, COMMANDS_ARGS_DATA, limit_ip_results
-from CommonServerPython import DemistoException
+import pytest
 import requests
+from Qualysv2 import is_empty_result, format_and_validate_response, \
+    parse_two_keys_dict, create_ip_list_dicts, build_args_dict, handle_general_result, \
+    change_dict_keys, COMMANDS_ARGS_DATA, limit_ip_results, Client, build_host_list_detection_outputs, \
+    COMMANDS_PARSE_AND_OUTPUT_DATA, validate_depended_args, Dict, validate_at_most_one_group, parse_raw_response, \
+    get_simple_response_from_raw, validate_required_group
+
+from CommonServerPython import DemistoException
 
 
 class TestIsEmptyResult:
@@ -157,6 +162,43 @@ class TestFormatAndValidateResponse:
         raw_json_response = '[{"ip": "1.1.1.1",{"ip": "1.1.1.1"}]'
         result = format_and_validate_response(raw_json_response)
         assert not result
+
+    PARSE_RAW_RESPONSE_INPUTS = [('[{"ip": "1.1.1.1"},{"ip": "1.1.1.1"}]', [{'ip': '1.1.1.1'}, {'ip': '1.1.1.1'}]),
+                                 (raw_xml_response_success, {'SIMPLE_RETURN': {
+                                     'RESPONSE': {'DATETIME': '2021-03-24T15:40:23Z',
+                                                  'TEXT': 'IPs successfully added to Vulnerability Management'}}}),
+                                 # Invalid case - should return empty dict
+                                 ('[{"ip": "1.1.1.1"ip": "1.1.1.1"}]', {})]
+
+    @pytest.mark.parametrize('response, expected', PARSE_RAW_RESPONSE_INPUTS)
+    def test_parse_raw_response(self, response, expected):
+        """
+        Given
+            - Response.
+        When
+            - Parsing the raw response.
+        Then
+            - Ensure expected object is returned from parsing.
+        """
+        assert parse_raw_response(response) == expected
+
+    SIMPLE_FROM_RAW_INPUTS = [({'SIMPLE_RETURN': {'RESPONSE': {'DATETIME': '2021-03-24T15:40:23Z',
+                                                               'TEXT': 'IPs successfully added to Vulnerability '
+                                                                       'Management'}}},
+                               {'DATETIME': '2021-03-24T15:40:23Z',
+                                'TEXT': 'IPs successfully added to Vulnerability Management'})]
+
+    @pytest.mark.parametrize('raw_response, expected', SIMPLE_FROM_RAW_INPUTS)
+    def test_get_simple_response_from_raw(self, raw_response, expected):
+        """
+        Given
+            - Parsed raw response.
+        When
+            - Getting simple response from parsed raw response.
+        Then
+            - Ensure expected object is returned from parsing.
+        """
+        assert get_simple_response_from_raw(raw_response) == expected
 
 
 class TestHandleGeneralResult:
@@ -623,6 +665,46 @@ class TestBuildArgsDict:
         build_args_dict(args, command_args_data, False)
         assert Qualysv2.args_values == {}
 
+    def test_build_args_dict_date_args(self):
+        """
+        Given:
+        - Cortex XSOAR arguments.
+        - Command arg names.
+
+        When:
+        - Parsing date parameters.
+
+        Then:
+        - Ensure date parameters values are updated accordingly.
+        """
+        args = {'published_before': '1640508554',
+                'launched_after_datetime': '2021-12-26T08:49:29Z',
+                'start_date': '2021-12-26T08:49:29Z'}
+        expected_result = {'launched_after_datetime': '2021-12-26',
+                           'published_before': '2021-12-26',
+                           'start_date': '12/26/2021'}
+
+        build_args_dict(args, {'args': ['published_before', 'launched_after_datetime', 'start_date']}, False)
+        assert Qualysv2.args_values == expected_result
+
+    def test_build_args_dict_default_added_depended_args(self):
+        """
+        Given:
+        - Cortex XSOAR arguments.
+        - Command arg names.
+
+        When:
+        - There are arguments who should be added depending on an arguments.
+
+        Then:
+        - Ensure arguments are added as expected.
+        """
+        args = {'arg_to_depend_on': '1'}
+        expected_result = {'arg_to_depend_on': '1', 'dep1': 2, 'dep2': 3}
+        build_args_dict(args, {'args': ['arg_to_depend_on'],
+                               'default_added_depended_args': {'arg_to_depend_on': {'dep1': 2, 'dep2': 3}}}, False)
+        assert Qualysv2.args_values == expected_result
+
 
 def test_handle_general_result_missing_output_builder():
     """
@@ -636,7 +718,7 @@ def test_handle_general_result_missing_output_builder():
         - raise a TypeError exception, None is not callable, must be provided
     """
     with pytest.raises(TypeError):
-        raw_xml_response = '<?xml version="1.0" encoding="UTF-8" ?>'\
+        raw_xml_response = '<?xml version="1.0" encoding="UTF-8" ?>' \
                            '<!DOCTYPE SIMPLE_RETURN SYSTEM' \
                            ' "https://qualysapi.qg2.apps.qualys.com/api/2.0/simple_return.dtd">' \
                            '<SIMPLE_RETURN><RESPONSE>' \
@@ -645,3 +727,223 @@ def test_handle_general_result_missing_output_builder():
                            '</RESPONSE></SIMPLE_RETURN>'
         command_name = 'qualys-ip-add'
         handle_general_result(result=raw_xml_response, command_name=command_name, output_builder=None)
+
+
+class TestHostDetectionOutputBuilder:
+    DETECTION_INPUTS = [({'HOST_LIST': {'HOST_ITEM': []}}, '### Host Detection List\n\n**No entries.**\n', []),
+                        ({'HOST_LIST': {'HOST_ITEM': [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
+                                                       'DETECTION_LIST': {
+                                                           'DETECTION': [
+                                                               {'QID': '123', 'RESULTS': 'FOUND DETECTION'}]}}]}},
+                         "### Host Detection List\n\n|DETECTIONS|DNS_DATA|ID|IP|\n|---|---|---|---|\n| {"
+                         "'QID': '123', 'RESULTS': 'FOUND DETECTION'} | data: dns data | ID123 | "
+                         "1.1.1.1 |\n", [{'DETECTION_LIST': {'DETECTION': [{'QID': '123',
+                                                                            'RESULTS': 'FOUND DETECTION'}]},
+                                          'DNS_DATA': {'data': 'dns data'},
+                                          'ID': 'ID123',
+                                          'IP': '1.1.1.1'}])
+                        ]
+
+    @pytest.mark.parametrize('result, readable, expected_outputs', DETECTION_INPUTS)
+    def test_build_host_list_detection_outputs(self, result, readable, expected_outputs):
+        """
+        Given:
+        - Result of Qualys service for host list detection.
+
+        When:
+        - Parsing result into outputs and readable output.
+
+        Then:
+        - Ensure resultes are parsed as expected.
+        """
+        Qualysv2.inner_args_values['limit'] = 1
+        assert build_host_list_detection_outputs({'command_parse_and_output_data': COMMANDS_PARSE_AND_OUTPUT_DATA[
+            'qualys-host-list-detection'], 'handled_result': result}) == (expected_outputs, readable)
+
+
+class MockResponse:
+    def __init__(self, text, status_code, json=None, reason=None):
+        self.text = text
+        self.json = json
+        self.status_code = status_code
+        self.reason = reason
+
+    def json(self):
+        if self.json:
+            return self.json
+        raise Exception('No JSON')
+
+
+class TestClientClass:
+    ERROR_HANDLER_INPUTS = [
+        (MockResponse('''<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE SIMPLE_RETURN SYSTEM "https://qualysapi.qg2.apps.qualys.com/api/2.0/simple_return.dtd">
+<SIMPLE_RETURN>
+  <RESPONSE>
+    <DATETIME>2021-12-21T08:59:39Z</DATETIME>
+    <CODE>999</CODE>
+    <TEXT>Internal error. Please contact customer support.</TEXT>
+    <ITEM_LIST>
+      <ITEM>
+        <KEY>Incident Signature</KEY>
+        <VALUE>8ecaf66401cf247f5a6d75afd56bf847</VALUE>
+      </ITEM>
+    </ITEM_LIST>
+  </RESPONSE>
+</SIMPLE_RETURN>''', 500),
+         'Error in API call [500] - None\nError Code: 999\nError Message: Internal error. Please '
+         'contact customer support.'),
+        (MockResponse('Invalid XML', 500), 'Error in API call [500] - None\nInvalid XML')
+    ]
+
+    @pytest.mark.parametrize('response, error_message', ERROR_HANDLER_INPUTS)
+    def test_error_handler(self, response, error_message):
+        """
+        Given:
+        - Qualys error response
+
+        When:
+        - Parsing error to readable message
+
+        Then:
+        - Ensure readable message is as expected
+        """
+        client: Client = Client('test.com', 'testuser', 'testpassword', False, False, None)
+        with pytest.raises(DemistoException, match=re.escape(error_message)):
+            client.error_handler(response)
+
+
+class TestInputValidations:
+    DEPENDANT_ARGS = {'day_of_month': 'frequency_months', 'day_of_week': 'frequency_months',
+                      'week_of_month': 'frequency_months', 'weekdays': 'frequency_weeks', }
+    VALIDATE_DEPENDED_ARGS_INPUT = [({}, {}),
+                                    ({'required_depended_args': DEPENDANT_ARGS}, {}),
+                                    ({'required_depended_args': DEPENDANT_ARGS},
+                                     {k: 3 for k, v in DEPENDANT_ARGS.items() if v == 'frequency_months'})]
+
+    @pytest.mark.parametrize('command_data, args', VALIDATE_DEPENDED_ARGS_INPUT)
+    def test_validate_depended_args_valid(self, command_data: Dict, args: Dict):
+        """
+        Given:
+        - Command data.
+        - Cortex XSOAR arguments.
+
+        When:
+        - Validating depended args are supplied as expected.
+
+        Then:
+        - Ensure no exception is thrown.
+        """
+        Qualysv2.args_values = args
+        validate_depended_args(command_data)
+
+    def test_validate_depended_args_invalid(self):
+        """
+        Given:
+        - Command data.
+        - Cortex XSOAR arguments.
+
+        When:
+        - Validating depended args are not supplied as expected.
+
+        Then:
+        - Ensure exception is thrown.
+        """
+        Qualysv2.args_values = {'frequency_months': 1}
+        with pytest.raises(DemistoException,
+                           match='Argument day_of_month is required when argument frequency_months is given.'):
+            validate_depended_args({'required_depended_args': self.DEPENDANT_ARGS})
+
+    EXACTLY_ONE_GROUP_ARGS = [['asset_group_ids', 'asset_groups', 'ip', ],
+                              ['frequency_days', 'frequency_weeks', 'frequency_months', ],
+                              ['scanners_in_ag', 'default_scanner', ], ]
+    EXACTLY_ONE_ARGS_INPUT = [({}, {}),
+                              ({'required_groups': EXACTLY_ONE_GROUP_ARGS},
+                               {'asset_group_ids': 1, 'scanners_in_ag': 1, 'frequency_days': 1}),
+                              ({'required_groups': EXACTLY_ONE_GROUP_ARGS},
+                               {'asset_groups': 1, 'scanners_in_ag': 1, 'frequency_weeks': 1}),
+                              ({'required_groups': EXACTLY_ONE_GROUP_ARGS},
+                               {'ip': '1.1.1.1', 'default_scanner': 1, 'frequency_months': 1})
+                              ]
+
+    @pytest.mark.parametrize('command_data, args', EXACTLY_ONE_ARGS_INPUT)
+    def test_validate_required_group_valid(self, command_data: Dict, args: Dict):
+        """
+        Given:
+        - Command data.
+        - Cortex XSOAR arguments.
+
+        When:
+        - Validating required groups are supplied as expected.
+
+        Then:
+        - Ensure no exception is thrown.
+        """
+        Qualysv2.args_values = args
+        validate_required_group(command_data)
+
+    EXACTLY_ONE_INVALID_INPUT = [({}), ({'ip': '1.1.1.1', 'asset_group_ids': 1, 'frequency_months': 1})]
+
+    @pytest.mark.parametrize('args', EXACTLY_ONE_INVALID_INPUT)
+    def test_validate_required_group_invalid(self, args):
+        """
+        Given:
+        - Command data.
+        - Cortex XSOAR arguments.
+
+        When:
+        - Validating required groups are not supplied as expected.
+
+        Then:
+        - Ensure exception is thrown.
+        """
+        Qualysv2.args_values = args
+        err_msg = "Exactly one of the arguments ['asset_group_ids', 'asset_groups', 'ip'] must be provided."
+        with pytest.raises(DemistoException, match=re.escape(err_msg)):
+            validate_required_group({'required_groups': self.EXACTLY_ONE_GROUP_ARGS})
+
+    AT_MOST_ONE_GROUP_ARGS = [['asset_group_ids', 'asset_groups', 'ip', ],
+                              ['frequency_days', 'frequency_weeks', 'frequency_months', ],
+                              ['scanners_in_ag', 'default_scanner', ], ]
+    AT_MOST_ONE_ARGS_INPUT = [({}, {}),
+                              ({'at_most_one_groups': AT_MOST_ONE_GROUP_ARGS}, {}),
+                              ({'at_most_one_groups': AT_MOST_ONE_GROUP_ARGS},
+                               {'asset_group_ids': 1, 'scanners_in_ag': 1, 'frequency_days': 1}),
+                              ({'at_most_one_groups': AT_MOST_ONE_GROUP_ARGS},
+                               {'asset_groups': 1, 'scanners_in_ag': 1, 'frequency_weeks': 1}),
+                              ({'at_most_one_groups': AT_MOST_ONE_GROUP_ARGS},
+                               {'ip': '1.1.1.1', 'default_scanner': 1, 'frequency_months': 1})
+                              ]
+
+    @pytest.mark.parametrize('command_data, args', AT_MOST_ONE_ARGS_INPUT)
+    def test_validate_at_most_one_group_valid(self, command_data: Dict, args: Dict):
+        """
+        Given:
+        - Command data.
+        - Cortex XSOAR arguments.
+
+        When:
+        - Validating depended args are supplied as expected.
+
+        Then:
+        - Ensure no exception is thrown.
+        """
+        Qualysv2.args_values = args
+        validate_at_most_one_group(command_data)
+
+    def test_validate_at_most_one_group_invalid(self):
+        """
+        Given:
+        - Command data.
+        - Cortex XSOAR arguments.
+
+        When:
+        - Validating depended args are not supplied as expected.
+
+        Then:
+        - Ensure exception is thrown.
+        """
+        Qualysv2.args_values = {'scanners_in_ag': 1, 'default_scanner': 1}
+        err_msg = "At most one of the following args can be given: ['scanners_in_ag', 'default_scanner']"
+        with pytest.raises(DemistoException, match=re.escape(err_msg)):
+            validate_at_most_one_group({'at_most_one_groups': self.AT_MOST_ONE_GROUP_ARGS})

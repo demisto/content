@@ -44,6 +44,8 @@ DEFAULT_SOURCE = 'Azure Sentinel'
 
 THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source', 'Confidence', 'Tags']
 
+MINIMAL_INCIDENT_NUMBER = 0
+
 
 class AzureSentinelClient:
     def __init__(self, server_url: str, tenant_id: str, client_id: str,
@@ -124,14 +126,36 @@ class AzureSentinelClient:
 ''' INTEGRATION HELPER METHODS '''
 
 
+def get_error_kind(code):
+    """
+    Get the kind of the error based on the http error code.
+    """
+    if code == 400:
+        return 'BadRequest'
+    elif code == 401:
+        return 'UnAuthorized'
+    elif code == 403:
+        return 'Forbidden'
+    elif code == 404:
+        return 'NotFound'
+
+
 def error_handler(response: requests.Response):
     """
     raise informative exception in case of error response
     """
     if response.status_code in (400, 401, 403, 404):
-        res_json = response.json()
-        error_kind = res_json.get('error', {}).get('code', 'BadRequest')
-        error_msg = res_json.get('error', {}).get('message', res_json)
+        try:
+            error_json = response.json()
+        except json.JSONDecodeError:
+            error_json = {
+                'error': {
+                    'code': get_error_kind(code=response.status_code),
+                    'message': response.text
+                }
+            }
+        error_kind = error_json.get('error', {}).get('code', 'BadRequest')
+        error_msg = error_json.get('error', {}).get('message', error_json)
         raise ValueError(
             f'[{error_kind} {response.status_code}] {error_msg}'
         )
@@ -435,7 +459,15 @@ def test_module(client):
     return 'ok'
 
 
-def list_incidents_command(client, args, is_fetch_incidents=False):
+def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents=False):
+    """ Retrieves incidents from Sentinel.
+    Args:
+        client: An AzureSentinelClient client.
+        args: Demisto args.
+        is_fetch_incidents: Is it part of a fetch incidents command.
+    Returns:
+        A CommandResult object with the array of incidents as output.
+    """
     filter_expression = args.get('filter')
     limit = None if is_fetch_incidents else min(200, int(args.get('limit')))
     next_link = args.get('next_link', '')
@@ -448,7 +480,7 @@ def list_incidents_command(client, args, is_fetch_incidents=False):
         params = {
             '$top': limit,
             '$filter': filter_expression,
-            '$orderby': 'properties/createdTimeUtc asc'
+            '$orderby': args.get('orderby', 'properties/createdTimeUtc asc')
         }
         remove_nulls_from_dictionary(params)
 
@@ -842,28 +874,68 @@ def update_next_link_in_context(result: dict, outputs: dict):
         outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item
 
 
-def fetch_incidents(client, last_run, first_fetch_time, min_severity):
+def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: int):
+    """Fetching incidents.
+    Args:
+        first_fetch_time: The first fetch time.
+        client: An AzureSentinelClient client.
+        last_run: An dictionary of the last run.
+        min_severity: A minimum severity of incidents to fetch.
+
+    Returns:
+        (tuple): 1. The LastRun object updated with the last run details.
+        2. An array of incidents.
+
+    """
     # Get the last fetch details, if exist
     last_fetch_time = last_run.get('last_fetch_time')
     last_fetch_ids = last_run.get('last_fetch_ids', [])
+    last_incident_number = last_run.get('last_incident_number', MINIMAL_INCIDENT_NUMBER)
+    demisto.debug(f"{last_fetch_time=}, {last_fetch_ids=}, {last_incident_number=}")
 
-    # Handle first time fetch
-    if last_fetch_time is None:
+    if last_fetch_time is None:  # this is the first fetch, or the First fetch timestamp was reset
+        demisto.debug("handle via timestamp")
         last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
-        last_fetch_time = dateparser.parse(last_fetch_time_str)
-    else:
-        last_fetch_time = dateparser.parse(last_fetch_time)
+        latest_created_time = dateparser.parse(last_fetch_time_str)
+        latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
+        command_args = {
+            'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
+            'orderby': 'properties/createdTimeUtc asc',
+        }
+        raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
 
-    latest_created_time = last_fetch_time
-    latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
-    command_args = {'filter': f'properties/createdTimeUtc ge {latest_created_time_str}'}
-    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True)
-    items = command_result.outputs
+    else:
+        demisto.debug("handle via id")
+        latest_created_time = dateparser.parse(last_fetch_time)
+        command_args = {
+            'filter': f'properties/incidentNumber gt {last_incident_number}',
+            'orderby': 'properties/incidentNumber asc',
+        }
+        raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
+
+    return process_incidents(raw_incidents, last_fetch_ids, min_severity, latest_created_time, last_incident_number)
+
+
+def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime,
+                      last_incident_number: int):
+    """Processing the raw incidents
+    Args:
+        raw_incidents: The incidents that were fetched from the API.
+        last_fetch_ids: The last fetch ids from the last run.
+        last_incident_number: The last incident number that was fetched.
+        latest_created_time: The latest created time.
+        min_severity: The minimum severity.
+
+    Returns:
+        A next_run dictionary, and an array of incidents.
+    """
+
     incidents = []
     current_fetch_ids = []
 
-    for incident in items:
+    for incident in raw_incidents:
         incident_severity = severity_to_level(incident.get('Severity'))
+        demisto.debug(f"{incident.get('ID')=}, {incident_severity=}, {incident.get('IncidentNumber')=}")
 
         # fetch only incidents that weren't fetched in the last run and their severity is at least min_severity
         if incident.get('ID') not in last_fetch_ids and incident_severity >= min_severity:
@@ -881,10 +953,13 @@ def fetch_incidents(client, last_run, first_fetch_time, min_severity):
             # Update last run to the latest fetch time
             if incident_created_time > latest_created_time:
                 latest_created_time = incident_created_time
+            if incident.get('IncidentNumber') > last_incident_number:
+                last_incident_number = incident.get('IncidentNumber')
 
     next_run = {
         'last_fetch_time': latest_created_time.strftime(DATE_FORMAT),
-        'last_fetch_ids': current_fetch_ids
+        'last_fetch_ids': current_fetch_ids,
+        'last_incident_number': last_incident_number,
     }
     return next_run, incidents
 

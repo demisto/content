@@ -6,3 +6,7 @@ ignore=auto-test
 
 [file:playbook-McAfee_ESM_Watchlists_-_Test.yml]
 ignore=auto-test
+
+
+[file:McAfee_ESM_v2_image.png]
+ignore=IM111

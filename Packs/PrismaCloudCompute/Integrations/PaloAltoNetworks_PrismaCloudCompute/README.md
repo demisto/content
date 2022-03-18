@@ -15,6 +15,7 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 4. On the left, select **Demisto** from the provider list.
 5. On the right, select the alert triggers. Alert triggers specify which alerts are sent to Cortex XSOAR.
 6. Click **Save** to save the alert profile.
+7. Make sure you configure the user role to be at least `auditor`, otherwise you will not be able to fetch the alerts.
 
 ## Configure Prisma Cloud Compute on Cortex XSOAR
 
@@ -35,6 +36,33 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 4. Click **Test** to validate the integration.
 5. Click **Done** to save the integration.
 
+## Configure Prisma Cloud Compute User Roles 
+
+* In order to access Prisma Cloud Compute resources, a user must be assigned with a role.
+* Without sufficient user roles, commands/fetching incidents might not work.
+* See below the user roles and their descriptions.
+* See 'Requires Role' section (each command requires a different type of role).
+
+1) Go to `Manage` -> `Authentication`.
+2) Choose the user that you want to edit roles -> `Actions` -> Press `...`.
+3) Press on `Edit` -> Choose a Role in the `Role` section.
+
+![User Roles Configuration](doc_images/user-roles-configuration.png)
+
+## Required User Roles
+In order to use the entire integration commands a user must have the permissions of the following user roles:
+
+* devSecOps
+* ci
+* auditor
+* operator
+* devOps
+* vulnerabilityManager
+
+The administrator user role can use the entire integration commands.
+
+See user roles descriptions in Prisma Cloud Compute:
+![Available User Roles](doc_images/available-user-roles.png)
 
 Commands
 --------
@@ -49,6 +77,10 @@ Get information about the hosts and their profile events. This command supports 
 #### Base Command
 
 `prisma-cloud-compute-profile-host-list`
+
+#### Requires Role
+devSecOps
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -220,27 +252,27 @@ Get information about the hosts and their profile events. This command supports 
 ```
 
 #### Human Readable Output - One Host
-### Host Description
-|Hostname|Distribution|Collections|
-|---|---|---|
-| host163 | amzn 2 | All,<br>676921422616 |
-### Apps
-|AppName|StartupProcess|User|LaunchTime|
-|---|---|---|---|
-| auditd | /usr/sbin/auditd | root | November 10, 2020 09:37:30 AM |
-| atd | /usr/sbin/atd | root | November 10, 2020 09:37:30 AM |
-### SSH Events
-|User|Ip|ProcessPath|Command|Time|
-|---|---|---|---|---|
-| user123 | 1.2.3.4 | /usr/bin/grep | grep twistlock_data - High rate of events, throttling started | December 10, 2021 11:06:03 AM |
-| user123 | 1.1.1.1 | /usr/bin/docker | docker -H unix:///var/run/docker.sock ps -a --format {{ .Names }} | December 10, 2021 11:06:03 AM |
+>### Host Description
+>|Hostname|Distribution|Collections|
+>|---|---|---|
+>| host163 | amzn 2 | All,<br>676921422616 |
+>### Apps
+>|AppName|StartupProcess|User|LaunchTime|
+>|---|---|---|---|
+>| auditd | /usr/sbin/auditd | root | November 10, 2020 09:37:30 AM |
+>| atd | /usr/sbin/atd | root | November 10, 2020 09:37:30 AM |
+>### SSH Events
+>|User|Ip|ProcessPath|Command|Time|
+>|---|---|---|---|---|
+>| user123 | 1.2.3.4 | /usr/bin/grep | grep twistlock_data - High rate of events, throttling started | December 10, 2021 11:06:03 AM |
+>| user123 | 1.1.1.1 | /usr/bin/docker | docker -H unix:///var/run/docker.sock ps -a --format {{ .Names }} | December 10, 2021 11:06:03 AM |
 
 #### Human Readable Output - Multiple Hosts
-### Host Description
-|Hostname|Distribution|Collections|
-|---|---|---|
-| host163 | amzn 2 | All,<br>676921422616 |
-| host249 | Ubuntu 16.04 | All,<br>676921422616 |
+>### Host Description
+>|Hostname|Distribution|Collections|
+>|---|---|---|
+>| host163 | amzn 2 | All,<br>676921422616 |
+>| host249 | Ubuntu 16.04 | All,<br>676921422616 |
 
 
 
@@ -248,10 +280,12 @@ Get information about the hosts and their profile events. This command supports 
 ***
 Get information about the containers and their profile events. This command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring.
 
-
 #### Base Command
-
 `prisma-cloud-compute-profile-container-list`
+
+#### Requires Role
+devSecOps
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -490,24 +524,24 @@ Get information about the containers and their profile events. This command supp
 ```
 
 #### Human Readable Output - One Container
-### Container Description
-|ContainerID|Image|Os|State|Created|EntryPoint|
-|---|---|---|---|---|---|
-| container123 | twistlock/private:defender_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2020 11:05:08 AM | /usr/local/bin/defender |
-### Processes
-|Type|Path|DetectionTime|
-|---|---|---|
-| static | /usr/bin/mongodump | January 01, 2021 00:00:00 AM |
-| static | /usr/bin/mongorestore | January 01, 2021 00:00:00 AM |
-| behavioral | /usr/local/bin/fsmon | September 02, 2021 11:05:08 AM |
-| behavioral | /usr/lib/apt/methods/gpgv | November 24, 2021 15:12:28 PM |
+>### Container Description
+>|ContainerID|Image|Os|State|Created|EntryPoint|
+>|---|---|---|---|---|---|
+>| container123 | twistlock/private:defender_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2020 11:05:08 AM | /usr/local/bin/defender |
+>### Processes
+>|Type|Path|DetectionTime|
+>|---|---|---|
+>| static | /usr/bin/mongodump | January 01, 2021 00:00:00 AM |
+>| static | /usr/bin/mongorestore | January 01, 2021 00:00:00 AM |
+>| behavioral | /usr/local/bin/fsmon | September 02, 2021 11:05:08 AM |
+>| behavioral | /usr/lib/apt/methods/gpgv | November 24, 2021 15:12:28 PM |
 
 #### Human Readable Output - Multiple Containers
-### Container Description
-|ContainerID|Image|Os|State|Created|EntryPoint|
-|---|---|---|---|---|---|
-| container123 | twistlock/private:defender_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2021 11:05:08 AM | /usr/local/bin/defender |
-| container1234 | twistlock/private:console_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2021 11:05:08 AM | /app/server |
+>### Container Description
+>|ContainerID|Image|Os|State|Created|EntryPoint|
+>|---|---|---|---|---|---|
+>| container123 | twistlock/private:defender_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2021 11:05:08 AM | /usr/local/bin/defender |
+>| container1234 | twistlock/private:console_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2021 11:05:08 AM | /app/server |
 
 ### prisma-cloud-compute-profile-container-hosts-list
 ***
@@ -517,6 +551,10 @@ Get the hosts where a specific container is running.
 #### Base Command
 
 `prisma-cloud-compute-profile-container-hosts-list`
+
+#### Requires Role
+devSecOps
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -553,10 +591,10 @@ Get the hosts where a specific container is running.
 ```
 
 #### Human Readable Output
-### Hosts
-|HostsIDs|
-|---|
-| host1,<br>host2 |
+>### Hosts
+>|HostsIDs|
+>|---|
+>| host1,<br>host2 |
 
 ### prisma-cloud-compute-profile-container-forensic-list
 ***
@@ -650,11 +688,11 @@ Get runtime forensics data for a specific container on a specific host.
 ```
 
 #### Human Readable Output
-### Containers forensic report
-|Type|Path|User|Pid|ContainerId|Timestamp|Command|
-|---|---|---|---|---|---|---|
-| Process spawned | /usr/bin/mongodump | twistlock | 1341 | a6f769dd | December 10, 2021 11:49:50 AM | mongodump --out=/var/lib/twistlock-backup/dump |
-| Process spawned | /usr/bin/mongodump | twistlock | 20891 | a6f769dd | December 09, 2021 11:49:22 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+>### Containers forensic report
+>|Type|Path|User|Pid|ContainerId|Timestamp|Command|
+>|---|---|---|---|---|---|---|
+>| Process spawned | /usr/bin/mongodump | twistlock | 1341 | a6f769dd | December 10, 2021 11:49:50 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+>| Process spawned | /usr/bin/mongodump | twistlock | 20891 | a6f769dd | December 09, 2021 11:49:22 AM | mongodump --out=/var/lib/twistlock-backup/dump |
 
 
 ### prisma-cloud-compute-host-forensic-list
@@ -663,8 +701,11 @@ Get forensics on a specific host.
 
 
 #### Base Command
-
 `prisma-cloud-compute-host-forensic-list`
+
+#### Requires Role
+devSecOps
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -758,12 +799,12 @@ Get forensics on a specific host.
 ```
 
 #### Human Readable Output
-### Host forensics report
-|Type|Path|User|Pid|Timestamp|Command|App|
-|---|---|---|---|---|---|---|
-| Process spawned | /usr/bin/gawk | cakeagent | 17411 | December 10, 2021 21:34:03 PM | awk {gsub("%", "%%", $0);printf  $1 "\|" $2 "\|" $3 "\|" $4 "\|" $5 "\|" $6 "\|" $11 ":::"} | cron |
-| Process spawned | /bin/ps | cakeagent | 17410 | December 10, 2021 21:34:03 PM | ps aux | cron |
-| Process spawned | /bin/grep | cakeagent | 17407 | December 10, 2021 21:34:03 PM | grep -vE ^Filesystem\|tmpfs\|cdrom | cron |
+>### Host forensics report
+>|Type|Path|User|Pid|Timestamp|Command|App|
+>|---|---|---|---|---|---|---|
+>| Process spawned | /usr/bin/gawk | cakeagent | 17411 | December 10, 2021 21:34:03 PM | awk {gsub("%", "%%", $0);printf  $1 "\|" $2 "\|" $3 "\|" $4 "\|" $5 "\|" $6 "\|" $11 ":::"} | cron |
+>| Process spawned | /bin/ps | cakeagent | 17410 | December 10, 2021 21:34:03 PM | ps aux | cron |
+>| Process spawned | /bin/grep | cakeagent | 17407 | December 10, 2021 21:34:03 PM | grep -vE ^Filesystem\|tmpfs\|cdrom | cron |
 
 
 ### prisma-cloud-compute-console-version-info
@@ -772,8 +813,11 @@ Get the console version.
 
 
 #### Base Command
-
 `prisma-cloud-compute-console-version-info`
+
+#### Requires Role
+ci
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -802,10 +846,10 @@ Get the console version.
 ```
 
 #### Human Readable Output
-### Console version
-|Version|
-|---|
-| 21.04.439 |
+>### Console version
+>|Version|
+>|---|
+>| 21.04.439 |
 
 
 ### prisma-cloud-compute-custom-feeds-ip-list
@@ -814,8 +858,11 @@ Get all the blacklisted IP addresses in the system.
 
 
 #### Base Command
-
 `prisma-cloud-compute-custom-feeds-ip-list`
+
+#### Requires Role
+auditor
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -851,19 +898,22 @@ Get all the blacklisted IP addresses in the system.
 ```
 
 #### Human Readable Output
-### IP Feeds
-|Modified|Feed|
-|---|---|
-| December 10, 2021 21:12:32 PM | 2.2.2.2,<br>1.1.1.1 |
+>### IP Feeds
+>|Modified|Feed|
+>|---|---|
+>| December 10, 2021 21:12:32 PM | 2.2.2.2,<br>1.1.1.1 |
 
 
 ### prisma-cloud-compute-custom-feeds-ip-add
 ***
 Add a list of banned IP addresses to be blocked by the system.
 
-### Base Command
-
+#### Base Command
 `prisma-cloud-compute-custom-feeds-ip-add`
+
+#### Requires Role
+operator
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -879,7 +929,7 @@ There is no context output for this command.
 ```!prisma-cloud-compute-custom-feeds-ip-add IP=1.1.1.1,2.2.2.2```
 
 #### Human Readable Output
-Successfully updated the custom IP feeds
+>Successfully updated the custom IP feeds
 
 ### prisma-cloud-compute-custom-feeds-malware-list
 ***
@@ -887,8 +937,11 @@ List all custom uploaded md5 malwares.
 
 
 #### Base Command
-
 `prisma-cloud-compute-custom-feeds-malware-list`
+
+#### Requires Role
+auditor
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -935,21 +988,23 @@ List all custom uploaded md5 malwares.
 ```
 
 #### Human Readable Output
-### Malware Feeds
-|Name|Md5|Allowed|
-|---|---|---|
-| first_md5_hash | md5_hash1 | false |
-| second_md5_hash | md5_hash2 | false |
+>### Malware Feeds
+>|Name|Md5|Allowed|
+>|---|---|---|
+>| first_md5_hash | md5_hash1 | false |
+>| second_md5_hash | md5_hash2 | false |
 
 
 ### prisma-cloud-compute-custom-feeds-malware-add
 ***
 Add custom md5 malware hashes.
 
-
 #### Base Command
-
 `prisma-cloud-compute-custom-feeds-malware-add`
+
+#### Requires Role
+operator
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -966,7 +1021,7 @@ There is no context output for this command.
 ```!prisma-cloud-compute-custom-feeds-malware-add name=test md5=md5_hash1,md5_hash2,md5_hash3```
 
 #### Human Readable Output
-Successfully updated the custom md5 malware feeds
+>Successfully updated the custom md5 malware feeds
 
 
 ### cve
@@ -975,8 +1030,11 @@ Get information about the CVEs in the system. Will return a maximum of 50 record
 
 
 #### Base Command
-
 `cve`
+
+#### Requires Role
+devOps
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1036,24 +1094,26 @@ Get information about the CVEs in the system. Will return a maximum of 50 record
 ```
 
 #### Human Readable Output
-### CVE-2021-43332
-|CVSS|Description|ID|Modified|
-|---|---|---|---|
-| 6.1 | In GNU Mailman before 2.1.36, the CSRF token for the Cgi/admindb.py admindb page contains an encrypted version of the list admin password. This could potentially be cracked by a moderator via an offline brute-force attack. | CVE-2021-43332 | November 19, 2021 08:40:01 AM |
-### CVE-2021-43337
-|CVSS|Description|ID|Modified|
-|---|---|---|---|
-| 6.5 | SchedMD Slurm 21.08.* before 21.08.4 has Incorrect Access Control. On sites using the new AccountingStoreFlags=job_script and/or job_env options, the access control rules in SlurmDBD may permit users to request job scripts and environment files to which they should not have access. | CVE-2021-43337 | November 18, 2021 08:40:01 AM |
+>### CVE-2021-43332
+>|CVSS|Description|ID|Modified|
+>|---|---|---|---|
+>| 6.1 | In GNU Mailman before 2.1.36, the CSRF token for the Cgi/admindb.py admindb page contains an encrypted version of the list admin password. This could potentially be cracked by a moderator via an offline brute-force attack. | CVE-2021-43332 | November 19, 2021 08:40:01 AM |
+>### CVE-2021-43337
+>|CVSS|Description|ID|Modified|
+>|---|---|---|---|
+>| 6.5 | SchedMD Slurm 21.08.* before 21.08.4 has Incorrect Access Control. On sites using the new AccountingStoreFlags=job_script and/or job_env options, the access control rules in SlurmDBD may permit users to request job scripts and environment files to which they should not have access. | CVE-2021-43337 | November 18, 2021 08:40:01 AM |
 
 
 ### prisma-cloud-compute-defenders-list
 ***
 Retrieve a list of defenders and their information.
 
-
 #### Base Command
-
 `prisma-cloud-compute-defenders-list`
+
+#### Requires Role
+vulnerabilityManager
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1199,10 +1259,10 @@ Retrieve a list of defenders and their information.
 ```
 
 #### Human Readable Output
-### Defenders Information
-|Hostname|Version|Status|Listener|
-|---|---|---|---|
-| host1 | 21.04.439 | Connected since September 02, 2021 11:05:08 AM | none
+>### Defenders Information
+>|Hostname|Version|Status|Listener|
+>|---|---|---|---|
+>| host1 | 21.04.439 | Connected since September 02, 2021 11:05:08 AM | none
 
 
 ### prisma-cloud-compute-collections-list
@@ -1211,8 +1271,11 @@ Retrieves a list of all collections.
 
 
 #### Base Command
-
 `prisma-cloud-compute-collections-list`
+
+#### Requires Role
+auditor
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1294,21 +1357,25 @@ Retrieves a list of all collections.
 ```
 
 #### Human Readable Output
-### Collections Information
-|Name|Description|Owner|Modified|
-|---|---|---|---|
-| All | System - all resources collection | system | September 02, 2021 11:05:06 AM |
+>### Collections Information
+>|Name|Description|Owner|Modified|
+>|---|---|---|---|
+>| All | System - all resources collection | system | September 02, 2021 11:05:06 AM |
 
 
 
 ### prisma-cloud-compute-container-namespace-list
 ***
-Get the containers namespaces names
+Get the containers namespaces names.
 
 
 #### Base Command
 
 `prisma-cloud-compute-container-namespace-list`
+
+#### Requires Role
+devSecOps
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1342,12 +1409,12 @@ Get the containers namespaces names
 ```
 
 #### Human Readable Output
-### Collections Information
-|Name|
-|---|
-| namespace1 |
-| namespace2 |
-| namespace3 |
+>### Collections Information
+>|Name|
+>|---|
+>| namespace1 |
+>| namespace2 |
+>| namespace3 |
 
 
 ### prisma-cloud-compute-images-scan-list
@@ -1356,8 +1423,11 @@ Get images scan report. The report includes vulnerabilities, compliance issues, 
 
 
 #### Base Command
-
 `prisma-cloud-compute-images-scan-list`
+
+#### Requires Role
+vulnerabilityManager
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1767,19 +1837,19 @@ Get images scan report. The report includes vulnerabilities, compliance issues, 
 ```
 
 #### Human Readable Output
-### Image description
-|ID|Image|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
-|---|---|---|---|---|
-| image123 | demisto/python:1.3-alpine | Alpine Linux v3.7 | 60 | 1 |
-### Vulnerabilities
-|Cve|Description|Severity|Package Name|Status|Fix Date|
-|---|---|---|---|---|---|
-| CVE-2018-20679 | An issue was discovered in BusyBox before 1.30.0. An out of bounds read in udhcp components (consumed by the DHCP server, client, and relay) allows a remote attacker to leak sensitive information from the stack by sending a crafted DHCP message. This is related to verification in udhcp_get_option() in networking/udhcp/common.c that 4-byte options are indeed 4 bytes. | high | busybox | fixed in 1.30.1-r5 | January 09, 2019 16:29:00 PM |
-| CVE-2018-1000517 | BusyBox project BusyBox wget version prior to commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e contains a Buffer Overflow vulnerability in Busybox wget that can result in heap buffer overflow. This attack appear to be exploitable via network connectivity. This vulnerability appears to have been fixed in after commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e. | critical | busybox | fixed in 1.29.3-r10 | June 26, 2018 16:29:00 PM |
-### Compliances
-|Id|Severity|Description|
-|---|---|---|
-| 41 | high | It is a good practice to run the container as a non-root user, if possible. Though user<br>namespace mapping is now available, if a user is already defined in the container image, the<br>container is run as that user by default and specific user namespace remapping is not<br>required |
+>### Image description
+>|ID|Image|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
+>|---|---|---|---|---|
+>| image123 | demisto/python:1.3-alpine | Alpine Linux v3.7 | 60 | 1 |
+>### Vulnerabilities
+>|Cve|Description|Severity|Package Name|Status|Fix Date|
+>|---|---|---|---|---|---|
+>| CVE-2018-20679 | An issue was discovered in BusyBox before 1.30.0. An out of bounds read in udhcp components (consumed by the DHCP server, client, and relay) allows a remote attacker to leak sensitive information from the stack by sending a crafted DHCP message. This is related to verification in udhcp_get_option() in networking/udhcp/common.c that 4-byte options are indeed 4 bytes. | high | busybox | fixed in 1.30.1-r5 | January 09, 2019 16:29:00 PM |
+>| CVE-2018-1000517 | BusyBox project BusyBox wget version prior to commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e contains a Buffer Overflow vulnerability in Busybox wget that can result in heap buffer overflow. This attack appear to be exploitable via network connectivity. This vulnerability appears to have been fixed in after commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e. | critical | busybox | fixed in 1.29.3-r10 | June 26, 2018 16:29:00 PM |
+>### Compliances
+>|Id|Severity|Description|
+>|---|---|---|
+>| 41 | high | It is a good practice to run the container as a non-root user, if possible. Though user<br>namespace mapping is now available, if a user is already defined in the container image, the<br>container is run as that user by default and specific user namespace remapping is not<br>required |
 
 
 
@@ -1910,28 +1980,31 @@ Get images scan report. The report includes vulnerabilities, compliance issues, 
 ```
 
 #### Human Readable Output
-### Image description
-|ID|Image|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
-|---|---|---|---|---|
-| image123 | demisto/python:1.3-alpine | Alpine Linux v3.7 | 60 | 1 |
-### Vulnerability Statistics
-|Critical|High|Medium|Low|
-|---|---|---|---|
-| 12 | 28 | 20 | 0 |
-### Compliance Statistics
-|Critical|High|Medium|Low|
-|---|---|---|---|
-| 0 | 1 | 0 | 0 |
+>### Image description
+>|ID|Image|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
+>|---|---|---|---|---|
+>| image123 | demisto/python:1.3-alpine | Alpine Linux v3.7 | 60 | 1 |
+>### Vulnerability Statistics
+>|Critical|High|Medium|Low|
+>|---|---|---|---|
+>| 12 | 28 | 20 | 0 |
+>### Compliance Statistics
+>|Critical|High|Medium|Low|
+>|---|---|---|---|
+>| 0 | 1 | 0 | 0 |
 
 
 ### prisma-cloud-compute-hosts-scan-list
 ***
-Get images scan report. The report includes vulnerabilities, compliance issues, binaries, etc.
+Get hosts scan report. The report includes vulnerabilities, compliance issues, binaries, etc.
 
 
 #### Base Command
-
 `prisma-cloud-compute-hosts-scan-list`
+
+#### Requires Role
+vulnerabilityManager
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2285,20 +2358,20 @@ Get images scan report. The report includes vulnerabilities, compliance issues, 
 ```
 
 #### Human Readable Output
-### Host description
-|Hostname|Docker Version|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
-|---|---|---|---|---|
-| host123 | 17.06.0-ce | Ubuntu 16.04.2 LTS | 191 | 17 |
-### Vulnerabilities
-|Cve|Description|Severity|Package Name|Status|
-|---|---|---|---|---|
-| CVE-2020-8037 | The ppp decapsulator in tcpdump 4.9.3 can be convinced to allocate a large amount of memory. | low | tcpdump | needed |
-| CVE-2021-31879 | GNU Wget through 1.21.1 does not omit the Authorization header upon a redirect to a different origin, a related issue to CVE-2018-1000007. | medium | wget | deferred |
-### Compliances
-|Id|Severity|Description|
-|---|---|---|
-| 16 | high | Docker allows you to share a directory between the Docker host and a guest container<br>without limiting the access rights of the container. This means that you can start a<br>container and map the / directory on your host to the container. The container will then be<br>able to alter your host file system without any restrictions. In simple terms, it means that<br>you can attain elevated privileges with just being a member of the docker group and then<br>starting a container with mapped / directory on the host |
-| 21 | high | By default, all network traffic is allowed between containers on the same host on the<br>default network bridge. If not desired, restrict all the inter-container communication. Link<br>specific containers together that require communication. Alternatively, you can create<br>custom network and only join containers that need to communicate to that custom<br>network |
+>### Host description
+>|Hostname|Docker Version|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
+>|---|---|---|---|---|
+>| host123 | 17.06.0-ce | Ubuntu 16.04.2 LTS | 191 | 17 |
+>### Vulnerabilities
+>|Cve|Description|Severity|Package Name|Status|
+>|---|---|---|---|---|
+>| CVE-2020-8037 | The ppp decapsulator in tcpdump 4.9.3 can be convinced to allocate a large amount of memory. | low | tcpdump | needed |
+>| CVE-2021-31879 | GNU Wget through 1.21.1 does not omit the Authorization header upon a redirect to a different origin, a related issue to CVE-2018-1000007. | medium | wget | deferred |
+>### Compliances
+>|Id|Severity|Description|
+>|---|---|---|
+>| 16 | high | Docker allows you to share a directory between the Docker host and a guest container<br>without limiting the access rights of the container. This means that you can start a<br>container and map the / directory on your host to the container. The container will then be<br>able to alter your host file system without any restrictions. In simple terms, it means that<br>you can attain elevated privileges with just being a member of the docker group and then<br>starting a container with mapped / directory on the host |
+>| 21 | high | By default, all network traffic is allowed between containers on the same host on the<br>default network bridge. If not desired, restrict all the inter-container communication. Link<br>specific containers together that require communication. Alternatively, you can create<br>custom network and only join containers that need to communicate to that custom<br>network |
 
 
 #### Command Example
@@ -2410,18 +2483,18 @@ Get images scan report. The report includes vulnerabilities, compliance issues, 
 ```
 
 #### Human Readable Output
-### Host description
-|Hostname|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
-|---|---|---|---|
-| host123 | Ubuntu 16.04.2 LTS | 191 | 17 |
-### Vulnerability Statistics
-|Critical|High|Medium|Low|
-|---|---|---|---|
-| 0 | 4 | 78 | 109 |
-### Compliance Statistics
-|Critical|High|Medium|Low|
-|---|---|---|---|
-| 1 | 16 | 0 | 0 |
+>### Host description
+>|Hostname|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
+>|---|---|---|---|
+>| host123 | Ubuntu 16.04.2 LTS | 191 | 17 |
+>### Vulnerability Statistics
+>|Critical|High|Medium|Low|
+>|---|---|---|---|
+>| 0 | 4 | 78 | 109 |
+>### Compliance Statistics
+>|Critical|High|Medium|Low|
+>|---|---|---|---|
+>| 1 | 16 | 0 | 0 |
 
 
 ### prisma-cloud-compute-vulnerabilities-impacted-resources-list
@@ -2430,8 +2503,11 @@ Get the list of Prisma Cloud Compute vulnerabilities resources.
 
 
 #### Base Command
-
 `prisma-cloud-compute-vulnerabilities-impacted-resources-list`
+
+#### Requires Role
+vulnerabilityManager
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2503,16 +2579,14 @@ Get the list of Prisma Cloud Compute vulnerabilities resources.
 ```
 
 #### Human Readable Output
-### Impacted Images
-|Cve|Image|
-|---|---|
-| CVE-2021-31535 | image1 |
-| CVE-2021-31535 | image2 |
-| CVE-2018-14600 | image3 |
-| CVE-2018-14600 | image4 |
-### Impacted Hosts
-|Cve|Hostname|
-|---|---|
-| CVE-2021-31535 | host1 |
-
-
+>### Impacted Images
+>|Cve|Image|
+>|---|---|
+>| CVE-2021-31535 | image1 |
+>| CVE-2021-31535 | image2 |
+>| CVE-2018-14600 | image3 |
+>| CVE-2018-14600 | image4 |
+>### Impacted Hosts
+>|Cve|Hostname|
+>|---|---|
+>| CVE-2021-31535 | host1 |
