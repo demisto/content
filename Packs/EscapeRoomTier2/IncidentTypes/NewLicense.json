@@ -1,0 +1,29 @@
+{
+	"id": "New License",
+	"version": -1,
+	"fromVersion": "6.0.0",
+	"locked": false,
+	"name": "New License",
+	"color": "#C5EDFF",
+	"hours": 0,
+	"days": 0,
+	"weeks": 0,
+	"hoursR": 0,
+	"daysR": 0,
+	"weeksR": 0,
+	"system": false,
+	"readonly": false,
+	"default": false,
+	"autorun": false,
+	"preProcessingScript": "",
+	"closureScript": "",
+	"disabled": false,
+	"reputationCalc": 1,
+	"onChangeRepAlg": 1,
+	"layout": "New License Layout",
+	"detached": false,
+	"extractSettings": {
+		"mode": "Specific",
+		"fieldCliNameToExtractSettings": {}
+	}
+}

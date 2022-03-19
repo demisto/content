@@ -7,9 +7,16 @@
 """
 
 import pytz
+import random
 
 import demistomock as demisto
 from CommonServerPython import *
+
+WRONG_DATE_RANGE_GIFS = (
+    '![](https://media.giphy.com/media/3dkPNxMiJWOCWvqGWY/giphy.gif)'
+    '![](https://user-images.githubusercontent.com/30797606/103149761-33c18b80-4775-11eb-8cdd-81d3142ea4a7.jpg)'
+    '![](https://media.giphy.com/media/fUwOs80ja3sTPpjndh/giphy.gif)'
+)
 
 WRONG_DATE_RANGE_HINT = '''
 ### You cannot drive a vehicle without a driver's license.
@@ -18,13 +25,33 @@ WRONG_DATE_RANGE_HINT = '''
 ### You cannot practice security without an XSOAR license.
 '''
 
+INVALID_LICENSE_GIFS = [
+    # 'https://media.giphy.com/media/kDqvtJtxMTFRcqR2r4/giphy.gif',
+    'https://media.giphy.com/media/l2Jegpw00OmTdz32w/giphy.gif',  # ok
+    'https://media.giphy.com/media/frTCmCyOReJC2AxN7A/giphy.gif',
+    'https://media.giphy.com/media/lPQvP5lfjHpapvrssI/giphy.gif',
+    'https://media.giphy.com/media/VIQpKu2WDTempgOKHK/giphy.gif',  # ok
+    'https://media.giphy.com/media/3ohhwqMZYXMmGNZEgo/giphy.gif',
+]
+
 INVALID_LICENSE_HINT = '''
 # Welcome to the twilight zone
 #### Looks like we run out of money and lost our XSOAR license.
 
 #### Don't be alarmed, we can handle it together.
-#### goto the [secret place](#Custom/caseinfoid/{incident_id})
+#### We've asked sales for a new license.
+#### Go get it from the [secret place]({incidents_page})
 '''
+
+SUCCESS_GIFS = [
+    # 'https://media.giphy.com/media/a0h7sAqON67nO/giphy.gif',
+    # 'https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif',
+    # 'https://media.giphy.com/media/gd0Dqg6rYhttBVCZqd/giphy.gif',
+    # 'https://media.giphy.com/media/Q81NcsY6YxK7jxnr4v/giphy.gif',
+    'https://media.giphy.com/media/MCZ39lz83o5lC/giphy.gif',
+    'https://media.giphy.com/media/fvlGGxUci1BiJuBET9/giphy.gif',
+    'https://media.giphy.com/media/Wq3gAYYuERDSU9DAbT/giphy.gif',
+]
 
 SUCCESS_MESSAGE = '''
 Now that you have the license issue sorted out.
@@ -64,14 +91,10 @@ def is_valid_license_temp(from_times: Set[str], to_times: Set[str]):
 
 
 def is_valid_license():
-    res = demisto.internalHttpRequest('GET', '/license')
-    license_info = res.get('body')
+    license_id = demisto.getLicenseID()
+    demisto.info(f'license info: {license_id}')
 
-    demisto.info(f'license info:\n {license_info}')
-    if dict_safe_get(license_info, ['customFields', 'EscapeRoomKey']):
-        return True
-
-    return False
+    return license_id == 'CUID1337deadbeef1337CUID'
 
 
 def create_starting_incident():
@@ -120,6 +143,8 @@ def main():
     try:
         args = demisto.args()
         demisto.info(str(args))
+        gif_or_text = args.get('gif_or_text', 'text')
+
         # Sometimes UTC time and local time doesn't return the same date in XSOAR when choosing specific time frames.
         time_from = dateparser.parse(args.get('from', '0001-01-01T00:00:00Z'))
         local_time_from = utc_to_time(time_from)
@@ -134,14 +159,32 @@ def main():
             local_time_to.date().strftime('%Y-%m-%d'),
         }
 
-        if not is_correct_date_range(from_times, to_times):
-            text = WRONG_DATE_RANGE_HINT
-        elif not is_valid_license():
-            incident_id = get_incident_with_license()
-            text = INVALID_LICENSE_HINT.format(incident_id=incident_id)
+        if is_valid_license():
+            if gif_or_text == 'text':
+                create_starting_incident()
+                text = SUCCESS_MESSAGE
+            else:
+                text = (
+                f'![]({random.choice(SUCCESS_GIFS)})'
+                f'![]({random.choice(SUCCESS_GIFS)})'
+                f'![]({random.choice(SUCCESS_GIFS)})'
+            )
+        elif is_correct_date_range(from_times, to_times):
+            if gif_or_text == 'text':
+                demisto_urls = demisto.demistoUrls()
+                incidents_page = 'acc_Tier2#/incidents' if 'acc_Tier2' in demisto_urls['server'] else '#/incidents'
+                text = INVALID_LICENSE_HINT.format(incidents_page=incidents_page)
+            else:
+                text = (
+                f'![]({random.choice(INVALID_LICENSE_GIFS)})'
+                f'![]({random.choice(INVALID_LICENSE_GIFS)})'
+                f'![]({random.choice(INVALID_LICENSE_GIFS)})'
+            )
         else:
-            create_starting_incident()
-            text = SUCCESS_MESSAGE
+            if gif_or_text == 'text':
+                text = WRONG_DATE_RANGE_HINT
+            else:
+                text = WRONG_DATE_RANGE_GIFS
 
         return_results(TextWidget(text))
 
