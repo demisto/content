@@ -1376,7 +1376,7 @@ attribute_mock_response_no_email_multiple = [
 @pytest.mark.parametrize('mock_response, expected_output', [(attribute_mock_response_email_exists, 'TEST-ID'),
                                                             (attribute_mock_response_no_email, 'TEST-ID'),
                                                             (attribute_mock_response_no_email_multiple,
-                                                             'Multiple account IDs were found')])
+                                                             'Multiple account IDs found')])
 def test_get_account_id_from_attribute_valid_attribute_match(mocker, mock_response, expected_output):
     """
     Given:

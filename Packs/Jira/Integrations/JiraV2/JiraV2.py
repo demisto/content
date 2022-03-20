@@ -328,15 +328,17 @@ def get_account_id_from_attribute(
                                                                               user.get('emailAddress', '').lower()])}
 
     if not account_ids:
+        # The email address is a private account field and sometimes is blank. If there is only one result,
+        # then it is the one. If there are more results for the query, the user should try "DisplayName" attribute.
         if not users:
             return f'No Account ID was found for attribute: {attribute}.'
         if len(users) == 1:
             account_ids = {users[0].get('name')} if is_jirav2api == 'true' else {users[0].get('accountId')}
         else:
-            demisto.debug(f'Account IDs found:\n {account_ids}')
-            return f'Multiple account IDs were found for attribute: {attribute}.\n' \
-                   f'but we could not validate which of them is the right one.' \
-                   f'Please try to provide the "DisplayName" attribute.'
+            demisto.debug(f'Multiple account IDs found, but it was not possible to resolve which one of them is most '
+                          f'relevant to attribute \"{attribute}\". Account ids: {account_ids}')
+            return f'Multiple account IDs found, but it was not possible to resolve which one of them is most ' \
+                   f'relevant to attribute \"{attribute}\".Please try to provide the "DisplayName" attribute.'
 
     if len(account_ids) > 1:
         return f'Multiple account IDs were found for attribute: {attribute}.\n' \
