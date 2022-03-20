@@ -15,12 +15,12 @@ configuration:
   name: tenant_id
   required: true
   type: 0
-- additionalinfo: Used for certificate Authentication. As appears in the "Certificates & secrets" page of the App.
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the App.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
-- additionalinfo: Used for certificate Authentication. The private key of the registered Certificate.
+- additionalinfo: Used for certificate authentication. The private key of the registered Certificate.
   display: Private Key
   name: private_key
   required: false
