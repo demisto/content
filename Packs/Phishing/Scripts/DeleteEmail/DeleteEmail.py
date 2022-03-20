@@ -33,7 +33,8 @@ def security_and_compliance_delete_mail(user_id, email_subject, delete_from_bran
         if not search_name:
             # first time, creating the search
             search_name = f'search_for_delete_{time()}'
-            execute_command('o365-sc-new-search', {'kql': query, 'search_name': search_name, 'using-brand': delete_from_brand})
+            execute_command('o365-sc-new-search', {'kql': query, 'search_name': search_name,
+                                                   'using-brand': delete_from_brand})
             execute_command('o365-sc-start-search', {'search_name': search_name, 'using-brand': delete_from_brand})
             args['search_name'] = search_name
 
@@ -51,11 +52,14 @@ def security_and_compliance_delete_mail(user_id, email_subject, delete_from_bran
             args['is_finished_searching'] = True
             return CommandResults(scheduled_command=schedule_next_command(args))
     else:
-        results = execute_command('o365-sc-get-search-action', {'search_action_name': search_name, 'using-brand': delete_from_brand})
+        results = execute_command('o365-sc-get-search-action', {'search_action_name': search_name,
+                                                                'using-brand': delete_from_brand})
         if results.get('Status') != 'Complete':
             return CommandResults(scheduled_command=schedule_next_command(args))
-        execute_command('o365-sc-remove-search-action', {'search_action_name': search_name, 'using-brand': delete_from_brand})
-        execute_command('o365-sc-remove-search', {'search_name': search_name, 'using-brand': delete_from_brand})
+        execute_command('o365-sc-remove-search-action', {'search_action_name': search_name,
+                                                         'using-brand': delete_from_brand})
+        execute_command('o365-sc-remove-search', {'search_name': search_name,
+                                                  'using-brand': delete_from_brand})
         return 'Success'
 
 
