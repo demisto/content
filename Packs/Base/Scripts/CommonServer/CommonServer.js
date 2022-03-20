@@ -2023,7 +2023,11 @@ function setVersionedIntegrationContext(context, sync, version) {
 }
 /* version should be given if theres a known version we must update according to.
 In case of a known version, retries should be set to 0 */
-function mergeVersionedIntegrationContext({newContext, retries = 0,version, objectKey = {}}) {
+function mergeVersionedIntegrationContext(args) {
+   var newContext = args.newContext;
+   var retries = args.retries || 0;
+   var version = args.version || 0;
+   var objectKey = args.objectKey || {};
     var savedSuccessfully = false;
     do {
         logDebug("mergeVersionedIntegrationContext - retries: " + retries  + " given version: " + version)
