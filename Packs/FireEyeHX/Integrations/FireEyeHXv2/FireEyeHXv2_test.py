@@ -1598,9 +1598,11 @@ def test_run_commands_without_polling(mocker, demisto_args, call_count):
     assert file_acquisition.call_count == call_count['file_acquisition']
 
 
-@pytest.mark.parametrize('status_code,expected_output', (
-        (204, 'Successfully deleted indicator indicator_name from the category category'),
-        (404, 'Failed deleting indicator indicator_name from the category category')))
+TEST_DELETE_INDICATOR_ARGS = (204, 'Successfully deleted indicator indicator_name from the category category'), \
+                             (404, 'Failed deleting indicator indicator_name from the category category')
+
+
+@pytest.mark.parametrize('status_code,expected_output', TEST_DELETE_INDICATOR_ARGS)
 def test_delete_indicator_command(mocker, requests_mock, status_code: int, expected_output: str):
     base_url = 'https://example.com'
     indicator_name = 'indicator_name'
