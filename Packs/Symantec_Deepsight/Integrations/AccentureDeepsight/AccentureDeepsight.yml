@@ -21,7 +21,7 @@ configuration:
   required: false
   type: 8
 description: Deprecated. Use ACTI Vulnerability Query instead.
-display: Symantec Deepsight Intelligence (Deprecated)
+display: Accenture Deepsight Intelligence (Deprecated)
 name: Symantec Deepsight Intelligence
 script:
   commands:
