@@ -1605,7 +1605,7 @@ def test_delete_indicator_command(mocker, requests_mock, status_code: int, expec
     base_url = 'https://example.com'
     indicator_name = 'indicator_name'
     category = 'category'
-    from Packs.FireEyeHX.Integrations.FireEyeHXv2.FireEyeHXv2 import delete_indicator_command, Client
+    from FireEyeHXv2 import delete_indicator_command, Client
     mocker.patch.object(Client, 'get_token_request', return_value='')
     request = requests_mock.delete(f"{base_url}/indicators/{category}/{indicator_name}",
                                    status_code=status_code,
@@ -1623,7 +1623,7 @@ def test_delete_indicator_command(mocker, requests_mock, status_code: int, expec
     base_url = 'https://example.com'
     indicator_name = 'indicator_name'
     category = 'category'
-    from Packs.FireEyeHX.Integrations.FireEyeHXv2.FireEyeHXv2 import delete_indicator_command, Client
+    from FireEyeHXv2 import delete_indicator_command, Client
     mocker.patch.object(Client, 'get_token_request', return_value='')
     request = requests_mock.delete(f"{base_url}/indicators/{category}/{indicator_name}",
                                    status_code=status_code,
@@ -1644,7 +1644,7 @@ def test_delete_indicator_condition_command(mocker, requests_mock, status_code: 
     condition_id = 'condition_id'
     response_message = 'error message'
 
-    from Packs.FireEyeHX.Integrations.FireEyeHXv2.FireEyeHXv2 import Client, delete_condition_command
+    from FireEyeHXv2 import Client, delete_condition_command
     mocker.patch.object(Client, 'get_token_request', return_value='')
     request = requests_mock.delete(f"{base_url}/indicators/{category}/{indicator_name}/"
                                    f"conditions/{indicator_type}/{condition_id}",
@@ -1672,7 +1672,7 @@ def test_list_indicator_categories_command(mocker, requests_mock, file_name: str
     mocked_response = json.loads((test_data_folder / 'responses' / file_name).read_text())
     expected_context = json.loads((test_data_folder / 'expected_context' / file_name).read_text())
 
-    from Packs.FireEyeHX.Integrations.FireEyeHXv2.FireEyeHXv2 import list_indicator_categories_command, Client
+    from FireEyeHXv2 import list_indicator_categories_command, Client
     mocker.patch.object(Client, 'get_token_request', return_value='')
     request = requests_mock.get(f'{base_url}/indicator_categories', status_code=status_code, json=mocked_response)
     client = Client(base_url)
