@@ -1254,7 +1254,7 @@ def main():
     # marketplace v2 isn't currently supported - dependencies zip should only be used for v1
     if is_create_dependencies_zip and marketplace == 'xsoar':
         # handle packs with dependencies zip
-        upload_packs_with_dependencies_zip(storage_base_path, storage_bucket, signature_key,
+        upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
                                            packs_for_current_marketplace_dict)
 
     # get the lists of packs divided by their status
