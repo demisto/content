@@ -3940,7 +3940,6 @@ script:
       Deletes the specified indicator.
     execution: false
     name: microsoft-atp-indicator-delete
-    outputs: []
   - arguments:
     - default: false
       description: The value of the indicator to update.
@@ -4345,7 +4344,6 @@ script:
     description: Deletes the specified indicator.
     execution: false
     name: microsoft-atp-sc-indicator-delete
-    outputs: []
   - arguments:
     - default: false
       defaultValue: '50'
@@ -5906,7 +5904,7 @@ script:
       - contextPath: MicrosoftATP.HuntCoverUp.Result
         description: The query results.
         type: String
-  dockerimage: demisto/crypto:1.0.0.27243
+  dockerimage: demisto/crypto:1.0.0.27590
   feed: false
   isfetch: true
   longRunning: false

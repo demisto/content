@@ -84,14 +84,14 @@ def get_headers(params: Dict) -> Dict:
             demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
             "Content-Type": "application/json"
         }
-        LOG.add_replace_strs(demisto.getLicenseCustomField("Core.ApiKey"))
+        add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
     else:
         headers = {
             "Content-Type": "application/json",
             "x-xdr-auth-id": str(api_key_id),
             "Authorization": api_key
         }
-        LOG.add_replace_strs(api_key)
+        add_sensitive_log_strs(api_key)
 
     return headers
 
