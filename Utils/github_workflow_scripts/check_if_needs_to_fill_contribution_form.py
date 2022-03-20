@@ -12,6 +12,7 @@ from github.PullRequest import PullRequest
 from github.Repository import Repository
 from github.ContentFile import ContentFile
 from github.Branch import Branch
+from blessings import Terminal
 
 from utils import load_json, CONTENT_ROOT_PATH, timestamped_print
 
@@ -23,6 +24,10 @@ PACKS = 'Packs'
 SUPPORT = 'support'
 XSOAR_SUPPORT = 'xsoar'
 PACK_NAME_REGEX = re.compile(r'Packs/([A-Za-z0-9-_.]+)/')
+CONTRIBUTION_FORM_FILLED_LABEL = 'Contribution Form Filled'
+COMMUNITY_LABEL = 'Community'
+PARTNER_LABEL = 'Partner'
+INTERNAL_LABEL = 'Internal'
 
 
 def get_metadata_filename_from_pr(pr_files, pack_name) -> str:
@@ -122,10 +127,26 @@ def arguments_handler():
     return parser.parse_args()
 
 
+def verify_labels(pr_label_names):
+    """
+    Verify that the external PR contains the following labels:
+    'Contribution Form Filled' and either one of 'Community'/'Partner'/'Internal' labels
+    """
+    is_contribution_form_filled_label_exist = CONTRIBUTION_FORM_FILLED_LABEL in pr_label_names
+    is_community_label_exist = COMMUNITY_LABEL in pr_label_names
+    is_partner_label_exist = PARTNER_LABEL in pr_label_names
+    is_internal_label_exist = INTERNAL_LABEL in pr_label_names
+
+    if is_contribution_form_filled_label_exist:
+        return is_community_label_exist ^ is_partner_label_exist ^ is_internal_label_exist
+    return False
+
+
 def main():
     options = arguments_handler()
     pr_number = options.pr_number
     github_token = options.github_token
+    t = Terminal()
 
     org_name: str = 'demisto'
     repo_name: str = 'content'
@@ -162,6 +183,15 @@ def main():
     if not_filled_packs:
         print(f'\nERROR: Contribution form was not filled for PR: {pr_number}.\nMake sure to register your contribution'
               f' by filling the contribution registration form in - https://forms.gle/XDfxU4E61ZwEESSMA')
+    
+    pr_label_names = [label.name for label in pr.labels]
+
+    if not verify_labels(pr_label_names=pr_label_names):
+        print(
+            f'{t.red}ERROR: PR labels {pr_label_names} must contain Contribution '
+            f'Form Filled label and one of Community/Partner/Internal labels'
+        )
+        exit_status = 1
 
     sys.exit(exit_status)
 
