@@ -172,19 +172,19 @@ def new_main():
     # test all functions
     # create get_search_arguments_func
     # test Sec&Comp
-
+    # go over yml
     args = demisto.args()
-    search_argumnets = {'delete_type': args.get('delete_type')}
+    search_args = {'delete_type': args.get('delete_type')}
     incident_info = demisto.incident()
     custom_fields = incident_info.get('CustomFields')
     message_id = custom_fields.get("reportedemailmessageid")
     delete_from_brand = args.get('delete_from_brand', incident_info.get('sourceBrand'))
-    search_argumnets['delete_from_brand'] = delete_from_brand
-    search_argumnets['user_id'] = custom_fields.get('reportedemailto')
-    search_argumnets['email_subject'] = custom_fields.get('reportedemailsubject')
-    search_argumnets['message_id'] = message_id
-    search_argumnets['query'] = f'Rfc822msgid:{message_id}'
-    search_argumnets['odata'] = f'"$filter=internetMessageId eq \'{message_id}\'"'
+    search_args['delete_from_brand'] = delete_from_brand
+    search_args['user_id'] = custom_fields.get('reportedemailto')
+    search_args['email_subject'] = custom_fields.get('reportedemailsubject')
+    search_args['message_id'] = message_id
+    search_args['query'] = f'Rfc822msgid:{message_id}'
+    search_args['odata'] = f'"$filter=internetMessageId eq \'{message_id}\'"'
     result = ''
     deletion_failure_reason = ''
 
@@ -193,12 +193,14 @@ def new_main():
             pass # TODO: fix
         else:
             integrations_dict = {'Gmail': ('gmail-search', gmail_delete_args_function, 'gmail-delete-mail'),
-                                 'EWS': ('ews-search-mailbox', ews_delete_args_function, 'ews-delete-items',
-                                         lambda x: not isinstance(x, dict)),
+                                 'EWS365': ('ews-search-mailbox', ews_delete_args_function, 'ews-delete-items',
+                                            lambda x: not isinstance(x, dict)),
+                                 'EWSV2': ('ews-search-mailbox', ews_delete_args_function, 'ews-delete-items',
+                                           lambda x: not isinstance(x, dict)),
                                  'Agari Phishing Defense': (None, agari_delete_args_function, 'apd-remediate-message'),
                                  'MicrosoftGraphMail': ('msgraph-mail-list-emails', msgraph_delete_args_function,
                                                         'msgraph-mail-delete-email')}
-            delete_email(*integrations_dict[delete_from_brand])
+            delete_email(search_args, *integrations_dict[delete_from_brand])
 
     except ReDeleteException as e:
         result = 'Skipped'
