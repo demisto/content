@@ -330,10 +330,11 @@ create_gcp_folders:
     - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_MARKET_KEY" >> $BASH_ENV
     - source $BASH_ENV
 #    - echo "Need to copy from marketplace-ci-build/content/builds/$BRANCH_NAME/$CI_BUILD_ID/marketplacev2/content to marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID/"
-    - echo "First copy prod bucket to it"
-#    - gsutil -m cp -r "gs://marketplace-ci-build/content/builds/xsiam-build-instances/2614154/marketplacev2/content" "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/xsoar-content-1/"
+    - echo "Delete content"
+    - gsutil rm "gs://marketplace-v2-dist-dev/content/"
+    #    - gsutil -m cp -r "gs://marketplace-ci-build/content/builds/xsiam-build-instances/2614154/marketplacev2/content" "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/xsoar-content-1/"
 #    - echo "Finished copying successfully."
-    - python3 ./Tests/gcp_update.py
+#    - python3 ./Tests/gcp_update.py
     - exit $EXIT_CODE
 
 
