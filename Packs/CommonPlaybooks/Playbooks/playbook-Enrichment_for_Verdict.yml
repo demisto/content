@@ -820,6 +820,7 @@ tasks:
       version: -1
       name: User Enrichment
       type: title
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
