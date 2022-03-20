@@ -6,7 +6,6 @@
 trigger-private-build:
   tags:
     - gke
-    - us-west1
   needs: []
   stage: unittests-and-validations
   extends:
@@ -50,7 +49,6 @@ run-validations:
 create-instances:
   tags:
     - gke
-    - us-west1
   extends:
     - .default-job-settings
   rules:
@@ -112,7 +110,6 @@ create-instances:
 prepare-testing-bucket-mpv2:
   tags:
     - gke
-    - us-west1
   extends:
     - .default-job-settings
   rules:
@@ -158,7 +155,6 @@ prepare-testing-bucket-mpv2:
 .test_content_on_server_instances_base:
   tags:
     - gke
-    - us-west1
   extends:
     - .default-job-settings
     - .push-rule
@@ -240,7 +236,6 @@ server_master:
 fan-in-nightly:
   tags:
     - gke
-    - us-west1
   stage: fan-in
   rules:
     - if: '$NIGHTLY'

@@ -132,15 +132,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 12874d34-8609-4ef8-8f99-521b21ac1cec
+    taskid: 5802b254-fac3-4c94-8b2d-89038b4239e5
     type: regular
     task:
-      id: 12874d34-8609-4ef8-8f99-521b21ac1cec
+      id: 5802b254-fac3-4c94-8b2d-89038b4239e5
       version: -1
       name: Extract email artifacts and attachments
-      description: Parses an email from an EML or MSG file and populates all relevant
-        context data to investigate the email. Also extracts indicators from the email
-        messages.
+      description: Parse an email from an eml or msg file and populate all relevant
+        context data to investigate the email. Also extracts inner attachments and
+        returns them to the war room. The incident labels themselves are preserved
+        and not modified - only the "Label/x" context items that originated from the
+        labels, and the best practice is to rely on these for the remainder of the
+        playbook.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
@@ -151,6 +154,9 @@ tasks:
     scriptarguments:
       entryid:
         simple: ${reportedemailentryid}
+      nesting_level_to_return:
+        complex:
+          root: inputs.EmailFileToExtract
     reputationcalc: 2
     results:
     - AttachmentName
@@ -446,10 +452,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 4eb6129e-12d9-4e4c-8f4c-53713c7aef76
+    taskid: 1610c1bd-a25b-4596-8cf6-d1a8f81decad
     type: regular
     task:
-      id: 4eb6129e-12d9-4e4c-8f4c-53713c7aef76
+      id: 1610c1bd-a25b-4596-8cf6-d1a8f81decad
       version: -1
       name: Display email information in layout
       description: Updates Cortex XSOAR incident fields using data from the email
@@ -671,6 +677,12 @@ tasks:
               separator:
                 value:
                   simple: ','
+      reportedemailmessageid:
+        complex:
+          root: Email.HeadersMap
+          accessor: Message-ID
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1265,8 +1277,8 @@ tasks:
       id: b01edbd3-8f20-4abf-8344-7b28dddc35f9
       version: -1
       name: Normalize Reporter Email Headers
-      description: Normalizes the keys names of the headers, which are different
-        with each client. This facilitates extracting the relevant values for the next
+      description: Normalizes the keys names of the headers, which are different with
+        each client. This facilitates extracting the relevant values for the next
         tasks.
       scriptName: SetGridField
       type: regular
@@ -1312,8 +1324,8 @@ tasks:
       id: 06309202-bd36-411d-85fb-026d39e3767c
       version: -1
       name: Extract Reporter Email Headers
-      description: Preserves the original state of the reporter's email headers, which are stored
-        in the context.
+      description: Preserves the original state of the reporter's email headers, which
+        are stored in the context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2243,6 +2255,23 @@ inputs:
     - MicrosoftGraphMail
     - EmailSecurityGateway
     Choosing the EmailSecurityGateway executes the following if enabled: - FireEye EX (Email Security) - Proofpoint TAP - Mimecast.
+  playbookInputQuery:
+- key: EmailFileToExtract
+  value:
+    simple: Inner file
+  required: false
+  description: |-
+    Reported emails and emails retrieved during playbook execution can contain multiple nested email files. For example, an EML nested inside another EML file.
+    If multiple level files are detected, this field determines which file represents the phishing email.
+    
+    For example:
+    User1 receives an email from Attacker. User1 attaches the email as an EML file and sends the email to User2.
+    User2 also attaches that email as a file, and reports it as phishing. In this case, the phishing email would be the "inner file" (as opposed to "outer file").
+    
+    Possible values are: Inner file, Outer file, All files.
+    Inner file: The file at the deepest level is parsed. If there is only one file, that file is parsed.
+    Outer file: The file at the first level is parsed.
+    All files: All files are parsed. Do not use this option in the phishing playbook, as there should only be one phishing email per playbook run.
   playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
