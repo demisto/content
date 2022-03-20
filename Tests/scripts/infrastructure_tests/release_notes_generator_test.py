@@ -595,9 +595,11 @@ class TestMergeVersionBlocks:
         assert '- **accountRep**' in rn
 
     @pytest.mark.parametrize('pack_versions_dict, expected_results', [
-        ({'1.0.1': "#### Scripts\n***Breaking Change*** some change\n##### entity1\n- Fixed something\n#### Integeration\n***Breaking Change*** some change",
-          '1.0.2': "#### Scripts\n***Breaking Changes*** some changes\n##### GetIncidentsByQuery\n#### Integeration\n##### entity1\n- Fixed something"},
-         "#### Integeration\n***Breaking Change*** some change\n\n##### entity1\n- Fixed something\n\n #### Scripts\n" \
+        ({'1.0.1': "#### Scripts\n***Breaking Change*** some change\n##### entity1\n- Fixed something\n"
+          "#### Integeration\n***Breaking Change*** some change",
+          '1.0.2': "#### Scripts\n***Breaking Changes*** some changes\n##### GetIncidentsByQuery\n"
+          "#### Integeration\n##### entity1\n- Fixed something"},
+         "#### Integeration\n***Breaking Change*** some change\n\n##### entity1\n- Fixed something\n\n#### Scripts\n"
          "***Breaking Change*** some change\n***Breaking Changes*** some changes\n\n##### entity1\n- Fixed something")])
     def test_merge_rns(self, pack_versions_dict, expected_results):
         """
@@ -613,4 +615,8 @@ class TestMergeVersionBlocks:
                 one entity with descrition each. The other entity with the empty description should be omitted.
         """
         rn_block, _ = merge_version_blocks(pack_versions_dict)
+        print(rn_block)
+
+        print("\n\n")
+        print(expected_results)
         assert rn_block == expected_results
