@@ -12,7 +12,8 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.8.24399
+# use sane report to speed the report generating as the docker will be downloaded once the pack is installed.
+dockerimage: demisto/sane-pdf-reports:1.0.0.27172
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

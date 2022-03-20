@@ -97,6 +97,7 @@
                         "y": 0
                     },
                     {
+                        "description": "![](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier1/images/indicator_Jafar.gif)",
                         "h": 3,
                         "hideName": true,
                         "i": "default-main-17fac710-2dba-11eb-81b8-51dd99a0c0cc",
@@ -106,7 +107,6 @@
                         "minW": 1,
                         "moved": false,
                         "name": "Gif",
-                        "query": "ERTokenLayoutGif",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamicIndicator",

@@ -139,7 +139,7 @@ tasks:
     task:
       id: fd5abeb8-975d-4d12-809f-7ed032116eff
       version: -1
-      name: Is the answers correct?
+      name: Are the answers correct?
       description: ""
       type: condition
       iscommand: false
