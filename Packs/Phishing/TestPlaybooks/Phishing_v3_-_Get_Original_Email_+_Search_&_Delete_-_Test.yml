@@ -1,5 +1,7 @@
 id: Phishing v3 - Get Original Email + Search & Delete - Test
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Phishing v3 - Get Original Email + Search & Delete - Test
 description: |-
   This playbook tests the search & delete and get original email functionality.
@@ -465,7 +467,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2650,
+          "x": 2760,
           "y": 1780
         }
       }
@@ -721,7 +723,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2920,
+          "x": 3030,
           "y": 1920
         }
       }
@@ -844,12 +846,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 55b54cfa-7aaf-493e-8b1b-efdb58de74ac
+    taskid: f7a797ff-151f-41af-8255-bbb2e3fe7ee3
     type: condition
     task:
-      id: 55b54cfa-7aaf-493e-8b1b-efdb58de74ac
+      id: f7a797ff-151f-41af-8255-bbb2e3fe7ee3
       version: -1
-      name: Were the URLs extracted successfully?
+      name: Were the URL & domain extracted successfully?
       type: condition
       iscommand: false
       brand: ""
@@ -873,11 +875,11 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: URL.Data
+              simple: Domain.Name
             iscontext: true
           right:
             value:
-              simple: http://www.scotiabank.com
+              simple: www.scotiabank.com
     view: |-
       {
         "position": {
@@ -931,20 +933,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: ac117364-549c-49a6-8ca1-542825af9471
+    taskid: d361a971-d701-4269-8fdf-371541a800fb
     type: regular
     task:
-      id: ac117364-549c-49a6-8ca1-542825af9471
+      id: d361a971-d701-4269-8fdf-371541a800fb
       version: -1
-      name: The URLs were not extracted
+      name: The URL or domain were not extracted
       description: Prints an error entry with a given message
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
     scriptarguments:
       message:
-        simple: The URLS were not extracted properly. The legitimate URL and the malicious URL should have been extracted using incident auto-extract settings or field extraction rules (in XSOAR 6.1+). If auto-extract is OK, it could be an issue with the threat intelligence integration.
+        simple: The URL or the domain were not extracted properly. The legitimate URL and the malicious URL should have been extracted using incident auto-extract settings or field extraction rules (in XSOAR 6.1+). If auto-extract is OK, it could be an issue with the threat intelligence integration.
     separatecontext: false
     view: |-
       {
@@ -1159,6 +1164,7 @@ tasks:
       - "32"
       - "34"
       - "17"
+      - "41"
     scriptarguments:
       complete_task:
         simple: "false"
@@ -1223,7 +1229,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2410,
+          "x": 2520,
           "y": 1940
         }
       }
@@ -1268,7 +1274,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2920,
+          "x": 3030,
           "y": 2050
         }
       }
@@ -1279,6 +1285,44 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: cb2ff954-fc9c-4470-8599-8ae3435ef823
+    type: regular
+    task:
+      id: cb2ff954-fc9c-4470-8599-8ae3435ef823
+      version: -1
+      name: Get the Domain context
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      get_key:
+        simple: Domain
+      incident_id:
+        complex:
+          root: FoundID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1288,7 +1332,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2945,
-        "width": 4420,
+        "width": 4530,
         "x": -1120,
         "y": 50
       }

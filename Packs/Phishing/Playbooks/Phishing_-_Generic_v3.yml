@@ -760,7 +760,7 @@ tasks:
     task:
       id: 3be84614-c9e3-436c-8d1e-96920a53e250
       version: -1
-      name: Manually remediate  the incident
+      name: Manually remediate the incident
       description: "To manually remediate a phishing incident you need to:\n1. Search\
         \ for and delete similar emails.\n2. Inform the organization about the threat.\n\
         3. Hunt relevant IOCs.\n4. Update proxies and firewalls as necessary.\n5.\
