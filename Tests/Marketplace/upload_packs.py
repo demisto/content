@@ -933,8 +933,8 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
 
     """
     logging.info("Starting to collect pack with dependencies zips")
-    try:
-        for pack_name, pack in packs_for_current_marketplace_dict.items():
+    for pack_name, pack in packs_for_current_marketplace_dict.items():
+        try:
             logging.info(f"Collecting dependencies of {pack_name}")
             pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
             zip_with_deps_path = os.path.join(pack.path, f"{pack_name}_with_dependencies.zip")
@@ -974,9 +974,9 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
             if not task_status:
                 pack.status = PackStatus.FAILED_UPLOADING_PACK.name
                 pack.cleanup()
-    except Exception as e:
-        logging.error(traceback.format_exc())
-        logging.error(f"Failed uploading packs with dependencies: {e}")
+        except Exception as e:
+            logging.error(traceback.format_exc())
+            logging.error(f"Failed uploading packs with dependencies: {e}")
 
 
 def option_handler():
@@ -1267,7 +1267,7 @@ def main():
     # marketplace v2 isn't currently supported - dependencies zip should only be used for v1
     if is_create_dependencies_zip and marketplace == 'xsoar':
         # handle packs with dependencies zip
-        upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
+        upload_packs_with_dependencies_zip(storage_base_path, storage_bucket, signature_key,
                                            packs_for_current_marketplace_dict)
 
 
