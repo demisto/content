@@ -2487,7 +2487,7 @@ def append_conditions_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def delete_condition_command(client: Client, args: Dict[str, str]) -> CommandResults:
-    # XSOAR yml makes sure the args exist
+    # Mandatory args - always exist
     indicator_name = args['indicator_name']
     category = args['category']
     condition_type = args['type']
