@@ -1,0 +1,709 @@
+category: Case Management
+commonfields:
+  id: SysAid
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: SysAid is a robust IT management system that was designed to meet all of your needs as an IT department.
+display: SysAid
+name: SysAid
+script:
+  commands:
+  - name: sysaid-table-list
+    description: 'Allows to retrieve all lists (tables) related to a specific entity, or to return a specific list from an entity.'
+    arguments:
+    - name: entity
+      description: 'A SysAid entity by which to retrieve the available lists. Defaults to SR. The options are: sr - Service record related lists, asset - Asset related lists, user - User related lists, ci - CI related lists, company - Company related lists, action_item - Action item related lists, project - Service record Sub Tabs lists, task - Task related lists, catalog - Catalog related lists, software - Software related lists, sr_activity - Service Record activity related lists, supplier - Supplier related lists, task_activity - Task activity related lists, user_groups - User Group related lists.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - sr
+      - asset
+      - user
+      - ci
+      - company
+      - action_item
+      - project
+      - task
+      - catalog
+      - software
+      - sr_activity
+      - supplier
+      - task_activity
+      - user_groups
+    - name: entity_id
+      description: "The entity's ID. For example, in SR Form lists, send the SR ID to populate additional filters on the lists. e.g. the responsibility list may be filtered by the admin group of the SR."
+      required: false
+      isArray: false
+    - name: entity_type
+      description: 'Numeric. For example: in sr entity, send the sr_type id, for ci entity, send the ci type id (e.g. for getting the list of CI sub types).'
+      required: false
+      isArray: false
+    - name: list_id
+      description: 'Desired list id.'
+      required: false
+      isArray: false
+    - name: key
+      description: 'Relevant for users/groups related fields. Defines whether to use the id or the name as the key for each value in the result. Available values are "name" or "id". Defaults to id.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+    - name: offset
+      description: 'Retrieved values count is limited. This parameter specifies the offset (start point) from which to retrieve values (e.g. 25). Defaults to 0. Zero base.'
+      required: false
+      isArray: false
+    - name: limit
+      description: 'The maximum number of list values to retrieve per request. Defaults to 500 (configurable).'
+      required: false
+      isArray: false
+    - name: fields
+      description: 'A comma separated list of fields to return. Available fields to return are: id (always returned), caption, and values.'
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: SysAid.List.id
+      description: ''
+    - type: String
+      contextPath: SysAid.List.caption
+      description: ''
+    - type: String
+      contextPath: SysAid.List.values
+      description: ''
+  - name: sysaid-asset-list
+    description: 'List all assets or get a specific asset by ID.'
+    arguments:
+    - name: asset_id
+      description: ''
+      required: false
+      isArray: false
+    - name: fields
+      description: 'List of fields to return. Comma separated.'
+      required: false
+      isArray: true
+    - name: offset
+      description: ''
+      required: false
+      isArray: false
+    - name: limit
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: SysAid.Asset.id
+      description: ''
+    - type: String
+      contextPath: SysAid.Asset.name
+      description: ''
+    - type: String
+      contextPath: SysAid.Asset.info
+      description: ''
+  - name: sysaid-asset-search
+    description: 'Get information about a specific asset.'
+    arguments:
+    - name: query
+      description: ''
+      required: true
+      isArray: false
+    - name: fields
+      description: 'List of fields to return. Comma separated.'
+      required: false
+      isArray: true
+    - name: limit
+      description: ''
+      required: false
+      isArray: false
+    - name: offset
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: SysAid.Asset.id
+      description: ''
+    - type: String
+      contextPath: SysAid.Asset.name
+      description: ''
+    - type: String
+      contextPath: SysAid.Asset.info
+      description: ''
+  - name: sysaid-filter-list
+    description: 'List all assets'
+    arguments:
+    - name: fields
+      description: 'List of fields to return. Comma separated.'
+      required: false
+      isArray: true
+    - name: offset
+      description: ''
+      required: false
+      isArray: false
+    - name: limit
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: SysAid.Filter.id
+      description: ''
+    - type: String
+      contextPath: SysAid.Filter.type
+      description: ''
+    - type: String
+      contextPath: SysAid.Filter.caption
+      description: ''
+    - type: String
+      contextPath: SysAid.Filter.values
+      description: ''
+  - name: sysaid-user-list
+    description: ''
+    arguments:
+    - name: fields
+      description: 'List of fields to return. Comma separated.'
+      required: false
+      isArray: true
+    - name: type
+      description: 'Defaults to all user type if not specified.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - admin
+      - user
+      - manager
+    - name: offset
+      description: ''
+      required: false
+      isArray: false
+    - name: limit
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: SysAid.User.id
+      description: ''
+    - type: String
+      contextPath: SysAid.User.name
+      description: ''
+    - type: Boolean
+      contextPath: SysAid.User.isAdmin
+      description: ''
+    - type: Boolean
+      contextPath: SysAid.User.isSysAidAdmin
+      description: ''
+    - type: Boolean
+      contextPath: SysAid.User.isManager
+      description: ''
+    - type: Boolean
+      contextPath: SysAid.User.isGuest
+      description: ''
+  - name: sysaid-user-search
+    description: 'Get information about a specific asset'
+    arguments:
+    - name: query
+      description: ''
+      required: true
+      isArray: false
+    - name: fields
+      description: 'List of fields to return. Comma separated.'
+      required: false
+      isArray: true
+    - name: type
+      description: 'Defaults to all user type if not specified.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - admin
+      - user
+      - manager
+    - name: offset
+      description: ''
+      required: false
+      isArray: false
+    - name: limit
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: SysAid.User.id
+      description: ''
+    - type: String
+      contextPath: SysAid.User.name
+      description: ''
+    - type: Boolean
+      contextPath: SysAid.User.isAdmin
+      description: ''
+    - type: Boolean
+      contextPath: SysAid.User.isSysAidAdmin
+      description: ''
+    - type: Boolean
+      contextPath: SysAid.User.isManager
+      description: ''
+    - type: Boolean
+      contextPath: SysAid.User.isGuest
+      description: ''
+  - name: sysaid-service-record-list
+    description: 'List all service requests'
+    arguments:
+    - name: type
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - request
+      - problem
+      - change
+      - all
+    - name: fields
+      description: 'List of fields to return. Comma separated.'
+      required: false
+      isArray: true
+    - name: offset
+      description: ''
+      required: false
+      isArray: false
+    - name: limit
+      description: ''
+      required: false
+      isArray: false
+    - name: ids
+      description: 'The list of SR IDs to return, comma separated'
+      required: false
+      isArray: true
+    - name: archive
+      description: 'Whether to return archived SRs. Value can be 1 or 0'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+    - name: custom_fields_keys
+      description: ''
+      required: false
+      isArray: true
+    - name: custom_fields_values
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: SysAid.ServiceRecord.id
+      description: ''
+    - type: String
+      contextPath: SysAid.ServiceRecord.title
+      description: ''
+    - type: String
+      contextPath: SysAid.ServiceRecord.status
+      description: ''
+  - name: sysaid-service-record-search
+    description: 'Search by a query among all SRs'
+    arguments:
+    - name: type
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - request
+      - problem
+      - change
+      - all
+    - name: fields
+      description: 'List of fields to return. Comma separated.'
+      required: false
+      isArray: true
+    - name: offset
+      description: ''
+      required: false
+      isArray: false
+    - name: limit
+      description: ''
+      required: false
+      isArray: false
+    - name: query
+      description: ''
+      required: true
+      isArray: false
+    - name: archive
+      description: 'Whether to return archived SRs. Value can be 1 or 0'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+    - name: custom_fields_keys
+      description: ''
+      required: false
+      isArray: true
+    - name: custom_fields_values
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: SysAid.ServiceRecord.id
+      description: ''
+    - type: String
+      contextPath: SysAid.ServiceRecord.title
+      description: ''
+    - type: String
+      contextPath: SysAid.ServiceRecord.status
+      description: ''
+  - name: sysaid-service-record-update
+    description: ''
+    arguments:
+    - name: id
+      description: 'The service record ID'
+      required: true
+      isArray: false
+    - name: impact
+      description: ''
+      required: false
+      isArray: false
+    - name: priority
+      description: ''
+      required: false
+      isArray: false
+    - name: status
+      description: ''
+      required: false
+      isArray: false
+    - name: description
+      description: ''
+      required: false
+      isArray: false
+    - name: solution
+      description: ''
+      required: false
+      isArray: false
+    - name: problem_type
+      description: ''
+      required: false
+      isArray: false
+    - name: problem_sub_type
+      description: ''
+      required: false
+      isArray: false
+    - name: third_level_category
+      description: ''
+      required: false
+      isArray: false
+    - name: sr_type
+      description: ''
+      required: false
+      isArray: false
+    - name: sub_type
+      description: ''
+      required: false
+      isArray: false
+    - name: agreement
+      description: ''
+      required: false
+      isArray: false
+    - name: title
+      description: ''
+      required: false
+      isArray: false
+    - name: followup_user
+      description: ''
+      required: false
+      isArray: false
+    - name: followup_text
+      description: ''
+      required: false
+      isArray: false
+    - name: cust_notes
+      description: ''
+      required: false
+      isArray: false
+    - name: email_account
+      description: ''
+      required: false
+      isArray: false
+    - name: responsibility
+      description: ''
+      required: false
+      isArray: false
+    - name: urgency
+      description: ''
+      required: false
+      isArray: false
+    - name: company
+      description: ''
+      required: false
+      isArray: false
+    - name: department
+      description: ''
+      required: false
+      isArray: false
+    - name: computer_id
+      description: ''
+      required: false
+      isArray: false
+    - name: due_date
+      description: ''
+      required: false
+      isArray: false
+    - name: escalation
+      description: ''
+      required: false
+      isArray: false
+    - name: change_category
+      description: ''
+      required: false
+      isArray: false
+    - name: assigned_group
+      description: ''
+      required: false
+      isArray: false
+    - name: location
+      description: ''
+      required: false
+      isArray: false
+    - name: custom_fields_keys
+      description: ''
+      required: false
+      isArray: true
+    - name: custom_fields_values
+      description: ''
+      required: false
+      isArray: true
+  - name: sysaid-service-record-close
+    description: 'Close a service record. Sets the service record status to the default Close status, as defined in the Help Desk settings.'
+    arguments:
+    - name: id
+      description: 'The service record ID'
+      required: true
+      isArray: false
+    - name: solution
+      description: ''
+      required: false
+      isArray: false
+  - name: sysaid-service-record-template-get
+    description: ''
+    arguments:
+    - name: fields
+      description: 'List of fields to return. Comma separated.'
+      required: false
+      isArray: true
+    - name: type
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+        - incident
+        - request
+        - problem
+        - change
+    - name: template_id
+      description: 'The service record template ID, according to SR type. Defaults to the first/default template.'
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: SysAid.ServiceRecordTemplate.id
+      description: ''
+    - type: String
+      contextPath: SysAid.ServiceRecordTemplate.info
+      description: ''
+  - name: sysaid-service-record-create
+    description: 'Create a new service record and return the newly created service record.'
+    arguments:
+    - name: fields
+      description: 'List of fields to return. Comma separated.'
+      required: false
+      isArray: true
+    - name: type
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+        - incident
+        - request
+        - problem
+        - change
+    - name: template_id
+      description: 'The service record template ID, according to SR type. Defaults to the first/default template.'
+      required: false
+      isArray: false
+    - name: description
+      description: ''
+      required: true
+      isArray: false
+    - name: title
+      description: ''
+      required: true
+      isArray: false
+    - name: impact
+      description: ''
+      required: false
+      isArray: false
+    - name: priority
+      description: ''
+      required: false
+      isArray: false
+    - name: status
+      description: ''
+      required: false
+      isArray: false
+    - name: solution
+      description: ''
+      required: false
+      isArray: false
+    - name: problem_type
+      description: ''
+      required: false
+      isArray: false
+    - name: problem_sub_type
+      description: ''
+      required: false
+      isArray: false
+    - name: third_level_category
+      description: ''
+      required: false
+      isArray: false
+    - name: sr_type
+      description: ''
+      required: false
+      isArray: false
+    - name: sub_type
+      description: ''
+      required: false
+      isArray: false
+    - name: agreement
+      description: ''
+      required: false
+      isArray: false
+    - name: followup_user
+      description: ''
+      required: false
+      isArray: false
+    - name: followup_text
+      description: ''
+      required: false
+      isArray: false
+    - name: cust_notes
+      description: ''
+      required: false
+      isArray: false
+    - name: email_account
+      description: ''
+      required: false
+      isArray: false
+    - name: responsibility
+      description: ''
+      required: false
+      isArray: false
+    - name: urgency
+      description: ''
+      required: false
+      isArray: false
+    - name: company
+      description: ''
+      required: false
+      isArray: false
+    - name: department
+      description: ''
+      required: false
+      isArray: false
+    - name: computer_id
+      description: ''
+      required: false
+      isArray: false
+    - name: due_date
+      description: ''
+      required: false
+      isArray: false
+    - name: escalation
+      description: ''
+      required: false
+      isArray: false
+    - name: change_category
+      description: ''
+      required: false
+      isArray: false
+    - name: assigned_group
+      description: ''
+      required: false
+      isArray: false
+    - name: location
+      description: ''
+      required: false
+      isArray: false
+    - name: custom_fields_keys
+      description: ''
+      required: false
+      isArray: true
+    - name: custom_fields_values
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: SysAid.ServiceRecord.id
+      description: ''
+    - type: String
+      contextPath: SysAid.ServiceRecord.title
+      description: ''
+    - type: String
+      contextPath: SysAid.ServiceRecord.status
+      description: ''
+  - name: sysaid-service-record-delete
+    description: 'Delete one or more service records.'
+    arguments:
+    - name: ids
+      description: 'The service record ID'
+      required: true
+      isArray: true
+    - name: solution
+      description: ''
+      required: false
+      isArray: false
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.1.27636
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

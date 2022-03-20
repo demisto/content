@@ -1,0 +1,13 @@
+!sysaid-table-list
+!sysaid-asset-list
+!sysaid-asset-search query=Test
+!sysaid-filter-list
+!sysaid-user-list
+!sysaid-user-search query=dmst
+!sysaid-service-record-list type=all
+!sysaid-service-record-search type=all query=test
+!sysaid-service-record-update id=6 status=2
+!sysaid-service-record-close id=6 solution="Closing via API call"
+!sysaid-service-record-template-get type=incident
+!sysaid-service-record-create type=request description="This is a test" title="Test SR from API" sr_type=6
+!sysaid-service-record-delete ids=2,32
