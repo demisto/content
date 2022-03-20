@@ -72,8 +72,8 @@ def utc_to_time(naive: datetime, time_zone: str = 'Asia/Tel_Aviv'):
 
 def is_correct_date_range(from_times: Set[str], to_times: Set[str]):
     validate = [
-        '2020-10-31' in from_times,
-        '2020-12-25' in to_times,
+        '10-31' in from_times,
+        '12-25' in to_times,
     ]
 
     demisto.info(f'WidgetLicenseErrorText - check_time_frame: {validate}')
@@ -82,8 +82,8 @@ def is_correct_date_range(from_times: Set[str], to_times: Set[str]):
 
 def is_valid_license_temp(from_times: Set[str], to_times: Set[str]):
     validate = [
-        '2020-12-01' in from_times,
-        '2020-12-25' in to_times,
+        '12-01' in from_times,
+        '12-25' in to_times,
     ]
 
     demisto.info(f'WidgetLicenseErrorText - is_correct_date_range: {validate}')
@@ -149,14 +149,14 @@ def main():
         time_from = dateparser.parse(args.get('from', '0001-01-01T00:00:00Z'))
         local_time_from = utc_to_time(time_from)
         from_times = {
-            time_from.date().strftime('%Y-%m-%d'),
-            local_time_from.date().strftime('%Y-%m-%d'),
+            time_from.date().strftime('%m-%d'),
+            local_time_from.date().strftime('%m-%d'),
         }
         time_to = dateparser.parse(args.get('to', '0001-01-01T00:00:00Z'))
         local_time_to = utc_to_time(time_to)
         to_times = {
-            time_to.date().strftime('%Y-%m-%d'),
-            local_time_to.date().strftime('%Y-%m-%d'),
+            time_to.date().strftime('%m-%d'),
+            local_time_to.date().strftime('%m-%d'),
         }
 
         if is_valid_license():
