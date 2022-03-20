@@ -17,7 +17,7 @@ def main():
     storage_client = storage.Client()
 
     bucket = storage_client.bucket('marketplace-ci-build')
-    destination_bucket = storage_client.bucket('marketplace-v2-dist-dev/upload-flow/builds-xsiam/xsoar-content-1/content/')
+    destination_bucket = storage_client.bucket('marketplace-v2-dist-dev/upload-flow/builds-xsiam/xsoar-content-1/content')
     from_bucket = 'content/builds/xsiam-build-instances/2613454/marketplacev2/'
     blob = bucket.blob(from_bucket)
     # to_bucket = 'upload-flow/builds-xsiam/xsoar-content-1/content/'
