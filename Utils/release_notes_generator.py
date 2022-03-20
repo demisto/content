@@ -334,13 +334,7 @@ def merge_version_blocks(pack_versions_dict: dict) -> Tuple[str, str]:
             entity_section = section[1] or section[3]
             entities_data.setdefault(entity_type, {})
             if not entity_section.strip().startswith('#####'):
-                special_msg = re.search(r'^((.*\n)[^\n|#####])*.+', entity_section + "\n").group(0)
-                rest = re.search("\n(^\n$|#####(.*\n)+)", entity_section + "\n")
-                entity_section = rest.group(0) if rest else ''
-                if 'special_msg' in entities_data[entity_type]:
-                    entities_data[entity_type]['special_msg'] += f'{special_msg.strip()}\n'
-                else:
-                    entities_data[entity_type]['special_msg'] = f'{special_msg.strip()}\n'
+                entity_section = "##### special_msg\n" + entity_section
             # extract release notes comments by entity
             # assuming all entity titles start with level 5 header ("#####") and then a list of all comments
             entity_comments = ENTITY_SECTION_REGEX.findall(entity_section)

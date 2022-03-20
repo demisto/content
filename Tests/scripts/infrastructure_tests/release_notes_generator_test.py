@@ -594,10 +594,12 @@ class TestMergeVersionBlocks:
         assert '### Indicator Types' in rn
         assert '- **accountRep**' in rn
 
-    @pytest.mark.parametrize('pack_versions_dict', [
-        ({'1.0.1': "#### Scripts\n***Breaking Change*** some change\n##### entity1\n- Fixed something",
-          '1.0.2': "#### Scripts\n***Breaking Changes*** some changes\n##### GetIncidentsByQuery"})])
-    def test_merge_rns(self, pack_versions_dict):
+    @pytest.mark.parametrize('pack_versions_dict, expected_results', [
+        ({'1.0.1': "#### Scripts\n***Breaking Change*** some change\n##### entity1\n- Fixed something\n#### Integeration\n***Breaking Change*** some change",
+          '1.0.2': "#### Scripts\n***Breaking Changes*** some changes\n##### GetIncidentsByQuery\n#### Integeration\n##### entity1\n- Fixed something"},
+          "#### Integeration\n***Breaking Change*** some change\n\n##### entity1\n- Fixed something\n\n" \
+        "#### Scripts\n***Breaking Change*** some change\n***Breaking Changes*** some changes\n\n##### entity1\n- Fixed something")])
+    def test_merge_rns(self, pack_versions_dict, expected_results):
         """
             Given:
                 - Case 1: pack_versions_dict of two consecutive versions, both containing changes announcments,
@@ -610,9 +612,4 @@ class TestMergeVersionBlocks:
                 and one entity with descrition. The other entity with the empty description should be omitted.
         """
         rn_block, latest_version = merge_version_blocks(pack_versions_dict)
-        print(rn_block)
-        assert '##### GetIncidentsByQuery' not in rn_block
-        assert '***Breaking Change***' in rn_block
-        assert '***Breaking Changes***' in rn_block
-        assert rn_block.endswith('##### entity1\n- Fixed something')
-        assert latest_version == '1.0.2'
+        assert rn_block == expected_results
