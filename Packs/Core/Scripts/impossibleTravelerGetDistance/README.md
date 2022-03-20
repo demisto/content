@@ -7,7 +7,7 @@ Compute the distance between two sets of coordinates, in miles.
 | --- | --- |
 | Script Type | python3 |
 | Tags | Utilities |
-| Cortex XSOAR Version | 5.5.0 |
+| Cortex XSOAR Version | 6.6.0 |
 
 ## Inputs
 ---
