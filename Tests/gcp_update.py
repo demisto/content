@@ -23,7 +23,7 @@ def main():
     to_bucket = 'upload-flow/builds-xsiam/xsoar-content-1/content/'
 
     copied_index = bucket.copy_blob(
-        blob=blob, destination_bucket='marketplace-v2-dist-dev', new_name=to_bucket
+        blob=blob, destination_bucket=destination_bucket, new_name=to_bucket
     )
     if copied_index.exists():
         logging.success(f"Finished uploading to storage.")
