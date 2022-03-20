@@ -725,11 +725,9 @@ class XSIAMBuild(Build):
         #  gs://marketplace-ci-build/content/builds/xsiam-build-instances/$CI_BUILD_ID/marketplacev2
         #  to gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID
         logging.info('Copying build bucket to xsiam_instance_bucket.')
-        from_bucket = f'gs://{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/marketplacev2'
+        from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/marketplacev2'
         for server in servers:
-            to_bucket = f'gs://{MARKETPLACE_XSIAM_BUCKETS}/{server.name}'
-            cmd = f'gsutil -m cp -r "{from_bucket}" "{to_bucket}"'
-            subprocess.run(cmd.split())
+            to_bucket = f'{MARKETPLACE_XSIAM_BUCKETS}/{server.name}'
         logging.info('Finished copying successfully.')
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
@@ -1551,7 +1549,6 @@ def main():
         # compares master to commit_sha and return two lists - new integrations and modified in the current branch
         new_integrations, modified_integrations = build.get_changed_integrations()
 
-        # todo: investigate more
         # Test configurations from conf.json that should be run in this execution
         # Configures integration instances that currently in master (+ press test button)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,

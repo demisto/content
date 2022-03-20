@@ -327,7 +327,7 @@ create_gcp_folders:
     - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
     - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_MARKET_KEY" >> $BASH_ENV
     - source $BASH_ENV
-#    - echo "Need to copy from marketplace-ci-build/content/builds/xsiam-build-instances/$CI_BUILD_ID/marketplacev2/content to marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID/"
+#    - echo "Need to copy from marketplace-ci-build/content/builds/$BRANCH_NAME/$CI_BUILD_ID/marketplacev2/content to marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID/"
 #    - echo "First copy prod bucket to it"
 #    - gsutil -m cp -r "gs://$GCS_PRODUCTION_V2_BUCKET/content" "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/xsoar-content-1/" > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine.log" 2>&1
 #    - echo "Finished copying successfully."
