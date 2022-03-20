@@ -185,6 +185,7 @@ def main():
               f' by filling the contribution registration form in - https://forms.gle/XDfxU4E61ZwEESSMA')
     
     pr_label_names = [label.name for label in pr.labels]
+    print(f'{t.cyan} labels: {pr_label_names}')
 
     if not verify_labels(pr_label_names=pr_label_names):
         print(
