@@ -83,7 +83,7 @@ class Client(BaseClient):
             'Content-Type': 'application/json'
         }
 
-        LOG.add_replace_strs(api_key)
+        add_sensitive_log_strs(api_key)
 
     def get_tags(self, data: Dict[str, Any]):
         res = self._http_request('POST',

@@ -86,6 +86,8 @@ OAuth
 Qualys
 Attivo
 Botsink
+Dbot
+OTX
 QRadar
 AdditionalPollingCommandName
 FireEye
