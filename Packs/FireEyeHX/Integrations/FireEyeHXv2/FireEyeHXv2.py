@@ -1598,15 +1598,13 @@ def list_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.list_policy_request(offset=offset, limit=limit, policy_id=policy_id, name=name, enabled=enabled)
 
-    for_table = []
-    for entry in response['data']["entries"]:
-        for_table.append({
-            "Policy Id": entry["_id"],
-            "Policy Name": entry["name"],
-            "Description": entry["description"],
-            "Priority": entry["priority"],
-            "Enabled": entry["enabled"]
-        })
+    for_table = [{
+        "Policy Id": entry["_id"],
+        "Policy Name": entry["name"],
+        "Description": entry["description"],
+        "Priority": entry["priority"],
+        "Enabled": entry["enabled"],
+    } for entry in response['data']['entries']]
     headers_for_table = ["Policy Name", "Policy Id", "Description", "Priority", "Enabled"]
 
     md = tableToMarkdown(name="FireEye HX List Policies", t=for_table, headers=headers_for_table)
@@ -2452,8 +2450,7 @@ def list_indicator_categories_command(client: Client, args: Dict[str, Any]) -> C
             raw_response=response
         )
     except DemistoException as e:
-        message = None
-        if e.res and (message := e.res.get('message')):
+        if message := (e.res or {}).get('message'):
             readable_output = f'Could not list categories. Error: {message}'
         else:
             readable_output = f'Could not list categories. Error: {e}'
