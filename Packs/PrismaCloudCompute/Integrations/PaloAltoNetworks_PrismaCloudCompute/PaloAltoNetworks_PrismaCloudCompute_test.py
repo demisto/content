@@ -13,6 +13,7 @@ from CommonServerPython import DemistoException
 
 
 BASE_URL = 'https://test.com'
+TEST = 'just a test - do not merge'
 
 
 @pytest.fixture
