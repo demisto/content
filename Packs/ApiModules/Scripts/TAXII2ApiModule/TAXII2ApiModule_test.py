@@ -405,7 +405,7 @@ class TestFetchingStixObjects:
 
                Given:
                 - A : An empty indicator_modified_str parameter.
-               - B : A client with empty last_fetched_indicator__modified field.
+                - B : A client with empty last_fetched_indicator__modified field.
                 - C : A client with a value in last_fetched_indicator__modified
                  and a valid indicator_modified_str parameter.
 
