@@ -17,12 +17,13 @@ def main():
     storage_client = storage.Client()
 
     bucket = storage_client.bucket('marketplace-ci-build')
-    from_bucket = 'content/builds/xsiam-build-instances/2576350/marketplacev2/content'
+    destination_bucket = storage_client.bucket('marketplace-v2-dist-dev')
+    from_bucket = 'content/builds/xsiam-build-instances/2576350/marketplacev2/content/'
     blob = bucket.blob(from_bucket)
-    to_bucket = 'upload-flow/builds-xsiam/xsoar-content-1/'
+    to_bucket = 'upload-flow/builds-xsiam/xsoar-content-1/content/'
 
     copied_index = bucket.copy_blob(
-        blob=blob, destination_bucket=storage_client.bucket('marketplace-v2-dist-dev'), new_name=to_bucket
+        blob=blob, destination_bucket='marketplace-v2-dist-dev', new_name=to_bucket
     )
     if copied_index.exists():
         logging.success(f"Finished uploading to storage.")
