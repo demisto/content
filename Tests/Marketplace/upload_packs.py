@@ -1251,6 +1251,12 @@ def main():
                             artifacts_dir=os.path.dirname(packs_artifacts_path),
                             storage_bucket=storage_bucket)
 
+    # marketplace v2 isn't currently supported - dependencies zip should only be used for v1
+    if is_create_dependencies_zip and marketplace == 'xsoar':
+        # handle packs with dependencies zip
+        upload_packs_with_dependencies_zip(storage_base_path, storage_bucket, signature_key,
+                                           packs_for_current_marketplace_dict)
+
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
@@ -1263,12 +1269,6 @@ def main():
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs, not is_bucket_upload_flow)
-
-    # marketplace v2 isn't currently supported - dependencies zip should only be used for v1
-    if is_create_dependencies_zip and marketplace == 'xsoar':
-        # handle packs with dependencies zip
-        upload_packs_with_dependencies_zip(storage_base_path, storage_bucket, signature_key,
-                                           packs_for_current_marketplace_dict)
 
 
 if __name__ == '__main__':
