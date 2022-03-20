@@ -17,7 +17,7 @@ try:
         for dest in dest_coords_list[i:]:
             if src_coords_list[i] != dest:
 
-                geo_distance = round(geopy.distance.vincenty(src_coords_list[i], dest).miles, 2)
+                geo_distance = round(geopy.distance.geodesic(src_coords_list[i], dest).miles, 2)
                 hr = 'Calculated Distance: {} miles.'.format(str(geo_distance))
                 context = {
                     "distance": geo_distance,
