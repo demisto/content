@@ -25,7 +25,7 @@ subtype: python3
 runonce: false
 dockerimage: demisto/geopy:1.0.0.24037
 runas: DBotWeakRole
-fromversion: 5.5.0
+fromversion: 6.6.0
 tests:
 - Impossible Traveler XSIAM - Test
 marketplaces:
