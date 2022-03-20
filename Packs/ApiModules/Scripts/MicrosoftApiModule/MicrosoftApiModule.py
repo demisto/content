@@ -541,7 +541,7 @@ class MicrosoftClient(BaseClient):
         return datetime.utcfromtimestamp(_time)
 
     @staticmethod
-    def get_encrypted(content: str, key: str) -> str:
+    def get_encrypted(content: str, key: Optional[str]) -> str:
         """
         Encrypts content with encryption key.
         Args:

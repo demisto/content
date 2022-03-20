@@ -626,7 +626,6 @@ def main():
     elif not enc_key and not (certificate_thumbprint and private_key):
         raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
-
     try:
         client = MsGraphClient(base_url=base_url, tenant_id=tenant, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME,
                                verify=use_ssl, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes,
