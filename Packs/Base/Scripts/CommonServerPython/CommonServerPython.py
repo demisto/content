@@ -9038,12 +9038,13 @@ def get_pack_version(pack_name=''):
 
     To get the version of a pack in which a script/integration is part of, just call the function without pack_name.
 
-    Args:
-        pack_name (str): the pack name as mentioned in the pack metadata file to query its version.
+    :type pack_name: ``str``
+    :param pack_name: the pack name as mentioned in the pack metadata file to query its version.
             use only if querying by a pack name.
 
-    Returns:
-        str: the requested pack version, empty string in-case not found.
+    :return: The pack version in which the integration/script is part of / the version of the requested pack name in
+        case provided. in case not found returns empty string.
+    :rtype: ``str``
     """
     def _get_packs_by_query(_body_request):
         packs_body_response = demisto.internalHttpRequest(
