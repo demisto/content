@@ -1257,24 +1257,32 @@ class TestHappyPath:
 
     def test_last_run_in_fetch_incidents(self, mocker):
         """
-        Given: - AzureSentinel client, last_fetched_ids array, last_run, first_fetch_time, and a minimum severity.
+        Scenario: First time fetching incidents after updating the integration.
+        Given: - AzureSentinel client,last_fetched_ids array, last_run dictionary, first_fetch_time,
+        and a minimum severity.
+
+        The last_run dictionary mimics a last_run dict from a previous version of the integration, containing an
+        empty 'last_fetch_ids' array and a valid 'last_fetch_time' string, but does not contain
+        'last_incident_number' that was added in the new version.
 
         When:
             - Calling the fetch_incidents command.
 
-        Then:
-            - Validate the call_args had the correct filter and orderby.
+        Then: - Validate the call_args had the correct filter and orderby, to check that the fetch was handled by
+        created time and not by incident number.
         """
         # prepare
         client = mock_client()
         last_run = {'last_fetch_time': '2022-03-16T13:01:08Z',
                     'last_fetch_ids': []}
         first_fetch_time = '3 days'
+        minimum_severity = 0
+
         mocker.patch('AzureSentinel.process_incidents', return_value=({}, []))
         mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENTS_OUTPUT)
 
         # run
-        fetch_incidents(client, last_run, first_fetch_time, 0)
+        fetch_incidents(client, last_run, first_fetch_time, minimum_severity)
         call_args = client.http_request.call_args[1]
 
         # validate
