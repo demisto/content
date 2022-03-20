@@ -944,6 +944,7 @@ def upload_packs_with_dependencies_zip(storage_base_path, storage_bucket, signat
                 Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
                 if not (pack.zip_path and os.path.isfile(pack.zip_path)):
                     task_status = sign_and_zip_pack(pack, signature_key)
+                    task_status = False # TODO: FIX, only for testing
                     if not task_status:
                         # modify the pack's status to indicate the failure was in the dependencies zip step
                         pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
