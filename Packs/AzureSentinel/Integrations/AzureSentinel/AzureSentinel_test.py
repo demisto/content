@@ -1263,7 +1263,7 @@ class TestHappyPath:
             - Calling the fetch_incidents command.
 
         Then:
-            - Validate the call_args had the correct filter.
+            - Validate the call_args had the correct filter and orderby.
         """
         # prepare
         client = mock_client()
@@ -1274,11 +1274,12 @@ class TestHappyPath:
         mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENTS_OUTPUT)
 
         # run
-        next_run, _ = fetch_incidents(client, last_run, first_fetch_time, 0)
+        fetch_incidents(client, last_run, first_fetch_time, 0)
         call_args = client.http_request.call_args[1]
 
         # validate
-        assert 'properties/createdTimeUtc ge' in call_args.get("params").get("$filter")
+        assert 'properties/createdTimeUtc ge' in call_args.get('params').get('$filter')
+        assert 'properties/createdTimeUtc asc' == call_args.get('params').get('$orderby')
 
 
 class TestEdgeCases:
