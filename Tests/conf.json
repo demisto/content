@@ -2892,6 +2892,12 @@
             "is_mockable": false
         },
         {
+            "integrations": "Hybrid Analysis",
+            "playbookID": "Detonate File - HybridAnalysis - Test",
+            "fromversion": "5.5.0",
+            "is_mockable": false
+        },
+        {
             "integrations": "Elasticsearch v2",
             "instance_names": "es_v7",
             "playbookID": "Elasticsearch_v2_test"
