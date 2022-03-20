@@ -1096,7 +1096,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method="GET",
-            url_suffix=f"/indicator_categories",
+            url_suffix="/indicator_categories",
             params=params,
             ok_codes=(200,),
             raise_on_status=True,
@@ -2584,8 +2584,8 @@ def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandR
     return CommandResults(readable_output=f"Search started,\nSearch ID: {search_id}"), True, search_id
 
 
-def start_search_with_polling_command(client: Client, args: Dict[str, Any]) -> Union[
-    CommandResults, List[CommandResults]]:
+def start_search_with_polling_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults,
+                                                                                     List[CommandResults]]:
     return run_polling_command(
         client,
         args,

@@ -1616,24 +1616,6 @@ def test_delete_indicator_command(mocker, requests_mock, status_code: int, expec
     assert request.call_count == 1
 
 
-@pytest.mark.parametrize('status_code,expected_output', (
-        (204, 'Successfully deleted indicator indicator_name from the category category'),
-        (404, 'Failed deleting indicator indicator_name from the category category')))
-def test_delete_indicator_command(mocker, requests_mock, status_code: int, expected_output: str):
-    base_url = 'https://example.com'
-    indicator_name = 'indicator_name'
-    category = 'category'
-    from FireEyeHXv2 import delete_indicator_command, Client
-    mocker.patch.object(Client, 'get_token_request', return_value='')
-    request = requests_mock.delete(f"{base_url}/indicators/{category}/{indicator_name}",
-                                   status_code=status_code,
-                                   json={})
-    client = Client(base_url)
-    command_result = delete_indicator_command(client, {'indicator_name': indicator_name, 'category': category})
-    assert command_result.readable_output.split(":")[0] == expected_output
-    assert request.call_count == 1
-
-
 @pytest.mark.parametrize('status_code,expected_output_prefix',
                          ((204, 'Successfully deleted'), (404, 'Failed deleting'), (418, 'Failed deleting')))
 def test_delete_indicator_condition_command(mocker, requests_mock, status_code: int, expected_output_prefix: str):
