@@ -1600,11 +1600,13 @@ def list_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     for_table = []
     for entry in response['data']["entries"]:
-        for_table.append({"Policy Id": entry["_id"],
-                          "Policy Name": entry["name"],
-                          "Description": entry["description"],
-                          "Priority": entry["priority"],
-                          "Enabled": entry["enabled"]})
+        for_table.append({
+            "Policy Id": entry["_id"],
+            "Policy Name": entry["name"],
+            "Description": entry["description"],
+            "Priority": entry["priority"],
+            "Enabled": entry["enabled"]
+        })
     headers_for_table = ["Policy Name", "Policy Id", "Description", "Priority", "Enabled"]
 
     md = tableToMarkdown(name="FireEye HX List Policies", t=for_table, headers=headers_for_table)
