@@ -13,12 +13,12 @@ enabled: true
 args:
 - name: value
   default: true
-  description: The value from which to extract the data from.
+  description: The value from which to extract the data.
 - name: from
   required: true
-  description: The starting from value.
+  description: The starting value.
 - name: to
-  description: The ending to value.
+  description: The ending value.
   required: true
 scripttarget: 0
 subtype: python3
