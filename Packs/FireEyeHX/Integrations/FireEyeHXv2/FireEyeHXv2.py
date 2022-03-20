@@ -1043,7 +1043,7 @@ class Client(BaseClient):
         return self._http_request(
             method="DELETE",
             url_suffix=f"/indicators/{category}/{indicator_name}/conditions/{condition_type}/{condition_id}",
-            ok_codes=(204,),
+            ok_codes=(200, 204),
             raise_on_status=True,
         )
 
@@ -2488,20 +2488,26 @@ def delete_condition_command(client: Client, args: Dict[str, str]) -> CommandRes
     condition_type = args['type']
     condition_id = args['condition_id']
 
-    human_readable_args = f'{indicator_name=}, {category=}, {condition_type=}, {condition_id=}'
+    human_readable_args = f'condition {condition_id} ({condition_type}) of indicator {indicator_name} ({category})' \
+        .replace('\'', '')
 
     try:
-        response = client.delete_condition(indicator_name, category, condition_type, condition_id)
+        response = client.delete_condition(indicator_name, category, condition_type, condition_id)  # raises on failure
         human_readable = f'Successfully deleted {human_readable_args}'
-    except DemistoException as e:  # invalid http status code
-        response = e.res
-        human_readable = f'Failed deleting {human_readable_args}. {str(e)}'
 
-    return CommandResults(
-        outputs_prefix='FireEyeHX.IndicatorCondition',
-        outputs=response,
-        readable_output=human_readable
-    )
+    except DemistoException as e:
+        message = None
+        if e.res:
+            response = e.res
+            try:
+                message = response.json().get('message')
+            except (JSONDecodeError, AttributeError):
+                pass
+        if not message:
+            message = str(e)
+        human_readable = f'Failed deleting {human_readable_args}: {message}'
+
+    # return CommandResults(readable_output=human_readable, raw_response=response)
 
 
 def create_indicator_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -2855,6 +2861,7 @@ def main() -> None:
         "fireeye-hx-list-containment": get_list_containment_command,
         'fireeye-hx-delete-indicator': delete_indicator_command,
         'fireeye-hx-list-indicator-category': list_indicator_categories,
+        'fireeye-hx-delete-indicator-condition': delete_condition_command,
     }
 
     params = demisto.params()
