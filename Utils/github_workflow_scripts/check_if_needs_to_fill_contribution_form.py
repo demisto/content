@@ -122,6 +122,30 @@ def arguments_handler():
     return parser.parse_args()
 
 
+def verify_labels(pr_label_names):
+    """
+    Verify that the external PR contains the following labels:
+
+    'Contribution Form Filled' and either one of 'Community'/'Partner'/'internal' labels
+
+    """
+    is_contribution_form_filled_label_exist = 'Contribution Form Filled' in pr_label_names
+    is_community_label_exist = 'Community' in pr_label_names
+    is_partner_label_exist = 'Partner' in pr_label_names
+    is_internal_label_exist = 'internal' in pr_label_names
+
+    if is_contribution_form_filled_label_exist:
+        if is_community_label_exist and not is_partner_label_exist and not is_internal_label_exist:
+            return True
+        elif not is_community_label_exist and is_partner_label_exist and not is_internal_label_exist:
+            return True
+        elif not is_community_label_exist and not is_partner_label_exist and is_internal_label_exist:
+            return True
+        else:
+            return False
+    return False
+
+
 def main():
     options = arguments_handler()
     pr_number = options.pr_number
@@ -162,6 +186,15 @@ def main():
     if not_filled_packs:
         print(f'\nERROR: Contribution form was not filled for PR: {pr_number}.\nMake sure to register your contribution'
               f' by filling the contribution registration form in - https://forms.gle/XDfxU4E61ZwEESSMA')
+
+    pr_label_names = [label.name for label in pr.labels]
+
+    if not verify_labels(pr_label_names=pr_label_names):
+        print(
+            f'ERROR: PR labels {pr_label_names} must contain Contribution '
+            f'Form Filled label and one of Community/Partner/internal labels'
+        )
+        exit_status = 1
 
     sys.exit(exit_status)
 
