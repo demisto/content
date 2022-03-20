@@ -206,7 +206,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -813,36 +813,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 89e23087-05ef-44f5-80c8-0d918606b33e
-    type: condition
+    taskid: 1483f669-dfec-4d0e-8fff-b68a199d7bd1
+    type: title
     task:
-      id: 89e23087-05ef-44f5-80c8-0d918606b33e
+      id: 1483f669-dfec-4d0e-8fff-b68a199d7bd1
       version: -1
-      name: Is there a user?
-      description: "Is there a user?"
-      type: condition
+      name: User Enrichment
+      type: title
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "25"
-      "yes":
+      '#none#':
       - "38"
       - "39"
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.User
-            iscontext: true
     view: |-
       {
         "position": {
-          "x": 3370,
+          "x": 3390,
           "y": 570
         }
       }
@@ -867,13 +855,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "47"
+      - "49"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3130,
-          "y": 740
+          "x": 3120,
+          "y": 720
         }
       }
     note: false
@@ -897,13 +885,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "41"
+      - "48"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3630,
-          "y": 740
+          "x": 3660,
+          "y": 720
         }
       }
     note: false
@@ -915,10 +903,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: b34d66ca-84c5-4673-8bc7-22e3ae3e0003
+    taskid: 5ae3c4ec-83cb-4d65-855c-2a3e5d36dbab
     type: playbook
     task:
-      id: b34d66ca-84c5-4673-8bc7-22e3ae3e0003
+      id: 5ae3c4ec-83cb-4d65-855c-2a3e5d36dbab
       version: -1
       name: AWS IAM - User enrichment
       playbookName: AWS IAM - User enrichment
@@ -942,23 +930,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3130,
-          "y": 1115
+          "x": 3120,
+          "y": 1235
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 33fac12f-926b-44f5-84af-3191e8ded66b
+    taskid: c88a3c79-44f7-4a12-8c4f-0a2005e7d523
     type: playbook
     task:
-      id: 33fac12f-926b-44f5-84af-3191e8ded66b
+      id: c88a3c79-44f7-4a12-8c4f-0a2005e7d523
       version: -1
       name: Account Enrichment - Generic v2.1
       description: |-
@@ -985,14 +973,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3630,
-          "y": 960
+          "x": 3830,
+          "y": 1050
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1207,10 +1195,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 7f18102e-5e5c-4057-8f7c-aadb91bd6b26
+    taskid: fcf15788-cba9-4b86-8324-ac74f8284760
     type: condition
     task:
-      id: 7f18102e-5e5c-4057-8f7c-aadb91bd6b26
+      id: fcf15788-cba9-4b86-8324-ac74f8284760
       version: -1
       name: Is AWS IAM integration available?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -1233,8 +1221,92 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3130,
+          "x": 3120,
+          "y": 1055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 23f12fc7-72e3-4ed1-8e74-cc26f9d04f36
+    type: condition
+    task:
+      id: 23f12fc7-72e3-4ed1-8e74-cc26f9d04f36
+      version: -1
+      name: Is there a user?
+      description: "Is there a user?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.User
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3660,
           "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 8db8b77b-1b5d-4926-8847-2e03a3abeb07
+    type: condition
+    task:
+      id: 8db8b77b-1b5d-4926-8847-2e03a3abeb07
+      version: -1
+      name: Is there an AWS user?
+      description: "Is there an AWS user?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.awsUser
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 3120,
+          "y": 865
         }
       }
     note: false
@@ -1255,7 +1327,6 @@ view: |-
       "20_31_#default#": 0.49,
       "26_25_#default#": 0.2,
       "28_25_yes": 0.21,
-      "37_25_#default#": 0.25,
       "44_25_#default#": 0.1,
       "45_25_yes": 0.16,
       "47_25_#default#": 0.68,
@@ -1265,7 +1336,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1945,
-        "width": 4240,
+        "width": 4440,
         "x": -230,
         "y": -260
       }
