@@ -1,6 +1,8 @@
 import json
 import demistomock as demisto
 import pytest
+from datetime import datetime
+import json
 
 
 def util_open_file(path):
@@ -259,6 +261,7 @@ EMAIL_THREADS = [{"Contents": {"context": {
             "EmailReplyTo": "soc_sender@company.com",
             "EmailSubject": "<69433507> Test Email 2",
             "EmailTo": "end_user@company.com",
+            'EmailAttachments': "['None']",
             "MessageDirection": "outbound",
             "MessageID": "",
             "MessageTime": "2022-02-04T20:56:53UTC"
@@ -281,6 +284,7 @@ EMAIL_THREADS = [{"Contents": {"context": {
             "EmailReplyTo": "BY5PR09ME5460A9F1D8E34A12904AE86EB6199@BY5VR02MB5660.namprd09.prod.outlook.com",
             "EmailSubject": "Re: <69433507> Test Email 2",
             "EmailTo": "soc_sender@company.com",
+            'EmailAttachments': "['None']",
             "MessageDirection": "inbound",
             "MessageID": "AAMkAGRmOGZlZTEzLTkyZGDtNGJkNy1iOTMxLYM0NTAwODZhZjlmNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJX"
                          "Bb0sRJWC0zdXEMqsAAAAAAEMAAAkkBJXBb0fRJWC0zdXEMqsAAApcWVYAAA=",
@@ -298,6 +302,7 @@ EMAIL_THREADS = [{"Contents": {"context": {
             "EmailReplyTo": "soc_sender@company.com",
             "EmailSubject": "<87692312> Test Email 4",
             "EmailTo": "end_user@company.com",
+            'EmailAttachments': "['None']",
             "MessageDirection": "outbound",
             "MessageID": "",
             "MessageTime": "2022-02-04T20:56:53UTC"
@@ -320,6 +325,7 @@ EMAIL_THREADS = [{"Contents": {"context": {
             "EmailReplyTo": "BY5PR03ME5460A9F1D8E34A12904AE86EB6191@BY5VR12MB5660.namprd09.prod.outlook.com",
             "EmailSubject": "Re: <87692312> Test Email 4",
             "EmailTo": "soc_sender@company.com",
+            'EmailAttachments': "['None']",
             "MessageDirection": "inbound",
             "MessageID": "AAMkAGRcOGZlZTEzLTkyZGDtNGJkNy1iOWMxLYM0NTAwODZhZjlxNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJX"
                          "Bb0sRJWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=",
@@ -331,7 +337,12 @@ EMAIL_THREADS = [{"Contents": {"context": {
 ]
 
 
-def test_main(mocker):
+@pytest.mark.parametrize(
+    "return_incident_path,expected_return,create_context_called",
+    [('test_data/email_related_incident_response.json', False, False),
+     ('test_data/email_related_incident_response_2.json', False, True)]
+)
+def test_main(return_incident_path, expected_return, create_context_called, mocker):
     """
         Given
         - A new incident of type Email Communication
@@ -342,17 +353,46 @@ def test_main(mocker):
         email related incident.
     """
     import PreprocessEmail
-    from PreprocessEmail import main
+    from PreprocessEmail import main, create_thread_context
     incident = util_load_json('test_data/get_incident_details_result.json')
     mocker.patch.object(demisto, 'incident', return_value=incident)
     mocker.patch.object(PreprocessEmail, 'get_email_related_incident_id', return_value='123')
     mocker.patch.object(PreprocessEmail, 'get_incident_by_query',
-                        return_value=[util_load_json('test_data/email_related_incident_response.json')])
+                        return_value=[util_load_json(return_incident_path)])
     mocker.patch.object(PreprocessEmail, 'get_attachments_using_instance')
     mocker.patch.object(PreprocessEmail, 'get_incident_related_files', return_value=FILES)
+    mocker.patch.object(demisto, 'debug')
+    create_thread_context_mocker = mocker.patch('PreprocessEmail.create_thread_context')
     mocker.patch.object(demisto, 'results')
     main()
-    assert not demisto.results.call_args[0][0]
+    assert create_context_called == create_thread_context_mocker.called
+    assert expected_return == demisto.results.call_args[0][0]
+
+
+def test_create_thread_context(mocker):
+    # demisto.executeCommand will be called twice in the tested function - prepare separate responses for each
+    def side_effect_function(command, args):
+        if command == "getContext":
+            return EMAIL_THREADS
+        elif command == "executeCommandAt":
+            return True
+
+    from PreprocessEmail import create_thread_context
+
+    # Email data to use both for function input and function output validation
+    test_email = EMAIL_THREADS[0]['Contents']['context']['EmailThreads'][3]
+
+    # Mock function to get current time string to match the expected result
+    mocker.patch('PreprocessEmail.get_utc_now',
+                 return_value=datetime.strptime(test_email['MessageTime'], "%Y-%m-%dT%H:%M:%SUTC"))
+
+    execute_command_mocker = mocker.patch.object(demisto, 'executeCommand', side_effect=side_effect_function)
+    create_thread_context(test_email['EmailCommsThreadId'], test_email['EmailCC'], test_email['EmailBCC'],
+                          test_email['EmailBody'], test_email['EmailFrom'], test_email['EmailHTML'],
+                          test_email['MessageID'], test_email['EmailReceived'], test_email['EmailReplyTo'],
+                          test_email['EmailSubject'], test_email['EmailTo'], '123', '')
+    call_args = execute_command_mocker.call_args
+    assert EMAIL_THREADS[0]['Contents']['context']['EmailThreads'][3] == call_args.args[1]['arguments']['value']
 
 
 def test_get_email_related_incident_id_1(mocker):

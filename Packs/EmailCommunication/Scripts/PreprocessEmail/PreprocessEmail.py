@@ -14,6 +14,15 @@ QUOTE_MARKERS = ['<div class="gmail_quote">',
                  '<hr style="display:inline-block;width:98%" tabindex="-1"><div id="divRplyFwdMsg"']
 
 
+def get_utc_now():
+    """ A wrapper function for datetime.utcnow
+    Helps handle tests
+    Returns:
+        datetime: current UTC time
+    """
+    return dt.utcnow()
+
+
 def get_query_window():
     """
     Check if the user defined the list `XSOAR - Email Communication Days To Query` to give a custom value for the time
@@ -341,7 +350,7 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
             'EmailTo': email_to,
             'EmailAttachments': f'{attachment_names}',
             'MessageDirection': 'inbound',
-            'MessageTime': dt.utcnow().strftime("%Y-%m-%dT%H:%M:%SUTC")
+            'MessageTime': get_utc_now().strftime("%Y-%m-%dT%H:%M:%SUTC")
         }
         # Add email message to context key
         try:

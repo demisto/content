@@ -9,6 +9,15 @@ ERROR_TEMPLATE = 'ERROR: PreprocessEmail - {function_name}: {reason}'
 FAIL_STATUS_MSG = "Command send-mail in module EWS Mail Sender requires argument to that is missing (7)"
 
 
+def get_utc_now():
+    """ A wrapper function for datetime.utcnow
+    Helps handle tests
+    Returns:
+        datetime: current UTC time
+    """
+    return dt.utcnow()
+
+
 def append_email_signature(html_body):
     """
         Retrieve the user defined email signature to include on new messages, if present.
@@ -158,7 +167,7 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
             'EmailTo': email_to,
             'EmailAttachments': f'{new_attachment_names}',
             'MessageDirection': 'outbound',
-            'MessageTime': dt.utcnow().strftime("%Y-%m-%dT%H:%M:%SUTC")
+            'MessageTime': get_utc_now().strftime("%Y-%m-%dT%H:%M:%SUTC")
         }
         # Add email message to context key
         try:

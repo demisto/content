@@ -1,4 +1,5 @@
 import pytest
+from CommonServerPython import *
 import json
 import demistomock as demisto
 
@@ -158,3 +159,105 @@ def test_get_email_cc(current_cc, additional_cc, excepted):
     from SendEmailReply import get_email_cc
     result = get_email_cc(current_cc, additional_cc)
     assert result == excepted
+
+
+def test_create_thread_context(mocker):
+    email_threads = util_load_json('test_data/email_threads.json')
+    # demisto.executeCommand will be called twice in the tested function - prepare separate responses for each
+
+    def side_effect_function(command, args):
+        if command == "getContext":
+            return email_threads
+        elif command == "executeCommandAt":
+            return True
+
+    from SendEmailReply import create_thread_context
+
+    # Email data to use both for function input and function output validation
+    test_email = email_threads[0]
+    # Mock function to get current time string to match the expected result
+    mocker.patch('SendEmailReply.get_utc_now',
+                 return_value=datetime.strptime(test_email['MessageTime'], "%Y-%m-%dT%H:%M:%SUTC"))
+
+    execute_command_mocker = mocker.patch.object(demisto, 'executeCommand', side_effect=side_effect_function)
+    create_thread_context(test_email['EmailCommsThreadId'], test_email['EmailCC'], test_email['EmailBCC'],
+                          test_email['EmailBody'], test_email['EmailFrom'], test_email['EmailHTML'],
+                          test_email['MessageID'], test_email['EmailReceived'], test_email['EmailReplyTo'],
+                          test_email['EmailSubject'], test_email['EmailTo'], '123', ['None'])
+    call_args = execute_command_mocker.call_args
+    assert test_email == call_args.args[1]['arguments']['value']
+
+
+@pytest.mark.parametrize(
+    "new_thread, thread_input_type",
+    [('n/a', ''),
+     ('true', ''),
+     ('false', 'dict'),
+     ('false', 'list')]
+)
+def test_main(new_thread, thread_input_type, mocker):
+    """Unit test
+    Given
+     - new_thread = 'n/a'
+     - new_thread = 'true'
+     - new_thread = 'false'
+    When
+        Preparing email message to send
+    Then
+     - validate that logic is followed as expected
+     - for case with new_thread = 'false', validate proper email details are pulled from context
+    """
+    def executeCommand_side_effects(command, args):
+        if command == "setIncident":
+            return True
+
+    def return_results_side_effects(results):
+        return True
+
+    import SendEmailReply
+    from SendEmailReply import main
+    incident = util_load_json('test_data/incident_data.json')
+    email_threads = util_load_json('test_data/email_threads.json')
+    mocker.patch.object(demisto, 'incident', return_value=incident)
+    input_args = {'service_mail': 'soc-sender@example.com', 'files': {}, 'attachment': {},
+                  'mail_sender_instance': 'soc-sender@example.com', 'new_thread': new_thread}
+    mocker.patch.object(demisto, 'args', return_value=input_args)
+    mocker.patch.object(SendEmailReply, 'get_mailbox_from_incident_labels')
+    mocker.patch.object(SendEmailReply, 'get_email_recipients', return_value='user@example.com')
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand_side_effects)
+    mocker.patch.object(SendEmailReply, 'get_unique_code', return_value='12345678')
+    mocker.patch.object(SendEmailReply, 'get_email_cc', return_value='')
+    mocker.patch.object(SendEmailReply, 'get_reply_body', return_value=['Body text.', 'Body text.'])
+    mocker.patch.object(SendEmailReply, 'get_entry_id_list', return_value=[])
+    mocker.patch.object(SendEmailReply, 'append_email_signature', return_value='Body text.  Signature.')
+    if thread_input_type == 'list' or '':
+        mocker.patch.object(SendEmailReply, 'get_email_threads', return_value=email_threads)
+    elif thread_input_type == 'dict':
+        mocker.patch.object(SendEmailReply, 'get_email_threads', return_value=email_threads[0])
+    send_reply_mocker = mocker.patch.object(SendEmailReply, 'send_reply',
+                                            return_value='Mail sent successfully. To: user@example.com')
+    mocker.patch.object(SendEmailReply, 'format_body', return_value='This is a test email.')
+    send_new_email_mocker = mocker.patch.object(SendEmailReply, 'send_new_email',
+                                                return_value='Mail sent successfully. To: user@example.com')
+    mocker.patch.object(SendEmailReply, 'reset_fields', return_value=None)
+    resend_first_contact_mocker = mocker.patch.object(SendEmailReply, 'resend_first_contact',
+                                                      return_value='Mail sent successfully. To: user@example.com')
+    create_thread_context_mocker = mocker.patch.object(SendEmailReply, 'create_thread_context')
+
+    main()
+    if new_thread == 'n/a':
+        assert send_reply_mocker.called
+    elif new_thread == 'true':
+        assert send_new_email_mocker.called
+    elif new_thread == 'false' and thread_input_type == 'dict':
+        assert resend_first_contact_mocker.called
+    elif new_thread == 'false' and thread_input_type == 'list':
+        expected_reply = ('10', '<87692312> Test Email 4', 'user@example.com', 'This is a test email.',
+                          'soc-sender@example.com', '', '', 'This is a test email.', [],
+                          'AAMkAGRcOGZlZTEzLTkyZGDtNGJkNy1iOWMxLYM0NTAwODZhZjlxNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwA'
+                          'kkBJXBb0sRJWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=', '87692312',
+                          'soc-sender@example.com')
+        call_args = send_reply_mocker.call_args
+        assert call_args.args == expected_reply
+        assert send_reply_mocker.called
+        assert create_thread_context_mocker.called
