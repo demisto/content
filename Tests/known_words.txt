@@ -110,3 +110,4 @@ SentinelOne
 URLs
 hostname
 EDR
+Rasterize
