@@ -4655,6 +4655,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "Impossible Traveler XSIAM - Test",
+            "fromversion": "6.6.0"
+        },
+        {
             "playbookID": "DeleteContext-auto-subplaybook-test",
             "fromversion": "5.0.0"
         },
