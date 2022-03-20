@@ -125,13 +125,12 @@ def construct_entities_block(entities_data: dict) -> str:
     for entity_type, entities_description in sorted(entities_data.items()):
         pretty_entity_type = re.sub(r'(\w)([A-Z])', r'\1 \2', entity_type)
         release_notes += f'#### {pretty_entity_type}\n'
-        orderd_entities_description = collections.OrderedDict(sorted(entities_description.items()))
-        for name, description in orderd_entities_description.items():
+        if 'special_msg' in entities_description:
+            release_notes += f'{str(entities_description.pop("special_msg"))}\n'
+        for name, description in entities_description.items():
             if entity_type in ('Connections', 'IncidentTypes', 'IndicatorTypes', 'Layouts', 'IncidentFields',
                                'Incident Types', 'Indicator Types', 'Incident Fields'):
                 release_notes += f'- **{name}**\n{description}\n'
-            elif name.startswith("***"):
-                release_notes += f'{name}\n{description}\n'
             elif description.strip():
                 release_notes += f'##### {name}\n{description}\n'
 
@@ -334,8 +333,14 @@ def merge_version_blocks(pack_versions_dict: dict) -> Tuple[str, str]:
             # blocks of entity name and related release notes comments
             entity_section = section[1] or section[3]
             entities_data.setdefault(entity_type, {})
-            if (entity_section.strip()).startswith('***'):
-                entity_section = "##### " + entity_section
+            if not entity_section.strip().startswith('#####'):
+                special_msg = re.search(r'^((.*\n)[^\n|#####])*.+', entity_section + "\n").group(0)
+                rest = re.search("\n(^\n$|#####(.*\n)+)", entity_section + "\n")
+                entity_section = rest.group(0) if rest else ''
+                if 'special_msg' in entities_data[entity_type]:
+                    entities_data[entity_type]['special_msg'] += f'{special_msg.strip()}\n'
+                else:
+                    entities_data[entity_type]['special_msg'] = f'{special_msg.strip()}\n'
             # extract release notes comments by entity
             # assuming all entity titles start with level 5 header ("#####") and then a list of all comments
             entity_comments = ENTITY_SECTION_REGEX.findall(entity_section)
