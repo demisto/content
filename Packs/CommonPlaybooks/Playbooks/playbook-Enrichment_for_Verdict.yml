@@ -1505,4 +1505,4 @@ outputs:
   type: unknown
 tests:
 - No tests.
-fromversion: 6.0.0
+fromversion: 6.6.0
