@@ -159,6 +159,16 @@ def main():
     pr: PullRequest = content_repo.get_pull(int(pr_number))
     pr_files = pr.get_files()
 
+    pr_label_names = [label.name for label in pr.labels]
+    print(f'{t.cyan} labels: {pr_label_names}')
+
+    if not verify_labels(pr_label_names=pr_label_names):
+        print(
+            f'{t.red}ERROR: PR labels {pr_label_names} must contain Contribution '
+            f'Form Filled label and one of Community/Partner/Internal labels'
+        )
+        sys.exit(1)
+
     for pack_name in get_pack_names_from_pr(pr_files):
         if pr_metadata_filename := get_metadata_filename_from_pr(pr_files, pack_name):
             support_type = get_pack_support_type_from_pr_metadata_file(pr_metadata_filename, pr)
@@ -183,16 +193,6 @@ def main():
     if not_filled_packs:
         print(f'\nERROR: Contribution form was not filled for PR: {pr_number}.\nMake sure to register your contribution'
               f' by filling the contribution registration form in - https://forms.gle/XDfxU4E61ZwEESSMA')
-    
-    pr_label_names = [label.name for label in pr.labels]
-    print(f'{t.cyan} labels: {pr_label_names}')
-
-    if not verify_labels(pr_label_names=pr_label_names):
-        print(
-            f'{t.red}ERROR: PR labels {pr_label_names} must contain Contribution '
-            f'Form Filled label and one of Community/Partner/Internal labels'
-        )
-        exit_status = 1
 
     sys.exit(exit_status)
 
