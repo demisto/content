@@ -257,6 +257,9 @@ class PackStatus(enum.Enum):
                           " which should be encrypted, seems not to be encrypted."
     FAILED_METADATA_REFORMATING = "Failed to reparse and create metadata.json when missing dependencies"
     NOT_RELEVANT_FOR_MARKETPLACE = "Pack is not relevant for current marketplace."
+    FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING = "Failed signing pack while creating dependencies zip"
+    FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING = "Failed uploading pack while creating dependencies zip"
+
 
 
 class Changelog(object):
