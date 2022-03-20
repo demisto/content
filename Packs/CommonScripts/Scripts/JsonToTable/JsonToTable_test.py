@@ -4,12 +4,16 @@ import pytest
 import demistomock as demisto
 import JsonToTable
 
+ONE_ROW_TABLE = '|header1|\n|---|\n| val1 |\n'
+MULTI_LINE_TABLE = '|header1|\n|---|\n| val1 |\n| val2 |\n'
+
 
 @pytest.mark.parametrize(argnames='value, expected_md', argvalues=[
-    ({"header1": "val1"}, '|header1|\n|---|\n| val1 |\n'),
-    ('{"header1": "val1"}', '|header1|\n|---|\n| val1 |\n'),
-    ([{"header1": "val1"}, {"header1": "val2"}], '|header1|\n|---|\n| val1 |\n| val2 |\n'),
-    ('[{"header1": "val1"}, {"header1": "val2"}]', '|header1|\n|---|\n| val1 |\n| val2 |\n'),
+    ({"header1": "val1"}, ONE_ROW_TABLE),
+    ('{"header1": "val1"}', ONE_ROW_TABLE),
+    ([{"header1": "val1"}, {"header1": "val2"}], MULTI_LINE_TABLE),
+    ('[{"header1": "val1"}, {"header1": "val2"}]', MULTI_LINE_TABLE),
+    (['[{"header1": "val1"}, {"header1": "val2"}]'], MULTI_LINE_TABLE),
 ])
 def test_json_to_table__sanity(mocker, value, expected_md):
     """
