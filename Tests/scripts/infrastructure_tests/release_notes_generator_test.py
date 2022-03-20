@@ -597,8 +597,8 @@ class TestMergeVersionBlocks:
     @pytest.mark.parametrize('pack_versions_dict, expected_results', [
         ({'1.0.1': "#### Scripts\n***Breaking Change*** some change\n##### entity1\n- Fixed something\n#### Integeration\n***Breaking Change*** some change",
           '1.0.2': "#### Scripts\n***Breaking Changes*** some changes\n##### GetIncidentsByQuery\n#### Integeration\n##### entity1\n- Fixed something"},
-          "#### Integeration\n***Breaking Change*** some change\n\n##### entity1\n- Fixed something\n\n" \
-          "#### Scripts\n***Breaking Change*** some change\n***Breaking Changes*** some changes\n\n##### entity1\n- Fixed something")])
+         "#### Integeration\n***Breaking Change*** some change\n\n##### entity1\n- Fixed something\n\n #### Scripts\n" \
+         "***Breaking Change*** some change\n***Breaking Changes*** some changes\n\n##### entity1\n- Fixed something")])
     def test_merge_rns(self, pack_versions_dict, expected_results):
         """
             Given:
@@ -609,8 +609,8 @@ class TestMergeVersionBlocks:
                 - Using merge_version_blocks function.
             Then:
                 Ensure that the merge was done correctly.
-                - Case 1: Should create a merged RN with anouncments as the top descrition of each category
-                and two categories with one entity with descrition each. The other entity with the empty description should be omitted.
+                - Case 1: Should create a merged RN with anouncments as the top descrition of each category, two categories with
+                one entity with descrition each. The other entity with the empty description should be omitted.
         """
-        rn_block, latest_version = merge_version_blocks(pack_versions_dict)
+        rn_block, _ = merge_version_blocks(pack_versions_dict)
         assert rn_block == expected_results
