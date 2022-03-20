@@ -2490,6 +2490,7 @@ def delete_condition_command(client: Client, args: Dict[str, str]) -> CommandRes
 
     human_readable_args = f'condition {condition_id} ({condition_type}) of indicator {indicator_name} ({category})' \
         .replace('\'', '')
+    response = None
 
     try:
         response = client.delete_condition(indicator_name, category, condition_type, condition_id)  # raises on failure
@@ -2507,7 +2508,7 @@ def delete_condition_command(client: Client, args: Dict[str, str]) -> CommandRes
             message = str(e)
         human_readable = f'Failed deleting {human_readable_args}: {message}'
 
-    # return CommandResults(readable_output=human_readable, raw_response=response)
+    return CommandResults(readable_output=human_readable, raw_response=response)
 
 
 def create_indicator_command(client: Client, args: Dict[str, Any]) -> CommandResults:

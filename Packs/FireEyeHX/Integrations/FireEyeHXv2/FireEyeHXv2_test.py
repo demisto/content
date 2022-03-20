@@ -1613,3 +1613,51 @@ def test_delete_indicator_command(mocker, requests_mock, status_code: int, expec
     command_result = delete_indicator_command(client, {'indicator_name': indicator_name, 'category': category})
     assert command_result.readable_output.split(":")[0] == expected_output
     assert request.call_count == 1
+
+
+@pytest.mark.parametrize('status_code,expected_output', (
+        (204, 'Successfully deleted indicator indicator_name from the category category'),
+        (404, 'Failed deleting indicator indicator_name from the category category')))
+def test_delete_indicator_command(mocker, requests_mock, status_code: int, expected_output: str):
+    base_url = 'https://example.com'
+    indicator_name = 'indicator_name'
+    category = 'category'
+    from Packs.FireEyeHX.Integrations.FireEyeHXv2.FireEyeHXv2 import delete_indicator_command, Client
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    request = requests_mock.delete(f"{base_url}/indicators/{category}/{indicator_name}",
+                                   status_code=status_code,
+                                   json={})
+    client = Client(base_url)
+    command_result = delete_indicator_command(client, {'indicator_name': indicator_name, 'category': category})
+    assert command_result.readable_output.split(":")[0] == expected_output
+    assert request.call_count == 1
+
+
+@pytest.mark.parametrize('status_code,expected_output_prefix',
+                         ((204, 'Successfully deleted'), (404, 'Failed deleting'), (418, 'Failed deleting')))
+def test_delete_indicator_condition_command(mocker, requests_mock, status_code: int, expected_output_prefix: str):
+    base_url = 'https://example.com'
+    indicator_name = 'indicator_name'
+    category = 'category'
+    indicator_type = 'type'
+    condition_id = 'condition_id'
+    response_message = 'error message'
+
+    from Packs.FireEyeHX.Integrations.FireEyeHXv2.FireEyeHXv2 import Client, delete_condition_command
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    request = requests_mock.delete(f"{base_url}/indicators/{category}/{indicator_name}/"
+                                   f"conditions/{indicator_type}/{condition_id}",
+                                   status_code=status_code,
+                                   json={'message': response_message})
+    client = Client(base_url)
+    command_result = delete_condition_command(client, {'indicator_name': indicator_name, 'category': category,
+                                                       'type': indicator_type, 'condition_id': condition_id})
+    human_readable_args = f'condition {condition_id} ({indicator_type}) of indicator {indicator_name} ({category})'
+    assert request.call_count == 1
+    readable_parts = command_result.readable_output.split(":")
+
+    assert readable_parts[0] == f'{expected_output_prefix} {human_readable_args}'
+    if status_code >= 400:
+        assert 'message' in readable_parts[1]
+    else:
+        assert len(readable_parts) == 1
