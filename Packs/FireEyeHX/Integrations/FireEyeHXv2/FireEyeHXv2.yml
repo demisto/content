@@ -1596,7 +1596,7 @@ script:
       description: The indicator category.
     - name: indicator_name
       required: true
-      description: The indicator name. The name of the indicator. Use the `uri_name` value.
+      description: The name of the indicator. Use the `uri_name` value.
     - name: type
       required: true
       auto: PREDEFINED
