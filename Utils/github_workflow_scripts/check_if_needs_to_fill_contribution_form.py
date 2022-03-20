@@ -7,7 +7,6 @@ import re
 import json
 import base64
 import urllib3
-from blessings import Terminal
 from github import Github
 from github.PullRequest import PullRequest
 from github.Repository import Repository
@@ -24,10 +23,6 @@ PACKS = 'Packs'
 SUPPORT = 'support'
 XSOAR_SUPPORT = 'xsoar'
 PACK_NAME_REGEX = re.compile(r'Packs/([A-Za-z0-9-_.]+)/')
-CONTRIBUTION_FORM_FILLED_LABEL = 'Contribution Form Filled'
-COMMUNITY_LABEL = 'Community'
-PARTNER_LABEL = 'Partner'
-INTERNAL_LABEL = 'Internal'
 
 
 def get_metadata_filename_from_pr(pr_files, pack_name) -> str:
@@ -114,21 +109,6 @@ def get_pack_support_type_from_repo_metadata_file(pack_name):
     return repo_pack_metadata.get(SUPPORT)
 
 
-def verify_labels(pr_label_names):
-    """
-    Verify that the external PR contains the following labels:
-    'Contribution Form Filled' and either one of 'Community'/'Partner'/'Internal' labels
-    """
-    is_contribution_form_filled_label_exist = CONTRIBUTION_FORM_FILLED_LABEL in pr_label_names
-    is_community_label_exist = COMMUNITY_LABEL in pr_label_names
-    is_partner_label_exist = PARTNER_LABEL in pr_label_names
-    is_internal_label_exist = INTERNAL_LABEL in pr_label_names
-
-    if is_contribution_form_filled_label_exist:
-        return is_community_label_exist ^ is_partner_label_exist ^ is_internal_label_exist
-    return False
-
-
 def arguments_handler():
     """ Validates and parses script arguments.
 
@@ -157,7 +137,6 @@ def main():
     content_repo: Repository = github_client.get_repo(f'{org_name}/{repo_name}')
     pr: PullRequest = content_repo.get_pull(int(pr_number))
     pr_files = pr.get_files()
-    t = Terminal()
 
     for pack_name in get_pack_names_from_pr(pr_files):
         if pr_metadata_filename := get_metadata_filename_from_pr(pr_files, pack_name):
@@ -183,15 +162,6 @@ def main():
     if not_filled_packs:
         print(f'\nERROR: Contribution form was not filled for PR: {pr_number}.\nMake sure to register your contribution'
               f' by filling the contribution registration form in - https://forms.gle/XDfxU4E61ZwEESSMA')
-    
-    pr_label_names = [label.name for label in pr.labels]
-
-    if not verify_labels(pr_label_names=pr_label_names):
-        print(
-            f'{t.red}ERROR: PR labels {pr_label_names} must contain Contribution '
-            f'Form Filled label and one of Community/Partner/Internal labels'
-        )
-        exit_status = 1
 
     sys.exit(exit_status)
 

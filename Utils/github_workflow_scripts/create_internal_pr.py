@@ -54,9 +54,15 @@ def main():
     print(f'{t.cyan}Internal PR Created - {pr.html_url}{t.normal}')
 
     labels = [label.name for label in merged_pr.labels]
-    for label in labels:
-        pr.add_to_labels(label)
-        print(f'{t.cyan}"{label}" label added to the Internal PR{t.normal}')
+    docs_approved_label = 'docs-approved'
+    if docs_approved_label in labels:
+        pr.add_to_labels(docs_approved_label)
+        print(f'{t.cyan}"docs-approved" label added{t.normal}')
+
+    # Add 'Contribution' Label to PR
+    contribution_label = 'Contribution'
+    pr.add_to_labels(contribution_label)
+    print(f'{t.cyan}Added "Contribution" label to the PR{t.normal}')
 
     merged_by = merged_pr.merged_by.login
     reviewers, _ = merged_pr.get_review_requests()
