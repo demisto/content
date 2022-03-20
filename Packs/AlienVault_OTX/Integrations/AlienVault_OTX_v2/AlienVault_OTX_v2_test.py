@@ -4,13 +4,9 @@
 import pytest
 
 # Import local packages
-<<<<<<< HEAD
-from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command, url_command, domain_command, \
-    ip_command, build_context_indicator_no_results_status
-=======
 from AlienVault_OTX_v2 import \
-    calculate_dbot_score, Client, file_command, url_command, domain_command, ip_command, delete_duplicated_entities
->>>>>>> origin
+    calculate_dbot_score, Client, file_command, url_command, domain_command, ip_command, \
+    delete_duplicated_entities, build_context_indicator_no_results_status
 from CommonServerPython import *
 import demistomock as demisto
 
@@ -801,6 +797,8 @@ def test_build_context_indicator_no_results_status(inputs, expected_return):
         assert results.indicator.sha1 == expected_return.get('sha1')
         assert results.indicator.sha256 == expected_return.get('sha256')
         assert results.indicator.md5 == expected_return.get('md5')
+
+
 @pytest.mark.parametrize('entities_list,field_name,expected_results', [
     ([{'name': 'some_name'}, {'name': 'some_name1'}, {'name': 'some_name2'}, {'name': 'some_name3'}], 'name',
      [{'name': 'some_name'}, {'name': 'some_name1'}, {'name': 'some_name2'}, {'name': 'some_name3'}]),
