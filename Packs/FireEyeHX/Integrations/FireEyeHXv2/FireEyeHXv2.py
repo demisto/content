@@ -2447,7 +2447,7 @@ def list_indicator_categories(client: Client, args: Dict[str, Any]) -> CommandRe
     return CommandResults(
         outputs_prefix='FireEyeHX.IndicatorCategory',
         outputs=entries,
-        readable_output=tableToMarkdown(f'{total} Indicator categories found', readable_entries),
+        readable_output=tableToMarkdown(f'{len(readable_entries)} Indicator categories found', readable_entries),
         raw_response=response
     )
 
