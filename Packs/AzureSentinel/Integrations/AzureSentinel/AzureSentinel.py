@@ -44,8 +44,6 @@ DEFAULT_SOURCE = 'Azure Sentinel'
 
 THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source', 'Confidence', 'Tags']
 
-MINIMAL_INCIDENT_NUMBER = 0
-
 
 class AzureSentinelClient:
     def __init__(self, server_url: str, tenant_id: str, client_id: str,
@@ -898,13 +896,16 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
     # Get the last fetch details, if exist
     last_fetch_time = last_run.get('last_fetch_time')
     last_fetch_ids = last_run.get('last_fetch_ids', [])
-    last_incident_number = last_run.get('last_incident_number', MINIMAL_INCIDENT_NUMBER)
+    last_incident_number = last_run.get('last_incident_number')
     demisto.debug(f"{last_fetch_time=}, {last_fetch_ids=}, {last_incident_number=}")
 
-    if last_fetch_time is None:  # this is the first fetch, or the First fetch timestamp was reset
+    if last_fetch_time is None or last_incident_number is None:
         demisto.debug("handle via timestamp")
-        last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
-        latest_created_time = dateparser.parse(last_fetch_time_str)
+        if last_fetch_time is None:
+            last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
+            latest_created_time = dateparser.parse(last_fetch_time_str)
+        else:
+            latest_created_time = dateparser.parse(last_fetch_time)
         latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
         command_args = {
             'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
@@ -925,7 +926,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
 
 
 def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime,
-                      last_incident_number: int):
+                      last_incident_number):
     """Processing the raw incidents
     Args:
         raw_incidents: The incidents that were fetched from the API.
@@ -940,6 +941,8 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
 
     incidents = []
     current_fetch_ids = []
+    if not last_incident_number:
+        last_incident_number = 0
 
     for incident in raw_incidents:
         incident_severity = severity_to_level(incident.get('Severity'))
