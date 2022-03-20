@@ -1,0 +1,282 @@
+id: Impossible Traveler XSIAM - Test
+version: -1
+name: Impossible Traveler XSIAM - Test
+description: This playbook is a test playbook for impossibleTravelerGetDistance automation.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1997996e-7965-4b56-8aa7-6c3704a8fc31
+    type: start
+    task:
+      id: 1997996e-7965-4b56-8aa7-6c3704a8fc31
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b8d3b54c-e78f-4157-8ac9-96fb8c174956
+    type: regular
+    task:
+      id: b8d3b54c-e78f-4157-8ac9-96fb8c174956
+      version: -1
+      name: Calculate Geo Distance
+      description: Compute the distance between two sets of coordinates, in miles.
+      scriptName: impossibleTravelerGetDistance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      dest_coords:
+        complex:
+          root: ImpossibleTraveler.Events
+          accessor: location
+      src_coords:
+        complex:
+          root: ImpossibleTraveler.Events
+          accessor: location
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f6826f62-23df-46d4-8d8e-233763a8cf5f
+    type: condition
+    task:
+      id: f6826f62-23df-46d4-8d8e-233763a8cf5f
+      version: -1
+      name: Check results
+      description: Checks the script results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GeoEvents
+                accessor: distance
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: de5e7466-1e9b-4cf8-85f2-8ab7af96d373
+    type: playbook
+    task:
+      id: de5e7466-1e9b-4cf8-85f2-8ab7af96d373
+      version: -1
+      name: Impossible Traveler - IP Enrichment
+      description: |-
+        This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler main playbook alert and enrich them based on:
+        * Geo location
+        * AD
+      playbookName: Impossible Traveler - IP Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      sourceip:
+        complex:
+          root: ImpossibleTravelerIPs
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 3
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 65d02867-13af-4ad0-894a-7a8cb88aea30
+    type: regular
+    task:
+      id: 65d02867-13af-4ad0-894a-7a8cb88aea30
+      version: -1
+      name: Create array data
+      description: 'Will create an array object in context from given string input '
+      scriptName: CreateArray
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      arrayData:
+        simple: 31.154.166.148,185.210.217.140
+      contextKey:
+        simple: ImpossibleTravelerIPs
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: dc2c36b1-6f74-45ef-84be-99766652ccd7
+    type: title
+    task:
+      id: dc2c36b1-6f74-45ef-84be-99766652ccd7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 0c8a832a-fa12-407a-8ee5-27e3a7b45e22
+    type: regular
+    task:
+      id: 0c8a832a-fa12-407a-8ee5-27e3a7b45e22
+      version: -1
+      name: Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The test playbook failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 865,
+        "width": 890,
+        "x": 170,
+        "y": -40
+      }
+    }
+  }
+inputs:
+- key: sourceIP
+  value:
+    simple: 31.154.166.148,185.210.217.140,143.244.46.168
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
+marketplaces:
+  - marketplacev2
