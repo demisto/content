@@ -2409,7 +2409,7 @@ def delete_indicator_command(client: Client, args: Dict[str, str]) -> CommandRes
     return CommandResults(readable_output=human_readable)
 
 
-def list_indicator_categories(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_indicator_categories_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     # The following may be None or int
     if limit := args.get('limit'):
         limit = int(limit)
@@ -2421,35 +2421,41 @@ def list_indicator_categories(client: Client, args: Dict[str, Any]) -> CommandRe
         ui_signature_enabled = argToBoolean(ui_signature_enabled)
     if ui_source_alerts_enabled := args.get('ui_source_alerts_enabled'):
         ui_source_alerts_enabled = argToBoolean(ui_source_alerts_enabled)
+    try:
+        response = client.list_indicator_categories(
+            search=args.get('search'),
+            name=args.get('name'),
+            display_name=args.get('display_name'),
+            retention_policy=args.get('retention_policy'),
+            ui_edit_policy=args.get('ui_edit_policy'),
+            ui_signature_enabled=ui_signature_enabled,
+            ui_source_alerts_enabled=ui_source_alerts_enabled,
+            share_mode=args.get('share_mode'),
+            offset=offset,
+            limit=limit,
+        )
 
-    response = client.list_indicator_categories(
-        search=args.get('search'),
-        name=args.get('name'),
-        display_name=args.get('display_name'),
-        retention_policy=args.get('retention_policy'),
-        ui_edit_policy=args.get('ui_edit_policy'),
-        ui_signature_enabled=ui_signature_enabled,
-        ui_source_alerts_enabled=ui_source_alerts_enabled,
-        share_mode=args.get('share_mode'),
-        offset=offset,
-        limit=limit,
-    )
+        data = response.get('data', {})
+        entries = data.get('entries', [])
 
-    data = response.get('data', {})
-    total = data.get('total')
-    entries = data.get('entries', [])
+        readable_entries = [{
+            'Policy ID': entry.get('_id'),
+            'Name': entry.get('name'),
+        } for entry in entries]
 
-    readable_entries = [{
-        'Policy ID': entry.get('_id'),
-        'Name': entry.get('name'),
-    } for entry in entries]
-
-    return CommandResults(
-        outputs_prefix='FireEyeHX.IndicatorCategory',
-        outputs=entries,
-        readable_output=tableToMarkdown(f'{len(readable_entries)} Indicator categories found', readable_entries),
-        raw_response=response
-    )
+        return CommandResults(
+            outputs_prefix='FireEyeHX.IndicatorCategory',
+            outputs=entries,
+            readable_output=tableToMarkdown(f'{len(readable_entries)} Indicator categories found', readable_entries),
+            raw_response=response
+        )
+    except DemistoException as e:
+        message = None
+        if e.res and (message := e.res.get('message')):
+            readable_output = f'Could not list categories. Error: {message}'
+        else:
+            readable_output = f'Could not list categories. Error: {e}'
+        return CommandResults(readable_output=readable_output, raw_response=e.res)
 
 
 def append_conditions_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -2861,7 +2867,7 @@ def main() -> None:
         "fireeye-hx-approve-containment": approve_containment_command,
         "fireeye-hx-list-containment": get_list_containment_command,
         'fireeye-hx-delete-indicator': delete_indicator_command,
-        'fireeye-hx-list-indicator-category': list_indicator_categories,
+        'fireeye-hx-list-indicator-category': list_indicator_categories_command,
         'fireeye-hx-delete-indicator-condition': delete_condition_command,
     }
 

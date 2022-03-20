@@ -1,5 +1,6 @@
 import io
 import json
+from pathlib import Path
 
 import pytest
 
@@ -1661,3 +1662,21 @@ def test_delete_indicator_condition_command(mocker, requests_mock, status_code: 
         assert 'message' in readable_parts[1]
     else:
         assert len(readable_parts) == 1
+
+
+@pytest.mark.parametrize('file_name,status_code', (('list_indicators_success.json', 200),
+                                                   ('list_indicators_unprocessable.json', 402)))
+def test_list_indicator_categories_command(mocker, requests_mock, file_name: str, status_code: int):
+    base_url = 'https://example.com'
+    test_data_folder = Path(__file__).absolute().parent / 'test_data'
+    mocked_response = json.loads((test_data_folder / 'responses' / file_name).read_text())
+    expected_context = json.loads((test_data_folder / 'expected_context' / file_name).read_text())
+
+    from Packs.FireEyeHX.Integrations.FireEyeHXv2.FireEyeHXv2 import list_indicator_categories_command, Client
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    request = requests_mock.get(f'{base_url}/indicator_categories', status_code=status_code, json=mocked_response)
+    client = Client(base_url)
+    command_result = list_indicator_categories_command(client, {'search': 'foo', 'limit': 49})
+    assert command_result.to_context() == expected_context
+    assert request.called_once
+    assert request.last_request._url_parts.query == 'limit=49&search=foo'
