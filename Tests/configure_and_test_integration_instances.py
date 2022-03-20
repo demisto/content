@@ -721,13 +721,15 @@ class XSIAMBuild(Build):
 
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number):
-        # Todo: "Need to copy from:
-        #  gs://marketplace-ci-build/content/builds/xsiam-build-instances/$CI_BUILD_ID/marketplacev2
+        # "Need to copy from:
+        #  gs://marketplace-ci-build/content/builds/$BRANCH_NAME/$CI_BUILD_ID/marketplacev2/content
         #  to gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID
         logging.info('Copying build bucket to xsiam_instance_bucket.')
-        from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/marketplacev2'
+        from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/marketplacev2/content'
         for server in servers:
             to_bucket = f'{MARKETPLACE_XSIAM_BUCKETS}/{server.name}'
+            cmd = f'gsutil -m cp -r "gs://{from_bucket}" "gs://{to_bucket}/" > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine.log" 2>&1'
+            subprocess.run(cmd.split())
         logging.info('Finished copying successfully.')
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
