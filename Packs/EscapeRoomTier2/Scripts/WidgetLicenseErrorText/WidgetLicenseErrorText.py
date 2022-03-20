@@ -165,10 +165,10 @@ def main():
                 text = SUCCESS_MESSAGE
             else:
                 text = (
-                f'![]({random.choice(SUCCESS_GIFS)})'
-                f'![]({random.choice(SUCCESS_GIFS)})'
-                f'![]({random.choice(SUCCESS_GIFS)})'
-            )
+                    f'![]({random.choice(SUCCESS_GIFS)})'
+                    f'![]({random.choice(SUCCESS_GIFS)})'
+                    f'![]({random.choice(SUCCESS_GIFS)})'
+                )
         elif is_correct_date_range(from_times, to_times):
             if gif_or_text == 'text':
                 demisto_urls = demisto.demistoUrls()
@@ -176,10 +176,10 @@ def main():
                 text = INVALID_LICENSE_HINT.format(incidents_page=incidents_page)
             else:
                 text = (
-                f'![]({random.choice(INVALID_LICENSE_GIFS)})'
-                f'![]({random.choice(INVALID_LICENSE_GIFS)})'
-                f'![]({random.choice(INVALID_LICENSE_GIFS)})'
-            )
+                    f'![]({random.choice(INVALID_LICENSE_GIFS)})'
+                    f'![]({random.choice(INVALID_LICENSE_GIFS)})'
+                    f'![]({random.choice(INVALID_LICENSE_GIFS)})'
+                )
         else:
             if gif_or_text == 'text':
                 text = WRONG_DATE_RANGE_HINT
