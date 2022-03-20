@@ -26,7 +26,7 @@ else:
 
 OOB_MAJOR_VERSION_INFO_KEY = 'major'
 OOB_MINOR_VERSION_INFO_KEY = 'minor'
-MAJOR_VERSION = 0
+MAJOR_VERSION = 1
 MINOR_DEFAULT_VERSION = 0
 
 MSG_MODEL_VERSION_IN_DEMISTO = "Model version in demisto: %s.%s"
@@ -117,6 +117,7 @@ MAPPING_VERDICT_TO_DISPLAY_VERDICT = {
 }  # type: Dict
 
 TIMEOUT_REQUESTS = 5
+WAIT_TIME_RASTERIZE = 5
 
 
 def get_model_data(model_name: str):
@@ -385,7 +386,8 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
             "ContentsFormat": formats['json'],
             "HumanReadable": tableToMarkdown("Phishing prediction evidence | %s" % domain, explain_hr),
             "Contents": explain,
-            "EntryContext": {'DBotPredictURLPhishing': explain, KEY_CONTENT_DBOT_SCORE: context_DBot_score}
+            "EntryContext": {'DBotPredictURLPhishing': explain, KEY_CONTENT_DBOT_SCORE: context_DBot_score},
+            "Tags": ['DBOT_URL_PHISHING_MALICIOUS']
         }
     return_results(return_entry)
     # Get rasterize image or logo detection if logo was found
@@ -396,7 +398,7 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
         res = fileResult(filename='Logo detection engine', data=image)
         res['Type'] = entryTypes['image']
         if pred_json[MODEL_KEY_LOGO_FOUND]:
-            res["Tags"] = ['DBotPredictURLPhishing_logo_detected']
+            res["Tags"] = ['DBOT_URL_PHISHING_MALICIOUS']
         return_results(res)
     return explain
 
@@ -532,6 +534,7 @@ def get_prediction_single_url(model, url, force_model, debug):
     # Rasterize html and image
     res = demisto.executeCommand('rasterize', {'type': 'json',
                                                'url': url,
+                                                'wait_time': WAIT_TIME_RASTERIZE
                                                })
     if KEY_IMAGE_RASTERIZE not in res[0]['Contents'].keys() or KEY_IMAGE_HTML not in res[0]['Contents'].keys():
         raise DemistoException(MSG_NEED_TO_UPDATE_RASTERIZE)
@@ -678,13 +681,29 @@ def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
         return_results(MSG_NO_URL_GIVEN)
-        return
+        return [], ""
     urls = get_final_urls(urls, max_urls, model)
     urls = [demisto.executeCommand("UnEscapeURLs", {"input": x})[0]['Contents'] for x in urls]
     if debug:
         return_results(urls)
     return urls, msg_list
 
+
+def update_model_docker_from_model(model_docker, model):
+
+    model_docker.logos_dict = model.logos_dict
+    model_docker.top_domains = model.top_domains
+
+    model_docker.clf.named_steps.preprocessor.named_transformers_[
+        'image'].named_steps.trans.logo_dict = model.logos_dict
+
+    model_docker.clf.named_steps.preprocessor.named_transformers_[
+        'url'].named_steps.trans.d_top_domains = model.top_domains
+
+    model_docker.clf.named_steps.preprocessor.named_transformers_[
+        'image'].named_steps.trans.top_domains = model.logos_dict
+
+    return model_docker
 
 def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version, demisto_minor_version,
                           model_data):
@@ -693,6 +712,7 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
             msg_list.append(MSG_MODEL_VERSION_IN_DEMISTO % (demisto_major_version, demisto_minor_version))
         else:
             msg_list.append(MSG_NO_MODEL_IN_DEMISTO)
+
     if reset_model or not exist or (
             demisto_major_version < MAJOR_VERSION and demisto_minor_version == MINOR_DEFAULT_VERSION):
         msg_list.append(load_oob_model(OUT_OF_THE_BOX_MODEL_PATH))
@@ -702,13 +722,12 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
     elif demisto_major_version == MAJOR_VERSION:
         model = decode_model_data(model_data)
         msg_list.append(MSG_NO_ACTION_ON_MODEL)
+
     elif (demisto_major_version < MAJOR_VERSION) and (demisto_minor_version > MINOR_DEFAULT_VERSION):
         model_docker = load_model_from_docker()
         model_docker_minor = model_docker.minor
         model = load_demisto_model()
-        model_docker.logos_dict = model.logos_dict
-        model_docker.clf.named_steps.preprocessor.named_transformers_[
-            'image'].named_steps.trans.logo_dict = model.logos_dict
+        model_docker = update_model_docker_from_model(model_docker, model)
         model_docker.minor += 1
         save_model_in_demisto(model_docker)
         msg_list.append(MSG_UPDATE_LOGO % (MAJOR_VERSION, model_docker_minor, model.major, model.minor))
@@ -742,6 +761,8 @@ def main():
 
         # Get all the URLs on which we will run the model
         urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
+        if not urls:
+            return
 
         # Run the model and get predictions
         results = [get_prediction_single_url(model, x, force_model, debug) for x in urls]

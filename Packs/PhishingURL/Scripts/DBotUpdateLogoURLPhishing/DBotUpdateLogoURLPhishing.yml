@@ -22,6 +22,36 @@ args:
   - 'True'
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: If True it will only display the logo in the current mode.
+  isArray: false
+  name: displayLogos
+  predefined:
+  - 'False'
+  - 'True'
+  required: false
+  secret: false
+- default: false
+  isArray: false
+  name: updateDomainForCustomLogo
+  required: false
+  secret: false
+- default: false
+  isArray: true
+  name: associatedDomains
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  isArray: false
+  name: action
+  predefined:
+  - RemoveLogo
+  - ' AddLogo'
+  required: false
+  secret: false
 comment: Update the URL Phishing model with new logo
 commonfields:
   id: DBotUpdateLogoURLPhishing
@@ -33,7 +63,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: devdemisto/mlurlphishing:1.0.0.27313
+dockerimage: devdemisto/mlurlphishing:1.0.0.27612
 runas: DBotRole
 runonce: false
 tests:
