@@ -3983,8 +3983,8 @@ def privilege_escalation_command(client, args):
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
-    page = int(args.get('page', 1))
-    limit = int(args.get('limit', 50))
+    if isinstance(results, list) and page > 1:
+        results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown('Privilege Escalation Hunt Results', results, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
