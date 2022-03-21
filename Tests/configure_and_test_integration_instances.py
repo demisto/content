@@ -69,7 +69,7 @@ XSOAR_BUILD_TYPE = "XSOAR"
 XSIAM_BUILD_TYPE = "XSIAM"
 MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
 MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
-
+ARTIFACTS_FOLDER_MPV2 = "/builds/xsoar/content/artifacts/marketplacev2"
 
 class Running(IntEnum):
     CI_RUN = 0
