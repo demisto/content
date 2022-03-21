@@ -21,11 +21,10 @@ def main():
     logging.info('Copying build bucket to xsiam_instance_bucket.')
     from_bucket = f'{MARKETPLACE_TEST_BUCKET}/xsiam-build-instances/2614610/marketplacev2/content'
     to_bucket = f'{MARKETPLACE_XSIAM_BUCKETS}/xsoar-content-1'
-    cmd = f'gsutil -m cp -r "gs://{from_bucket}" "gs://{to_bucket}/"'
+    cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/'
     #  > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine.log" 2>&1
 
-    cmd2 = 'gsutil -m cp -r gs://marketplace-ci-build/content/builds/xsiam-build-instances/2614018/marketplacev2/content gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/xsoar-content-1/'
-    subprocess.run(cmd2.split())
+    subprocess.run(cmd.split())
     logging.info('Finished copying successfully.')
 
     # bucket = storage_client.bucket('marketplace-ci-build')
