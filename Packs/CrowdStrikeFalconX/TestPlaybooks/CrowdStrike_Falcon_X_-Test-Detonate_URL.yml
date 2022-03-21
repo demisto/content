@@ -1,15 +1,14 @@
 id: CrowdStrike_Falcon_X_-Test-Detonate_URL
 version: -1
 name: CrowdStrike_Falcon_X_-Test-Detonate_URL
-description: ""
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 80a1754e-b8e6-406a-8108-337eed83ff43
+    taskid: 0f8d526b-e4c5-4f01-86e6-7624947b6d5e
     type: start
     task:
-      id: 80a1754e-b8e6-406a-8108-337eed83ff43
+      id: 0f8d526b-e4c5-4f01-86e6-7624947b6d5e
       version: -1
       name: ""
       iscommand: false
@@ -31,18 +30,19 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 8da20376-add7-41e7-817e-8ee2a32dee59
+    taskid: f48ef094-015e-4ea8-8050-9e46ca0967a6
     type: regular
     task:
-      id: 8da20376-add7-41e7-817e-8ee2a32dee59
+      id: f48ef094-015e-4ea8-8050-9e46ca0967a6
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      description: ''
       brand: ""
     nexttasks:
       '#none#':
@@ -50,8 +50,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      key: {}
-      keysToKeep: {}
     separatecontext: false
     view: |-
       {
@@ -65,24 +63,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: d5fd2168-0e80-4f43-8294-b3e7cee570d8
+    taskid: 0394d1d4-004f-43fd-8a10-614f6772d3f3
     type: regular
     task:
-      id: d5fd2168-0e80-4f43-8294-b3e7cee570d8
+      id: 0394d1d4-004f-43fd-8a10-614f6772d3f3
       version: -1
       name: Set URL
       scriptName: Set
       type: regular
       iscommand: false
-      description: ''
       brand: ""
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
-      append: {}
       key:
         simple: URL.Data
       value:
@@ -100,16 +98,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 402c0b9a-94f9-4a17-82a5-0478df6c5da9
+    taskid: 9a380dce-d1ca-4fb6-848e-9e658e6d6358
     type: playbook
     task:
-      id: 402c0b9a-94f9-4a17-82a5-0478df6c5da9
+      id: 9a380dce-d1ca-4fb6-848e-9e658e6d6358
       version: -1
       name: Detonate URL - CrowsStrike Falcon X
-      playbookName: Detonate URL - CrowsStrike Falcon X
-      playbookId: Detonate URL - CrowdStrike Falcon X
+      playbookName: Detonate URL - CrowdStrike Falcon X
       type: playbook
       iscommand: false
       brand: ""
@@ -127,6 +126,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -141,4 +142,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.1.0
+description: ''
