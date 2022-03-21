@@ -1,0 +1,61 @@
+commonfields:
+  id: OpenPhish
+  version: -1
+name: OpenPhish
+deprecated: true
+display: OpenPhish (Deprecated)
+category: Data Enrichment & Threat Intelligence
+description: Deprecated. Use the OpenPhish v2 integration instead.
+defaultEnabled: false
+configuration:
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Database refresh interval (hours)
+  name: fetchIntervalHours
+  defaultvalue: "1"
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to check
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Check URL Reputation
+  - name: openphish-reload
+    arguments: []
+    description: Reload OpenPhish database
+  - name: openphish-status
+    arguments: []
+    description: Show OpenPhish database status
+hidden: false
+tests:
+- No test
+fromversion: 5.0.0

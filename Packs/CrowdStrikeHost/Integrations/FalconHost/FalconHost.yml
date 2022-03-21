@@ -1,0 +1,680 @@
+commonfields:
+  id: FalconHost
+  version: -1
+name: FalconHost
+display: FalconHost (Deprecated)
+fromversion: 5.0.0
+category: Endpoint
+description: Deprecated. Use the CrowdStrike Falcon integration instead.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  defaultvalue: https://falconapi.crowdstrike.com/
+  type: 0
+  required: true
+- display: API ID
+  name: id
+  type: 0
+  required: true
+- display: API Key
+  name: key
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: cs-upload-ioc
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
+      description: The type of the indicator
+    - name: value
+      required: true
+      description: The string representation of the indicator
+    - name: policy
+      auto: PREDEFINED
+      predefined:
+      - detect
+      - none
+      description: "The policy to enact when the value is detected on a host. A value\
+        \ of none is equivalent to turning the indicator off.\t"
+      defaultValue: detect
+    - name: share_level
+      auto: PREDEFINED
+      predefined:
+      - red
+      description: The level at which the indicator will be shared. Only red share
+        level (not shared) is supported, which indicates that the IOC is not shared
+        with other Falcon Host customers.
+    - name: expiration_days
+      description: 'This represents the days the indicator should be valid for. This
+        only applies to domain, ipv4, and ipv6 types. Default is 30 if not provided. '
+    - name: source
+      description: The source where this indicator originated. This can be used for
+        tracking where this indicator was defined. Limit 200 characters.
+    - name: description
+      description: A meaningful description of the indicator. Limit 200 characters.
+    description: Uploads one or more indicators for CrowdStrike to monitor
+    execution: true
+  - name: cs-get-ioc
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
+      description: The IOC type to retrieve
+    - name: value
+      required: true
+      description: The IOC value to retrieve
+    description: Get the full definition of one or more indicators that you are watching
+  - name: cs-update-ioc
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
+      description: The IOC type to update
+    - name: value
+      required: true
+      description: The IOC value to update
+    - name: policy
+      auto: PREDEFINED
+      predefined:
+      - detect
+      - none
+      description: The policy to enact when the value is detected on a host. A value
+        of none is equivalent to turning the indicator off.
+      defaultValue: detect
+    - name: share_level
+      auto: PREDEFINED
+      predefined:
+      - red
+      description: The level at which the indicator will be shared. Only red share
+        level (not shared) is supported, which indicates that the IOC is not shared
+        with other Falcon Host customers.
+    - name: expiration_days
+      description: This represents the days the indicator should be valid for. This
+        only applies to domain, ipv4, and ipv6 types. Default is 30.
+    - name: source
+      description: The source where this indicator originated. This can be used for
+        tracking where this indicator was defined. Limit 200 characters.
+    - name: description
+      description: A meaningful description of the indicator. Limit 200 characters.
+    description: Updates one or more of the uploaded indicators
+    execution: true
+  - name: cs-delete-ioc
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
+      description: The IOC type to delete
+    - name: value
+      description: The IOC value to delete
+    description: Deletes an indicator that you are monitoring
+    execution: true
+  - name: cs-search-iocs
+    arguments:
+    - name: types
+      description: A list of indicator types. Separate multiple types by comma. Valid
+        types are sha256, sha1, md5, domain, ipv4, ipv6.
+      isArray: true
+    - name: values
+      description: Comma-separated list of indicator values
+      isArray: true
+    - name: policies
+      description: Comma-separated list of indicator policies
+      isArray: true
+    - name: share_levels
+      description: A list of share levels. Only red is supported.
+      isArray: true
+    - name: sources
+      description: Comma-separated list of IOC sources
+      isArray: true
+    - name: from_expiration_date
+      description: Start of date range to search (YYYY-MM-DD format)
+    - name: to_expiration_date
+      description: End of date range to search (YYYY-MM-DD format)
+    - name: sort
+      auto: PREDEFINED
+      predefined:
+      - type.asc
+      - type.desc
+      - value.asc
+      - value.desc
+      - policy.asc
+      - policy.desc
+      - share_level.asc
+      - share_level.desc
+      - expiration_timestamp.asc
+      - expiration_timestamp.desc
+      description: The order of the results. Format is field.asc or field.desc.
+    - name: limit
+      description: The maximum number of records to return. The minimum is 1 and the
+        maximum is 500. Default is 100.
+    - name: offset
+      description: The offset to begin the list from. For example, start from the
+        10th record and return the list. Default is 0.
+    description: Returns a list of your uploaded IOCs that match the search criteria
+  - name: cs-device-search
+    arguments:
+    - name: query
+      default: true
+      description: Search for a value across all fields
+    - name: filter
+      description: Filter devices using query syntax of "field:value+field:value"
+        where string values are enclosed in single quotes or as arrays in single quotes
+        (['x', 'y']). Numerical fields and dates also support operators like field:>value.
+        For a list of relevant fields, see the CrowdStrike documentation.
+    - name: limit
+      description: Number of results to return
+    - name: offset
+      description: The result to start from
+    outputs:
+    - contextPath: FalconHostDevices
+      description: Device IDs found by device search
+      type: string
+    description: Search for devices in your environment by platform, host name, IP,
+      or various other parameters
+  - name: cs-device-details
+    arguments:
+    - name: ids
+      required: true
+      default: true
+      description: The ID of the process. Allows multiple values separated by comma.
+    outputs:
+    - contextPath: FalconHostDetails
+      description: The ID to retrieve details for. Supports comma-separated list of
+        IDs.
+      type: string
+    - contextPath: Endpoint.ID
+      description: Unique ID of the endpoint in FalconHost
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: IPAddress of the endpoint
+      type: string
+    - contextPath: Endpoint.Domain
+      description: Domain of the endpoint
+      type: string
+    - contextPath: Endpoint.MACAddress
+      description: MACAddress of the endpoint
+      type: string
+    - contextPath: Endpoint.OS
+      description: OS of the endpoint
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: OSVersion of the endpoint
+      type: string
+    - contextPath: Endpoint.BIOSVersion
+      description: BIOSVersion of the endpoint
+      type: string
+    - contextPath: Endpoint.HostName
+      description: The host of the endpoint
+      type: string
+    description: Get details for one or more devices, according to device ID
+  - name: cs-device-count-ioc
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      description: The type of indicator
+    - name: value
+      required: true
+      default: true
+      description: The actual string representation of the indicator
+    description: Returns the number of devices on which an IOC ran, according to type
+      and value of an IOC
+  - name: cs-device-ran-on
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
+      description: The type of indicator from the list of supported indicator types.
+    - name: value
+      required: true
+      description: The actual string representation of the indicator
+    outputs:
+    - contextPath: FalconHostDevices
+      description: Device IDs found by device IOC search
+      type: string
+    description: Returns a list of device IDs on which an indicator ran
+  - name: cs-processes-ran-on
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      description: The type of indicator from the list of supported indicator types.
+    - name: value
+      required: true
+      description: The actual string representation of the indicator
+    - name: device_id
+      required: true
+      description: "The device ID you want to check against\t"
+    outputs:
+    - contextPath: FalconHostProcesses
+      description: List of processes of the searched indicators
+      type: string
+    description: Returns the process ID of the indicator if it ran on given device
+      recently
+  - name: cs-process-details
+    arguments:
+    - name: ids
+      required: true
+      default: true
+      description: The ID of the process. Allows multiple values separated by comma.
+    description: Retrieves the details of a process, according to process ID, that
+      is running or that previously ran.
+  - name: cs-resolve-detection
+    deprecated: true
+    arguments:
+    - name: ids
+      required: true
+      default: true
+      description: "The IDs of the detections you want to resolve. Falcon Host API\
+        \ v2: detection ids are in the following format: ldt:[first field]:[second\
+        \ field],  for example, ldt:cf54bb61f92e4d3e75bf4f7c11fc8f74:4295536142.\t"
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - new
+      - in_progress
+      - true_positive
+      - false_positive
+      - ignored
+      description: "The status to which you want to transition a detection\t"
+    outputs:
+    - contextPath: CrowdStrikeHost.Detections.cid
+      description: cid of the detection
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.detection_id
+      description: ID of the detection
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.first_behavior
+      description: First behavior of the detection
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.last_behavior
+      description: Last behavior of the detection
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.max_confidence
+      description: Max confidence of the detection
+      type: number
+    - contextPath: CrowdStrikeHost.Detections.max_severity
+      description: Max severity of the detection
+      type: number
+    - contextPath: CrowdStrikeHost.Detections.max_severity_display_name
+      description: Displayname of the max severity
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.alleged_file_type
+      description: Alleged filetype of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.behavior_id
+      description: ID of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.device_id
+      description: ID of the device of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.user_id
+      description: ID of the user of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.control_graph_id
+      description: ID of the control graph of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.cmdline
+      description: Command line of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.confidence
+      description: Confidence of the behavior
+      type: number
+    - contextPath: CrowdStrikeHost.Detections.behaviors.severity
+      description: Severity of the behavior
+      type: number
+    - contextPath: CrowdStrikeHost.Detections.behaviors.filename
+      description: Filename of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.ioc_description
+      description: IOC description of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.ioc_source
+      description: IOC source of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.ioc_type
+      description: IOC type of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.ioc_value
+      description: IOC value of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.md5
+      description: MD5 of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.sha256
+      description: SHA256 of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.timestamp
+      description: Timestamp of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.parent_details.parent_cmdline
+      description: Commandline of the parent of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.parent_details.parent_md5
+      description: MD5 of the parent of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.parent_details.parent_sha256
+      description: SHA256 of the parent of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.parent_details.parent_control_graph_id
+      description: Control graph ID of the parent of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.device.agent_version
+      description: Agent version of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.device.bios_version
+      description: Bios version of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.device.os_version
+      description: OS version of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.device.mac_address
+      description: MACAddress of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.device.local_ip
+      description: Local IP of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.device.external_ip
+      description: External IP of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.device.hostname
+      description: Hostname of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.technique
+      description: Technique of the behavior
+      type: string
+    description: Deprecated. Use the cs-falcon-resolve-detection command from the
+      CrowdStrike Falcon integration instead.
+    execution: true
+  - name: cs-detection-search
+    deprecated: true
+    arguments:
+    - name: query
+      description: Free text search filter
+    - name: first_behavior
+      description: 'First Behavior of the detection. Example: 2017-01-31T22:36:11Z'
+    outputs:
+    - contextPath: CrowdStrikeHost.Detections.detection_id
+      description: IDs of the related detections
+      type: string
+    description: Deprecated. Use the cs-falcon-search-detection command from the CrowdStrike
+      Falcon integration instead.
+  - name: cs-detection-details
+    deprecated: true
+    arguments:
+    - name: detection_id
+      required: true
+      description: ID of the detections
+      isArray: true
+    outputs:
+    - contextPath: CrowdStrikeHost.Detections.cid
+      description: cid of the detection
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.detection_id
+      description: ID of the detection
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.first_behavior
+      description: First behavior of the detection
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.last_behavior
+      description: Last behavior of the detection
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.max_confidence
+      description: Max confidence of the detection
+      type: number
+    - contextPath: CrowdStrikeHost.Detections.max_severity
+      description: Max severity of the detection
+      type: number
+    - contextPath: CrowdStrikeHost.Detections.max_severity_display_name
+      description: Displayname of the max severity
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.alleged_file_type
+      description: Alleged filetype of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.behavior_id
+      description: ID of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.device_id
+      description: ID of the device of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.user_id
+      description: ID of the user of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.control_graph_id
+      description: ID of the control graph of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.cmdline
+      description: Command line of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.confidence
+      description: Confidence of the behavior
+      type: number
+    - contextPath: CrowdStrikeHost.Detections.behaviors.severity
+      description: Severity of the behavior
+      type: number
+    - contextPath: CrowdStrikeHost.Detections.behaviors.filename
+      description: Filename of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.ioc_description
+      description: IOC description of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.ioc_source
+      description: IOC source of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.ioc_type
+      description: IOC type of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.ioc_value
+      description: IOC value of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.md5
+      description: MD5 of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.sha256
+      description: SHA256 of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.timestamp
+      description: Timestamp of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.parent_details.parent_cmdline
+      description: Commandline of the parent of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.parent_details.parent_md5
+      description: MD5 of the parent of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.parent_details.parent_sha256
+      description: SHA256 of the parent of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.parent_details.parent_control_graph_id
+      description: Control graph ID of the parent of the behavior
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.device.agent_version
+      description: Agent version of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.device.bios_version
+      description: Bios version of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.device.os_version
+      description: OS version of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.device.mac_address
+      description: MAC address of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.device.local_ip
+      description: Local IP of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.device.external_ip
+      description: External IP of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.device.hostname
+      description: Hostname of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.technique
+      description: Technique of the behavior
+      type: string
+    description: Deprecated. Use the cs-falcon-search-detection command from the CrowdStrike
+      Falcon integration instead.
+  - name: cs-threatgraph-summary
+    arguments:
+    - name: ctg_id
+      required: true
+      description: Crowd Strike threat graph ID.
+      isArray: true
+    outputs:
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.customer_id
+      description: Customer ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.device_id
+      description: Device ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.edges
+      description: Summary edges.
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.id
+      description: Threat graph ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.object_id
+      description: Object ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.properties
+      description: Threat graph properties.
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.scope
+      description: Threat graph scope.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.timestamp
+      description: Timestamp when the threat graph summary was created.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.vertex_type
+      description: Threat graph vertex type.
+      type: string
+    description: Gets the details of a threat graph summary.
+  - name: cs-threatgraph-processes
+    arguments:
+    - name: process_id
+      required: true
+      description: ID of the threat graph processes.
+      isArray: true
+    outputs:
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.customer_id
+      description: Customer ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.device_id
+      description: Device ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.edges
+      description: Threat graph edges.
+      type: unknown
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.id
+      description: Process ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.object_id
+      description: Object ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.properties
+      description: Threat graph properties.
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.scope
+      description: Threat graph scope.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.timestamp
+      description: Timestamp when the threat graph processes were created.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.vertex_type
+      description: Threat graph vertex type.
+      type: string
+    description: Gets the summary of Threat Graph Processes.
+  - name: cs-threatgraph-detections
+    arguments:
+    - name: detection_id
+      required: true
+      description: ID of  threat graph detection.
+      isArray: true
+    outputs:
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.customer_id
+      description: Customer ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.device_id
+      description: Device ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.edges
+      description: Threat graph edges.
+      type: unknown
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.id
+      description: Detection ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.object_id
+      description: Object ID.
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.properties
+      description: Threat graph properties.
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.scope
+      description: Threat graph scope.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.timestamp
+      description: Timestamp when the threat graph detections were created.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.vertex_type
+      description: Threat graph vertex type.
+      type: string
+    description: Gets the child process Threat Graph Detections.
+  runonce: false
+deprecated: true
+tests:
+- No tests

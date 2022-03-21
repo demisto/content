@@ -1,0 +1,171 @@
+versionedfields: {}
+commonfields:
+  id: Cisco CloudLock
+  version: -1
+name: Cisco CloudLock
+display: Cisco CloudLock
+category: Network Security
+description: Query Cisco CloudLock
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://api.cloudlock.com
+  type: 0
+  required: true
+- display: Version
+  name: version
+  defaultvalue: v2
+  type: 0
+  required: true
+- display: API token
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: cloudlock-get-users
+    arguments:
+    - name: offset
+      description: To indicate the item number to start the result set from
+    - name: limit
+      description: To determine the quantity of results to return in the response
+    - name: order
+      description: Use the “order” parameter to indicate the order for your request
+        list result. For multiple sort orders use a comma-delimted list of sort parameters.
+        Default direction is ascending, and a leading “-” character denotes descending
+    - name: platform
+      description: 'The application supplying the underlying data (i.e. Google Drive,
+        Google Sites). platform value should be in the format: <vendor>_<origin_type>'
+    - name: users
+      description: comma delimited list of owner email addresses
+    - name: exposure
+      description: exposure level of the document
+    - name: asset_type
+      auto: PREDEFINED
+      predefined:
+      - google_document
+      - google_spreadsheet
+      - google_presentation
+      - google_form
+      - google_drawing
+      - google_site
+      - google_non_native_file
+      - pdf
+      - folder
+      description: The applications trust rating
+    - name: mime_type
+      description: The mime type of the object/document (if any)
+    - name: updated_before
+      description: Filters assets updated before the specified timestamp
+    - name: updated_after
+      description: Filters assets updated after the specified timestamp
+    outputs:
+    - contextPath: CloudLock.Users.ID
+      description: CloudLock user ID
+    - contextPath: CloudLock.Users.Name
+      description: CloudLock user name
+    - contextPath: CloudLock.Users.Suspended
+      description: CloudLock user suspended
+    - contextPath: CloudLock.Users.OU
+      description: CloudLock user OU
+    - contextPath: CloudLock.Users.Incidents.Total
+      description: CloudLock user total incidents
+    - contextPath: CloudLock.Users.Incidents.Active
+      description: CloudLock user active incidents
+    - contextPath: CloudLock.Users.Entities.Total
+      description: CloudLock user total entities
+    - contextPath: CloudLock.Users.Entities.Exposed
+      description: CloudLock user exposed entities
+    description: This endpoint will return data about the users in the cloud lock
+      system
+  - name: cloudlock-get-user-apps
+    arguments:
+    - name: email
+      required: true
+      default: true
+      description: 'User email '
+    outputs:
+    - contextPath: CloudLock.Users,Applications.Category
+      description: CloudLock user application category
+    - contextPath: CloudLock.Users,Applications.AccessRisk
+      description: CloudLock user application access risk
+    - contextPath: CloudLock.Users,Applications.RiskLevel
+      description: CloudLock user application risk level
+    - contextPath: CloudLock.Users,Applications.ID
+      description: CloudLock user application id
+    - contextPath: CloudLock.Users,Applications.Name
+      description: CloudLock user application name
+    - contextPath: CloudLock.Users,Applications.Vendor
+      description: CloudLock user application vendor
+    description: This endpoint returns all of the applications installed by a user
+      (based on the users email address)
+  - name: cloudlock-get-activities
+    description: Returns UBA (User Behavioral Analysis) activities
+    arguments:
+    - name: event_type
+      description: Filter based on the event type i.e. login, user_settings, other
+    - name: ids
+      description: Filter based on the event id or a group of ids (needs url encoding)
+    - name: created_after
+      description: Filter based on the creation date
+    - name: filter_key
+      description: Filter results by this key
+      defaultValue: User-Email
+    - name: filter_value
+      description: Filter results by this value of the key
+    outputs:
+    - contextPath: CloudLock.Activities.ID
+      description: Activity ID
+    - contextPath: CloudLock.Activities.IP
+      description: Activity IP
+    - contextPath: CloudLock.Activities.Type
+      description: Activity type
+    - contextPath: CloudLock.Activities.Created
+      description: Activity creation time
+    - contextPath: CloudLock.Activities.Successful
+      description: Activity successful
+    - contextPath: CloudLock.Activities.Location.Latitude
+      description: Activity latitude
+    - contextPath: CloudLock.Activities.Location.Longitude
+      description: Activity longitudr
+    - contextPath: CloudLock.Activities.Location.Country.Code
+      description: Activity country code
+    - contextPath: CloudLock.Activities.Location.Country.Name
+      description: Activity country name
+    - contextPath: CloudLock.Activities.Location.Region.Code
+      description: Activity region code
+    - contextPath: CloudLock.Activities.Location.Region.Name
+      description: Activity region name
+    - contextPath: CloudLock.Activities.Location.City
+      description: Activity city
+    - contextPath: CloudLock.Activities.Category
+      description: Activity category
+    - contextPath: CloudLock.Activities.OriginID
+      description: Activity OriginID
+    - contextPath: CloudLock.Activities.User.Email
+      description: Activity user email
+    - contextPath: CloudLock.Activities.User.VendorID
+      description: Activity user vendor id
+    - contextPath: CloudLock.Activities.Vendor.Name
+      description: Activity vendor name
+    - contextPath: CloudLock.Activities.Vendor.Service
+      description: Activity vendor service
+    - contextPath: CloudLock.Activities.User.FullName
+      description: Activity user full name
+hidden: false
+tests:
+- No tests
+fromversion: 5.0.0

@@ -1,16 +1,20 @@
 {
-  "name": "Nmap",
-  "description": "Run nmap scans with the given parameters",
-  "support": "xsoar",
-  "currentVersion": "1.0.1",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Network Security"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "Nmap",
+    "description": "Run nmap scans with the given parameters",
+    "support": "xsoar",
+    "currentVersion": "1.0.2",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -29,5 +29,9 @@
     "dependencies": {},
     "githubUser": [
         "christian-recordedfuture"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

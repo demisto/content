@@ -1,0 +1,32 @@
+commonfields:
+  id: Koodous
+  version: -1
+name: Koodous
+system: true
+display: Koodous
+category: Forensics & Malware Analysis
+description: Check Android app samples (APK) against Koodous API
+configuration:
+- display: API Key
+  name: APIKey
+  defaultvalue:
+  type: 0
+  required: false
+- display: Server URL
+  name: ServerURL
+  defaultvalue: https://api.koodous.com/
+  type: 0
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: k-check-hash
+    arguments:
+    - name: hash
+      required: true
+      description: The hash of the sample (MD5, SHA1 or SHA256)
+    description: Check APK sample.
+tests:
+- No tests
+fromversion: 5.0.0

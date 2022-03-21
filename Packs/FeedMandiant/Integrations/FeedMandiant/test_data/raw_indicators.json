@@ -1,0 +1,78 @@
+{
+  "metadata_indicator": {
+    "first_seen": "2021-11-18T13:22:01.000Z",
+    "last_seen": "2021-11-18T13:22:01.000Z",
+    "sources": [
+      {
+        "first_seen": "2021-11-18T13:22:01.240+0000",
+        "last_seen": "2021-11-18T13:22:01.240+0000",
+        "osint": true,
+        "category": [],
+        "source_name": "source_name"
+      }
+    ],
+    "associated_hashes": [
+      {
+        "id": "id",
+        "type": "md5",
+        "value": "value"
+      }
+    ],
+    "mscore": 100,
+    "id": "id",
+    "type": "md5",
+    "value": "value",
+    "is_publishable": true,
+    "actors": [
+      {
+        "name": "name"
+      }
+    ],
+    "cve": [
+      {
+        "name": "name"
+      }
+    ],
+    "malware": [
+      {
+        "name": "name"
+      }
+    ]
+  },
+  "new_indicators": {
+    "indicators": [
+      {
+        "first_seen": "2021-08-23T22:26:02.000Z",
+        "last_seen": "2021-08-23T22:30:16.000Z",
+        "sources": [
+          {
+            "first_seen": "2021-08-23T22:29:11.000+0000",
+            "last_seen": "2021-08-23T22:29:11.000+0000",
+            "osint": false,
+            "category": [],
+            "source_name": "source_name"
+          }
+        ],
+        "associated_hashes": [
+          {
+            "id": "id",
+            "type": "type",
+            "value": "value"
+          }
+        ],
+        "mscore": 100,
+        "attributed_associations": [
+          {
+            "id": "id",
+            "name": "name",
+            "type": "type"
+          }
+        ],
+        "id": "id",
+        "type": "type",
+        "value": "value",
+        "is_publishable": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+    "name": "Create EDL Instance",
+    "description": "An automation script for creating EDL instances on XSOAR.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Nicholas Ericksen",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}

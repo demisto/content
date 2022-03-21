@@ -1,0 +1,13 @@
+{
+  "~~~NOTE~~~": "unknown data should be ignored",
+  "widgets": [
+    {
+      "~~~NOTE~~~": "unknown data should be ignored",
+      "id": "789",
+      "params": {
+        "assetsOverview": { "nbDaysToCompare": 28, "withTotal": true }
+      },
+      "type": "ASSETS_OVERVIEW"
+    }
+  ]
+}

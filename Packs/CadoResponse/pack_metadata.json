@@ -1,0 +1,31 @@
+{
+    "name": "Cado Response",
+    "description": "Automate data collection. Process data at cloud speed. Analyze with purpose.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Cado Security",
+    "url": "https://docs.cadosecurity.com/docs/cado-response/integrations/cortex-xsoar/",
+    "email": "contact@cadosecurity.com",
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [
+        "Forensics",
+        "Alerts",
+        "PII",
+        "Security",
+        "New",
+        "Trending"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Cado Security"
+    ],
+    "devEmail": [
+        "jthompson@cadosecurity.com",
+        "ahillel@cadosecurity.com"
+    ],
+    "githubUser": [
+        "cado-joshua"
+    ]
+}

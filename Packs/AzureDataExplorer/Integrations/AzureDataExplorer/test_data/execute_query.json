@@ -1,0 +1,366 @@
+{
+    "Tables": [
+        {
+            "TableName": "Table_0",
+            "Columns": [
+                {
+                    "ColumnName": "StartTime",
+                    "DataType": "DateTime",
+                    "ColumnType": "datetime"
+                },
+                {
+                    "ColumnName": "EndTime",
+                    "DataType": "DateTime",
+                    "ColumnType": "datetime"
+                },
+                {
+                    "ColumnName": "EpisodeId",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "EventId",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "State",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "EventType",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "InjuriesDirect",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "InjuriesIndirect",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "DeathsDirect",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "DeathsIndirect",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "DamageProperty",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "DamageCrops",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "Source",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "BeginLocation",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "EndLocation",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "BeginLat",
+                    "DataType": "Double",
+                    "ColumnType": "real"
+                },
+                {
+                    "ColumnName": "BeginLon",
+                    "DataType": "Double",
+                    "ColumnType": "real"
+                },
+                {
+                    "ColumnName": "EndLat",
+                    "DataType": "Double",
+                    "ColumnType": "real"
+                },
+                {
+                    "ColumnName": "EndLon",
+                    "DataType": "Double",
+                    "ColumnType": "real"
+                },
+                {
+                    "ColumnName": "EpisodeNarrative",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "EventNarrative",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "StormSummary",
+                    "DataType": "Object",
+                    "ColumnType": "dynamic"
+                }
+            ],
+            "Rows": [
+                [
+                    "2007-09-29T08:11:00Z",
+                    "2007-09-29T08:11:00Z",
+                    11091,
+                    61032,
+                    "ATLANTIC SOUTH",
+                    "Waterspout",
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "Trained Spotter",
+                    "MELBOURNE BEACH",
+                    "MELBOURNE BEACH",
+                    28.0393,
+                    -80.6048,
+                    28.0393,
+                    -80.6048,
+                    "Showers and thunderstorms lingering along the coast produced waterspouts in Brevard County.",
+                    "A waterspout formed in the Atlantic southeast of Melbourne Beach and briefly moved toward shore.",
+                    {
+                        "TotalDamages": 0,
+                        "StartTime": "2007-09-29T08:11:00.0000000Z",
+                        "EndTime": "2007-09-29T08:11:00.0000000Z",
+                        "Details": {
+                            "Description": "A waterspout formed in the Atlantic southeast of Melbourne Beach and briefly moved toward shore.",
+                            "Location": "ATLANTIC SOUTH"
+                        }
+                    }
+                ],
+                [
+                    "2007-09-18T20:00:00Z",
+                    "2007-09-19T18:00:00Z",
+                    11074,
+                    60904,
+                    "FLORIDA",
+                    "Heavy Rain",
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "Trained Spotter",
+                    "ORMOND BEACH",
+                    "NEW SMYRNA BEACH",
+                    29.28,
+                    -81.05,
+                    29.02,
+                    -80.93,
+                    "Thunderstorms lingered over Volusia County.",
+                    "As much as 9 inches of rain fell in a 24-hour period across parts of coastal Volusia County.",
+                    {
+                        "TotalDamages": 0,
+                        "StartTime": "2007-09-18T20:00:00.0000000Z",
+                        "EndTime": "2007-09-19T18:00:00.0000000Z",
+                        "Details": {
+                            "Description": "As much as 9 inches of rain fell in a 24-hour period across parts of coastal Volusia County.",
+                            "Location": "FLORIDA"
+                        }
+                    }
+                ],
+                [
+                    "2007-09-20T21:57:00Z",
+                    "2007-09-20T22:05:00Z",
+                    11078,
+                    60913,
+                    "FLORIDA",
+                    "Tornado",
+                    0,
+                    0,
+                    0,
+                    0,
+                    6200000,
+                    0,
+                    "NWS Storm Survey",
+                    "EUSTIS",
+                    "EUSTIS",
+                    28.8368,
+                    -81.6763,
+                    28.8628,
+                    -81.6846,
+                    "As Tropical Depression number 10 began to slowly organize in the Gulf of Mexico, low level rotation allowed numerous strong mesocyclones to track north over western Orange and northern Lake counties.",
+                    "A tornado touched down in the Town of Eustis at the northern end of West Crooked Lake. The tornado quickly intensified to EF1 strength as it moved north northwest through Eustis. The track was just under two miles long and had a maximum width of 300 yards.  The tornado destroyed 7 homes. Twenty seven homes received major damage and 81 homes reported minor damage. There were no serious injuries and property damage was set at $6.2 million.",
+                    {
+                        "TotalDamages": 6200000,
+                        "StartTime": "2007-09-20T21:57:00.0000000Z",
+                        "EndTime": "2007-09-20T22:05:00.0000000Z",
+                        "Details": {
+                            "Description": "A tornado touched down in the Town of Eustis at the northern end of West Crooked Lake. The tornado quickly intensified to EF1 strength as it moved north northwest through Eustis. The track was just under two miles long and had a maximum width of 300 yards.  The tornado destroyed 7 homes. Twenty seven homes received major damage and 81 homes reported minor damage. There were no serious injuries and property damage was set at $6.2 million.",
+                            "Location": "FLORIDA"
+                        }
+                    }
+                ]
+            ]
+        },
+        {
+            "TableName": "Table_1",
+            "Columns": [
+                {
+                    "ColumnName": "Value",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                }
+            ],
+            "Rows": [
+                [
+                    "{\"Visualization\":null,\"Title\":null,\"XColumn\":null,\"Series\":null,\"YColumns\":null,\"AnomalyColumns\":null,\"XTitle\":null,\"YTitle\":null,\"XAxis\":null,\"YAxis\":null,\"Legend\":null,\"YSplit\":null,\"Accumulate\":false,\"IsQuerySorted\":false,\"Kind\":null,\"Ymin\":\"NaN\",\"Ymax\":\"NaN\"}"
+                ]
+            ]
+        },
+        {
+            "TableName": "Table_2",
+            "Columns": [
+                {
+                    "ColumnName": "Timestamp",
+                    "DataType": "DateTime",
+                    "ColumnType": "datetime"
+                },
+                {
+                    "ColumnName": "Severity",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "SeverityName",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "StatusCode",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "StatusDescription",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Count",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "RequestId",
+                    "DataType": "Guid",
+                    "ColumnType": "guid"
+                },
+                {
+                    "ColumnName": "ActivityId",
+                    "DataType": "Guid",
+                    "ColumnType": "guid"
+                },
+                {
+                    "ColumnName": "SubActivityId",
+                    "DataType": "Guid",
+                    "ColumnType": "guid"
+                },
+                {
+                    "ColumnName": "ClientActivityId",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                }
+            ],
+            "Rows": [
+                [
+                    "2021-10-18T13:39:25.3689991Z",
+                    4,
+                    "Info",
+                    0,
+                    "Query completed successfully",
+                    1,
+                    "ca7340e6-c385-4b0c-b989-7577c4a5bad8",
+                    "ca7340e6-c385-4b0c-b989-7577c4a5bad8",
+                    "4c839488-6d19-4d2f-9a97-afb2626db1dd",
+                    "XSOAR;DataExplorerIntegration;10206129-ac34-42f2-b545-c0cbd40766a1"
+                ],
+                [
+                    "2021-10-18T13:39:25.3689991Z",
+                    6,
+                    "Stats",
+                    0,
+                    "{\"ExecutionTime\":0.0156215,\"resource_usage\":{\"cache\":{\"memory\":{\"hits\":0,\"misses\":0,\"total\":0},\"disk\":{\"hits\":0,\"misses\":0,\"total\":0},\"shards\":{\"hot\":{\"hitbytes\":517324,\"missbytes\":0,\"retrievebytes\":0},\"cold\":{\"hitbytes\":0,\"missbytes\":0,\"retrievebytes\":0},\"bypassbytes\":0}},\"cpu\":{\"user\":\"00:00:00\",\"kernel\":\"00:00:00\",\"total cpu\":\"00:00:00\"},\"memory\":{\"peak_per_node\":0},\"network\":{\"inter_cluster_total_bytes\":3755,\"intra_cluster_total_bytes\":0}},\"input_dataset_statistics\":{\"extents\":{\"total\":1,\"scanned\":1,\"scanned_min_datetime\":\"2016-03-17T08:24:02.6259906Z\",\"scanned_max_datetime\":\"2016-03-17T08:24:02.6259906Z\"},\"rows\":{\"total\":59066,\"scanned\":3},\"rowstores\":{\"scanned_rows\":0,\"scanned_values_size\":0},\"shards\":{\"queries_generic\":1,\"queries_specialized\":0}},\"dataset_statistics\":[{\"table_row_count\":3,\"table_size\":2480}]}",
+                    1,
+                    "ca7340e6-c385-4b0c-b989-7577c4a5bad8",
+                    "ca7340e6-c385-4b0c-b989-7577c4a5bad8",
+                    "4c839488-6d19-4d2f-9a97-afb2626db1dd",
+                    "XSOAR;DataExplorerIntegration;10206129-ac34-42f2-b545-c0cbd40766a1"
+                ]
+            ]
+        },
+        {
+            "TableName": "Table_3",
+            "Columns": [
+                {
+                    "ColumnName": "Ordinal",
+                    "DataType": "Int64",
+                    "ColumnType": "long"
+                },
+                {
+                    "ColumnName": "Kind",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Name",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Id",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "PrettyName",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                }
+            ],
+            "Rows": [
+                [
+                    0,
+                    "QueryResult",
+                    "PrimaryResult",
+                    "0b1d5426-cc03-462e-8ed5-8cfc88fccfbb",
+                    ""
+                ],
+                [
+                    1,
+                    "QueryProperties",
+                    "@ExtendedProperties",
+                    "4cf1d978-39c9-4aae-9b72-ec4032c3e8cd",
+                    ""
+                ],
+                [
+                    2,
+                    "QueryStatus",
+                    "QueryStatus",
+                    "00000000-0000-0000-0000-000000000000",
+                    ""
+                ]
+            ]
+        }
+    ]
+}

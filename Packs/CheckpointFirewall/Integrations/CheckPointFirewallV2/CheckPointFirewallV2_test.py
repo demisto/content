@@ -482,6 +482,22 @@ def test_publish_command(mocker):
     assert result.get('task-id') == "01234567"
 
 
+def test_add_batch_command(mocker):
+    from CheckPointFirewallV2 import checkpoint_add_objects_batch_command
+    mocked_client = mocker.Mock()
+
+    def validate_add_list(object_type, add_list):
+        assert type(add_list) == list
+        for obj in add_list:
+            assert len(obj) == 2
+            assert 'name' in obj and 'ip-address' in obj
+
+        return {}
+
+    mocked_client.add_objects_batch.side_effect = validate_add_list
+    checkpoint_add_objects_batch_command(mocked_client, '01234567', '1.1.1.1', 'test')
+
+
 def test_show_task_command(mocker):
     from CheckPointFirewallV2 import checkpoint_show_task_command
     mocked_client = mocker.Mock()

@@ -103,7 +103,7 @@ def http_post(url_suffix, params=None, data=None):
 
 
 def playbook_name_to_id(name):
-    playbooks = http_get('/exec/playbooks')['data']
+    playbooks = http_get('/automate/playbooks')['data']
     ids = [p['id'] for p in playbooks if p['name'] == name]
     if len(ids) != 1:
         raise ValueError('Could not find specific id for name "{}"'.format(name))
@@ -534,7 +534,7 @@ def execute_playbook_command():
 
 
 def execute_playbook(playbook_id, detection_id):
-    res = http_post('/exec/playbooks/{}/execute'.format(playbook_id), params={
+    res = http_post('/automate/playbooks/{}/execute'.format(playbook_id), params={
         'resource_type': 'Detection',
         'resource_id': detection_id,
     })

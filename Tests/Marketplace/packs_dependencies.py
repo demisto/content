@@ -10,7 +10,8 @@ from typing import Tuple, Iterable, List, Callable
 from Tests.Marketplace.marketplace_constants import GCPConfig, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
-from demisto_sdk.commands.find_dependencies.find_dependencies import PackDependencies, parse_for_pack_metadata
+from demisto_sdk.commands.find_dependencies.find_dependencies import PackDependencies, \
+    calculate_single_pack_dependencies
 from pebble import ProcessPool, ProcessFuture
 
 
@@ -64,43 +65,6 @@ def wait_futures_complete(futures: List[ProcessFuture], done_fn: Callable):
         except Exception as e:
             logging.exception(e)
             raise
-
-
-def calculate_single_pack_dependencies(pack: str, dependency_graph: object) -> Tuple[dict, list, str]:
-    """
-    Calculates pack dependencies given a pack and a dependencies graph.
-    First is extract the dependencies subgraph of the given graph only using DFS algorithm with the pack as source.
-
-    Then, for all the dependencies of that pack it Replaces the 'mandatory_for_packs' key with a boolean key 'mandatory'
-    which indicates whether this dependency is mandatory for this pack or not.
-
-    Then using that subgraph we get the first-level dependencies and all-levels dependencies.
-
-    Args:
-        pack: The pack for which we need to calculate the dependencies
-        dependency_graph: The full dependencies graph
-
-    Returns:
-        first_level_dependencies: A dict of the form {'dependency_name': {'mandatory': < >, 'display_name': < >}}
-        all_level_dependencies: A list with all dependencies names
-        pack: The pack name
-    """
-    install_logging('Calculate_Packs_Dependencies.log', include_process_name=True, logger=logging)
-    first_level_dependencies = {}
-    all_level_dependencies = []
-    try:
-        logging.info(f"Calculating {pack} pack dependencies.")
-        subgraph = PackDependencies.get_dependencies_subgraph_by_dfs(dependency_graph, pack)
-        for dependency_pack, additional_data in subgraph.nodes(data=True):
-            logging.debug(f'Iterating dependency {dependency_pack} for pack {pack}')
-            additional_data['mandatory'] = pack in additional_data['mandatory_for_packs']
-            del additional_data['mandatory_for_packs']
-            first_level_dependencies, all_level_dependencies = parse_for_pack_metadata(subgraph, pack)
-    except Exception:
-        logging.exception(f"Failed calculating {pack} pack dependencies")
-        raise
-
-    return first_level_dependencies, all_level_dependencies, pack
 
 
 def get_all_packs_dependency_graph(id_set: dict, packs: list) -> Iterable:
@@ -215,7 +179,6 @@ def main():
     logging.info(f"Number of created pack dependencies entries: {len(pack_dependencies_result.keys())}")
     # finished iteration over pack folders
     logging.success("Finished dependencies calculation")
-
     with open(output_path, 'w') as pack_dependencies_file:
         json.dump(pack_dependencies_result, pack_dependencies_file, indent=4)
 

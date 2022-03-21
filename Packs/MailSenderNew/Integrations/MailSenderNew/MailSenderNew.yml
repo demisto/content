@@ -126,7 +126,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document like {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value from.'
+      description: 'Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document like {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value from. Note that only context data is accessible for this argument, while incident fields are not.'
       isArray: false
       name: templateParams
       required: false

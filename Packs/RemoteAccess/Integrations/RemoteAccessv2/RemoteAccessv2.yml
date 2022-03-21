@@ -1,0 +1,181 @@
+category: Utilities
+commonfields:
+  id: RemoteAccess v2
+  version: -1
+configuration:
+- display: Default Hostname or IP Address
+  name: hostname
+  required: true
+  type: 0
+- display: User
+  additionalinfo: For example, "root".
+  name: credentials
+  type: 9
+  required: false
+- displaypassword: Additional Password
+  name: additional_password
+  hiddenusername: true
+  required: false
+  type: 9
+  additionalinfo: Will require an additional password as an argument to run any command
+    of this module.
+- display: Ciphers
+  additionalinfo: A comma-separated list of ciphers to use. If none of the specified
+    ciphers are agreed to by the server, an error message specifying the supported
+    ciphers is returned.
+  name: ciphers
+  required: false
+  type: 0
+- display: Key Algorithms
+  additionalinfo: A comma-separated list of key algorithms to use. If none of the
+    specified key algorithms are agreed to by the server, an error message specifying
+    the supported key algorithms is returned.
+  name: key_algorithms
+  required: false
+  type: 0
+description: File transfer between Cortex XSOAR and a remote machine, and execution
+  of commands on the remote machine.
+display: RemoteAccess v2
+name: RemoteAccess v2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Command to run on the remote machine.
+      isArray: false
+      name: cmd
+      required: true
+      secret: false
+    - default: false
+      description: Password. Required to match the Additional Password parameter if
+        it was supplied in order to run the command.
+      isArray: false
+      name: additional_password
+      required: false
+      secret: false
+    - default: false
+      description: Timeout for command, in seconds.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    deprecated: false
+    description: Run the specified command on the remote system with SSH.
+    execution: true
+    name: ssh
+    outputs:
+    - contextPath: RemoteAccess.Command.output
+      description: Standard output of the specified command.
+      type: String
+    - contextPath: RemoteAccess.Command.error
+      description: Standard error output of the specified command.
+      type: String
+    - contextPath: RemoteAccess.Command.success
+      description: Whether the operation was successful.
+      type: Boolean
+    - contextPath: RemoteAccess.Command.command
+      description: Command that was run.
+      type: String
+  - arguments:
+    - default: false
+      description: Entry ID of the file to be copied from Cortex XSOAR to the remote
+        machine.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      description: Destination of the path of the copied file in the remote machine.
+        Defaults to the `entry_id` file path if not specified.
+      isArray: false
+      name: destination_path
+      required: false
+      secret: false
+    - default: false
+      description: Password. Required to match the Additional Password parameter if
+        it was supplied in order to run the command.
+      isArray: false
+      name: additional_password
+      required: false
+      secret: false
+    - default: false
+      description: Timeout for command, in seconds.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    deprecated: false
+    description: Copies the given file from Cortex XSOAR to the remote machine.
+    execution: false
+    name: copy-to
+    outputs: []
+  - arguments:
+    - default: false
+      description: Path of the file in the remote machine to be copied to Cortex XSOAR.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: Name of the file to be copied to Cortex XSOAR. Defaults to the
+        file name in `file_path` if not specified. For example, if `file_path` is
+        "a/b/c.txt", the file name will be c.txt.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    - default: false
+      description: Password. Required to match the Additional Password parameter if
+        it was supplied in order to run the command.
+      isArray: false
+      name: additional_password
+      required: false
+      secret: false
+    - default: false
+      description: Timeout for command, in seconds.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    deprecated: false
+    description: Copies the given file from the remote machine to Cortex XSOAR.
+    execution: false
+    name: copy-from
+    outputs:
+    - contextPath: File.Name
+      description: The full file name (including the file extension).
+      type: String
+    - contextPath: File.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: 'The file extension. For example: "xls".'
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/netmiko:1.0.0.24037
+fromversion: 6.0.0
+tests:
+- RemoteAccessTest

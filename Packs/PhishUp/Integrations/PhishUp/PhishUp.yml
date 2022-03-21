@@ -1,0 +1,96 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: 6437c006-1d86-4cdc-89d5-23305f207e3a
+  version: -1
+configuration:
+- additionalinfo: PhishUp Api Key
+  displaypassword: API Key
+  hiddenusername: true
+  name: credentials
+  required: true
+  type: 9
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: If there is any Phishing activity in mail, what should PhishUp do?
+  defaultvalue: Nothing
+  display: PhishUp Playbook Actions
+  hidden: false
+  name: phishup-playbook-action
+  options:
+  - Nothing
+  - ' Delete Mail'
+  - ' Move to SPAM'
+  required: true
+  type: 15
+description: PhishUp prevents phishing attacks, protects your staff and your brand
+  with AI
+display: PhishUp
+name: 6437c006-1d86-4cdc-89d5-23305f207e3a
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: Url for PhishUp Reputation Investigation
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Url for PhishUp Reputation Investigation
+    execution: false
+    name: url
+    outputs:
+    - contextPath: PhishUp.Url
+      description: Incoming URL
+      type: String
+    - contextPath: PhishUp.Result
+      description: response types "Clean", "Phish", "Error"
+      type: String
+    - contextPath: PhishUp.Score
+      description: Phishup Engine Url Score
+      type: Number
+  - deprecated: false
+    description: Get chosen action from PhishUp instance
+    execution: false
+    name: phishup-get-chosen-action
+    outputs:
+    - contextPath: PhishUp.Action
+      description: Chosen action from PhishUp instance
+      type: String
+  - arguments:
+    - default: false
+      description: takes investigate-url command result
+      isArray: true
+      name: URLs
+      required: false
+      secret: false
+    deprecated: false
+    description: Evaluation PhishUp URLs Response
+    execution: false
+    name: phishup-evaluate-response
+    outputs:
+    - contextPath: PhishUp.Evaluation
+      description: returns "Phish" if any response has "Phish" result
+      type: String
+  dockerimage: demisto/python3:3.10.1.25933
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -11,5 +11,9 @@
   "created": "2021-01-02T18:00:53Z",
   "useCases": [],
   "keywords": ["Active Directory", "Active Directory Audit"],
-  "dependencies": {}
+  "dependencies": {},
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2"
+  ]
 }

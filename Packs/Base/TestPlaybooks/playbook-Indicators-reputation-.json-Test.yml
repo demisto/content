@@ -544,7 +544,9 @@ tasks:
         simple: valid_domains
       value:
         simple: '"www.demisto.com", "www.google.com", "http:\\example.com", "http:example.com",
-          "www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/"'
+          "www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/",
+          "test.com", "www.xn--t1e2s3t4.com", "subtest.test.com", "ötest.com", "www.teöst.com",
+          "testing[.]com",  "見.香港"'
     separatecontext: false
     view: |-
       {
@@ -618,38 +620,6 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: demisto.com
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${Domain.Name}
-            iscontext: true
-          right:
-            value:
-              simple: google.com
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${Domain.Name}
-            iscontext: true
-          right:
-            value:
-              simple: wikipedia.org
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${Domain.Name}
-            iscontext: true
-          right:
-            value:
-              simple: golang.org
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${Domain.Name}
-            iscontext: true
-          right:
-            value:
               simple: www.demisto.com
       - - operator: containsGeneral
           left:
@@ -683,6 +653,62 @@ tasks:
           right:
             value:
               simple: example.com
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: test.com
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: www.xn--t1e2s3t4.com
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: subtest.test.com
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: ötest.com
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: www.teöst.com
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: 見.香港
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: testing.com
     view: |-
       {
         "position": {
@@ -715,7 +741,7 @@ tasks:
       key:
         simple: invalid_domains
       value:
-        simple: '"not@domain.com", "dvscfsrty"'
+        simple: '"not@domain.com", "dvscfsrty", "none.zip", "test.notexist", "test[.com"'
     separatecontext: false
     view: |-
       {
@@ -796,6 +822,30 @@ tasks:
           right:
             value:
               simple: not@domain.com
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: none.zip
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: test.notexist
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: test[.com
     view: |-
       {
         "position": {
@@ -889,9 +939,16 @@ tasks:
         simple: valid_urls
       value:
         simple: '"http:\\example.com", "http:example.com", "www.ru.wikipedia.org/wiki/Елизавета_I",
-          "www.golang.org/pkg/regexp/syntax/", "www.mock.com?e=P6wGLG", "www.bücher.de",
-          "https://Test.com/this''that" "http://_23_11.redacted.com./#redactedredactedredacted",
-          "www.mock.com?gbdfs", "https://very.non.malicious.link.com/?url=https://hs-493391.t.myspot.net/e2t/c/*W18tsYF1kx8GnW3gMqC22tNDpb0/*VyTf3G8Z5tzsW6ZtJVm16pm9y0/5/f18dQhb0Sjvg8YHtdnW4yW9Gg7wXdkxW1226P22BplFbW4X4JfH3tD-KTW2K4V9Y8–HBkW8-26zT54WmDkW8-y12S8HbRxPN8k1dMQpSBF3N8WhTQ1JVPWnW58jdzV55F8NJW1TxP_c3-zX8TW1h4tYc1ZJc7nW9dSlS635rgClW93-JnT6rY-3sW2KQ2YY1Gk5btW360lT36pzHWBW79p91d2tk5vHW2z_scn6x2RKSW5-lMJc5tl56XW4rg-x22m3yw6W4ygqRJ3bHG73W4XqJc33wXgzKW30W3q936dSQMW2B2Mrq5WdvG4W4rq3_c3Rjc3wW3HcVw66skpxGW4VJsm45Wh0RvW4rV7dB6mRlwJW6MqkD43Hzf02W3jvrZM4kZvVwW61S2h-82G-VBN8yRlRqrPpMvVrJh2D4kxR3rW69_fvX4rHWjtN7mNJrsch-NYW2XGkjn2GD9D7W49WgNP6ZGyNkN5mdMt3bhl36W9c2TH44VyT05W7-fpqd9kRtWfW2pglVT6vc-Z6VJtGSY2XT6Ms0&data=02\|01\|bark@demisto.com\|097990af37d940aab90608d65127c465\|8b86a65e3c3a44068ac319a6b5cc52bc\|1\|0\|636785628577804533&sdata=nSdMICDRUwP60OgXBo79s8rQUywrWxaYdr7BKPeXamo=&reserved=0","http://test.com#fragment3","http://test.com#fragment3/","http://test.com#fragment3#fragment3","(http://www.foo.bar/taz?())"'
+          "www.golang.org/pkg/regexp/syntax/", "http://www.mock.com?e=P6wGLG",
+          "https://Test.com/this-that" "http://_23_11.redacted.com./#redactedredactedredacted",
+          "http://www.mock.com?gbdfs", "https://very.non.malicious.link.com/?url=https://hs-493391.t.myspot.net/e2t/c/*W18tsYF1kx8GnW3gMqC22tNDpb0/*VyTf3G8Z5tzsW6ZtJVm16pm9y0/5/f18dQhb0Sjvg8YHtdnW4yW9Gg7wXdkxW1226P22BplFbW4X4JfH3tD-KTW2K4V9Y8–HBkW8-26zT54WmDkW8-y12S8HbRxPN8k1dMQpSBF3N8WhTQ1JVPWnW58jdzV55F8NJW1TxP_c3-zX8TW1h4tYc1ZJc7nW9dSlS635rgClW93-JnT6rY-3sW2KQ2YY1Gk5btW360lT36pzHWBW79p91d2tk5vHW2z_scn6x2RKSW5-lMJc5tl56XW4rg-x22m3yw6W4ygqRJ3bHG73W4XqJc33wXgzKW30W3q936dSQMW2B2Mrq5WdvG4W4rq3_c3Rjc3wW3HcVw66skpxGW4VJsm45Wh0RvW4rV7dB6mRlwJW6MqkD43Hzf02W3jvrZM4kZvVwW61S2h-82G-VBN8yRlRqrPpMvVrJh2D4kxR3rW69_fvX4rHWjtN7mNJrsch-NYW2XGkjn2GD9D7W49WgNP6ZGyNkN5mdMt3bhl36W9c2TH44VyT05W7-fpqd9kRtWfW2pglVT6vc-Z6VJtGSY2XT6Ms0&data=02\|01\|bark@demisto.com\|097990af37d940aab90608d65127c465\|8b86a65e3c3a44068ac319a6b5cc52bc\|1\|0\|636785628577804533&sdata=nSdMICDRUwP60OgXBo79s8rQUywrWxaYdr7BKPeXamo=&reserved=0","http://test.com#fragment3","http://test.com#fragment3/","http://test.com#fragment3#fragment3","(http://www.foo.bar/taz?())",
+          "http://test.com#fragment3","http://test.com#fragment3/","http://test.com#fragment3#fragment3",
+          "(http://www.foo.bar/taz?())","http://öevil.tld/","http://öevil.tld:5000","http://öevil.tld/anypath",
+          "www.evilö.tld/evil.aspx","https://www.evöl.tld/","https://www.evöl.tld/anypath",
+          "hxxps://www.xn--e1v2i3l4.tld","www.evil.tld:443/path/to/resource.html",
+          "https://www.evil.tld:443/path/to/resource.html","1.2.3.4/path",
+          "google.com/path","2001:db8:3333:4444:5555:6666:7777:8888/path/path",
+          "ftp://foo.bar/resource","ftp://foo.bar/"'
     separatecontext: false
     view: |-
       {
@@ -963,7 +1020,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://www.ru.wikipedia.org/wiki/Елизавета_I
+              simple: http://öevil.tld/
       - - operator: containsGeneral
           left:
             value:
@@ -971,7 +1028,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://www.golang.org/pkg/regexp/syntax/
+              simple: http://öevil.tld:5000
       - - operator: containsGeneral
           left:
             value:
@@ -979,7 +1036,95 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://www.bücher.de
+              simple: http://öevil.tld/anypath
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: www.evilö.tld/evil.aspx
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: https://www.evöl.tld/
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: https://www.evöl.tld/anypath
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: www.evil.tld:443/path/to/resource.html
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: https://www.evil.tld:443/path/to/resource.html
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4/path
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: google.com/path
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: ftp://foo.bar/resource
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: ftp://foo.bar/
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: www.ru.wikipedia.org/wiki/Елизавета_I
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: www.golang.org/pkg/regexp/syntax/
       - - operator: containsGeneral
           left:
             value:
@@ -1051,23 +1196,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://www.foo.bar/taz?()
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://www.foo.bar/taz?())
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: https://Test.com/this'that
+              simple: https://Test.com/this-that
     view: |-
       {
         "position": {

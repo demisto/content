@@ -17,5 +17,9 @@
         "Aliyun",
         "Alicloud",
         "Asset Management"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

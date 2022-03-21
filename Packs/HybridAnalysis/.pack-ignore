@@ -1,5 +1,5 @@
 [file:README.md]
 ignore=RM104
 
-[file:integration-HybridAnalysis.yml]
+[file:HybridAnalysis.yml]
 ignore=IN145

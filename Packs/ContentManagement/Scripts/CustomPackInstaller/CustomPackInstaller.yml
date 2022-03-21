@@ -5,6 +5,20 @@ args:
   name: pack_id
   required: true
   secret: false
+- auto: PREDEFINED
+  defaultValue: "true"
+  description: if true will skip pack signature validation, Available from 6.5.0 server version.
+  name: skip_verify
+  predefined:
+  - "true"
+  - "false"
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: if true will skip all pack validations, use this flag just to migrate from custom content entities to custom content packs, Available from 6.6.0 server version.
+  name: skip_validation
+  predefined:
+  - "true"
+  - "false"
 commonfields:
   id: CustomPackInstaller
   version: -1
@@ -23,7 +37,7 @@ tags:
 - Content Management
 timeout: '0'
 type: python
-dockerimage: demisto/xsoar-tools:1.0.0.23423
+dockerimage: demisto/xsoar-tools:1.0.0.26178
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

@@ -1,0 +1,41 @@
+commonfields:
+  id: ContextFilter
+  version: -1
+name: ContextFilter
+script: ''
+type: javascript
+tags:
+- Utility
+comment: Filter context keys by applying one of the various available manipulations
+  and storing in a new context key. Please notice that the resulting context key will
+  not be available automatically as an option but you can still specify it.
+system: true
+enabled: true
+args:
+- name: data
+  required: true
+  default: true
+  description: The data to apply the filter on
+  isArray: true
+- name: filterType
+  required: true
+  description: The type of filter to apply. Available filters are upper, lower, join,
+    split, index, substr, trim, regex, replace
+- name: filter
+  description: The data for the filter. join - the join string between elements (optional,
+    default is ','). split - the string on which to split (optional, default is ',').
+    index - the index of the array to return (optional, default 0). substr - the from
+    (inclusive) and length (optional, default is to end of string). regex - the regular
+    expression to match. replace - a regular expression to replace and with what.
+- name: out
+  required: true
+  description: The name of the context output parameter we should write to
+- name: additional
+  description: Additional arguments to add to filter. flags for regex. flags, replace
+    string for replace. length for substr.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- No tests

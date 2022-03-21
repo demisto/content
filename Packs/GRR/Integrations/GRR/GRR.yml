@@ -1,0 +1,311 @@
+commonfields:
+  id: GRR
+  version: -1
+name: GRR
+display: GRR
+category: Endpoint
+description: Use GRR Rapid Response framework
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "8000"
+  type: 0
+  required: false
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: grr-set-flows
+    arguments:
+    - name: client_id
+      required: true
+      default: true
+      description: The ID of the client
+    - name: flow
+      required: true
+      description: JSON string of the flow to set
+    - name: headers
+      description: The headers to show
+    description: Starts a flow on a given client with given parameters
+    outputs:
+    - contextPath: Flow
+      description: A GRR Flow
+    - contextPath: Flow.ID
+      description: The GRR Flow ID
+    - contextPath: Flow.Args
+      description: The GRR Flow Args
+    - contextPath: Flow.Creator
+      description: The GRR Flow Creator
+    - contextPath: Flow.LastActiveAt
+      description: When Was the flow last active
+    - contextPath: Flow.NestedFlow
+      description: The GRR Flow Nested Flows
+    - contextPath: Flow.StartedAt
+      description: When was the flow started at
+    - contextPath: Flow.State
+      description: The GRR Flow State
+    important:
+    - contextPath: Flow.ID
+      description: The Flow ID
+  - name: grr-get-flows
+    arguments:
+    - name: client_id
+      required: true
+      default: true
+      description: The ID of the client
+    - name: offset
+      description: Starting offset
+    - name: count
+      description: Max number of flows to fetch
+    - name: headers
+      description: headers to show in output
+    description: Lists flows launched on a given client
+    outputs:
+    - contextPath: Flow
+      description: A GRR Flow
+    - contextPath: Flow.ID
+      description: The GRR Flow ID
+    - contextPath: Flow.Args
+      description: The GRR Flow Args
+    - contextPath: Flow.Creator
+      description: The GRR Flow Creator
+    - contextPath: Flow.LastActiveAt
+      description: When Was the flow last active
+    - contextPath: Flow.NestedFlow
+      description: The GRR Flow Nested Flows
+    - contextPath: Flow.StartedAt
+      description: When was the flow started at
+    - contextPath: Flow.State
+      description: The GRR Flow State
+    important:
+    - contextPath: Flow.ID
+      description: The Flow ID
+  - name: grr-get-files
+    deprecated: true
+    arguments:
+    - name: hostname
+      description: Target host, Can be FQDN or client ID
+    - name: paths
+      description: Fetch this number of elements, an array of path strings
+    - name: max_file_size
+      description: Maximum size of file we will download
+    - name: action
+      description: Action to apply to found files - STAT, HASH or DOWNLOAD
+    - name: pathtype
+      description: Path type to glob in - UNSET, OS, TSK, REGISTRY, MEMORY, TMPFILE
+    description: Downloads files from specified machine without requiring approval
+  - name: grr-get-hunts
+    arguments:
+    - name: offset
+      description: Starting offset
+    - name: count
+      description: Max number of items to fetch
+    - name: created_by
+      description: 'Only return hunts created by a given user. If approved_by or/and
+        description_contains are also supplied, then logical AND is applied to all
+        the criterias. NOTE: this filter can only be used in conjunction with ''active_within''
+        filter (to prevent queries of death)'
+    - name: description_contains
+      description: 'Only return hunts where description contains given substring (matching
+        is case-insensitive).If created_by or/and approved_by are also supplied, then
+        logical AND is applied to all the criterias. NOTE: this filter can only be
+        used in conjunction with ''active_within'' filter (to prevent queries of death)'
+    - name: active_within
+      description: Only return hunts that were active within given time duration
+    - name: headers
+      description: headers to show in output
+    description: Renders list of available hunts
+    outputs:
+    - contextPath: Hunt
+      description: A GRR Hunt
+    - contextPath: Hunt.ID
+      description: The GRR Hunt ID
+    - contextPath: Hunt.Creator
+      description: The GRR Hunt Creator
+    - contextPath: Hunt.Description
+      description: The GRR Hunt Description
+    - contextPath: Hunt.Created
+      description: The time the GRR Hunt was created
+    - contextPath: Hunt.Expires
+      description: The time the GRR Hunt expires
+    - contextPath: Hunt.IsRobot
+      description: Is the Hunt originated from a robot
+    - contextPath: Hunt.Name
+      description: The GRR Hunt Name
+    - contextPath: Hunt.State
+      description: The GRR Hunt State
+    important:
+    - contextPath: Hunt.ID
+      description: The Hunt ID
+  - name: grr-get-hunt
+    arguments:
+    - name: hunt_id
+      required: true
+      default: true
+      description: Hunt id
+    - name: headers
+      description: headers to show in output
+    description: Renders hunt's summary
+    outputs:
+    - contextPath: Hunt
+      description: A GRR Hunt
+    - contextPath: Hunt.ID
+      description: The GRR Hunt ID
+    - contextPath: Hunt.Creator
+      description: The GRR Hunt Creator
+    - contextPath: Hunt.Description
+      description: The GRR Hunt Description
+    - contextPath: Hunt.Created
+      description: The time the GRR Hunt was created
+    - contextPath: Hunt.Expires
+      description: The time the GRR Hunt expires
+    - contextPath: Hunt.IsRobot
+      description: Is the Hunt originated from a robot
+    - contextPath: Hunt.Name
+      description: The GRR Hunt Name
+    - contextPath: Hunt.State
+      description: The GRR Hunt State
+    important:
+    - contextPath: Hunt.ID
+      description: The Hunt ID
+  - name: grr-set-hunts
+    arguments:
+    - name: hunt_runner_args
+      description: Hunt runner arguments
+    - name: hunt_args
+      description: Hunt arguments
+    - name: headers
+      description: The headers to show
+    description: Handles hunt creation request
+  - name: grr-get-clients
+    arguments:
+    - name: query
+      description: 'Search query string. See here for syntax: https://github.com/google/grr-doc/blob/master/user_manual.adoc#searching-for-a-client '
+    - name: offset
+      description: 'Found clients starting offset. '
+    - name: count
+      description: 'Number of found client to fetch. '
+    - name: headers
+      description: headers to show in output
+    description: 'Renders results of a client search. '
+    outputs:
+    - contextPath: Client
+      description: A GRR Client
+    - contextPath: Client.ID
+      description: The GRR Client ID
+    - contextPath: Client.LastBootedAt
+      description: The GRR Client LastBootedAt time
+    - contextPath: Client.FirstSeenAt
+      description: The GRR Client FirstSeenAt time
+    - contextPath: Client.LatClock
+      description: The GRR Client LastClock
+    - contextPath: Client.LastCrashAt
+      description: The GRR Client LastCrashAt time
+    - contextPath: Client.AgentInfo
+      description: The GRR Client AgentInfo
+    - contextPath: Client.HardwareInfo
+      description: The GRR Client HardwareInfo
+    - contextPath: Client.Interfaces
+      description: The GRR Client Interfaces
+    - contextPath: Client.Labels
+      description: The GRR Client Labels
+    - contextPath: Client.OS
+      description: The GRR Client OS details
+    - contextPath: Client.User
+      description: The GRR Client User
+    - contextPath: Client.Volumes
+      description: The GRR Client Volumes
+    important:
+    - contextPath: Client.ID
+      description: The Client ID
+  - name: grr_set_flows
+    deprecated: true
+    arguments:
+    - name: client_id
+      required: true
+      default: true
+      description: The ID of the client
+    - name: flow
+      required: true
+      description: JSON string of the flow to set
+    description: Starts a flow on a given client with given parameters
+  - name: grr_get_flows
+    deprecated: true
+    arguments:
+    - name: client_id
+      required: true
+      default: true
+      description: The ID of the client
+    - name: offset
+      description: Starting offset
+    - name: count
+      description: Max number of flows to fetch
+    description: Lists flows launched on a given client
+  - name: grr_get_files
+    arguments:
+    - name: hostname
+      description: Target host, Can be FQDN or client ID
+    - name: paths
+      description: Fetch this number of elements, an array of path strings
+    - name: max_file_size
+      description: Maximum size of file we will download
+    - name: action
+      description: Action to apply to found files - STAT, HASH or DOWNLOAD
+    - name: pathtype
+      description: Path type to glob in - UNSET, OS, TSK, REGISTRY, MEMORY, TMPFILE
+    description: Downloads files from specified machine without requiring approval
+  - name: grr_get_hunts
+    arguments:
+    - name: offset
+      description: Starting offset
+    - name: count
+      description: Max number of items to fetch
+    - name: created_by
+      description: 'Only return hunts created by a given user. If approved_by or/and
+        description_contains are also supplied, then logical AND is applied to all
+        the criterias. NOTE: this filter can only be used in conjunction with ''active_within''
+        filter (to prevent queries of death)'
+    - name: description_contains
+      description: 'Only return hunts where description contains given substring (matching
+        is case-insensitive).If created_by or/and approved_by are also supplied, then
+        logical AND is applied to all the criterias. NOTE: this filter can only be
+        used in conjunction with ''active_within'' filter (to prevent queries of death)'
+    - name: active_within
+      description: Only return hunts that were active within given time duration
+    description: Renders list of available hunts
+  - name: grr_get_hunt
+    arguments:
+    - name: hunt_id
+      required: true
+      default: true
+      description: Hunt id
+    description: Renders hunt's summary
+  - name: grr_set_hunts
+    arguments:
+    - name: hunt_runner_args
+      description: Hunt runner arguments
+    - name: hunt_args
+      description: Hunt arguments
+    description: Handles hunt creation request
+system: true
+fromversion: 5.0.0

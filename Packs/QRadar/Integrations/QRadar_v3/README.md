@@ -83,6 +83,9 @@ This integration supports in mirroring from QRadar offenses to XSOAR.
 * The integration will always mirror the events that occurred first in each offense.
 
 For further information about mirroring configurations, see [here](https://xsoar.pan.dev/docs/integrations/mirroring_integration).
+### Use API token instead of Username and Password
+- In the **Username / API Key** field, type **_api_token_key**.  
+- In the **Password** field, type your API token.
 ## Choose your API version
 1. Visit the [QRadar API versions page](https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_getting_started.html) for a full list of available API versions according to the QRadar version.
 2. Choose one of the API versions listed under **Supported REST API versions** column in the line corresponding to your QRadar version.

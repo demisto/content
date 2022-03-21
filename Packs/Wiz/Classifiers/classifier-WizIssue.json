@@ -1,0 +1,15 @@
+{
+    "defaultIncidentType": "Wiz Issue",
+    "description": "Classifies Wiz Issues that are fetched via the built in XSOAR fetch mechanism.",
+    "feed": false,
+    "id": "Wiz Classifier",
+    "name": "Wiz Classifier",
+    "keyTypeMap": {},
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

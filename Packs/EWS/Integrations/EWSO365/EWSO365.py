@@ -154,9 +154,6 @@ class EWSClient:
     def __init__(
             self,
             default_target_mailbox,
-            client_id,
-            client_secret,
-            tenant_id,
             folder="Inbox",
             is_public_folder=False,
             request_timeout="120",
@@ -177,6 +174,18 @@ class EWSClient:
         :param max_fetch: Max incidents per fetch
         :param insecure: Trust any certificate (not secure)
         """
+
+        client_id = kwargs.get('client_id') or kwargs.get('_client_id')
+        tenant_id = kwargs.get('tenant_id') or kwargs.get('_tenant_id')
+        client_secret = kwargs.get('client_secret') or (kwargs.get('credentials') or {}).get('password')
+
+        if not client_secret:
+            raise Exception('Key / Application Secret must be provided.')
+        elif not client_id:
+            raise Exception('ID / Application ID must be provided.')
+        elif not tenant_id:
+            raise Exception('Token / Tenant ID must be provided.')
+
         BaseProtocol.TIMEOUT = int(request_timeout)
         self.ews_server = "https://outlook.office365.com/EWS/Exchange.asmx/"
         self.ms_client = MicrosoftClient(
@@ -601,6 +610,8 @@ def prepare_args(args):
     args = dict((k.replace("-", "_"), v) for k, v in list(args.items()))
     if "is_public" in args:
         args["is_public"] = args["is_public"] == "True"
+    if "from" in args:
+        args['from_address'] = args.pop('from')
     return args
 
 
@@ -1787,30 +1798,34 @@ def handle_template_params(template_params):
     return actual_params
 
 
-def create_message_object(to, cc, bcc, subject, body, additional_headers):
+def create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to):
     """Creates the message object according to the existence of additional custom headers.
     """
     if additional_headers:
         return Message(
             to_recipients=to,
+            author=from_address,
             cc_recipients=cc,
             bcc_recipients=bcc,
             subject=subject,
+            reply_to=reply_to,
             body=body,
             **additional_headers
         )
 
     return Message(
         to_recipients=to,
+        author=from_address,
         cc_recipients=cc,
         bcc_recipients=bcc,
         subject=subject,
+        reply_to=reply_to,
         body=body
     )
 
 
 def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, attachments=None,
-                   additional_headers=None):
+                   additional_headers=None, from_address=None, reply_to=None):
     """Creates the Message object that will be sent.
 
     Args:
@@ -1822,13 +1837,15 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
         html_body (str): Email's html body.
         attachments (list): Files to be attached to the mail, both inline and as files.
         additional_headers (Dict): Custom headers to be added to the message.
+        from_address (str): The email address from which to reply.
+        reply_to (list): Email addresses that need to be used to reply to the message.
 
     Returns:
         Message. Message object ready to be sent.
     """
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
-        message = create_message_object(to, cc, bcc, subject, body, additional_headers)
+        message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to)
 
         for attachment in attachments:
             if not attachment.get('cid'):
@@ -1839,7 +1856,8 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
         html_body, html_attachments = handle_html(html_body)
         attachments += html_attachments
 
-        message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers)
+        message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers, from_address,
+                                        reply_to)
 
         for attachment in attachments:
             if not attachment.get('cid'):
@@ -1884,10 +1902,11 @@ def add_additional_headers(additional_headers):
 def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
-               additionalHeader=None, raw_message=None):
+               additionalHeader=None, raw_message=None, from_address=None, replyTo=None):
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
+    reply_to = argToList(replyTo)
 
     # Basic validation - we allow pretty much everything but you have to have at least a recipient
     # We allow messages without subject and also without body
@@ -1899,7 +1918,9 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
             to_recipients=to,
             cc_recipients=cc,
             bcc_recipients=bcc,
-            body=raw_message
+            body=raw_message,
+            author=from_address,
+            reply_to=reply_to
         )
 
     else:
@@ -1918,7 +1939,8 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
             if htmlBody:
                 htmlBody = htmlBody.format(**template_params)
 
-        message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader)
+        message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
+                                 reply_to)
 
     client.send_email(message)
 
@@ -2297,9 +2319,10 @@ def sub_main():
     # client's default_target_mailbox is the authorization source for the instance
     params['default_target_mailbox'] = args.get('target_mailbox',
                                                 args.get('source_mailbox', params['default_target_mailbox']))
-    client = EWSClient(**params)
-    start_logging()
+
     try:
+        client = EWSClient(**params)
+        start_logging()
         command = demisto.command()
         # commands that return a single note result
         normal_commands = {

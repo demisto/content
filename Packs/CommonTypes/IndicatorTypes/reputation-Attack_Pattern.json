@@ -48,7 +48,7 @@
         }
     },
     "mergeContext": false,
-    "regex": "(T\\d{3,4}\\.\\d{3}|T\\d{3,4})",
+    "regex": "\\bT\\d{4}(?:\\.\\d{3})?\\b",
     "reputationCommand": "",
     "reputationScriptName": "",
     "sortValues": null,

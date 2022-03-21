@@ -5,4 +5,4 @@ ignore=PB114,PB115
 ignore=IN145
 
 [file:PrismaAccessEgressIPFeed.yml]
-ignore=IN145
+ignore=IN145,IN124

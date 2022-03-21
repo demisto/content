@@ -1,0 +1,77 @@
+commonfields:
+  id: IsItPhishing
+  version: -1
+name: IsItPhishing
+display: IsItPhishing
+category: Data Enrichment & Threat Intelligence
+description: Collaborative web service that provides validation on whether a URL is
+  a phishing page or not by analyzing the content of the webpage
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  defaultvalue: https://ws.isitphishing.org
+  type: 0
+  required: false
+- display: Customer's name
+  name: name
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Customer's License
+  name: license
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: URL to be checked if phishing
+    - name: force
+      description: Set true to analyze URL, or false to check whether URL may cause
+        collateral damage to the end user
+      defaultValue: "false"
+    - name: smart
+      description: Set true to force checks on URLs that may cause collateral damage
+        to the end user, or false to ignore the argument
+      defaultValue: "true"
+    - name: area
+      description: The regional area to force using a proxy
+    - name: timeout
+      description: Timeout in milliseconds. Default value set to 10000, with a minimum
+        value of 1000. Once timeout is reached, TIMEOUT response is returned
+    outputs:
+    - contextPath: URL.Status
+      description: URL identification result
+    - contextPath: URL.Url
+      description: The URL that was tested
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Checks if URL is phishing
+tests:
+- No tests
+fromversion: 5.0.0
