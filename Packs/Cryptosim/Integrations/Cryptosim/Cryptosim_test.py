@@ -29,13 +29,9 @@ def test_correlations_command():
                      ],
                      'OutParameters': None
                      }
-<<<<<<< HEAD
+
     requests_mock.post("https://test.com/api/service/correlations",
                         json=mock_response)
-=======
-    requests_mock.get("https://test.com/api/service/correlations",
-                      json=mock_response)
->>>>>>> 6a01781b3ef35e1f9ddd0086bf280f07aeafa1d6
 
     results = correlations_command(test_client)
     assert results.outputs.keys() == ['StatusCode', 'Data', 'OutParameters']
@@ -55,13 +51,12 @@ def test_correlation_alerts_command():
                      'OutParameters': None
                      }
 
-<<<<<<< HEAD
     requests_mock.post("https://test.com/api/service/correlationalerts",
                         json=mock_response)
-=======
+
     requests_mock.get("https://test.com/api/service/correlationalerts",
                       json=mock_response)
->>>>>>> 6a01781b3ef35e1f9ddd0086bf280f07aeafa1d6
+
 
     results = correlation_alerts_command(test_client)
     assert results.outputs.keys() == ['StatusCode', 'Data', 'OutParameters']
@@ -78,13 +73,13 @@ def test_fetch_incidents(client):
                          'type': 'Crpyotsim CorrelationAlert'
                      }])
 
-<<<<<<< HEAD
+
     requests_mock.post("https://test.com/api/service/correlationalerts",
                         json=mock_response)
-=======
+
     requests_mock.get("https://test.com/api/service/correlationalerts",
                       json=mock_response)
->>>>>>> 6a01781b3ef35e1f9ddd0086bf280f07aeafa1d6
+
     next_run, incidents = fetch_incidents(test_client)
     assert next_run == {"lastRun": "2018-10-24T14:13:20+00:00"}
     assert isinstance(incidents, list)

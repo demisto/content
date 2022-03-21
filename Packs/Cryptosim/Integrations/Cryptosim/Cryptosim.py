@@ -17,7 +17,7 @@ class Client(BaseClient):
 
     def correlation_alerts(self, start_time=None):
         args = demisto.args()
-<<<<<<< HEAD
+
         
         end_time = datetime.now()
         
@@ -26,7 +26,7 @@ class Client(BaseClient):
         if start_time is None or start_time < interval_time:
             start_time = interval_time
         
-=======
+
 
         end_time = datetime.now()
 
@@ -34,7 +34,7 @@ class Client(BaseClient):
 
         if start_time is None or start_time < interval_time:
             start_time = interval_time
->>>>>>> 6a01781b3ef35e1f9ddd0086bf280f07aeafa1d6
+
         parameters = {
             'startDate': args.get('startDate', start_time.isoformat()),
             'endDate': args.get('endDate', end_time.isoformat()),
@@ -122,13 +122,10 @@ def fetch_incidents(client: Client):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('last_fetch', first_fetch_time)
 
-<<<<<<< HEAD
+
     incidentsList=[]
     alert_response = client.correlation_alerts(start_time=datetime.strptime(last_fetch,DATE_FORMAT))
-=======
-    incidentsList = []
-    alert_response = client.correlation_alerts(start_time=last_fetch)
->>>>>>> 6a01781b3ef35e1f9ddd0086bf280f07aeafa1d6
+
     incident_data = alert_response['Data']
 
     for inc in incident_data:
