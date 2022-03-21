@@ -82,12 +82,6 @@ script:
       required: true
       secret: false
     - default: false
-      description: The unique identifier of the custom device field in the Classic version of Absolute. Please note, in order to get this value, use the *absolute-custom-device-field-list* command.
-      isArray: false
-      name: field_key
-      required: true
-      secret: false
-    - default: false
       description: The new value of the custom device field to be set.
       isArray: false
       name: value

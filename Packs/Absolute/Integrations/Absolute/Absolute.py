@@ -19,11 +19,6 @@ ABSOLUTE_URL_TO_API_URL = {
     'https://cc.us.absolute.com': 'https://api.us.absolute.com',
     'https://cc.eu2.absolute.com': 'https://api.eu2.absolute.com',
 }
-ABSOLUTE_URL_TO_HOST_NAME = {
-    'https://cc.absolute.com': 'api.absolute.com',
-    'https://cc.us.absolute.com': 'api.us.absolute.com',
-    'https://cc.eu2.absolute.com': 'api.eu2.absolute.com',
-}
 ABSOLUTE_URL_REGION = {
     'https://api.absolute.com': 'cadc',
     'https://api.us.absolute.com': 'usdc',
@@ -53,6 +48,7 @@ class Client(BaseClient):
             x_abs_date (str):
         """
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self._payload = None
         self._base_url = base_url
         self._token_id = token_id
         self._secret_key = secret_key
@@ -220,24 +216,30 @@ class Client(BaseClient):
         return f'{STRING_TO_SIGN_ALGORITHM} Credential={self._token_id}/{credential_scope}, ' \
                f'SignedHeaders={canonical_headers}, Signature={signing_signature}'
 
-    def request_custom_device_field_list_command(self, method: str, url_suffix: str, body: str = ""):
+    def request_custom_device_fields(self, method: str, url_suffix: str, body: str = ""):
         """
         Makes an HTTP request to
         Args:
             method (str): HTTP request method (GET/POST/DELETE).
             url_suffix (str): The API endpoint.
-            body (str): The params to set.
+            body (str): The body to set.
         """
         demisto.debug(f'current request is: method={method}, url suffix={url_suffix}, body={body}')
         self.prepare_request_for_api(method=method, canonical_uri=url_suffix, query_string='', payload=body)
-        return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers)
+        if method == 'GET':
+            return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers)
+        else:
+            full_url = urljoin(self._base_url, url_suffix)
+            res = requests.put(full_url, data=body, headers=self._headers, verify=self._verify)
+            if res.status_code != 200:
+                raise DemistoException(f'{INTEGRATION} error: the operation was failed due to: {res.json()}')
+
+
+''' COMMAND FUNCTIONS '''
 
 
 def sign(key, msg):
     return hmac.new(key, msg.encode('utf-8'), hashlib.sha256).digest()
-
-
-''' COMMAND FUNCTIONS '''
 
 
 def test_module(client: Client) -> str:
@@ -256,6 +258,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
+        client.validate_absolute_api_url()
 
         # This  should validate all the inputs given in the integration configuration panel,
         # either manually or by using an API that uses them.
@@ -284,12 +287,10 @@ def parse_device_field_list_response(response: dict) -> Dict[str, Any]:
 
 def get_custom_device_field_list_command(args, client) -> CommandResults:
     device_id = args.get('device_id')
-    res = client.request_custom_device_field_list_command('GET', f'/v2/devices/{device_id}/cdf')
-    print("res")
-    print(res)
+    res = client.request_custom_device_fields('GET', f'/v2/devices/{device_id}/cdf')
     outputs = parse_device_field_list_response(res)
     human_readable = tableToMarkdown(f'{INTEGRATION}: Custom device field list', outputs,
-                                     headers=['DeviceUID', 'ESN', 'CDFValues'])
+                                     headers=['DeviceUID', 'ESN'], removeNull=True)
     return CommandResults(outputs=outputs, outputs_prefix="Absolute.CustomDeviceField", outputs_key_field='DeviceUID',
                           readable_output=human_readable, raw_response=res)
 
@@ -297,11 +298,11 @@ def get_custom_device_field_list_command(args, client) -> CommandResults:
 def update_custom_device_field_command(args, client) -> CommandResults:
     device_id = args.get('device_id')
     cdf_uid = args.get('cdf_uid')
-    field_key = args.get('field_key')
     field_value = args.get('value')
-    res = client.request_custom_device_field_list_command('PUT', f'v2/devices/{device_id}/cdf')
-    return CommandResults(readable_output=f"Device {device_id} with value {field_value} was updated successfully.",
-                          raw_response=res)
+
+    payload = json.dumps({"cdfValues": [{'cdfUid': cdf_uid, 'fieldValue': field_value}]})
+    client.request_custom_device_fields('PUT', f'/v2/devices/{device_id}/cdf', body=payload)
+    return CommandResults(readable_output=f"Device {device_id} with value {field_value} was updated successfully.")
 
 
 ''' MAIN FUNCTION '''
@@ -340,7 +341,7 @@ def main() -> None:
             return_results(get_custom_device_field_list_command(args=args, client=client))
 
         elif demisto.command() == 'absolute-custom-device-field-update':
-            return_results(get_custom_device_field_list_command(args=args, client=client))
+            return_results(update_custom_device_field_command(args=args, client=client))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
