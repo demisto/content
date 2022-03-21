@@ -9033,7 +9033,8 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
 def get_pack_version(pack_name=''):
     """
     Get a pack version.
-    The version can be retrieved either by a pack name, script name or integration name.
+    The version can be retrieved either by a pack name or by the calling script/integration in which
+    script/integration is part of.
 
     To get the version of the pack in which the calling script/integration is part of,
     just call the function without pack_name.
