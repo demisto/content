@@ -71,6 +71,7 @@ MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
 MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
 ARTIFACTS_FOLDER_MPV2 = "/builds/xsoar/content/artifacts/marketplacev2"
 
+
 class Running(IntEnum):
     CI_RUN = 0
     WITH_OTHER_SERVER = 1
@@ -721,14 +722,12 @@ class XSIAMBuild(Build):
 
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number):
-        # "Need to copy from:
-        #  gs://marketplace-ci-build/content/builds/$BRANCH_NAME/$CI_BUILD_ID/marketplacev2/content
-        #  to gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID
-        logging.info('Copying build bucket to xsiam_instance_bucket.')
+        logging.info('Copying custom build bucket to xsiam_instance_bucket.')
         from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/marketplacev2/content'
+        output_redirect = f'{ARTIFACTS_FOLDER_MPV2}/Copy_prod_bucket_to_xsiam_machine.log 2>&1'
         for server in servers:
             to_bucket = f'{MARKETPLACE_XSIAM_BUCKETS}/{server.name}'
-            cmd = f'gsutil -m cp -r "gs://{from_bucket}" "gs://{to_bucket}/" > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine.log" 2>&1'
+            cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/ > {output_redirect}'
             subprocess.run(cmd.split())
         logging.info('Finished copying successfully.')
 
