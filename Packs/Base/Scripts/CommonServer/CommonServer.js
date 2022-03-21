@@ -2023,7 +2023,11 @@ function setVersionedIntegrationContext(context, sync, version) {
 }
 /* version should be given if theres a known version we must update according to.
 In case of a known version, retries should be set to 0 */
-function mergeVersionedIntegrationContext({newContext, retries = 0,version, objectKey = {}}) {
+function mergeVersionedIntegrationContext(args) {
+    var newContext = args.newContext;
+    var retries = args.retries || 0;
+    var version = args.version || 0;
+    var objectKey = args.objectKey || {};
     var savedSuccessfully = false;
     do {
         logDebug("mergeVersionedIntegrationContext - retries: " + retries  + " given version: " + version)
@@ -2048,7 +2052,8 @@ function mergeVersionedIntegrationContext({newContext, retries = 0,version, obje
 /*
     This function will mutate existingContext, updating it according to newContext.
 */
-function mergeContexts(newContext, existingContext, objectKeys = {}) {
+function mergeContexts(newContext, existingContext, objectKeys ) {
+    var objectKeys = objectKeys || {};
     for (var key in newContext) {
         if('remove' === newContext[key]){
             delete existingContext[key]
@@ -2064,12 +2069,12 @@ function mergeContexts(newContext, existingContext, objectKeys = {}) {
 function mergeContextLists(newItems, oldItems, objectKey) {
     //if have a list like {a : b, c : d}, {a:z, b : y} and the key is b
     //should get the following { 'd': {a : b, c : d} , y : {a:z, b : y}
-    let toMapByKey = (prev, curr) => {
+    var toMapByKey = function(prev, curr) {
         prev[curr[objectKey]] = curr;
         return prev;
     };
 
-    let oldItemsByKey = oldItems.reduce(toMapByKey, {});
-    let newItemsByKey = newItems.reduce(toMapByKey, {});
-    return Object.values(Object.assign(oldItemsByKey, newItemsByKey)).filter(e => !e['remove']);
+    var oldItemsByKey = oldItems.reduce(toMapByKey, {});
+    var newItemsByKey = newItems.reduce(toMapByKey, {});
+    return Object.values(Object.assign(oldItemsByKey, newItemsByKey)).filter(function() {return !e['remove']});
 }
