@@ -14,39 +14,33 @@ ARTIFACTS_FOLDER_MPV2 = "/builds/xsoar/content/artifacts/marketplacev2"
 def main():
     install_logging('Create_GCP.log', logger=logging)
     logging.info('Starting create bucket folder')
-    # from google.cloud import storage
-    # storage_client = storage.Client()
+    from google.cloud import storage
+    storage_client = storage.Client()
 
-    logging.info('Copying build bucket to xsiam_instance_bucket.')
-    from_bucket = f'{MARKETPLACE_TEST_BUCKET}/xsiam-build-instances/2613454/marketplacev2/content'
-    to_bucket = f'{MARKETPLACE_XSIAM_BUCKETS}/xsoar-content-1'
-    output_file = f'{ARTIFACTS_FOLDER_MPV2}/Copy_prod_bucket_to_xsiam_machine.log'
-    cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/'
-
-    with open(output_file, "w") as outfile:
-        subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
-    logging.info('Finished copying successfully.')
+    # logging.info('Copying build bucket to xsiam_instance_bucket.')
+    # from_bucket = f'{MARKETPLACE_TEST_BUCKET}/xsiam-build-instances/2613454/marketplacev2/content'
+    # to_bucket = f'{MARKETPLACE_XSIAM_BUCKETS}/xsoar-content-1'
+    # output_file = f'{ARTIFACTS_FOLDER_MPV2}/Copy_prod_bucket_to_xsiam_machine.log'
+    # cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/'
+    #
+    # with open(output_file, "w") as outfile:
+    #     subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
+    # logging.info('Finished copying successfully.')
 
     # bucket = storage_client.bucket('marketplace-ci-build')
-    # destination_bucket = storage_client.bucket('marketplace-v2-dist-dev')
-    # from_bucket = 'content/builds/xsiam-build-instances/2613454/marketplacev2/'
-    # blob = bucket.blob(from_bucket)
-    # to_bucket = 'upload-flow/builds-xsiam/xsoar-content-1/content/'
-    #
-    # copied_index = bucket.copy_blob(
-    #     blob=blob, destination_bucket=destination_bucket, new_name=to_bucket
-    # )
-    # if copied_index.exists():
-    #     logging.success(f"Finished uploading to storage.")
-
+    bucket = storage_client.bucket('marketplace-v2-dist-dev')
     # blob = bucket.blob('upload-flow/builds-xsiam/')
     # blob.upload_from_string('')
     # logging.info('Created folder for xsiambuilds')
 
-    # blob = bucket.blob('upload-flow/builds-xsiam/qa2-test-9994443226862/')
-    # blob.upload_from_string('')
-    # logging.info('Created folder qa2-test-9997333835008')
-    #
+    blob = bucket.blob('upload-flow/builds-xsiam/qa2-test-9994443226862/')
+    blob.upload_from_string('')
+    logging.info('Created folder qa2-test-9994443226862')
+
+    blob = bucket.blob('upload-flow/builds-xsiam/qa2-test-9997461765391/')
+    blob.upload_from_string('')
+    logging.info('Created folder qa2-test-9997461765391')
+
     # s = blob.download_as_string()
     # logging.info(f'{s=}')
     #
