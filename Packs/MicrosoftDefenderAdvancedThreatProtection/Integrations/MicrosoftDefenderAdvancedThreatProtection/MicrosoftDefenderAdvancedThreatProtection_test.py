@@ -1382,7 +1382,8 @@ class TestHuntingQueryBuilder:
             lme = HuntingQueryBuilder.LateralMovementEvidence(
                 limit='1',
                 query_operation='and',
-                sha1='1,2'
+                sha1='1,2',
+                page='1',
             )
             actual = lme.build_network_connections_query()
             assert actual == expected
@@ -1403,6 +1404,7 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 md5='1,2',
+                page='1',
             )
             actual = lme.build_smb_connections_query()
             assert actual == expected
@@ -1423,7 +1425,8 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 md5='1,2',
-                remote_ip_count=25
+                remote_ip_count=25,
+                page='1',
             )
             actual = lme.build_smb_connections_query()
             assert actual == expected
@@ -1443,7 +1446,8 @@ class TestHuntingQueryBuilder:
             lme = HuntingQueryBuilder.LateralMovementEvidence(
                 limit=10,
                 query_operation='or',
-                device_name='1'
+                device_name='1',
+                page='1',
             )
             actual = lme.build_credential_dumping_query()
             assert actual == expected
@@ -1463,7 +1467,8 @@ class TestHuntingQueryBuilder:
             lme = HuntingQueryBuilder.LateralMovementEvidence(
                 limit=10,
                 query_operation='or',
-                device_name='1'
+                device_name='1',
+                page='1',
             )
             actual = lme.build_management_connection_query()
             assert actual == expected
@@ -1485,7 +1490,8 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 sha1='1,2',
-                query_purpose='scheduled_job'
+                query_purpose='scheduled_job',
+                page='1',
             )
             actual = pe.build_scheduled_job_query()
             assert actual == expected
@@ -1508,7 +1514,8 @@ class TestHuntingQueryBuilder:
                     limit='1',
                     query_operation='and',
                     sha1='1,2',
-                    query_purpose='registry_entry'
+                    query_purpose='registry_entry',
+                    page='1',
                 )
 
         def test_registry_entry_query(self):
@@ -1530,7 +1537,8 @@ class TestHuntingQueryBuilder:
                 query_operation='and',
                 sha1='1,2',
                 query_purpose='registry_entry',
-                process_cmd='something'
+                process_cmd='something',
+                page='1',
             )
             actual = pe.build_registry_entry_query()
             assert actual == expected
@@ -1552,6 +1560,7 @@ class TestHuntingQueryBuilder:
                 query_operation='and',
                 sha1='1,2',
                 query_purpose='startup_folder_changes',
+                page='1',
             )
             actual = pe.build_startup_folder_changes_query()
             assert actual == expected
@@ -1573,6 +1582,7 @@ class TestHuntingQueryBuilder:
                 query_operation='and',
                 sha1='1,2',
                 query_purpose='new_service_created',
+                page='1',
             )
             actual = pe.build_new_service_created_query()
             assert actual == expected
@@ -1594,6 +1604,7 @@ class TestHuntingQueryBuilder:
                 query_operation='and',
                 sha1='1,2',
                 query_purpose='service_updated',
+                page='1',
             )
             actual = pe.build_service_updated_query()
             assert actual == expected
@@ -1615,6 +1626,7 @@ class TestHuntingQueryBuilder:
                 query_operation='and',
                 sha1='1,2',
                 query_purpose='file_replaced',
+                page='1',
             )
             actual = pe.build_file_replaced_query()
             assert actual == expected
@@ -1636,6 +1648,7 @@ class TestHuntingQueryBuilder:
                 query_operation='and',
                 sha1='1,2',
                 query_purpose='new_user',
+                page='1',
             )
             actual = pe.build_new_user_query()
             assert actual == expected
@@ -1657,6 +1670,7 @@ class TestHuntingQueryBuilder:
                 query_operation='and',
                 sha1='1,2',
                 query_purpose='new_group',
+                page='1',
             )
             actual = pe.build_new_group_query()
             assert actual == expected
@@ -1678,6 +1692,7 @@ class TestHuntingQueryBuilder:
                 query_operation='and',
                 sha1='1,2',
                 query_purpose='group_user_change',
+                page='1',
             )
             actual = pe.build_group_user_change_query()
             assert actual == expected
@@ -1699,6 +1714,7 @@ class TestHuntingQueryBuilder:
                 query_operation='and',
                 sha1='1,2',
                 query_purpose='local_firewall_change',
+                page='1',
             )
             actual = pe.build_local_firewall_change_query()
             assert actual == expected
@@ -1720,6 +1736,7 @@ class TestHuntingQueryBuilder:
                 query_operation='and',
                 sha1='1,2',
                 query_purpose='host_file_change',
+                page='1',
             )
             actual = pe.build_host_file_change_query()
             assert actual == expected
@@ -1741,6 +1758,7 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 sha1='1,2',
+                page='1',
             )
             actual = fo.build_file_origin_query()
             assert actual == expected
@@ -1762,6 +1780,7 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 sha1='1,2',
+                page='1',
             )
             actual = pd.build_parent_process_query()
             assert actual == expected
@@ -1782,6 +1801,7 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 sha1='1,2',
+                page='1',
             )
             actual = pd.build_grandparent_process_query()
             assert actual == expected
@@ -1802,6 +1822,7 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 sha1='1,2',
+                page='1',
             )
             actual = pd.build_process_details_query()
             assert actual == expected
@@ -1822,6 +1843,7 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 sha1='1,2',
+                page='1',
             )
             actual = pd.build_beaconing_evidence_query()
             assert actual == expected
@@ -1843,7 +1865,8 @@ class TestHuntingQueryBuilder:
                 query_operation='and',
                 sha1='1,2',
                 device_id='1',
-                query_purpose='process_excecution_powershell'
+                query_purpose='process_excecution_powershell',
+                page='1',
             )
             actual = pd.build_process_excecution_powershell_query()
             assert actual == expected
@@ -1863,7 +1886,8 @@ class TestHuntingQueryBuilder:
             pd = HuntingQueryBuilder.ProcessDetails(
                 limit='1',
                 query_operation='and',
-                query_purpose='powershell_execution_unsigned_files'
+                query_purpose='powershell_execution_unsigned_files',
+                page='1',
             )
             actual = pd.build_powershell_execution_unsigned_files_query()
             assert actual == expected
@@ -1884,7 +1908,8 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 query_purpose='powershell_execution_unsigned_files',
-                md5='1'
+                md5='1',
+                page='1',
             )
             actual = pd.build_powershell_execution_unsigned_files_query()
             assert actual == expected
@@ -1906,7 +1931,8 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 sha1='1,2',
-                query_purpose='external_addresses'
+                query_purpose='external_addresses',
+                page='1',
             )
             actual = nc.build_external_addresses_query()
             assert actual == expected
@@ -1927,7 +1953,8 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 sha1='1,2',
-                query_purpose='dns_query'
+                query_purpose='dns_query',
+                page='1',
             )
             actual = nc.build_dns_query()
             assert actual == expected
@@ -1949,7 +1976,8 @@ class TestHuntingQueryBuilder:
                 query_operation='and',
                 md5='1',
                 device_id='1',
-                query_purpose='encoded_commands'
+                query_purpose='encoded_commands',
+                page='1',
             )
             actual = nc.build_encoded_commands_query()
             assert actual == expected
@@ -1970,7 +1998,8 @@ class TestHuntingQueryBuilder:
             pe = HuntingQueryBuilder.PrivilegeEscalation(
                 limit='1',
                 query_operation='and',
-                device_id='1'
+                device_id='1',
+                page='1',
             )
             actual = pe.build_query()
             assert actual == expected
@@ -1991,7 +2020,8 @@ class TestHuntingQueryBuilder:
             t = HuntingQueryBuilder.Tampering(
                 limit='1',
                 query_operation='and',
-                device_id='1'
+                device_id='1',
+                page='1',
             )
             actual = t.build_query()
             assert actual == expected
@@ -2011,6 +2041,7 @@ class TestHuntingQueryBuilder:
             t = HuntingQueryBuilder.Tampering(
                 limit='1',
                 query_operation='and',
+                page='1',
             )
             actual = t.build_query()
             assert actual == expected
@@ -2032,7 +2063,8 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 sha1='1,2',
-                query_purpose='file_deleted'
+                query_purpose='file_deleted',
+                page='1',
             )
             actual = cu.build_file_deleted_query()
             assert actual == expected
@@ -2053,7 +2085,8 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 device_id='12',
-                query_purpose='event_log_cleared'
+                query_purpose='event_log_cleared',
+                page='1',
             )
             actual = cu.build_event_log_cleared_query()
             assert actual == expected
@@ -2074,7 +2107,8 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 username='dbot',
-                query_purpose='compromised_information'
+                query_purpose='compromised_information',
+                page='1',
             )
             actual = cu.build_compromised_information_query()
             assert actual == expected
@@ -2095,7 +2129,8 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 username='dbot',
-                query_purpose='connected_devices'
+                query_purpose='connected_devices',
+                page='1',
             )
             actual = cu.build_connected_devices_query()
             assert actual == expected
@@ -2116,7 +2151,8 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 username='dbot',
-                query_purpose='action_types'
+                query_purpose='action_types',
+                page='1',
             )
             actual = cu.build_action_types_query()
             assert actual == expected
@@ -2137,7 +2173,8 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 username='dbot',
-                query_purpose='common_files'
+                query_purpose='common_files',
+                page='1',
             )
             actual = cu.build_common_files_query()
             assert actual == expected

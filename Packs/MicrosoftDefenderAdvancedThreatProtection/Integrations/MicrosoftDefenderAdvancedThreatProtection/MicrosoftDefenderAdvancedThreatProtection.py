@@ -157,6 +157,7 @@ class HuntingQueryBuilder:
         def __init__(self,
                      limit: str,
                      query_operation: str,
+                     page: str,
                      device_name: Optional[str] = None,
                      file_name: Optional[str] = None,
                      sha1: Optional[str] = None,
@@ -168,7 +169,7 @@ class HuntingQueryBuilder:
             if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                 raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
 
-            self._limit = limit
+            self._limit = limit * (int(page))
             self._query_operation = query_operation
             self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
             self._file_name = HuntingQueryBuilder.get_filter_values(file_name)
@@ -284,6 +285,7 @@ class HuntingQueryBuilder:
                      limit: str,
                      query_operation: str,
                      query_purpose: str,
+                     page: str,
                      device_name: Optional[str] = None,
                      file_name: Optional[str] = None,
                      sha1: Optional[str] = None,
@@ -297,7 +299,7 @@ class HuntingQueryBuilder:
             elif not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                 raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
 
-            self._limit = limit
+            self._limit = limit * (int(page))
             self._query_operation = query_operation
             self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
             self._file_name = HuntingQueryBuilder.get_filter_values(file_name)
@@ -509,6 +511,7 @@ class HuntingQueryBuilder:
         def __init__(self,
                      limit: str,
                      query_operation: str,
+                     page: str,
                      device_name: Optional[str] = None,
                      file_name: Optional[str] = None,
                      sha1: Optional[str] = None,
@@ -521,7 +524,7 @@ class HuntingQueryBuilder:
                     'Please provide at least one of the query args: "device_name", "file_name", "sha1, '
                     '"sha256", "md5" or "device_id".')
 
-            self._limit = limit
+            self._limit = limit * (int(page))
             self._query_operation = query_operation
             self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
             self._file_name = HuntingQueryBuilder.get_filter_values(file_name)
@@ -565,6 +568,7 @@ class HuntingQueryBuilder:
         def __init__(self,
                      limit: str,
                      query_operation: str,
+                     page: str,
                      device_name: Optional[str] = None,
                      file_name: Optional[str] = None,
                      sha1: Optional[str] = None,
@@ -583,7 +587,7 @@ class HuntingQueryBuilder:
                 if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                     raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
 
-            self._limit = limit
+            self._limit = limit * (int(page))
             self._query_operation = query_operation
             self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
             self._file_name = HuntingQueryBuilder.get_filter_values(file_name)
@@ -712,6 +716,7 @@ class HuntingQueryBuilder:
                      limit: str,
                      query_operation: str,
                      query_purpose: str,
+                     page: str,
                      device_name: Optional[str] = None,
                      file_name: Optional[str] = None,
                      sha1: Optional[str] = None,
@@ -725,7 +730,7 @@ class HuntingQueryBuilder:
             else:
                 if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                     raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
-            self._limit = limit
+            self._limit = limit * (int(page))
             self._query_operation = query_operation
             self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
             self._file_name = HuntingQueryBuilder.get_filter_values(file_name)
@@ -788,12 +793,13 @@ class HuntingQueryBuilder:
         def __init__(self,
                      limit: str,
                      query_operation: str,
+                     page: str,
                      device_name: Optional[str] = None,
                      device_id: Optional[str] = None,
                      ):
             if not (device_name or device_id):
                 raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
-            self._limit = limit
+            self._limit = limit * (int(page))
             self._query_operation = query_operation
             self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
             self._device_id = HuntingQueryBuilder.get_filter_values(device_id)
@@ -818,10 +824,11 @@ class HuntingQueryBuilder:
         def __init__(self,
                      limit: str,
                      query_operation: str,
+                     page: str,
                      device_name: Optional[str] = None,
                      device_id: Optional[str] = None,
                      ):
-            self._limit = limit
+            self._limit = limit * (int(page))
             self._query_operation = query_operation
             self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
             self._device_id = HuntingQueryBuilder.get_filter_values(device_id)
@@ -860,6 +867,7 @@ class HuntingQueryBuilder:
                      limit: str,
                      query_operation: str,
                      query_purpose: str,
+                     page: str,
                      device_name: Optional[str] = None,
                      file_name: Optional[str] = None,
                      sha1: Optional[str] = None,
@@ -875,7 +883,7 @@ class HuntingQueryBuilder:
                 raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
             elif not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                 raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
-            self._limit = limit
+            self._limit = limit * (int(page))
             self._query_operation = query_operation
             self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
             self._file_name = HuntingQueryBuilder.get_filter_values(file_name)
@@ -3815,6 +3823,8 @@ def lateral_movement_evidence_command(client, args):
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     query_purpose = args.pop('query_purpose')
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
     query_builder = HuntingQueryBuilder.LateralMovementEvidence(**args)
     query_options = {
         'network_connections': query_builder.build_network_connections_query,
@@ -3829,6 +3839,8 @@ def lateral_movement_evidence_command(client, args):
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
+    if isinstance(results, list) and page > 1:
+        results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown(f'Lateral Movement Evidence Hunt ({query_purpose}) Results',
                                       results,
                                       removeNull=True
@@ -3878,12 +3890,16 @@ def file_origin_command(client, args):
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
     query_builder = HuntingQueryBuilder.FileOrigin(**args)
     query = query_builder.build_file_origin_query()
 
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
+    if isinstance(results, list) and page > 1:
+        results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown('File Origin Hunt Results', results, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
@@ -3897,6 +3913,8 @@ def process_details_command(client, args):
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
     query_builder = HuntingQueryBuilder.ProcessDetails(**args)
     query_options = {
         'parent_process': query_builder.build_parent_process_query,
@@ -3913,6 +3931,8 @@ def process_details_command(client, args):
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
+    if isinstance(results, list) and page > 1:
+        results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown(f'Process Details Hunt ({query_purpose}) Results', results, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
@@ -3926,6 +3946,8 @@ def network_connections_command(client, args):
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
     query_builder = HuntingQueryBuilder.NetworkConnections(**args)
     query_options = {
         'external_addresses': query_builder.build_external_addresses_query,
@@ -3939,6 +3961,8 @@ def network_connections_command(client, args):
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
+    if isinstance(results, list) and page > 1:
+        results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown(f'Network Connections Hunt ({query_purpose}) Results', results, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
@@ -3951,12 +3975,16 @@ def privilege_escalation_command(client, args):
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
     query_builder = HuntingQueryBuilder.PrivilegeEscalation(**args)
     query = query_builder.build_query()
 
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
     readable_output = tableToMarkdown('Privilege Escalation Hunt Results', results, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
@@ -3969,12 +3997,16 @@ def tampering_command(client, args):
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
     query_builder = HuntingQueryBuilder.Tampering(**args)
     query = query_builder.build_query()
 
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
+    if isinstance(results, list) and page > 1:
+        results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown('Tampering Hunt Results', results, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
@@ -3988,6 +4020,8 @@ def cover_up_command(client, args):
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
     query_builder = HuntingQueryBuilder.CoverUp(**args)
     query_options = {
         'file_deleted': query_builder.build_file_deleted_query,
@@ -4004,6 +4038,8 @@ def cover_up_command(client, args):
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
+    if isinstance(results, list) and page > 1:
+        results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown(f'Cover Up Hunt ({query_purpose}) Results', results, removeNull=True)
     return CommandResults(
         readable_output=readable_output,

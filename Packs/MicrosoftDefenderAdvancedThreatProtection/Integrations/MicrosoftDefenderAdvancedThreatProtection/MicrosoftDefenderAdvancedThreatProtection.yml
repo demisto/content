@@ -5372,6 +5372,13 @@ script:
       name: timeout
       required: false
       secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
     outputs:
     - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result
       description: The query results.
@@ -5475,6 +5482,13 @@ script:
       name: process_cmd
       required: false
       secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
     outputs:
     - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
       description: The query results.
@@ -5542,6 +5556,13 @@ script:
         response before a timeout occurs.
       isArray: false
       name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
       required: false
       secret: false
     outputs:
@@ -5631,6 +5652,13 @@ script:
       name: timeout
       required: false
       secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
     outputs:
     - contextPath: MicrosoftATP.HuntProcessDetails.Result
       description: The query results.
@@ -5714,6 +5742,13 @@ script:
       name: timeout
       required: false
       secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
     outputs:
     - contextPath: MicrosoftATP.HuntNetworkConnections.Result
       description: The query results.
@@ -5759,6 +5794,13 @@ script:
       name: timeout
       required: false
       secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
     outputs:
     - contextPath: MicrosoftATP.HuntPrivilegeEscalation.Result
       description: The query results.
@@ -5802,6 +5844,13 @@ script:
         response before a timeout occurs.
       isArray: false
       name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
       required: false
       secret: false
     outputs:
@@ -5898,6 +5947,13 @@ script:
           response before a timeout occurs.
         isArray: false
         name: timeout
+        required: false
+        secret: false
+      - default: false
+        defaultValue: "1"
+        description: The page number from which to start a search. Default is 1.
+        isArray: false
+        name: page
         required: false
         secret: false
     outputs:
