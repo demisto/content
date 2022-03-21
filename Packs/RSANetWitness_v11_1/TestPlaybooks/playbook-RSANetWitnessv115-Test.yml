@@ -1,0 +1,928 @@
+id: RSANetWitnessv115-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: RSANetWitnessv115-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a63a5b24-dfaa-4aa5-8df3-9dc64040801a
+    type: start
+    task:
+      id: a63a5b24-dfaa-4aa5-8df3-9dc64040801a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ad16aad5-9b44-4d2f-8282-5bcec59675b8
+    type: regular
+    task:
+      id: ad16aad5-9b44-4d2f-8282-5bcec59675b8
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f5dae7aa-9c2c-42fe-8aae-e9f4805358b6
+    type: regular
+    task:
+      id: f5dae7aa-9c2c-42fe-8aae-e9f4805358b6
+      version: -1
+      name: rsa-nw-list-incidents
+      script: RSANetWitnessv115|||rsa-nw-list-incidents
+      type: regular
+      iscommand: true
+      brand: RSANetWitnessv115
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 926a9aff-9d1b-4c39-8494-a8bde86c8d0e
+    type: condition
+    task:
+      id: 926a9aff-9d1b-4c39-8494-a8bde86c8d0e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RSANetWitness115
+                accessor: Incidents
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 29cfc48a-46e5-4d0d-8f09-677394de304e
+    type: regular
+    task:
+      id: 29cfc48a-46e5-4d0d-8f09-677394de304e
+      version: -1
+      name: rsa-nw-update-incident
+      script: RSANetWitnessv115|||rsa-nw-update-incident
+      type: regular
+      iscommand: true
+      brand: RSANetWitnessv115
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      id:
+        simple: ${RSANetWitness115.Incidents.id}
+      status:
+        simple: New
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 10fb507b-7249-4319-8cae-dcc15eaec056
+    type: condition
+    task:
+      id: 10fb507b-7249-4319-8cae-dcc15eaec056
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RSANetWitness115.Incidents
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: New
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a6c56c6d-d3df-430e-836c-781e2f143c0b
+    type: regular
+    task:
+      id: a6c56c6d-d3df-430e-836c-781e2f143c0b
+      version: -1
+      name: rsa-nw-incident-add-journal-entry
+      script: RSANetWitnessv115|||rsa-nw-incident-add-journal-entry
+      type: regular
+      iscommand: true
+      brand: RSANetWitnessv115
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      id:
+        simple: ${RSANetWitness115.Incidents.id}
+      notes:
+        simple: Testing
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4e1c9ec7-e376-41db-8224-2587b809e2a0
+    type: regular
+    task:
+      id: 4e1c9ec7-e376-41db-8224-2587b809e2a0
+      version: -1
+      name: rsa-nw-incident-list-alerts
+      script: RSANetWitnessv115|||rsa-nw-incident-list-alerts
+      type: regular
+      iscommand: true
+      brand: RSANetWitnessv115
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      id:
+        simple: ${RSANetWitness115.Incidents.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: a1b11db6-8724-432d-8af0-7ea206d5e094
+    type: condition
+    task:
+      id: a1b11db6-8724-432d-8af0-7ea206d5e094
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.IncidentAlerts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: ccc0db55-5f2c-4ff4-89f8-9ea908e08f66
+    type: regular
+    task:
+      id: ccc0db55-5f2c-4ff4-89f8-9ea908e08f66
+      version: -1
+      name: rsa-nw-services-list
+      script: RSANetWitnessv115|||rsa-nw-services-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1c552b2e-63fb-402f-8c74-3c8654bbcc95
+    type: condition
+    task:
+      id: 1c552b2e-63fb-402f-8c74-3c8654bbcc95
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.ServicesList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 25441a93-e392-4e5c-80ac-02b955bc26b3
+    type: regular
+    task:
+      id: 25441a93-e392-4e5c-80ac-02b955bc26b3
+      version: -1
+      name: rsa-nw-hosts-list
+      script: RSANetWitnessv115|||rsa-nw-hosts-list
+      type: regular
+      iscommand: true
+      brand: RSANetWitnessv115
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: a6a878ee-dc88-4b57-894c-31e3075cb97b
+    type: condition
+    task:
+      id: a6a878ee-dc88-4b57-894c-31e3075cb97b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.HostsList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 7ef18326-38b8-415b-8d63-fd7d5433ba01
+    type: regular
+    task:
+      id: 7ef18326-38b8-415b-8d63-fd7d5433ba01
+      version: -1
+      name: endpoint
+      script: RSANetWitnessv115|||endpoint
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: a667faea-1c43-40dd-8829-205b20fd1e9c
+    type: condition
+    task:
+      id: a667faea-1c43-40dd-8829-205b20fd1e9c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 8d6c0f8f-4468-406c-8d36-84939b821738
+    type: regular
+    task:
+      id: 8d6c0f8f-4468-406c-8d36-84939b821738
+      version: -1
+      name: rsa-nw-snapshots-list-for-host
+      script: RSANetWitnessv115|||rsa-nw-snapshots-list-for-host
+      type: regular
+      iscommand: true
+      brand: RSANetWitnessv115
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      agent_id:
+        simple: ${Endpoint.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 281b686b-0468-4533-861d-a103eb9c6597
+    type: condition
+    task:
+      id: 281b686b-0468-4533-861d-a103eb9c6597
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.SnapshotsListForHost
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: b2a8ef3e-6d78-487c-8939-9e68dad40d3b
+    type: regular
+    task:
+      id: b2a8ef3e-6d78-487c-8939-9e68dad40d3b
+      version: -1
+      name: rsa-nw-snapshot-details-get
+      script: RSANetWitnessv115|||rsa-nw-snapshot-details-get
+      type: regular
+      iscommand: true
+      brand: RSANetWitnessv115
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      agent_id:
+        simple: ${Endpoint.ID}
+      categories:
+        simple: PROCESSES
+      limit:
+        simple: "1"
+      snapshot_timestamp:
+        simple: ${RSANetWitness115.SnapshotsListForHost.[0]}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b18b618f-c3b3-4d05-8254-75d1d6f6558a
+    type: condition
+    task:
+      id: b18b618f-c3b3-4d05-8254-75d1d6f6558a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.SnapshotDetailsGet
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 0ac8dd94-e96c-4566-829c-d692713bce4e
+    type: regular
+    task:
+      id: 0ac8dd94-e96c-4566-829c-d692713bce4e
+      version: -1
+      name: rsa-nw-files-list
+      script: RSANetWitnessv115|||rsa-nw-files-list
+      type: regular
+      iscommand: true
+      brand: RSANetWitnessv115
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 5e497566-e22c-4f29-8a16-82003f88e6dc
+    type: condition
+    task:
+      id: 5e497566-e22c-4f29-8a16-82003f88e6dc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.FilesList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 40133d16-6a58-4963-8db5-96df331ae553
+    type: regular
+    task:
+      id: 40133d16-6a58-4963-8db5-96df331ae553
+      version: -1
+      name: rsa-nw-host-alerts-list
+      script: RSANetWitnessv115|||rsa-nw-host-alerts-list
+      type: regular
+      iscommand: true
+      brand: RSANetWitnessv115
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      agent_id:
+        simple: ${RSANetWitness115.HostsList.agentId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 69084181-3661-400e-8eb8-434dfaeaab3d
+    type: condition
+    task:
+      id: 69084181-3661-400e-8eb8-434dfaeaab3d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.HostAlerts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: cd927ab7-4287-4d6b-853a-0936c92692cc
+    type: regular
+    task:
+      id: cd927ab7-4287-4d6b-853a-0936c92692cc
+      version: -1
+      name: rsa-nw-file-alerts-list
+      script: RSANetWitnessv115|||rsa-nw-file-alerts-list
+      type: regular
+      iscommand: true
+      brand: RSANetWitnessv115
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      check_sum:
+        simple: ${RSANetWitness115.FilesList.checksumSha256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: befa23c9-c5a1-4d53-817d-d847d3858e88
+    type: condition
+    task:
+      id: befa23c9-c5a1-4d53-817d-d847d3858e88
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.FileAlerts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 63641c75-60ec-4a55-813b-e0c8b2d1cde2
+    type: title
+    task:
+      id: 63641c75-60ec-4a55-813b-e0c8b2d1cde2
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 5810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5825,
+        "width": 390,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

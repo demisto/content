@@ -219,8 +219,10 @@ var fetchIncidentsToDemisto = function() {
             value: (new Date(nowDate.getTime() - 10*60*1000)).toISOString()
         };
     }
-    var query =  "'Create Date'>" + '"' + lastRun.value + '"';
+    logDebug("Last run value before starting to fetch: " + lastRun.value);
+    var query =  "'Submit Date'>" + '"' + lastRun.value + '"';
     var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/' + '?q=' + encodeURIComponent(query);
+    logDebug("This is the URL with the query for fetching the incidents: " + url);
     var token = login();
     var res = sendRequest(url, token);
     logout(token);
@@ -240,6 +242,8 @@ var fetchIncidentsToDemisto = function() {
             'rawJSON': JSON.stringify(incident)
         });
     });
+    var now = new Date().toISOString();
+    logDebug("Last run is set to: " + now);
     setLastRun({value: now});
     return JSON.stringify(incidents);
 };

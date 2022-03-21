@@ -1,2 +1,5 @@
 [file:Lacework.yml]
 ignore=IN145
+
+[file:Lacework_image.png]
+ignore=IM111

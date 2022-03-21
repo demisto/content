@@ -13,8 +13,7 @@
     "reputationScriptName": "",
     "reputationCommand": "ip",
     "enhancementScriptNames": [
-        "IPReputation",
-        "SplunkPySearch"
+        "IPReputation"
     ],
     "system": true,
     "locked": false,

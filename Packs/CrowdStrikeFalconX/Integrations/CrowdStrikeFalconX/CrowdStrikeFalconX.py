@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Callable
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -458,7 +458,8 @@ def parse_outputs(
         meta_fields: list = [],
         quota_fields: list = [],
         resources_fields: list = [],
-        sandbox_fields: list = []
+        sandbox_fields: list = [],
+        extra_sandbox_fields=[],
 ) -> Dict[str, dict]:
     """Parse group data as received from CrowdStrike FalconX API into Demisto's conventions
     the output from the API is a dict that contains the keys: meta, resources and errors
@@ -470,10 +471,11 @@ def parse_outputs(
     :param quota_fields: the wanted params that appear in the quota section
     :param resources_fields: the wanted params that appear in the resources section
     :param sandbox_fields: the wanted params that appear in the sandbox section
+    :param extra_sandbox_fields: the wanted params that appear in the extra sandbox section
     :return: a dict based on api_res with the wanted params only
     """
     api_res_quota, api_res_resources, api_res_sandbox = {}, {}, {}
-    resources_group_outputs, sandbox_group_outputs = {}, {}
+    resources_group_outputs, sandbox_group_outputs, extra_sandbox_group_outputs = {}, {}, {}
 
     api_res_meta = api_res.get("meta")
     if api_res_meta:
@@ -494,10 +496,18 @@ def parse_outputs(
             if api_res_resources and sandbox:
                 api_res_sandbox = sandbox[0]
                 sandbox_group_outputs = add_outputs_from_dict(api_res_sandbox, sandbox_fields)
+                extra_sandbox_group_outputs = add_outputs_from_dict(api_res_sandbox, extra_sandbox_fields)
+
+                if extra_sandbox_group_outputs.get('processes'):
+                    for process in extra_sandbox_group_outputs.get('processes', []):
+                        if process.get('registry'):
+                            process.pop('registry')
         else:
             # the resources section is a list of strings
             resources_group_outputs = {"resources": api_res.get("resources")}
 
+    if extra_sandbox_group_outputs:
+        resources_group_outputs['sandbox'] = extra_sandbox_group_outputs
     merged_dicts = {**meta_group_outputs, **quota_group_outputs, **resources_group_outputs, **sandbox_group_outputs}
 
     return merged_dicts
@@ -539,7 +549,7 @@ def upload_file_command(
         is_confidential: str = "true",
         comment: str = "",
         submit_file: str = "no",
-) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
+):
     """Upload a file for sandbox analysis.
     :param client: the client object with an access token
     :param file: content of the uploaded sample in binary format
@@ -553,9 +563,13 @@ def upload_file_command(
 
     resources_fields = ["file_name", "sha256"]
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields)
-    entry_context = {'csfalconx.resource(val.sha256 === obj.sha256)': [filtered_outputs]}
     if submit_file == 'no':
-        return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
+        return CommandResults(
+            outputs_key_field='sha256',
+            outputs_prefix='csfalconx.resource',
+            outputs=[filtered_outputs],
+            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs),
+            raw_response=[response])
 
     else:
         sha256 = str(filtered_outputs.get("sha256"))
@@ -573,7 +587,7 @@ def send_uploaded_file_to_sandbox_analysis_command(
         submit_name: str = "",
         system_date: str = "",
         system_time: str = ""
-) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
+):
     """Submit a sample SHA256 for sandbox analysis.
     :param client: the client object with an access token
     :param sha256: SHA256 ID of the sample, which is a SHA256 hash value
@@ -596,9 +610,13 @@ def send_uploaded_file_to_sandbox_analysis_command(
     filtered_outputs = parse_outputs(response, sandbox_fields=sandbox_fields, resources_fields=resource_fields)
     # in order identify the id source, upload or submit command, the id name changed
     filtered_outputs["submitted_id"] = filtered_outputs.pop("id")
-    entry_context = {'csfalconx.resource(val.submitted_id === obj.submitted_id)': [filtered_outputs]}
 
-    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
+    return CommandResults(
+        outputs_key_field='submitted_id',
+        outputs_prefix='csfalconx.resource',
+        outputs=filtered_outputs,
+        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs),
+        raw_response=[response])
 
 
 def send_url_to_sandbox_analysis_command(
@@ -612,7 +630,7 @@ def send_url_to_sandbox_analysis_command(
         submit_name: str = "",
         system_date: str = "",
         system_time: str = ""
-) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
+):
     """Submit a URL or FTP for sandbox analysis.
     :param client: the client object with an access token
     :param url: a web page or file URL. It can be HTTP(S) or FTP.
@@ -634,49 +652,92 @@ def send_url_to_sandbox_analysis_command(
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields, sandbox_fields=sandbox_fields)
     # in order identify the id source, upload or submit command, the id name changed
     filtered_outputs["submitted_id"] = filtered_outputs.pop("id")
-    entry_context = {'csfalconx.resource(val.submitted_id === obj.submitted_id)': [filtered_outputs]}
 
-    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
+    return CommandResults(
+        outputs_key_field='submitted_id',
+        outputs_prefix='csfalconx.resource',
+        outputs=[filtered_outputs],
+        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs),
+        raw_response=[response])
 
 
-def get_full_report_command(
-        client: Client,
-        ids: list
-) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
+def arrange_output_for_hr(filtered_outputs_list):
+    res_hr_list: list = []
+    hr_fields = ['sha256', 'environment_description', 'environment_id', 'created_timestamp', 'id', 'submission_type',
+                 'threat_score', 'verdict']
+    for output in filtered_outputs_list:
+        output_for_hr: dict = {}
+        for field in hr_fields:
+            output_for_hr[field] = output.get(field)
+        res_hr_list.append(output_for_hr)
+    return res_hr_list, hr_fields
+
+
+def get_full_report_command(client: Client, ids: list, extended_data: str):
     """Get a full version of a sandbox report.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
+    :param extended_data: Whether to return extended data which includes mitre attacks and signature information.
+    :param polling: Whether is polling call this function.
     :return: Demisto outputs when entry_context and responses are lists
     """
     ids_list = argToList(ids)
     filtered_outputs_list = []
     response_list = []
+    command_result: CommandResults
+    is_command_finished: bool = False
 
     for single_id in ids_list:
-        response = client. get_full_report(single_id)
+        response = client.get_full_report(single_id)
+        if response.get('resources'):
+            is_command_finished = True
         response_list.append(response)
 
         resources_fields = ['id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
                             "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
                             "ioc_report_broad_json_artifact_id", "ioc_report_strict_stix_artifact_id",
                             "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
-                            "ioc_report_broad_maec_artifact_id"]
+                            "ioc_report_broad_maec_artifact_id", 'tags', "intel"]
 
-        sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
-                          "filetype", "filesize", "sha256"]
+        sandbox_fields = [
+            "environment_id", "environment_description", "threat_score", "submit_url", "submission_type", "filetype",
+            "filesize", "sha256"
+        ]
+        extra_sandbox_fields = [
+            "processes", "architecture", "classification", "classification_tags", "http_requests",
+            "extracted_files", "file_metadata", "file_size", "file_type", "file_type_short", "packer", "incidents",
+            "submit_name", "screenshots_artifact_ids", "dns_requests", "contacted_hosts", "contacted_hosts"
+        ]
+
+        if extended_data == 'true':
+            extra_sandbox_fields.extend(["mitre_attacks", "signatures"])
+
         filtered_outputs_list.append(parse_outputs(response, resources_fields=resources_fields,
-                                                   sandbox_fields=sandbox_fields))
+                                                   sandbox_fields=sandbox_fields,
+                                                   extra_sandbox_fields=extra_sandbox_fields))
 
-    entry_context = {'csfalconx.resource(val.id === obj.id)': filtered_outputs_list}
+    filtered_outputs_list_for_hr, hr_fields = arrange_output_for_hr(filtered_outputs_list)
 
     if not filtered_outputs_list:
         # if there are no results, the sample is still being analyzed
         no_results_message = 'There are no results yet, the sample might still being analyzed.' \
                              ' Please wait to download the report.\n' \
                              'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.'
-        return no_results_message, entry_context, response_list
+        command_result = CommandResults(
+            outputs_key_field='id',
+            outputs_prefix='csfalconx.resource',
+            outputs=filtered_outputs_list,
+            readable_output=no_results_message,
+            raw_response=[response_list])
+    else:
+        command_result = CommandResults(
+            outputs_key_field='id',
+            outputs_prefix='csfalconx.resource',
+            outputs=filtered_outputs_list,
+            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list_for_hr, hr_fields),
+            raw_response=[response_list])
 
-    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list), entry_context, response_list
+    return command_result, is_command_finished
 
 
 def get_report_summary_command(
@@ -762,10 +823,12 @@ def download_ioc_command(
     :param accept_encoding: format used to compress your downloaded file
     :return: Demisto outputs when entry_context and responses are lists
     """
+    response: dict = {}
     try:
         response = client.download_ioc(id, name, accept_encoding)
     except Exception as a:
         demisto.debug(f'Download ioc exception {a}')
+
     entry_context = {'csfalconx.resource(val.id === obj.id)': [response]}
 
     return tableToMarkdown("CrowdStrike Falcon X response:", response), entry_context, [response]
@@ -835,8 +898,154 @@ def find_submission_id_command(
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
 
+def get_results_function_args(outputs, extended_data, item_type, interval_in_secs):
+    if isinstance(outputs, list):
+        outputs = outputs[0]
+
+    results_function_args: dict = {
+        'ids': outputs.get('submitted_id'),
+        'extended_data': extended_data,
+        'interval_in_seconds': interval_in_secs,
+        'polling': True,
+    }
+    if item_type == 'FILE':
+        results_function_args['submit_file'] = 'yes'
+
+    return results_function_args
+
+
+def pop_polling_related_args(args):
+    if 'submit_file' in args:
+        args.pop('submit_file')
+    if 'enable_tor' in args:
+        args.pop('enable_tor')
+    if 'interval_in_seconds' in args:
+        args.pop('interval_in_seconds')
+    if 'polling' in args:
+        args.pop('polling')
+
+
+def is_new_polling_search(args):
+    """
+    Check if the polling func is a new search or in the polling flow.
+    if there ids argument in the args dict its mean that the first search is finished and we should run the polling flow
+    """
+    return not args.get('ids')
+
+
+def arrange_args_for_upload_func(args):
+    args.pop('polling')
+    args.pop('interval_in_seconds')
+    extended_data = args.pop('extended_data')
+    return extended_data
+
+
+def run_polling_command(client, args: dict, cmd: str, upload_function: Callable, results_function: Callable, item_type):
+    """
+    This function is generically handling the polling flow. In the polling flow, there is always an initial call that
+    starts the uploading to the API (referred here as the 'upload' function) and another call that retrieves the status
+    of that upload (referred here as the 'results' function).
+    The run_polling_command function runs the 'upload' function and returns a ScheduledCommand object that schedules
+    the next 'results' function, until the polling is complete.
+    Args:
+        item_type: the item type to handle the args according.
+        client: the CS FX client.
+        args: the arguments required to the command being called, under cmd
+        cmd: the command to schedule by after the current command
+        upload_function: the function that initiates the uploading to the API
+        results_function: the function that retrieves the status of the previously initiated upload process
+
+    Returns:
+
+    """
+    ScheduledCommand.raise_error_if_not_supported()
+    interval_in_secs = int(args.get('interval_in_seconds', 600))
+    # distinguish between the initial run, which is the upload run, and the results run
+    if is_new_polling_search(args):
+        # create new search
+        extended_data = arrange_args_for_upload_func(args)
+        command_results = upload_function(client, **args)
+        outputs = command_results.outputs
+        results_function_args = get_results_function_args(outputs, extended_data, item_type, interval_in_secs)
+        # schedule next poll
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,
+            args=results_function_args,
+            timeout_in_seconds=6000)
+        command_results.scheduled_command = scheduled_command
+        return command_results
+
+    # not a new search, get search status
+    pop_polling_related_args(args)
+    command_result, status = results_function(client, **args)
+    if not status:
+        # schedule next poll
+        polling_args = {
+            'interval_in_seconds': interval_in_secs,
+            'polling': True,
+            **args
+        }
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,
+            args=polling_args,
+            timeout_in_seconds=6000)
+
+        command_result = CommandResults(scheduled_command=scheduled_command)
+    return command_result
+
+
+def upload_file_with_polling_command(client, args):
+    return run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command,
+                               get_full_report_command, 'FILE')
+
+
+def submit_uploaded_file_polling_command(client, args):
+    return run_polling_command(client, args, 'cs-fx-submit-uploaded-file',
+                               send_uploaded_file_to_sandbox_analysis_command, get_full_report_command, 'FILE')
+
+
+def submit_uploaded_url_polling_command(client, args):
+    return run_polling_command(client, args, 'cs-fx-submit-url', send_url_to_sandbox_analysis_command,
+                               get_full_report_command, 'URL')
+
+
+def validate_command_args(command, args):
+    if 'ids' in args:  # for the polling result command
+        return
+    if command == 'cs-fx-upload-file':
+        if 'file' not in args:
+            raise Exception("file argument is a mandatory for cs-fx-upload-file command")
+        if 'file_name' not in args:
+            raise Exception("file_name argument is a mandatory for cs-fx-upload-file command")
+        if 'polling' in args and args.get('submit_file') != 'yes':
+            raise Exception("The command cs-fx-upload-file support the polling option "
+                            "just when the submit_file argument is yes.")
+
+    elif command == 'cs-fx-submit-uploaded-file':
+        if 'environment_id' not in args:
+            raise Exception("environment_id argument is a mandatory for cs-fx-submit-uploaded-file command")
+        if 'sha256' not in args:
+            raise Exception("sha256 argument is a mandatory for cs-fx-submit-uploaded-file command")
+
+    elif command == 'cs-fx-submit-url':
+        if 'environment_id' not in args:
+            raise Exception("environment_id argument is a mandatory for cs-fx-submit-url command")
+        if 'url' not in args:
+            raise Exception("sha256 argument is a mandatory for cs-fx-submit-url command")
+
+
+def remove_polling_related_args(args):
+    if 'interval_in_seconds' in args:
+        args.pop('interval_in_seconds')
+    if 'extended_data' in args:
+        args.pop('extended_data')
+
+
 def main():
     params = demisto.params()
+    args = demisto.args()
     url = params.get('base_url', 'https://api.crowdstrike.com/')
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
@@ -847,6 +1056,11 @@ def main():
         command = demisto.command()
         LOG(f'Command being called in CrowdStrikeFalconX Sandbox is: {command}')
         client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy)
+        polling_commands = {
+            'cs-fx-upload-file': upload_file_with_polling_command,
+            'cs-fx-submit-uploaded-file': submit_uploaded_file_polling_command,
+            'cs-fx-submit-url': submit_uploaded_url_polling_command
+        }
         commands = {
             'test-module': test_module,
             'cs-fx-upload-file': upload_file_command,
@@ -860,8 +1074,17 @@ def main():
             'cs-fx-find-reports': find_sandbox_reports_command,
             'cs-fx-find-submission-id': find_submission_id_command
         }
-        if command in commands:
-            return_outputs(*commands[command](client, **demisto.args()))  # type: ignore[operator]
+        if command in polling_commands:
+            validate_command_args(command, args)
+            if args.get('polling', '') == 'true':
+                return_results(polling_commands[command](client, args))  # type: ignore[operator]
+            else:
+                remove_polling_related_args(args)
+                return_results(commands[command](client, **args))  # type: ignore[operator]
+        elif command == 'cs-fx-get-full-report':
+            return_results(get_full_report_command(client, **args)[0])  # type: ignore[operator]
+        elif command in commands:
+            return_outputs(*commands[command](client, **args))  # type: ignore[operator]
         else:
             raise NotImplementedError(f'{command} is not an existing CrowdStrike Falcon X command')
     except Exception as err:

@@ -1,2 +1,5 @@
 [file:CiscoUmbrellaEnforcement.yml]
 ignore=IN145
+
+[file:CiscoUmbrellaEnforcement_image.png]
+ignore=IM111

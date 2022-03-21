@@ -96,8 +96,13 @@ def fetch_indicators_command(client, params, manual_run=False):
     indicators_unparsed = list()
     indicators = list()
     now = datetime.utcnow()
-    create_date = dateparser.parse(f"{client.history} days ago", settings={
+    date_filter = dateparser.parse(f"{client.history} days ago", settings={
                                    'RELATIVE_BASE': now}).strftime("%Y-%m-%dT%H:%M:%S.000+0000")
+    integration_context = get_integration_context()
+    if integration_context:
+        last_run = integration_context.get('lastRun')
+    else:
+        last_run = None
     object_fields = None
     if client.fields:
         object_fields = client.fields.split(",")
@@ -108,8 +113,13 @@ def fetch_indicators_command(client, params, manual_run=False):
 
     if client.query_filter:
         search_criteria = f"{client.query_filter}"
+        if last_run:
+            search_criteria = f"{search_criteria} AND LastModifiedDate >= {last_run}"
     else:
-        search_criteria = f"CreatedDate > {create_date}"
+        if last_run:
+            search_criteria = f"LastModifiedDate >= {last_run}"
+        else:
+            search_criteria = f"LastModifiedDate > {date_filter}"
     indicators_raw = client.query_object(object_fields, client.object_name, search_criteria)
     if indicators_raw.get('totalSize', 0) > 0:
         for indicator in indicators_raw.get('records', []):
@@ -140,6 +150,11 @@ def fetch_indicators_command(client, params, manual_run=False):
             pass
 
     if not manual_run:
+
+        # Update the last run time
+        last_run = now.strftime("%Y-%m-%dT%H:%M:00Z")
+        set_integration_context({"lastRun": last_run})
+
         # We submit indicators in batches
         for b in batch(indicators, batch_size=2000):
             demisto.createIndicators(b)

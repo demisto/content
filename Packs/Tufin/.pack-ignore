@@ -3,3 +3,7 @@ ignore=RM102,RM104
 
 [file:Tufin.yml]
 ignore=IN136
+
+
+[file:Tufin_image.png]
+ignore=IM111

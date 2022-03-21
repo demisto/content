@@ -87,6 +87,12 @@ script:
     - name: raw_message
       description: Raw email message from MimeContent type.
       required: false
+    - default: false
+      description: The email address from which to reply.
+      isArray: false
+      name: from
+      required: false
+      secret: false
     description: Sends an email using EWS.
   - name: reply-mail
     arguments:

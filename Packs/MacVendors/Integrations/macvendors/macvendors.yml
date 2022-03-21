@@ -1,0 +1,74 @@
+commonfields:
+  id: MAC Vendors
+  version: -1
+name: MAC Vendors
+display: MAC Vendors
+detaileddescription: >-
+  ## MAC Vendors
+
+  ### Overview
+  Find MAC Address Vendors
+
+  ### API Keys
+  API Keys are not required but are limited to 1,000 queries per day (at 2 requests
+  per second).
+  API Keys can be purchased from https://macvendors.com/plans
+
+  ---
+category: Utilities
+configuration:
+- name: apiKey
+  display: API Key
+  required: false
+  defaultvalue:
+  type: 4
+  additionalinfo: No API key is required for up to 1,000 requests per day at 1 request
+    per second. For higher limits, please use an API key.
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  defaultvalue: ''
+  type: 8
+  additionalinfo:
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  defaultvalue: ''
+  type: 8
+  additionalinfo:
+description: >
+  Query MAC Vendors for vendor names when providing a MAC address.
+
+  MAC Vendors maintains a list of vendors provided directly from the IEEE Standards
+  Association and is updated multiple times each day. The IEEE is the registration
+  authority and provides data on over 16,500 registered vendors.
+script:
+  commands:
+  - arguments:
+    - default: false
+      isArray: false
+      name: mac
+      description: MAC address to lookup. Can be any of the formats;  00-11-22-33-44-55,
+        00:11:22:33:44:55, 00.11.22.33.44.55, 001122334455, 0011.2233.4455
+      required: true
+      secret: false
+    deprecated: false
+    description: Resolves a MAC address to a vendor name.
+    name: macvendors-lookup-mac
+    outputs:
+    - contextPath: MACVendors.mac
+      description: MAC Address
+      type: string
+    - contextPath: MACVendors.vendor
+      description: Vendor Name
+      type: string
+  isfetch: false
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.1.25933
+  feed: false
+fromversion: "6.0.0"
+tests:
+- No tests (auto formatted)

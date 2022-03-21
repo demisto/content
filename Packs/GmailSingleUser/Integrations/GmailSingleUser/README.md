@@ -7,18 +7,19 @@ Use the Gmail Single User integration to send emails and fetch emails as inciden
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Gmail Single User.
 3. Click **Add instance** to create and configure a new integration instance.
-    | **Parameter Name** | **Description** |**Required** |
-    | --- | --- | --- |
-    | email | Gmail of the user | True |
-    | code | Auth Code (run the !gmail-auth-link command to start the auth flow - see the Application Authorization Flow section) | False |
-    | client_id | Client ID (Optional: use your own app - see Application Authorization Flow section) | False |
-    | incidentType | Incident type | False |
-    | isFetch | Fetch incidents | False |
-    | fetch_time | First fetch timestamp, in days | False |
-    | query | Events query (e.g., "from:example@demisto.com") | False |
-    | fetch_limit | Maximum number of emails to pull per fetch. Default is 50.<br/>The maximum number is 200 emails per fetch (even if a higher number is configured). | False | 
-    | insecure | Trust any certificate (not secure) | False |
-    | proxy | Use system proxy settings | False |
+
+| **Parameter Name** | **Description**                                                                                                                                    | **Required** |
+|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| email              | Gmail of the user                                                                                                                                  | True         |
+| code               | Auth Code (run the !gmail-auth-link command to start the auth flow - see the Application Authorization Flow section)                               | False        |
+| client_id          | Client ID (Optional: use your own app - see Application Authorization Flow section)                                                                | False        |
+| incidentType       | Incident type                                                                                                                                      | False        |
+| isFetch            | Fetch incidents                                                                                                                                    | False        |
+| fetch_time         | First fetch timestamp, in days                                                                                                                     | False        |
+| query              | Events query (e.g., "from:example@demisto.com")                                                                                                    | False        |
+| fetch_limit        | Maximum number of emails to pull per fetch. Default is 50.<br/>The maximum number is 200 emails per fetch (even if a higher number is configured). | False        | 
+| insecure           | Trust any certificate (not secure)                                                                                                                 | False        |
+| proxy              | Use system proxy settings                                                                                                                          | False        |
 
 ## Application Authorization Flow
 
@@ -110,7 +111,7 @@ Sends an email using Gmail.
 | transientFileContent | The content for the attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional | 
 | transientFileCID | The CID image for an attached file to include within the email body. Multiple files are supported as comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional | 
 | additionalHeader | A comma-separated list of additional headers in the format headerName=headerValue. For example, "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
-| templateParams | 'Replaces {varname} variables with values from this parameter. Expected values are in the form of a JSON document. For example, {"varname" :{"value" "some  value", "key": "context key"}}. Each var name can either be provided with  the value or a context key to retrieve the value.' | Optional | 
+| templateParams | 'Replaces {varname} variables with values from this parameter. Expected values are in the form of a JSON document. For example, {"varname" :{"value" "some  value", "key": "context key"}}. Each var name can either be provided with  the value or a context key to retrieve the value. Note that only context data is accessible for this argument, while incident fields are not.' | Optional | 
 
 
 ##### Context Output

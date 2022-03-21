@@ -27,5 +27,8 @@
  "unsearchable": false,
  "caseInsensitive": true,
  "sla": 0,
- "threshold": 72
+ "threshold": 72,
+ "marketplaces": [
+    "xsoar"
+]
 }

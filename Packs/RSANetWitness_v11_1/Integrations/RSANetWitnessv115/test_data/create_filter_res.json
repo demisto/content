@@ -1,0 +1,50 @@
+{
+  "criteria": {
+    "criteriaList": [
+      {
+        "expressionList": [
+          {
+            "propertyName": "agentId",
+            "restrictionType": "IN",
+            "propertyValues": [
+              {
+                "value": "1"
+              }
+            ]
+          },
+          {
+            "propertyName": "riskScore",
+            "restrictionType": "GREATER_THAN_OR_EQUAL_TO",
+            "propertyValues": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "propertyName": "hostName",
+            "restrictionType": "IN",
+            "propertyValues": [
+              {
+                "value": "host_name_test"
+              }
+            ]
+          },
+          {
+            "propertyName": "networkInterfaces.ipv4",
+            "restrictionType": "IN",
+            "propertyValues": [
+              {
+                "value": "1.1.1.1"
+              },
+              {
+                "value": "2.3.4.5"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "predicateType": "AND"
+  }
+}

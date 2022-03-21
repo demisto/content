@@ -523,6 +523,94 @@ def redlock_search_config():
         })
 
 
+def redlock_search_event():
+    """
+    Run query in event API endpoint
+    """
+    query = demisto.args().get('query', None)
+    limit = demisto.args().get('limit', None)
+    if not limit:
+        limit = DEFAULT_LIMIT
+    else:
+        limit = int(limit)
+
+    if not query:
+        return_error('You must specify a query to retrieve assets')
+    payload = {
+        'query': query,
+        'limit': limit,
+    }
+    handle_time_filter(payload, {'type': 'to_now', 'value': 'epoch'})
+
+    response = req('POST', 'search/event', payload, None)
+
+    if (
+            not response
+            or 'data' not in response
+            or not isinstance(response['data'], dict)
+            or 'items' not in response['data']
+            or not isinstance(response['data']['items'], list)
+            or not response['data']['items']
+    ):
+        demisto.results('No results found')
+    else:
+        response_data = response.get('data')
+        items = response_data.get('items', [])
+        total_events = response_data.get('totalRows', len(items))
+        md = tableToMarkdown(f"Event Details\nShowing {len(items)} out of {total_events} events", items)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': items,
+            'EntryContext': {'Redlock.Event(val.id == obj.id)': items},
+            'HumanReadable': md
+        })
+
+
+def redlock_search_network():
+    """
+    Run query in network API endpoint
+    """
+    query = demisto.args().get('query', None)
+    cloud_type = demisto.args().get('cloud-type', None)
+
+    if not query:
+        return_error('You must specify a query to retrieve assets')
+    payload = {
+        'query': query,
+    }
+    handle_time_filter(payload, {'type': 'to_now', 'value': 'epoch'})
+    if cloud_type:
+        payload['cloudType'] = cloud_type
+
+    response = req('POST', 'search', payload, None)
+
+    if (
+            not response
+            or 'data' not in response
+            or not isinstance(response['data'], dict)
+            or (not response['data'].get('nodes') and not response['data'].get('connections'))
+    ):
+        demisto.results('No results found')
+    else:
+        response_data = response.get('data')
+        nodes = response_data.get('nodes', [])
+        connections = response_data.get('connections', [])
+        md = "## Network Details\n"
+        md += tableToMarkdown("Node", nodes)
+        md += tableToMarkdown("Connection", connections)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': response_data,
+            'EntryContext': {
+                'Redlock.Network.Node(val.id == obj.id)': nodes,
+                'Redlock.Network.Connection(val.id == obj.from)': connections
+            },
+            'HumanReadable': md
+        })
+
+
 def redlock_list_scans():
     """
      Returns a list of IaC scans that meet the given conditions.
@@ -773,6 +861,10 @@ def main():
             get_rql_response(demisto.args())
         elif command == 'redlock-search-config':
             redlock_search_config()
+        elif command == 'redlock-search-event':
+            redlock_search_event()
+        elif command == 'redlock-search-network':
+            redlock_search_network()
         elif command == 'redlock-list-scans':
             redlock_list_scans()
         elif command == 'redlock-get-scan-status':

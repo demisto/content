@@ -1,0 +1,67 @@
+commonfields:
+  id: PhishTank
+  version: -1
+name: PhishTank
+display: PhishTank (Deprecated)
+category: Data Enrichment & Threat Intelligence
+description: Deprecated. Use the PhishTank v2 integration instead.
+defaultEnabled: false
+configuration:
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Database refresh interval (hours)
+  name: fetchIntervalHours
+  defaultvalue: "1"
+  type: 0
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to check
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: String
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+    description: Check URL Reputation
+  - name: phishtank-reload
+    arguments: []
+    description: Reload PhishTank database
+  - name: phishtank-status
+    arguments: []
+    description: Show PhishTank database status
+  runonce: false
+tests:
+- PhishTank Testing
+deprecated: true
+fromversion: 5.0.0

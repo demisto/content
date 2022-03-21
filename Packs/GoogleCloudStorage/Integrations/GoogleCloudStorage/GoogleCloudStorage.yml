@@ -508,7 +508,7 @@ script:
     description: Removes an entity from an object's Access Control List.
     execution: false
     name: gcs-delete-bucket-object-policy
-  dockerimage: demisto/google-cloud-storage:1.0.0.24037
+  dockerimage: demisto/google-cloud-storage:1.0.0.25839
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -1,0 +1,515 @@
+{
+    "iocs": [
+        {
+            "CustomFields": {
+                "sha1": "some_sha1_1"
+            },
+            "calculatedTime": "2021-12-28T14:58:19.704886+02:00",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Created",
+                    "created": "2021-12-28T14:58:19.625554+02:00",
+                    "entryId": "",
+                    "id": "df0430b7-42ed-4900-8a3c-776752d6baf5",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "expirationSource": {
+                "brand": "",
+                "expirationInterval": 0,
+                "expirationPolicy": "never",
+                "instance": "",
+                "moduleId": "",
+                "setTime": "2021-12-28T14:58:19.625546+02:00",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "2021-12-28T14:58:19.704886+02:00",
+            "firstSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "id": "5214325",
+            "indicator_type": "File",
+            "investigationIDs": [
+                "e99f97d1-7225-4c75-896c-3c960febbe8c"
+            ],
+            "lastReputationRun": "2021-12-28T14:58:18.991562+02:00",
+            "lastSeen": "2021-12-28T14:58:19.704886+02:00",
+            "lastSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "modified": "2021-12-28T14:58:19.712449+02:00",
+            "score": 0,
+            "sortValues": [
+                " \u0001\u0016b;\u0012x\u0001TEp",
+                "5214325"
+            ],
+            "source": "DBot",
+            "timestamp": "2021-12-28T14:58:19.712448+02:00",
+            "value": "some_sha1_1",
+            "version": 1
+        },
+        {
+            "CustomFields": {
+                "sha1": "some_sha1_2"
+            },
+            "calculatedTime": "2021-12-28T14:58:19.704369+02:00",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Created",
+                    "created": "2021-12-28T14:58:19.627304+02:00",
+                    "entryId": "",
+                    "id": "c49a6bf4-8eb2-4a53-816a-a7b6b3fc1fc4",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "expirationSource": {
+                "brand": "",
+                "expirationInterval": 0,
+                "expirationPolicy": "never",
+                "instance": "",
+                "moduleId": "",
+                "setTime": "2021-12-28T14:58:19.627296+02:00",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "2021-12-28T14:58:19.70437+02:00",
+            "firstSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "id": "5214274",
+            "indicator_type": "File",
+            "investigationIDs": [
+                "e99f97d1-7225-4c75-896c-3c960febbe8c"
+            ],
+            "lastReputationRun": "2021-12-28T14:58:19.002986+02:00",
+            "lastSeen": "2021-12-28T14:58:19.704369+02:00",
+            "lastSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "modified": "2021-12-28T14:58:19.711497+02:00",
+            "score": 0,
+            "sortValues": [
+                " \u0001\u0016b;\u0012x\u00014~h",
+                "5214274"
+            ],
+            "source": "DBot",
+            "timestamp": "2021-12-28T14:58:19.711496+02:00",
+            "value": "some_sha1_2",
+            "version": 1
+        },
+        {
+            "CustomFields": {
+                "sha1": "some_sha1_3"
+            },
+            "calculatedTime": "2021-12-28T14:58:19.703576+02:00",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Created",
+                    "created": "2021-12-28T14:58:19.622504+02:00",
+                    "entryId": "",
+                    "id": "aa194f38-baa6-4818-8ad1-619570a1399b",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "expirationSource": {
+                "brand": "",
+                "expirationInterval": 0,
+                "expirationPolicy": "never",
+                "instance": "",
+                "moduleId": "",
+                "setTime": "2021-12-28T14:58:19.622495+02:00",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "2021-12-28T14:58:19.703576+02:00",
+            "firstSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "id": "5214272",
+            "indicator_type": "File",
+            "investigationIDs": [
+                "e99f97d1-7225-4c75-896c-3c960febbe8c"
+            ],
+            "lastReputationRun": "2021-12-28T14:58:18.991725+02:00",
+            "lastSeen": "2021-12-28T14:58:19.703576+02:00",
+            "lastSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "modified": "2021-12-28T14:58:19.711461+02:00",
+            "score": 0,
+            "sortValues": [
+                " \u0001\u0016b;\u0012x\u0001\u0004K@",
+                "5214272"
+            ],
+            "source": "DBot",
+            "timestamp": "2021-12-28T14:58:19.711459+02:00",
+            "value": "some_sha1_3",
+            "version": 1
+        },
+        {
+            "CustomFields": {
+                "sha1": "some_sha1_4"
+            },
+            "calculatedTime": "2021-12-28T14:58:19.703564+02:00",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Created",
+                    "created": "2021-12-28T14:58:19.62233+02:00",
+                    "entryId": "",
+                    "id": "8d4c2332-08d3-4a58-8be8-2984405d926e",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "expirationSource": {
+                "brand": "",
+                "expirationInterval": 0,
+                "expirationPolicy": "never",
+                "instance": "",
+                "moduleId": "",
+                "setTime": "2021-12-28T14:58:19.622322+02:00",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "2021-12-28T14:58:19.703565+02:00",
+            "firstSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "id": "5214261",
+            "indicator_type": "File",
+            "investigationIDs": [
+                "e99f97d1-7225-4c75-896c-3c960febbe8c"
+            ],
+            "lastReputationRun": "2021-12-28T14:58:19.003535+02:00",
+            "lastSeen": "2021-12-28T14:58:19.703564+02:00",
+            "lastSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "modified": "2021-12-28T14:58:19.71124+02:00",
+            "score": 0,
+            "sortValues": [
+                " \u0001\u0016b;\u0012x\u0001\u0003m`",
+                "5214261"
+            ],
+            "source": "DBot",
+            "timestamp": "2021-12-28T14:58:19.711239+02:00",
+            "value": "some_sha1_4",
+            "version": 1
+        },
+        {
+            "CustomFields": {
+                "category": "Payload delivery",
+                "description": "Trojanized sftp",
+                "sha1": "some_sha1_5",
+                "updateddate": "2021-10-08T11:36:01+03:00"
+            },
+            "aggregatedReliability": "F - Reliability cannot be judged",
+            "calculatedTime": "2021-12-27T11:16:02.385471+02:00",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Created",
+                    "created": "2021-12-14T17:45:38.390284+02:00",
+                    "entryId": "",
+                    "id": "984187ca-86a0-455a-8c89-d047c2bff196",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "Some Feed.Some Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "expirationSource": {
+                "brand": "Some Feed",
+                "expirationInterval": 0,
+                "expirationPolicy": "never",
+                "instance": "Some Feed_instance_1",
+                "moduleId": "ef8d69f0-befd-44e7-821e-4d52d9403499",
+                "setTime": "2021-12-27T16:11:40.417993+02:00",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "2021-12-26T17:19:25.79003+02:00",
+            "firstSeenEntryID": "API",
+            "id": "5199192",
+            "indicator_type": "File",
+            "investigationIDs": [
+                "e99f97d1-7225-4c75-896c-3c960febbe8c"
+            ],
+            "lastSeen": "2021-12-27T11:16:02.385471+02:00",
+            "lastSeenEntryID": "8180@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "modified": "2021-12-27T16:11:40.513923+02:00",
+            "modifiedTime": "2021-12-27T16:11:11+02:00",
+            "moduleToFeedMap": {
+                "ef8d69f0-befd-44e7-821e-4d52d9403499": {
+                    "ExpirationSource": {
+                        "brand": "Some Feed",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "Some Feed_instance_1",
+                        "moduleId": "ef8d69f0-befd-44e7-821e-4d52d9403499",
+                        "setTime": "2021-12-27T16:11:40.417993+02:00",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierId": "",
+                    "classifierVersion": 0,
+                    "expirationInterval": 20160,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2021-12-27T16:11:11+02:00",
+                    "fields": {
+                        "category": "Payload delivery",
+                        "description": "Trojanized sftp",
+                        "sha1": "some_sha1_5",
+                        "updateddate": "2021-10-08T11:36:01+03:00"
+                    },
+                    "isEnrichment": false,
+                    "mapperId": "",
+                    "mapperVersion": 0,
+                    "modifiedTime": "2021-12-27T16:11:11+02:00",
+                    "moduleId": "ef8d69f0-befd-44e7-821e-4d52d9403499",
+                    "rawJSON": null,
+                    "reliability": "F - Reliability cannot be judged",
+                    "score": 2,
+                    "sourceBrand": "Some Feed",
+                    "sourceInstance": "Some Feed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "File",
+                    "value": "some_sha1_5"
+                }
+            },
+            "score": 2,
+            "sortValues": [
+                " \u0001\u0016b$<\u0019EZ\f\u0018",
+                "5199192"
+            ],
+            "sourceBrands": [
+                "Some Feed"
+            ],
+            "sourceInstances": [
+                "Some Feed_instance_1"
+            ],
+            "timestamp": "2021-12-14T17:45:38.40295+02:00",
+            "value": "some_sha1_5",
+            "version": 21
+        },
+        {
+            "CustomFields": {
+                "category": "Payload installation",
+                "sha1": "some_sha1_6",
+                "updateddate": "2019-07-29T17:33:29+03:00"
+            },
+            "aggregatedReliability": "F - Reliability cannot be judged",
+            "calculatedTime": "2021-12-27T11:16:02.385455+02:00",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Created",
+                    "created": "2021-12-14T17:45:34.725026+02:00",
+                    "entryId": "",
+                    "id": "fd0e3373-c128-475f-86da-63a2f5c9e9c4",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "Some Feed.Some Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "expirationSource": {
+                "brand": "Some Feed",
+                "expirationInterval": 0,
+                "expirationPolicy": "never",
+                "instance": "Some Feed_instance_1",
+                "moduleId": "ef8d69f0-befd-44e7-821e-4d52d9403499",
+                "setTime": "2021-12-27T16:11:35.20691+02:00",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "2021-12-26T17:19:25.790348+02:00",
+            "firstSeenEntryID": "API",
+            "id": "5197481",
+            "indicator_type": "File",
+            "investigationIDs": [
+                "e99f97d1-7225-4c75-896c-3c960febbe8c"
+            ],
+            "lastSeen": "2021-12-27T11:16:02.385455+02:00",
+            "lastSeenEntryID": "8180@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "modified": "2021-12-27T16:11:35.33954+02:00",
+            "modifiedTime": "2021-12-27T16:11:11+02:00",
+            "moduleToFeedMap": {
+                "ef8d69f0-befd-44e7-821e-4d52d9403499": {
+                    "ExpirationSource": {
+                        "brand": "Some Feed",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "Some Feed_instance_1",
+                        "moduleId": "ef8d69f0-befd-44e7-821e-4d52d9403499",
+                        "setTime": "2021-12-27T16:11:35.20691+02:00",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierId": "",
+                    "classifierVersion": 0,
+                    "expirationInterval": 20160,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2021-12-27T16:11:11+02:00",
+                    "fields": {
+                        "category": "Payload installation",
+                        "sha1": "some_sha1_6",
+                        "updateddate": "2019-07-29T17:33:29+03:00"
+                    },
+                    "isEnrichment": false,
+                    "mapperId": "",
+                    "mapperVersion": 0,
+                    "modifiedTime": "2021-12-27T16:11:11+02:00",
+                    "moduleId": "ef8d69f0-befd-44e7-821e-4d52d9403499",
+                    "rawJSON": null,
+                    "reliability": "F - Reliability cannot be judged",
+                    "score": 2,
+                    "sourceBrand": "Some Feed",
+                    "sourceInstance": "Some Feed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "File",
+                    "value": "some_sha1_6"
+                }
+            },
+            "score": 2,
+            "sortValues": [
+                " \u0001\u0016b$<\u0019EY\u000f\u0018",
+                "5197481"
+            ],
+            "sourceBrands": [
+                "Some Feed"
+            ],
+            "sourceInstances": [
+                "Some Feed_instance_1"
+            ],
+            "timestamp": "2021-12-14T17:45:34.792287+02:00",
+            "value": "some_sha1_6",
+            "version": 21
+        },
+        {
+            "CustomFields": {
+                "category": "Payload delivery",
+                "description": "Rootkit 2",
+                "sha1": "some_sha1_7",
+                "updateddate": "2021-10-08T11:36:01+03:00"
+            },
+            "aggregatedReliability": "F - Reliability cannot be judged",
+            "calculatedTime": "2021-12-27T11:16:02.385438+02:00",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Created",
+                    "created": "2021-12-14T17:45:38.390444+02:00",
+                    "entryId": "",
+                    "id": "5ee53677-6b12-4419-8e6e-41d7055c32aa",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "Some Feed.Some Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "expirationSource": {
+                "brand": "Some Feed",
+                "expirationInterval": 0,
+                "expirationPolicy": "never",
+                "instance": "Some Feed_instance_1",
+                "moduleId": "ef8d69f0-befd-44e7-821e-4d52d9403499",
+                "setTime": "2021-12-27T16:11:40.406406+02:00",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "2021-12-26T17:19:25.790497+02:00",
+            "firstSeenEntryID": "API",
+            "id": "5198982",
+            "indicator_type": "File",
+            "investigationIDs": [
+                "e99f97d1-7225-4c75-896c-3c960febbe8c"
+            ],
+            "lastSeen": "2021-12-27T11:16:02.385438+02:00",
+            "lastSeenEntryID": "8180@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "modified": "2021-12-27T16:11:40.503074+02:00",
+            "modifiedTime": "2021-12-27T16:11:11+02:00",
+            "moduleToFeedMap": {
+                "ef8d69f0-befd-44e7-821e-4d52d9403499": {
+                    "ExpirationSource": {
+                        "brand": "Some Feed",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "Some Feed_instance_1",
+                        "moduleId": "ef8d69f0-befd-44e7-821e-4d52d9403499",
+                        "setTime": "2021-12-27T16:11:40.406406+02:00",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierId": "",
+                    "classifierVersion": 0,
+                    "expirationInterval": 20160,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2021-12-27T16:11:11+02:00",
+                    "fields": {
+                        "category": "Payload delivery",
+                        "description": "Rootkit 2",
+                        "sha1": "some_sha1_7",
+                        "updateddate": "2021-10-08T11:36:01+03:00"
+                    },
+                    "isEnrichment": false,
+                    "mapperId": "",
+                    "mapperVersion": 0,
+                    "modifiedTime": "2021-12-27T16:11:11+02:00",
+                    "moduleId": "ef8d69f0-befd-44e7-821e-4d52d9403499",
+                    "rawJSON": null,
+                    "reliability": "F - Reliability cannot be judged",
+                    "score": 2,
+                    "sourceBrand": "Some Feed",
+                    "sourceInstance": "Some Feed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "File",
+                    "value": "some_sha1_7"
+                }
+            },
+            "score": 2,
+            "sortValues": [
+                " \u0001\u0016b$<\u0019EX\n0",
+                "5198982"
+            ],
+            "sourceBrands": [
+                "Some Feed"
+            ],
+            "sourceInstances": [
+                "Some Feed_instance_1"
+            ],
+            "timestamp": "2021-12-14T17:45:38.397583+02:00",
+            "value": "some_sha1_7",
+            "version": 21
+        }
+    ],
+    "searchAfter": [
+        " \u0001\u0016b$<\u0019DnFH",
+        "5199011"
+    ],
+    "total": 10
+}

@@ -1,0 +1,60 @@
+{
+    "objects": [
+        {
+            "created": "2021-12-28T14:58:19.712448Z",
+            "id": "file--835a8789-b74d-57d6-ae46-fedbfd6dced9",
+            "modified": "2021-12-28T14:58:19.712449Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "some_sha1_1"
+        },
+        {
+            "created": "2021-12-28T14:58:19.711496Z",
+            "id": "file--37bd8c5e-e9f9-5a3b-92d1-75c34907455f",
+            "modified": "2021-12-28T14:58:19.711497Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "some_sha1_2"
+        },
+        {
+            "created": "2021-12-28T14:58:19.711459Z",
+            "id": "file--e6c3aa71-d6be-56c3-85ee-b714df13f1f0",
+            "modified": "2021-12-28T14:58:19.711461Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "some_sha1_3"
+        },
+        {
+            "created": "2021-12-28T14:58:19.711239Z",
+            "id": "file--5c3834b4-2863-517b-b997-c05d5529b04c",
+            "modified": "2021-12-28T14:58:19.711240Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "some_sha1_4"
+        },
+        {
+            "created": "2021-12-14T17:45:38.402950Z",
+            "id": "file--f9eef278-638b-535e-b2d1-cb481e91274c",
+            "modified": "2021-12-27T16:11:40.513923Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "some_sha1_5"
+        },
+        {
+            "created": "2021-12-14T17:45:34.792287Z",
+            "id": "file--0d660066-a673-5907-9860-afc66673f61f",
+            "modified": "2021-12-27T16:11:35.339540Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "some_sha1_6"
+        },
+        {
+            "created": "2021-12-14T17:45:38.397583Z",
+            "id": "file--0dfa4322-7334-5b5b-98ee-2590e93d4a99",
+            "modified": "2021-12-27T16:11:40.503074Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "some_sha1_7"
+        }
+    ]
+}

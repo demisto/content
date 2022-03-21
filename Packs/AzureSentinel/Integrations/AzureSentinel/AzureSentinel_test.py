@@ -1,9 +1,9 @@
 import json
 
+import dateparser
 import pytest
 import requests
 import demistomock as demisto
-
 from AzureSentinel import AzureSentinelClient, list_incidents_command, list_incident_relations_command, \
     incident_add_comment_command, \
     get_update_incident_request_data, list_incident_entities_command, list_incident_comments_command, \
@@ -13,13 +13,37 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command, NEXTLINK_DESCRIPTION
+    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
 NEXT_LINK_CONTEXT_KEY = 'AzureSentinel.NextLink(val.Description == "NextLink for listing commands")'
 
 API_VERSION = '2021-04-01'
+
+
+def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
+    """
+    Given
+    - Empty api response and invalid status code returned from the api response.
+
+    When
+    - running 'test-module'.
+
+    Then
+    - ValueError is raised.
+    """
+    from AzureSentinel import test_module
+    client = mock_client()
+    api_response = requests.Response()
+    api_response.status_code = 403
+    api_response._content = None
+
+    mocker.patch.object(client._client, 'get_access_token')
+    mocker.patch.object(client._client._session, 'request', return_value=api_response)
+
+    with pytest.raises(ValueError, match='[Forbidden 403]'):
+        test_module(client)
 
 
 def mock_client():
@@ -367,7 +391,7 @@ MOCKED_THREAT_INDICATOR_OUTPUT = {
                 ],
                 "pattern": "[url:value = ‘twitter.com’]",
                 "patternType": "twitter.com",
-                "validFrom": "0001-01-01T00:00:00"
+                "validFrom": "2021-11-17T08:20:15.111Z"
             }
         }]
 }
@@ -503,6 +527,17 @@ ARGS_TO_UPDATE = {
     "displayName": 'newDisplayName',
     "value": 'newValue',
     "indicator_type": 'domain'
+}
+
+MOCKED_RAW_INCIDENT_OUTPUT = {
+    'value': [{
+        'ID': 'inc_ID',
+        'Name': 'inc_name',
+        'IncidentNumber': 2,
+        'Title': 'title',
+        'Severity': 'High',
+        'CreatedTimeUTC': '2020-02-02T14:05:01.5348545Z',
+    }]
 }
 
 
@@ -1185,6 +1220,40 @@ class TestHappyPath:
 
         assert context['Name'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
         assert context['DisplayName'] == 'newDisplayName'
+
+    @pytest.mark.parametrize('args, client, expected_result', [  # disable-secrets-detection
+        ({'last_fetch_ids': [], 'min_severity': 3, 'last_incident_number': 1}, mock_client(),
+         {'last_fetch_ids': ['inc_ID'], 'last_incident_number': 2}),  # case 1
+        ({'last_fetch_ids': ['inc_ID'], 'min_severity': 3, 'last_incident_number': 2}, mock_client(),
+         {'last_fetch_ids': [], 'last_incident_number': 2})  # case 2
+    ])
+    def test_process_incidents(self, args, client, expected_result):
+        """
+        Given: - Raw_incidents, AzureSentinel client, last_fetched_ids array, last_incident_number,
+        latest_created_time,  and a minimum severity.
+
+        When:
+            - Calling the process_incidents command.
+
+        Then:
+            - Validate the return values based on the scenario:
+            case 1: We expect to process the incident, so its ID exists in the expected result.
+            case 2: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
+        """
+        # prepare
+        raw_incidents = MOCKED_RAW_INCIDENT_OUTPUT.get('value')
+        last_fetch_ids = args.get('last_fetch_ids')
+        min_severity = args.get('min_severity')
+        last_incident_number = args.get('last_incident_number')
+        latest_created_time = dateparser.parse('2020-02-02T14:05:01.5348545Z')
+
+        # run
+        next_run, _ = process_incidents(raw_incidents, last_fetch_ids, min_severity, latest_created_time,
+                                        last_incident_number)
+
+        # validate
+        assert next_run.get('last_fetch_ids') == expected_result.get('last_fetch_ids')
+        assert next_run.get('last_incident_number') == expected_result.get('last_incident_number')
 
 
 class TestEdgeCases:

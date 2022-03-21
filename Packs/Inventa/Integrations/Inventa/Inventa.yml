@@ -1,0 +1,254 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Inventa
+  version: -1
+configuration:
+- defaultvalue: https://
+  display: Your Inventa server URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: The API Key to use for connection
+  display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the Inventa integration to generate DSAR reports within Inventa instance
+  and retrieve DSAR data for the XSOAR
+display: 1Touch.io's Inventa Connector
+name: Inventa
+script:
+  commands:
+  - arguments:
+    - description: National ID of a PII
+      name: national_id
+    - description: Passport Number of a PII
+      name: passport_number
+    - description: Driver's License of a PII
+      name: driver_license
+    - description: Tax ID of a PII
+      name: tax_id
+    - description: Credit Card Number of a PII
+      name: cc_number
+    - description: Given Name of a PII
+      name: given_name
+    - description: Surname of a PII
+      name: surname
+    - description: Full Name of a PII
+      name: full_name
+    - description: Vehicle Number of a PII
+      name: vehicle_number
+    - description: Phone Number of a PII
+      name: phone_number
+    - description: Birthday of a PII
+      name: birthday
+    - description: City of Resdence of a PII
+      name: city
+    - description: Street Address of a PII
+      name: street_address
+    description: Get Data Subject full details
+    name: inventa-get-datasubjects
+    outputs:
+    - contextPath: Inventa.DataSubjects.dataSubjects.id
+      description: ID of a Data Subject
+      type: String
+    - contextPath: Inventa.DataSubjects.dataSubjects.piis.id
+      description: ID of an Entity Type for the PII
+      type: String
+    - contextPath: Inventa.DataSubjects.dataSubjects.piis.piiEntityType
+      description: Entity Type name for the PII
+      type: String
+    - contextPath: Inventa.DataSubjects.dataSubjects.piis.piiEntityValue
+      description: Value of an Entity Type for the PII
+      type: String
+    - contextPath: Inventa.DataSubjects.dataSubjects.piis.piiEntityValueNew
+      description: New Value of an Entity Type for the PII
+      type: String
+    - contextPath: Inventa.DataSubjects.dataSubjects.piis.action
+      description: Action of an Entity Type for the PII
+      type: String
+    - contextPath: Inventa.DataSubjects.total
+      description: Total number of PII Entities found for the PII
+      type: String
+  - arguments:
+    - description: ID of a DSAR ticket within Inventa
+      name: ticket_id
+      required: true
+    description: Retrieves data transactions' details containing info about data subject
+    name: inventa-get-dsar-transactions
+    outputs:
+    - contextPath: Inventa.DSAR.Transactions.transactions
+      description: List of data transactions
+      type: String
+  - arguments:
+    - description: ID of a DSAR ticket within Inventa
+      name: ticket_id
+      required: true
+    description: Retrieves details of files contatining info about data subject
+    name: inventa-get-dsar-files
+    outputs:
+    - contextPath: Inventa.DSAR.Files.files
+      description: List of files containing info about data subject
+      type: String
+  - arguments:
+    - description: ID of a DSAR ticket within Inventa
+      name: ticket_id
+      required: true
+    description: Retrieves list of databases and tables containing info about data
+      subject
+    name: inventa-get-dsar-databases
+    outputs:
+    - contextPath: Inventa.DSAR.DataBases.databases
+      description: List of datatables containing info about data subject
+      type: String
+  - arguments:
+    - description: ID of a DSAR ticket within Inventa
+      name: ticket_id
+      required: true
+    description: Get datasubject name and email
+    name: inventa-get-datasubject-details
+    outputs:
+    - contextPath: Inventa.DataSubject.name
+      description: Name of a data subject
+      type: String
+    - contextPath: Inventa.DataSubject.email
+      description: Email address of a data subject
+      type: String
+  - arguments:
+    - description: ID of a DSAR ticket within Inventa
+      name: ticket_id
+      required: true
+    description: Retrieves list of data assets containing info about data subject
+    name: inventa-get-dsar-dataassets
+    outputs:
+    - contextPath: Inventa.DSAR.DataAssets.dataAssets
+      description: List of data assets containing info about data subject
+      type: String
+  - arguments:
+    - description: ID of a DSAR ticket within Inventa
+      name: ticket_id
+      required: true
+    description: Get list of PII categories related to the data subject
+    name: inventa-get-dsar-piis
+    outputs:
+    - contextPath: Inventa.DSAR.piis
+      description: List of PII categories related to data subject
+      type: String
+  - arguments: []
+    description: Retrieves list of PII entities described in Inventa
+    name: inventa-get-entities
+    outputs:
+    - contextPath: Inventa.Entities.entity
+      description: List of PII entities described in Inventa
+      type: String
+  - arguments:
+    - description: ID of a DSAR ticket within Inventa
+      name: ticket_id
+      required: true
+    description: Retrieves ID of a data subject from Inventa's DSAR ticket
+    name: inventa-get-datasubject-id-from-ticket
+    outputs:
+    - contextPath: Inventa.DataSubjects.datasubject_id
+      description: ID of a data subject within Inventa
+      type: String
+  - arguments:
+    - description: National ID of a PII
+      name: national_id
+    - description: Passport Number of a PII
+      name: passport_number
+    - description: Driver's License of a PII
+      name: driver_license
+    - description: Tax ID of a PII
+      name: tax_id
+    - description: Credit Card Number of a PII
+      name: cc_number
+    - description: Given Name of a PII
+      name: given_name
+    - description: Surname of a PII
+      name: surname
+    - description: Full Name of a PII
+      name: full_name
+    - description: Vehicle Number of a PII
+      name: vehicle_number
+    - description: Phone Number of a PII
+      name: phone_number
+    - description: Birthday of a PII
+      name: birthday
+    - description: City of Resdence of a PII
+      name: city
+    - description: Street Address of a PII
+      name: street_address
+    description: Retrieves ID of a data subject from passed constraints
+    name: inventa-get-datasubject-id
+    outputs:
+    - contextPath: Inventa.DataSubjects.datasubject_id
+      description: ID of a data subject within Inventa
+      type: String
+  - arguments:
+    - description: National ID of a PII
+      name: national_id
+    - description: Passport Number of a PII
+      name: passport_number
+    - description: Driver's License of a PII
+      name: driver_license
+    - description: Tax ID of a PII
+      name: tax_id
+    - description: Credit Card Number of a PII
+      name: cc_number
+    - description: Given Name of a PII
+      name: given_name
+    - description: Surname of a PII
+      name: surname
+    - description: Full Name of a PII
+      name: full_name
+    - description: Vehicle Number of a PII
+      name: vehicle_number
+    - description: Phone Number of a PII
+      name: phone_number
+    - description: Birthday of a PII
+      name: birthday
+    - description: City of Resdence of a PII
+      name: city
+    - description: Street Address of a PII
+      name: street_address
+    - description: Inventa's ticket ID
+      name: ticket_id
+    - description: Inventa's Datasubject ID
+      name: datasubject_id
+    - description: Report reason
+      name: reason
+    description: Validates incident's inputs
+    name: inventa-validate-incident-inputs
+    outputs:
+    - contextPath: Inventa.Incident.validated
+      description: Whether incident inputs are validated
+      type: Boolean
+  - arguments:
+    - description: Reason for DSAR report
+      name: reason
+      required: true
+    - description: ID of a data subject within Inventa
+      name: datasubject_id
+      required: true
+    description: Creates Inventa ticket
+    name: inventa-create-ticket
+    outputs:
+    - contextPath: Inventa.DataSubjects.Ticket.ticket_id
+      description: ID of a DSAR ticket, created within Inventa
+      type: String
+  dockerimage: demisto/python3:3.9.9.25564
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
