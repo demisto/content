@@ -44,6 +44,57 @@ script:
   commands:
   - arguments:
     - default: false
+      description: Sensor ID of Cybereason Sensor.
+      isArray: false
+      name: sensorID
+      required: true
+      secret: false
+    - default: false
+      description: Reason for Archiving Cybereason Sensor.
+      isArray: false
+      name: archiveReason
+      required: true
+      secret: false
+    deprecated: false
+    description: Archives a Sensor.
+    execution: false
+    name: cybereason-archive-sensor
+  - arguments:
+    - default: false
+      description: Sensor ID of Cybereason Sensor.
+      isArray: false
+      name: sensorID
+      required: true
+      secret: false
+    - default: false
+      description: Reason for Unarchiving Cybereason Sensor.
+      isArray: false
+      name: unarchiveReason
+      required: true
+      secret: false
+    deprecated: false
+    description: Unarchives a Sensor.
+    execution: false
+    name: cybereason-unarchive-sensor
+  - arguments:
+    - default: false
+      description: Sensor ID of Cybereason Sensor.
+      isArray: false
+      name: sensorID
+      required: true
+      secret: false
+    - default: false
+      description: Reason for Deleting Cybereason Sensor.
+      isArray: false
+      name: deleteReason
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a Sensor.
+    execution: false
+    name: cybereason-delete-sensor
+  - arguments:
+    - default: false
       description: The hostname of the machine.
       isArray: false
       name: machine
