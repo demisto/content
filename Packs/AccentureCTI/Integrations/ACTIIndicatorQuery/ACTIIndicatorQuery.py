@@ -525,7 +525,7 @@ def main():
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'acti-getThreatIntelReport':
-            return_results(commands[command](document_search_client, demisto.args(), reliability))
+            return_results(getThreatReport_command(document_search_client, demisto.args(), reliability))
         elif command in commands:
             return_results(commands[command](client, demisto.args(), reliability, document_search_client))
 
