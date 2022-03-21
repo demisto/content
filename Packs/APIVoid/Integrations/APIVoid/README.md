@@ -1,4 +1,4 @@
-APIVoid wraps up a number of services such as ipvoid & urlvoid
+APIVoid wraps up a number of services such as ipvoid & urlvoid.
 
 ## Configure APIVoid on Cortex XSOAR
 
