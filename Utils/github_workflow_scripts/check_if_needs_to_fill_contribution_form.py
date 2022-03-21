@@ -146,6 +146,7 @@ def verify_labels(pr_label_names):
 
 
 def main():
+    print('test')
     options = arguments_handler()
     pr_number = options.pr_number
     github_token = options.github_token
