@@ -13,13 +13,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Search And Delete Emails - EWS
 
 ### Integrations
-* Agari Phishing Defense
+Agari Phishing Defense
 
 ### Scripts
-* Set
+Set
 
 ### Commands
-* apd-remediate-message
+apd-remediate-message
 
 ## Playbook Inputs
 ---

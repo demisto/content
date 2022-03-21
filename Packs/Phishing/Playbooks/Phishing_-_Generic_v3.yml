@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Phishing - Generic v3
-description: "This playbook investigates and remediates a potential phishing incident. It engages with the user that triggered the incident while investigating the incident itself.\nNote: Final remediation tasks are always decided by a human analyst. "
+description: "This playbook investigates and remediates a potential phishing incident. It engages with the user who triggered the incident while investigating the incident itself.\nNote: Final remediation tasks are always decided by a human analyst. "
 starttaskid: "0"
 tasks:
   "0":
@@ -177,7 +177,7 @@ tasks:
       version: -1
       name: Acknowledge incident was received
       description: |
-        Sends an auto-response to the user reporting the incident that the incident was received and is being handled.
+        Sends an auto-response to the user reporting that the incident was received and is being handled.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -506,7 +506,11 @@ tasks:
       id: f0a914bc-d536-4578-84f2-d001f9ea3b8f
       version: -1
       name: Search And Delete Emails - Generic v2
-      description: 'This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations: * EWS * Office 365 * Gmail * Agari Phishing Defense'
+      description: 'This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations: 
+        * EWS 
+        * Office 365 
+        * Gmail 
+        * Agari Phishing Defense'
       playbookName: Search And Delete Emails - Generic v2
       type: playbook
       iscommand: false
@@ -944,8 +948,8 @@ tasks:
       name: Email Address Enrichment - Generic v2.1
       description: |-
         Enrich email addresses.
-        - Get information from Active Directory for internal addresses
-        - Get the domain-squatting reputation for external addresses
+        - Get information from Active Directory for internal addresses.
+        - Get the domain-squatting reputation for external addresses.
       playbookName: Email Address Enrichment - Generic v2.1
       type: playbook
       iscommand: false
@@ -1758,7 +1762,7 @@ tasks:
       id: 57931df0-123d-4082-8ef1-4fde3fcbf988
       version: -1
       name: Entity Enrichment - Phishing v2
-      description: Enrich entities using one or more integrations
+      description: Enrich entities using one or more integrations.
       playbookName: Entity Enrichment - Phishing v2
       type: playbook
       iscommand: false
@@ -2730,7 +2734,7 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Set to True to assign only the user that is currently on shift.
+  description: Set to True to assign only the user who is currently on shift.
   playbookInputQuery:
 - key: SearchAndDeleteIntegration
   value:
@@ -2794,7 +2798,7 @@ inputs:
   value:
     simple: phishing_model
   required: false
-  description: Optional - the name of a pre-trained phishing model to predict phishing type using machine learning.
+  description: Optional - the name of a pre-trained phishing model to predict the phishing type using machine learning.
   playbookInputQuery:
 - key: GetOriginalEmail
   value: {}
@@ -2802,7 +2806,7 @@ inputs:
   description: |-
     For forwarded emails. When "True", retrieves the original email in the thread.
 
-    You must have the necessary permissions in your email service to execute global search.
+    You must have the necessary permissions in your email service to execute a global search.
 
     - For EWS: eDiscovery
     - For Gmail: Google Apps Domain-Wide Delegation of Authority
