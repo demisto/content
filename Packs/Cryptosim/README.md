@@ -1,7 +1,4 @@
-PhishER Identify and respond to email threats faster.
-With automatic prioritization for emails, PhishER helps your InfoSec and Security Operations team cut through the inbox noise and respond to the most dangerous threats more quickly.
- 
-
+CRYPTOSIM meets the SIEM needs of corporations by its unique correlation engine works in memory, capable of hierarchical correlation, supports different correlation techniques, query structure that allows all kinds of data analytics, detects AI based algorithms behavioral anomalies and threat patterns that are not in rule sets.
 
 
 ## What does this pack do?
