@@ -9034,9 +9034,9 @@ def get_pack_version(pack_name=''):
     """
     Get a pack version.
     The version can be retrieved either by a pack name, script name or integration name.
-    To get the version of any pack just send the pack name as mentioned in the pack metadata file as a func argument.
 
-    To get the version of a pack in which a script/integration is part of, just call the function without pack_name.
+    To get the version of the pack in which the calling script/integration is part of,
+    just call the function without pack_name.
 
     :type pack_name: ``str``
     :param pack_name: the pack name as mentioned in the pack metadata file to query its version.
@@ -9108,7 +9108,7 @@ def get_pack_version(pack_name=''):
     if not pack_version and query_type == 'integration':
         # handle the case where the display name of the integration is not the same as the integration brand
         integration_display = _extract_integration_display_name(_integration_brand=entity_name)
-        if integration_display:
+        if integration_display and integration_display != entity_name:
             body_request['integrationsQuery'] = integration_display
 
             return _extract_current_pack_version(
