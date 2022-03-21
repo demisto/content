@@ -17,21 +17,11 @@ class Client(BaseClient):
 
     def correlation_alerts(self, start_time=None):
         args = demisto.args()
-
-        
+ 
         end_time = datetime.now()
         
         interval_time = end_time - timedelta(minutes=demisto.params().get('incidentFetchInterval', 360))
         
-        if start_time is None or start_time < interval_time:
-            start_time = interval_time
-        
-
-
-        end_time = datetime.now()
-
-        interval_time = end_time - timedelta(minutes=demisto.params().get('incidentFetchInterval', 360))
-
         if start_time is None or start_time < interval_time:
             start_time = interval_time
 

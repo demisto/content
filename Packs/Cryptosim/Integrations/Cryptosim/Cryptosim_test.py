@@ -33,6 +33,7 @@ def test_correlations_command():
     requests_mock.post("https://test.com/api/service/correlations",
                         json=mock_response)
 
+
     results = correlations_command(test_client)
     assert results.outputs.keys() == ['StatusCode', 'Data', 'OutParameters']
     assert results.outputs_prefix == 'Correlations'
@@ -54,9 +55,6 @@ def test_correlation_alerts_command():
     requests_mock.post("https://test.com/api/service/correlationalerts",
                         json=mock_response)
 
-    requests_mock.get("https://test.com/api/service/correlationalerts",
-                      json=mock_response)
-
 
     results = correlation_alerts_command(test_client)
     assert results.outputs.keys() == ['StatusCode', 'Data', 'OutParameters']
@@ -76,9 +74,6 @@ def test_fetch_incidents(client):
 
     requests_mock.post("https://test.com/api/service/correlationalerts",
                         json=mock_response)
-
-    requests_mock.get("https://test.com/api/service/correlationalerts",
-                      json=mock_response)
 
     next_run, incidents = fetch_incidents(test_client)
     assert next_run == {"lastRun": "2018-10-24T14:13:20+00:00"}
