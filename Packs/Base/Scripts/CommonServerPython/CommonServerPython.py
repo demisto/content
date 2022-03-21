@@ -222,7 +222,8 @@ entryTypes = {
     'entryInfoFile': 9,
     'warning': 11,
     'map': 15,
-    'widget': 17
+    'widget': 17,
+    'test': 19,
 }
 
 ENDPOINT_STATUS_OPTIONS = [
