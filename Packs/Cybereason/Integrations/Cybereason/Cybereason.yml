@@ -704,14 +704,36 @@ script:
       type: string
   - arguments:
     - default: true
-      description: Element GUID to identify the file
-      name: elementGuids
+      description: Malop GUID for fetching a file from a sonsor to download
+      name: malopGUID
+      required: true
+    - default: true
+      description: The complete Cybereason user name string for the user performing the request
+      name: userName
       required: true
     description: Start fetching the file to download
     name: cybereason-start-fetchfile
-  - arguments: []
-    description: Return a list of all files waiting for download
+  - arguments:
+    - default: true
+      description: Malop GUID to know the progress for downloading a file
+      name: malopGuid
+      required: true
+    description: Return a batch id for files waiting for download
     name: cybereason-fetchfile-progress
+  - arguments:
+    - default: true
+      description: The batch id for the file download operation
+      name: batchID
+      required: true
+    description: Downloads the actual file to the machine
+    name: cybereason-download-fetchfile
+  - arguments:
+    - default: true
+      description: The batch id to abort a file download operation
+      name: batchID
+      required: true
+    description: Aborts a file download operation that is in progress
+    name: cybereason-close-fetchfile
   isfetch: true
   runonce: false
   script: '-'
