@@ -1,4 +1,4 @@
-!sysaid-table-list
+!sysaid-table-list list_id=known_error
 !sysaid-asset-list
 !sysaid-asset-search query=Test
 !sysaid-filter-list

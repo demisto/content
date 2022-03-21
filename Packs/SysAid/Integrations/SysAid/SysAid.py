@@ -17,6 +17,8 @@ SERVICE_RECORD_ARGS = ['agreement', 'assigned_group', 'change_category', 'compan
                        'location', 'priority', 'problem_sub_type', 'problem_type', 'responsibility', 'solution', 'sr_type',
                        'status', 'sub_type', 'third_level_category', 'title', 'urgency']
 
+TEMPLATE_OUTPUTS = ['key', 'value', 'mandatory', 'editable', 'type', 'defaultValue', 'keyCaption']
+
 ''' CLIENT CLASS '''
 
 
@@ -154,8 +156,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def asset_list_readable_response(responses: Union[dict, List[dict], str], regular_titles: List[str], special_title: str,
-                                 special_title_key: str, special_title_value: str, remove_if_null: str = None) \
+def asset_list_readable_response(responses: Union[dict, List[dict], str], remove_if_null: str) \
         -> Union[str, List[Dict[str, str]]]:
     readable_response = []
 
@@ -167,13 +168,37 @@ def asset_list_readable_response(responses: Union[dict, List[dict], str], regula
 
     for response in responses:
         new_info = []
-        response_entry = {key: response[key] for key in regular_titles}
+        response_entry = {key: response[key] for key in ['id', 'name'] if key in response}
 
-        for info in response[special_title]:
-            if not remove_if_null or info[remove_if_null]:
-                new_info.append(f'{info[special_title_key]}: {info[special_title_value]}')
+        if 'info' in response:
+            for info in response['info']:
+                if info['keyCaption'] in ['Model', 'Description'] and info[remove_if_null]:
+                    new_info.append(f'{info["keyCaption"]}: {info["valueCaption"]}')
 
-        response_entry[special_title] = new_info
+            response_entry['info'] = new_info
+        readable_response.append(response_entry)
+
+    return readable_response
+
+
+def filter_list_readable_response(responses: Union[dict, List[dict], str]) -> Union[str, List[Dict[str, str]]]:
+    readable_response = []
+
+    if isinstance(responses, dict):
+        responses = [responses]
+
+    if isinstance(responses, str):
+        return responses
+
+    for response in responses:
+        new_info = []
+        response_entry = {key: response[key] for key in ['id', 'type', 'caption'] if key in response}
+
+        if 'values' in response:
+            for info in response['values']:
+                new_info.append(f'{info["id"]}: {info["caption"]}')
+
+            response_entry['values'] = new_info
         readable_response.append(response_entry)
 
     return readable_response
@@ -191,14 +216,13 @@ def service_record_readable_response(responses: Union[dict, List[dict], str]) ->
     for response in responses:
         response_entry = {'id': response['id']}
 
-        for info in response['info']:
-            if info['key'] == 'title':
-                response_entry['title'] = info['value']
-            elif info['key'] == 'status':
-                response_entry['status'] = info['value']
+        if 'info' in response:
+            for info in response['info']:
+                if info['key'] in ['title', 'status']:
+                    response_entry[info['key']] = info['value']
 
-        if len(response_entry) == 3:
-            readable_response.append(response_entry)
+            if len(response_entry) == 3:
+                readable_response.append(response_entry)
 
     return readable_response
 
@@ -236,18 +260,13 @@ def template_readable_response(responses: Union[dict, List[dict], str]) -> Union
         return responses
 
     for response in responses:
-        all_info_for_response = []
+        if 'info' in response:
+            for response_info in response['info']:
+                response_entry = {}
+                for key in TEMPLATE_OUTPUTS:
+                    response_entry[key] = response_info[key] if key in response_info else None
 
-        for response_info in response['info']:
-            info = ''
-            for key in ['key', 'value', 'mandatory', 'editable', 'type', 'defaultValue', 'keyCaption']:
-                if key in response_info:
-                    info += f'{", " if info else ""}{key}: {response_info[key]}'
-
-            if info:
-                all_info_for_response.append(info)
-
-        readable_response.append({'id': response['id'], 'info': all_info_for_response})
+                readable_response.append(response_entry)
 
     return readable_response
 
@@ -260,7 +279,7 @@ def table_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     entity_id = args.get('entity_id')
     entity_type = arg_to_number(args.get('entity_type'))
     key = args.get('key')
-    list_id = str(args.get('list_id'))
+    list_id = args.get('list_id')
     offset = arg_to_number(args.get('offset'))
     limit = arg_to_number(args.get('limit'))
     fields = argToList(args.get('fields'))
@@ -275,10 +294,11 @@ def table_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Lists {list_id if list_id else entity or "sr"} Results:',
+        readable_output=tableToMarkdown(f'List {f"ID {list_id}" if list_id else entity or "sr"} Results:',
                                         response,
                                         headers=headers,
-                                        removeNull=True)
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -295,8 +315,7 @@ def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     else:
         response = client.asset_list_request(fields, offset, limit)
     headers = ['id', 'name', 'info']
-    readable_response = asset_list_readable_response(response, ['id', 'name'], 'info', 'keyCaption', 'valueCaption',
-                                                     'valueCaption')
+    readable_response = asset_list_readable_response(response, 'valueCaption')
     command_results = CommandResults(
         outputs_prefix='SysAid.Asset',
         outputs_key_field='id',
@@ -305,21 +324,22 @@ def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output=tableToMarkdown(f'Asset {asset_id + " " if asset_id else ""}Results:',
                                         readable_response,
                                         headers=headers,
-                                        removeNull=True)
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
 
 
 def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    query = str(args.get('query'))
+    query = args.get('query')
     fields = argToList(args.get('fields'))
     offset = arg_to_number(args.get('offset'))
     limit = arg_to_number(args.get('limit'))
 
     response = client.asset_search_request(query, fields, limit, offset)
     headers = ['id', 'name', 'info']
-    readable_response = asset_list_readable_response(response, ['id', 'name'], 'info', 'keyCaption', 'valueCaption', 'value')
+    readable_response = asset_list_readable_response(response, 'value')
     command_results = CommandResults(
         outputs_prefix='SysAid.Asset',
         outputs_key_field='id',
@@ -328,7 +348,8 @@ def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         readable_output=tableToMarkdown('Asset Results:',
                                         readable_response,
                                         headers=headers,
-                                        removeNull=True)
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -341,7 +362,7 @@ def filter_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.filter_list_request(fields, offset, limit)
     headers = ['id', 'caption', 'type', 'values']
-    readable_response = asset_list_readable_response(response, ['id', 'type', 'caption'], 'values', 'id', 'caption')
+    readable_response = filter_list_readable_response(response)
     command_results = CommandResults(
         outputs_prefix='SysAid.Filter',
         outputs_key_field='id',
@@ -350,7 +371,8 @@ def filter_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output=tableToMarkdown('Filter Results:',
                                         readable_response,
                                         headers=headers,
-                                        removeNull=True)
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -379,7 +401,7 @@ def user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    query = str(args.get('query'))
+    query = args.get('query')
     fields = argToList(args.get('fields'))
     type_ = args.get('type')
     offset = arg_to_number(args.get('offset'))
@@ -402,7 +424,7 @@ def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def service_record_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    type_ = str(args.get('type'))
+    type_ = args.get('type')
     fields = argToList(args.get('fields'))
     offset = arg_to_number(args.get('offset'))
     limit = arg_to_number(args.get('limit'))
@@ -423,15 +445,16 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
         readable_output=tableToMarkdown('Service Record Results:',
                                         readable_response,
                                         headers=headers,
-                                        removeNull=True)
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
 
 
 def service_record_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    query = str(args.get('query'))
-    type_ = str(args.get('type'))
+    query = args.get('query')
+    type_ = args.get('type')
     fields = argToList(args.get('fields'))
     offset = arg_to_number(args.get('offset'))
     limit = arg_to_number(args.get('limit'))
@@ -451,14 +474,15 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
         readable_output=tableToMarkdown('Service Record Results:',
                                         readable_response,
                                         headers=headers,
-                                        removeNull=True)
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
 
 
 def service_record_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    id_ = str(args.get('id'))
+    id_ = args.get('id')
     info = set_service_record_info(args)
 
     response = client.service_record_update_request(id_, info)
@@ -475,7 +499,7 @@ def service_record_update_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def service_record_close_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    id_ = str(args.get('id'))
+    id_ = args.get('id')
     solution = args.get('solution')
 
     response = client.service_record_close_request(id_, solution)
@@ -495,12 +519,11 @@ def service_record_close_command(client: Client, args: Dict[str, Any]) -> Comman
 
 def service_record_template_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     fields = argToList(args.get('fields'))
-    type_ = str(args.get('type'))
+    type_ = args.get('type')
     template_id = args.get('template_id')
 
     response = client.service_record_template_get_request(type_, fields, template_id)
     readable_response = template_readable_response(response)
-    headers = ['id', 'info']
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecordTemplate',
         outputs_key_field='id',
@@ -508,8 +531,9 @@ def service_record_template_get_command(client: Client, args: Dict[str, Any]) ->
         raw_response=response,
         readable_output=tableToMarkdown('Service Record Results:',
                                         readable_response,
-                                        headers=headers,
-                                        removeNull=True)
+                                        headers=TEMPLATE_OUTPUTS,
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -517,7 +541,7 @@ def service_record_template_get_command(client: Client, args: Dict[str, Any]) ->
 
 def service_record_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     fields = argToList(args.get('fields'))
-    type_ = str(args.get('type'))
+    type_ = args.get('type')
     template_id = args.get('template_id')
     info = set_service_record_info(args)
 
@@ -532,7 +556,8 @@ def service_record_create_command(client: Client, args: Dict[str, Any]) -> Comma
         readable_output=tableToMarkdown('Service Record Results:',
                                         readable_response,
                                         headers=headers,
-                                        removeNull=True)
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results

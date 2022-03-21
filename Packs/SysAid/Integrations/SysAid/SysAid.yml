@@ -551,10 +551,25 @@ script:
       isArray: false
     outputs:
     - type: String
-      contextPath: SysAid.ServiceRecordTemplate.id
+      contextPath: SysAid.ServiceRecordTemplate.key
       description: ''
     - type: String
-      contextPath: SysAid.ServiceRecordTemplate.info
+      contextPath: SysAid.ServiceRecordTemplate.value
+      description: ''
+    - type: String
+      contextPath: SysAid.ServiceRecordTemplate.mandatory
+      description: ''
+    - type: Boolean
+      contextPath: SysAid.ServiceRecordTemplate.editable
+      description: ''
+    - type: Boolean
+      contextPath: SysAid.ServiceRecordTemplate.type
+      description: ''
+    - type: String
+      contextPath: SysAid.ServiceRecordTemplate.defaultValue
+      description: ''
+    - type: String
+      contextPath: SysAid.ServiceRecordTemplate.keyCaption
       description: ''
   - name: sysaid-service-record-create
     description: 'Create a new service record and return the newly created service record.

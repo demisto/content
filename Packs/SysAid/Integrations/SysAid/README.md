@@ -7,15 +7,19 @@ This integration was integrated and tested with version 21.4.44 of SysAid.
 2. Search for SysAid.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | Username | True |
-    | Password | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Incident type | False |
-    | Fetch incidents | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL |  | True |
+    | Username |  | True |
+    | Password |  | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Incident type |  | False |
+    | Maximum number of incidents to fetch |  | False |
+    | Fetch incidents |  | False |
+    | First fetch time interval |  | False |
+    | Fetch types | Choose what service record type to fetch - incidents, requests, problems, changes, or all. | False |
+    | Include Archived |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -52,1110 +56,39 @@ Allows to retrieve all lists (tables) related to a specific entity, or to return
 | SysAid.List.values | String |  | 
 
 #### Command example
-```!sysaid-table-list```
+```!sysaid-table-list list_id=known_error```
 #### Context Example
 ```json
 {
     "SysAid": {
-        "List": [
-            {
-                "caption": "Third Level Category",
-                "id": "third_level_category",
-                "values": [
-                    {
-                        "caption": " ",
-                        "id": " "
-                    },
-                    {
-                        "caption": "Add Memory",
-                        "id": "Add Memory"
-                    },
-                    {
-                        "caption": "Add user",
-                        "id": "Add user"
-                    },
-                    {
-                        "caption": "Authorizations (add  change)",
-                        "id": "Authorizations (add  change)"
-                    },
-                    {
-                        "caption": "Battery Replacement",
-                        "id": "Battery Replacement"
-                    },
-                    {
-                        "caption": "Can not access Internet",
-                        "id": "Can not access Internet"
-                    },
-                    {
-                        "caption": "Can not access network drive",
-                        "id": "Can not access network drive"
-                    },
-                    {
-                        "caption": "Can not access page - Blocked",
-                        "id": "Can not access page - Blocked"
-                    },
-                    {
-                        "caption": "Can not Open File",
-                        "id": "Can not Open File"
-                    },
-                    {
-                        "caption": "Can not perform warehouse Exit",
-                        "id": "Can not perform warehouse Exit"
-                    },
-                    {
-                        "caption": "Can not place an order",
-                        "id": "Can not place an order"
-                    },
-                    {
-                        "caption": "Can not send/receive email",
-                        "id": "Can not send/receive email"
-                    },
-                    {
-                        "caption": "Can not update Employee data",
-                        "id": "Can not update Employee data"
-                    },
-                    {
-                        "caption": "Cannot access email",
-                        "id": "Cannot access email"
-                    },
-                    {
-                        "caption": "Cannot Connect",
-                        "id": "Cannot Connect"
-                    },
-                    {
-                        "caption": "Cannot Connect to the server",
-                        "id": "Cannot Connect to the server"
-                    },
-                    {
-                        "caption": "Change Configuration",
-                        "id": "Change Configuration"
-                    },
-                    {
-                        "caption": "Communication Problem",
-                        "id": "Communication Problem"
-                    },
-                    {
-                        "caption": "Communication Problems",
-                        "id": "Communication Problems"
-                    },
-                    {
-                        "caption": "Does not respond",
-                        "id": "Does not respond"
-                    },
-                    {
-                        "caption": "Does not turn on",
-                        "id": "Does not turn on"
-                    },
-                    {
-                        "caption": "Does not work (Not Printing)",
-                        "id": "Does not work (Not Printing)"
-                    },
-                    {
-                        "caption": "Does not work correctly",
-                        "id": "Does not work correctly"
-                    },
-                    {
-                        "caption": "Does not work properly",
-                        "id": "Does not work properly"
-                    },
-                    {
-                        "caption": "Error",
-                        "id": "Error"
-                    },
-                    {
-                        "caption": "Error in Browser",
-                        "id": "Error in Browser"
-                    },
-                    {
-                        "caption": "Error message",
-                        "id": "Error message"
-                    },
-                    {
-                        "caption": "Hardware Problems",
-                        "id": "Hardware Problems"
-                    },
-                    {
-                        "caption": "Hardware Upgrade",
-                        "id": "Hardware Upgrade"
-                    },
-                    {
-                        "caption": "How to ?",
-                        "id": "How to ?"
-                    },
-                    {
-                        "caption": "How to?",
-                        "id": "How to?"
-                    },
-                    {
-                        "caption": "Install",
-                        "id": "Install"
-                    },
-                    {
-                        "caption": "Install new",
-                        "id": "Install new"
-                    },
-                    {
-                        "caption": "Install/Uninstall",
-                        "id": "Install/Uninstall"
-                    },
-                    {
-                        "caption": "Install/Uninstall Software",
-                        "id": "Install/Uninstall Software"
-                    },
-                    {
-                        "caption": "Internet Very Slow",
-                        "id": "Internet Very Slow"
-                    },
-                    {
-                        "caption": "Is working slow",
-                        "id": "Is working slow"
-                    },
-                    {
-                        "caption": "Login/Password Problem",
-                        "id": "Login/Password Problem"
-                    },
-                    {
-                        "caption": "Move",
-                        "id": "Move"
-                    },
-                    {
-                        "caption": "Move (User  Location)",
-                        "id": "Move (User  Location)"
-                    },
-                    {
-                        "caption": "New",
-                        "id": "New"
-                    },
-                    {
-                        "caption": "No dial tone",
-                        "id": "No dial tone"
-                    },
-                    {
-                        "caption": "No Paper",
-                        "id": "No Paper"
-                    },
-                    {
-                        "caption": "Noisy",
-                        "id": "Noisy"
-                    },
-                    {
-                        "caption": "Other",
-                        "id": "Other"
-                    },
-                    {
-                        "caption": "Paper stuck",
-                        "id": "Paper stuck"
-                    },
-                    {
-                        "caption": "Performance issues",
-                        "id": "Performance issues"
-                    },
-                    {
-                        "caption": "Permission request",
-                        "id": "Permission request"
-                    },
-                    {
-                        "caption": "Permissions",
-                        "id": "Permissions"
-                    },
-                    {
-                        "caption": "Policy update",
-                        "id": "Policy update"
-                    },
-                    {
-                        "caption": "Power Problem",
-                        "id": "Power Problem"
-                    },
-                    {
-                        "caption": "Printout is weak and unclear",
-                        "id": "Printout is weak and unclear"
-                    },
-                    {
-                        "caption": "Problem with an invoice",
-                        "id": "Problem with an invoice"
-                    },
-                    {
-                        "caption": "Remove user",
-                        "id": "Remove user"
-                    },
-                    {
-                        "caption": "Replace",
-                        "id": "Replace"
-                    },
-                    {
-                        "caption": "Replace CPU",
-                        "id": "Replace CPU"
-                    },
-                    {
-                        "caption": "Reset password",
-                        "id": "Reset password"
-                    },
-                    {
-                        "caption": "Restore a file/directory",
-                        "id": "Restore a file/directory"
-                    },
-                    {
-                        "caption": "Shutdown",
-                        "id": "Shutdown"
-                    },
-                    {
-                        "caption": "Software Upgrade",
-                        "id": "Software Upgrade"
-                    },
-                    {
-                        "caption": "Temperature too high",
-                        "id": "Temperature too high"
-                    },
-                    {
-                        "caption": "Unlock account",
-                        "id": "Unlock account"
-                    },
-                    {
-                        "caption": "Update group policy",
-                        "id": "Update group policy"
-                    },
-                    {
-                        "caption": "Update user",
-                        "id": "Update user"
-                    },
-                    {
-                        "caption": "Upgrade",
-                        "id": "Upgrade"
-                    },
-                    {
-                        "caption": "Upgrade to newer version",
-                        "id": "Upgrade to newer version"
-                    },
-                    {
-                        "caption": "WiFi/3G Error",
-                        "id": "WiFi/3G Error"
-                    }
-                ]
-            },
-            {
-                "caption": "SR Custom List 1",
-                "id": "cust_list1",
-                "values": []
-            },
-            {
-                "caption": "SR Custom List 2",
-                "id": "cust_list2",
-                "values": []
-            },
-            {
-                "caption": "Survey Status",
-                "id": "survey_status",
-                "values": [
-                    {
-                        "caption": "The survey has not been sent.",
-                        "id": "0"
-                    },
-                    {
-                        "caption": "The survey has been sent.",
-                        "id": "1"
-                    },
-                    {
-                        "caption": "The survey was answered.",
-                        "id": "2"
-                    }
-                ]
-            },
-            {
-                "caption": "Agreement",
-                "id": "agreement",
-                "values": [
-                    {
-                        "caption": "DEFAULT SLA",
-                        "id": "1"
-                    }
-                ]
-            },
-            {
-                "caption": "Impact",
-                "id": "impact",
-                "values": [
-                    {
-                        "caption": "Very High",
-                        "id": "1"
-                    },
-                    {
-                        "caption": "High",
-                        "id": "2"
-                    },
-                    {
-                        "caption": "Medium",
-                        "id": "3"
-                    },
-                    {
-                        "caption": "Low",
-                        "id": "4"
-                    },
-                    {
-                        "caption": "Very Low",
-                        "id": "5"
-                    }
-                ]
-            },
-            {
-                "caption": "Priority",
-                "id": "priority",
-                "values": [
-                    {
-                        "caption": "Highest",
-                        "id": "1"
-                    },
-                    {
-                        "caption": "Very High",
-                        "id": "2"
-                    },
-                    {
-                        "caption": "High",
-                        "id": "3"
-                    },
-                    {
-                        "caption": "Normal",
-                        "id": "4"
-                    },
-                    {
-                        "caption": "Low",
-                        "id": "5"
-                    }
-                ]
-            },
-            {
-                "caption": "Status",
-                "id": "status",
-                "values": [
-                    {
-                        "caption": "New",
-                        "id": "1"
-                    },
-                    {
-                        "caption": "Open",
-                        "id": "2"
-                    },
-                    {
-                        "caption": "Closed",
-                        "id": "3"
-                    },
-                    {
-                        "caption": "Verified closed",
-                        "id": "4"
-                    },
-                    {
-                        "caption": "Pending",
-                        "id": "5"
-                    },
-                    {
-                        "caption": "Postponed",
-                        "id": "6"
-                    },
-                    {
-                        "caption": "Deleted",
-                        "id": "7"
-                    },
-                    {
-                        "caption": "Reopened by End User",
-                        "id": "8"
-                    },
-                    {
-                        "caption": "Change opened and being analyzed",
-                        "id": "18"
-                    },
-                    {
-                        "caption": "Change Approved",
-                        "id": "19"
-                    },
-                    {
-                        "caption": "Change Rejected",
-                        "id": "20"
-                    },
-                    {
-                        "caption": "Change Completed",
-                        "id": "21"
-                    },
-                    {
-                        "caption": "Being Analyzed",
-                        "id": "22"
-                    },
-                    {
-                        "caption": "In Approval Process",
-                        "id": "23"
-                    },
-                    {
-                        "caption": "In Implementation",
-                        "id": "24"
-                    },
-                    {
-                        "caption": "In Release",
-                        "id": "25"
-                    },
-                    {
-                        "caption": "Waiting to be closed",
-                        "id": "26"
-                    },
-                    {
-                        "caption": "Problem Identified",
-                        "id": "27"
-                    },
-                    {
-                        "caption": "Problem Solved",
-                        "id": "28"
-                    },
-                    {
-                        "caption": "Closed unresolved problem",
-                        "id": "29"
-                    },
-                    {
-                        "caption": "Analyzing the solution for the problem",
-                        "id": "30"
-                    },
-                    {
-                        "caption": "User Responded",
-                        "id": "31"
-                    },
-                    {
-                        "caption": "Pending Problem resolution",
-                        "id": "32"
-                    },
-                    {
-                        "caption": "Request opened and being analyzed",
-                        "id": "33"
-                    },
-                    {
-                        "caption": "Request Completed",
-                        "id": "34"
-                    },
-                    {
-                        "caption": "Request Rejected",
-                        "id": "35"
-                    },
-                    {
-                        "caption": "Request Cancelled",
-                        "id": "36"
-                    },
-                    {
-                        "caption": "Merge Deleted",
-                        "id": "39"
-                    },
-                    {
-                        "caption": "Merge Closed",
-                        "id": "40"
-                    },
-                    {
-                        "caption": "Active",
-                        "id": "OPEN_CLASSES"
-                    }
-                ]
-            },
-            {
-                "caption": "Known Error",
-                "id": "known_error",
-                "values": [
-                    {
-                        "caption": "Production",
-                        "id": "P"
-                    },
-                    {
-                        "caption": "Development",
-                        "id": "D"
-                    },
-                    {
-                        "caption": "No",
-                        "id": "N"
-                    }
-                ]
-            },
-            {
-                "caption": "Process manager",
-                "id": "responsibility",
-                "values": [
-                    {
-                        "caption": "sysaid-dmst",
-                        "id": "1"
-                    }
-                ]
-            },
-            {
-                "caption": "CC",
-                "id": "cc",
-                "values": [
-                    {
-                        "caption": "Adi Dmst",
-                        "id": "3"
-                    },
-                    {
-                        "caption": "sysaid-dmst",
-                        "id": "1"
-                    },
-                    {
-                        "caption": "Test User",
-                        "id": "2"
-                    }
-                ]
-            },
-            {
-                "caption": "Main Asset",
-                "id": "computer_name",
-                "values": [
-                    {
-                        "caption": "EC2AMAZ-S0GM752",
-                        "id": "0A-3E-E9-13-2B-E4"
-                    },
-                    {
-                        "caption": "Test LP",
-                        "id": "93c18412-a672-4a3d-8b02-6f91ee963918"
-                    },
-                    {
-                        "caption": "Test Phone",
-                        "id": "5171019c-fa80-4905-a577-c95eb518de90"
-                    }
-                ]
-            },
-            {
-                "caption": "Main CI",
-                "id": "ci",
-                "values": []
-            },
-            {
-                "caption": "Service Record Type",
-                "id": "sr_type",
-                "values": [
-                    {
-                        "caption": "Change",
-                        "id": "4"
-                    },
-                    {
-                        "caption": "Problem",
-                        "id": "6"
-                    },
-                    {
-                        "caption": "Incident",
-                        "id": "1"
-                    },
-                    {
-                        "caption": "Request",
-                        "id": "10"
-                    }
-                ]
-            },
-            {
-                "caption": "Template",
-                "id": "quick_name",
-                "values": []
-            },
-            {
-                "caption": "Source",
-                "id": "source",
-                "values": [
-                    {
-                        "caption": "Administrator - Other",
-                        "id": "0"
-                    },
-                    {
-                        "caption": "Administrator Portal",
-                        "id": "1"
-                    },
-                    {
-                        "caption": "Administrator Portal - Mobile",
-                        "id": "2"
-                    },
-                    {
-                        "caption": "Administrator Portal - Phone call",
-                        "id": "3"
-                    },
-                    {
-                        "caption": "Self-Service Portal",
-                        "id": "4"
-                    },
-                    {
-                        "caption": "Agent",
-                        "id": "5"
-                    },
-                    {
-                        "caption": "Email",
-                        "id": "6"
-                    },
-                    {
-                        "caption": "Monitoring Notification",
-                        "id": "7"
-                    },
-                    {
-                        "caption": "Task Notification",
-                        "id": "8"
-                    },
-                    {
-                        "caption": "Chat",
-                        "id": "9"
-                    },
-                    {
-                        "caption": "External Agent",
-                        "id": "10"
-                    },
-                    {
-                        "caption": "Reminder",
-                        "id": "11"
-                    },
-                    {
-                        "caption": "Manually from the chat",
-                        "id": "12"
-                    },
-                    {
-                        "caption": "Password Services",
-                        "id": "13"
-                    }
-                ]
-            },
-            {
-                "caption": "Template",
-                "id": "change_template",
-                "values": []
-            },
-            {
-                "caption": "Closure Information",
-                "id": "closure_information",
-                "values": [
-                    {
-                        "caption": "Solved (Permanently)",
-                        "id": "1"
-                    },
-                    {
-                        "caption": "Solved (Work Around)",
-                        "id": "2"
-                    },
-                    {
-                        "caption": "Solved On-site",
-                        "id": "3"
-                    },
-                    {
-                        "caption": "Solved Remotely",
-                        "id": "4"
-                    },
-                    {
-                        "caption": "Not Solved (Not Reproducible)",
-                        "id": "5"
-                    },
-                    {
-                        "caption": "Not Solved (Too Costly)",
-                        "id": "6"
-                    },
-                    {
-                        "caption": "Closed/Resolved by Requester",
-                        "id": "7"
-                    }
-                ]
-            },
-            {
-                "caption": "Sub-Category",
-                "id": "problem_sub_type",
-                "values": [
-                    {
-                        "caption": "Active Directory",
-                        "id": "Active Directory"
-                    },
-                    {
-                        "caption": "Administration",
-                        "id": "Administration"
-                    },
-                    {
-                        "caption": "Adobe Reader",
-                        "id": "Adobe Reader"
-                    },
-                    {
-                        "caption": "Air conditioners",
-                        "id": "Air conditioners"
-                    },
-                    {
-                        "caption": "Availability",
-                        "id": "Availability"
-                    },
-                    {
-                        "caption": "Backup robot",
-                        "id": "Backup robot"
-                    },
-                    {
-                        "caption": "DHCP",
-                        "id": "DHCP"
-                    },
-                    {
-                        "caption": "DNS",
-                        "id": "DNS"
-                    },
-                    {
-                        "caption": "Electricity",
-                        "id": "Electricity"
-                    },
-                    {
-                        "caption": "Exchange Server",
-                        "id": "Exchange Server"
-                    },
-                    {
-                        "caption": "Faxes",
-                        "id": "Faxes"
-                    },
-                    {
-                        "caption": "File Server",
-                        "id": "File Server"
-                    },
-                    {
-                        "caption": "Finance",
-                        "id": "Finance"
-                    },
-                    {
-                        "caption": "Firewall",
-                        "id": "Firewall"
-                    },
-                    {
-                        "caption": "HandHelds",
-                        "id": "HandHelds"
-                    },
-                    {
-                        "caption": "HR",
-                        "id": "HR"
-                    },
-                    {
-                        "caption": "Keyboard",
-                        "id": "Keyboard"
-                    },
-                    {
-                        "caption": "Laptop",
-                        "id": "Laptop"
-                    },
-                    {
-                        "caption": "Logistics",
-                        "id": "Logistics"
-                    },
-                    {
-                        "caption": "Mobile phone",
-                        "id": "Mobile phone"
-                    },
-                    {
-                        "caption": "Module A",
-                        "id": "Module A"
-                    },
-                    {
-                        "caption": "Module B",
-                        "id": "Module B"
-                    },
-                    {
-                        "caption": "Module C",
-                        "id": "Module C"
-                    },
-                    {
-                        "caption": "Mouse",
-                        "id": "Mouse"
-                    },
-                    {
-                        "caption": "Network printers",
-                        "id": "Network printers"
-                    },
-                    {
-                        "caption": "Office",
-                        "id": "Office"
-                    },
-                    {
-                        "caption": "Office Phones",
-                        "id": "Office Phones"
-                    },
-                    {
-                        "caption": "Other",
-                        "id": "Other"
-                    },
-                    {
-                        "caption": "Other Module",
-                        "id": "Other Module"
-                    },
-                    {
-                        "caption": "Others",
-                        "id": "Others"
-                    },
-                    {
-                        "caption": "Outlook",
-                        "id": "Outlook"
-                    },
-                    {
-                        "caption": "Patch Approval",
-                        "id": "Patch Approval"
-                    },
-                    {
-                        "caption": "PC",
-                        "id": "PC"
-                    },
-                    {
-                        "caption": "PhotoCopy Machine",
-                        "id": "PhotoCopy Machine"
-                    },
-                    {
-                        "caption": "Printer",
-                        "id": "Printer"
-                    },
-                    {
-                        "caption": "Projectors",
-                        "id": "Projectors"
-                    },
-                    {
-                        "caption": "Router",
-                        "id": "Router"
-                    },
-                    {
-                        "caption": "Sales",
-                        "id": "Sales"
-                    },
-                    {
-                        "caption": "Screen",
-                        "id": "Screen"
-                    },
-                    {
-                        "caption": "Smartphone",
-                        "id": "Smartphone"
-                    },
-                    {
-                        "caption": "Switch",
-                        "id": "Switch"
-                    },
-                    {
-                        "caption": "Tablet",
-                        "id": "Tablet"
-                    },
-                    {
-                        "caption": "Telephone System",
-                        "id": "Telephone System"
-                    },
-                    {
-                        "caption": "Terminals",
-                        "id": "Terminals"
-                    },
-                    {
-                        "caption": "UPS",
-                        "id": "UPS"
-                    }
-                ]
-            },
-            {
-                "caption": "Followup User",
-                "id": "followup_user",
-                "values": [
-                    {
-                        "caption": "Adi Dmst",
-                        "id": "3"
-                    },
-                    {
-                        "caption": "sysaid-dmst",
-                        "id": "1"
-                    },
-                    {
-                        "caption": "Test User",
-                        "id": "2"
-                    }
-                ]
-            },
-            {
-                "caption": "Urgency",
-                "id": "urgency",
-                "values": [
-                    {
-                        "caption": "Urgent",
-                        "id": "1"
-                    },
-                    {
-                        "caption": "Very High",
-                        "id": "2"
-                    },
-                    {
-                        "caption": "High",
-                        "id": "3"
-                    },
-                    {
-                        "caption": "Normal",
-                        "id": "4"
-                    },
-                    {
-                        "caption": "Low",
-                        "id": "5"
-                    }
-                ]
-            },
-            {
-                "caption": "Request user",
-                "id": "request_user",
-                "values": [
-                    {
-                        "caption": "Adi Dmst",
-                        "id": "3"
-                    },
-                    {
-                        "caption": "sysaid-dmst",
-                        "id": "1"
-                    },
-                    {
-                        "caption": "Test User",
-                        "id": "2"
-                    }
-                ]
-            },
-            {
-                "caption": "Sub Type",
-                "id": "sub_type",
-                "values": [
-                    {
-                        "caption": "Advanced Problem",
-                        "id": "3"
-                    },
-                    {
-                        "caption": "Advanced Request",
-                        "id": "9"
-                    },
-                    {
-                        "caption": "Basic Problem",
-                        "id": "4"
-                    },
-                    {
-                        "caption": "Basic Request",
-                        "id": "10"
-                    },
-                    {
-                        "caption": "Change Proposal",
-                        "id": "12"
-                    },
-                    {
-                        "caption": "DEFAULT",
-                        "id": "6"
-                    },
-                    {
-                        "caption": "Emergency Change",
-                        "id": "2"
-                    },
-                    {
-                        "caption": "ITIL Problem",
-                        "id": "13"
-                    },
-                    {
-                        "caption": "Normal Change",
-                        "id": "1"
-                    },
-                    {
-                        "caption": "Patch Approval Process",
-                        "id": "11"
-                    },
-                    {
-                        "caption": "PHONE_CALL",
-                        "id": "8"
-                    },
-                    {
-                        "caption": "Printer failure",
-                        "id": "7"
-                    },
-                    {
-                        "caption": "Standard Change",
-                        "id": "5"
-                    }
-                ]
-            },
-            {
-                "caption": "Company",
-                "id": "company",
-                "values": []
-            },
-            {
-                "caption": "Department",
-                "id": "department",
-                "values": [
-                    {
-                        "caption": "IT",
-                        "id": "1"
-                    }
-                ]
-            },
-            {
-                "caption": "Responsible Admin",
-                "id": "responsible_manager",
-                "values": [
-                    {
-                        "caption": "sysaid-dmst",
-                        "id": "1"
-                    }
-                ]
-            },
-            {
-                "caption": "Classification",
-                "id": "change_category",
-                "values": [
-                    {
-                        "caption": "Minor",
-                        "id": "1"
-                    },
-                    {
-                        "caption": "Significant",
-                        "id": "2"
-                    },
-                    {
-                        "caption": "Major",
-                        "id": "3"
-                    },
-                    {
-                        "caption": "Proposal",
-                        "id": "4"
-                    }
-                ]
-            },
-            {
-                "caption": "Admin group",
-                "id": "assigned_group",
-                "values": [
-                    {
-                        "caption": "None",
-                        "id": "none"
-                    },
-                    {
-                        "caption": "Support",
-                        "id": "1"
-                    }
-                ]
-            },
-            {
-                "caption": "Location",
-                "id": "location",
-                "values": []
-            }
-        ]
+        "List": {
+            "caption": "Known Error",
+            "id": "known_error",
+            "values": [
+                {
+                    "caption": "Production",
+                    "id": "P"
+                },
+                {
+                    "caption": "Development",
+                    "id": "D"
+                },
+                {
+                    "caption": "No",
+                    "id": "N"
+                }
+            ]
+        }
     }
 }
 ```
 
 #### Human Readable Output
 
->### Lists sr Results:
->|id|caption|values|
+>### List ID known_error Results:
+>|Id|Caption|Values|
 >|---|---|---|
->| third_level_category | Third Level Category | {'id': ' ', 'caption': ' '},<br/>{'id': 'Add Memory', 'caption': 'Add Memory'},<br/>{'id': 'Add user', 'caption': 'Add user'},<br/>{'id': 'Authorizations (add  change)', 'caption': 'Authorizations (add  change)'},<br/>{'id': 'Battery Replacement', 'caption': 'Battery Replacement'},<br/>{'id': 'Can not access Internet', 'caption': 'Can not access Internet'},<br/>{'id': 'Can not access network drive', 'caption': 'Can not access network drive'},<br/>{'id': 'Can not access page - Blocked', 'caption': 'Can not access page - Blocked'},<br/>{'id': 'Can not Open File', 'caption': 'Can not Open File'},<br/>{'id': 'Can not perform warehouse Exit', 'caption': 'Can not perform warehouse Exit'},<br/>{'id': 'Can not place an order', 'caption': 'Can not place an order'},<br/>{'id': 'Can not send/receive email', 'caption': 'Can not send/receive email'},<br/>{'id': 'Can not update Employee data', 'caption': 'Can not update Employee data'},<br/>{'id': 'Cannot access email', 'caption': 'Cannot access email'},<br/>{'id': 'Cannot Connect', 'caption': 'Cannot Connect'},<br/>{'id': 'Cannot Connect to the server', 'caption': 'Cannot Connect to the server'},<br/>{'id': 'Change Configuration', 'caption': 'Change Configuration'},<br/>{'id': 'Communication Problem', 'caption': 'Communication Problem'},<br/>{'id': 'Communication Problems', 'caption': 'Communication Problems'},<br/>{'id': 'Does not respond', 'caption': 'Does not respond'},<br/>{'id': 'Does not turn on', 'caption': 'Does not turn on'},<br/>{'id': 'Does not work (Not Printing)', 'caption': 'Does not work (Not Printing)'},<br/>{'id': 'Does not work correctly', 'caption': 'Does not work correctly'},<br/>{'id': 'Does not work properly', 'caption': 'Does not work properly'},<br/>{'id': 'Error', 'caption': 'Error'},<br/>{'id': 'Error in Browser', 'caption': 'Error in Browser'},<br/>{'id': 'Error message', 'caption': 'Error message'},<br/>{'id': 'Hardware Problems', 'caption': 'Hardware Problems'},<br/>{'id': 'Hardware Upgrade', 'caption': 'Hardware Upgrade'},<br/>{'id': 'How to ?', 'caption': 'How to ?'},<br/>{'id': 'How to?', 'caption': 'How to?'},<br/>{'id': 'Install', 'caption': 'Install'},<br/>{'id': 'Install new', 'caption': 'Install new'},<br/>{'id': 'Install/Uninstall', 'caption': 'Install/Uninstall'},<br/>{'id': 'Install/Uninstall Software', 'caption': 'Install/Uninstall Software'},<br/>{'id': 'Internet Very Slow', 'caption': 'Internet Very Slow'},<br/>{'id': 'Is working slow', 'caption': 'Is working slow'},<br/>{'id': 'Login/Password Problem', 'caption': 'Login/Password Problem'},<br/>{'id': 'Move', 'caption': 'Move'},<br/>{'id': 'Move (User  Location)', 'caption': 'Move (User  Location)'},<br/>{'id': 'New', 'caption': 'New'},<br/>{'id': 'No dial tone', 'caption': 'No dial tone'},<br/>{'id': 'No Paper', 'caption': 'No Paper'},<br/>{'id': 'Noisy', 'caption': 'Noisy'},<br/>{'id': 'Other', 'caption': 'Other'},<br/>{'id': 'Paper stuck', 'caption': 'Paper stuck'},<br/>{'id': 'Performance issues', 'caption': 'Performance issues'},<br/>{'id': 'Permission request', 'caption': 'Permission request'},<br/>{'id': 'Permissions', 'caption': 'Permissions'},<br/>{'id': 'Policy update', 'caption': 'Policy update'},<br/>{'id': 'Power Problem', 'caption': 'Power Problem'},<br/>{'id': 'Printout is weak and unclear', 'caption': 'Printout is weak and unclear'},<br/>{'id': 'Problem with an invoice', 'caption': 'Problem with an invoice'},<br/>{'id': 'Remove user', 'caption': 'Remove user'},<br/>{'id': 'Replace', 'caption': 'Replace'},<br/>{'id': 'Replace CPU', 'caption': 'Replace CPU'},<br/>{'id': 'Reset password', 'caption': 'Reset password'},<br/>{'id': 'Restore a file/directory', 'caption': 'Restore a file/directory'},<br/>{'id': 'Shutdown', 'caption': 'Shutdown'},<br/>{'id': 'Software Upgrade', 'caption': 'Software Upgrade'},<br/>{'id': 'Temperature too high', 'caption': 'Temperature too high'},<br/>{'id': 'Unlock account', 'caption': 'Unlock account'},<br/>{'id': 'Update group policy', 'caption': 'Update group policy'},<br/>{'id': 'Update user', 'caption': 'Update user'},<br/>{'id': 'Upgrade', 'caption': 'Upgrade'},<br/>{'id': 'Upgrade to newer version', 'caption': 'Upgrade to newer version'},<br/>{'id': 'WiFi/3G Error', 'caption': 'WiFi/3G Error'} |
->| cust_list1 | SR Custom List 1 |  |
->| cust_list2 | SR Custom List 2 |  |
->| survey_status | Survey Status | {'id': '0', 'caption': 'The survey has not been sent.'},<br/>{'id': '1', 'caption': 'The survey has been sent.'},<br/>{'id': '2', 'caption': 'The survey was answered.'} |
->| agreement | Agreement | {'id': '1', 'caption': 'DEFAULT SLA'} |
->| impact | Impact | {'id': '1', 'caption': 'Very High'},<br/>{'id': '2', 'caption': 'High'},<br/>{'id': '3', 'caption': 'Medium'},<br/>{'id': '4', 'caption': 'Low'},<br/>{'id': '5', 'caption': 'Very Low'} |
->| priority | Priority | {'id': '1', 'caption': 'Highest'},<br/>{'id': '2', 'caption': 'Very High'},<br/>{'id': '3', 'caption': 'High'},<br/>{'id': '4', 'caption': 'Normal'},<br/>{'id': '5', 'caption': 'Low'} |
->| status | Status | {'id': '1', 'caption': 'New'},<br/>{'id': '2', 'caption': 'Open'},<br/>{'id': '3', 'caption': 'Closed'},<br/>{'id': '4', 'caption': 'Verified closed'},<br/>{'id': '5', 'caption': 'Pending'},<br/>{'id': '6', 'caption': 'Postponed'},<br/>{'id': '7', 'caption': 'Deleted'},<br/>{'id': '8', 'caption': 'Reopened by End User'},<br/>{'id': '18', 'caption': 'Change opened and being analyzed'},<br/>{'id': '19', 'caption': 'Change Approved'},<br/>{'id': '20', 'caption': 'Change Rejected'},<br/>{'id': '21', 'caption': 'Change Completed'},<br/>{'id': '22', 'caption': 'Being Analyzed'},<br/>{'id': '23', 'caption': 'In Approval Process'},<br/>{'id': '24', 'caption': 'In Implementation'},<br/>{'id': '25', 'caption': 'In Release'},<br/>{'id': '26', 'caption': 'Waiting to be closed'},<br/>{'id': '27', 'caption': 'Problem Identified'},<br/>{'id': '28', 'caption': 'Problem Solved'},<br/>{'id': '29', 'caption': 'Closed unresolved problem'},<br/>{'id': '30', 'caption': 'Analyzing the solution for the problem'},<br/>{'id': '31', 'caption': 'User Responded'},<br/>{'id': '32', 'caption': 'Pending Problem resolution'},<br/>{'id': '33', 'caption': 'Request opened and being analyzed'},<br/>{'id': '34', 'caption': 'Request Completed'},<br/>{'id': '35', 'caption': 'Request Rejected'},<br/>{'id': '36', 'caption': 'Request Cancelled'},<br/>{'id': '39', 'caption': 'Merge Deleted'},<br/>{'id': '40', 'caption': 'Merge Closed'},<br/>{'id': 'OPEN_CLASSES', 'caption': 'Active'} |
 >| known_error | Known Error | {'id': 'P', 'caption': 'Production'},<br/>{'id': 'D', 'caption': 'Development'},<br/>{'id': 'N', 'caption': 'No'} |
->| responsibility | Process manager | {'id': '1', 'caption': 'sysaid-dmst'} |
->| cc | CC | {'id': '3', 'caption': 'Adi Dmst'},<br/>{'id': '1', 'caption': 'sysaid-dmst'},<br/>{'id': '2', 'caption': 'Test User'} |
->| computer_name | Main Asset | {'id': '0A-3E-E9-13-2B-E4', 'caption': 'EC2AMAZ-S0GM752'},<br/>{'id': '93c18412-a672-4a3d-8b02-6f91ee963918', 'caption': 'Test LP'},<br/>{'id': '5171019c-fa80-4905-a577-c95eb518de90', 'caption': 'Test Phone'} |
->| ci | Main CI |  |
->| sr_type | Service Record Type | {'id': '4', 'caption': 'Change'},<br/>{'id': '6', 'caption': 'Problem'},<br/>{'id': '1', 'caption': 'Incident'},<br/>{'id': '10', 'caption': 'Request'} |
->| quick_name | Template |  |
->| source | Source | {'id': '0', 'caption': 'Administrator - Other'},<br/>{'id': '1', 'caption': 'Administrator Portal'},<br/>{'id': '2', 'caption': 'Administrator Portal - Mobile'},<br/>{'id': '3', 'caption': 'Administrator Portal - Phone call'},<br/>{'id': '4', 'caption': 'Self-Service Portal'},<br/>{'id': '5', 'caption': 'Agent'},<br/>{'id': '6', 'caption': 'Email'},<br/>{'id': '7', 'caption': 'Monitoring Notification'},<br/>{'id': '8', 'caption': 'Task Notification'},<br/>{'id': '9', 'caption': 'Chat'},<br/>{'id': '10', 'caption': 'External Agent'},<br/>{'id': '11', 'caption': 'Reminder'},<br/>{'id': '12', 'caption': 'Manually from the chat'},<br/>{'id': '13', 'caption': 'Password Services'} |
->| change_template | Template |  |
->| closure_information | Closure Information | {'id': '1', 'caption': 'Solved (Permanently)'},<br/>{'id': '2', 'caption': 'Solved (Work Around)'},<br/>{'id': '3', 'caption': 'Solved On-site'},<br/>{'id': '4', 'caption': 'Solved Remotely'},<br/>{'id': '5', 'caption': 'Not Solved (Not Reproducible)'},<br/>{'id': '6', 'caption': 'Not Solved (Too Costly)'},<br/>{'id': '7', 'caption': 'Closed/Resolved by Requester'} |
->| problem_sub_type | Sub-Category | {'id': 'Active Directory', 'caption': 'Active Directory'},<br/>{'id': 'Administration', 'caption': 'Administration'},<br/>{'id': 'Adobe Reader', 'caption': 'Adobe Reader'},<br/>{'id': 'Air conditioners', 'caption': 'Air conditioners'},<br/>{'id': 'Availability', 'caption': 'Availability'},<br/>{'id': 'Backup robot', 'caption': 'Backup robot'},<br/>{'id': 'DHCP', 'caption': 'DHCP'},<br/>{'id': 'DNS', 'caption': 'DNS'},<br/>{'id': 'Electricity', 'caption': 'Electricity'},<br/>{'id': 'Exchange Server', 'caption': 'Exchange Server'},<br/>{'id': 'Faxes', 'caption': 'Faxes'},<br/>{'id': 'File Server', 'caption': 'File Server'},<br/>{'id': 'Finance', 'caption': 'Finance'},<br/>{'id': 'Firewall', 'caption': 'Firewall'},<br/>{'id': 'HandHelds', 'caption': 'HandHelds'},<br/>{'id': 'HR', 'caption': 'HR'},<br/>{'id': 'Keyboard', 'caption': 'Keyboard'},<br/>{'id': 'Laptop', 'caption': 'Laptop'},<br/>{'id': 'Logistics', 'caption': 'Logistics'},<br/>{'id': 'Mobile phone', 'caption': 'Mobile phone'},<br/>{'id': 'Module A', 'caption': 'Module A'},<br/>{'id': 'Module B', 'caption': 'Module B'},<br/>{'id': 'Module C', 'caption': 'Module C'},<br/>{'id': 'Mouse', 'caption': 'Mouse'},<br/>{'id': 'Network printers', 'caption': 'Network printers'},<br/>{'id': 'Office', 'caption': 'Office'},<br/>{'id': 'Office Phones', 'caption': 'Office Phones'},<br/>{'id': 'Other', 'caption': 'Other'},<br/>{'id': 'Other Module', 'caption': 'Other Module'},<br/>{'id': 'Others', 'caption': 'Others'},<br/>{'id': 'Outlook', 'caption': 'Outlook'},<br/>{'id': 'Patch Approval', 'caption': 'Patch Approval'},<br/>{'id': 'PC', 'caption': 'PC'},<br/>{'id': 'PhotoCopy Machine', 'caption': 'PhotoCopy Machine'},<br/>{'id': 'Printer', 'caption': 'Printer'},<br/>{'id': 'Projectors', 'caption': 'Projectors'},<br/>{'id': 'Router', 'caption': 'Router'},<br/>{'id': 'Sales', 'caption': 'Sales'},<br/>{'id': 'Screen', 'caption': 'Screen'},<br/>{'id': 'Smartphone', 'caption': 'Smartphone'},<br/>{'id': 'Switch', 'caption': 'Switch'},<br/>{'id': 'Tablet', 'caption': 'Tablet'},<br/>{'id': 'Telephone System', 'caption': 'Telephone System'},<br/>{'id': 'Terminals', 'caption': 'Terminals'},<br/>{'id': 'UPS', 'caption': 'UPS'} |
->| followup_user | Followup User | {'id': '3', 'caption': 'Adi Dmst'},<br/>{'id': '1', 'caption': 'sysaid-dmst'},<br/>{'id': '2', 'caption': 'Test User'} |
->| urgency | Urgency | {'id': '1', 'caption': 'Urgent'},<br/>{'id': '2', 'caption': 'Very High'},<br/>{'id': '3', 'caption': 'High'},<br/>{'id': '4', 'caption': 'Normal'},<br/>{'id': '5', 'caption': 'Low'} |
->| request_user | Request user | {'id': '3', 'caption': 'Adi Dmst'},<br/>{'id': '1', 'caption': 'sysaid-dmst'},<br/>{'id': '2', 'caption': 'Test User'} |
->| sub_type | Sub Type | {'id': '3', 'caption': 'Advanced Problem'},<br/>{'id': '9', 'caption': 'Advanced Request'},<br/>{'id': '4', 'caption': 'Basic Problem'},<br/>{'id': '10', 'caption': 'Basic Request'},<br/>{'id': '12', 'caption': 'Change Proposal'},<br/>{'id': '6', 'caption': 'DEFAULT'},<br/>{'id': '2', 'caption': 'Emergency Change'},<br/>{'id': '13', 'caption': 'ITIL Problem'},<br/>{'id': '1', 'caption': 'Normal Change'},<br/>{'id': '11', 'caption': 'Patch Approval Process'},<br/>{'id': '8', 'caption': 'PHONE_CALL'},<br/>{'id': '7', 'caption': 'Printer failure'},<br/>{'id': '5', 'caption': 'Standard Change'} |
->| company | Company |  |
->| department | Department | {'id': '1', 'caption': 'IT'} |
->| responsible_manager | Responsible Admin | {'id': '1', 'caption': 'sysaid-dmst'} |
->| change_category | Classification | {'id': '1', 'caption': 'Minor'},<br/>{'id': '2', 'caption': 'Significant'},<br/>{'id': '3', 'caption': 'Major'},<br/>{'id': '4', 'caption': 'Proposal'} |
->| assigned_group | Admin group | {'id': 'none', 'caption': 'None'},<br/>{'id': '1', 'caption': 'Support'} |
->| location | Location |  |
 
 
 ### sysaid-asset-list
@@ -4139,11 +3072,11 @@ List all assets or get a specific asset by ID.
 #### Human Readable Output
 
 >### Asset Results:
->|id|name|info|
+>|Id|Name|Info|
 >|---|---|---|
->| 0A-3E-E9-13-2B-E4 | EC2AMAZ-S0GM752 | HDD Total Space: 0A-3E-E9-13-2B-E4,<br/>Last Boot: 2022-01-27 11:06:26.0,<br/>Child Assets: 0A-3E-E9-13-2B-E4,<br/>Source: Agent,<br/>Model: t3.large,<br/>Patch Management List: 0A-3E-E9-13-2B-E4,<br/>CPU Speed: 2500,<br/>Version: 7,<br/>Missing Patches List: 0A-3E-E9-13-2B-E4,<br/>RC: 0A-3E-E9-13-2B-E4,<br/>Display Adapter: Microsoft Basic Display Adapter,<br/>Operating System Type: Windows Server 2019 Datacenter ServerDatacenter,<br/>Pending Patches: 0A-3E-E9-13-2B-E4,<br/>Free Memory Banks: 0,<br/>Bytes out: 0.0,<br/>Approved Patches: 0A-3E-E9-13-2B-E4,<br/>CPU Count: 1,<br/>Manufacturer: Amazon EC2,<br/>Missing Patches: 0A-3E-E9-13-2B-E4,<br/>Update Time: 03/13/2022 08:07:20 PM,<br/>HDD Total Free Space: 0A-3E-E9-13-2B-E4,<br/>CPU Model: Xeon Platinum 8175M,<br/>Purchase Cost: 0.0,<br/>Free Space: 0A-3E-E9-13-2B-E4,<br/>Patch Management: 0,<br/>Operating System Version: 10.0.17763 Multiprocessor Free,<br/>Display: Microsoft Basic Display Adapter adapter, Generic Non-PnP Monitor monitor.,<br/>Online Users: 0A-3E-E9-13-2B-E4,<br/>HDD Total Used Space: 0A-3E-E9-13-2B-E4,<br/>CPU Vendor: Intel Corporation,<br/>Agent Settings: 0,<br/>Account: paloaltonetworks_trial,<br/>Change SR Patches: 0A-3E-E9-13-2B-E4,<br/>Disabled: N,<br/>OS Name: Windows Server 2019 Datacenter ServerDatacenter,<br/>Total Memory Banks: 1,<br/>Last Access Time: 2022-03-20 16:17:25.0,<br/>Failed Patches: 0A-3E-E9-13-2B-E4,<br/>Storage Devices: 1,<br/>Type: Server,<br/>HDD count: 0A-3E-E9-13-2B-E4,<br/>Mouse: PS/2 Compatible Mouse,<br/>Display Resolution: 1024x768,<br/>Links: 0A-3E-E9-13-2B-E4,<br/>BIOS Type: AMAZON - 1,<br/>Installed Patches: 0A-3E-E9-13-2B-E4,<br/>Asset Custom Int 2: 0,<br/>Asset Custom Int 1: 0,<br/>Get Logs: 03/13/2022 08:07:20 PM,<br/>Occupied Memory Banks: 1,<br/>CPU: 1 x Intel Corporation Xeon Platinum 8175M 2.5 Ghz.,<br/>Bytes in: 0.0,<br/>Service Desk: 0A-3E-E9-13-2B-E4,<br/>Catalog number: t3.large Amazon EC2 Server,<br/>Storage: 100 Gb,<br/>Network: Host EC2AMAZ-S0GM752@UnknownAdapter Amazon Elastic Network Adapter, IP Address 172.31.12.179,<br/>Memory: 0A-3E-E9-13-2B-E4,<br/>MAC Address: 0A:3E:E9:13:2B:E4 (fe80::938:a6b0:f84e:180d%7,172.31.12.179),<br/>Display Memory: 0,<br/>Denied Patches: 0A-3E-E9-13-2B-E4,<br/>Operating System: Windows Server 2019 Datacenter ServerDatacenter ServerDatacenter [10.0.17763 Multiprocessor Free].,<br/>Memory: 8482484224,<br/>OS Serial: R24JD-JYQF3-D6P9P-XFDKH-KHMMT,<br/>IP Address: 172.31.12.179,<br/>SysAid agent version: 21.4.44.88,<br/>Serial: ec26dedd-f98f-981f-6cba-1ff7b4de08b9,<br/>Storage Capacity: 100 |
->| 5171019c-fa80-4905-a577-c95eb518de90 | Test Phone | HDD Total Space: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Child Assets: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Ownership: Corporate Owned,<br/>Source: Manual,<br/>Model: Galaxy S22,<br/>Patch Management List: 5171019c-fa80-4905-a577-c95eb518de90,<br/>CPU Speed: 0,<br/>Version: 1,<br/>Missing Patches List: 5171019c-fa80-4905-a577-c95eb518de90,<br/>RC: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Phone Number: +123456789,<br/>Pending Patches: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Free Memory Banks: 0,<br/>Bytes out: 0.0,<br/>Approved Patches: 5171019c-fa80-4905-a577-c95eb518de90,<br/>CPU Count: 0,<br/>Manufacturer: Samsung,<br/>Missing Patches: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Update Time: 03/07/2022 09:04:03 AM,<br/>HDD Total Free Space: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Purchase Cost: 0.0,<br/>Free Space: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Patch Management: 0,<br/>Display:  adapter,<br/>Online Users: 5171019c-fa80-4905-a577-c95eb518de90,<br/>HDD Total Used Space: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Agent Settings: 0,<br/>Account: paloaltonetworks_trial,<br/>Change SR Patches: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Disabled: N,<br/>Total Memory Banks: 0,<br/>Failed Patches: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Storage Devices: 0,<br/>Type: PDA,<br/>HDD count: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Links: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Installed Patches: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Asset Custom Int 2: 0,<br/>Asset Custom Int 1: 0,<br/>Get Logs: 03/07/2022 09:04:03 AM,<br/>Occupied Memory Banks: 0,<br/>CPU: 0 x   0 Mhz.,<br/>Bytes in: 0.0,<br/>Service Desk: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Description: Test smartphone,<br/>Memory: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Display Memory: 0,<br/>Denied Patches: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Storage Capacity: 0,<br/>Owner: Test User |
->| 93c18412-a672-4a3d-8b02-6f91ee963918 | Test LP | HDD Total Space: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Child Assets: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Source: Manual,<br/>Model: Dell Inspirion 3556,<br/>Patch Management List: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>CPU Speed: 0,<br/>Version: 1,<br/>Missing Patches List: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>RC: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Pending Patches: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Free Memory Banks: 0,<br/>Bytes out: 0.0,<br/>Approved Patches: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>CPU Count: 0,<br/>Manufacturer: Dell,<br/>Missing Patches: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Update Time: 03/07/2022 09:02:38 AM,<br/>HDD Total Free Space: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Purchase Cost: 0.0,<br/>Free Space: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Patch Management: 0,<br/>Display:  adapter,<br/>Online Users: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>HDD Total Used Space: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Agent Settings: 0,<br/>Account: paloaltonetworks_trial,<br/>Change SR Patches: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Disabled: N,<br/>Total Memory Banks: 0,<br/>Failed Patches: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Storage Devices: 0,<br/>Type: Laptop,<br/>HDD count: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Links: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Installed Patches: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Asset Custom Int 2: 0,<br/>Asset Custom Int 1: 0,<br/>Get Logs: 03/07/2022 09:02:38 AM,<br/>Occupied Memory Banks: 0,<br/>CPU: 0 x   0 Mhz.,<br/>Bytes in: 0.0,<br/>Service Desk: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Users: Test User,<br/>Description: Test LP,<br/>Memory: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Display Memory: 0,<br/>Denied Patches: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Storage Capacity: 0,<br/>Owner: Test User |
+>| 0A-3E-E9-13-2B-E4 | EC2AMAZ-S0GM752 | Model: t3.large |
+>| 5171019c-fa80-4905-a577-c95eb518de90 | Test Phone | Model: Galaxy S22,<br/>Description: Test smartphone |
+>| 93c18412-a672-4a3d-8b02-6f91ee963918 | Test LP | Model: Dell Inspirion 3556,<br/>Description: Test LP |
 
 
 ### sysaid-asset-search
@@ -6147,10 +5080,10 @@ Get information about a specific asset.
 #### Human Readable Output
 
 >### Asset Results:
->|id|name|info|
+>|Id|Name|Info|
 >|---|---|---|
->| 5171019c-fa80-4905-a577-c95eb518de90 | Test Phone | HDD Total Space: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Child Assets: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Ownership: Corporate Owned,<br/>Source: Manual,<br/>Model: Galaxy S22,<br/>Patch Management List: 5171019c-fa80-4905-a577-c95eb518de90,<br/>CPU Speed: 0,<br/>Version: 1,<br/>Missing Patches List: 5171019c-fa80-4905-a577-c95eb518de90,<br/>RC: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Phone Number: +123456789,<br/>Pending Patches: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Approved Patches: 5171019c-fa80-4905-a577-c95eb518de90,<br/>CPU Count: 0,<br/>Manufacturer: Samsung,<br/>Missing Patches: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Update Time: 03/07/2022 09:04:03 AM,<br/>HDD Total Free Space: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Free Space: 5171019c-fa80-4905-a577-c95eb518de90,<br/>CI Attachment: ,<br/>Display:  adapter,<br/>Online Users: 5171019c-fa80-4905-a577-c95eb518de90,<br/>HDD Total Used Space: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Account: paloaltonetworks_trial,<br/>Change SR Patches: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Disabled: N,<br/>Failed Patches: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Type: PDA,<br/>HDD count: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Links: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Installed Patches: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Status: ,<br/>Asset Custom Int 2: 0,<br/>Asset Custom Int 1: 0,<br/>Get Logs: 03/07/2022 09:04:03 AM,<br/>CPU: 0 x   0 Mhz.,<br/>Service Desk: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Users: ,<br/>Description: Test smartphone,<br/>Memory: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Denied Patches: 5171019c-fa80-4905-a577-c95eb518de90,<br/>Owner: Test User |
->| 93c18412-a672-4a3d-8b02-6f91ee963918 | Test LP | HDD Total Space: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Child Assets: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Source: Manual,<br/>Model: Dell Inspirion 3556,<br/>Patch Management List: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>CPU Speed: 0,<br/>Version: 1,<br/>Missing Patches List: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>RC: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Pending Patches: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Approved Patches: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>CPU Count: 0,<br/>Manufacturer: Dell,<br/>Missing Patches: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Update Time: 03/07/2022 09:02:38 AM,<br/>HDD Total Free Space: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Free Space: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>CI Attachment: ,<br/>Display:  adapter,<br/>Online Users: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>HDD Total Used Space: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Account: paloaltonetworks_trial,<br/>Change SR Patches: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Disabled: N,<br/>Failed Patches: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Type: Laptop,<br/>HDD count: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Links: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Installed Patches: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Asset Custom Int 2: 0,<br/>Asset Custom Int 1: 0,<br/>Get Logs: 03/07/2022 09:02:38 AM,<br/>CPU: 0 x   0 Mhz.,<br/>Service Desk: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Users: Test User,<br/>Description: Test LP,<br/>Memory: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Denied Patches: 93c18412-a672-4a3d-8b02-6f91ee963918,<br/>Owner: Test User |
+>| 5171019c-fa80-4905-a577-c95eb518de90 | Test Phone | Model: Galaxy S22,<br/>Description: Test smartphone |
+>| 93c18412-a672-4a3d-8b02-6f91ee963918 | Test LP | Model: Dell Inspirion 3556,<br/>Description: Test LP |
 
 
 ### sysaid-filter-list
@@ -7741,7 +6674,7 @@ List all assets
 #### Human Readable Output
 
 >### Filter Results:
->|id|caption|type|values|
+>|Id|Caption|Type|Values|
 >|---|---|---|---|
 >| priority | Priority | list | ${list.all}: All,<br/>1: Highest,<br/>2: Very High,<br/>3: High,<br/>4: Normal,<br/>5: Low |
 >| responsibility | Assigned to | list | 1: sysaid-dmst |
@@ -14464,7 +13397,7 @@ List all service requests
 #### Human Readable Output
 
 >### Service Record Results:
->|id|title|status|
+>|Id|Title|Status|
 >|---|---|---|
 >| 25 | Cannot access email - Test  | 1 |
 >| 28 | Cannot connect to a Wi-Fi network | 1 |
@@ -18850,7 +17783,7 @@ Search by a query among all SRs
 #### Human Readable Output
 
 >### Service Record Results:
->|id|title|status|
+>|Id|Title|Status|
 >|---|---|---|
 >| 25 | Cannot access email - Test  | 1 |
 >| 28 | Cannot connect to a Wi-Fi network | 1 |
@@ -18864,7 +17797,7 @@ Search by a query among all SRs
 
 ### sysaid-service-record-update
 ***
-
+The valid statuses can be retrieved using the "sysaid-table-list" command.
 
 
 #### Base Command
@@ -18960,8 +17893,13 @@ There is no context output for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SysAid.ServiceRecordTemplate.id | String |  | 
-| SysAid.ServiceRecordTemplate.info | String |  | 
+| SysAid.ServiceRecordTemplate.key | String |  | 
+| SysAid.ServiceRecordTemplate.value | String |  | 
+| SysAid.ServiceRecordTemplate.mandatory | String |  | 
+| SysAid.ServiceRecordTemplate.editable | Boolean |  | 
+| SysAid.ServiceRecordTemplate.type | Boolean |  | 
+| SysAid.ServiceRecordTemplate.defaultValue | String |  | 
+| SysAid.ServiceRecordTemplate.keyCaption | String |  | 
 
 #### Command example
 ```!sysaid-service-record-template-get type=incident```
@@ -19700,14 +18638,72 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Service Record Results:
->|id|info|
->|---|---|
->| 0 | key: third_level_category, value: , mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Third Level Category,<br/>key: cust_list1, value: 0, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: SR Custom List 1,<br/>key: notes, value: , mandatory: False, editable: True, type: object, defaultValue: None, keyCaption: Notes,<br/>key: screen, value: {'sendScreenCapture': 'NO', 'captureExists': False}, mandatory: False, editable: True, type: object, defaultValue: None, keyCaption: Screen capture,<br/>key: resolution, value: , mandatory: False, editable: True, type: text, defaultValue: None, keyCaption: Resolution,<br/>key: childs, value: [], mandatory: False, editable: True, type: object, defaultValue: None, keyCaption: Child Service Records,<br/>key: cust_list2, value: 0, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: SR Custom List 2,<br/>key: parent_link, value: 0, mandatory: False, editable: True, type: numeric, defaultValue: None, keyCaption: Parent ID,<br/>key: solution, value: , mandatory: False, editable: True, type: text, defaultValue: None, keyCaption: Solution,<br/>key: project_id, value: {}, mandatory: False, editable: True, type: object, defaultValue: None, keyCaption: Main project,<br/>key: links, value: [], mandatory: False, editable: True, type: object, defaultValue: None, keyCaption: Links,<br/>key: sr_weight, value: 0, mandatory: False, editable: True, type: numeric, defaultValue: None, keyCaption: Weight,<br/>key: followup_planned_date, value: None, mandatory: False, editable: True, type: date, defaultValue: None, keyCaption: Followup Planned Date,<br/>key: cust_int2, value: 0, mandatory: False, editable: True, type: numeric, defaultValue: None, keyCaption: SR Custom Int 2,<br/>key: cust_date1, value: None, mandatory: False, editable: True, type: date, defaultValue: None, keyCaption: SR Custom Date 1,<br/>key: cust_int1, value: 0, mandatory: False, editable: True, type: numeric, defaultValue: None, keyCaption: SR Custom Int 1,<br/>key: impact, value: 4, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Impact,<br/>key: cust_date2, value: None, mandatory: False, editable: True, type: date, defaultValue: None, keyCaption: SR Custom Date 2,<br/>key: priority, value: 5, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Priority,<br/>key: merged_service_records, value: None, mandatory: False, editable: True, type: text, defaultValue: None, keyCaption: Merged service records,<br/>key: CustomColumn3sr, value: , mandatory: False, editable: True, type: text, defaultValue: None, keyCaption: Test Field,<br/>key: messages, value: [], mandatory: False, editable: True, type: object, defaultValue: None, keyCaption: Messages,<br/>key: problem_type, value: , mandatory: False, editable: True, type: nested, defaultValue: None, keyCaption: Category,<br/>key: alertID, value: None, mandatory: False, editable: True, type: calculated, defaultValue: None, keyCaption: Alert,<br/>key: actions, value: None, mandatory: False, editable: True, type: object, defaultValue: None, keyCaption: Actions,<br/>key: status, value: 1, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Status,<br/>key: attachments, value: [], mandatory: False, editable: True, type: object, defaultValue: None, keyCaption: Attachments,<br/>key: problem_sub_type, value: , mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Sub-Category,<br/>key: linkedSRs, value: [], mandatory: False, editable: True, type: object, defaultValue: None, keyCaption: Links to other Items,<br/>key: description, value: , mandatory: False, editable: True, type: text, defaultValue: None, keyCaption: Description,<br/>key: task_id, value: 0, mandatory: False, editable: True, type: numeric, defaultValue: None, keyCaption: Main task,<br/>key: video, value: {'sendVideoRecording': 'NO', 'captureExists': False, 'filePath': None}, mandatory: False, editable: True, type: object, defaultValue: None, keyCaption: Video capture,<br/>key: title, value: DEFAULT, mandatory: False, editable: True, type: text, defaultValue: None, keyCaption: Title,<br/>key: followup_user, value: None, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Followup User,<br/>key: workaround, value: , mandatory: False, editable: True, type: text, defaultValue: None, keyCaption: Workaround,<br/>key: success_rating, value: 0, mandatory: False, editable: True, type: numeric, defaultValue: None, keyCaption: Success Rating,<br/>key: cust_notes, value: None, mandatory: False, editable: True, type: text, defaultValue: None, keyCaption: SR Custom Notes,<br/>key: followup_text, value: , mandatory: False, editable: True, type: text, defaultValue: None, keyCaption: Followup Text,<br/>key: responsibility, value: 1, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Assigned to,<br/>key: urgency, value: 5, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Urgency,<br/>key: request_user, value: 1, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Request user,<br/>key: sub_type, value: 6, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Sub Type,<br/>key: company, value: 0, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Company,<br/>key: followup_actual_date, value: None, mandatory: False, editable: True, type: date, defaultValue: None, keyCaption: Followup Actual Date,<br/>key: computer_id, value: None, mandatory: False, editable: True, type: text, defaultValue: None, keyCaption: Asset ID,<br/>key: cc, value: , mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: CC,<br/>key: ci, value: 0, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Main CI,<br/>key: due_date, value: None, mandatory: False, editable: True, type: date, defaultValue: None, keyCaption: Due Date,<br/>key: cust_text1, value: None, mandatory: False, editable: True, type: text, defaultValue: None, keyCaption: SR Custom Text 1,<br/>key: cust_text2, value: None, mandatory: False, editable: True, type: text, defaultValue: None, keyCaption: SR Custom Text 2,<br/>key: merged_to, value: 0, mandatory: False, editable: True, type: numeric, defaultValue: None, keyCaption: Merged to,<br/>key: responsible_manager, value: None, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Responsible Admin,<br/>key: solutionModel, value: None, mandatory: False, editable: True, type: object, defaultValue: None, keyCaption: Solution Model,<br/>key: activities, value: [], mandatory: False, editable: True, type: object, defaultValue: None, keyCaption: Activities,<br/>key: relatedProblems, value: None, mandatory: False, editable: True, type: object, defaultValue: None, keyCaption: Potential Related Problems,<br/>key: change_category, value: 0, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Classification,<br/>key: assigned_group, value: None, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Admin group,<br/>key: location, value: None, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Location,<br/>key: sr_type, value: 2, mandatory: False, editable: True, type: list, defaultValue: None, keyCaption: Service Record Type |
+>|Key|Value|Mandatory|Editable|Type|Key Caption|
+>|---|---|---|---|---|---|
+>| third_level_category |  | false | true | list | Third Level Category |
+>| cust_list1 | 0 | false | true | list | SR Custom List 1 |
+>| notes |  | false | true | object | Notes |
+>| screen | sendScreenCapture: NO<br/>captureExists: false | false | true | object | Screen capture |
+>| resolution |  | false | true | text | Resolution |
+>| childs |  | false | true | object | Child Service Records |
+>| cust_list2 | 0 | false | true | list | SR Custom List 2 |
+>| parent_link | 0 | false | true | numeric | Parent ID |
+>| solution |  | false | true | text | Solution |
+>| project_id |  | false | true | object | Main project |
+>| links |  | false | true | object | Links |
+>| sr_weight | 0 | false | true | numeric | Weight |
+>| followup_planned_date |  | false | true | date | Followup Planned Date |
+>| cust_int2 | 0 | false | true | numeric | SR Custom Int 2 |
+>| cust_date1 |  | false | true | date | SR Custom Date 1 |
+>| cust_int1 | 0 | false | true | numeric | SR Custom Int 1 |
+>| impact | 4 | false | true | list | Impact |
+>| cust_date2 |  | false | true | date | SR Custom Date 2 |
+>| priority | 5 | false | true | list | Priority |
+>| merged_service_records |  | false | true | text | Merged service records |
+>| CustomColumn3sr |  | false | true | text | Test Field |
+>| messages |  | false | true | object | Messages |
+>| problem_type |  | false | true | nested | Category |
+>| alertID |  | false | true | calculated | Alert |
+>| actions |  | false | true | object | Actions |
+>| status | 1 | false | true | list | Status |
+>| attachments |  | false | true | object | Attachments |
+>| problem_sub_type |  | false | true | list | Sub-Category |
+>| linkedSRs |  | false | true | object | Links to other Items |
+>| description |  | false | true | text | Description |
+>| task_id | 0 | false | true | numeric | Main task |
+>| video | sendVideoRecording: NO<br/>captureExists: false<br/>filePath: null | false | true | object | Video capture |
+>| title | DEFAULT | false | true | text | Title |
+>| followup_user |  | false | true | list | Followup User |
+>| workaround |  | false | true | text | Workaround |
+>| success_rating | 0 | false | true | numeric | Success Rating |
+>| cust_notes |  | false | true | text | SR Custom Notes |
+>| followup_text |  | false | true | text | Followup Text |
+>| responsibility | 1 | false | true | list | Assigned to |
+>| urgency | 5 | false | true | list | Urgency |
+>| request_user | 1 | false | true | list | Request user |
+>| sub_type | 6 | false | true | list | Sub Type |
+>| company | 0 | false | true | list | Company |
+>| followup_actual_date |  | false | true | date | Followup Actual Date |
+>| computer_id |  | false | true | text | Asset ID |
+>| cc |  | false | true | list | CC |
+>| ci | 0 | false | true | list | Main CI |
+>| due_date |  | false | true | date | Due Date |
+>| cust_text1 |  | false | true | text | SR Custom Text 1 |
+>| cust_text2 |  | false | true | text | SR Custom Text 2 |
+>| merged_to | 0 | false | true | numeric | Merged to |
+>| responsible_manager |  | false | true | list | Responsible Admin |
+>| solutionModel |  | false | true | object | Solution Model |
+>| activities |  | false | true | object | Activities |
+>| relatedProblems |  | false | true | object | Potential Related Problems |
+>| change_category | 0 | false | true | list | Classification |
+>| assigned_group |  | false | true | list | Admin group |
+>| location |  | false | true | list | Location |
+>| sr_type | 2 | false | true | list | Service Record Type |
 
 
 ### sysaid-service-record-create
 ***
-Create a new service record and return the newly created service record.
+Create a new service record and return the newly created service record. The valid statuses can be retrieved using the "sysaid-table-list" command.
 
 
 #### Base Command
@@ -20485,7 +19481,7 @@ Create a new service record and return the newly created service record.
 #### Human Readable Output
 
 >### Service Record Results:
->|id|title|status|
+>|Id|Title|Status|
 >|---|---|---|
 >| 0 | Basic Request Process | 1 |
 
