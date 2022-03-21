@@ -62,27 +62,6 @@ def raw_response_to_context_rules(items: Union[Dict, List]) -> Union[Dict, List]
         'Updated_at': items.get('updated_at')
     }
 
-
-def switch_list_to_list_counter(data: Union[Dict, List]) -> Union[Dict, List]:
-    if isinstance(data, list):
-        return [switch_list_to_list_counter(dat) for dat in data]
-    new_data = {}
-    for item in data:
-        if type(data[item]) == list:
-            new_data[item] = len(data[item])
-        elif data[item] and type(data[item]) == dict:
-            counter = 0
-            for in_item in data[item]:
-                if type(data[item][in_item]) == list:
-                    counter += len(data[item][in_item])
-                elif data[item][in_item]:
-                    counter = 1 if counter == 0 else counter
-            new_data[item] = counter
-        else:
-            new_data[item] = data[item]
-    return new_data
-
-
 def get_log_list(base_url, username, password):
     access_token, refresh_token, headers1 = login(base_url, username, password)
     logserver_url = base_url + '/logapi/api/v2/logmgr/0'
@@ -105,10 +84,10 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int])-> Tu
     log_list = loglist(base_url, access_token, refresh_token, headers1)
     log_server_id = [e["id"] for e in log_list if e["is_connected"] == True]
     last_fetch = last_run.get('last_fetch', None)
+    
     if (last_fetch is None):
-        params1 = {"start": f"None", "end": f"{now_time}", "size": max_fetch}
-    else:
-        params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
+        last_fetch = first_fetch_time
+    params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
         
     if len(log_server_id) == 0:
         return_output('ok')
@@ -155,7 +134,7 @@ def main():
     base_url = params.get('base_url')
     username = params.get('username')
     password = params.get('password')
-    '''
+    
     first_fetch_time = arg_to_datetime(
         arg=demisto.params().get('first_fetch', '3 days'),
         arg_name='First fetch time',
@@ -163,7 +142,7 @@ def main():
     )
     first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
     assert isinstance(first_fetch_timestamp, int)
-    '''
+    
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
@@ -182,7 +161,8 @@ def main():
         elif command == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
                 base_url, username, password,
-                last_run=demisto.getLastRun()
+                last_run=demisto.getLastRun(),
+                first_fetch_time = first_fetch_timestamp
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
