@@ -112,7 +112,7 @@ class Client:
 ''' HELPER FUNCTIONS '''
 
 
-def build_context_indicator_no_results_status(indicator: str, indicator_type: str, message: str,
+def build_context_indicator_no_results_status(indicator: str, indicator_type: str,
                                               integration_name: str, reliability: Any = None) -> CommandResults:
 
     indicator_map = {
@@ -131,10 +131,13 @@ def build_context_indicator_no_results_status(indicator: str, indicator_type: st
     if indicator_type == 'hash':
         if sha1Regex.match(indicator):
             indicator_ = Common.File(sha1=indicator, dbot_score=dbot_score)
+            indicator_type = 'sha1'
         if sha256Regex.match(indicator):
             indicator_ = Common.File(sha256=indicator, dbot_score=dbot_score)
+            indicator_type = 'sha256'
         if md5Regex.match(indicator):
             indicator_ = Common.File(md5=indicator, dbot_score=dbot_score)
+            indicator_type = 'md5'
 
     elif indicator_type == 'ip':
         indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)
@@ -145,7 +148,11 @@ def build_context_indicator_no_results_status(indicator: str, indicator_type: st
     elif indicator_type == 'url':
         indicator_ = Common.URL(url=indicator, dbot_score=dbot_score)
 
-    return CommandResults(readable_output=message, indicator=indicator_)
+    readable_output = tableToMarkdown(name=f'{integration_name}:',
+                                      t={indicator_type.upper(): indicator, 'Result': 'Not found'},
+                                      headers=[indicator_type.upper(), 'Result'])
+
+    return CommandResults(readable_output=readable_output, indicator=indicator_)
 
 
 def get_dbot_score_type(indicator_type: str) -> Union[Exception, DBotScoreType, str]:
@@ -282,7 +289,6 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
     else:
         results.append(build_context_indicator_no_results_status(indicator=indicator_value,
                                                                  indicator_type=indicator_type,
-                                                                 message=f'No indicator found for {indicator_value}.',
                                                                  integration_name='CrowdStrike Falcon Intel v2'))
 
     return results

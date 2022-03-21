@@ -859,8 +859,9 @@ def get_domain_command():
             })
         except RequestException as r:
             if r.response.status_code == 404:
-                human_readable = '### Umbrella Investigate Domain for: ' + domain + '\n' \
-                    + "Failed to find " + domain + ", reason: " + r.message
+                human_readable = tableToMarkdown(name='Cisco Umbrella Investigate:',
+                                                 t={'DOMAIN': domain, 'Result': 'Not found'},
+                                                 headers=['DOMAIN', 'Result'])
 
                 context[outputPaths['domain']] = {'Name': domain}
                 context[outputPaths['dbotscore']] = {'Indicator': domain,

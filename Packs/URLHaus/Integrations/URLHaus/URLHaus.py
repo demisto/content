@@ -76,11 +76,12 @@ def download_malware_sample(sha256, api_url, use_ssl):
     return http_request('GET', f'download/{sha256}', api_url=api_url, use_ssl=use_ssl)
 
 
-def build_context_indicator_no_results_status(indicator: str, indicator_type: str, message: str,
-                                              integration_name: str, reliability: Any = None) -> CommandResults:
+def build_context_indicator_no_results_status(indicator: str, indicator_type: str, integration_name: str,
+                                              reliability: Any = None) -> CommandResults:
 
     indicator_map = {
-        'file': DBotScoreType.FILE,
+        'sha256': DBotScoreType.FILE,
+        'md5': DBotScoreType.FILE,
         'ip': DBotScoreType.IP,
         'domain': DBotScoreType.DOMAIN,
         'url': DBotScoreType.URL
@@ -93,13 +94,12 @@ def build_context_indicator_no_results_status(indicator: str, indicator_type: st
                                   reliability=reliability)
 
     indicator_: Any = None
-    if indicator_type == 'file':
-        if sha1Regex.match(indicator):
-            indicator_ = Common.File(sha1=indicator, dbot_score=dbot_score)
-        if sha256Regex.match(indicator):
-            indicator_ = Common.File(sha256=indicator, dbot_score=dbot_score)
-        if md5Regex.match(indicator):
-            indicator_ = Common.File(md5=indicator, dbot_score=dbot_score)
+
+    if indicator_type == 'sha256':
+        indicator_ = Common.File(sha256=indicator, dbot_score=dbot_score)
+
+    elif indicator_type == 'md5':
+        indicator_ = Common.File(md5=indicator, dbot_score=dbot_score)
 
     elif indicator_type == 'ip':
         indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)
@@ -110,7 +110,11 @@ def build_context_indicator_no_results_status(indicator: str, indicator_type: st
     elif indicator_type == 'url':
         indicator_ = Common.URL(url=indicator, dbot_score=dbot_score)
 
-    return CommandResults(readable_output=message, indicator=indicator_)
+    readable_output = tableToMarkdown(name=f'{integration_name}:',
+                                      t={indicator_type.upper(): indicator, 'Result': 'Not found'},
+                                      headers=[indicator_type.upper(), 'Result'])
+
+    return CommandResults(readable_output=readable_output, indicator=indicator_)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -388,13 +392,10 @@ def process_query_info(url_information: dict, uri: str, params: dict) -> Command
     elif url_information['query_status'] == 'no_results' or url_information['query_status'] == 'invalid_url':
 
         if re.match(urlRegex, uri):
-            msg = f'## URLhaus reputation for {uri}\n' \
-                  f'No results!'
             return build_context_indicator_no_results_status(indicator=uri,
                                                              indicator_type='url',
                                                              integration_name='URLhaus',
-                                                             reliability=params.get('reliability'),
-                                                             message=msg)
+                                                             reliability=params.get('reliability'))
         human_readable = f'## URLhaus reputation for {uri}\n' \
                          f'Invalid URL!'
         return CommandResults(
@@ -541,13 +542,10 @@ def run_domain_command(domain: str, params: dict) -> CommandResults:
             indicator=domain_indicator,
             relationships=relationships)
     elif domain_information['query_status'] == 'no_results':
-        msg = f'## URLhaus reputation for {domain}\n' \
-              f'No results!'
         return build_context_indicator_no_results_status(indicator=domain,
                                                          indicator_type='domain',
                                                          integration_name='URLhaus',
-                                                         reliability=params.get('reliability'),
-                                                         message=msg)
+                                                         reliability=params.get('reliability'))
 
     elif domain_information['query_status'] == 'invalid_host':
         human_readable = f'## URLhaus reputation for {domain}\n' \
@@ -689,12 +687,9 @@ def run_file_command(hash: str, params: dict) -> CommandResults:
 
     elif (file_information['query_status'] == 'ok' and not file_information['md5_hash']) or \
             file_information['query_status'] == 'no_results':
-        msg = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \
-              f'No results!'
         return build_context_indicator_no_results_status(indicator=hash,
-                                                         indicator_type='file',
+                                                         indicator_type=hash_type,
                                                          integration_name='URLhaus',
-                                                         message=msg,
                                                          reliability=params.get('reliability'))
 
     elif file_information['query_status'] in ['invalid_md5', 'invalid_sha256']:

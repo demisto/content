@@ -237,7 +237,7 @@ class DBotScoreCalculator:
                 return Common.DBotScore.GOOD
 
 
-def build_context_indicator_no_results_status(indicator: str, indicator_type: str, message: str,
+def build_context_indicator_no_results_status(indicator: str, indicator_type: str,
                                               integration_name: str, reliability: Any = None) -> CommandResults:
 
     indicator_map = {
@@ -256,10 +256,13 @@ def build_context_indicator_no_results_status(indicator: str, indicator_type: st
     if indicator_type == 'file':
         if sha1Regex.match(indicator):
             indicator_ = Common.File(sha1=indicator, dbot_score=dbot_score)
+            indicator_type = 'sha1'
         if sha256Regex.match(indicator):
             indicator_ = Common.File(sha256=indicator, dbot_score=dbot_score)
+            indicator_type = 'sha256'
         if md5Regex.match(indicator):
             indicator_ = Common.File(md5=indicator, dbot_score=dbot_score)
+            indicator_type = 'md5'
 
     elif indicator_type == 'ip':
         indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)
@@ -270,7 +273,11 @@ def build_context_indicator_no_results_status(indicator: str, indicator_type: st
     elif indicator_type == 'url':
         indicator_ = Common.URL(url=indicator, dbot_score=dbot_score)
 
-    return CommandResults(readable_output=message, indicator=indicator_)
+    readable_output = tableToMarkdown(name=f'{integration_name}:',
+                                      t={indicator_type.upper(): indicator, 'Result': 'Not found'},
+                                      headers=[indicator_type.upper(), 'Result'])
+
+    return CommandResults(readable_output=readable_output, indicator=indicator_)
 
 
 def find_worst_indicator(indicators):
@@ -487,8 +494,7 @@ def get_ip_reputation(client: Client, score_calc: DBotScoreCalculator, ip, statu
     }
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return build_context_indicator_no_results_status(message=NO_INDICATORS_FOUND_MSG.format(searchable_value=ip),
-                                                         indicator=ip,
+        return build_context_indicator_no_results_status(indicator=ip,
                                                          indicator_type='ip',
                                                          integration_name=THREAT_STREAM,
                                                          reliability=client.reliability)
@@ -556,8 +562,7 @@ def get_domain_reputation(client: Client, score_calc: DBotScoreCalculator, domai
     params = dict(value=domain, type=DBotScoreType.DOMAIN, status=status, limit=0)
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return build_context_indicator_no_results_status(message=NO_INDICATORS_FOUND_MSG.format(searchable_value=domain),
-                                                         indicator=domain,
+        return build_context_indicator_no_results_status(indicator=domain,
                                                          indicator_type='domain',
                                                          integration_name=THREAT_STREAM,
                                                          reliability=client.reliability)
@@ -626,8 +631,7 @@ def get_file_reputation(client: Client, score_calc: DBotScoreCalculator, file, s
     params = dict(value=file, type="md5", status=status, limit=0)
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return build_context_indicator_no_results_status(message=NO_INDICATORS_FOUND_MSG.format(searchable_value=file),
-                                                         indicator=file,
+        return build_context_indicator_no_results_status(indicator=file,
                                                          indicator_type='file',
                                                          integration_name=THREAT_STREAM,
                                                          reliability=client.reliability)
@@ -703,8 +707,7 @@ def get_url_reputation(client: Client, score_calc: DBotScoreCalculator, url, sta
     params = dict(value=url, type=DBotScoreType.URL, status=status, limit=0)
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return build_context_indicator_no_results_status(message=NO_INDICATORS_FOUND_MSG.format(searchable_value=url),
-                                                         indicator=url,
+        return build_context_indicator_no_results_status(indicator=url,
                                                          indicator_type='url',
                                                          integration_name=THREAT_STREAM,
                                                          reliability=client.reliability)

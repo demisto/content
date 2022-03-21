@@ -57,8 +57,7 @@ FILE_EC_WITH_ANALYSIS = {
         'Malicious': {'PulseIDs': []}},
     'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
     ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [{
-        'Indicator': {
-            'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'}, 'Type': 'file',
+        'Indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'Type': 'file',
         'Vendor': 'AlienVault OTX v2', 'Score': 0, 'Reliability': 'C - Fairly reliable'
     }]
 }
@@ -67,14 +66,10 @@ FILE_EC_WITHOUT_ANALYSIS = {
     'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||'
     ' val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 ||'
     ' val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH ||'
-    ' val.SSDeep && val.SSDeep == obj.SSDeep)': {
-        'MD5': None, 'SHA1': None, 'SHA256': None, 'SSDeep': None, 'Size': None, 'Type': None,
-        'Malicious': {'PulseIDs': []}},
+    ' val.SSDeep && val.SSDeep == obj.SSDeep)': [{'SHA1': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'}],
     'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
-    ' val.Type == obj.Type)': [{
-        'Indicator': {'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'}, 'Type': 'file',
-        'Vendor': 'AlienVault OTX v2', 'Score': 0, 'Reliability': 'C - Fairly reliable'
-    }]
+    ' val.Type == obj.Type)': [{'Indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'Type': 'file',
+                                'Vendor': 'AlienVault OTX v2', 'Score': 0, 'Reliability': 'C - Fairly reliable'}]
 }
 
 URL_RAW_RESPONSE = {
@@ -595,7 +590,7 @@ def test_file_command(mocker, raw_response_general, raw_response_analysis, expec
     - Validate that the File and DBotScore entry context have the proper values.
     """
     mocker.patch.object(client, 'query', side_effect=[raw_response_analysis, raw_response_general])
-    command_results = file_command(client, {'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'})
+    command_results = file_command(client, file='6c5360d41bd2b14b1565f5b18e5c203cf512e493')
     # results is CommandResults list
     context = command_results[0].to_context()['EntryContext']
     assert expected == context
@@ -643,12 +638,12 @@ def test_url_command_not_found(mocker):
           'Q1cIqvNrOcRqvlAgWpdtwnHcouXXGS0c64jBnTCVM9X4Cd5n0ZizgP78tXM5VB2w0m0DiwLI_J2sI1s09Mb5WlOYhWuCjJ8-lUjUdQ9' \
           'TyxcDuXhHIapoSlpgOzqCddxTLM3cSCW9zRcHfK5b3yO7P0XOFOqG-kZyFOs9LA75fX-yJ-d-2jHzBzeXrFbc9GxWEw1W9yyTUzvCY8' \
           'cirtcm1_CG8NVhvfc5wnattncML1PF6zctl5JVX3kUHZZJoc2uUHbADiLAJ6K3mEHmH4EbS9oEFs10MF8BvT7n'
-    expected_result = f'No matches for URL {url}'
+    expected_result = 0
     mocker.patch.object(client, 'query', return_value=404)
 
     command_results = url_command(client, url)
 
-    assert command_results[0].to_context()['HumanReadable'] == expected_result
+    assert command_results[0].indicator.dbot_score.score == expected_result
 
 
 def test_url_command_uppercase_protocol(requests_mock):
@@ -727,7 +722,7 @@ def test_ip_command(mocker, ip_, raw_response, url_raw_response, file_raw_respon
 
 
 @pytest.mark.parametrize('ip_,raw_response,expected', [
-    ('8.8.88.8', IP_404_RAW_RESPONSE, 'IP 8.8.88.8 could not be found.'),
+    ('8.8.88.8', IP_404_RAW_RESPONSE, 0),
 ])
 def test_ip_command_on_404(mocker, ip_, raw_response, expected):
     """
@@ -742,42 +737,41 @@ def test_ip_command_on_404(mocker, ip_, raw_response, expected):
         """
     mocker.patch.object(client, 'query', side_effect=[raw_response])
     command_results = ip_command(client, ip_, 'IPv4')
-    assert command_results[0].readable_output == expected
+    assert command_results[0].indicator.dbot_score.score == expected
 
 
 DBOT_SCORE_UNKNOWN = [
 
     (
         {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': 'file',
-         'integration_name': 'test', 'message': 'Not found'},
-        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': 'file', 'message': 'Not found',
+         'integration_name': 'test'},
+        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': 'file',
          'sha1': None, 'sha256': None, 'md5': 'd26cec10398f2b10202d23c966022dce'}
     ),
     (
         {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'indicator_type': 'file',
-         'integration_name': 'test', 'message': 'Not found'},
+         'integration_name': 'test'},
         {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'indicator_type': 'file',
-         'message': 'Not found', 'sha1': None,
+         'sha1': None,
          'sha256': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'md5': None}
     ),
     (
         {'indicator': 'cf23df2207d99a74fbe169e3eba035e633b65d94', 'indicator_type': 'file',
-         'integration_name': 'test', 'message': 'Not found'},
+         'integration_name': 'test'},
         {'indicator': 'cf23df2207d99a74fbe169e3eba035e633b65d94', 'indicator_type': 'file',
-         'message': 'Not found', 'sha1': 'cf23df2207d99a74fbe169e3eba035e633b65d94', 'sha256': None, 'md5': None}
+         'sha1': 'cf23df2207d99a74fbe169e3eba035e633b65d94', 'sha256': None, 'md5': None}
     ),
     (
-        {'indicator': '8.8.8.8', 'indicator_type': 'ip', 'integration_name': 'test', 'message': 'Not found'},
-        {'indicator': '8.8.8.8', 'indicator_type': 'ip',
-         'message': 'Not found'}
+        {'indicator': '8.8.8.8', 'indicator_type': 'ip', 'integration_name': 'test'},
+        {'indicator': '8.8.8.8', 'indicator_type': 'ip'}
     ),
     (
-        {'indicator': 'www.example.com', 'indicator_type': 'url', 'integration_name': 'test', 'message': 'Not found'},
-        {'indicator': 'www.example.com', 'indicator_type': 'url', 'message': 'Not found'}
+        {'indicator': 'www.example.com', 'indicator_type': 'url', 'integration_name': 'test'},
+        {'indicator': 'www.example.com', 'indicator_type': 'url'}
     ),
     (
-        {'indicator': 'example.com', 'indicator_type': 'domain', 'integration_name': 'test', 'message': 'Not found'},
-        {'indicator': 'example.com', 'indicator_type': 'domain', 'message': 'Not found'}
+        {'indicator': 'example.com', 'indicator_type': 'domain', 'integration_name': 'test'},
+        {'indicator': 'example.com', 'indicator_type': 'domain'}
     )
 ]
 
@@ -787,10 +781,8 @@ def test_build_context_indicator_no_results_status(inputs, expected_return):
 
     results = build_context_indicator_no_results_status(indicator=inputs.get('indicator'),
                                                         indicator_type=inputs.get('indicator_type'),
-                                                        integration_name='test',
-                                                        message=inputs.get('message'))
+                                                        integration_name='test')
 
-    assert results.readable_output == expected_return.get('message')
     assert results.indicator.dbot_score.score == 0
     assert results.indicator.dbot_score.indicator_type == expected_return.get('indicator_type')
     if results.indicator.dbot_score.indicator_type == 'file':
