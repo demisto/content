@@ -24,7 +24,7 @@ def main():
     cmd = f'gsutil -m cp -r "gs://{from_bucket}" "gs://{to_bucket}/"'
     #  > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine.log" 2>&1
 
-    cmd2 = 'gsutil -m cp -r "gs://marketplace-ci-build/content/builds/xsiam-build-instances/2614018/marketplacev2/content" "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/xsoar-content-1/"'
+    cmd2 = 'gsutil -m cp -r gs://marketplace-ci-build/content/builds/xsiam-build-instances/2614018/marketplacev2/content gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/xsoar-content-1/'
     subprocess.run(cmd2.split())
     logging.info('Finished copying successfully.')
 
