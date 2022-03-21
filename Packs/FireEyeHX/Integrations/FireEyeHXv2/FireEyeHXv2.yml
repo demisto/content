@@ -1573,11 +1573,11 @@ script:
       description: The updated name of the actor.
       type: string
   - arguments:
-    - description: The Host Set Id.
+    - description: The host set ID.
       name: hostSetId
       required: true
       isArray: false
-    - description: The Policy Id.
+    - description: The policy ID.
       name: policyId
       required: true
       isArray: false
@@ -1607,22 +1607,22 @@ script:
     - name: condition_id
       required: true
       description: The condition ID. It is part of the response when you request a list of all conditions known to the HX Series appliance.
-    description: Delete an indicator condiction.
+    description: Delete an indicator condition.
   - name: fireeye-hx-list-indicator-category
     arguments:
     - name: search
-      description: Performs a search of indicator categories. Searchable values are based on the name, display_name, retention_policy, ui_edit_policy, ui_signature_enabled, ui_source_alerts_enabled
+      description: Performs a search of indicator categories. Searchable values are based on the name, display_name, retention_policy, ui_edit_policy, ui_signature_enabled, ui_source_alerts_enabled.
     - name: name
-      description: Filter for indicator categories with the specified name
+      description: Filter for indicator categories with the specified name.
     - name: display_name
-      description: Filter for indicator categories with given display name
+      description: Filter for indicator categories with given display name.
     - name: retention_policy
       auto: PREDEFINED
       predefined:
       - manual
       - auto
       - intel
-      description: Retention policy
+      description: Retention policy.
     - name: ui_edit_policy
       auto: PREDEFINED
       predefined:
@@ -1630,19 +1630,19 @@ script:
       - edit_delete
       - delete
       - read_only
-      description: UI edit policy
+      description: UI edit policy.
     - name: ui_signature_enabled
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: UI Signature enabled
+      description: Whether to enable the UI signature.
     - name: ui_source_alerts_enabled
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: UI source alerts enabled
+      description: Whether to enable the UI source alerts.
     - name: share_mode
       auto: PREDEFINED
       predefined:
@@ -1651,40 +1651,40 @@ script:
       - silent
       - visible
       - any
-      description: Share mode
+      description: Share mode.
     - name: limit
-      description: number of results to return
+      description: Maximum number of results to return.
       defaultValue: "50"
     - name: offset
-      description: result offset
+      description: Result offset.
       defaultValue: "0"
     outputs:
     - contextPath: FireEyeHX.IndicatorCategory.uri_name
-      description: Policy ID
+      description: Policy ID of the indicator category.
       type: number
     - contextPath: FireEyeHX.IndicatorCategory.name
-      description: Name
+      description: Name of the indicator category.
       type: string
     - contextPath: FireEyeHX.IndicatorCategory._revision
-      description: Revision
+      description: Revision of the indicator category.
       type: number
     - contextPath: FireEyeHX.IndicatorCategory.display_name
-      description: Display Name
+      description: Display name of the indicator category.
       type: string
     - contextPath: FireEyeHX.IndicatorCategory.retention_policy
-      description: Retention policy
+      description: Retention policy of the indicator category.
       type: string
     - contextPath: FireEyeHX.IndicatorCategory.ui_edit_policy
-      description: UI edit policy
+      description: UI edit policy of the indicator category.
       type: string
     - contextPath: FireEyeHX.IndicatorCategory.ui_signature_enabled
-      description: UI signature enabled
+      description: Whether the UI signature is enabled.
       type: boolean
     - contextPath: FireEyeHX.IndicatorCategory.ui_source_alerts_enabled
-      description: UI source alerts enabled
+      description: Whether the UI source alerts is enabled.
       type: boolean
     - contextPath: FireEyeHX.IndicatorCategory.share_mode
-      description: Share mode
+      description: Share mode of the indicator category.
       type: string
     description: List indicator categories.
   - name: fireeye-hx-delete-indicator
