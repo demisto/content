@@ -4,7 +4,7 @@
         "System Diagnostics and Health Check"
     ],
     "caseInsensitive": true,
-    "cliName": "healthcheckinvestigationsbiggerthan1mb",
+    "cliName": "healthcheckinvestigationswithlargeinputoutput",
     "closeForm": false,
     "columns": [
         {
@@ -17,7 +17,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 80
         },
         {
             "displayName": "Size",
@@ -29,42 +29,32 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 100
         },
         {
-            "displayName": "Amount of entries",
+            "displayName": "Details",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "amountofentries",
+            "key": "details",
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "shortText",
-            "width": 130
-        },
-        {
-            "displayName": "Date",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "date",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
+            "type": "longText",
+            "width": 200
         }
     ],
     "content": true,
+    "defaultRows": [],
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_healthcheckinvestigationsbiggerthan1mb",
+    "id": "incident_healthcheckinvestigationswithlargeinputoutput",
     "isReadOnly": false,
     "locked": false,
-    "name": "Health Check Investigations bigger than 1MB",
+    "name": "Health Check Investigations With Large Input / Output",
     "neverSetAsRequired": false,
+    "openEnded": false,
     "ownerOnly": false,
     "required": false,
     "sla": 0,
