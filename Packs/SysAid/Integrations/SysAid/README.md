@@ -581,7 +581,7 @@ Allows to retrieve all lists (tables) related to a specific entity, or to return
                 "id": "cc",
                 "values": [
                     {
-                        "caption": "Adi Demisto",
+                        "caption": "Adi Dmst",
                         "id": "3"
                     },
                     {
@@ -936,7 +936,7 @@ Allows to retrieve all lists (tables) related to a specific entity, or to return
                 "id": "followup_user",
                 "values": [
                     {
-                        "caption": "Adi Demisto",
+                        "caption": "Adi Dmst",
                         "id": "3"
                     },
                     {
@@ -980,7 +980,7 @@ Allows to retrieve all lists (tables) related to a specific entity, or to return
                 "id": "request_user",
                 "values": [
                     {
-                        "caption": "Adi Demisto",
+                        "caption": "Adi Dmst",
                         "id": "3"
                     },
                     {
@@ -1137,7 +1137,7 @@ Allows to retrieve all lists (tables) related to a specific entity, or to return
 >| status | Status | {'id': '1', 'caption': 'New'},<br/>{'id': '2', 'caption': 'Open'},<br/>{'id': '3', 'caption': 'Closed'},<br/>{'id': '4', 'caption': 'Verified closed'},<br/>{'id': '5', 'caption': 'Pending'},<br/>{'id': '6', 'caption': 'Postponed'},<br/>{'id': '7', 'caption': 'Deleted'},<br/>{'id': '8', 'caption': 'Reopened by End User'},<br/>{'id': '18', 'caption': 'Change opened and being analyzed'},<br/>{'id': '19', 'caption': 'Change Approved'},<br/>{'id': '20', 'caption': 'Change Rejected'},<br/>{'id': '21', 'caption': 'Change Completed'},<br/>{'id': '22', 'caption': 'Being Analyzed'},<br/>{'id': '23', 'caption': 'In Approval Process'},<br/>{'id': '24', 'caption': 'In Implementation'},<br/>{'id': '25', 'caption': 'In Release'},<br/>{'id': '26', 'caption': 'Waiting to be closed'},<br/>{'id': '27', 'caption': 'Problem Identified'},<br/>{'id': '28', 'caption': 'Problem Solved'},<br/>{'id': '29', 'caption': 'Closed unresolved problem'},<br/>{'id': '30', 'caption': 'Analyzing the solution for the problem'},<br/>{'id': '31', 'caption': 'User Responded'},<br/>{'id': '32', 'caption': 'Pending Problem resolution'},<br/>{'id': '33', 'caption': 'Request opened and being analyzed'},<br/>{'id': '34', 'caption': 'Request Completed'},<br/>{'id': '35', 'caption': 'Request Rejected'},<br/>{'id': '36', 'caption': 'Request Cancelled'},<br/>{'id': '39', 'caption': 'Merge Deleted'},<br/>{'id': '40', 'caption': 'Merge Closed'},<br/>{'id': 'OPEN_CLASSES', 'caption': 'Active'} |
 >| known_error | Known Error | {'id': 'P', 'caption': 'Production'},<br/>{'id': 'D', 'caption': 'Development'},<br/>{'id': 'N', 'caption': 'No'} |
 >| responsibility | Process manager | {'id': '1', 'caption': 'sysaid-dmst'} |
->| cc | CC | {'id': '3', 'caption': 'Adi Demisto'},<br/>{'id': '1', 'caption': 'sysaid-dmst'},<br/>{'id': '2', 'caption': 'Test User'} |
+>| cc | CC | {'id': '3', 'caption': 'Adi Dmst'},<br/>{'id': '1', 'caption': 'sysaid-dmst'},<br/>{'id': '2', 'caption': 'Test User'} |
 >| computer_name | Main Asset | {'id': '0A-3E-E9-13-2B-E4', 'caption': 'EC2AMAZ-S0GM752'},<br/>{'id': '93c18412-a672-4a3d-8b02-6f91ee963918', 'caption': 'Test LP'},<br/>{'id': '5171019c-fa80-4905-a577-c95eb518de90', 'caption': 'Test Phone'} |
 >| ci | Main CI |  |
 >| sr_type | Service Record Type | {'id': '4', 'caption': 'Change'},<br/>{'id': '6', 'caption': 'Problem'},<br/>{'id': '1', 'caption': 'Incident'},<br/>{'id': '10', 'caption': 'Request'} |
@@ -1146,9 +1146,9 @@ Allows to retrieve all lists (tables) related to a specific entity, or to return
 >| change_template | Template |  |
 >| closure_information | Closure Information | {'id': '1', 'caption': 'Solved (Permanently)'},<br/>{'id': '2', 'caption': 'Solved (Work Around)'},<br/>{'id': '3', 'caption': 'Solved On-site'},<br/>{'id': '4', 'caption': 'Solved Remotely'},<br/>{'id': '5', 'caption': 'Not Solved (Not Reproducible)'},<br/>{'id': '6', 'caption': 'Not Solved (Too Costly)'},<br/>{'id': '7', 'caption': 'Closed/Resolved by Requester'} |
 >| problem_sub_type | Sub-Category | {'id': 'Active Directory', 'caption': 'Active Directory'},<br/>{'id': 'Administration', 'caption': 'Administration'},<br/>{'id': 'Adobe Reader', 'caption': 'Adobe Reader'},<br/>{'id': 'Air conditioners', 'caption': 'Air conditioners'},<br/>{'id': 'Availability', 'caption': 'Availability'},<br/>{'id': 'Backup robot', 'caption': 'Backup robot'},<br/>{'id': 'DHCP', 'caption': 'DHCP'},<br/>{'id': 'DNS', 'caption': 'DNS'},<br/>{'id': 'Electricity', 'caption': 'Electricity'},<br/>{'id': 'Exchange Server', 'caption': 'Exchange Server'},<br/>{'id': 'Faxes', 'caption': 'Faxes'},<br/>{'id': 'File Server', 'caption': 'File Server'},<br/>{'id': 'Finance', 'caption': 'Finance'},<br/>{'id': 'Firewall', 'caption': 'Firewall'},<br/>{'id': 'HandHelds', 'caption': 'HandHelds'},<br/>{'id': 'HR', 'caption': 'HR'},<br/>{'id': 'Keyboard', 'caption': 'Keyboard'},<br/>{'id': 'Laptop', 'caption': 'Laptop'},<br/>{'id': 'Logistics', 'caption': 'Logistics'},<br/>{'id': 'Mobile phone', 'caption': 'Mobile phone'},<br/>{'id': 'Module A', 'caption': 'Module A'},<br/>{'id': 'Module B', 'caption': 'Module B'},<br/>{'id': 'Module C', 'caption': 'Module C'},<br/>{'id': 'Mouse', 'caption': 'Mouse'},<br/>{'id': 'Network printers', 'caption': 'Network printers'},<br/>{'id': 'Office', 'caption': 'Office'},<br/>{'id': 'Office Phones', 'caption': 'Office Phones'},<br/>{'id': 'Other', 'caption': 'Other'},<br/>{'id': 'Other Module', 'caption': 'Other Module'},<br/>{'id': 'Others', 'caption': 'Others'},<br/>{'id': 'Outlook', 'caption': 'Outlook'},<br/>{'id': 'Patch Approval', 'caption': 'Patch Approval'},<br/>{'id': 'PC', 'caption': 'PC'},<br/>{'id': 'PhotoCopy Machine', 'caption': 'PhotoCopy Machine'},<br/>{'id': 'Printer', 'caption': 'Printer'},<br/>{'id': 'Projectors', 'caption': 'Projectors'},<br/>{'id': 'Router', 'caption': 'Router'},<br/>{'id': 'Sales', 'caption': 'Sales'},<br/>{'id': 'Screen', 'caption': 'Screen'},<br/>{'id': 'Smartphone', 'caption': 'Smartphone'},<br/>{'id': 'Switch', 'caption': 'Switch'},<br/>{'id': 'Tablet', 'caption': 'Tablet'},<br/>{'id': 'Telephone System', 'caption': 'Telephone System'},<br/>{'id': 'Terminals', 'caption': 'Terminals'},<br/>{'id': 'UPS', 'caption': 'UPS'} |
->| followup_user | Followup User | {'id': '3', 'caption': 'Adi Demisto'},<br/>{'id': '1', 'caption': 'sysaid-dmst'},<br/>{'id': '2', 'caption': 'Test User'} |
+>| followup_user | Followup User | {'id': '3', 'caption': 'Adi Dmst'},<br/>{'id': '1', 'caption': 'sysaid-dmst'},<br/>{'id': '2', 'caption': 'Test User'} |
 >| urgency | Urgency | {'id': '1', 'caption': 'Urgent'},<br/>{'id': '2', 'caption': 'Very High'},<br/>{'id': '3', 'caption': 'High'},<br/>{'id': '4', 'caption': 'Normal'},<br/>{'id': '5', 'caption': 'Low'} |
->| request_user | Request user | {'id': '3', 'caption': 'Adi Demisto'},<br/>{'id': '1', 'caption': 'sysaid-dmst'},<br/>{'id': '2', 'caption': 'Test User'} |
+>| request_user | Request user | {'id': '3', 'caption': 'Adi Dmst'},<br/>{'id': '1', 'caption': 'sysaid-dmst'},<br/>{'id': '2', 'caption': 'Test User'} |
 >| sub_type | Sub Type | {'id': '3', 'caption': 'Advanced Problem'},<br/>{'id': '9', 'caption': 'Advanced Request'},<br/>{'id': '4', 'caption': 'Basic Problem'},<br/>{'id': '10', 'caption': 'Basic Request'},<br/>{'id': '12', 'caption': 'Change Proposal'},<br/>{'id': '6', 'caption': 'DEFAULT'},<br/>{'id': '2', 'caption': 'Emergency Change'},<br/>{'id': '13', 'caption': 'ITIL Problem'},<br/>{'id': '1', 'caption': 'Normal Change'},<br/>{'id': '11', 'caption': 'Patch Approval Process'},<br/>{'id': '8', 'caption': 'PHONE_CALL'},<br/>{'id': '7', 'caption': 'Printer failure'},<br/>{'id': '5', 'caption': 'Standard Change'} |
 >| company | Company |  |
 >| department | Department | {'id': '1', 'caption': 'IT'} |
@@ -6425,7 +6425,7 @@ List all assets
                 "type": "list",
                 "values": [
                     {
-                        "caption": "Adi Demisto",
+                        "caption": "Adi Dmst",
                         "id": "3"
                     },
                     {
@@ -7747,7 +7747,7 @@ List all assets
 >| responsibility | Assigned to | list | 1: sysaid-dmst |
 >| status | Status | list | ${list.active}: Active,<br/>${list.all}: All,<br/>${list.close}: Closed Class,<br/>1: New,<br/>2: Open,<br/>3: Closed,<br/>4: Verified closed,<br/>5: Pending,<br/>6: Postponed,<br/>7: Deleted,<br/>8: Reopened by End User,<br/>18: Change opened and being analyzed,<br/>19: Change Approved,<br/>20: Change Rejected,<br/>21: Change Completed,<br/>22: Being Analyzed,<br/>23: In Approval Process,<br/>24: In Implementation,<br/>25: In Release,<br/>26: Waiting to be closed,<br/>27: Problem Identified,<br/>28: Problem Solved,<br/>29: Closed unresolved problem,<br/>30: Analyzing the solution for the problem,<br/>31: User Responded,<br/>32: Pending Problem resolution,<br/>33: Request opened and being analyzed,<br/>34: Request Completed,<br/>35: Request Rejected,<br/>36: Request Cancelled,<br/>39: Merge Deleted,<br/>40: Merge Closed |
 >| urgency | Urgency | list | ${list.all}: All,<br/>1: Urgent,<br/>2: Very High,<br/>3: High,<br/>4: Normal,<br/>5: Low |
->| request_user | Request user | list | 3: Adi Demisto,<br/>1: sysaid-dmst,<br/>2: Test User |
+>| request_user | Request user | list | 3: Adi Dmst,<br/>1: sysaid-dmst,<br/>2: Test User |
 >| problem_type | Category | nested | problem_type: problem_type |
 >| archive | Archive | boolean |  |
 >| assigned_group | Admin Group | list | ${list.group.all}: All Groups,<br/>${list.group.none}: none,<br/>1: Support |
@@ -7984,8 +7984,8 @@ List all assets
                     {
                         "key": "calculated_user_name",
                         "keyCaption": "Calculated User Name",
-                        "value": "Adi Demisto",
-                        "valueCaption": "Adi Demisto",
+                        "value": "Adi Dmst",
+                        "valueCaption": "Adi Dmst",
                         "valueClass": ""
                     },
                     {
@@ -8033,8 +8033,8 @@ List all assets
                     {
                         "key": "last_name",
                         "keyCaption": "Last Name",
-                        "value": "Demisto",
-                        "valueCaption": "Demisto",
+                        "value": "Dmst",
+                        "valueCaption": "Dmst",
                         "valueClass": ""
                     },
                     {
@@ -8746,8 +8746,8 @@ List all assets
                     {
                         "key": "email_address",
                         "keyCaption": "Email",
-                        "value": "Test@demistodev.com",
-                        "valueCaption": "Test@demistodev.com",
+                        "value": "Test@dmstdev.com",
+                        "valueCaption": "Test@dmstdev.com",
                         "valueClass": ""
                     },
                     {
@@ -9053,8 +9053,8 @@ Get information about a specific asset
                     {
                         "key": "calculated_user_name",
                         "keyCaption": "Calculated User Name",
-                        "value": "Adi Demisto",
-                        "valueCaption": "Adi Demisto",
+                        "value": "Adi Dmst",
+                        "valueCaption": "Adi Dmst",
                         "valueClass": ""
                     },
                     {
@@ -9102,8 +9102,8 @@ Get information about a specific asset
                     {
                         "key": "last_name",
                         "keyCaption": "Last Name",
-                        "value": "Demisto",
-                        "valueCaption": "Demisto",
+                        "value": "Dmst",
+                        "valueCaption": "Dmst",
                         "valueClass": ""
                     },
                     {
@@ -10967,7 +10967,7 @@ List all service requests
                         "key": "request_user_name",
                         "keyCaption": "Request username",
                         "value": 3,
-                        "valueCaption": "Adi Demisto",
+                        "valueCaption": "Adi Dmst",
                         "valueClass": ""
                     },
                     {
@@ -11051,7 +11051,7 @@ List all service requests
                         "key": "request_user",
                         "keyCaption": "Request user",
                         "value": 3,
-                        "valueCaption": "Adi Demisto",
+                        "valueCaption": "Adi Dmst",
                         "valueClass": ""
                     },
                     {
@@ -15894,7 +15894,7 @@ Search by a query among all SRs
                         "key": "request_user_name",
                         "keyCaption": "Request username",
                         "value": 3,
-                        "valueCaption": "Adi Demisto",
+                        "valueCaption": "Adi Dmst",
                         "valueClass": ""
                     },
                     {
@@ -15978,7 +15978,7 @@ Search by a query among all SRs
                         "key": "request_user",
                         "keyCaption": "Request user",
                         "value": 3,
-                        "valueCaption": "Adi Demisto",
+                        "valueCaption": "Adi Dmst",
                         "valueClass": ""
                     },
                     {

@@ -24,10 +24,22 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- defaultvalue: '50'
+  display: Maximum number of incidents to fetch
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+- defaultvalue: 3 days
+  display: First fetch time interval
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
 description: SysAid is a robust IT management system that was designed to meet all of your needs as an IT department.
 display: SysAid
 name: SysAid
@@ -387,7 +399,7 @@ script:
       contextPath: SysAid.ServiceRecord.status
       description: ''
   - name: sysaid-service-record-update
-    description: ''
+    description: 'The valid statuses can be retrieved using the "sysaid-table-list" command.'
     arguments:
     - name: id
       description: 'The service record ID'
@@ -529,10 +541,10 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-        - incident
-        - request
-        - problem
-        - change
+      - incident
+      - request
+      - problem
+      - change
     - name: template_id
       description: 'The service record template ID, according to SR type. Defaults to the first/default template.'
       required: false
@@ -545,7 +557,8 @@ script:
       contextPath: SysAid.ServiceRecordTemplate.info
       description: ''
   - name: sysaid-service-record-create
-    description: 'Create a new service record and return the newly created service record.'
+    description: 'Create a new service record and return the newly created service record.
+     The valid statuses can be retrieved using the "sysaid-table-list" command.'
     arguments:
     - name: fields
       description: 'List of fields to return. Comma separated.'
@@ -557,10 +570,10 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-        - incident
-        - request
-        - problem
-        - change
+      - incident
+      - request
+      - problem
+      - change
     - name: template_id
       description: 'The service record template ID, according to SR type. Defaults to the first/default template.'
       required: false

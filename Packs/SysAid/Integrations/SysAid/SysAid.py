@@ -12,6 +12,11 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
+SERVICE_RECORD_ARGS = ['agreement', 'assigned_group', 'change_category', 'company', 'computer_id', 'cust_notes', 'department',
+                       'description', 'due_date', 'email_account', 'escalation', 'followup_text', 'followup_user', 'impact',
+                       'location', 'priority', 'problem_sub_type', 'problem_type', 'responsibility', 'solution', 'sr_type',
+                       'status', 'sub_type', 'third_level_category', 'title', 'urgency']
+
 ''' CLIENT CLASS '''
 
 
@@ -27,14 +32,15 @@ class Client(BaseClient):
 
         return response.cookies
 
-    def table_list_request(self, entity, fields, offset, limit):
+    def table_list_request(self, entity: str = None, fields: List[str] = None, offset: int = None, limit: int = None):
         params = assign_params(entity=entity, fields=fields, offset=offset, limit=limit)
 
         response = self._http_request('GET', 'list', params=params, cookies=self._cookies)
 
         return response
 
-    def table_list_with_id_request(self, list_id, entity, entity_id, entity_type, fields, offset, limit, key):
+    def table_list_with_id_request(self, list_id: str, entity: str = None, entity_id: str = None, entity_type: int = None,
+                                   fields: List[str] = None, offset: int = None, limit: int = None, key: str = None):
         params = assign_params(entity=entity, fields=fields, offset=offset, limit=limit,
                                entityId=entity_id, entityType=entity_type, key=key)
 
@@ -42,49 +48,51 @@ class Client(BaseClient):
 
         return response
 
-    def asset_list_request(self, fields, offset, limit):
+    def asset_list_request(self, fields: List[str] = None, offset: int = None, limit: int = None):
         params = assign_params(fields=fields, offset=offset, limit=limit)
 
         response = self._http_request('GET', 'asset', params=params, cookies=self._cookies)
 
         return response
 
-    def asset_list_with_id_request(self, asset_id, fields):
+    def asset_list_with_id_request(self, asset_id: str, fields: List[str] = None):
         params = assign_params(fields=fields)
 
         response = self._http_request('GET', f'asset/{asset_id}', params=params, cookies=self._cookies)
 
         return response
 
-    def asset_search_request(self, query, fields, limit, offset):
+    def asset_search_request(self, query: str, fields: List[str] = None, limit: int = None, offset: int = None):
         params = assign_params(query=query, fields=fields, limit=limit, offset=offset)
 
         response = self._http_request('GET', 'asset/search', params=params, cookies=self._cookies)
 
         return response
 
-    def filter_list_request(self, fields, offset, limit):
+    def filter_list_request(self, fields: List[str] = None, offset: int = None, limit: int = None):
         params = assign_params(fields=fields, offset=offset, limit=limit)
 
         response = self._http_request('GET', 'filters', params=params, cookies=self._cookies)
 
         return response
 
-    def user_list_request(self, fields, type_, offset, limit):
+    def user_list_request(self, fields: List[str] = None, type_: str = None, offset: int = None, limit: int = None):
         params = assign_params(fields=fields, type=type_, offset=offset, limit=limit)
 
         response = self._http_request('GET', 'users', params=params, cookies=self._cookies)
 
         return response
 
-    def user_search_request(self, query, fields, type_, offset, limit):
+    def user_search_request(self, query: str, fields: List[str] = None, type_: str = None, offset: int = None, limit: int = None):
         params = assign_params(query=query, fields=fields, type=type_, offset=offset, limit=limit)
 
         response = self._http_request('GET', 'users/search', params=params, cookies=self._cookies)
 
         return response
 
-    def service_record_list_request(self, type_, fields, offset, limit, ids, archive, filters):
+    def service_record_list_request(self, type_: str, fields: List[str] = None, offset: int = None, limit: int = None,
+                                    ids: List[str] = None, archive: int = None,
+                                    filters: Dict[str, str] = None):
         params = assign_params(type=type_, fields=fields, offset=offset, limit=limit, ids=ids, archive=archive)
         params.update(filters)
 
@@ -92,7 +100,8 @@ class Client(BaseClient):
 
         return response
 
-    def service_record_search_request(self, type_, fields, offset, limit, query, archive, filters):
+    def service_record_search_request(self, type_: str, query: str, fields: List[str] = None, offset: int = None,
+                                      limit: int = None, archive: int = None, filters: Dict[str, str] = None):
         params = assign_params(type=type_, fields=fields, offset=offset, limit=limit, query=query, archive=archive)
         params.update(filters)
 
@@ -100,14 +109,14 @@ class Client(BaseClient):
 
         return response
 
-    def service_record_update_request(self, id_: str, info: List[Dict[str, Any]]):
+    def service_record_update_request(self, id_: str, info: List[Dict[str, str]] = None):
         data = {"id": id_, "info": info}
 
         response = self._http_request('PUT', f'sr/{id_}', json_data=data, cookies=self._cookies, resp_type='response')
 
         return response
 
-    def service_record_close_request(self, id_, solution):
+    def service_record_close_request(self, id_: str, solution: str = None):
         data = {"solution": solution}
 
         # 400 - 'This service record is already closed' might be raised - which isn't a real error
@@ -116,27 +125,28 @@ class Client(BaseClient):
 
         return response
 
-    def service_record_template_get_request(self, fields, type_, template_id):
+    def service_record_template_get_request(self, type_: str, fields: List[str] = None, template_id: str = None):
         params = assign_params(fields=fields, type=type_, template=template_id)
 
         response = self._http_request('GET', 'sr/template', params=params, cookies=self._cookies)
 
         return response
 
-    def service_record_create_request(self, fields, type_, template, info: List[Dict[str, Any]]):
-        params = assign_params(fields=fields, type=type_, template=template)
+    def service_record_create_request(self, type_: str, info: List[Dict[str, str]], fields: List[str] = None,
+                                      template_id: str = None):
+        params = assign_params(fields=fields, type=type_, template=template_id)
         data = {"info": info}
 
         response = self._http_request('GET', 'sr/template', params=params, json_data=data, cookies=self._cookies)
 
         return response
 
-    def service_record_delete_request(self, ids, solution):
+    def service_record_delete_request(self, ids: List[str], solution: str = None):
         params = assign_params(ids=ids)
         data = {"solution": solution}
 
         # 400 - 'Invalid service record id' might be raised - which isn't a real error
-        response = self._http_request('DELETE', f'sr', params=params, json_data=data, cookies=self._cookies, resp_type='response',
+        response = self._http_request('DELETE', 'sr', params=params, json_data=data, cookies=self._cookies, resp_type='response',
                                       ok_codes=(200, 400))
         return response
 
@@ -144,12 +154,16 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def asset_list_readable_response(responses, regular_titles: List[str], special_title, special_title_key, special_title_value,
-                                 remove_if_null=None):
+def asset_list_readable_response(responses: Union[dict, List[dict], str], regular_titles: List[str], special_title: str,
+                                 special_title_key: str, special_title_value: str, remove_if_null: str = None) \
+        -> Union[str, List[Dict[str, str]]]:
     readable_response = []
 
     if isinstance(responses, dict):
         responses = [responses]
+
+    if isinstance(responses, str):
+        return responses
 
     for response in responses:
         new_info = []
@@ -165,11 +179,14 @@ def asset_list_readable_response(responses, regular_titles: List[str], special_t
     return readable_response
 
 
-def service_record_readable_response(responses):
+def service_record_readable_response(responses: Union[dict, List[dict], str]) -> Union[str, List[Dict[str, str]]]:
     readable_response = []
 
     if isinstance(responses, dict):
         responses = [responses]
+
+    if isinstance(responses, str):
+        return responses
 
     for response in responses:
         response_entry = {'id': response['id']}
@@ -186,20 +203,17 @@ def service_record_readable_response(responses):
     return readable_response
 
 
-def extract_filters(custom_fields_keys, custom_fields_values):
+def extract_filters(custom_fields_keys: List[str], custom_fields_values: List[str]) -> Dict[str, str]:
     filters = {}
     for key, value in zip(custom_fields_keys, custom_fields_values):
         filters[key] = value
     return filters
 
 
-def set_info(args) -> List[Dict[str, Any]]:
+def set_service_record_info(args: Dict[str, Any]) -> List[Dict[str, str]]:
     info = []
 
-    for arg_name in ['impact', 'priority', 'status', 'description', 'solution', 'problem_type', 'problem_sub_type',
-                     'third_level_category', 'sr_type', 'sub_type', 'agreement', 'title', 'followup_user', 'followup_text',
-                     'cust_notes', 'email_account', 'responsibility', 'urgency', 'company', 'department', 'computer_id',
-                     'due_date', 'escalation', 'change_category', 'assigned_group', 'location']:
+    for arg_name in SERVICE_RECORD_ARGS:
         arg_value = args.get(arg_name)
         if arg_value:
             info.append({"key": arg_name, "value": arg_value})
@@ -212,11 +226,14 @@ def set_info(args) -> List[Dict[str, Any]]:
     return info
 
 
-def template_readable_response(responses):
+def template_readable_response(responses: Union[dict, List[dict], str]) -> Union[str, List[Dict[str, Any]]]:
     readable_response = []
 
     if isinstance(responses, dict):
         responses = [responses]
+
+    if isinstance(responses, str):
+        return responses
 
     for response in responses:
         all_info_for_response = []
@@ -243,7 +260,7 @@ def table_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     entity_id = args.get('entity_id')
     entity_type = arg_to_number(args.get('entity_type'))
     key = args.get('key')
-    list_id = args.get('list_id')
+    list_id = str(args.get('list_id'))
     offset = arg_to_number(args.get('offset'))
     limit = arg_to_number(args.get('limit'))
     fields = argToList(args.get('fields'))
@@ -295,7 +312,7 @@ def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    query = args.get('query')
+    query = str(args.get('query'))
     fields = argToList(args.get('fields'))
     offset = arg_to_number(args.get('offset'))
     limit = arg_to_number(args.get('limit'))
@@ -308,7 +325,7 @@ def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Asset Results:',
+        readable_output=tableToMarkdown('Asset Results:',
                                         readable_response,
                                         headers=headers,
                                         removeNull=True)
@@ -330,7 +347,7 @@ def filter_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Filter Results:',
+        readable_output=tableToMarkdown('Filter Results:',
                                         readable_response,
                                         headers=headers,
                                         removeNull=True)
@@ -352,7 +369,7 @@ def user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Filter Results:',
+        readable_output=tableToMarkdown('Filter Results:',
                                         response,
                                         headers=headers,
                                         removeNull=True)
@@ -362,7 +379,7 @@ def user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    query = args.get('query')
+    query = str(args.get('query'))
     fields = argToList(args.get('fields'))
     type_ = args.get('type')
     offset = arg_to_number(args.get('offset'))
@@ -375,7 +392,7 @@ def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'User Results:',
+        readable_output=tableToMarkdown('User Results:',
                                         response,
                                         headers=headers,
                                         removeNull=True)
@@ -385,7 +402,7 @@ def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def service_record_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    type_ = args.get('type')
+    type_ = str(args.get('type'))
     fields = argToList(args.get('fields'))
     offset = arg_to_number(args.get('offset'))
     limit = arg_to_number(args.get('limit'))
@@ -403,7 +420,7 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Service Record Results:',
+        readable_output=tableToMarkdown('Service Record Results:',
                                         readable_response,
                                         headers=headers,
                                         removeNull=True)
@@ -413,8 +430,8 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def service_record_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    query = args.get('query')
-    type_ = args.get('type')
+    query = str(args.get('query'))
+    type_ = str(args.get('type'))
     fields = argToList(args.get('fields'))
     offset = arg_to_number(args.get('offset'))
     limit = arg_to_number(args.get('limit'))
@@ -423,7 +440,7 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
     custom_fields_values = argToList(args.get('custom_fields_values'))
     filters = extract_filters(custom_fields_keys, custom_fields_values)
 
-    response = client.service_record_search_request(type_, fields, offset, limit, query, archive, filters)
+    response = client.service_record_search_request(type_, query, fields, offset, limit, archive, filters)
     headers = ['id', 'title', 'status']
     readable_response = service_record_readable_response(response)
     command_results = CommandResults(
@@ -431,7 +448,7 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Service Record Results:',
+        readable_output=tableToMarkdown('Service Record Results:',
                                         readable_response,
                                         headers=headers,
                                         removeNull=True)
@@ -441,8 +458,8 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def service_record_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    id_ = args.get('id')
-    info = set_info(args)
+    id_ = str(args.get('id'))
+    info = set_service_record_info(args)
 
     response = client.service_record_update_request(id_, info)
     if response.ok:
@@ -458,7 +475,7 @@ def service_record_update_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def service_record_close_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    id_ = args.get('id')
+    id_ = str(args.get('id'))
     solution = args.get('solution')
 
     response = client.service_record_close_request(id_, solution)
@@ -477,11 +494,11 @@ def service_record_close_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def service_record_template_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    fields = args.get('fields')
-    type_ = args.get('type')
+    fields = argToList(args.get('fields'))
+    type_ = str(args.get('type'))
     template_id = args.get('template_id')
 
-    response = client.service_record_template_get_request(fields, type_, template_id)
+    response = client.service_record_template_get_request(type_, fields, template_id)
     readable_response = template_readable_response(response)
     headers = ['id', 'info']
     command_results = CommandResults(
@@ -489,7 +506,7 @@ def service_record_template_get_command(client: Client, args: Dict[str, Any]) ->
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Service Record Results:',
+        readable_output=tableToMarkdown('Service Record Results:',
                                         readable_response,
                                         headers=headers,
                                         removeNull=True)
@@ -499,12 +516,12 @@ def service_record_template_get_command(client: Client, args: Dict[str, Any]) ->
 
 
 def service_record_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    fields = args.get('fields')
-    type_ = args.get('type')
-    template = args.get('template')
-    info = set_info(args)
+    fields = argToList(args.get('fields'))
+    type_ = str(args.get('type'))
+    template_id = args.get('template_id')
+    info = set_service_record_info(args)
 
-    response = client.service_record_create_request(fields, type_, template, info)
+    response = client.service_record_create_request(type_, info, fields, template_id)
     headers = ['id', 'title', 'status']
     readable_response = service_record_readable_response(response)
     command_results = CommandResults(
@@ -512,7 +529,7 @@ def service_record_create_command(client: Client, args: Dict[str, Any]) -> Comma
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Service Record Results:',
+        readable_output=tableToMarkdown('Service Record Results:',
                                         readable_response,
                                         headers=headers,
                                         removeNull=True)
