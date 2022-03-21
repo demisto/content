@@ -19,21 +19,27 @@ ABSOLUTE_URL_TO_API_URL = {
     'https://cc.us.absolute.com': 'https://api.us.absolute.com',
     'https://cc.eu2.absolute.com': 'https://api.eu2.absolute.com',
 }
+ABSOLUTE_URL_TO_HOST_NAME = {
+    'https://cc.absolute.com': 'api.absolute.com',
+    'https://cc.us.absolute.com': 'api.us.absolute.com',
+    'https://cc.eu2.absolute.com': 'api.eu2.absolute.com',
+}
 ABSOLUTE_URL_REGION = {
-    'https://cc.absolute.com': 'cadc',
-    'https://cc.us.absolute.com': 'usdc',
-    'https://cc.eu2.absolute.com': 'eudc',
+    'https://api.absolute.com': 'cadc',
+    'https://api.us.absolute.com': 'usdc',
+    'https://api.eu2.absolute.com': 'eudc',
 }
 INTEGRATION = "Absolute"
 STRING_TO_SIGN_ALGORITHM = "ABS1-HMAC-SHA-256"
 STRING_TO_SIGN_SIGNATURE_VERSION = "abs1"
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y%m%dT%H%M%SZ'  # ISO8601 format with UTC, default in XSOAR
 DATE_FORMAT_CREDENTIAL_SCOPE = '%Y%m%d'
 DATE_FORMAT_K_DATE = '<%Y><%m><%d>'
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, headers: dict, proxy: bool):
+    def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, headers: dict, proxy: bool,
+                 x_abs_date: str):
         """
         Client to use in the Absolute integration. Overrides BaseClient.
 
@@ -44,18 +50,18 @@ class Client(BaseClient):
             verify (bool): Whether to check for SSL certificate validity.
             proxy (bool): Whether the client should use proxies.
             headers (dict): Headers to set when doing a http request.
+            x_abs_date (str):
         """
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self._api_url = None
         self._base_url = base_url
         self._token_id = token_id
         self._secret_key = secret_key
         self._headers = headers
+        self._x_abs_date = x_abs_date
 
     def validate_absolute_api_url(self):
         if self._base_url not in ABSOLUTE_URL_TO_API_URL.keys():
             DemistoException(f"{INTEGRATION} Error: The Absolute server url {self._base_url} in not a valid url.")
-        self._api_url = ABSOLUTE_URL_TO_API_URL[self._base_url]
 
     def prepare_request_for_api(self, method: str, canonical_uri: str, query_string: str, payload: str):
         """
@@ -89,7 +95,7 @@ class Client(BaseClient):
         """
         canonical_request = [method, canonical_uri, self.prepare_query_string_for_canonical_request(query_string),
                              self.prepare_canonical_headers(), self.prepare_canonical_hash_payload(payload)]
-        return "\n".join(canonical_request)
+        return "\n".join(canonical_request).rstrip()
 
     def prepare_query_string_for_canonical_request(self, query_string: str) -> str:
         """
@@ -104,27 +110,27 @@ class Client(BaseClient):
             return ""
         query_list = query_string.split()
         query_list.sort()
-        encoded_query_list = [urllib.parse.quote(query.encode('utf-8'), safe='=') for query in query_list]
+        encoded_query_list = [urllib.parse.quote(query.encode('utf-8'), safe='=&') for query in query_list]
         return '&'.join(encoded_query_list)
 
     def prepare_canonical_headers(self) -> str:
         """
-
+        Create the canonical headers and signed headers. Header names must be trimmed and lowercase,
+        and sorted in code point order from low to high. Note that there is a trailing \n.
         """
         canonical_headers = ""
         for header, value in self._headers.items():
             canonical_headers += f'{header.lower()}:{value.strip()}\n'
-        return canonical_headers
+        return canonical_headers.rstrip()
 
-    def prepare_canonical_hash_payload(self, payload) -> str:
+    def prepare_canonical_hash_payload(self, payload: str) -> str:
         """
         According to the API we should do:
-        Hash the entire body using SHA-256 algorithm, HexEncode, and apply lowercase
-        If there is no payload, use an empty string
+        Hash the entire body using SHA-256 algorithm, HexEncode.
+        Create payload hash (hash of the request body content).
+        For GET requests, the payload is an empty string ("").
         """
-        if not payload:
-            return ""
-        return hashlib.sha256(payload).hexdigest().lower()
+        return hashlib.sha256(payload.encode('utf-8')).hexdigest()
 
     def create_signing_string(self, canonical_req: str) -> str:
         """
@@ -146,20 +152,18 @@ class Client(BaseClient):
 
         HashedCanonicalRequest: The hashed, hex-converted, and lowercase value of the canonical request.
         """
-        # todo wait for response about this step
-        requested_date_time = datetime.now().strftime(DATE_FORMAT)
         credential_scope = self.create_credential_scope()
-        canonical_req_hashed = hashlib.sha256(canonical_req).hexdigest().lower()
-        return "\n".join([STRING_TO_SIGN_ALGORITHM, requested_date_time, credential_scope, canonical_req_hashed])
+        canonical_req_hashed = hashlib.sha256(canonical_req.encode('utf-8')).hexdigest()
+        return "\n".join([STRING_TO_SIGN_ALGORITHM, self._x_abs_date, credential_scope, canonical_req_hashed])
 
     def create_credential_scope(self) -> str:
         """
-            CredentialScope: The CredentialScope is defined in three parts:
-                    1. The date (in UTC) of the request. Format: YYYYMMDD
-                    2. Region or data center (must be in lowercase) Possible values: cadc, usdc, eudc
-                    3. Version or type of signature. Always abs1
+        CredentialScope: The CredentialScope is defined in three parts:
+                1. The date (in UTC) of the request. Format: YYYYMMDD
+                2. Region or data center (must be in lowercase) Possible values: cadc, usdc, eudc
+                3. Version or type of signature. Always abs1
         """
-        credential_scope_date = datetime.now().date().strftime(DATE_FORMAT_CREDENTIAL_SCOPE)
+        credential_scope_date = datetime.utcnow().date().strftime(DATE_FORMAT_CREDENTIAL_SCOPE)
         region = ABSOLUTE_URL_REGION[self._base_url]
         return f'{credential_scope_date}/{region}/{STRING_TO_SIGN_SIGNATURE_VERSION}'
 
@@ -178,9 +182,10 @@ class Client(BaseClient):
                     Note:Do not use a hex digest method.
 
         """
-        k_secret = f'ABS1 {self._secret_key}'.encode(encoding='UTF-8')
-        k_date = sign(k_secret, datetime.now().date().strftime(DATE_FORMAT_K_DATE))
-        return sign(k_date, "abs1_request")
+        credential_scope_date = datetime.now().date().strftime(DATE_FORMAT_CREDENTIAL_SCOPE)
+        k_date = sign((STRING_TO_SIGN_SIGNATURE_VERSION.upper() + self._secret_key).encode('utf-8'),
+                      credential_scope_date)
+        return sign(k_date, 'abs1_request')
 
     def create_signature(self, signing_string, signing_key):
         """
@@ -191,7 +196,7 @@ class Client(BaseClient):
 
         signature = lowercase(hexencode(HMAC(kSigning, StringToSign)))
         """
-        return sign(signing_key, signing_string).hexdigest().lower()
+        return hmac.new(signing_key, signing_string.encode('utf-8'), hashlib.sha256).hexdigest()
 
     def add_authorization_header(self, signing_signature: str) -> str:
         """
@@ -211,14 +216,25 @@ class Client(BaseClient):
         """
         credential_scope = self.create_credential_scope()
         canonical_headers = ";".join([header.lower() for header in self._headers.keys()])
-
         # There is a space after each comma in the authorization header
-        return f'Authorization: {STRING_TO_SIGN_ALGORITHM} Credential={self._token_id}/{credential_scope}, ' \
+        return f'{STRING_TO_SIGN_ALGORITHM} Credential={self._token_id}/{credential_scope}, ' \
                f'SignedHeaders={canonical_headers}, Signature={signing_signature}'
+
+    def request_custom_device_field_list_command(self, method: str, url_suffix: str, body: str = ""):
+        """
+        Makes an HTTP request to
+        Args:
+            method (str): HTTP request method (GET/POST/DELETE).
+            url_suffix (str): The API endpoint.
+            body (str): The params to set.
+        """
+        demisto.debug(f'current request is: method={method}, url suffix={url_suffix}, body={body}')
+        self.prepare_request_for_api(method=method, canonical_uri=url_suffix, query_string='', payload=body)
+        return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers)
 
 
 def sign(key, msg):
-    return hmac.new(key, msg.encode('utf-8'), hashlib.sha256)
+    return hmac.new(key, msg.encode('utf-8'), hashlib.sha256).digest()
 
 
 ''' COMMAND FUNCTIONS '''
@@ -252,12 +268,48 @@ def test_module(client: Client) -> str:
     return message
 
 
+def parse_device_field_list_response(response: dict) -> Dict[str, Any]:
+    parsed_data = {'DeviceUID': response.get('deviceUid'), 'ESN': response.get('esn'), 'CDFValues': []}
+    for cdf_item in response.get('cdfValues', []):
+        parsed_data['CDFValues'].append({
+            'CDFUID': cdf_item.get('cdfUid'),
+            'FieldKey': cdf_item.get('fieldKey'),
+            'FieldName': cdf_item.get('fieldName'),
+            'CategoryCode': cdf_item.get('categoryCode'),
+            'FieldValue': cdf_item.get('fieldValue'),
+            'Type': cdf_item.get('type'),
+        })
+    return parsed_data
+
+
+def get_custom_device_field_list_command(args, client) -> CommandResults:
+    device_id = args.get('device_id')
+    res = client.request_custom_device_field_list_command('GET', f'/v2/devices/{device_id}/cdf')
+    print("res")
+    print(res)
+    outputs = parse_device_field_list_response(res)
+    human_readable = tableToMarkdown(f'{INTEGRATION}: Custom device field list', outputs,
+                                     headers=['DeviceUID', 'ESN', 'CDFValues'])
+    return CommandResults(outputs=outputs, outputs_prefix="Absolute.CustomDeviceField", outputs_key_field='DeviceUID',
+                          readable_output=human_readable, raw_response=res)
+
+
+def update_custom_device_field_command(args, client) -> CommandResults:
+    device_id = args.get('device_id')
+    cdf_uid = args.get('cdf_uid')
+    field_key = args.get('field_key')
+    field_value = args.get('value')
+    res = client.request_custom_device_field_list_command('PUT', f'v2/devices/{device_id}/cdf')
+    return CommandResults(readable_output=f"Device {device_id} with value {field_value} was updated successfully.",
+                          raw_response=res)
+
+
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
     params = demisto.params()
-    base_url = urljoin(params.get('url'), '/v2')
+    base_url = ABSOLUTE_URL_TO_API_URL[params.get('url')]
     token_id = params.get('token')
     secret_key = params.get('secret_key', {}).get('password')
     verify_certificate = not params.get('insecure', False)
@@ -265,8 +317,9 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        x_abs_date = datetime.now().strftime(DATE_FORMAT)
-        headers: Dict = {"Host": base_url, "Content-Type": "application/json", "X-Abs-Date": x_abs_date}
+        host = base_url.split('https://')[-1]
+        x_abs_date = datetime.utcnow().strftime(DATE_FORMAT)
+        headers: Dict = {"host": host, "content-type": "application/json", "x-abs-date": x_abs_date}
 
         client = Client(
             base_url=base_url,
@@ -274,16 +327,20 @@ def main() -> None:
             headers=headers,
             proxy=proxy,
             token_id=token_id,
-            secret_key=secret_key
+            secret_key=secret_key,
+            x_abs_date=x_abs_date,
         )
-
+        args = demisto.args()
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'baseintegration-dummy':
-            pass
+        elif demisto.command() == 'absolute-custom-device-field-list':
+            return_results(get_custom_device_field_list_command(args=args, client=client))
+
+        elif demisto.command() == 'absolute-custom-device-field-update':
+            return_results(get_custom_device_field_list_command(args=args, client=client))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

@@ -44,13 +44,13 @@ script:
     execution: false
     name: absolute-custom-device-field-list
     outputs:
-    - contextPath: Absolute.CustomDeviceField.DeviceUid
+    - contextPath: Absolute.CustomDeviceField.DeviceUID
       description: The system-defined unique identifier of the device.
       type: String
     - contextPath: Absolute.CustomDeviceField.ESN
       description: The unique ESN (Identifier) assigned to the Absolute agent that is installed on a device.
       type: String
-    - contextPath: Absolute.CustomDeviceField.CDFValues.CDFUid
+    - contextPath: Absolute.CustomDeviceField.CDFValues.CDFUID
       description: The unique identifier of the custom device field.
       type: String
     - contextPath: Absolute.CustomDeviceField.CDFValues.FieldKey
@@ -144,7 +144,7 @@ script:
       isArray: false
       name: scheduled_freeze_date
       required: false
-      secret: falseF
+      secret: false
     - default: false
       description: 'The length of time (in seconds) that a device can be offline before the device is frozen. Required if device_freeze_type is Offline. Must be between 1200 seconds (20 minutes) and 172800000 seconds (2000 days). Default value is 30 days.'
       isArray: false
