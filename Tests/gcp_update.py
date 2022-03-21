@@ -17,7 +17,7 @@ def main():
     from google.cloud import storage
     storage_client = storage.Client()
     logging.info('Copying build bucket to xsiam_instance_bucket.')
-    from_bucket = f'{MARKETPLACE_TEST_BUCKET}/xsiam-build-instances/2614154/marketplacev2/content'
+    from_bucket = f'{MARKETPLACE_TEST_BUCKET}/xsiam-build-instances/2614610/marketplacev2/content'
     to_bucket = f'{MARKETPLACE_XSIAM_BUCKETS}/xsoar-content-1'
     cmd = f'gsutil -m cp -r "gs://{from_bucket}" "gs://{to_bucket}/"'
     #  > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine.log" 2>&1
