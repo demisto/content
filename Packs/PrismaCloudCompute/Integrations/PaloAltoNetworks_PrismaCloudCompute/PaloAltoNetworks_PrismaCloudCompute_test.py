@@ -13,7 +13,7 @@ from CommonServerPython import DemistoException
 
 
 BASE_URL = 'https://test.com'
-
+TEST = 'just a test'
 
 @pytest.fixture
 def client() -> PrismaCloudComputeClient:
