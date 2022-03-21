@@ -6454,7 +6454,7 @@ class CommandRunner:
             if not isinstance(args_lst, list):
                 raise DemistoException('Expected "args_lst" argument to be a list. received: {}'.format(type(args_lst)))
             if len(commands) != len(args_lst):
-                raise DemistoException('commands and args_lst should be in the same size')
+                raise DemistoException('"commands" and "args_lst" should be in the same size')
 
     class Result:
         """
