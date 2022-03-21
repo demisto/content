@@ -521,3 +521,50 @@ def test_file_create_relationships(create_relationships: bool, max_num_relations
     assert len(results) == len(excepted_output)
     for i in range(len(results)):
         assert results[i].to_context() == excepted_output[i]
+
+
+DBOT_SCORE_UNKNOWN = [
+
+    (
+        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': 'md5',
+         'integration_name': 'test'},
+        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': 'file',
+         'sha1': None, 'sha256': None, 'md5': 'd26cec10398f2b10202d23c966022dce'}
+    ),
+    (
+        {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'indicator_type': 'sha256',
+         'integration_name': 'test'},
+        {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'indicator_type': 'file',
+         'sha1': None,
+         'sha256': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'md5': None}
+    ),
+    (
+        {'indicator': '8.8.8.8', 'indicator_type': 'ip', 'integration_name': 'test'},
+        {'indicator': '8.8.8.8', 'indicator_type': 'ip'}
+    ),
+    (
+        {'indicator': 'www.example.com', 'indicator_type': 'url', 'integration_name': 'test'},
+        {'indicator': 'www.example.com', 'indicator_type': 'url'}
+    ),
+    (
+        {'indicator': 'example.com', 'indicator_type': 'domain', 'integration_name': 'test'},
+        {'indicator': 'example.com', 'indicator_type': 'domain'}
+    )
+]
+
+
+@pytest.mark.parametrize('inputs, expected_return', DBOT_SCORE_UNKNOWN)
+def test_build_context_indicator_no_results_status(inputs, expected_return):
+
+    from URLHaus import build_context_indicator_no_results_status
+
+    results = build_context_indicator_no_results_status(indicator=inputs.get('indicator'),
+                                                        indicator_type=inputs.get('indicator_type'),
+                                                        integration_name='test')
+
+    assert results.indicator.dbot_score.score == 0
+    assert results.indicator.dbot_score.indicator_type == expected_return.get('indicator_type')
+    if results.indicator.dbot_score.indicator_type == 'file':
+        assert results.indicator.sha1 == expected_return.get('sha1')
+        assert results.indicator.sha256 == expected_return.get('sha256')
+        assert results.indicator.md5 == expected_return.get('md5')
