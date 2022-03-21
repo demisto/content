@@ -110,4 +110,9 @@ SentinelOne
 URLs
 hostname
 EDR
+GetCampaignLowSimilarityIncidentsInfo
+ShowCampaignSenders
+ShowCampaignRecipients
+GetCampaignIncidentsInfo
+IsIncidentPartOfCampaign
 Rasterize
