@@ -17,7 +17,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 300
+            "width": 150
         },
         {
             "displayName": "Value",
@@ -54,6 +54,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "openEnded": false
+    "fromVersion": "6.0.0"
 }

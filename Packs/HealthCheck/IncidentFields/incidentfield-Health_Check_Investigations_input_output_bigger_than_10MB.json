@@ -4,7 +4,7 @@
         "System Diagnostics and Health Check"
     ],
     "caseInsensitive": true,
-    "cliName": "healthcheckincidentslargenumberofentries",
+    "cliName": "healthcheckinvestigationsinputoutputbiggerthan10mb",
     "closeForm": false,
     "columns": [
         {
@@ -17,31 +17,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 100
-        },
-        {
-            "displayName": "Amount of Entries",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "amountofentries",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Date",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "date",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 100
+            "width": 120
         },
         {
             "displayName": "Size",
@@ -53,24 +29,42 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 120
+        },
+        {
+            "displayName": "Details",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "details",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "longText",
+            "width": 120
+        },
+        {
+            "displayName": "Input or Output",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "inputoroutput",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 120
         }
     ],
     "content": true,
-    "defaultRows": [
-        {},
-        {},
-        {}
-    ],
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_healthcheckincidentslargenumberofentries",
+    "id": "incident_healthcheckinvestigationsinputoutputbiggerthan10mb",
     "isReadOnly": false,
     "locked": false,
-    "name": "Health Check Incidents Large Number Of Entries",
+    "name": "Health Check Investigations input / output bigger than 10MB",
     "neverSetAsRequired": false,
-    "openEnded": false,
     "ownerOnly": false,
     "required": false,
     "sla": 0,

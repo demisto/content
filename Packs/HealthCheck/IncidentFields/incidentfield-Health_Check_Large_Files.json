@@ -8,18 +8,6 @@
     "closeForm": false,
     "columns": [
         {
-            "displayName": "Size",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "size",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
             "displayName": "File",
             "fieldCalcScript": "",
             "isDefault": true,
@@ -30,6 +18,18 @@
             "selectValues": null,
             "type": "shortText",
             "width": 476
+        },
+        {
+            "displayName": "Size",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "size",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 142
         }
     ],
     "content": true,

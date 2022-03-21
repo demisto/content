@@ -4,7 +4,7 @@
         "System Diagnostics and Health Check"
     ],
     "caseInsensitive": true,
-    "cliName": "healthchecklargeinvestigations",
+    "cliName": "healthcheckinvestigationsinputoutputbiggerthan1mb",
     "closeForm": false,
     "columns": [
         {
@@ -16,8 +16,8 @@
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "number",
-            "width": 100
+            "type": "shortText",
+            "width": 120
         },
         {
             "displayName": "Size",
@@ -29,44 +29,42 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 100
+            "width": 120
         },
         {
-            "displayName": "Date",
+            "displayName": "Details",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "date",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 100
-        },
-        {
-            "displayName": "Info",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "info",
+            "key": "details",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "longText",
-            "width": 100
+            "width": 120
+        },
+        {
+            "displayName": "Input or Output",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "inputoroutput",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 120
         }
     ],
     "content": true,
-    "defaultRows": [],
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_healthchecklargeinvestigations",
+    "id": "incident_healthcheckinvestigationsinputoutputbiggerthan1mb",
     "isReadOnly": false,
     "locked": false,
-    "name": "Health Check Large Investigations",
+    "name": "Health Check Investigations input / output bigger than 1MB",
     "neverSetAsRequired": false,
-    "openEnded": false,
     "ownerOnly": false,
     "required": false,
     "sla": 0,

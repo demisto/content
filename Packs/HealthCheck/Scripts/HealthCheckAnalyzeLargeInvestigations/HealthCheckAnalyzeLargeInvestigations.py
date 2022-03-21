@@ -1,16 +1,16 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 import dateutil.relativedelta
 
 THRESHOLDS = {
     'numberofincidentswithmorethan500entries': 300,
+    'numberofincidentsbiggerthan10mb': 1,
     'numberofincidentsbiggerthan1mb': 300,
 }
 DESCRIPTION = [
     'Too many incidents with high number of war room entries were found, consider to use quite mode in task settings',
-    'Large incidents were found, consider to use quite mode in task settings and delete unneeded Context'
+    'Large incidents were found, consider to use quite mode in task settings and delete context unneeded Context'
 ]
 RESOLUTION = [
     'Playbook Settings: https://xsoar.pan.dev/docs/playbooks/playbook-settings',
@@ -23,22 +23,14 @@ def format_dict_keys(entry: Dict[str, Any]) -> Dict:
     for key, value in entry.items():
         if key == 'Size(MB)':
             new_entry['size'] = f'{value} MB'
-        elif key == 'AmountOfEntries':
-            new_entry['info'] = f'{value} Entries'
         else:
             new_entry[key.lower()] = value
-    new_entry.pop('size(mb)', None)
+
     return new_entry
-
-
-def formatToEntriesGrid(table):
-    for entry in table:
-        entry['amountofentries'] = entry['info']
 
 
 def main(args):
     thresholds = args.get('Thresholds', THRESHOLDS)
-    append = args.get('Append', 'False')
     prev_month = datetime.today() + dateutil.relativedelta.relativedelta(months=-1)
     current_month = datetime.today()
     res = execute_command('GetLargestInvestigations', {
@@ -49,33 +41,29 @@ def main(args):
     })
 
     incidentsbiggerthan1mb = []
+    incidentsbiggerthan10mb = []
     incidentswithmorethan500entries = []
-
     for incident in res['data']:
         formatted_incident = format_dict_keys(incident)
         if incident['AmountOfEntries'] >= 500:
             incidentswithmorethan500entries.append(formatted_incident)
-            continue
-        incidentsbiggerthan1mb.append(formatted_incident)
+        if round(incident['Size(MB)']) >= 10:
+            incidentsbiggerthan10mb.append(formatted_incident)
+        else:
+            incidentsbiggerthan1mb.append(formatted_incident)
 
     numberofincidentsbiggerthan1mb = len(incidentsbiggerthan1mb)
+    numberofincidentsbiggerthan10mb = len(incidentsbiggerthan10mb)
     numberofincidentswithmorethan500entries = len(incidentswithmorethan500entries)
-    if incidentswithmorethan500entries:
-        formatToEntriesGrid(incidentswithmorethan500entries)
 
-    analyzeFields = {
-        'healthchecklargeinvestigations': incidentsbiggerthan1mb,
+    analyze_fields = {
+        'healthcheckinvestigationsbiggerthan1mb': incidentsbiggerthan1mb,
+        'healthcheckinvestigationsbiggerthan10mb': incidentsbiggerthan10mb,
         'healthchecknumberofinvestigationsbiggerthan1mb': numberofincidentsbiggerthan1mb,
-        'healthcheckincidentslargenumberofentries': incidentswithmorethan500entries
+        'healthchecknumberofinvestigationsbiggerthan10mb': numberofincidentsbiggerthan10mb,
+        'healthchecknumberofinvestigationswithmorethan500entries': numberofincidentswithmorethan500entries,
     }
-
-    if append == 'False':
-        demisto.executeCommand('setIncident', analyzeFields)
-    else:
-        incident = demisto.incidents()
-        prevData = incident[0].get('CustomFields', {}).get('healthchecklargeinvestigations')
-        prevData.extend(analyzeFields.get("healthchecklargeinvestigations", []))
-        demisto.executeCommand('setIncident', analyzeFields)
+    execute_command('setIncident', analyze_fields)
 
     action_items = []
     if numberofincidentswithmorethan500entries > int(thresholds['numberofincidentswithmorethan500entries']):
@@ -84,6 +72,14 @@ def main(args):
             'severity': 'High',
             'description': DESCRIPTION[0],
             'resolution': '{}'.format(RESOLUTION[0]),
+        })
+
+    if numberofincidentsbiggerthan10mb > thresholds['numberofincidentsbiggerthan10mb']:
+        action_items.append({
+            'category': 'DB Analysis',
+            'severity': 'High',
+            'description': DESCRIPTION[1],
+            'resolution': '{} \n{}'.format(RESOLUTION[0], RESOLUTION[1]),
         })
 
     if numberofincidentsbiggerthan1mb > thresholds['numberofincidentsbiggerthan1mb']:
