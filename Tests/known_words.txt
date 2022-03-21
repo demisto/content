@@ -113,3 +113,8 @@ CrowdStrike
 MSDE
 hostname
 EDR
+GetCampaignLowSimilarityIncidentsInfo
+ShowCampaignSenders
+ShowCampaignRecipients
+GetCampaignIncidentsInfo
+IsIncidentPartOfCampaign
