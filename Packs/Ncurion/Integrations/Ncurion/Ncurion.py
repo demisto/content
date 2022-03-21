@@ -84,6 +84,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int])-> Tu
     log_list = loglist(base_url, access_token, refresh_token, headers1)
     log_server_id = [e["id"] for e in log_list if e["is_connected"] == True]
     last_fetch = last_run.get('last_fetch', None)
+    max_fetch = demisto.params().get('max_fetch')    
     
     if (last_fetch is None):
         last_fetch = first_fetch_time
@@ -92,7 +93,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int])-> Tu
     if len(log_server_id) == 0:
         return_output('ok')
     else:
-        max_fetch = demisto.params().get('max_fetch')
+
         #incidents: List[Dict[str, Any]] = []
         incidents = []
         now_time = datetime.datetime.utcnow()
