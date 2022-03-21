@@ -67,13 +67,13 @@ class Client(BaseClient):
         last_job_id = demisto.getIntegrationContext().get(context_key)
         last_job_cursor = demisto.getIntegrationContext().get(matches_cursor_key)
 
-        # There is a pending job to be completely processed
+        # There is a pending job to be completely processed2
         if not job_id and last_job_id and last_job_cursor:
             job_id = last_job_id
 
         # Look for new jobs and get the latest finished one
         if not job_id:
-            jobs = self.fetch_jobs()
+            jobs = self.fetch_jobs().get('data')
 
             if len(jobs) == 0:
                 return []
