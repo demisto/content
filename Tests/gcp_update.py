@@ -24,7 +24,7 @@ def main():
     cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/'
 
     with open(output_file, "w") as outfile:
-        subprocess.run(cmd.split(), stdout=outfile)
+        subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
     logging.info('Finished copying successfully.')
 
     # bucket = storage_client.bucket('marketplace-ci-build')
