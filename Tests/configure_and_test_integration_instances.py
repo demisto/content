@@ -724,11 +724,12 @@ class XSIAMBuild(Build):
     def set_marketplace_url(servers, branch_name, ci_build_number):
         logging.info('Copying custom build bucket to xsiam_instance_bucket.')
         from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/marketplacev2/content'
-        output_file = f'{ARTIFACTS_FOLDER_MPV2}/Copy_prod_bucket_to_xsiam_machine.log'
+        output_file = f'{ARTIFACTS_FOLDER_MPV2}/Copy_custom_bucket_to_xsiam_machine.log'
         for server in servers:
             to_bucket = f'{MARKETPLACE_XSIAM_BUCKETS}/{server.name}'
-            cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/ > {output_file}'
-            subprocess.run(cmd.split())
+            cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/'
+            with open(output_file, "w") as outfile:
+                subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
         logging.info('Finished copying successfully.')
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
