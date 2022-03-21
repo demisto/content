@@ -42,9 +42,10 @@ class Client(BaseClient):
         return result
 
     def fetch_jobs(self):
+        """ Retrieve finished retrohunt jobs. """
         return self._http_request(
             'GET',
-            'intelligence/retrohunt_jobs'
+            'intelligence/retrohunt_jobs?filter=status:finished'
         )
 
     def fetch_job_matches(self, job_id: str, limit: int = 40, cursor: str = None) -> dict:
@@ -62,18 +63,22 @@ class Client(BaseClient):
         """ Retrieve matches for a given retrohunt job (latest by default).
         """
         context_key = 'last_retrohunt_job_id'
+        matches_cursor_key = 'last_retrohunt_job_matches_cursor'
+        last_job_id = demisto.getIntegrationContext().get(context_key)
+        last_job_cursor = demisto.getIntegrationContext().get(matches_cursor_key)
 
+        # There is a pending job to be completely processed
+        if not job_id and last_job_id and last_job_cursor:
+            job_id = last_job_id
+
+        # Look for new jobs and get the latest finished one
         if not job_id:
             jobs = self.fetch_jobs()
-            try:
-                finished_jobs = [job for job in jobs['data'] if job.get('attributes').get('status') == 'finished']
-            except KeyError:
+
+            if len(jobs) == 0:
                 return []
 
-            if len(finished_jobs) == 0:
-                return []
-
-            job_id = finished_jobs[0].get('id')
+            job_id = jobs[0].get('id')
             last_job_id = demisto.getIntegrationContext().get(context_key)
             if last_job_id == job_id:
                 return []
@@ -86,10 +91,12 @@ class Client(BaseClient):
         # If response.data length is less than limit and there are more pages,
         # get the next pages until limit is reached or there are no more pages.
         cursor = response.get('meta', {}).get('cursor')
+        demisto.setIntegrationContext({matches_cursor_key: cursor})
         while(cursor and len(matches) < limit):
             response = self.fetch_job_matches(job_id, limit, cursor)
             matches.extend(response.get('data', []))
             cursor = response.get('meta', {}).get('cursor')
+            demisto.setIntegrationContext({matches_cursor_key: cursor})
 
         return matches
 
