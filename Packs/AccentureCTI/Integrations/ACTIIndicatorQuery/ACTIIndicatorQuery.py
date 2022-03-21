@@ -1,13 +1,14 @@
 from typing import Union
 from CommonServerPython import *
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 '''CONSTANTS'''
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 IDEFENSE_URL_TEMPLATE = "https://intelgraph.idefense.com/#/node/{0}/view/{1}"
-
+ATTACHMENT_LINK = 'https://intelgraph.idefense.com/rest/files/download'
+IA_URL = 'https://intelgraph.idefense.com/#/node/intelligence_alert/view/'
+IR_URL = 'https://intelgraph.idefense.com/#/node/intelligence_report/view/'
 ENDPOINTS = {
     'threatindicator': '/rest/threatindicator',
     'document': '/rest/document',
@@ -388,7 +389,7 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
 
     try:
         res = doc_search_client.threat_indicator_search(
-            url_suffix='/v0', data={'type.values': ['intelligence_alert', 'intelligence_report'], 'links.display_text.query': indicator})                                                                       # noqa: E501
+            url_suffix='/v0', data={'type.values': ['intelligence_alert', 'intelligence_report'], 'links.display_text.values': indicator, 'links.display_text.match_all': 'true'})                                                                       # noqa: E501
 
         alerts = {item['title']: item['uuid'] for item in res.get('results', []) if item['type'] == 'intelligence_alert'}
         reports = {item['title']: item['uuid'] for item in res.get('results', []) if item['type'] == 'intelligence_report'}
@@ -404,6 +405,93 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
             raise e
 
     return intelligence_alerts, intelligence_reports
+
+
+def fix_markdown(text):
+    regex_header = r"([#]+)([^\/|\s]\w)"
+    subst_header = "\\1 \\2"
+    result = re.sub(regex_header, subst_header, text, 0)
+
+    regex_url = r"\/?#\/"
+    subst_url = "https://intelgraph.idefense.com/#/"
+    output = re.sub(regex_url, subst_url, result, 0)
+    return output
+
+
+def getThreatReport_command(doc_search_client: Client, args: dict, reliability: DBotScoreReliability):
+    try:
+        result = {}
+        ia_ir_uuid: str = str(args.get('uuid'))
+        result = doc_search_client.threat_indicator_search(url_suffix=f'/v0/{ia_ir_uuid}')
+        custom_indicator, iair_link = _ia_ir_extract(result, reliability)
+        return CommandResults(indicator=custom_indicator, raw_response=result,
+                              readable_output=f"Report has been fetched!\nUUID: {result['uuid']}\nLink to view report: {iair_link}") # noqa
+
+    except Exception as e:
+        if 'Failed to parse json object from response' in e.args[0]:
+            return CommandResults(indicator=None, raw_response={},
+                                  readable_output=f"No report was found for UUID: {ia_ir_uuid} !!")
+        elif 'Error in API call [403]' in e.args[0]:
+            return_error(f"This API token doesn't have permission for accessing document API!.\n Error: {str(e)}")
+        else:
+            raise e
+
+
+def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
+    """
+    """
+    threat_types = Res.get('threat_types', '')
+    threattypes = ''
+    uuid = Res.get('uuid', '')
+    if threat_types:
+        for threat_type in threat_types:
+            threattypes = threattypes + '\n- ' + threat_type
+    context = {
+        'created_on': Res.get('created_on', 'NA'),
+        'display_text': Res.get('display_text', 'NA'),
+        'dynamic_properties': Res.get('dynamic_properties', 'NA'),
+        'index_timestamp': Res.get('index_timestamp', 'NA'),
+        'last_modified': Res.get('last_modified', 'NA'),
+        'last_published': Res.get('last_published', 'NA'),
+        'links': Res.get('links', 'NA'),
+        'threat_types': threattypes,
+        'title': Res.get('title', 'NA'),
+        'type': Res.get('type', 'NA'),
+        'uuid': uuid,
+        'analysis': fix_markdown(Res.get('analysis', 'NA')),
+        'sources_external': Res.get('sources_external', 'NA')
+    }
+
+    type_of_report = Res.get('type', 'NA')
+    if 'intelligence_report' in type_of_report:
+        context['conclusion'] = fix_markdown(Res.get('conclusion', 'NA'))
+        context['summary'] = fix_markdown(Res.get('summary', 'NA'))
+        severity_dbot_score = Common.DBotScore.NONE
+        indicatortype = 'ACTI Intelligence Report'
+        iair_link: str = IR_URL + uuid
+    else:
+        severity_dbot_score = Res.get('severity', 'NA')
+        if severity_dbot_score != 'NA':
+            severity_dbot_score = _calculate_dbot_score(severity_dbot_score)
+        context['mitigation'] = fix_markdown(Res.get('mitigation', 'NA'))
+        context['severity'] = Res.get('severity', 'NA')
+        context['abstract'] = fix_markdown(Res.get('abstract', 'NA'))
+        attachment_links = Res.get('attachment_links', '')
+        fqlink: str = ''
+        if attachment_links:
+            for link in attachment_links:
+                fqlink = fqlink + '\n- ' + (ATTACHMENT_LINK + link)
+        else:
+            fqlink = 'NA'
+        context['attachment_links'] = fqlink
+        indicatortype = 'ACTI Intelligence Alert'
+        iair_link = IA_URL + uuid
+    dbot_score = Common.DBotScore(indicator=uuid, indicator_type=DBotScoreType.CUSTOM,
+                                  integration_name='ACTI Threat Intelligence Report',
+                                  score=severity_dbot_score, reliability=reliability)
+    custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score,
+                                              value=uuid, data=context, context_prefix='IAIR')
+    return custom_indicator, iair_link
 
 
 def main():
@@ -423,7 +511,8 @@ def main():
         'url': url_command,
         'ip': ip_command,
         'domain': domain_command,
-        'acti-get-ioc-by-uuid': uuid_command
+        'acti-get-ioc-by-uuid': uuid_command,
+        'acti-getThreatIntelReport': getThreatReport_command 
     }
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('use_proxy', False)
@@ -435,6 +524,8 @@ def main():
         demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
             return_results(test_module(client))
+        elif command == 'acti-getThreatIntelReport':
+            return_results(commands[command](document_search_client, demisto.args(), reliability))
         elif command in commands:
             return_results(commands[command](client, demisto.args(), reliability, document_search_client))
 
