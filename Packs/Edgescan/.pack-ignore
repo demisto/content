@@ -1,2 +1,5 @@
 [file:Edgescan.yml]
 ignore=IN145
+
+[file:Edgescan_image.png]
+ignore=IM111

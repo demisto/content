@@ -1,0 +1,15 @@
+{
+    "name": "Azure Key Vault",
+    "description": "Use Key Vault to safeguard and manage cryptographic keys and secrets used by cloud applications and services.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

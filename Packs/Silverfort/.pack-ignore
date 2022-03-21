@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:Silverfort.yml]
 ignore=IN145
+
+[file:Silverfort_image.png]
+ignore=IM111

@@ -1,2 +1,5 @@
 [file:shiftleft.yml]
 ignore=IN145
+
+[file:shiftleft_image.png]
+ignore=IM111

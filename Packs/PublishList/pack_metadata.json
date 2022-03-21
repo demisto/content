@@ -2,7 +2,7 @@
     "name": "Publish List",
     "description": "The Publish List integration is used to publish XSOAR lists for external consumption.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.1.0",
     "author": "landonc",
     "url": "",
     "email": "",
@@ -13,5 +13,9 @@
     "keywords": [],
     "githubUser": [
         "landonc"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

@@ -107,3 +107,15 @@ FILTER_TO_MATCHED_INCIDENTS = [
 def test_apply_filters(args, expected_incident_ids):
     incidents = apply_filters(EXAMPLE_INCIDENTS_RAW_RESPONSE, args)
     assert [incident['id'] for incident in incidents] == expected_incident_ids
+
+
+@pytest.mark.parametrize('args,filtered_args', (({}, {}),
+                                                (dict(trimevents='0'), {}),
+                                                (dict(trimevents='1'), dict(trimevents='1')),
+                                                ))
+def test_filter_events(mocker, args, filtered_args):
+    import SearchIncidentsV2
+    execute_mock = mocker.patch.object(SearchIncidentsV2, 'execute_command', return_value=[{'Contents': {'data': []}}])
+    SearchIncidentsV2.search_incidents(args)
+    assert execute_mock.call_count == 1
+    assert execute_mock.call_args[0][1] == filtered_args

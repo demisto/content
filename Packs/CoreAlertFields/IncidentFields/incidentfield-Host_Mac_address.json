@@ -1,0 +1,64 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "hostmacaddress",
+    "closeForm": false,
+    "content": true,
+    "description": "MAC address of the endpoint or server on which this alert triggered.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_hostmacaddress",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Host Mac Address",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "mac",
+    "Aliases": [
+        {
+            "cliName": "darktracedevicemac",
+            "type": "shortText",
+            "name": "Darktrace Device MAC"
+        },
+        {
+            "cliName": "destinationmacaddress",
+            "type": "multiSelect",
+            "name": "Destination MAC Address"
+        },
+        {
+            "cliName": "fireeyenxalerttargetmacaddress",
+            "type": "shortText",
+            "name": "FireEye NX Alert Target MAC Address"
+        },
+        {
+            "cliName": "fireeyenxalertvictimmacaddress",
+            "type": "shortText",
+            "name": "FireEye NX Alert Victim MAC Address"
+        },
+        {
+            "cliName": "macaddress",
+            "type": "shortText",
+            "name": ""
+        },
+        {
+            "cliName": "sourcemacaddress",
+            "type": "shortText",
+            "name": "Source MAC Address"
+        }
+    ]
+}

@@ -1,0 +1,281 @@
+commonfields:
+  id: ArcSight Logger
+  version: -1
+name: ArcSight Logger
+display: ArcSight Logger
+category: Analytics & SIEM
+description: ArcSight events logger
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)*
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "9000"
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Events query
+  name: eventsQuery
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fields
+  name: fields
+  defaultvalue: ""
+  type: 0
+  required: false
+  additionalinfo: Fields to be fetched. The Fields specify columns that you can see
+    in the arcsight logger interface. The fields that you select will be fetched as
+    data.
+- display: Aggregate events into one incident
+  name: aggregate
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: By enabling this you take all the events that happened in the last
+    minute and aggregate them into one Events key. This will result in having all
+    the data for the last minute fetched into one incident.
+- display: Fetch limit
+  name: fetchlimit
+  defaultvalue: "100"
+  type: 0
+  required: false
+  additionalinfo: This parameter limits the maximum number of events that can be fetched
+    at once. In case the aggregate parameter is checked this parameter will limit
+    the number of events in the aggregated Events key.
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: as-search-events
+    arguments:
+    - name: discover_fields
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates that the search should try to discover fields in the
+        events found.
+    - name: startTime
+      description: 'The date and time string for the start time in the search time
+        range. If startTime is provided, endTime must be present as well. Format:
+        - InPDT:2014-05-26T21:49:46.000-07:00 - InUTC:2014-05-26T21:49:46.000Z '
+    - name: endTime
+      description: 'The date and time string for the end time in the search time range.
+        If endTime is provided, startTime must be present as well. See Integration
+        tips for correct date/time format. Format: - InPDT:2014-05-26T21:49:46.000-07:00
+        - InUTC:2014-05-26T21:49:46.000Z '
+    - name: summary_fields
+      description: Comma separated list of fields. To be used to calculate summary
+        when field_summary is true.
+    - name: field_summary
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates to use the field summary.
+    - name: local_search
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates the search is local only, and does not include peers.
+        The default value for this parameter is 'true'. If the local search option
+        is configured to 'False' on your ArcSight Logger instance, make sure to include
+        this argument with a value of 'false' for the command.
+    - name: query
+      description: The search query string to filter/process the events.
+    - name: timeout
+      description: The number of milliseconds to keep the search after processing
+        has stopped. Default timeout is 10 minutes.
+      defaultValue: "120000"
+    - name: lastDays
+      description: 'The number of days from from current time . Use to limit the search
+        time range. '
+    - name: offset
+      description: The offset from the first even
+    - name: length
+      description: The length or number of events to retrieve. Maximum number is 10000.
+        Default is 100.
+      defaultValue: "100"
+    - name: dir
+      auto: PREDEFINED
+      predefined:
+      - forward
+      - backward
+      description: The sort direction based on event time. forward/backward (default
+        is forward).
+    - name: fields
+      description: comma separated list of fields in the order to show. If not specified,
+        all fields will be used
+    description: Start a new search, wait until the search status is complete and
+      then return the events. This command combine 3 commands - as-search, as-status,
+      as-events
+  - name: as-status
+    arguments:
+    - name: searchSessionId
+      required: true
+      description: The Search Session ID returned from as-search command
+    - name: sessionId
+      required: true
+      description: The Session ID returned from as-search command
+    outputs:
+    - contextPath: ArcSightLogger.Status.Status
+      description: The search status. Can be any of starting, running, complete, or
+        error. If the specified search has not started yet, the status will be “starting".
+    - contextPath: ArcSightLogger.Status.ResultType
+      description: Indicates the type of the search results
+    - contextPath: ArcSightLogger.Status.Hit
+      description: The number of events found
+    - contextPath: ArcSightLogger.Status.Scanned
+      description: The number of events scanned.
+    - contextPath: ArcSightLogger.Status.Elapsed
+      description: The elapsed time of this search
+    - contextPath: ArcSightLogger.Status.Message
+      description: The message for the search. This will be used when there is an
+        error in the local/peer search.
+    - contextPath: ArcSightLogger.Status.SearchSessionId
+      description: The search session id.
+    description: Returns the latest status of the specified search.
+  - name: as-drilldown
+    arguments:
+    - name: searchSessionId
+      required: true
+      description: The Search Session ID returned from as-search command
+    - name: sessionId
+      required: true
+      description: The Session ID returned from as-search command
+    - name: startTime
+      description: The date and time string for the start time in the search time
+        range. If startTime is provided, endTime needs to be present as well. See
+        Integration tips for correct date/time format.
+    - name: endTime
+      description: The date and time string for the end time in the search time range.
+        If endTime is provided, startTime needs to be present as well. See Integration
+        tips for correct date/time format.
+    - name: lastDays
+      description: 'The number of days from from current time . Use to limit the search
+        time range. '
+    description: Narrows-down the search results to the specified time range
+  - name: as-events
+    arguments:
+    - name: searchSessionId
+      required: true
+      description: The Search Session ID returned from as-search command
+    - name: sessionId
+      required: true
+      description: The Session ID returned from as-search command
+    - name: dir
+      auto: PREDEFINED
+      predefined:
+      - forward
+      - backward
+      description: The sort direction based on event time. forward/backward (default
+        is forward).
+    - name: fields
+      description: comma separated list of fields in the order to show. If not specified,
+        all fields will be used
+    - name: length
+      description: The length or number of events to retrieve. Maximum number is 10000.
+        Default is 100.
+      defaultValue: "100"
+    - name: offset
+      description: The offset from the first even
+    description: Returns the list of events found in the specified search.
+  - name: as-close
+    arguments:
+    - name: sessionId
+      required: true
+      description: The Session ID returned from as-search command
+    - name: searchSessionId
+      required: true
+      description: The Search Session ID returned from as-search command
+    description: Stops the execution of the search and clears the search session data
+      from the server.
+  - name: as-stop
+    arguments:
+    - name: sessionId
+      required: true
+      description: The Session ID returned from as-search command
+    - name: searchSessionId
+      required: true
+      description: The Search Session ID returned from as-search command
+    description: Stops the search operation but keeps the search session so that the
+      search results can be narrowed down later
+  - name: as-search
+    arguments:
+    - name: discover_fields
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates that the search should try to discover fields in the
+        events found.
+    - name: startTime
+      description: 'The date and time string for the start time in the search time
+        range. If startTime is provided, endTime must be present as well. Format:
+        - InPDT:2014-05-26T21:49:46.000-07:00 - InUTC:2014-05-26T21:49:46.000Z '
+    - name: endTime
+      description: 'The date and time string for the end time in the search time range.
+        If endTime is provided, startTime must be present as well. See Integration
+        tips for correct date/time format. Format: - InPDT:2014-05-26T21:49:46.000-07:00
+        - InUTC:2014-05-26T21:49:46.000Z '
+    - name: summary_fields
+      description: Comma separated list of fields. To be used to calculate summary
+        when field_summary is true.
+    - name: field_summary
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates to use the field summary.
+    - name: local_search
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates the search is local only, and does not include peers.
+        The default value for this parameter is 'true'. If the local search option
+        is configured to 'False' on your ArcSight Logger instance, make sure to include
+        this argument with a value of 'false' for the command.
+    - name: query
+      description: The search query string to filter/process the events.
+    - name: timeout
+      description: The number of milliseconds to keep the search after processing
+        has stopped. Default timeout is 10 minutes.
+      defaultValue: "120000"
+    - name: lastDays
+      description: 'The number of days from from current time . Use to limit the search
+        time range. '
+    description: In opposite to as-search-events, as-search-events waits until the
+      search query is complete and returns the events, as-search initiates new logger
+      search query, and returns sessionId and searchSessionId which should be used
+      in other commands like as-status, as-stop, as-events, etc.
+  isfetch: true
+  runonce: false
+fromversion: 5.0.0

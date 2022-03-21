@@ -1,2 +1,5 @@
 [file:BitSightForSecurityPerformanceManagement.yml]
 ignore=IN145
+
+[file:BitSightForSecurityPerformanceManagement_image.png]
+ignore=IM111

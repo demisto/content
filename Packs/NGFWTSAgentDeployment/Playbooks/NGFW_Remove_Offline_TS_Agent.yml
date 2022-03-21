@@ -1,0 +1,240 @@
+id: NGFW Remove Offline TS Agent
+fromversion: 6.0.0
+inputs:
+- description: The TSAgent Object
+  key: TSAgent
+  playbookInputQuery:
+  required: false
+  value: {}
+name: NGFW Remove Offline TS Agent
+description: Check if TS Agent server is offline and deregister it from the NGFW
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 204bfee0-9a5b-4225-80b7-3b073b262f12
+      iscommand: false
+      description: Start
+      name: ""
+      version: -1
+    taskid: 204bfee0-9a5b-4225-80b7-3b073b262f12
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerror: true
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      address:
+        simple: ${inputs.TSAgent.host}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "5"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Pings an IP or url address, to verify it's up
+      id: 79a46d40-feca-4828-87a0-2f899e444102
+      iscommand: false
+      name: Ping Hosts
+      script: Ping
+      type: regular
+      version: -1
+    taskid: 79a46d40-feca-4828-87a0-2f899e444102
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: delete
+      type:
+        simple: config
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/ts-agent/entry[@name='${inputs.TSAgent.@name}']
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Run any command supported in the API.
+      id: 07fc750f-53bb-4e2a-83df-da72b846b9ce
+      iscommand: true
+      name: Remove TS Agent from NGFW Config
+      script: '|||panorama'
+      type: regular
+      version: -1
+    taskid: 07fc750f-53bb-4e2a-83df-da72b846b9ce
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Ping
+          operator: isExists
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e65d84f8-d7b2-4e7b-8782-700ec86ca21c
+      iscommand: false
+      description: Check if host is online
+      name: Host Alive?
+      type: condition
+      version: -1
+    taskid: e65d84f8-d7b2-4e7b-8782-700ec86ca21c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: Ping
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      id: 544bf8cf-a54b-4f02-82a2-c4b50280680a
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 544bf8cf-a54b-4f02-82a2-c4b50280680a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fb0d6b39-473e-4faa-8827-ebd05ac9502c
+      iscommand: false
+      name: Fin
+      description: End
+      type: title
+      version: -1
+    taskid: fb0d6b39-473e-4faa-8827-ebd05ac9502c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)

@@ -14,5 +14,9 @@
     "useCases": [],
     "keywords": [],
     "githubUser": "genians-rnd",
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

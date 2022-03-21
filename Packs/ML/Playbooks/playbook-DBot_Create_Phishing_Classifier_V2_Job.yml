@@ -162,3 +162,5 @@ outputs: []
 fromversion: "5.0.0"
 tests:
 - Create Phishing Classifier V2 ML Test
+marketplaces:
+  - xsoar

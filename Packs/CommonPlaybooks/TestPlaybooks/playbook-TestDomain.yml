@@ -86,7 +86,7 @@ tasks:
     task:
       id: 2e2b5ffd-3cf0-4ae1-82b5-558da89f4557
       version: -1
-      name: Get exit.com indicator
+      name: Get www.exit.com indicator
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -96,7 +96,7 @@ tasks:
       - "10"
     scriptarguments:
       indicator:
-        simple: exit.com
+        simple: www.exit.com
     separatecontext: false
     view: |-
       {
@@ -112,7 +112,7 @@ tasks:
     task:
       id: 927a80fd-7959-4f62-8111-4309ee52a2cd
       version: -1
-      name: Has exit.com indicator
+      name: Has www.exit.com indicator
       type: condition
       iscommand: false
       brand: ""
@@ -142,12 +142,12 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: exit.com
+                        simple: www.exit.com
                 accessor: Indicator
             iscontext: true
           right:
             value:
-              simple: exit.com
+              simple: www.exit.com
     view: |-
       {
         "position": {

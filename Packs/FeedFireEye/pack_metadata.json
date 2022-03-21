@@ -17,5 +17,9 @@
     "keywords": [
         "FireEye",
         "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

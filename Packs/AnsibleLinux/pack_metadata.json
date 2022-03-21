@@ -20,5 +20,9 @@
         "Red Hat",
         "FreeBSD",
         "Asset Management"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

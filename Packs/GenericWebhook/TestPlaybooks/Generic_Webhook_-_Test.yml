@@ -30,6 +30,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 1e4e6562-50f4-4895-8321-bb4d3963c84a
@@ -49,19 +51,12 @@ tasks:
     scriptarguments:
       body:
         simple: '{"name":"webhook"}'
-      filename: {}
       headers:
         simple: Authorization:token
-      insecure: {}
       method:
         simple: POST
-      password: {}
-      proxy: {}
-      saveAsFile: {}
-      unsecure: {}
       url:
         simple: http://localhost:9000
-      username: {}
     separatecontext: false
     view: |-
       {
@@ -75,6 +70,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: ed4acac5-5f67-4f70-823e-bd56b99fadf8
@@ -92,32 +89,14 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      details: {}
-      fromclosedate: {}
-      fromdate: {}
-      fromduedate: {}
-      id: {}
-      level: {}
       name:
         simple: webhook
-      notstatus: {}
-      owner: {}
-      page: {}
-      query: {}
-      reason: {}
-      size: {}
-      sort: {}
-      status: {}
-      toclosedate: {}
-      todate: {}
-      toduedate: {}
-      type: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -125,6 +104,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: ac6cae19-629e-4372-8620-ee537f79c25d
@@ -152,7 +133,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -160,6 +141,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 84802530-89ee-4ca8-8eb2-339899de1a5e
@@ -174,21 +157,14 @@ tasks:
       iscommand: true
       brand: Builtin
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
       id:
         simple: ${foundIncidents.id}
-      incomingmirrorerror: {}
-      outgoingmirrorerror: {}
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -196,6 +172,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 231d0f93-ee6a-4335-8dff-99ae78e946c4
@@ -215,10 +193,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -232,6 +206,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: ccaef695-050b-4212-8a20-2b61e3511939
@@ -245,7 +221,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "2"
+      - "9"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -270,6 +246,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 0102897a-8451-4150-8c15-30c27d589383
@@ -302,12 +280,49 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: b2a34874-e4de-49a0-8786-15886d23264b
+    type: regular
+    task:
+      id: b2a34874-e4de-49a0-8786-15886d23264b
+      version: -1
+      name: Sleep 10 seconds before searching the incident
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1465,
         "width": 380,
         "x": 50,
         "y": 50

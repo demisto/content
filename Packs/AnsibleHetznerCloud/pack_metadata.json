@@ -16,5 +16,9 @@
     "keywords": [
         "HCloud",
         "Asset Management"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

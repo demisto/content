@@ -33,13 +33,15 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: '50'
+- additionalinfo: the maximum number of incidents to fetch
+  defaultvalue: '50'
+  display: Fetch Limit
   name: max_fetch
   required: false
   type: 0
-description: Triggers by triaged alerts from endpoint, cloud, and network security monitoring. Contains event details and easy-to-follow mitigation steps.
+description: Triggers by triaged alerts from endpoint, cloud, and network security
+  monitoring. Contains event details and easy-to-follow mitigation steps.
 display: Covalence Managed Security
-fromversion: 5.0.0
 name: Covalence Managed Security
 script:
   commands:
@@ -52,24 +54,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Portal query, for example: "resolution=Unresolved&type=Recommendation"
-
+      description: |-
+        Portal query, for example: "resolution=Unresolved&type=Recommendation"
         Available Keys to filter on:
-
         - id; eg: "id=<ARO_id>
-
         - status; eg: "status=In Triage" or "status=Open" or "status=Closed"
-
-        - resolution; eg: "resolution=Unresolved" or "resolution=Resolved" or "resolution=Help
-        Requested" or "resolution=Dismissed"
-
+        - resolution; eg: "resolution=Unresolved" or "resolution=Resolved" or "resolution=Help Requested" or "resolution=Dismissed"
         - type; eg: "type=Action" or "type=Recommendation" or "type=Observation"
-
         - org; eg: "org=<organization_name>"
-
         - since; eg: "since=2021-01-31 14:00:00"
-
-        - until; eg: "until=2021-01-31 14:00:00"'
+        - until; eg: "until=2021-01-31 14:00:00"
       isArray: false
       name: query
       required: true
@@ -157,8 +151,7 @@ script:
     - contextPath: FESPortal.Aro.type
       description: Type
       type: String
-  - arguments: []
-    deprecated: false
+  - deprecated: false
     description: List organizations
     execution: false
     name: cov-mgsec-list-org
@@ -176,10 +169,15 @@ script:
       description: Name
       type: String
   dockerimage: demisto/python3:3.9.8.24399
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0
+beta: false

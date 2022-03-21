@@ -397,6 +397,56 @@ def test_update_intel_doc_yara(mocker, requests_mock):
     assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('RevisionId') == 2
 
 
+def test_delete_intel_doc(mocker, requests_mock):
+    """
+    Given -
+        A specific intel-doc ID.
+
+    When -
+        Running delete_intel_doc function.
+
+    Then -
+        Specified intel-doc is deleted.
+    """
+
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.delete(BASE_URL + '/plugin/products/detect3/api/v1/intels/?id=431', json={})
+
+    human_readable, outputs, raw_response = TaniumThreatResponseV2.delete_intel_doc(MOCK_CLIENT, {'intel_doc_id': 431})
+    assert 'Intel Doc deleted' in human_readable
+
+
+def test_start_quick_scan(mocker, requests_mock):
+    """
+    Given -
+        A specific intel-doc ID.
+        A Tanium Computer Group Name
+
+    When -
+        Running start_quick_scan function.
+
+    Then -
+        A quick scan is started.
+    """
+
+    api_get_expected_response = util_load_json('test_files/get_computer_group_name_raw_response.json')
+    api_post_expected_response = util_load_json('test_files/start_quick_scan_raw_response.json')
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/api/v2/groups/by-name/All%20Computers', json=api_get_expected_response)
+    requests_mock.post(BASE_URL + '/plugin/products/detect3/api/v1/quick-scans/', json=api_post_expected_response)
+
+    human_readable, outputs, raw_response = TaniumThreatResponseV2.start_quick_scan(MOCK_CLIENT, {
+        'intel_doc_id': 431, 'computer_group_name': 'All Computers'})
+    assert 'Quick Scan started' in human_readable
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('IntelDocId') == 431
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('ComputerGroupId') == 1
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('ID') == 1000239
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('AlertCount') == 0
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('CreatedAt') == "2022-01-05T19:53:43.049Z"
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('UserId') == 64
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('QuestionId') == 2025697
+
+
 def test_deploy_intel(requests_mock):
     """
     Given -

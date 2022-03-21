@@ -5,7 +5,7 @@ ignore=BA101
 ignore=BA101
 
 [file:EWSO365.yml]
-ignore=IN126,DS107,IN145
+ignore=IN126,DS107,IN145,IN124
 
 [file:EWSv2.yml]
 ignore=IN126,IN135

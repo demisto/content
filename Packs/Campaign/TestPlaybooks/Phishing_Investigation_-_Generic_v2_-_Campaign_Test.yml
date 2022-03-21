@@ -128,7 +128,7 @@ tasks:
       {
         "position": {
           "x": 820,
-          "y": 1465
+          "y": 1825
         }
       }
     note: false
@@ -140,26 +140,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: e49a8058-7350-427c-81dc-c8ca9fba1b94
+    taskid: 92f706cb-f213-49e1-8766-b5fb0d315022
     type: regular
     task:
-      id: e49a8058-7350-427c-81dc-c8ca9fba1b94
+      id: 92f706cb-f213-49e1-8766-b5fb0d315022
       version: -1
-      name: Investigate the incidents
-      description: commands.local.investigate
-      script: Builtin|||investigate
+      name: Sleep to let incidents settle down
+      description: Sleep for X seconds
+      scriptName: Sleep
       type: regular
-      iscommand: true
+      iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
-      - "48"
+      - "77"
     scriptarguments:
-      id:
-        complex:
-          root: CreatedIncidentID
-          transformers:
-          - operator: uniq
+      seconds:
+        simple: "5"
     separatecontext: false
     view: |-
       {
@@ -205,7 +202,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 875
+          "y": 1235
         }
       }
     note: false
@@ -268,7 +265,7 @@ tasks:
       {
         "position": {
           "x": 130,
-          "y": 1465
+          "y": 1825
         }
       }
     note: false
@@ -680,7 +677,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1080
+          "y": 1440
         }
       }
     note: false
@@ -720,7 +717,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1830
+          "y": 2190
         }
       }
     note: false
@@ -757,7 +754,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1650
+          "y": 2010
         }
       }
     note: false
@@ -917,7 +914,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1240
+          "y": 1600
         }
       }
     note: false
@@ -954,7 +951,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2030
+          "y": 2390
         }
       }
     note: false
@@ -998,7 +995,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2230
+          "y": 2590
         }
       }
     note: false
@@ -1039,7 +1036,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2400
+          "y": 2760
         }
       }
     note: false
@@ -1066,7 +1063,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 3070
+          "y": 3430
         }
       }
     note: false
@@ -1100,7 +1097,7 @@ tasks:
       {
         "position": {
           "x": 1330,
-          "y": 2900
+          "y": 3260
         }
       }
     note: false
@@ -1147,7 +1144,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 2590
+          "y": 2950
         }
       }
     note: false
@@ -1190,7 +1187,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 2770
+          "y": 3130
         }
       }
     note: false
@@ -1223,7 +1220,78 @@ tasks:
       {
         "position": {
           "x": -220,
-          "y": 2940
+          "y": 3300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: f57d684a-a7df-4c41-8b29-4024b09fda50
+    type: regular
+    task:
+      id: f57d684a-a7df-4c41-8b29-4024b09fda50
+      version: -1
+      name: Investigate the incidents
+      description: commands.local.investigate
+      script: Builtin|||investigate
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      id:
+        complex:
+          root: CreatedIncidentID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 64057fa1-2161-4d0f-8f5f-3828001ffeea
+    type: regular
+    task:
+      id: 64057fa1-2161-4d0f-8f5f-3828001ffeea
+      version: -1
+      name: Sleep to let incidents settle down
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1050
         }
       }
     note: false
@@ -1238,7 +1306,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3085,
+        "height": 3445,
         "width": 3710,
         "x": -1120,
         "y": 50

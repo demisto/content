@@ -15,5 +15,9 @@
     "devEmail": [
         "amahmoud@paloaltonetworks.com"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

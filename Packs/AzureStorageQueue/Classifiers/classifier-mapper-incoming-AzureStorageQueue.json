@@ -1,0 +1,48 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Azure Storage Queue Mapper",
+    "mapping": {
+        "Azure Storage Queue Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Azure Storage Queue Expiration Time": {
+                    "complex": null,
+                    "simple": "ExpirationTime"
+                },
+                "Azure Storage Queue Insertation Time": {
+                    "complex": null,
+                    "simple": "InsertionTime"
+                },
+                "Azure Storage Queue Message ID": {
+                    "complex": null,
+                    "simple": "MessageId"
+                },
+                "Azure Storage Queue Message Text": {
+                    "complex": null,
+                    "simple": "MessageText"
+                },
+                "Azure Storage Queue Next Visible Time": {
+                    "complex": null,
+                    "simple": "TimeNextVisible"
+                },
+                "Azure Storage Queue PopReceipt": {
+                    "complex": null,
+                    "simple": "PopReceipt"
+                },
+                "Azure Storage Queue Queue Name": {
+                    "complex": null,
+                    "simple": "queue_name"
+                },
+                "Azure Storage Queue QueueCount": {
+                    "complex": null,
+                    "simple": "DequeueCount"
+                }
+            }
+        }
+    },
+    "name": "Azure Storage Queue Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

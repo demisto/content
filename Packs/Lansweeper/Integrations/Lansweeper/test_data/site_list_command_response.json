@@ -1,0 +1,16 @@
+{
+  "data": {
+    "authorizedSites": {
+      "sites": [
+        {
+          "id": "401d153d-2a59-45eb-879a-c291390448ca",
+          "name": "api-demo-data"
+        },
+        {
+          "id": "56d4ed4f-b2ad-4587-91b5-07bd453c5c76",
+          "name": "api-demo-data-v2"
+        }
+      ]
+    }
+  }
+}

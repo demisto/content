@@ -763,7 +763,8 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
      - Ensure dict containing the enrichment is as expected.
     """
     mocker.patch.object(client, mock_func_name, return_value=mock_response)
-    assert (enrich_func(**args)) == expected
+    res = enrich_func(**args)
+    assert res == expected
 
 
 @pytest.mark.parametrize('command_func, command_name',
@@ -1722,6 +1723,7 @@ def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
     """
     mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
     mocker.patch.object(QRadar_v3, 'set_integration_context')
+    mocker.patch.object(QRadar_v3.demisto, 'error')
 
     change_ctx_to_be_compatible_with_retry()
 

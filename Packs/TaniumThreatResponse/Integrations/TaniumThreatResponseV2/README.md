@@ -2686,6 +2686,95 @@ Update the contents of an existing intel document by providing the document cont
 >| 438 | file.yara | yara | 0 | 0 | 2021-07-18T10:27:41.742Z | 2021-10-07T12:23:39.573Z |
 
 
+### tanium-tr-intel-doc-delete
+***
+Remove an intel document from the system by providing its ID
+
+
+#### Base Command
+
+`tanium-tr-intel-doc-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| intel_doc_id | The file entry ID. | Required | 
+
+
+#### Context Output
+None
+
+
+#### Command Example
+```!tanium-tr-intel-doc-delete intel_doc_id=509```
+
+#### Context Example
+None
+
+#### Human Readable Output
+
+>### Intel Doc deleted
+
+
+### tanium-tr-start-quick-scan
+***
+Scan a computer group for hashes in intel document. Computer groups
+      can be viewed by navigating to `Administration -> Computer Groups` in the Threat-Response
+      product console. Computer group names and IDs can also be retrieved by using
+      the `tn-list-groups` command in the `Tanium` integration.
+
+
+#### Base Command
+
+`tanium-tr-start-quick-scan`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| intel_doc_id | The intel document ID. | Required | 
+| computer_group_name | The name of a Tanium computer group. See command description for possible ways to retrieve this value. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Tanium.QuickScan.IntelDocId | Number | The unique identifier for this intel in this instance of the system. | 
+| Tanium.QuickScan.ComputerGroupId | Number | The ID of a Tanium computer group. | 
+| Tanium.QuickScan.ID | Number | The ID of the quick scan. | 
+| Tanium.QuickScan.AlertCount | Number | The number of alerts returned from the quick scan. | 
+| Tanium.QuickScan.CreatedAt | Date | The date the quick scan was created. | 
+| Tanium.QuickScan.UserId | Number | The user ID which initiated the quick scan. | 
+| Tanium.QuickScan.QuestionId | Number | The ID of the quick scan question. | 
+
+#### Command Example
+```!tanium-tr-start-quick-scan intel_doc_id=509 computer_group_name="All Computers"```
+
+#### Context Example
+```json
+{
+    "Tanium": {
+        "QuickScan": {
+            "AlertCount": 0,
+            "ComputerGroupId": 1,
+            "CreatedAt": "2022-01-05T19:53:43.049Z",
+            "ID": 1000239,
+            "IntelDocId": 509,
+            "QuestionId": 2025697,
+            "UserId": 64
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Quick Scan started
+>|AlertCount|ComputerGroupId|CreatedAt|ID|IntelDocId|QuestionId|UserId|
+>|---|---|---|---|---|---|---|
+>| 0 | 1 | 2022-01-05T19:53:43.049Z | 1000239 | 509 | 2025697 | 64 |
+
+
 ### tanium-tr-intel-deploy
 ***
 Deploys intel using the service account context.

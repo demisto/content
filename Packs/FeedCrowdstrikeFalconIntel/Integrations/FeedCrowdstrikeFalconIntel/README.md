@@ -16,6 +16,7 @@ The CrowdStrike intelligence team tracks the activities of threat actor groups a
 | feedExpirationInterval |  | False |
 | feedIncremental | Incremental feed | False |
 | feedFetchInterval | Feed fetch interval | False |
+| limit | Number of top indicators to fetch from the feed | False |
 | feedBypassExclusionList | Bypass exclusion list | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |

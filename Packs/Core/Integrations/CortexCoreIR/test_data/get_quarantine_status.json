@@ -1,0 +1,23 @@
+{
+  "api_response": {
+    "reply": [
+      {
+        "endpoint_id": "123",
+        "file_path": "C:\\Users\\test\\Desktop\\test_x64.msi",
+        "file_hash": "123",
+        "status": false
+      }
+    ]
+  },
+  "command_args": {
+    "endpoint_id": "123",
+    "file_path": "C:\\Users\\test\\Desktop\\test_x64.msi",
+    "file_hash": "123"
+  },
+  "context_data": {
+    "status": false,
+    "endpointId": "123",
+    "filePath":"C:\\Users\\test\\Desktop\\test_x64.msi",
+    "fileHash":"123"
+  }
+}
