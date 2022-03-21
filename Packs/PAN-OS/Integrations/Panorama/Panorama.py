@@ -7569,6 +7569,8 @@ class Topology:
                         self.ha_active_devices[device.serial] = "peer serial not implemented here.."
                         self.get_all_child_firewalls(device)
                         return
+                else:
+                    self.get_all_child_firewalls(device)
             else:
                 self.get_all_child_firewalls(device)
 
@@ -7736,6 +7738,7 @@ class Topology:
 
         topology.username = username
         topology.password = password
+        topology.api_key = api_key
 
         return topology
 
@@ -9285,11 +9288,14 @@ def get_topology() -> Topology:
     server_url = demisto.params().get('server')
     parsed_url = urlparse(server_url)
     hostname = parsed_url.hostname
+    params = demisto.params()
+    api_key = str(params.get('key')) or str((params.get('credentials') or {}).get('password', ''))  # type: ignore
+
     return Topology.build_from_string(
         hostname,
         username="",
         password="",
-        api_key=demisto.params().get('key')
+        api_key=api_key
     )
 
 
