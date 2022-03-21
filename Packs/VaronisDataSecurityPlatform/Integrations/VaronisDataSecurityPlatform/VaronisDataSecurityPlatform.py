@@ -275,14 +275,14 @@ class Client(BaseClient):
                               ) -> Dict[str, Any]:
         """Get alert ids to retrieve from search api.
 
-        :type from_alert_id: ``Optional[int]``
-        :param from_alert_id:
-            Alert id to fetch from
-
         :type first_fetch_time: ``Optional[datetime]``
         :param first_fetch_time:
             If last_run is None (first time we are fetching), it contains
             the datetime on when to start fetching incidents
+
+        :type from_alert_id: ``Optional[int]``
+        :param from_alert_id:
+            Alert id to fetch from
 
         :type max_results: ``int``
         :param max_results: Maximum numbers of incidents per fetch
@@ -327,6 +327,30 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def convert_to_demisto_severity(severity: Optional[str]) -> int:
+    """Maps Varonis severity to Cortex XSOAR severity
+
+    Converts the Varonis alert severity level ('Low', 'Medium',
+    'High') to Cortex XSOAR incident severity (1 to 4)
+    for mapping.
+
+    :type severity: ``str``
+    :param severity: severity as returned from the Varonis API (str)
+
+    :return: Cortex XSOAR Severity (1 to 4)
+    :rtype: ``int``
+    """
+
+    if severity is None:
+        return IncidentSeverity.LOW
+
+    return {
+        'Low': IncidentSeverity.LOW,
+        'Medium': IncidentSeverity.MEDIUM,
+        'High': IncidentSeverity.HIGH
+    }[severity]
 
 
 class SearchQueryBuilder(object):
@@ -854,30 +878,6 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
             return next_run, incidents
 
     return next_run, incidents
-
-
-def convert_to_demisto_severity(severity: Optional[str]) -> int:
-    """Maps Varonis severity to Cortex XSOAR severity
-
-    Converts the Varonis alert severity level ('Low', 'Medium',
-    'High') to Cortex XSOAR incident severity (1 to 4)
-    for mapping.
-
-    :type severity: ``str``
-    :param severity: severity as returned from the Varonis API (str)
-
-    :return: Cortex XSOAR Severity (1 to 4)
-    :rtype: ``int``
-    """
-
-    if severity is None:
-        return IncidentSeverity.LOW
-
-    return {
-        'Low': IncidentSeverity.LOW,
-        'Medium': IncidentSeverity.MEDIUM,
-        'High': IncidentSeverity.HIGH
-    }[severity]
 
 
 def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
