@@ -172,7 +172,7 @@ def login():
         'password': demisto.get(demisto.params(), 'credentials.password'),
         'alt': 'json'
     }
-    res = send_request(query_path, headers=headers, params=params, is_login=True)
+    res = send_request(query_path, headers=headers, body=params, is_login=True)
     if not res.ok:
         demisto.debug(res.text)
         return_error('Failed to login, check integration parameters.')
