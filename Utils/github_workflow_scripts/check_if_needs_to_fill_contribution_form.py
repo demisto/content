@@ -146,7 +146,7 @@ def verify_labels(pr_label_names):
 
 
 def main():
-    print('test')
+    print('test1')
     options = arguments_handler()
     pr_number = options.pr_number
     github_token = options.github_token
@@ -162,8 +162,10 @@ def main():
     pr: PullRequest = content_repo.get_pull(int(pr_number))
     pr_files = pr.get_files()
     t = Terminal()
+    print('test2')
 
     for pack_name in get_pack_names_from_pr(pr_files):
+        print('test3')
         if pr_metadata_filename := get_metadata_filename_from_pr(pr_files, pack_name):
             support_type = get_pack_support_type_from_pr_metadata_file(pr_metadata_filename, pr)
         else:
@@ -180,6 +182,8 @@ def main():
             print(f'{pack_name} pack is {support_type} supported.')
             exit_status = 1
 
+    print('test4')
+
     if packs_without_metadata_or_support:
         print(f'{t.red}ERROR: {METADATA} file / pack support is missing for the following packs: '
               f'{packs_without_metadata_or_support}')
@@ -189,6 +193,8 @@ def main():
               f' by filling the contribution registration form in - https://forms.gle/XDfxU4E61ZwEESSMA')
 
     pr_label_names = [label.name for label in pr.labels]
+
+    print('test5')
 
     if not verify_labels(pr_label_names=pr_label_names):
         print(
