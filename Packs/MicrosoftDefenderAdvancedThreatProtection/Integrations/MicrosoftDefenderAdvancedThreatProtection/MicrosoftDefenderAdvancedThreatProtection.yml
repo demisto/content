@@ -851,9 +851,6 @@ script:
         range, e.g. 60 minutes, 6 hours, 1 day etc.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     deprecated: false
     description: 'Allows you to run programmatic queries like in Microsoft Defender
       ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can
