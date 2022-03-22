@@ -1,5 +1,5 @@
 This is the Ncurion integration for getting started.
-This integration was integrated and tested with version xx of Ncurion
+This integration was integrated and tested with version 1.4 of Ncurion
 
 ## Configure Ncurion on Cortex XSOAR
 
