@@ -111,7 +111,7 @@ def build_query(query_fields, path, template_context='SPECIFIC'):
     return query
 
 
-def http_request(method, url_suffix, data=None, json_body=None, headers=HEADERS, return_json=True):
+def http_request(method, url_suffix, data=None, json_body=None, headers=HEADERS, return_json=True, custom_response=False):
     LOG('running request with url=%s' % (SERVER + url_suffix))
     try:
         res = session.request(
@@ -122,8 +122,11 @@ def http_request(method, url_suffix, data=None, json_body=None, headers=HEADERS,
             json=json_body,
             verify=USE_SSL
         )
+        if custom_response:
+            return res
         if res.status_code not in {200, 204}:
-            raise Exception('Your request failed with the following error: ' + res.content + str(res.status_code))
+            raise Exception('Your request failed with the following error: ' + res.content + '. Response Status code: ' + str(res.status_code))
+
     except Exception as e:
         LOG(e)
         raise
@@ -1256,6 +1259,85 @@ def query_user(filters):
         raise Exception('Error occurred while trying to query the file.')
 
 
+def archive_sensor():
+    sensor_id = demisto.getArg('sensorID')
+    archive_reason = demisto.getArg('archiveReason')
+
+    data = {
+        "sensorsIds": [sensor_id],
+        "argument": archive_reason
+    }
+    response = http_request('POST', '/rest/sensors/action/archive', json_body=data, return_json=False, custom_response=True)
+
+    if response.status_code == 204:
+        output = "The selected Sensor with Sensor ID: {sensor_id} is not available for archive.".format(sensor_id=sensor_id)
+    elif response.status_code == 200:
+        output = ""
+        try:
+            response_json = response.json()
+            output = "Sensor archive status: "
+            output += "Failed Actions: " + str(response_json['globalStats']['stats']['Failed']) + '. '
+            output += "Succeeded Actions: " + str(response_json['globalStats']['stats']['Succeeded'])
+        except Exception as e:
+            output = "Exception occurred while processing response for Archive action: " + str(e)
+    else:
+        try:
+            json_response = res.json()
+            output = "Could not archive Sensor. The received response is {json_response}".format(json_response=json_response)
+        except Exception as e:
+            raise Exception('Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(response.status_code))
+    demisto.results(output)
+
+
+def unarchive_sensor():
+    sensor_id = demisto.getArg('sensorID')
+    unarchive_reason = demisto.getArg('unarchiveReason')
+    data = {
+        "sensorsIds": [sensor_id],
+        "argument": unarchive_reason
+    }
+    response = http_request('POST', '/rest/sensors/action/unarchive', json_body=data, return_json=False, custom_response=True)
+    if response.status_code == 204:
+        output = "The selected Sensor with Sensor ID: {sensor_id} is not available for unarchive.".format(sensor_id=sensor_id)
+    elif response.status_code == 200:
+        output = ""
+        try:
+            response_json = response.json()
+            output = "Sensor unarchive status: "
+            output += "Failed Actions: " + str(response_json['globalStats']['stats']['Failed']) + '. '
+            output += "Succeeded Actions: " + str(response_json['globalStats']['stats']['Succeeded'])
+        except Exception as e:
+            output = "Exception occurred while processing response for Unarchive action: " + str(e)
+    else:
+        try:
+            json_response = res.json()
+            output = "Could not unarchive Sensor. The received response is {json_response}".format(json_response=json_response)
+        except Exception as e:
+            raise Exception('Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(response.status_code))
+    demisto.results(output)
+
+
+def delete_sensor():
+    sensor_id = demisto.getArg('sensorID')
+
+    data = {
+        "sensorsIds": [sensor_id]
+    }
+    response = http_request('POST', '/rest/sensors/action/delete', json_body=data, return_json=False, custom_response=True)
+
+    if response.status_code == 204:
+        output = "The selected Sensor with Sensor ID: {sensor_id} is not available for deleting.".format(sensor_id=sensor_id)
+    elif response.status_code == 200:
+        output = "Sensor deleted successfully."
+    else:
+        try:
+            json_response = res.json()
+            output = "Could not delete Sensor. The received response is {json_response}".format(json_response=json_response)
+        except Exception as e:
+            raise Exception('Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(response.status_code))
+    demisto.results(output)
+
+
 def malop_to_incident(malop):
     if not isinstance(malop, dict):
         raise ValueError("Cybereason raw response is not valid, malop is not dict")
@@ -1641,6 +1723,14 @@ def main():
         elif demisto.command() == 'cybereason-close-fetchfile':
             close_fetchfile_command()
 
+        elif demisto.command() == 'cybereason-archive-sensor':
+            archive_sensor()
+
+        elif demisto.command() == 'cybereason-unarchive-sensor':
+            unarchive_sensor()
+
+        elif demisto.command() == 'cybereason-delete-sensor':
+            delete_sensor()
 
     except Exception as e:
         return_error(str(e))
