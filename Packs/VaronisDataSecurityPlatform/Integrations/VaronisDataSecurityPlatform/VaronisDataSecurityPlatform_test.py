@@ -14,8 +14,7 @@ import json
 import io
 from pytest_mock import MockerFixture
 
-from VaronisDataSecurityPlatform import Client, varonis_get_alerted_events_command, varonis_get_alerts_command, \
-    varonis_update_alert_status_command, varonis_close_alert_command
+from VaronisDataSecurityPlatform import Client
 
 
 def util_load_json(path):
@@ -34,6 +33,8 @@ def test_varonis_get_alerts_command(mocker: MockerFixture):
             - Assert output prefix data is as expected
             - Assert mapping works as expected
     """
+    from VaronisDataSecurityPlatform import varonis_get_alerts_command
+
     client = Client(
         base_url='https://test.com',
         verify=False,
@@ -64,7 +65,9 @@ def test_varonis_get_alerts_command(mocker: MockerFixture):
     assert result.outputs == expected_outputs
 
 
-def test_varonis_update_alert_status_command(requests_mock: MockerFixture):
+def test_varonis_update_alert_status_command(requests_mock):
+    from VaronisDataSecurityPlatform import varonis_update_alert_status_command
+
     requests_mock.post('https://test.com/api/alert/alert/SetStatusToAlerts', json=True)
 
     client = Client(
@@ -83,7 +86,9 @@ def test_varonis_update_alert_status_command(requests_mock: MockerFixture):
     assert resp is True
 
 
-def test_varonis_close_alert_command(requests_mock: MockerFixture):
+def test_varonis_close_alert_command(requests_mock):
+    from VaronisDataSecurityPlatform import varonis_close_alert_command
+
     requests_mock.post('https://test.com/api/alert/alert/SetStatusToAlerts', json=True)
 
     client = Client(
@@ -110,6 +115,9 @@ def test_varonis_get_alerted_events_command(mocker: MockerFixture):
             - Assert output prefix data is as expected
             - Assert mapping works as expected
     """
+
+    from VaronisDataSecurityPlatform import varonis_get_alerted_events_command
+
     client = Client(
         base_url='https://test.com',
         verify=False,
@@ -133,3 +141,64 @@ def test_varonis_get_alerted_events_command(mocker: MockerFixture):
 
     assert result.outputs_prefix == 'Varonis'
     assert result.outputs == expected_outputs
+
+
+def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
+    from VaronisDataSecurityPlatform import fetch_incidents
+
+    requests_mock.get(
+        'https://test.com/api/alert/alert/GetAlertsID'
+        '?threatModel=Suspicious&severity=Medium&status=Open&fromAlertId=150&bulkSize=200',
+        json=util_load_json('test_data/demisto_get_alert_ids.json'))
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False,
+        proxy=False
+    )
+
+    mocker.patch.object(
+        client,
+        'varonis_execute_search',
+        return_value=util_load_json('test_data/search_alerts_response.json')
+    )
+
+    mocker.patch.object(
+        client,
+        'varonis_get_search_result',
+        return_value=util_load_json('test_data/varonis_get_alerts_api_response.json')
+    )
+
+    last_run = {
+        'last_fetched_id': 150
+    }
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        max_results=200,
+        alert_status='Open',
+        severity='Medium',
+        threat_model='Suspicious',
+        last_run=last_run,
+        first_fetch_time='3 days'
+    )
+
+    expected_outputs = util_load_json('test_data/varonis_get_alerts_command_output.json')
+
+    assert next_run == {'last_fetched_id': 200}
+    assert incidents == [
+        {
+            'name': 'Varonis alert 4FDB86C2-D78F-47EC-A1B1-74C4268A8A60',
+            'occurred': '2022-02-12T13:59:00Z',
+            'rawJSON': json.dumps(expected_outputs['Alert'][0]),
+            'type': 'Varonis DSP Incident',
+            'severity': 3,
+        },
+        {
+            'name': 'Varonis alert D99AEA15-7F17-46FC-A249-942B974377D6',
+            'occurred': '2022-02-12T13:59:00Z',
+            'rawJSON': json.dumps(expected_outputs['Alert'][1]),
+            'type': 'Varonis DSP Incident',
+            'severity': 3,
+        }
+    ]

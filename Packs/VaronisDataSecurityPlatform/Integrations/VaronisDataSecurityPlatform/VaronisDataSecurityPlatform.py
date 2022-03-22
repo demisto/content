@@ -1,4 +1,4 @@
-"""Varonis Data Security Platform intehration
+"""Varonis Data Security Platform integration
 """
 
 import demistomock as demisto
@@ -7,7 +7,7 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 from requests_ntlm import HttpNtlmAuth
 
 # Disable insecure warnings
@@ -16,6 +16,8 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
+MAX_INCIDENTS_TO_FETCH_PER_RUN = 5000
+MAX_INCIDENTS_TO_FETCH = 200
 SEARCH_RESULT_RETRIES = 10
 BACKOFF_FACTOR = 5
 THREAT_MODEL_ENUM_ID = 5821
@@ -185,6 +187,9 @@ class Client(BaseClient):
         token = response['access_token']
         token_type = response['token_type']
         self._expires_in = response['expires_in']
+
+        demisto.debug(f'Token expires in {self._expires_in}')
+
         self._headers = {
             'Authorization': f'{token_type} {token}'
         }
@@ -265,8 +270,87 @@ class Client(BaseClient):
             '/api/alert/alert/SetStatusToAlerts',
             json_data=query)
 
+    def varonis_get_alerts_id(self, first_fetch_time: Optional[datetime], from_alert_id: Optional[int], max_results: int,
+                              alert_status: Optional[str], threat_model: Optional[str], severity: Optional[str]
+                              ) -> Dict[str, Any]:
+        """Get alert ids to retrieve from search api.
+
+        :type first_fetch_time: ``Optional[datetime]``
+        :param first_fetch_time:
+            If last_run is None (first time we are fetching), it contains
+            the datetime on when to start fetching incidents
+
+        :type from_alert_id: ``Optional[int]``
+        :param from_alert_id:
+            Alert id to fetch from
+
+        :type max_results: ``int``
+        :param max_results: Maximum numbers of incidents per fetch
+
+        :type alert_status: ``Optional[str]``
+        :param alert_status: status of the alert to search for. Options are 'Open', 'Closed' or 'Under investigation'
+
+        :type threat_model: ``Optional[str]``
+        :param threat_model: threat model of the alert to search for.
+
+        :type severity: ``Optional[str]``
+        :param severity: severity of the alert to search for. Options are 'High', 'Medium' or 'Low'
+
+        :return: Alert ids
+        :rtype: ``Dict[str, Any]``
+
+        """
+
+        request_params: Dict[str, Any] = {}
+
+        if threat_model:
+            request_params['threatModel'] = threat_model
+
+        if severity:
+            request_params['severity'] = severity
+
+        if alert_status:
+            request_params['status'] = alert_status
+
+        if from_alert_id:
+            request_params['fromAlertId'] = from_alert_id
+        elif first_fetch_time:
+            request_params['fromDate'] = first_fetch_time.isoformat()
+
+        request_params['bulkSize'] = max_results
+
+        return self._http_request(
+            'GET',
+            '/api/alert/alert/GetAlertsID',
+            params=request_params
+        )
+
 
 ''' HELPER FUNCTIONS '''
+
+
+def convert_to_demisto_severity(severity: Optional[str]) -> int:
+    """Maps Varonis severity to Cortex XSOAR severity
+
+    Converts the Varonis alert severity level ('Low', 'Medium',
+    'High') to Cortex XSOAR incident severity (1 to 4)
+    for mapping.
+
+    :type severity: ``str``
+    :param severity: severity as returned from the Varonis API (str)
+
+    :return: Cortex XSOAR Severity (1 to 4)
+    :rtype: ``int``
+    """
+
+    if severity is None:
+        return IncidentSeverity.LOW
+
+    return {
+        'Low': IncidentSeverity.LOW,
+        'Medium': IncidentSeverity.MEDIUM,
+        'High': IncidentSeverity.HIGH
+    }[severity]
 
 
 class SearchQueryBuilder(object):
@@ -278,7 +362,8 @@ class SearchQueryBuilder(object):
         select_columns: List[str],
         client: Client,
         entity_name: str,
-        request_params: Any
+        request_params: Any,
+        alert_id_column_name: str
     ):
         """
         :type select_columns: ``List[str]``
@@ -293,6 +378,7 @@ class SearchQueryBuilder(object):
         self._url_query = ''
         self._entity_name = entity_name
         self._request_params = request_params
+        self._alert_id_column_name = alert_id_column_name
 
     def build(self) -> Dict[str, Any]:
         """Generate search query
@@ -309,16 +395,38 @@ class SearchQueryBuilder(object):
         }
         return query
 
+    def create_alert_id_filter(self, alerts: List[str]):
+        """Add alert id filter to the search query
+
+        :type alerts: ``List[str]``
+        :param alerts: A list of alert ids
+        """
+        filter_obj: Dict[str, Any] = {
+            'path': self._alert_id_column_name,
+            'operator': 'In',
+            'values': []
+        }
+
+        if not alerts or not any(alerts):
+            raise ValueError('The list of alerts can\'t be empty.')
+
+        for alert_id in alerts:
+            filter_obj['values'].append({self._alert_id_column_name: alert_id, 'displayValue': alert_id})
+
+        self._filters.append(filter_obj)
+
 
 class SearchAlertsQueryBuilder(SearchQueryBuilder):
     """ Builder class, needed for generation a search query for alerts
     """
+
     def __init__(self, client: Client):
         super().__init__(
             ALERT_COLUMNS,
             client,
             'Alert',
-            {'searchSource': 1, 'searchSourceName': 'Alert'}  # TODO: find out where does this object come from
+            {'searchSource': 1, 'searchSourceName': 'Alert'},  # TODO: find out where does this object come from
+            'Alert.ID'
         )
 
     def create_threat_model_filter(self, threats: List[str]):
@@ -404,28 +512,9 @@ class SearchEventQueryBuilder(SearchQueryBuilder):
             EVENT_COLUMNS,
             client,
             'Event',
-            {"searchSource": 1, "searchSourceName": "Event"}  # TODO: find out where does this object come from
+            {"searchSource": 1, "searchSourceName": "Event"},  # TODO: find out where does this object come from
+            'Event.Alert.ID'
         )
-
-    def create_alert_id_filter(self, alerts: List[str]):
-        """Add alert id filter to the search query
-
-        :type alerts: ``List[str]``
-        :param alerts: A list of alert ids
-        """
-        filter_obj: Dict[str, Any] = {
-            'path': 'Event.Alert.ID',
-            'operator': 'Equals',
-            'values': []
-        }
-
-        if not alerts or not any(alerts):
-            raise ValueError('The list of alerts can\'t be empty.')
-
-        for alert_id in alerts:
-            filter_obj['values'].append({'Event.Alert.ID': alert_id, 'displayValue': alert_id})
-
-        self._filters.append(filter_obj)
 
 
 def get_query_range(count: int, page: int):
@@ -541,29 +630,30 @@ def execute_search_query(client: Client, query: Any, data_range: str) -> Dict[st
 
 
 def varonis_get_alerts(
-    client: Client,
-    statuses: List[str],
-    threats: List[str],
-    start: datetime,
-    end: datetime,
-    count: int,
-    page: int
+        client: Client,
+        statuses: Optional[List[str]],
+        threats: Optional[List[str]],
+        start: Optional[datetime],
+        end: Optional[datetime],
+        count: int,
+        page: int,
+        alert_guids: Optional[List[str]]
 ) -> Dict[str, Any]:
     """Searches and retrieves alerts
 
     :type client: ``Client``
     :param client: Http client
 
-    :type statuses: ``List[str]``
+    :type statuses: ``Optional[List[str]]``
     :param statuses: A list of statuses
 
-    :type threats: ``List[str]``
+    :type threats: ``Optional[List[str]]``
     :param threats: A list of threats
 
-    :type start: ``datetime``
+    :type start: ``Optional[datetime]``
     :param start: Start time
 
-    :type end: ``datetime``
+    :type end: ``Optional[datetime]``
     :param end: End time
 
     :type count: ``int``
@@ -571,6 +661,9 @@ def varonis_get_alerts(
 
     :type page: ``int``
     :param page: Current page, depends on count
+
+    :type alert_guids: ``Optional[List[str]]``
+    :param alert_guids: List alert guids to search
 
     :return: Alerts
     :rtype: ``Dict[str, Any]``
@@ -583,6 +676,8 @@ def varonis_get_alerts(
         builder.create_threat_model_filter(threats)
     if start and end:
         builder.create_time_interval_filter(start, end)
+    if alert_guids and len(alert_guids) > 0:
+        builder.create_alert_id_filter(alert_guids)
 
     query = builder.build()
     data_range = get_query_range(count, page)
@@ -697,6 +792,94 @@ def test_module(client: Client) -> str:
     return message
 
 
+def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: Optional[datetime], max_results: int,
+                    alert_status: Optional[str], threat_model: Optional[str], severity: Optional[str]
+                    ) -> Tuple[Dict[str, Optional[int]], List[dict]]:
+    """This function retrieves new alerts every interval (default is 1 minute).
+
+    :type client: ``Client``
+    :param client: client to use
+
+    :type last_run: ``Dict[str, int]``
+    :param last_run:
+        A dict with a key containing the latest alert id we got from last fetch
+
+    :type first_fetch_time: ``Optional[datetime]``
+    :param first_fetch_time:
+        If last_run is None (first time we are fetching), it contains
+        the datetime on when to start fetching incidents
+
+    :type max_results: ``int``
+    :param max_results: Maximum numbers of incidents per fetch
+
+    :type alert_status: ``Optional[str]``
+    :param alert_status: status of the alert to search for. Options are 'Open', 'Closed' or 'Under investigation'
+
+    :type threat_model: ``Optional[str]``
+    :param threat_model: threat model of the alert to search for.
+
+    :type severity: ``Optional[str]``
+    :param severity: severity of the alert to search for. Options are 'High', 'Medium' or 'Low'
+
+    :return:
+        A tuple containing two elements:
+            next_run (``Dict[str, Optional[int]]``): Contains last fetched id.
+            incidents (``List[dict]``): List of incidents that will be created in XSOAR
+    :rtype: ``Tuple[Dict[str, int], List[dict]]``
+
+    """
+
+    last_fetched_id = last_run.get('last_fetched_id', None)
+    incidents: List[Dict[str, Any]] = []
+    next_run = {'last_fetched_id': last_fetched_id}
+    iteration: int = 0
+
+    while len(incidents) <= MAX_INCIDENTS_TO_FETCH_PER_RUN:
+        iteration += 1
+        demisto.debug(f'Fetching incidents. Iteration #{iteration}. Last fetched id: {last_fetched_id}')
+
+        alert_ids = client.varonis_get_alerts_id(first_fetch_time=first_fetch_time, from_alert_id=last_fetched_id,
+                                                 max_results=max_results, alert_status=alert_status,
+                                                 threat_model=threat_model,
+                                                 severity=severity)
+
+        alert_guids: List[str] = alert_ids['AlertGuids']
+        last_fetched_id = alert_ids['LatestAlertId']
+        if last_fetched_id != 0:
+            next_run['last_fetched_id'] = last_fetched_id
+
+        if len(alert_guids) == 0:
+            demisto.debug('API returned no alerts')
+            return next_run, incidents
+
+        result = varonis_get_alerts(client, None, None, None, None, len(alert_guids), 1, alert_guids)
+        alerts_output = create_output(ALERT_OUTPUT, result['rows'])
+
+        if not alerts_output:
+            demisto.debug('API returned no alerts from search api')
+            return next_run, incidents
+
+        alerts = alerts_output['Alert']
+
+        for alert in alerts:
+            guid = alert['ID']
+            alert_time = alert['Time']
+            incident = {
+                'name': f'Varonis alert {guid}',
+                'occurred': f'{alert_time}Z',
+                'rawJSON': json.dumps(alert),
+                'type': 'Varonis DSP Incident',
+                'severity': convert_to_demisto_severity(alert['Severity']),
+            }
+
+            incidents.append(incident)
+
+        if len(alert_guids) < max_results:
+            return next_run, incidents
+
+    return next_run, incidents
+
+
 def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Get alerts from Varonis DA
 
@@ -749,7 +932,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
         ValueError(f'page should be integer, but it is {page}.')
     )
 
-    result = varonis_get_alerts(client, alert_statuses, threat_model_names, start_time, end_time, max_results, page)
+    result = varonis_get_alerts(client, alert_statuses, threat_model_names, start_time, end_time, max_results, page, None)
     outputs = create_output(ALERT_OUTPUT, result['rows'])
     page_size = result['rowsCount']
     outputs = enrich_with_pagination(outputs, page, page_size)
@@ -898,12 +1081,43 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
+        elif demisto.command() == 'fetch-incidents':
+            alert_status = demisto.params().get('status', None)
+            threat_model = demisto.params().get('threat_model', None)
+            severity = demisto.params().get('severity', None)
+
+            max_results = arg_to_number(
+                arg=demisto.params().get('max_fetch'),
+                arg_name='max_fetch',
+                required=False
+            )
+            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
+                max_results = MAX_INCIDENTS_TO_FETCH
+
+            first_fetch_time = arg_to_datetime(
+                arg=demisto.params().get('first_fetch', '2 weeks'),
+                arg_name='First fetch time',
+                required=True
+            )
+
+            next_run, incidents = fetch_incidents(client=client, last_run=demisto.getLastRun(),
+                                                  first_fetch_time=first_fetch_time,
+                                                  alert_status=alert_status, threat_model=threat_model,
+                                                  severity=severity,
+                                                  max_results=max_results)
+
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
+
         elif demisto.command() == 'varonis-get-alerts':
             return_results(varonis_get_alerts_command(client, demisto.args()))
+
         elif demisto.command() == 'varonis-update-alert-status':
             varonis_update_alert_status_command(client, demisto.args())
+
         elif demisto.command() == 'varonis-close-alert':
             varonis_close_alert_command(client, demisto.args())
+
         elif demisto.command() == 'varonis-get-alerted-events':
             return_results(varonis_get_alerted_events_command(client, demisto.args()))
 
