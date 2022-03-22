@@ -4369,7 +4369,7 @@
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
-            "fromversion": "5.0.0",
+            "fromversion": "6.2.0",
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -4377,7 +4377,7 @@
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
-            "fromversion": "5.0.0",
+            "fromversion": "6.2.0",
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
