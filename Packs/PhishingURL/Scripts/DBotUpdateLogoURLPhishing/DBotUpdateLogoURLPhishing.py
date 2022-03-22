@@ -25,11 +25,13 @@ MSG_WRONG_CONFIGURATION = "Wrong configuration of the model"
 MSG_SAVE_MODEL_IN_DEMISTO = "Saved model version %s.%s"
 MSG_TRANSFER_LOGO = "Transfer logo from demisto model into new docker model"
 MSG_ERROR_READING_MODEL = "Error reading model %s from Demisto"
-MSG_NEED_TO_KNOW_WHICH_ACTION = "Need to choose one of the action: Add/Remove/Amend logo"
+MSG_NEED_TO_KNOW_WHICH_ACTION = "Need to choose one of the action: Add logo/ Remove logo/ Modify logo/ Display logos"
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 
 KEY_ADD_LOGO = 'AddLogo'
 KEY_REMOVE_LOGO = 'RemoveLogo'
+KEY_DISPLAY_LOGOS = 'DisplayAllLogos'
+KEY_MODIFY_LOGO = 'ModifiedDomainForLogo'
 
 
 def get_minor_version_upgrade(model):
@@ -185,21 +187,28 @@ def display_all_logos(model):
     res['Type'] = entryTypes['image']
     return_results(res)
 
+def execute_action(action, logo_name, logo_content, associated_domains, model):
+    if action == KEY_ADD_LOGO:
+        success, msg = model.add_new_logo(logo_name, logo_content, associated_domains)
+    elif action == KEY_REMOVE_LOGO:
+        success, msg = model.remove_logo(logo_name)
+    else:
+        success, msg = model.update_domain_for_custom_logo(logo_name, associated_domains)
+    return success, msg
+
 
 def main():
     msg_list = []
     logo_image_id = demisto.args().get('logoimageId', '')
     logo_name = demisto.args().get('logoName', '')
     debug = demisto.args().get('debug', 'False') == 'True'
-    display_logos = demisto.args().get('displayLogos', 'False') == 'True'
     associated_domains = demisto.args().get('associatedDomains', '').split(',')
     action = demisto.args().get('action', None)
 
-    if not action and not display_logos:
+    if not action:
         return_error(MSG_NEED_TO_KNOW_WHICH_ACTION)
-        return
 
-    if display_logos:
+    if action == KEY_DISPLAY_LOGOS:
         exist, _, _ = oob_model_exists_and_updated()
         if exist:
             model = load_demisto_model()
@@ -210,26 +219,26 @@ def main():
 
     if (action == KEY_ADD_LOGO) and (not logo_image_id or not logo_name):
         return_error(MSG_EMPTY_NAME_OR_URL)
-    elif not logo_name:
+    if (action == KEY_REMOVE_LOGO) and (not logo_name):
         return_error(MSG_EMPTY_LOGO_NAME)
+    if (action == KEY_MODIFY_LOGO) and (not logo_name):
+        return_error(MSG_EMPTY_LOGO_NAME)
+
 
     if action==KEY_ADD_LOGO:
         res = demisto.getFilePath(logo_image_id)
         path = res['path']
         with open(path, 'rb') as file:
             logo_content = file.read()
+    else:
+        logo_content = None
 
     exist, demisto_major_version, demisto_minor_version = oob_model_exists_and_updated()
 
     # Case 1: model in demisto does not exist OR new major released but no logo were added -> load from docker
     if not exist or (demisto_major_version < MAJOR_VERSION and demisto_minor_version == MINOR_DEFAULT_VERSION):
         model = load_model_from_docker()
-        if action == KEY_ADD_LOGO:
-            success, msg = model.add_new_logo(logo_name, logo_content, associated_domains)
-        elif action == KEY_REMOVE_LOGO:
-            success, msg = model.remove_logo(logo_name)
-        else:
-            success, msg = model.update_domain_for_custom_logo(logo_name, associated_domains)
+        success, msg = execute_action(action, logo_name, logo_content, associated_domains, model)
         msg_list.append(msg)
         if success:
             minor, model = get_minor_version_upgrade(model)
@@ -238,15 +247,11 @@ def main():
         else:
             return_error(msg)
 
+
     # Case where there were new new model release -> load model from demisto
     elif (demisto_major_version == MAJOR_VERSION):
         model = load_demisto_model()
-        if action == KEY_ADD_LOGO:
-            success, msg = model.add_new_logo(logo_name, logo_content, associated_domains)
-        elif action == KEY_REMOVE_LOGO:
-            success, msg = model.remove_logo(logo_name)
-        else:
-            success, msg = model.update_domain_for_custom_logo(logo_name, associated_domains)
+        success, msg = execute_action(action, logo_name, logo_content, associated_domains, model)
         msg_list.append(msg)
         if success:
             minor, model = get_minor_version_upgrade(model)
@@ -263,12 +268,7 @@ def main():
         model_docker.custom_logo_associated_domain = model_demisto.custom_logo_associated_domain
         model_docker.top_domains = model_demisto.top_domains
         msg_list.append(MSG_TRANSFER_LOGO)
-        if action == KEY_ADD_LOGO:
-            success, msg = model_docker.add_new_logo(logo_name, logo_content, associated_domains)
-        elif action == KEY_REMOVE_LOGO:
-            success, msg = model_docker.remove_logo(logo_name)
-        else:
-            success, msg = model_docker.update_domain_for_custom_logo(logo_name, associated_domains)
+        success, msg = execute_action(action, logo_name, logo_content, associated_domains, model_docker)
         msg_list.append(msg)
         if success:
             model_docker.minor = demisto_minor_version
@@ -282,7 +282,7 @@ def main():
     else:
         msg_list.append(MSG_WRONG_CONFIGURATION)
         return_error(MSG_WRONG_CONFIGURATION)
-    demisto.results(msg_list)
+    demisto.results(' , '.join(msg_list))
     return msg_list
 
 

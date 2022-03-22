@@ -22,36 +22,26 @@ args:
   - 'True'
   required: false
   secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: 'False'
-  description: If True, it will display all the logos inside the model.
-  isArray: false
-  name: displayLogos
-  predefined:
-  - 'False'
-  - 'True'
-  required: false
-  secret: false
 - default: false
   description: Comma-separated list of domains that are associated to the logo defined
-    in the logoName argument. It will only be used if the action argument is AddLogo or
-    ModifiedDomainForLogo.
+    in the logoName argument. It will only be used if the action argument is AddLogo
+    or ModifiedDomainForLogo.
   isArray: true
   name: associatedDomains
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Action to execute on the model. Will be ignored if displayLogos
-    is set to True.
+  description: Action to execute on the model. Will be ignored if displayLogos is
+    set to True.
   isArray: false
   name: action
   predefined:
   - RemoveLogo
   - AddLogo
   - ModifiedDomainForLogo
-  required: false
+  - DisplayAllLogos
+  required: true
   secret: false
 comment: Add, remove, or modify logos from the URL Phishing model.
 commonfields:
@@ -66,7 +56,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: devdemisto/mlurlphishing:1.0.0.27657
+dockerimage: devdemisto/mlurlphishing:1.0.0.27701
 runas: DBotRole
 runonce: false
 tests:
