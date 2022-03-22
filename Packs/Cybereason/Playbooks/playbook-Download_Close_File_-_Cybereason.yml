@@ -111,7 +111,7 @@ tasks:
       version: -1
       name: cybereason-close-fetchfile
       description: Aborts a file download operation that is in progress
-      script: Cybereason|||cybereason-close-fetchfile
+      script: Cybereason|||cybereason-close-file-batch-id
       type: regular
       iscommand: true
       brand: Cybereason

@@ -111,7 +111,7 @@ tasks:
       version: -1
       name: download-files
       description: Downloads the actual file to the machine
-      script: Cybereason|||cybereason-download-fetchfile
+      script: Cybereason|||cybereason-download-file
       type: regular
       iscommand: true
       brand: Cybereason

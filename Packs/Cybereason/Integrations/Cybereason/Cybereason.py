@@ -1717,10 +1717,10 @@ def main():
         elif demisto.command() == 'cybereason-fetchfile-progress':
             fetchfile_progress_command()
              
-        elif demisto.command() == 'cybereason-download-fetchfile':
+        elif demisto.command() == 'cybereason-download-file':
             download_fetchfile_command()
 
-        elif demisto.command() == 'cybereason-close-fetchfile':
+        elif demisto.command() == 'cybereason-close-file-batch-id':
             close_fetchfile_command()
 
         elif demisto.command() == 'cybereason-archive-sensor':

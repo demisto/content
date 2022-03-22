@@ -15,7 +15,7 @@ This playbook does not use any scripts.
 ### Commands
 * cybereason-start-fetchfile
 * cybereason-fetchfile-progress
-* cybereason-download-fetchfile
+* cybereason-download-file
 
 ## Playbook Inputs
 ---
