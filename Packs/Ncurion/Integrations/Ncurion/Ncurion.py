@@ -85,6 +85,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int], firs
     log_server_id = [e["id"] for e in log_list if e["is_connected"] == True]
     last_fetch = last_run.get('last_fetch', None)
     max_fetch = demisto.params().get('max_fetch')    
+    now_time = datetime.datetime.utcnow()
     
     if (last_fetch is None):
         last_fetch = first_fetch_time
@@ -94,12 +95,12 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int], firs
             params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
         
     if len(log_server_id) == 0:
-        return_output('ok')
+        return 'ok'
     else:
 
         #incidents: List[Dict[str, Any]] = []
         incidents = []
-        now_time = datetime.datetime.utcnow()
+        
         verify_certificate = not demisto.params().get('insecure', False)
         for i in log_server_id:
             base_url_log = base_url + f'/logapi/api/v1/logserver/search/alert/search/{i}'
