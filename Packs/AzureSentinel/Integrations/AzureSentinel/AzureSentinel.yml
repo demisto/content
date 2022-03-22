@@ -15,8 +15,18 @@ configuration:
   type: 4
 - display: Client ID
   name: credentials
-  required: true
+  required: false
   type: 9
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
 - display: Subscription ID
   name: subscriptionID
   required: true
