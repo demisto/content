@@ -1,0 +1,904 @@
+commonfields:
+  id: DeepInstinct_3.x
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: DeepInstinct_3.x
+display: DeepInstinct_3.x
+category: Network Security
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOYAAABtCAYAAAC1HR2gAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QA/wD/AP+gvaeTAAAAB3RJTUUH5QoWBQwPj16gBQAAAAFvck5UAc+id5oAACRjSURBVHja7Z15lFxXfec/3/te9a7VkiXjXaqW8YKN8Q4OjjHqdiAMcQIhhOSQhAAZODNMSDKZzCFMHOJAIGECIQuEJIQZEnaGOGAtNraxDcaY4AVv6pZsWbIly7LWVi9V793f/HGrWou7q151V3eXWu/jU/Y57bfc++793eV3f4uYBXr7U8AB/lrQrwLxJJcKuAf4R6A0sN7NRvFyclqOePqPaAQVgbcC7YBNcEGQROOf5/i75OTMKbMsmIggfKr8JrsmJ+eEJl8r5uS0ILlg5uS0ILlg5uS0ILlg5uS0ILlg5uS0ILlg5uS0ILlg5uS0ILlg5uS0ILlg5uS0ILlg5uS0ILlg5uS0ILlg5uS0IFMyYi/2ewDkbdwc3WwqT6pNb186tRsrZvAGeA8SbN4QNa1cq68fBQxZAWyqNveGfASWYk5NM90XoUgyYZWyDW7M/QKONzILZrHfQOXQmaoeW06h1wPO1e5bZmCGb6Rw1uGqj2+MEuBBGJEzMOhdm4JgYIoCes7aBGdG2TlkYCj845haGTFwKSkRzhtqknCaEconjxTaqbcvpTqGDm5s3gCVM3NMKpinXWV0LU7wiZCEYSwcLXCwzXcBSyq/RZgtALrMaLc6sglcQcblc2FomLK6LgIuz3rPESTAfrCdwA7gOWtzQyr7itN2YGB97U66+joPHlzB8BIpgPcx0lKw5cByM5aY0UFDYmWJwfedd9tkPjbH5WacjdGMdUcKDIP2g+0BXjBjTxRpzKyyClG2+ufMHZMKZtcCj3mHixzm007gpQfb7SrQJcBqYAXQDXQCbZVn1eucMRln6ZH2dsVwHfChyvMb6bQGjIXOyQ7Eo0r8d4G7wW/BogSM3r500hm0ty8N008MlEdFoXOZ4BKc+yngYsFZwGKgCyhkqHsVgYaEvQOxDegA3gn8MkGoposnrBmGQQeBZ+R41IzvY/wA81tRlBqeYn/C4PrZdsnNycKLWqXY78f3jGbWjvkrkHurYC1wKqEjzTgpEXGYKQtMbS/cBiwATgMuA70ZMQDRzci+grdHTEpXr02RYLAioMW+NOyXBYwl0BGfQaHzdcDPAa8AlgLTnWpSUHiGAKmtUt5m0U1Y0QC8FHgN8GuITSi6GfiqYY85nF/1umHkIzava2/i63Omy4s6vAEu9Mzlkn4deBewirmLLNAstVIXcBFwPuhncfp7zL4cRez2KRTXpgxujPAeogjMrFMdhZ8Bfgt4JaGzt1qdsiLCIHVJ5Ru83uH+FvhalHQc2PqjnRRfmzJ4a760bRXGBbPYl5AkYzjA4EzBB4G30NwO2QrEwMuBj0i60sw+mozYI3GXrNifBq2m8RJJ7wV+A1g51wWegfpfVom/dAGyPz/z8hU7fBnO7vM8uSE/QWsFDreC9xQKXQCnCH0Q+FXmn1AeyQLgbaBPFrp1VU+bqy4JVkrcCHo/808oj2QJ8B7QjZZySuSgoNmeyHMmw0HYVxFFeEu7gfcRFBGFuS4ctYN2Nav+14I+eqjsL0Fg0AY6k5ndS7fKwWIH8HZJv2NioQHF/mbon3KmS7z6tSkycGMl0o621xOWb1PtlL7ym2zodTSmOCkBQzSula0qjbIOLq8EfRDP+1zEU+btE6BzCYqjLGWsVedjETBauacRysBYnedGNKD5rtAG/BrwaNn8P0col8wWIDYzzIm0va0o9F5geQP3l4BngM3AdmAX4fywzIQdVT8NvI4MM0a5jLW3sR5sBw2dY0qEuLWnABcAlxKUV7U6q4CfQWyyNP2gF7c5oi8A72di4d4N/KTyexIYMsxXnlNPQEUQsgcb+M6A3Q38A5MfqRQMOgUnj+8fYQ1hyV6Pk0DvjeV+IPRIb3+an3HOMbGLBJ5Ikd4IXJbxvjHgh8DXwe4x42nggETJe6Wpd0cdlTtnLF4sDh60IAAZBLOnC4DHK7+GsSSVIrcA0Qt6IyHQdLHGLQXgbcjd1ebcvyXevgBcT9BiVtkLrAO+iNmPgN0quDEr28wvTo3Nzidf9FE86YwmHGYliagbdArSqwiz4Supv3q4UOhNPvVPKBho5MwhsSRwnALcQDAWqMcB4NOY/U2qdGtssVmwUQNADtqio1dpZuNC2RBTSZFQ7PMMInojZ6Gs+pEnfdDhbgP9AeE8drIHnwL6zcTbfaaxn8javgY6nzDbPgH2MTO+5nD7qiOPlT1+oeh4XjxyZ2PlbdAWWKbIySzdtOHFk3+xr4S5/TgWGsYQYsB1aCAd9XcJ/SHwNmqvGmLgjYr0ReCJ4vUJg+ty44O5Inx52SWVDliPUeAzhv+wpL2OiESGqG0k3tvf6HZq6gxW1P2l1xltZY9hSC4xdKfMdiF9BPhZJhfOnwKucer4kpndQphxhoHfN1gvKTU8UcGRjJQYvK01DuYHNxy2Tyj2eTCRDhtybAa7CXQWcE2dx/QKvWpRp57YN5xraOeS2LyP5dxVwMIM1/8Qs78W2ltWSkzElhbdi2z99uEJOtjHGhKPGfa/QCsIdrsTsRh4g0/9v0kaBP6fwb1vXaVvf3ELCLGpxZMdVQen1f0eDLp63MDIIftn4GJqt3MP8Op9I+mXJQ3NdT1OZGJJS4Dzqa9gKYF9I0nKW6OoQCzH4AwL5Zo+39S9mwEJ6YMx7q9B5xCEcCIuRSqmafoT5/RxM174183VfEcWZqTpcsTyf6bYvN5x4btSRrZ6gHtAmwnCWYsLhJYTtOE5c0RcmT1Oz3DtM6C740KbDawz0MzuPwqCxOgmjOLNEs+RWNF+jHWEdH+vn+S6UwTnRVH0sLAXDK2w6dvHHokRNNiHZuwDVhh6Aly7AWyX9Cj1BfN00BmIJ2e6bDmTEyOWMfnMcSRbDNsOULweBme4YENjqL2d/wS8m7AXnu784oBHzdsHLxh2Ox7ptnUE4+6JFF7dwLlpOXVRwfUiPqpgBdSMzbKAEdAHBLc3x9NrcrbcGXHWdWUSs5HOgttcqUOt1dFC4DQQ519X5pHbWsHO5MQjJnhLZNHGbpXZAdDUnfYbIbzjdOBqmjdbXSjxnUe67V/Bfgx6Hjhjgusi4PQodu2Es9qzCF4azWKYw94fM05BMYUChtlz1BfMNuA0DEaiXCs7VzjCUrHesGjAbrAxxIzvLY/A0xwfxSo9oFdivoBpB2E5ORnLEB0Y+wjnl82u16ypPcuUK2+zQxneK7CTIl9Su8+NgOYKR5g16yl+PMawpfhZd1hqPmcj9Rh2kHAmOxkLCRZEJcIx0XHLU7e2VVcgQT1dGwFdnsilLWPSe+LhCOZh9fdOwpuytGvLswjUjWwUbLjGdT1Au4XvM5zx2S1LxXGkms27HnEq5Fv7VGhe4wiawVKd6wTEFkXY1CJPTZWZ8C7pwmgHlUC1ZswFBOEs0fyl7Kx+xN6+pDqcdmZ8d+rwpqbounKmQgy2F1RvqeaABc4TI6snxE3ByQMuISwjm7XZCX7gstjwJRHtICwBJuqsJ4PO7CjokbHEHgb207w4vIeYVXtUwyJQquUZ63BIZn52tHw5ExETZoODGa49RXKdQKlWEKtm0dFxyNJ0wW2EfWAlsMK0ccAejF2OyJBtI7g5TaR+XAR22Wg5uQXFX1bwImmWYCaG/Xj2ur1DiW9HOitDHTzwvLk2EyOzVsKco4kxdiF2ENyEanG2iSXA/tlwdE+SBURlHhI81Mznmgxfiedn6DEFwV86waUO1I+izwNPIj3VxFJUQ5jMOMX+tBqUegVwXoZbRoGtAJvWd818AXMmJDZjj8QmgtdFLVYJnSPsqdnoUQLSZscQMMOMyKFTQTuE3wTawsSCCXCR0A0e/0mZkmbqveodJjaTEJ3dLgb1Zrh8D2irjn8l33FNrEijGD8kaB5rDZHLgdebcSfS6Jr+lNSam3rgWAZvmX7XLb62jIsizAzJ4fGXA+8C+zDYU6C7CdHjJlpZdgHvdrgHTbpNFmx3m+VEPOUUEFnq3ZfCEoN94GVLhX4RWJbh1kGMp/Pt5dziMMC4H3g6w/VvBK5bHDsM4WZXQ9swi694iqVL4nD42u0w/CuE/hj4BYNrIheVwG4hRGufjDXAH8nsygPDzwCw+mdS1sygUE2X1f0JJoN9DjPfJvglQuSIenjgPsNeyCfMuSU2DGSbhfsOcA611elnIP3xvtQ8cCtQ7u1PK0Yl4U75CVrULOQ5abCxe6cYGCqExRUC9h0EsG6GfT/od4Erw//lF1Lvv4VxD2IdIdbRZLwK+NTC7lM/DKxzXodMRrE/ATRxneuVcUqDmmFyL/ouZsfmTxERIsFOdop+hRAiZXGGF+wA2+icSj7Nj0rmklhmEEWjeP910Buo72nyCuCvgC9h9u/AJmAo9Wn5omUF/9gw+GP7nAFvwPhqAx3YAJeqoidp6D7zkqIoBhZ7718uuZ8jzPanHHHllaA+OX3OvP8npFczeegRAZeAPgl8A/gqxsOGHRgjSbq6262hbbfCQZCVGuz8QpDoWDEMgikXorurE+yUFK5QqPNryOZrC3A7xg/txZKeM8uot98ISbisS+hDoPeRzWg8BZ4FHiMI5w7C0UuJyefG64E3UXtW/gLGO9sTPzJWcJcAP52xPEdSDcZ1LsHXdNkk77zLsLcLexrc+4AbCUYFtTBgJyGY1sOEIGRZbFDHvznBmuhOGVsN60H6NCFkaC1+SBgUJlpGRATjgaUEg/vVBOP8RtSq28B+HXSbM+OJGT4Oy6lNTDICcTtCwwafVciudXWGeyPC7Ho60EfoMPXM+zIn31kZO7aGIFJ/TBC0RsNXZtEcXS70m2b8KdjnJZ1HCCVSq1eKIPSnEAaaEo0ZC4ggyO+gciyRkUuZ3JdSZDe3m4hRsM+Z8T3Jmuo1kDM14oHbwqDa25ew6PH7Hjtw7hV/Avo42c68jiSiic7ElZOSaqzUmRq+24G3S9yB2IjZh0HLCDGBsr5zKgmB/BTqJKaYaDgD/27GpyVGBtbvobEIpjkzwVGzyv5zr8DDbcAHCEvUOWOWdjhjlfCbWzFoT91m4H8CXyfM/jNFq+g8DfgOZjcBzxwaTSn2LZ3uM3OawLhgDlRCIgoSn/pvWkiVcCfN9YdsJZ4HPmnwOy5ik/cwGqUgHgX7XYKC6/m5LuQMUgZuNuz9nbF7AIyFXfF4OsKcueWoGXNwfQQGcvKm8q1gv4Xxl4S9UKuM8tPlILAReC/wIaHtaVLJWm/Ce4/Q02B/BPxX4A7mgdvXMTwN9hdm9t+c3IOHkgQTPN4Eg46c5vCiPcvghohifxocMNDjmH0AuBnx86BrCBq/bmZutSkYn6arSo3pkgLPAfcD3wRbH8fumSQxTu0U20ds3JpndX/CLoZYTvfBnv1bvzi06IzvAz8HuoEQlX1xE8ozHUXNVBklGJHcAfZlzN8judHUJyBj8/o8tk8rMaEyYXB9dNhcTIwK7kyN+5zsTNBFhA66hqCZXEDQ1TRjDeQI4T5sdzhL2wdsofGkQikwAuwDniLkGLkPs0fLo6Xdhc42K5c9LoLth4zBjYeLvrmS+vzk/oRDi04H2GrePiXH10GvwLgKcREh4dCSStkaGTyqWtlSg0uQ0Up96t1mHHbuPkgYkAYxHkb82LBB5zRkqYgoYxTwUT5Tthp1R+1ifxqu8uHMWXKYpc5MXUCPRA9Gl6kpGkMJvSDT0xzY7/2iBScT0ss35PYllGB2yELHPCiNjFSP9MyCxUIWt7Xi2gQXOyyt5CaRg8RHIQ+BloMtl+gxa6juAhKJB8yzUyLrOeYdmP2ZBYGr1W6pDmdJ2x++gR1SIUpJDONwPNt8P9m61O1Q1cBb56z1pHh2rkxYucN5zIaYwWjdFgJB7aJ2wKwMDzI6uroZHfYVQwqNK7rq1n1juK73+rB6UHsZn8SpsL0EY4pN0ylag8Y1z2P6LrK6+91jPb8NKJXLtBOhMaCjeYb4OTND5pH+iY2HlztZvKrnEwPrZqYTN+hd4oBIJgY25kvP+U7ewjk5LUgumMcPlSzU8+XUKqcWeajt1mc/cCvYp+uE28yZR+SC2bokBA+Wz2L2dcntsjyc5AlDLpityTbgS2D/ZD55XIq9Nz8etTlnblndn4Qsiqq4yNbCwimbeYiiqhN/5V4Lf8eC29UYh/eWuWC2FkMEc8FPg30XGHGugDdbQHCv28Jxnq5hPtBNNG5AXm8NI5VIrY2xuERpexktiWAMos4IK3uizhiLxaiHQuWI2WiOUUDO9Kg6Tv8H8BnDvuFwuwzDzGLg5ZLeCXSb8dvkgjnnDGMIOx30aiaf3BSSOEW3I9sdpRFtKyNMdNHBWUAPbW4MU4pn1MGWipAXwQ7lgjn3lDH7V+DjPnE/cQXzLoIk4TTJvYXguH0BIcZSTgtQWbxeBHyCYFJmE1+mZ8HeAuwe/2tQFCQGqwRbKrGal5vZTiQn40rQU7lgzj2j3rPBRTIX1jIL09RfJ+m3gJ/icO7SfIPZWlTDudTKLdvBEUeSYZnKqHm3WbIVBlvM2Utk6gatxCgYHBCUcsGcQ6yy+Xcx5r3FTrwc6TeBG4CT57p8OXXJ4lAABOeIl16bksQgWTX0jVOYgJ9FnEVIFLCToC/KmUtGXhDAqc7pt5E+D7yTXCjnJY/fPm7aaVQTSxmjwE6NewVpJzCSz5hziaBzuY/BvQ34IMHPNWdeM+5u/CjBC2iYoNzdFfauVgaem1Qwe/utcn2WQM2GpZWDGjX5uE3h+dUy2BH/HszoJVKLNX1pqOWLjqNmx4/Zew8hvGYWoTRJ9PbXNzRwDvwYDR2IdZZhrCB8td2bhawa+5YQgNcwKwOOzRvbm/g1D1P8+QMw1FPpjJW6VFz+mlS17L3cjnRYCOHRzTQsGXY4wuKR6S3LkzZbxQXTyShkKELqUxLnACTMMoeprIsqX9TMp6UkbevusDQNjdvbn+JTQ5FjcH1jq/LevjTIu0KHIS07XNQOaiN056hpdahB5KKYw5q9Wu9rE+P5LWtdZxj7McbiEiQREdnEM1E5TS2KQyD3Zp1xV9OaGR6ztGdp5If3g/dhd1XsTzGJzeumv6ta1Rf6uAM0JCQYYliddEUK9XFgbvrN6g0paxJgiAQPPAz+8ICqo/5rkCzg2VVFDvUD22s8uDJjFkG/QQiCPJl4OrC7nfmveDlv6CSFfdKpZEkhn42EMOUfAHaD7QSeAZ7x5XSvayt4zAcrCjgqIsGL65VWJECY9wU5nQE6jxAc+mzC/q6bxiMTTBVV3lsvAv5eQuTCcp1nDQEfkbgr8SgSfYS8JWJStT5l4Bsdke4uefDeLkG8lcYjR0yGJxi2HAL2gD1nxrOIbcKeg6iE+fEXNeLAXTwiXYQQJV9WQdFJQmdX8oGeDpxEiEbfRXPa1Vee+ypqD2D7gX8kRNHI8E67z+TvlcnXeKgBOo0gZPWyRLVJfC0U2BaC3kb9fJuNYoS1+RhoGNgDPOni6F7M3w48oFgHfOIp9qUTNm5vX8U5Q2mEuZfJ6c2gtQTBWExrW0ItIQTArscBKu1lwV7sMuC/UHt0HwU2W4G7KQHiHOA91D4KmAqeoOAYljhIGFz/A/x3gHs6Ot1zoyOTt99EdDrHSOoxWQysaXOFfuC1wEsJkem7Ce06FzkfFhK+fdbB7SNK/X0o8s3qiLNxxlYNeBwTPvZy4BykPsLgsQ7PP5i3HyiWL/an49EXANb0p9W0nl0iegvitwlBreebK3/F+vIo6i2TjRdfMBNt6ghBttsJA80ZoKuAX0F8d2zUPo3ZRpxKxes9+JTBDRMHCavus0dDKVc63C8Dv0KYEFolslijQbqjakvNh+MSR1g2/wbwmSiO3lQxZRtf5pz1muGwppZvQ/wa8KfAy5h/Qnm8sgh4A/C3cu7dGF2Y4dyL+/Sa61J6+8uAsW9M4O0Vkj4BfIiQQqJVhHJazAfBrCLCaHmTk7v+QHQ4HJEvpzjnsGDb+HvAyrkubM6EnA78ocQvC4vMXqyi8LEwHANXOxa3+6sRfwW8mcYSKLU880kwqxSB31uY9KwWorcvpa2zC5/6pULvIGTDymldloPeh+lCOFq5U1wbNOmRjN67/RWgjxL23fMuZ+B8FEyAKyXdYN67kMNWSHo5wfZ0OtgM/bK+O6nzSyu/sHKfwwaYJuchfsGwo9ayzoXzZm86E/SHwFVzXdCZYi61kClBG1ivYzrCXrBA9oGkDfhZnL4EbPOkzhFdAazIcK8RvAG2ANvB9la0wCVmJo9LRNAivrzOdT/C7POEY4daMlcCPWR19T3TJmv7VTO2Fci+p3eg12B8Fniq2JeOH4di1onjncDaaZa9qiSbqpLLkU3bm/XI8KjjrLkUzKeBvyQce0xWORGErIuqFjaMkqdleP65QueDbRPqICSwrVdfA74HfBy438z2CBvFzIchwTVXU+kEqe9EWkh9wdwi9A/mNFx3eKp6xs8sjwOfIpyb1uqcVQOKpYT0Gq8kbDfqdehVks4BnhpP1+0cmF1BCI6dNfXhCKGvPUlIMvwC4Ux8jHB+O5U2NaAXeDu1LbYOAl8mHAvVaTUzjO8i56sfba7YjfEVc7ZjsgvkHRGwX3voYlEs1CV4NehPCP5wtVgKnH9g6Pl1C3uWd3F0mvfJ2Al2E87dgq+2l6jG2lGzZ6HUV0LDZzJiFODkjU0ZrGSKGcz2psmzwBdNtq92ocXFF4r7H0giZ+qQ08WV9rumzvMXg/UOPL1jffH0StN53430NsK5cz3KwPfAvgB8H2OHyUYMyng8DkuSUSNNG27Snp6FVir5a0G/SG3BPID5vx/dd+C+tp7uDKuFyBPHHt9YaP/mI5xMyCb+MiZPAnSHPD4JcIBS6Vu0tb8E+HNC3pTJiIHVC3uWtYG6yJYMaBNwP2lFEA0GNs7ciUqDAZ9bjTBQ1Gg/CH5M//GAx8mlgkNy3G3ePgk6n9qGK22g04unryxIlCsrvQsIy/56JGBfwbhRzm0ys3Gb2SNtZQtRx5QOzErZs84YwncsWWzmfbas45WytoSly6YN2Yas3r4UCm2G2a1Ig0ye+rzKCkwFRIFsViwHMY0BDGyYr3qx5pO1/Yp9aXWJfa/CUvjqGpeLILixGWWPuUhcRzizrscPDD7knDZ5n2DOs3ld84zlszgRHFuTarqNrBxXvW9gQ1TdEOwgNGw9uhFRZS2aZXpahqwHBQP5nOYyuCGEiZPZHsKerx6dgggJJy0DXU19A4JDYJ9zco97nwJqqlDOFi0xYzaKiZLCHqceBVCEGCUoKeqxBrgW0n+ByKrCmW3hUp01qvEJjSj1eCcGGhwt5zMRI3h1lAhKmHoUKr4/AGcSlH/1eAS43czjo4gtx2ky3uOvxwhSUouJRjLs2mWGhI0g7c3w9KWg/wFRB8YGxG4zEpNlkk0DMxLfRpt5QVrJO/nSvpSUbKn/5jvee4giI1uWbgW7UeGxNWSL7PBjM56VIPIzr5qeKY47wZRBnGLE2c8UTTYitC3j5ReA/jfiUeAxiReEyhnuq4SGKBz02PNg24GtwDOpNAJQ7Csj3IktoK4HXy7j4jitaKPrjq7ltOSiqFCkvjP5GNijcm4ESxlYf9x173GOz5JXnOAzqrmlOBojsYcIB+IdGe5ZAFxR+TVaspRwyH9AYjvwQ7BvAvdI0VDqjdV9KZtPUOGsfiCR/ZQiigoRwb653i2joG2YYSt3znVVp8XxuQBv9CgxMYDvExxWZ7pk1QP1lcClwH8GfQ50E9jZ7ZGQGb1rs2nPcwCsQHB2rscY2B4w2Ltkrgs9LY5PwZwKxmPANzkcY2U2WQm8B/SxxFijKEI+y+o4B8CwCGxBhksTgqUPg/92fMc1O3EEU4yAfQa4mbkRzpgQL/YPzPuTLMpqUZZjPijxslwaYgvNdYmnz4kjmBhmbgvw34FPEhQzsz1tOeAGiTd60uPY+WN2kUilMBPWISK7DW1Lc3wqf6aIlAJu0Mw+IPEV4BrQpYQzsuWEoGPVKHlZ9RPVfWVWbc4i0C86xbeA7ZgPo/uME0zyspx7tiEWAvSuTWfUnHKmOWEEc2B9VLHmMRT2Ifda2d9H7BZKLAUtqwQS6yGY79WLplZV9ceEoEtnEjwnXkb9UftC4ByhHZZdMk9YEfbeksjxXIZLO4BThUij4/tznTCCCUE4q6zp9xDJm9gH7AO2SCGjqFXnSl/f1bCtAEMHhlXoaI+EViG9H/h1agvnScC5Mt3RQPeJ7Lj2fZ46sYu9YZsJA2otm+dO0Hmp+TahUm9/elSbzwGhJ01hjDiB9phHs2m9Y2BjjEKuQ8yM1FuIQm7+qOC8k2OMlTyFjo4QXUDaBPYxQq7LWrQBp5R9qRFB6zCs0MAMO2+o1PkJ4Pk6lwq43KGXtEjy7Rg0JUPdE2rGnIhmWYesuraEKwjgaYl7gSvr3NITRbHqz8rjLFU4H92zqj9ly9zOBLNJJUeHthDc8s6oc/1FSK8R+kdvKcU+j/kSm2/NYlfSdLpAJwmx6nWjbPl29jKcsDNms9lye1i5mk89IehyBsbnvyzSuQKxEkH5BGw1834X2N3UP+paALzb8JcfGhoGDLkCxT5Psa+ptrMTxe89li7gjNhD28HGJs4TfsZsBsW1o6B2hEcuaqP+qA4wIu/xOK8Q5qIeK0CXapHu79jnKb62zOCt8yKEaibkXGrYBoX4wfW+72WgT/Qs6P4LM9Y554aqyYx6+9IjpEmNbdplR4iiStQ/bouAy0pKu+hkuLcvzWwnfcIIZrE/bW4WMgAshG2zEH6knJRVKLRdA/x0nRsTYFfbRQU/9lCSEFygEmq3RzfwS7bPbsfpCcwFLbOBHZOqrDW2V00mWBg8hNgAvIPaijABV4I+JfFtM7sF4xFgt8GwYSmQCjWyZTdk6eFcdnYQlOVs9VVCl5m404zxRFjlnRHxMs+WOyYW1BNGMEERWDvN1WwaYTvQBawoFApXA++ifuzaA8BA6WGwKE7lbRth1qzXHlcjbsLsYxIPWLsbUwncBF5px6/D08RYcP86ZPAF4Dqyxf1ZQdCQvwmxDbRNsFtoiOB2VkKZPpWAYUxfRnqi8re9hAF1dZ17z0T6PeH3jjLycAfd5iLRfmpos6Md8kPXHFjvThzBFFyA9H7MltCsfiup4oi9QOgU4CVky3O5GewJw1AoyROg3RnujYAbQC9D3KkxexB4zg6HkRRQNnhA4rn5NnX6MADdK+n/AL9PyIGShQWEPDXnHfvIjPcL2GNwv4J2GNA+Qva1y+vc64DrQSs61PVV4F5CBI4RDi9uguAHYZ/zKHmzzXLgeqS5TqOeArfhbTtSdZDcBDxMMFKohyNEWljDYaPtYDkR/t9+wXsE35rjejaVwfURa/pSTIyCfRZ0MSHfyXRoRI02npfUMPYWdh1aWl5xD/AmMg2oupQQonQ3sAsYojosh2ffScipM9RowY53qimy55rHwb6Cc2NpCnjPaZe4F8C+TohD2ggxYTZYTMietajyK1QrPJ/YtCEKemy5bYbdCNw1F+VwDpaUT8aw24GHGrg1JngaXUiwEru68nslYTYfnyhPJMFsBfaD/R3wIBjOARLbf+QhzHD/zvTlab7J41EIgXnGuh77EcEh4TvMTIT8SalEhMd8ugX4JzIfj9XkqEkjF8zZ4yDY3xj8XyDd/nyJwY0RAxvCIGlol2EfBm5lngvXdKia2LUPn0tHzL1m9l7g7yCTLW1zyrAulMG52BMirX+WbDGMMtM0wZyCqnO62tGp3D8XtqYGPAX2pwYfE+zraINTlx1rSuspyD0M9rvAvxDShM/ld5mNbzWldwysj8DEcBkkPW5mfwD2buBLwE5mYQYd3BAH883QTn9GcCXc1azn11H+mAeNUfsAXEByxDxshAQ8ZSbf06lyzZSoqB+TOuVyQPkIE+KUsLHuYeb3mknlXTuAH2B8FfQDycYAHr756LOrgfURq9aWKSvFIveQS+19SN8GXkfYjyyrlLueRYEIGtpK3E0DqfqdXI17xoD0iN5cTRg02T3h24b0DlP9RtV3TPYAV/mOE64eBisBudf0p4AOEumbJP5O4GKka4FLCPk2FxGUM+0ErXb1fY0UvNpf06P/KFwkvLddePsTxPdAbwYuIxzVdB/zzslwx9azhmAamD2F+GglxcBkyytnxo9T8BWrxr1gfyN0MpMLgAN2GBxotFmruehiuEM1Go6QAWirwUh4hw2AbiScOc7kUtGAUbDnDJ6SsQ2nEQwOcJAFk2R12LKxQG9filID6YU2p38ZS+1bws5CnAmqHsXETJ6lqiqYj4W4tqkRx98FbuSYbFLH3JMYdl+pZDhzmNnDkm4iDAQT3eMwe9JgJGNkz6NfGKLjfadS1slwmD1uMFarj6R4YovxYWrYh3Q7+LsMdxLYSmBZpS8uAjrAYtC4hjVrkQna7wGOqO/g+ojiaz14QzGH5NzNPvV3SeolKHPOIghoD7VXpw64D2x8svr/X3Ksgnikc88AAAAldEVYdGRhdGU6Y3JlYXRlADIwMjEtMTAtMjJUMDU6MTI6MTUrMDA6MDBriR8HAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIxLTEwLTIyVDA1OjEyOjE1KzAwOjAwGtSnuwAAAABJRU5ErkJggg==
+description: The Deep Learning cybersecurity platform, for zero time prevention.
+detaileddescription: |-
+  ### Partner Contributed Integration
+  #### Integration Author: Deep Instinct
+  Support and maintenance for this integration are provided by the author. Please use the following contact details:
+  - **Email**: [support@deepinstinct.com](mailto:support@deepinstinct.com)
+  ***
+  1. Configure "Base server URL" as base url of your Deep Instinct environment. i.e https://my-deep-instinct-path.deepinstinctweb.com
+  2. Configure "API Key" as your api connector key from your Deep Instinct environment.
+      a. In your Deep Instinct environment, go to "Settings" > "Integration & Notification" > "API Connectors".
+      b. Create your own api connector with "Full Access" and click "copy"
+      c. Paste the copied api key to "API Key" field in Cortex XSOAR
+  3. Configure "first_fetch_id" to be the first event id to start fetching from
+
+  ---
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/deep-instinct)
+configuration:
+- display: Base server URL
+  name: base_url
+  defaultvalue: https://my-deep-instinct-path.deepinstinctweb.com
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  type: 4
+  required: true
+- display: First event ID to fetch from
+  name: first_fetch_id
+  defaultvalue: "0"
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  script: |
+    import requests
+    import json
+
+
+    requests.packages.urllib3.disable_warnings()
+
+
+    def http_request(method, url_suffix, json=None):
+        """
+        Helper function to perform http request
+        """
+        try:
+            api_suffix = "/api/v1"
+            base_url = demisto.params().get('base_url')
+            if base_url.endswith("/"):  # remove slash in the end
+                base_url = base_url[:-1]
+            api_key = demisto.params().get('apikey')
+
+            headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': str(api_key)
+            }
+            r = requests.request(
+                method,
+                base_url + api_suffix + url_suffix,
+                json=json,
+                headers=headers,
+                verify=False
+            )
+
+            if r.status_code == 422:
+                return_error(message='Authentication parameters are invalid, '
+                                     'Please check your URL address and your API token')
+
+            if r.status_code not in (200, 204):
+                return_error(message='The following API call response status code is [%d] - %s '
+                                     % (r.status_code, r.reason))
+            try:
+                return r.json()
+            except ValueError:
+                return None
+        except Exception as e:
+            return_error(message='Error occurred on API call: %s. Error is: %s'
+                                 % (base_url + api_suffix + url_suffix, str(e)))
+
+
+    def get_specific_device():
+        """
+        Get specific device by id
+        """
+        device_id = demisto.args().get('device_id')
+        result = http_request('GET', "/devices/%s" % str(device_id))
+        ec = {'DeepInstinct.Devices(val.id && val.id == obj.id)': result}
+
+        return_outputs(
+            readable_output=tableToMarkdown('Device', result),
+            outputs=ec,
+            raw_response=result
+        )
+
+
+    def get_events():
+        """
+        Get events
+        """
+        first_event_id = demisto.args().get('first_event_id')
+        result = http_request('GET', '/events?after_event_id=' + str(first_event_id))
+        events = {}
+        if 'events' in result:
+            events = result['events']
+        ec = {'DeepInstinct.Events(val.id && val.id == obj.id)': events}
+
+        return_outputs(
+            readable_output=tableToMarkdown('Events', events),
+            outputs=ec,
+            raw_response=events
+        )
+
+
+    def get_all_groups():
+        """
+        Get all groups
+
+        """
+        result = http_request('GET', "/groups")
+        ec = {'DeepInstinct.Groups(val.id && val.id == obj.id)': result}
+
+        return_outputs(
+            readable_output=tableToMarkdown('Groups', result),
+            outputs=ec,
+            raw_response=result
+        )
+
+
+    def get_all_policies():
+        """
+        Get all policies
+
+        """
+        result = http_request('GET', "/policies")
+        ec = {'DeepInstinct.Policies(val.id && val.id == obj.id)': result}
+
+        return_outputs(
+            readable_output=tableToMarkdown('Policies', result),
+            outputs=ec,
+            raw_response=result
+        )
+
+
+    def add_hash_to_denylist():
+        """
+        Add hash to deny-list
+        """
+        policy_id = demisto.args().get('policy_id')
+        file_hash = demisto.args().get('file_hash')
+        comment = demisto.args().get('comment') or ""
+        http_request('POST', '/policies/%s/deny-list/hashes/%s' % (str(policy_id), file_hash), json={"comment": comment})
+        demisto.results('ok')
+
+
+    def add_hash_to_allowlist():
+        """
+        Add hash to allow-list
+        """
+        policy_id = demisto.args().get('policy_id')
+        file_hash = demisto.args().get('file_hash')
+        comment = demisto.args().get('comment') or ""
+        http_request('POST', '/policies/%s/allow-list/hashes/%s' % (str(policy_id), file_hash), json={"comment": comment})
+        demisto.results('ok')
+
+
+    def remove_hash_from_denylist():
+        """
+        Remove hash from deny-list
+        """
+        policy_id = demisto.args().get('policy_id')
+        file_hash = demisto.args().get('file_hash')
+        http_request('DELETE', '/policies/%s/deny-list/hashes/%s' % (str(policy_id), file_hash))
+        demisto.results('ok')
+
+
+    def remove_hash_from_allowlist():
+        """
+        Remove hash from allow-list
+        """
+        policy_id = demisto.args().get('policy_id')
+        file_hash = demisto.args().get('file_hash')
+        http_request('DELETE', '/policies/%s/allow-list/hashes/%s' % (str(policy_id), file_hash))
+        demisto.results('ok')
+
+
+    def add_devices_to_group():
+        """
+        Add devices to specific group
+        """
+        group_id = demisto.args().get('group_id')
+        device_ids_input = demisto.args().get('device_ids')
+        device_ids = [int(num) for num in device_ids_input.split(",")]
+        http_request('POST', '/groups/%s/add-devices' % str(group_id), json={"devices": device_ids})
+        demisto.results('ok')
+
+
+    def remove_devices_from_group():
+        """
+        Remove devices from group
+        """
+        group_id = demisto.args().get('group_id')
+        device_ids_input = demisto.args().get('device_ids')
+        device_ids = [int(num) for num in device_ids_input.split(",")]
+
+        http_request('POST', '/groups/%s/remove-devices' % str(group_id), json={"devices": device_ids})
+        demisto.results('ok')
+
+
+    def delete_files_remotely():
+        """
+        Delete given file ids remotely
+        """
+        event_ids_input = demisto.args().get('event_ids')
+        event_ids = [int(num) for num in event_ids_input.split(",")]
+        http_request('POST', '/devices/actions/delete-remote-files', json={"ids": event_ids})
+        demisto.results('ok')
+
+
+    def terminate_remote_processes():
+        """
+        Terminate remove processes by given event ids
+        """
+        event_ids_input = demisto.args().get('event_ids')
+        event_ids = [int(num) for num in event_ids_input.split(",")]
+        http_request('POST', '/devices/actions/terminate-remote-process', json={"ids": event_ids})
+        demisto.results('ok')
+
+
+    def close_events():
+        """
+        Close events by event ids
+        """
+        event_ids_input = demisto.args().get('event_ids')
+        event_ids = [int(num) for num in event_ids_input.split(",")]
+        http_request('POST', '/events/actions/close', json={"ids": event_ids})
+        demisto.results('ok')
+
+
+    def fetch_incidents():
+        incidents = []
+        last_id = demisto.params().get('first_fetch_id')
+
+        last_run = demisto.getLastRun()
+        if last_run and last_run.get('last_id') is not None:
+            last_id = last_run.get('last_id')
+
+        events = http_request('GET', '/events?after_event_id=' + str(last_id))
+        while events and events['events']:
+            for event in events['events']:
+                incident = {
+                    'name': "DeepInstinct_" + str(event['id']),  # name is required field, must be set
+                    'occurred': event['insertion_timestamp'],
+                    'rawJSON': json.dumps(event)
+                }
+            incidents.append(incident)
+
+            demisto.setLastRun({'last_id': events['last_id']})
+            events = http_request('GET', '/events?after_event_id=' + str(events['last_id']))
+
+        demisto.incidents(incidents)
+
+
+    def test_module():
+        http_request('GET', "/health_check")
+        demisto.results("ok")
+
+
+    def get_suspicious_events():
+        """
+        Get suspicious events
+        """
+        first_event_id = demisto.args().get('first_event_id')
+        result = http_request('GET', '/suspicious-events?after_event_id=' + str(first_event_id))
+        events = {}
+        if 'events' in result:
+            events = result['events']
+        ec = {'DeepInstinct.Events(val.id && val.id == obj.id)': events}
+
+        return_outputs(
+            readable_output=tableToMarkdown('Events', events),
+            outputs=ec,
+            raw_response=events
+        )
+
+
+    def isolate_from_network():
+        """
+        Isolate given Device Id(s) from Network
+        """
+        device_ids_input = demisto.args().get('device_ids')
+        device_ids = [int(num) for num in device_ids_input.split(",")]
+        http_request('POST', '/devices/actions/isolate-from-network', json={"ids": device_ids})
+        demisto.results('ok')
+
+
+    def release_from_isolation():
+        """
+        Release given Device Id(s) from Isolation
+        """
+        device_ids_input = demisto.args().get('device_ids')
+        device_ids = [int(num) for num in device_ids_input.split(",")]
+        http_request('POST', '/devices/actions/release-from-isolation', json={"ids": device_ids})
+        demisto.results('ok')
+
+
+    def remote_file_upload():
+        """
+        Request Remote File Upload by Event ID
+        """
+        event_id = demisto.args().get('event_id')
+        http_request('POST', '/devices/actions/request-remote-file-upload/%s' % (str(event_id)))
+        demisto.results('ok')
+
+
+    def disable_device():
+        """
+        Disable D-client at next Check-In
+        """
+        device_id = demisto.args().get('device_id')
+        http_request('POST', '/devices/%s/actions/disable' % (str(device_id)))
+        demisto.results('ok')
+
+
+    def enable_device():
+        """
+        Enable D-Client at next Check-In
+        """
+        device_id = demisto.args().get('device_id')
+        http_request('POST', '/devices/%s/actions/enable' % (str(device_id)))
+        demisto.results('ok')
+
+
+    def remove_device():
+        """
+        Uninstall D-Client on device at next Check-In
+        """
+        device_id = demisto.args().get('device_id')
+        http_request('POST', '/devices/%s/actions/remove' % (str(device_id)))
+        demisto.results('ok')
+
+
+    def upload_logs():
+        """
+        Upload D-Client Logs at next Check-In
+        """
+        device_id = demisto.args().get('device_id')
+        http_request('POST', '/devices/%s/actions/upload-logs' % (str(device_id)))
+        demisto.results('ok')
+
+
+    def main():
+        # Commands
+        if demisto.command() == 'test-module':
+            """
+             test module
+            """
+            test_module()
+
+        if demisto.command() == 'deepinstinct-get-device':
+            """
+            Get device by id
+            """
+            get_specific_device()
+
+        if demisto.command() == 'deepinstinct-get-events':
+            """
+            Get events
+            """
+            get_events()
+
+        if demisto.command() == 'deepinstinct-get-suspicious-events':
+            """
+            Get events
+            """
+            get_suspicious_events()
+
+        if demisto.command() == 'deepinstinct-get-all-groups':
+            """
+            Get all groups
+            """
+            get_all_groups()
+
+        if demisto.command() == 'deepinstinct-get-all-policies':
+            """
+            Get all policies
+            """
+            get_all_policies()
+
+        if demisto.command() == 'deepinstinct-add-hash-to-deny-list':
+            """
+            Add hash to deny-list
+            """
+            add_hash_to_denylist()
+
+        if demisto.command() == 'deepinstinct-add-hash-to-allow-list':
+            """
+            Add hash to allow-list
+            """
+            add_hash_to_allowlist()
+
+        if demisto.command() == 'deepinstinct-remove-hash-from-deny-list':
+            """
+            Remove hash from deny-list
+            """
+            remove_hash_from_denylist()
+
+        if demisto.command() == 'deepinstinct-remove-hash-from-allow-list':
+            """
+            Remove hash from allow-list
+            """
+            remove_hash_from_allowlist()
+
+        if demisto.command() == 'deepinstinct-add-devices-to-group':
+            """
+            Add devices to groups
+            """
+            add_devices_to_group()
+
+        if demisto.command() == 'deepinstinct-remove-devices-from-group':
+            """
+            Remove devices from group
+            """
+            remove_devices_from_group()
+
+        if demisto.command() == 'deepinstinct-delete-files-remotely':
+            """
+            Delete files remotely by event ids
+            """
+            delete_files_remotely()
+
+        if demisto.command() == 'deepinstinct-terminate-processes':
+            """
+            Terminate processes by event ids
+            """
+            terminate_remote_processes()
+
+        if demisto.command() == 'deepinstinct-close-events':
+            """
+            Close events by event ids
+            """
+            close_events()
+
+        if demisto.command() == 'fetch-incidents':
+            """
+            fetch events
+            """
+            fetch_incidents()
+
+        if demisto.command() == 'deepinstinct-isolate-from-network':
+            """
+            Isolate Device(s) from Network
+            """
+            isolate_from_network()
+
+        if demisto.command() == 'deepinstinct-release-from-isolation':
+            """
+            Remove Device(s) from Isolation
+            """
+            release_from_isolation()
+
+        if demisto.command() == 'deepinstinct-remote-file-upload':
+            """
+            Request Remote File Upload by Event ID
+            """
+            remote_file_upload()
+
+        if demisto.command() == 'deepinstinct-disable-device':
+            """
+            Disable D-client at next Check-In
+            """
+            disable_device()
+
+        if demisto.command() == 'deepinstinct-enable-device':
+            """
+            Enable D-client at next Check-In
+            """
+            enable_device()
+
+        if demisto.command() == 'deepinstinct-remove-device':
+            """
+            Uninstall D-Client on device at next Check-In
+            """
+            remove_device()
+
+        if demisto.command() == 'deepinstinct-upload-logs':
+            """
+            Upload D-Client logs from device at next Check-In
+            """
+            upload_logs()
+
+
+    if __name__ in ('__builtin__', 'builtins'):
+        main()
+  type: python
+  commands:
+  - name: deepinstinct-get-device
+    arguments:
+    - name: device_id
+      required: true
+      description: The device ID
+    outputs:
+    - contextPath: DeepInstinct.devices.ID
+      description: Device ID
+      type: number
+    - contextPath: DeepInstinct.devices.os
+      description: Device OS
+      type: string
+    - contextPath: DeepInstinct.devices.osv
+      description: Device OS version
+      type: string
+    - contextPath: DeepInstinct.devices.ip_address
+      description: Device IP address
+      type: string
+    - contextPath: DeepInstinct.devices.mac_address
+      description: Device mac address
+      type: string
+    - contextPath: DeepInstinct.devices.hostname
+      description: Device hostname
+      type: string
+    - contextPath: DeepInstinct.devices.domain
+      description: Device domain
+      type: string
+    - contextPath: DeepInstinct.devices.scanned_files
+      description: Num of device scanned files
+      type: number
+    - contextPath: DeepInstinct.devices.tag
+      description: Device tag
+      type: string
+    - contextPath: DeepInstinct.devices.connectivity_status
+      description: Device connectivity status
+      type: string
+    - contextPath: DeepInstinct.devices.deployment_status
+      description: Device deployment status
+      type: string
+    - contextPath: DeepInstinct.devices.last_registration
+      description: Device last registration datetime
+      type: string
+    - contextPath: DeepInstinct.devices.last_contact
+      description: Device last contact datetime
+      type: string
+    - contextPath: DeepInstinct.devices.distinguished_name
+      description: Device distinguished name
+      type: string
+    - contextPath: DeepInstinct.devices.group_name
+      description: Device group name
+      type: string
+    - contextPath: DeepInstinct.devices.group_id
+      description: Device group ID
+      type: number
+    - contextPath: DeepInstinct.devices.policy_name
+      description: Device policy name
+      type: string
+    - contextPath: DeepInstinct.devices.policy_id
+      description: Device policy ID
+      type: number
+    - contextPath: DeepInstinct.devices.log_status
+      description: Device log status
+      type: string
+    - contextPath: DeepInstinct.devices.agent_version
+      description: Device agent version
+      type: string
+    - contextPath: DeepInstinct.devices.brain_version
+      description: Device brain version
+      type: string
+    - contextPath: DeepInstinct.devices.msp_name
+      description: Device msp name
+      type: string
+    - contextPath: DeepInstinct.devices.msp_id
+      description: Device msp ID
+      type: number
+    - contextPath: DeepInstinct.devices.tenant_name
+      description: Device tenant name
+      type: string
+    - contextPath: DeepInstinct.devices.tenant_id
+      description: Device tenant ID
+      type: number
+    description: get specific device by ID
+  - name: deepinstinct-get-events
+    arguments:
+    - name: first_event_id
+      description: First event id to get as max events in response can be 50
+      defaultValue: "0"
+    outputs:
+    - contextPath: DeepInstinct.Events.events.ID
+      description: event ID
+      type: number
+    - contextPath: DeepInstinct.Events.events.device_id
+      description: event device ID
+      type: number
+    - contextPath: DeepInstinct.Events.events.file_hash
+      description: event file hash
+      type: string
+    - contextPath: DeepInstinct.Events.events.file_type
+      description: event file type
+      type: string
+    - contextPath: DeepInstinct.Events.events.file_archive_hash
+      description: event file archive hash
+      type: string
+    - contextPath: DeepInstinct.Events.events.path
+      description: event file path
+    - contextPath: DeepInstinct.Events.events.file_size
+      description: event file size
+      type: number
+    - contextPath: DeepInstinct.Events.events.threat_severity
+      description: event threat severity
+      type: string
+    - contextPath: DeepInstinct.Events.events.deep_classification
+      description: Deep Instinct classification
+      type: string
+    - contextPath: DeepInstinct.Events.events.file_status
+      description: event file status
+      type: string
+    - contextPath: sandbox_statusDeepInstinct.Events.events.
+      description: event sandbox status
+      type: string
+    - contextPath: DeepInstinct.Events.events.model
+      description: event model
+      type: string
+    - contextPath: DeepInstinct.Events.events.type
+      description: event type
+      type: string
+    - contextPath: DeepInstinct.Events.events.trigger
+      description: event trigger
+      type: string
+    - contextPath: DeepInstinct.Events.events.action
+      description: event action
+      type: string
+    - contextPath: DeepInstinct.Events.events.tenant_id
+      description: event tenant id
+      type: number
+    - contextPath: DeepInstinct.Events.events.msp_id
+      description: event msp id
+      type: number
+    - contextPath: DeepInstinct.Events.events.status
+      description: event status
+      type: string
+    - contextPath: DeepInstinct.Events.events.close_trigger
+      description: event close trigger
+      type: string
+    - contextPath: DeepInstinct.Events.events.reoccurrence_count
+      description: event reoccurrence_count
+      type: number
+    description: Get all events. Max events in response can be 50, use first_event_id
+      parameter to define first event id to get
+  - name: deepinstinct-get-suspicious-events
+    arguments:
+    - name: first_event_id
+      description: First event id to get as max events in response can be 50
+      defaultValue: "0"
+    outputs:
+    - contextPath: DeepInstinct.Events.events.ID
+      description: event ID
+      type: number
+    - contextPath: DeepInstinct.Events.events.device_id
+      description: event device ID
+      type: number
+    - contextPath: DeepInstinct.Events.events.file_hash
+      description: event file hash
+      type: string
+    - contextPath: DeepInstinct.Events.events.file_type
+      description: event file type
+      type: string
+    - contextPath: DeepInstinct.Events.events.file_archive_hash
+      description: event file archive hash
+      type: string
+    - contextPath: DeepInstinct.Events.events.path
+      description: event file path
+    - contextPath: DeepInstinct.Events.events.file_size
+      description: event file size
+      type: number
+    - contextPath: DeepInstinct.Events.events.threat_severity
+      description: event threat severity
+      type: string
+    - contextPath: DeepInstinct.Events.events.deep_classification
+      description: Deep Instinct classification
+      type: string
+    - contextPath: DeepInstinct.Events.events.file_status
+      description: event file status
+      type: string
+    - contextPath: sandbox_statusDeepInstinct.Events.events.
+      description: event sandbox status
+      type: string
+    - contextPath: DeepInstinct.Events.events.model
+      description: event model
+      type: string
+    - contextPath: DeepInstinct.Events.events.type
+      description: event type
+      type: string
+    - contextPath: DeepInstinct.Events.events.trigger
+      description: event trigger
+      type: string
+    - contextPath: DeepInstinct.Events.events.action
+      description: event action
+      type: string
+    - contextPath: DeepInstinct.Events.events.tenant_id
+      description: event tenant id
+      type: number
+    - contextPath: DeepInstinct.Events.events.msp_id
+      description: event msp id
+      type: number
+    - contextPath: DeepInstinct.Events.events.status
+      description: event status
+      type: string
+    - contextPath: DeepInstinct.Events.events.close_trigger
+      description: event close trigger
+      type: string
+    - contextPath: DeepInstinct.Events.events.reoccurrence_count
+      description: event reoccurrence_count
+      type: number
+    description: Get all suspicious events. Max events in response can be 50, use
+      first_event_id parameter to define first event id to get
+  - name: deepinstinct-get-all-groups
+    arguments: []
+    outputs:
+    - contextPath: DeepInstinct.Groups.ID
+      description: group id
+      type: number
+    - contextPath: DeepInstinct.Groups.os
+      description: group operation system
+      type: string
+    - contextPath: DeepInstinct.Groups.name
+      description: group name
+      type: string
+    - contextPath: DeepInstinct.Groups.policy_id
+      description: group policy ID
+      type: number
+    - contextPath: DeepInstinct.Groups.is_default_group
+      description: True if group is a default group, false otherwise
+      type: boolean
+    - contextPath: DeepInstinct.Groups.msp_name
+      description: msp name
+      type: string
+    - contextPath: DeepInstinct.Groups.msp_id
+      description: msp ID
+      type: number
+    description: get all groups
+  - name: deepinstinct-get-all-policies
+    arguments: []
+    outputs:
+    - contextPath: DeepInstinct.Policies.ID
+      description: policy ID
+      type: number
+    - contextPath: DeepInstinct.Policies.name
+      description: policy name
+      type: string
+    - contextPath: DeepInstinct.Policies.os
+      description: policy operating system
+      type: string
+    - contextPath: DeepInstinct.Policies.is_default_policy
+      description: True if policy is a default policy, False otherwise
+      type: boolean
+    - contextPath: DeepInstinct.Policies.msp_id
+      description: msp ID
+      type: number
+    - contextPath: DeepInstinct.Policies.msp_name
+      description: msp name
+      type: string
+    description: get all policies
+  - name: deepinstinct-add-hash-to-deny-list
+    arguments:
+    - name: policy_id
+      required: true
+      description: policy ID
+    - name: file_hash
+      required: true
+      description: file hash
+    - name: comment
+      description: Optional, add comment to hash field
+    description: add file hash to deny-list
+  - name: deepinstinct-add-hash-to-allow-list
+    arguments:
+    - name: policy_id
+      required: true
+      description: policy ID
+    - name: file_hash
+      required: true
+      description: file hash
+    - name: comment
+      description: Optional, add comment to hash field
+    description: add file hash to allow-list
+  - name: deepinstinct-remove-hash-from-deny-list
+    arguments:
+    - name: policy_id
+      required: true
+      description: policy ID
+    - name: file_hash
+      required: true
+      description: file hash
+    description: remove file hash from deny-list
+  - name: deepinstinct-remove-hash-from-allow-list
+    arguments:
+    - name: policy_id
+      required: true
+      description: policy ID
+    - name: file_hash
+      required: true
+      description: file hash
+    description: remove file hash from allow-list
+  - name: deepinstinct-add-devices-to-group
+    arguments:
+    - name: group_id
+      required: true
+      description: group ID
+    - name: device_ids
+      required: true
+      description: comma separated devices ids
+      isArray: true
+    description: add multiple devices to group
+  - name: deepinstinct-remove-devices-from-group
+    arguments:
+    - name: group_id
+      required: true
+      description: group ID to remove from
+    - name: device_ids
+      required: true
+      description: comma separated list of device ids to remove
+      isArray: true
+    description: remove list of devices from group
+  - name: deepinstinct-delete-files-remotely
+    arguments:
+    - name: event_ids
+      required: true
+      description: comma separated list of event ids
+      isArray: true
+    description: delete multiple files remotely
+  - name: deepinstinct-terminate-processes
+    arguments:
+    - name: event_ids
+      required: true
+      description: comma separated list of event ids
+      isArray: true
+    description: terminate list of processes
+  - name: deepinstinct-close-events
+    arguments:
+    - name: event_ids
+      required: true
+      description: comma separated list of event ids
+      isArray: true
+    description: close list of events
+  - name: deepinstinct-isolate-from-network
+    arguments:
+    - name: device_ids
+      required: true
+      description: comma separated list of device ids
+      isArray: true
+    description: isolate devices from network
+  - name: deepinstinct-release-from-isolation
+    arguments:
+    - name: device_ids
+      required: true
+      description: comma separated list of device ids
+      isArray: true
+    description: remove devices from isolation
+  - name: deepinstinct-disable-device
+    arguments:
+    - name: device_id
+      required: true
+    description: disable D-Client
+  - name: deepinstinct-enable-device
+    arguments:
+    - name: device_id
+      required: true
+    description: enable D-Client
+  - name: deepinstinct-remove-device
+    arguments:
+    - name: device_id
+      required: true
+    description: uninstall D-Client
+  - name: deepinstinct-upload-logs
+    arguments:
+    - name: device_id
+      required: true
+    description: upload logs from D-Client
+  - name: deepinstinct-remote-file-upload
+    arguments:
+    - name: event_id
+      required: true
+    description: upload file from Event Id
+  dockerimage: demisto/python3:3.9.9.25564
+  isfetch: true
+  runonce: false
+  subtype: python3
+  sourcemoduleid: DeepInstinct
