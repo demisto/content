@@ -42,6 +42,54 @@ External resources:
 
 [Possible Microsoft process masquerading](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/possible-microsoft-process-masquerading.html)
 
+## How to use this playbook
+
+### Create a new playbook trigger
+
+1. Click on the **Incident Response** icon on the left menu ![img.png](img.png)
+2. Under **Automation** click on **Incident Configuration**.
+3. Select **Playbook Triggers** on the left panel.
+4. Click on **New Trigger**.
+5. Choose a trigger name e.g. Masquerading Response.
+6. Under **Playbook To Run**, select T1036 - Masquerading playbook.
+7. Add trigger description - optional.
+8. Create a filter for the playbook trigger.
+    1. Click on 'select field'.
+    2. Choose 'Mitre ATT&CK Technique'.
+    3. Fill the value with 'T1036' and select all.
+    4. Click **Create**.
+    
+* **Note** that the playbook triggers are being executed by their order, please consider changing the trigger position for the execution order to be as intended. If not, other trigger may override the new trigger.
+
+Click **Save**.
+
+### Playbook inputs
+
+Before executing the playbook, please review the inputs and change them default values if needed.
+
+Important playbook inputs you should pay attention to:
+
+1. FileRemediation - Under the second phase of the playbook remediation, there are two sub-playbooks:
+    1. Containment Plan
+    2. Eradication Plan
+
+One can quarantine a file while the other can delete it. Since both can be executed together, this playbook input allows you to decide which response action the playbook should execute
+
+2. AutoContainment - This input is responsible for whether to execute the following response actions automatically or manually:
+    1. Block indicators
+    2. Quarantine file
+    3. Disable user
+    
+3. HostAutoContainment - This input is responsible for whether to execute Endpoint Isolation automatically or manually.
+
+
+### Playbook remediation plan
+
+In this playbook the remediation plan happens in two different phases:
+
+1. On an early stage of the playbook execution, the Containment Plan sub-playbook is being used for **File quarantine** and **Block indicators**.
+2. On a later stage, the playbook executes the **Endpoint Investigation Plan** intended to look for additional activity on the alerted endpoint. On this phase, based on the results of the Endpoint Investigation Plan playbook, both Containment and Eradication Plan sub-playbook are being executed.
+
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
