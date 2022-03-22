@@ -6,7 +6,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Name of the logo. The name is the unique identifier for each logo.
+  description: Name of the logo. The name is the unique identifier for the logo.
   isArray: false
   name: logoName
   required: false
@@ -25,7 +25,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: If True it will only display all the logos inside the model.
+  description: If True, it will display all the logos inside the model.
   isArray: false
   name: displayLogos
   predefined:
@@ -35,7 +35,7 @@ args:
   secret: false
 - default: false
   description: Comma-separated list of domains that are associated to the logo defined
-    in the logoName argument. It will only be used if action argument is AddLogo or
+    in the logoName argument. It will only be used if the action argument is AddLogo or
     ModifiedDomainForLogo.
   isArray: true
   name: associatedDomains
@@ -43,7 +43,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Action that we want to execute on the model. Will be ignore if displayLogos
+  description: Action to execute on the model. Will be ignored if displayLogos
     is set to True.
   isArray: false
   name: action
@@ -53,7 +53,7 @@ args:
   - ModifiedDomainForLogo
   required: false
   secret: false
-comment: Add Remove or amend logos from the URL Phishing model
+comment: Add, remove, or modifiy logos from the URL Phishing model.
 commonfields:
   id: DBotUpdateLogoURLPhishing
   version: -1
