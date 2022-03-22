@@ -68,7 +68,7 @@ class TestReadAndFormatReleaseNote:
         Then
         - Ensure formatted string is empty.
         """
-        rn_file = os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_3.md')
+        rn_file = os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_1.md')
         formatted_text = read_and_format_release_note(rn_file)
         assert formatted_text == ''
 
@@ -314,7 +314,7 @@ class TestGenerateReleaseNotesSummary:
           - empty lines (with dashes) are removed from the release notes summary.
         """
         release_notes_files = [
-            os.path.join(TEST_DATA_PATH, 'FakePack3', 'ReleaseNotes', '1_0_3.md')
+            os.path.join(TEST_DATA_PATH, 'FakePack3', 'ReleaseNotes', '1_0_1.md')
         ]
 
         packs_metadta_dict = {
@@ -350,7 +350,7 @@ class TestGenerateReleaseNotesSummary:
           - the summary does not contain release notes 1.0.1, because it is ignored.
         """
         release_notes_files = [
-            os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_3.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_1.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_1_0.md'),
         ]
         packs_metadta_dict = {
@@ -381,7 +381,7 @@ class TestMergeVersionBlocks:
         - Ensure that the content of both RN files appears in the result file.
         """
         release_notes_paths = [
-            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_3.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_1.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_2.md'),
         ]
 
@@ -411,7 +411,7 @@ class TestMergeVersionBlocks:
         - Ensure that the content of both RN files appears in the result file.
         """
         release_notes_paths = [
-            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_3.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_1.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_2.md'),
         ]
 

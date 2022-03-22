@@ -2601,7 +2601,7 @@ class Pack(object):
         Receives changelog, checks if there exists a BC version in each changelog entry (as changelog entry might be
         zipped into few RN versions, check if at least one of the versions is BC).
         Check if RN is BC is done by doing the following:
-         1) Check if RN has corresponding config file, e.g 1_0_3.md has corresponding 1_0_1.json file.
+         1) Check if RN has corresponding config file, e.g 1_0_1.md has corresponding 1_0_1.json file.
          2) If it does, check if `isBreakingChanges` field is true
         If such version exists, adds a
         true value to 'breakingChanges' field.

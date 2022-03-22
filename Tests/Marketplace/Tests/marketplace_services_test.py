@@ -581,7 +581,7 @@ class TestChangelogCreation:
         open_mocker[os.path.join(dummy_pack.path, Pack.RELEASE_NOTES, '2_0_2.md')].read_data = 'wow'
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         mocker.patch("os.path.exists", return_value=True)
-        dir_list = ['1_0_3.md', '2_0_2.md', '2_0_0.md']
+        dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
         mocker.patch('builtins.open', open_mocker)
         build_number = random.randint(0, 100000)
@@ -603,7 +603,7 @@ class TestChangelogCreation:
         dummy_pack.current_version = '2.0.0'
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         mocker.patch("os.path.exists", return_value=True)
-        dir_list = ['1_0_3.md', '2_0_2.md', '2_0_0.md']
+        dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
         original_changelog = '''{
             "1.0.0": {
@@ -638,7 +638,7 @@ class TestChangelogCreation:
         dummy_pack.current_version = '2.0.0'
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch("Tests.Marketplace.marketplace_services")
-        dir_list = ['1_0_3.md', '2_0_0.md']
+        dir_list = ['1_0_1.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
         original_changelog = '''{
             "1.0.0": {
@@ -674,7 +674,7 @@ class TestChangelogCreation:
                 and false otherwise.
         """
         release_notes_dir = 'Irrelevant/Test/Path'
-        dir_list = ['1_0_3.md', '1_0_2.md', '1_0_3.md']
+        dir_list = ['1_0_1.md', '1_0_2.md', '1_0_3.md']
         mocker.patch("os.listdir", return_value=dir_list)
         assert is_the_only_rn_in_block(release_notes_dir, version, AGGREGATED_CHANGELOG) == boolean_value
 
@@ -693,7 +693,7 @@ class TestChangelogCreation:
         release_notes_dir = 'Irrelevant/Test/Path'
         version = '1.0.2'
         higher_nearest_version = '1.0.3'
-        dir_list = ['1_0_3.md', '1_0_2.md', '1_0_3.md']
+        dir_list = ['1_0_1.md', '1_0_2.md', '1_0_3.md']
         mocker.patch("os.listdir", return_value=dir_list)
         modified_rn_file = 'modified dummy release notes'
         mocker.patch("builtins.open", mock_open(read_data=modified_rn_file))
@@ -1700,7 +1700,7 @@ class TestReleaseNotes:
 - wow1
         '''
         mocker.patch('builtins.open', mock_open(read_data=rn))
-        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_3.md'])
+        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
         rn_lines, latest_rn, new_versions = \
             dummy_pack.get_release_notes_lines('rn_dir_fake_path', Version('1.0.1'), rn)
         assert latest_rn == '1.0.1'
@@ -1723,7 +1723,7 @@ class TestReleaseNotes:
 - wow2
         '''
 
-        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_3.md'])
+        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
         rn_lines, latest_rn, new_versions = \
             dummy_pack.get_release_notes_lines('wow', Version('1.0.1'), changelog_latest_rn)
         assert latest_rn == '1.0.1'
@@ -1845,7 +1845,7 @@ class TestReleaseNotes:
         os.mkdir(rn_dir)
         create_rn_file(rn_dir, '1_0_1', 'txt1')
         create_rn_file(rn_dir, '1_0_2', 'txt2')
-        assert Pack._get_release_notes_concat_str(rn_dir, ['1_0_3.md', '1_0_2.md']) == '\ntxt1\ntxt2'
+        assert Pack._get_release_notes_concat_str(rn_dir, ['1_0_1.md', '1_0_2.md']) == '\ntxt1\ntxt2'
 
     def test_get_release_notes_concat_str_empty(self):
         """

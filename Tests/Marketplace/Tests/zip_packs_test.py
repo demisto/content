@@ -168,7 +168,7 @@ class TestZipPacks:
         Then:
             The zip should be without TestPlaybooks
         """
-        files = ['README.md', 'changelog.json', 'metadata.json', 'ReleaseNotes/1_0_3.md',
+        files = ['README.md', 'changelog.json', 'metadata.json', 'ReleaseNotes/1_0_1.md',
                  'Playbooks/playbook-oylo.yml', 'TestPlaybooks/playbook-oylo.yml',
                  'Scripts/script-TaniumAskQuestion.yml', 'Integrations/integration-shtak.yml']
         mocker.patch.object(ZipFile, '__init__', return_value=None)
@@ -201,7 +201,7 @@ class TestZipPacks:
         Then:
             TestPlaybooks should not be removed
         """
-        files = ['README.md', 'changelog.json', 'metadata.json', 'ReleaseNotes/1_0_3.md',
+        files = ['README.md', 'changelog.json', 'metadata.json', 'ReleaseNotes/1_0_1.md',
                  'Playbooks/playbook-oylo.yml', 'Scripts/script-TaniumAskQuestion.yml',
                  'Integrations/integration-shtak.yml']
         mocker.patch.object(ZipFile, '__init__', return_value=None)
@@ -227,7 +227,7 @@ class TestZipPacks:
         """
 
         files = ['Integrations/integration-VirusTotal_5.5.yml', 'changelog.json', 'metadata.json',
-                 'ReleaseNotes/1_0_3.md', 'TestPlaybooks/playbook-VirusTotal_detonate_file.yml', 'README.md',
+                 'ReleaseNotes/1_0_1.md', 'TestPlaybooks/playbook-VirusTotal_detonate_file.yml', 'README.md',
                  'Scripts/script-TaniumAskQuestion.yml', 'Playbooks/playbook-Detonate_File-VirusTotal.yml',
                  'Integrations/integration-shtak.yml', 'TestPlaybooks/playbook-VirusTotal_preferred_vendors_test.yml',
                  "TestPlaybooks/playbook-virusTotal-test.yml"]
