@@ -1,4 +1,4 @@
-Use this feed integration to fetch VirusTotal Retrohunt matches.
+Use this feed integration to fetch VirusTotal Retrohunt matches. It processes the latest finished job retrieving its matches based on the limit parameter (40 by default) in every fetch until there are no more matches for that job.
 
 ## Configure VirusTotal Retrohunt Feed on Cortex XSOAR
 
@@ -27,7 +27,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### vt-retrohunt-get-indicators
 ***
-Gets the matches from a given retrohunt job's id or the latest by default.
+Gets the matches from a given retrohunt job's id or the latest finished by default.
 
 ### vt-retrohunt-reset-fetch-indicators
 ***
