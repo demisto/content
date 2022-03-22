@@ -1,0 +1,75 @@
+from datetime import datetime
+import json
+
+def load_json_file(filename):
+    """
+    Loads the json content and return the json object
+    :param filename:
+    :return:
+    """
+    content = None
+    with open("test_data/{0}".format(filename), 'r') as f:
+        content = json.load(f)
+    return content
+
+def test_module():
+    """
+    Test the basic test command for Cyble Events
+    :return:
+    """
+    pass
+
+def test_cyble_vision_fetch_taxii(requests_mock):
+    """
+    Tests the cyble_vision_fetch_taxii command
+
+    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_taxii
+    API response when the correct cyble_vision_fetch_taxii API request is performed. Checks
+    the output of the command function with the expected output.
+
+    Uses
+    :param requests_mock:
+    :return:
+    """
+
+    from CybleThreatIntel import Client, cyble_fetch_taxii
+
+    mock_response = load_json_file("cyble_threat_intel.json")
+    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json=mock_response)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    args = {
+        'token': 'some_random_token',
+        "page": 1,
+        "limit": 1,
+        "start_date": "2022-02-22",
+        "end_date": "2022-02-22"
+    }
+
+    response = cyble_fetch_taxii(client=client, method='POST', args=args)
+    # assert the response object
+
+    # check if the response object is a dict
+    assert isinstance(response, dict)
+
+    # each result entry is a list
+    assert isinstance(response['result'], list)
+
+    # check if the result entry is a dict
+    assert isinstance(response['result'][0], dict)
+
+    # assert the entries for indicator key
+    assert isinstance(response['result'][0]['indicator'], dict)
+    assert response['result'][0]['indicator']['type'] == 'some_type'
+    assert response['result'][0]['indicator']['spec_version'] == 'some_spec_version'
+    assert response['result'][0]['indicator']['id'] == 'some_id'
+    assert response['result'][0]['indicator']['created'] == '2022-02-04T22:54:38Z'
+    assert response['result'][0]['indicator']['modified'] == '2022-02-04T22:54:38Z'
+    assert response['result'][0]['indicator']['description'] == ''
+    assert response['result'][0]['indicator']['indicator_types'] == 'some_indicator_type'
+    assert response['result'][0]['indicator']['pattern'] == 'some_pattern'
+    assert response['result'][0]['indicator']['pattern_type'] == 'some_pattern_type'
