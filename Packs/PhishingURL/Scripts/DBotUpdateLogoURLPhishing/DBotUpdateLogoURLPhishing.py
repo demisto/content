@@ -213,10 +213,11 @@ def main():
     elif not logo_name:
         return_error(MSG_EMPTY_LOGO_NAME)
 
-    res = demisto.getFilePath(logo_image_id)
-    path = res['path']
-    with open(path, 'rb') as file:
-        logo_content = file.read()
+    if action==KEY_ADD_LOGO:
+        res = demisto.getFilePath(logo_image_id)
+        path = res['path']
+        with open(path, 'rb') as file:
+            logo_content = file.read()
 
     exist, demisto_major_version, demisto_minor_version = oob_model_exists_and_updated()
 
