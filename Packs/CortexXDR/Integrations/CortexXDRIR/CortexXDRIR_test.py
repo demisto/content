@@ -399,8 +399,8 @@ def test_isolate_endpoint(requests_mock):
         "endpoint_id": "1111"
     }
 
-    readable_output, _, _ = isolate_endpoint_command(client, args)
-    assert readable_output == 'The isolation request has been submitted successfully on Endpoint 1111.\n' \
+    res = isolate_endpoint_command(client, args)
+    assert res.readable_output == 'The isolation request has been submitted successfully on Endpoint 1111.\n' \
                               'To check the endpoint isolation status please run:' \
                               ' !xdr-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'
 
@@ -460,8 +460,8 @@ def test_unisolate_endpoint(requests_mock):
         "endpoint_id": "1111"
     }
 
-    readable_output, _, _ = unisolate_endpoint_command(client, args)
-    assert readable_output == 'The un-isolation request has been submitted successfully on Endpoint 1111.\n' \
+    res = unisolate_endpoint_command(client, args)
+    assert res.readable_output == 'The un-isolation request has been submitted successfully on Endpoint 1111.\n' \
                               'To check the endpoint isolation status please run:' \
                               ' !xdr-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'
 
@@ -732,7 +732,7 @@ def test_blacklist_files_command_with_more_than_one_file(requests_mock):
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
     expected_command_result = {'PaloAltoNetworksXDR.blackList.fileHash(val.fileHash == obj.fileHash)': test_data[
         'multi_command_args']['hash_list']}
-    requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/blacklist/', json=test_data['api_response'])
+    requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/blocklist/', json=test_data['api_response'])
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
@@ -758,7 +758,8 @@ def test_blacklist_files_command_with_single_file(requests_mock):
     expected_command_result = {
         'PaloAltoNetworksXDR.blackList.fileHash(val.fileHash == obj.fileHash)':
             test_data['single_command_args']['hash_list']}
-    requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/blacklist/', json=test_data['api_response'])
+    requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/blocklist'
+                       f'/', json=test_data['api_response'])
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
@@ -784,7 +785,7 @@ def test_blacklist_files_command_with_no_comment_file(requests_mock):
     expected_command_result = {
         'PaloAltoNetworksXDR.blackList.fileHash(val.fileHash == obj.fileHash)':
             test_data['no_comment_command_args']['hash_list']}
-    requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/blacklist/', json=test_data['api_response'])
+    requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/blocklist/', json=test_data['api_response'])
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
@@ -809,7 +810,7 @@ def test_whitelist_files_command_with_more_than_one_file(requests_mock):
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
     expected_command_result = {'PaloAltoNetworksXDR.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data[
         'multi_command_args']['hash_list']}
-    requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/whitelist/', json=test_data['api_response'])
+    requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
@@ -835,7 +836,7 @@ def test_whitelist_files_command_with_single_file(requests_mock):
     expected_command_result = {
         'PaloAltoNetworksXDR.whiteList.fileHash(val.fileHash == obj.fileHash)':
             test_data['single_command_args']['hash_list']}
-    requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/whitelist/', json=test_data['api_response'])
+    requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
@@ -861,7 +862,7 @@ def test_whitelist_files_command_with_no_comment_file(requests_mock):
     expected_command_result = {
         'PaloAltoNetworksXDR.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data['no_comment_command_args'][
             'hash_list']}
-    requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/whitelist/', json=test_data['api_response'])
+    requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}

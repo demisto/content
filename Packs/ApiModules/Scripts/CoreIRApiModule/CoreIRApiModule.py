@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 ALERT_GENERAL_FIELDS = {
     'detection_modules',
@@ -169,8 +170,8 @@ ALERT_EVENT_AZURE_FIELDS = {
 class CoreClient(BaseClient):
 
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
-        self.timeout = timeout
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
+        self.timeout = timeout
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, sort_by_modification_time=None,
@@ -528,6 +529,30 @@ class CoreClient(BaseClient):
             timeout=self.timeout
         )
         return reply.get('reply')
+
+    def insert_alerts(self, alerts):
+        self._http_request(
+            method='POST',
+            url_suffix='/alerts/insert_parsed_alerts/',
+            json_data={
+                'request_data': {
+                    'alerts': alerts
+                }
+            },
+            timeout=self.timeout
+        )
+
+    def insert_cef_alerts(self, alerts):
+        self._http_request(
+            method='POST',
+            url_suffix='/alerts/insert_cef_alerts/',
+            json_data={
+                'request_data': {
+                    'alerts': alerts
+                }
+            },
+            timeout=self.timeout
+        )
 
     def get_distribution_url(self, distribution_id, package_type):
         reply = self._http_request(
