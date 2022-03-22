@@ -3,6 +3,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import time
 seconds = time.time()
+import time
+seconds = time.time()
 from typing import Dict, Any
 import traceback
 
@@ -78,94 +80,46 @@ def security_and_compliance_delete_mail(args, user_id, email_subject, delete_fro
         return 'Success'
 
 
-def gmail_delete_args_function(search_result, delete_type, user_id, delete_from_brand, **kwargs):
-    is_permanent = True if delete_type == 'Hard' else False
+def gmail_delete_args_function(search_result, search_args):
+    is_permanent = True if search_args['delete-type'] == 'Hard' else False
     gmail_message_id = search_result[0].get('id')
-    return {'user-id': user_id, 'message-id': gmail_message_id, 'permanent': is_permanent,
-            'using-brand': delete_from_brand}
-
-def gmail_delete_email(delete_type, message_id, user_id, delete_from_brand):
-    is_permanent = True if delete_type == 'Hard' else False
-    query = f'Rfc822msgid:{message_id}'
-    result = execute_command('gmail-search', {'user-id': user_id, 'query': query, 'using-brand': delete_from_brand})
-    if not result:
-        raise ReDeleteException()
-    gmail_message_id = result[0].get('id')
-    resp = execute_command('gmail-delete-mail',
-                           {'user-id': user_id, 'message-id': gmail_message_id, 'permanent': is_permanent,
-                            'using-brand': delete_from_brand})
-    if 'successfully' not in resp:
-        raise DeletionFailed(resp)
+    return {'user-id': search_args['user-id'], 'message-id': gmail_message_id, 'permanent': is_permanent,
+            'using-brand': search_args['using-brand']}
 
 
-def ews_delete_args_function(search_result, delete_type, delete_from_brand, **kwargs):
-    delete_type = f'{delete_type.lower()}'
-    item_id = search_result[0].get('itemId')
-    return {'item-ids': item_id, 'delete-type': delete_type, 'using-brand': delete_from_brand}
-
-
-def ews_delete_email(delete_type, user_id, delete_from_brand, message_id):
-    delete_type = f'{delete_type.lower()}'
-    result = execute_command('ews-search-mailbox', {'target-mailbox': user_id, 'message-id': message_id,
-                                                    'using-brand': delete_from_brand})
-    if not result:
-        raise ReDeleteException()
-    item_id = result[0].get('itemId')
-    resp = execute_command('ews-delete-items', {'item-ids': item_id, 'delete-type': delete_type,
-                                                'using-brand': delete_from_brand})
-    if not isinstance(resp, dict):
-        raise DeletionFailed(resp)
-
-
-def msgraph_delete_args_function(search_result, user_id, delete_from_brand, message_id, **kwargs):
+def msgraph_delete_args_function(search_result, search_args):
     results = search_result[0].get('value', [])
-    results = [res for res in results if res.get('internetMessageId') == message_id]
+    results = [res for res in results if res.get('internetMessageId') == search_args['message-id']]
     internal_id = results[0].get('id')
-    return {'user_id': user_id, 'message_id': internal_id, 'using-brand': delete_from_brand}
+    return {'user_id': search_args['user_id'], 'message_id': internal_id, 'using-brand': search_args['using-brand']}
 
 
-def msgraph_delete_email(user_id, delete_from_brand, message_id):
-    # no soft or hard here
-    odata = f'"$filter=internetMessageId eq \'{message_id}\'"'
-    result = execute_command('msgraph-mail-list-emails',
-                             {'user_id': user_id, 'odata': odata, 'using-brand': delete_from_brand})
-    if not result:
-        raise ReDeleteException()
-    results = result[0].get('value', [])
-    results = [res for res in results if res.get('internetMessageId') == message_id]
-    internal_id = results[0].get('id')
-    resp = execute_command('msgraph-mail-delete-email', {'user_id': user_id, 'message_id': internal_id,
-                                                         'using-brand': delete_from_brand})
-    if 'successfully' not in resp:
-        raise DeletionFailed(resp)
-
-def msgraph_delete_args_function(delete_from_brand, **kwargs):
-    agari_message_id = demisto.get(demisto.context(), 'incident.apdglobalmessageid')
-    return {'operation': 'delete', 'id': agari_message_id, 'using-brand': delete_from_brand}
-
-
-def agari_delete_args_function(delete_from_brand, **kwargs):
+def agari_delete_args_function(search_result=None, search_args=None):
     agari_message_id = demisto.get(demisto.context(), 'incident.apdglobalmessageid')
     return {'operation': 'delete', 'id': agari_message_id,
      'using-brand': delete_from_brand}
 
-def agari_delete_email(delete_from_brand):
-    agari_message_id = demisto.get(demisto.context(), 'incident.apdglobalmessageid')
-    resp = execute_command('apd-remediate-message', {'operation': 'delete', 'id': agari_message_id,
-                                                     'using-brand': delete_from_brand})
-    if 'successfully' not in resp:
-        raise DeletionFailed(resp)
+
+def ews_delete_args_function(search_result, search_args):
+    print(search_result)
+    delete_type = f'{search_args["delete-type"].lower()}'
+    item_id = search_result[0].get('itemId')
+    return {'item-ids': item_id, 'delete-type': delete_type, 'using-brand': search_args['using-brand']}
 
 
 def delete_email(search_args, search_function, delete_args_function, delete_function, deletion_error_condition=
     lambda x: 'successfully' not in x):
     result = None
+    print(search_args)
     if search_function:
-        result = execute_command(search_function, search_args)
-        if not result:
+        search_result = execute_command(search_function, search_args)
+        if not search_result or isinstance(search_result, str):
             raise ReDeleteException()
-    delete_args = delete_args_function(result)
+    delete_args = delete_args_function(search_result, search_args)
+    print(delete_args)
     resp = execute_command(delete_function, delete_args)
+    print(deletion_error_condition(resp))
+    print(resp)
     if deletion_error_condition(resp):
         raise DeletionFailed(resp)
 
@@ -174,40 +128,46 @@ def get_search_args(args):
     incident_info = demisto.incident()
     custom_fields = incident_info.get('CustomFields')
     message_id = custom_fields.get("reportedemailmessageid")
+    user_id = custom_fields.get('reportedemailto')
     delete_from_brand = args.get('delete_from_brand', incident_info.get('sourceBrand'))
-    search_args = {'delete_type': args.get('delete_type'),
-                   'delete_from_brand': delete_from_brand,
-                   'user_id': custom_fields.get('reportedemailto'),
-                   'email_subject': custom_fields.get('reportedemailsubject'),
-                   'message_id': message_id,
-                   'query': f'Rfc822msgid:{message_id}',  # only relevant for Gmail
-                   'odata': f'"$filter=internetMessageId eq \'{message_id}\'"',  # only relevant for MSGraph
-                   }
 
+    search_args = {
+        'delete-type': args.get('delete_type'),
+                   'using-brand': delete_from_brand,
+                   'email_subject': custom_fields.get('reportedemailsubject'),
+                   'message-id': message_id,
+                   }
+    additional_args = {
+        'Gmail': {'query': f'Rfc822msgid:{message_id}', 'user-id': user_id},
+        'EWSO365': {'target-mailbox': user_id},
+        'EWS v2': {'target-mailbox': user_id},'MicrosoftGraphMail': {'user_id': user_id, 'odata': f'"$filter=internetMessageId eq \'{message_id}\'"'}}
+
+    search_args.update(additional_args[delete_from_brand])
     return search_args
 
-def new_main():
+def main():
     # test all functions
     # test Sec&Comp - tomorrow
     # go over yml
     args = demisto.args()
     search_args = get_search_args(args)
-    result = 'Success'
+    result = ''
     deletion_failure_reason = ''
-    delete_from_brand = search_args['delete_from_brand']
+    delete_from_brand = search_args['using-brand']
     try:
         if delete_from_brand == 'SecurityAndCompliance':
             security_and_compliance_delete_mail(args, **search_args)
         else:
             integrations_dict = {'Gmail': ('gmail-search', gmail_delete_args_function, 'gmail-delete-mail'),
-                                 'EWS365': ('ews-search-mailbox', ews_delete_args_function, 'ews-delete-items',
-                                            lambda x: not isinstance(x, dict)),
-                                 'EWSV2': ('ews-search-mailbox', ews_delete_args_function, 'ews-delete-items',
-                                           lambda x: not isinstance(x, dict)),
+                                 'EWSO365': ('ews-search-mailbox', ews_delete_args_function, 'ews-delete-items',
+                                            lambda x: not isinstance(x, list)),
+                                 'EWS v2': ('ews-search-mailbox', ews_delete_args_function, 'ews-delete-items',
+                                           lambda x: not isinstance(x, list)),
                                  'Agari Phishing Defense': (None, agari_delete_args_function, 'apd-remediate-message'),
                                  'MicrosoftGraphMail': ('msgraph-mail-list-emails', msgraph_delete_args_function,
                                                         'msgraph-mail-delete-email')}
             delete_email(search_args, *integrations_dict[delete_from_brand])
+            result = 'Success'
 
     except ReDeleteException as e:
         result = 'Skipped'
@@ -220,99 +180,6 @@ def new_main():
         return_error(f'Failed to execute DeleteEmail. Error: {str(e)}')
     finally:
         return result, deletion_failure_reason
-
-
-
-
-def main():
-    try:
-        # need to have: a dict with brand name and function name
-        # create function for each integration
-        # raise errors that can be related to failed deletion
-        # add skipped
-        # check security and compliance - will wait
-        # add agari - done
-        args = demisto.args()
-        delete_type = args.get('delete_type')
-        incident_info = demisto.incident()
-        custom_fields = incident_info.get('CustomFields')
-        delete_from_brand = args.get('delete_from_brand', incident_info.get('sourceBrand'))
-        user_id = custom_fields.get('reportedemailto')
-        email_subject = custom_fields.get('reportedemailsubject')
-        message_id = custom_fields.get("reportedemailmessageid")
-        result = ''
-        deletion_failure_reason = ''
-
-
-
-
-
-        # Gmail
-        if delete_from_brand == 'Gmail':
-            is_permanent = True if delete_type == 'Hard' else False
-            query = f'Rfc822msgid:{message_id}'
-            result = execute_command('gmail-search', {'user-id': user_id, 'query': query, 'using-brand': delete_from_brand})
-            gmail_message_id = result[0].get('id')
-            resp = execute_command('gmail-delete-mail', {'user-id': user_id, 'message-id': gmail_message_id, 'permanent': is_permanent, 'using-brand': delete_from_brand})
-            if 'successfully' in result:
-                deletion_status = 'Success'
-            else:
-                deletion_failure_reason = 'Unknown'
-
-        # Security & Compliance - implement by playbook
-        elif delete_from_brand == 'SecurityAndCompliance':
-            search_name = args.get('search_name')
-            delete_type = f'{delete_type}Delete'
-            try:
-                result = security_and_compliance_delete_mail(user_id, email_subject, delete_from_brand, delete_type, args)
-                if not isinstance(result, str):
-                    return result
-
-            except Exception as e:
-                result = 'Failed'
-                deletion_failure_reason = f'Failed trying to delete email: {e}'
-            finally:
-                return result, deletion_failure_reason
-
-        # EWS
-        elif delete_from_brand in ['EWSO365', 'EWS v2']:
-            delete_type = f'{delete_type.lower()}'
-            result = execute_command('ews-search-mailbox', {'target-mailbox': user_id, 'message-id': message_id,
-                                                            'using-brand': delete_from_brand})
-            print(result)
-            if not result:
-                raise Exception('Email was not found, is it possible that the email was already deleted.')
-            item_id = result[0].get('itemId')
-            resp = execute_command('ews-delete-items', {'item-ids': item_id, 'delete-type': delete_type,
-                                                        'using-brand': delete_from_brand})
-
-        # Agari Phishing Defense - no instance, search API for response
-        elif delete_from_brand == 'Agari Phishing Defense':
-            agari_message_id = demisto.get(demisto.context(), 'incident.apdglobalmessageid')
-            resp = execute_command('apd-remediate-message', {'operation': 'delete', 'id': agari_message_id,
-                                                             'using-brand': delete_from_brand})
-            if 'successfully' not in resp:
-                result = 'Failed'
-                deletion_failure_reason = f'Failed trying to delete email: {e}'
-
-        # O365 Outlook Mail
-        elif delete_from_brand == 'MicrosoftGraphMail':
-            # no soft or hard here
-            odata = f'"$filter=internetMessageId eq \'{message_id}\'"'
-            result = execute_command('msgraph-mail-list-emails',
-                                     {'user_id': user_id, 'odata': odata, 'using-brand': delete_from_brand})
-            results = result[0].get('value', [])
-            results = [res for res in results if res.get('internetMessageId') == message_id]
-            internal_id = results[0].get('id')
-            resp = execute_command('msgraph-mail-delete-email', {'user_id': user_id, 'message_id': internal_id,
-                                                                 'using-brand': delete_from_brand})
-
-    except DeletionFailed as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute DeleteEmail. Error: {str(ex)}')
-
-
-''' ENTRY POINT '''
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
