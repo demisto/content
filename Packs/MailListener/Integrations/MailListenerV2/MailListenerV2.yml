@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: Mail Listener v2
+  id: Mail Listener v2 test
   version: -1
 configuration:
 - display: Mail Server Hostname / IP address
@@ -75,8 +75,8 @@ configuration:
   required: false
   type: 8
 description: Listens to a mailbox and enables incident triggering via e-mail.
-display: Mail Listener v2
-name: Mail Listener v2
+display: Mail Listener v2 test
+name: Mail Listener v2 test
 script:
   commands:
   - deprecated: false

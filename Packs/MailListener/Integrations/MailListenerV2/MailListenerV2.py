@@ -44,7 +44,9 @@ class Email(object):
         self.headers = email_object.headers
         self.raw_body = email_object.body if include_raw_body else None
         # According to the mailparser documentation the datetime object is in utc
-        self.date = email_object.date.replace(tzinfo=timezone.utc)
+        self.date = email_object.date.replace(tzinfo=timezone.utc) if email_object.date else None
+        if not email_object.date:
+            demisto.debug(f"email object date is none")
         self.raw_json = self.generate_raw_json()
         self.save_eml_file = save_file
         self.labels = self._generate_labels()
@@ -231,6 +233,7 @@ def fetch_incidents(client: IMAPClient,
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
+    LOG('in fetch incidents function')
     uid_to_fetch_from = last_run.get('last_uid', 1)
     time_to_fetch_from = parse(last_run.get('last_fetch', f'{first_fetch_time} UTC'), settings={'TIMEZONE': 'UTC'})
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
@@ -285,6 +288,7 @@ def fetch_mails(client: IMAPClient,
         messages_fetched: A list of the ids of the messages fetched
         last_message_in_current_batch: The UID of the last message fetchedd
     """
+    LOG('in fetch mails')
     if message_id:
         messages_uids = [message_id]
     else:
@@ -308,6 +312,7 @@ def fetch_mails(client: IMAPClient,
 
         if not message_bytes:
             continue
+        LOG('about to create email object')
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
         if (not time_to_fetch_from or time_to_fetch_from < email_message_object.date) and \
                 int(email_message_object.id) > int(uid_to_fetch_from):
@@ -369,6 +374,7 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
     Returns:
         A list with arguments for the email search query
     """
+    LOG('in generate search query')
     permitted_from_addresses_list = argToList(permitted_from_addresses)
     permitted_from_domains_list = argToList(permitted_from_domains)
     messages_query = ''
@@ -474,7 +480,9 @@ def main():
         ssl_context.verify_mode = ssl.CERT_NONE
     LOG(f'Command being called is {demisto.command()}')
     try:
+        LOG('before creating client')
         with IMAPClient(mail_server_url, ssl=tls_connection, port=port, ssl_context=ssl_context) as client:
+            LOG('after creating client')
             client.login(username, password)
             client.select_folder(folder)
             if demisto.command() == 'test-module':
