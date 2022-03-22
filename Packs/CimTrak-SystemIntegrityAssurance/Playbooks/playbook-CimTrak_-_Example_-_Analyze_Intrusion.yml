@@ -1,19 +1,20 @@
 id: CimTrak - Example - Analyze Intrusion
-version: -1
+version: 7
+vcShouldKeepItemLegacyProdMachine: false
 name: CimTrak - Example - Analyze Intrusion
+description: Example to analyze intrusion
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 10ca1b00-1e5f-42eb-8c37-80ce4d9af7d2
+    taskid: 9f2ff3c3-c076-4dc8-8ae2-37dba245b135
     type: start
     task:
-      id: 10ca1b00-1e5f-42eb-8c37-80ce4d9af7d2
+      id: 9f2ff3c3-c076-4dc8-8ae2-37dba245b135
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -34,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3853df04-a7d7-42b7-8311-8ba335a58b68
+    taskid: 4ced97d9-8d26-44ea-8b8c-509780b3c3dc
     type: regular
     task:
-      id: 3853df04-a7d7-42b7-8311-8ba335a58b68
+      id: 4ced97d9-8d26-44ea-8b8c-509780b3c3dc
       version: -1
       name: file-analysis-by-objectdetail-id
       description: Returns File Analysis by Object Detail ID
@@ -68,13 +69,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: b8690ae1-c523-44df-863f-05478638ec67
+    taskid: 2ee22b8e-6653-4391-8f0f-f8ae0729f248
     type: condition
     task:
-      id: b8690ae1-c523-44df-863f-05478638ec67
+      id: 2ee22b8e-6653-4391-8f0f-f8ae0729f248
       version: -1
       name: Check if file is malicious
-      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
+      description: Queries Virus Total and checks if the file is a known virus, or
+        known to be a valid file, if the file is malicious add it to the deny lists,
+        if is a valid known file add to allow list, else pass it to manual resolution.
       type: condition
       iscommand: false
       brand: ""
@@ -83,8 +86,13 @@ tasks:
       - "11"
       File is malicious:
       - "4"
+      - "9"
+      - "10"
       File is not malicious:
       - "3"
+      - "6"
+      - "7"
+      - "8"
     separatecontext: false
     conditions:
     - label: File is not malicious
@@ -164,10 +172,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: d2e631ce-0b21-48bb-8b67-cd1b812aa70a
+    taskid: 9f5f5635-3627-4777-87de-2feac42c8d67
     type: regular
     task:
-      id: d2e631ce-0b21-48bb-8b67-cd1b812aa70a
+      id: 9f5f5635-3627-4777-87de-2feac42c8d67
       version: -1
       name: add-hash-allow-list MD5
       description: Add Hash to allow list
@@ -175,9 +183,6 @@ tasks:
       type: regular
       iscommand: true
       brand: CimTrak
-    nexttasks:
-      '#none#':
-      - "6"
     scriptarguments:
       hash:
         complex:
@@ -194,8 +199,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 640
+          "x": 480,
+          "y": 610
         }
       }
     note: false
@@ -207,10 +212,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a57b71a0-47bf-43d8-815a-3c6f556276e4
+    taskid: e8f06fc1-b395-4df4-8bb9-453c2f2ab530
     type: regular
     task:
-      id: a57b71a0-47bf-43d8-815a-3c6f556276e4
+      id: e8f06fc1-b395-4df4-8bb9-453c2f2ab530
       version: -1
       name: add-hash-deny-list MD5
       description: Add Hash to deny list
@@ -218,9 +223,6 @@ tasks:
       type: regular
       iscommand: true
       brand: CimTrak
-    nexttasks:
-      '#none#':
-      - "9"
     scriptarguments:
       hash:
         complex:
@@ -237,8 +239,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -140,
-          "y": 640
+          "x": -840,
+          "y": 610
         }
       }
     note: false
@@ -250,10 +252,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 8ab4c796-e7a2-4e86-8f74-c581733ebe39
+    taskid: d3b18ba8-1e5e-444b-8626-1b9ff4692291
     type: regular
     task:
-      id: 8ab4c796-e7a2-4e86-8f74-c581733ebe39
+      id: d3b18ba8-1e5e-444b-8626-1b9ff4692291
       version: -1
       name: add-hash-allow-list SHA256
       description: Add Hash to allow list
@@ -261,9 +263,6 @@ tasks:
       type: regular
       iscommand: true
       brand: CimTrak
-    nexttasks:
-      '#none#':
-      - "7"
     scriptarguments:
       hash:
         complex:
@@ -280,8 +279,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 820
+          "x": 890,
+          "y": 610
         }
       }
     note: false
@@ -293,10 +292,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: a626cbf3-6899-4a3e-865e-18923bf96e8f
+    taskid: 446c3706-4656-4649-87a0-15191926b748
     type: regular
     task:
-      id: a626cbf3-6899-4a3e-865e-18923bf96e8f
+      id: 446c3706-4656-4649-87a0-15191926b748
       version: -1
       name: add-hash-allow-list SHA1
       description: Add Hash to allow list
@@ -304,9 +303,6 @@ tasks:
       type: regular
       iscommand: true
       brand: CimTrak
-    nexttasks:
-      '#none#':
-      - "8"
     scriptarguments:
       hash:
         complex:
@@ -323,8 +319,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 1000
+          "x": 1290,
+          "y": 610
         }
       }
     note: false
@@ -336,10 +332,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 1e51916d-c269-4bd7-8979-eae892feae8c
+    taskid: 48513c40-c8fd-49fa-8271-fb6b2bd2dcde
     type: regular
     task:
-      id: 1e51916d-c269-4bd7-8979-eae892feae8c
+      id: 48513c40-c8fd-49fa-8271-fb6b2bd2dcde
       version: -1
       name: promote-authoritative-baseline-files
       description: Promote baseline files
@@ -354,8 +350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 1180
+          "x": 1700,
+          "y": 610
         }
       }
     note: false
@@ -367,10 +363,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 426e19eb-865f-4073-8d6e-e35cecac90cc
+    taskid: 036750cc-0436-4d44-8caf-2584377544a3
     type: regular
     task:
-      id: 426e19eb-865f-4073-8d6e-e35cecac90cc
+      id: 036750cc-0436-4d44-8caf-2584377544a3
       version: -1
       name: add-hash-deny-list SHA256
       description: Add Hash to deny list
@@ -378,9 +374,6 @@ tasks:
       type: regular
       iscommand: true
       brand: CimTrak
-    nexttasks:
-      '#none#':
-      - "10"
     scriptarguments:
       hash:
         complex:
@@ -397,8 +390,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -140,
-          "y": 820
+          "x": -430,
+          "y": 610
         }
       }
     note: false
@@ -410,10 +403,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 8da41de5-c29f-405b-819f-71d4d4cce995
+    taskid: 1d1cb662-a9b4-4b5e-84eb-b856bf49edd6
     type: regular
     task:
-      id: 8da41de5-c29f-405b-819f-71d4d4cce995
+      id: 1d1cb662-a9b4-4b5e-84eb-b856bf49edd6
       version: -1
       name: add-hash-deny-list SHA1
       description: Add Hash to deny list
@@ -437,8 +430,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -140,
-          "y": 1000
+          "x": -20,
+          "y": 610
         }
       }
     note: false
@@ -450,13 +443,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 1ae2fee7-75b8-4795-8a82-bafc40451577
+    taskid: c1608521-8134-4120-85f2-aca13ff86a25
     type: regular
     task:
-      id: 1ae2fee7-75b8-4795-8a82-bafc40451577
+      id: c1608521-8134-4120-85f2-aca13ff86a25
       version: -1
       name: Manually remediate  the incident
-      description: "Review the incident to determine if the account activity is malicious.\n\nIf malicious, consider the following:\n* Quarantine the account/ endpoint \n* Revoke the account password\n* Query the account/ IPs logs in the SIEM\n* Block the external IPs in the firewall/ proxy\n* Check the account's privileges and change if needed"
+      description: "Review the incident to determine if the account activity is malicious.\n\nIf
+        malicious, consider the following:\n* Quarantine the account/ endpoint \n*
+        Revoke the account password\n* Query the account/ IPs logs in the SIEM\n*
+        Block the external IPs in the firewall/ proxy\n* Check the account's privileges
+        and change if needed"
       type: regular
       iscommand: false
       brand: ""
@@ -464,8 +461,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 580
+          "x": 2210,
+          "y": 610
         }
       }
     note: false
@@ -478,13 +475,16 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "2_11_#default#": 0.79
+      "2_11_#default#": 0.9,
+      "2_6_File is not malicious": 0.84,
+      "2_7_File is not malicious": 0.9,
+      "2_8_File is not malicious": 0.9
     },
     "paper": {
       "dimensions": {
-        "height": 1225,
-        "width": 1300,
-        "x": -140,
+        "height": 655,
+        "width": 3430,
+        "x": -840,
         "y": 50
       }
     }
@@ -497,7 +497,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results:
+    results: null
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -505,8 +505,8 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue:
-        fromvalue:
+        tovalue: null
+        fromvalue: null
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: true
@@ -517,10 +517,6 @@ inputs:
       accessor: objectDetailId}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
-quiet: false
-tests:
-- No tests (auto formatted)
-fromversion: 6.0.0
-description: Example to analyze intrusion
+quiet: true

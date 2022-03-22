@@ -1,41 +1,24 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 id: CimTrak - Example - Scan Compliance By IP
-inputs:
-- description: ""
-  key: IP
-  playbookInputQuery:
-  required: false
-  value:
-    simple: ::ffff:127.0.0.1
+version: 3
+vcShouldKeepItemLegacyProdMachine: false
 name: CimTrak - Example - Scan Compliance By IP
-outputs: []
+description: Example on how to run a compliance scan for an agent based on IP address
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: 81e710f8-1a3a-4ca6-8ed3-1d7d9fc41145
+    type: start
+    task:
+      id: 81e710f8-1a3a-4ca6-8ed3-1d7d9fc41145
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 858b1aac-8b0d-441c-870f-1b8152034805
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 858b1aac-8b0d-441c-870f-1b8152034805
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -43,33 +26,33 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: c302d19c-747f-49e2-8d42-8185da19308e
+    type: regular
+    task:
+      id: c302d19c-747f-49e2-8d42-8185da19308e
+      version: -1
+      name: get-agent-object-by-ip
+      description: Get agent object from ip address
+      script: CimTrak|||get-agent-object-by-ip
+      type: regular
+      iscommand: true
+      brand: CimTrak
     nexttasks:
       '#none#':
       - "3"
-    note: false
-    quietmode: 0
     scriptarguments:
       ip:
         simple: ${inputs.IP}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: CimTrak
-      description: Get agent object from ip address
-      id: 1d91ce46-b750-4223-892e-d35728f241ab
-      iscommand: true
-      name: get-agent-object-by-ip
-      script: CimTrak|||get-agent-object-by-ip
-      type: regular
-      version: -1
-    taskid: 1d91ce46-b750-4223-892e-d35728f241ab
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -77,30 +60,30 @@ tasks:
           "y": 230
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
+    taskid: 76012f52-b420-44bc-814e-98e7e2de0715
+    type: regular
+    task:
+      id: 76012f52-b420-44bc-814e-98e7e2de0715
+      version: -1
+      name: compliance-scan-with-summary
+      description: Launch compliance scan for object and return results
+      script: CimTrak|||compliance-scan-with-summary
+      type: regular
+      iscommand: true
+      brand: CimTrak
     scriptarguments:
       objectId:
         simple: ${CimTrak.Objects.objectId}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: CimTrak
-      description: Launch compliance scan for object and return results
-      id: c0c503b3-be5b-45ad-8c19-a1bc09e5334e
-      iscommand: true
-      name: compliance-scan-with-summary
-      script: CimTrak|||compliance-scan-with-summary
-      type: regular
-      version: -1
-    taskid: c0c503b3-be5b-45ad-8c19-a1bc09e5334e
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -108,16 +91,29 @@ tasks:
           "y": 640
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: 2f1c4ef0-82c8-4300-879b-613a7153bc76
+    type: regular
+    task:
+      id: 2f1c4ef0-82c8-4300-879b-613a7153bc76
+      version: -1
+      name: get-objects
+      description: Retrieves a list of objects.
+      script: CimTrak|||get-objects
+      type: regular
+      iscommand: true
+      brand: CimTrak
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     scriptarguments:
       ObjectSubType:
         simple: "10"
@@ -126,19 +122,6 @@ tasks:
       ParentId:
         simple: ${CimTrak.Object.objectId}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: CimTrak
-      description: Retrieves a list of objects.
-      id: d1d3328d-a2e0-419a-8b76-09bf17236d84
-      iscommand: true
-      name: get-objects
-      script: CimTrak|||get-objects
-      type: regular
-      version: -1
-    taskid: d1d3328d-a2e0-419a-8b76-09bf17236d84
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -146,7 +129,13 @@ tasks:
           "y": 430
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -159,7 +148,10 @@ view: |-
       }
     }
   }
-tests:
-- No tests (auto formatted)
-fromversion: 6.0.0
-description: Example on how to run a compliance scan for an agent based on IP address
+inputs:
+- key: IP
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
