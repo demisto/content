@@ -68,7 +68,7 @@ def check_login(args):
                                           password=password, verify_ssl=False)
         client.generic_request(path='/health', method='GET')
 
-        return CommandResults(readable_output=LOGIN_VICTORY_MESSAGE, outputs={'MrBurns.Present': 'hello'})
+        return CommandResults(readable_output=LOGIN_VICTORY_MESSAGE, outputs={'MrBurns.Present': 'dHlwZTpQb3dlclNoZWxsIC10YWdzOmluZnJhLEpTT04='})
     except ApiException as exc:  # pylint: disable=W0703
         return_error(exc.body)
 
