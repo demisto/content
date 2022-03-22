@@ -223,7 +223,7 @@ def get_pack_path_from_release_note(file_path):
 
 
 def get_pack_version_from_path(file_path):
-    # example: from file path `<path>/1_0_3.md`, the next line will produce `1.0.1`
+    # example: from file path `<path>/1_0_1.md`, the next line will produce `1.0.1`
     pack_version = os.path.basename(os.path.splitext(file_path)[0]).replace('_', '.')
     return pack_version
 
