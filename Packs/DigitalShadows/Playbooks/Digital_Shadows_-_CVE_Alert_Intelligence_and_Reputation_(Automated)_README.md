@@ -26,7 +26,3 @@ This playbook does not use any sub-playbooks.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Digital Shadows - CVE Alert Intelligence and Reputation (Automated)](Insert the link to your image here)

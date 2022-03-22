@@ -41,7 +41,3 @@ This playbook does not use any commands.
 | --- | --- | --- |
 | DBotScore.Indicator | Indicator Value | string |
 | DBotScore.Type | Indicator Type | string |
-
-## Playbook Image
----
-![Digital Shadows - IoC Assessment & Enrichment](Insert the link to your image here)

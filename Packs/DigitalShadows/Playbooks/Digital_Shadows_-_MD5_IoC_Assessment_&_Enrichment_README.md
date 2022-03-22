@@ -31,7 +31,3 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- |
 | DBotScore.Indicator | Indicator Value | string |
 | DBotScore.Type | Indicator Type | string |
-
-## Playbook Image
----
-![Digital Shadows - MD5_IoC Assessment & Enrichment](Insert the link to your image here)

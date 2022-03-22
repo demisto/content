@@ -27,7 +27,3 @@ This playbook does not use any sub-playbooks.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Digital Shadows - Domain Alert Intelligence (Automated)](Insert the link to your image here)
