@@ -1,0 +1,24 @@
+{
+    "name": "CybleEvents",
+    "description": "Cyble Events for Vision Users. Must have Vision API access to use the threat intelligence.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2022-03-22T17:37:18Z",
+    "certification": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "CommonScripts": {
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

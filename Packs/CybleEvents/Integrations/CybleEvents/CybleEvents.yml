@@ -1,0 +1,171 @@
+commonfields:
+  id: CybleEvents
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: CybleEvents
+display: Cyble Events
+category: Data Enrichment & Threat Intelligence
+image: data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgNzQuMTUiPjx0aXRsZT5jeWJsZS1ibGFjay1sb2dvPC90aXRsZT48cGF0aCBkPSJNMy44MiwzNy40M2EzNC4zMywzNC4zMywwLDAsMSw3Ljc2LTIxLjU3QTMzLjc4LDMzLjc4LDAsMCwxLDM2LDNhMzIuOTQsMzIuOTQsMCwwLDEsMjMuODUsNy42QTMzLjQzLDMzLjQzLDAsMCwxLDcyLjc1LDM2LjA4LDMzLjA3LDMzLjA3LDAsMCwxLDY0LjQ0LDYwYy02LjU3LDcuNTQtMTQuNDgsMTEuNDctMjUsMTEuNzRDMjkuNjksNzIsMjEuMyw2OSwxNC4zNiw2Mi4yNVM0LDQ3LjE3LDMuODIsMzcuNDNaTTE3LjcsNDcuMjhhMywzLDAsMCwwLS4yNi41NWMtLjM5LDEuODYtLjgsMy43My0xLjE1LDUuNkExLjM1LDEuMzUsMCwwLDAsMTcsNTVxMy4xMiwxLjgxLDYuMTIsMy44MWMyLDEuMzIsNy4zOSw0LjkxLDguMDYsNS40MXMxLjE0Ljg4LDEuMTQuODhjLjIuNDksMSwyLjIsMSwyLjJsMS40Mi4wNiwyLjI5LjA1YTM3LjI2LDM3LjI2LDAsMCwwLDkuODctMS4xMmwuMjktLjA3YTE4LjY0LDE4LjY0LDAsMCwwLDIuMTgtLjc0QTI1LjgzLDI1LjgzLDAsMCwwLDUyLjQ4LDY0YTM4LjM5LDM4LjM5LDAsMCwwLDMuNzctMi40MywzMi4wNiwzMi4wNiwwLDAsMCwzLTIuNTVBMjguMzYsMjguMzYsMCwwLDAsNjIsNTUuOWEyNy4zNSwyNy4zNSwwLDAsMCwyLjMzLTMuNDQsNDEuODMsNDEuODMsMCwwLDAsMi00LjMxLDMzLjIsMzMuMiwwLDAsMCwyLTguNDEsMjIuMTUsMjIuMTUsMCwwLDAtLjE2LTUuNjMsMzUuNDksMzUuNDksMCwwLDAtNS42My0xNEEzMi4zNiwzMi4zNiwwLDAsMCw1MC42Nyw5Ljg0YTI2LjUsMjYuNSwwLDAsMC0xNS0yLjU0LDMxLjM5LDMxLjM5LDAsMCwwLTcuMzQsMS44LDMyLjc0LDMyLjc0LDAsMCwwLTcuMDcsMy43M0EyNy45LDI3LjksMCwwLDAsMTcuMzgsMTZjLTEuMzksMS40LTIuNTcsMy0zLjgyLDQuNTNhOCw4LDAsMCwwLS43NSwxLjE1Yy41MS0uMTgsMS42Mi0uNzQsMi4xMy0uOTJzMS4xNC0uNDcsMS43My0uNjNjLjQtLjExLjY1LjE0LjU0LjU0TDE1LDI4LjhsLS4xNy41MWMtLjYtLjI5LTQuNTEtMi43LTQuNzYtMi4yMnMuMTcuNDkuNDEuNjJsMS43MSwxTDE0LjU1LDMwYy0uNTMuNjMtNi4zLDYuNTYtNi40Miw2Ljgycy0uMDYuMzcsMCwuNDFhLjU5LjU5LDAsMCwwLC40NywwYy4xMy0uMDUuMjMtLjIxLjM0LS4zMiwxLjc0LTEuODEsNS40My01Ljc5LDUuNTUtNiwwLDAsMi45Myw2Ljc3LDQuMzYsMTAuMmwtMi43Ny0uNGMtMi4yNS0uMzEtNC41MS0uNjMtNi43Ny0uOTFhMS4wOSwxLjA5LDAsMCwwLS44My4zM2MtLjM3LjQyLjMzLDEsLjY1LDEuMjZsNC40MiwzWiIvPjxwYXRoIGQ9Ik0xNTAuNTYsMzkuMzNjMC00LjA3LDAtOC4xMywwLTEyLjE5YTE0LjgzLDE0LjgzLDAsMCwxLC41Ni0zLjg3LDQuMjIsNC4yMiwwLDAsMSwyLjItMi40Nyw3LjQxLDcuNDEsMCwwLDEsMy43Mi0uN2MzLjI0LDAsMTYtLjE3LDE5LjA2LS4wOWE5LjI5LDkuMjksMCwwLDEsNC41NywxLjA2YzMsMS44MSw0LDYuMjIsNC4wOCw5LjQ4YTE0LjUxLDE0LjUxLDAsMCwxLTEsNS4xNyw2LjcxLDYuNzEsMCwwLDEtMi42NCwzbC0uNDguMzNzLjMuMTYuNTEuMjlhNy4yLDcuMiwwLDAsMSwzLjQ5LDQuMTUsMTUuOTMsMTUuOTMsMCwwLDEsLjU4LDYuMThjLS4zMyw0LTIsOC4zOC02LjU0LDguOTItNS4xNy42MS0yMCwuMzUtMjIuMjYuMjVhNS44Niw1Ljg2LDAsMCwxLTQuMjItMS41MSw0Ljc1LDQuNzUsMCwwLDEtMS4xNS0xLjk0LDE1LjYyLDE1LjYyLDAsMCwxLS41Mi00LjY3QzE1MC41Nyw0Ni45MiwxNTAuNTYsNDMuMTIsMTUwLjU2LDM5LjMzWm0xNS43MiwzLjJoLTZjLTEuNTcsMC0xLjU4LDAtMS41NywxLjU3LDAsMi4xLDAsNC4yLDAsNi4zLDAsMS40NS4yNCwxLjY4LDEuNTksMS44NWEyNC42MSwyNC42MSwwLDAsMCwyLjg1LjEycTQsMCw3Ljk0LDBhMTYuOTQsMTYuOTQsMCwwLDAsMi4yNi0uMTIsNi4yNCw2LjI0LDAsMCwwLDEuODItLjQ2QTMuMzIsMy4zMiwwLDAsMCwxNzcsNDguNjdhOC4xNyw4LjE3LDAsMCwwLS40OC00LjE0QTMsMywwLDAsMCwxNzUuMDksNDNhNy41MSw3LjUxLDAsMCwwLTMtLjQ4QzE3MC4xMyw0Mi41NywxNjguMjEsNDIuNTMsMTY2LjI4LDQyLjUzWm0tLjEtNi41N3YuMDljMi42NC0uMSw1LjI4LS4xOSw3LjkxLS4zQTIuMjgsMi4yOCwwLDAsMCwxNzYsMzQuMzZhOC41OCw4LjU4LDAsMCwwLDAtNS44NywyLjQ0LDIuNDQsMCwwLDAtMi4yNS0xLjc1Yy0xLjU4LS4wNy0zLjE1LS4xNy00LjczLS4xNi0zLDAtNi4wNy4wOS05LjEuMTZhMSwxLDAsMCwwLTEuMDcsMWMwLDIuNTEsMCw1LS4wNyw3LjUxLDAsLjU2LjI3LjcyLjc5LjcyQzE2MS43NywzNiwxNjQsMzYsMTY2LjE4LDM2WiIvPjxwYXRoIGQ9Ik0yNTEuNzcsNTIuMzhjLTMuNzIsMC05LjM4LDAtMTMuMSwwLTIuOTIsMC01Ljg1LDAtOC43Ny0uMTJhMS42MSwxLjYxLDAsMCwxLTEuMTYtLjUxLDIuNiwyLjYsMCwwLDEtLjM2LTEuNDRjMC0yLjMsMC00LjU5LDAtNi44OSwwLS43NC4xOS0xLjEsMS4wNS0xLjA5LDYuNywwLDE1LjMzLDAsMjIsMGwuMzQsMFYzNS44MUgyMjljLS40OCwwLS42OS0uMjMtLjY5LS43MywwLTIuMTksMC00LjM4LDAtNi41N2E0LjQ1LDQuNDUsMCwwLDEsLjE4LTEuMjUsMSwxLDAsMCwxLC45NS0uNjFjLjc5LDAsMTYuMjgtLjExLDIyLjI3LS4xMlYyMC4xMUgyMjYuMjZhNyw3LDAsMCwwLTMsLjYyLDQuODMsNC44MywwLDAsMC0yLjYsMy42NywxMC43NSwxMC43NSwwLDAsMC0uMTIsMi40OHEwLDYuMjUsMCwxMi41VjUyYTEwLjc5LDEwLjc5LDAsMCwwLC40MiwzLjQ4LDQuNTYsNC41NiwwLDAsMCwxLjU0LDIuMzEsNi41Miw2LjUyLDAsMCwwLDMuODYsMS4wOGMyLjE2LDAsNC4zMSwwLDYuNDcsMGgxOVoiLz48cGF0aCBkPSJNMTA4LjYyLDUyLjM4aC0uNTdjLTQuODQtLjExLTEwLjQ2LjI1LTE1LjMtLjMxYTEyLjEzLDEyLjEzLDAsMCwxLTQuNTEtMS40OSw2LjE4LDYuMTgsMCwwLDEtMi41LTMuMzMsOC40Miw4LjQyLDAsMCwxLS41Ni0yLjExLDMzLjU0LDMzLjU0LDAsMCwxLS4zNi0zLjg3Yy0uMS00LjQ1LS41OC0xMC43OCw0LTEzLjI3YTkuMTgsOS4xOCwwLDAsMSwyLjg3LTEsMzQuNDksMzQuNDksMCwwLDEsNS0uNDNjMy41Ny0uMDcsNy45MiwwLDExLjQ5LDBhMi41NywyLjU3LDAsMCwwLC41LS4wNVYyMC4xM2MtLjE1LDAtNi45LDAtOS43MiwwLS44NSwwLTEuNywwLTIuNTQsMC01LjI4LjIxLTEwLjg2LS4xNS0xNSwzLjdBMTMuMTQsMTMuMTQsMCwwLDAsNzguMTMsMjlhMjEuMSwyMS4xLDAsMCwwLTEuMDYsNC4wOCw0Myw0MywwLDAsMC0uNDMsNS4wOGMtLjA2LDEuMzgsMCwyLjc4LjEsNC4xN2EyOC41NiwyOC41NiwwLDAsMCwuMzMsMy40NWMuMiwxLjE0LjU2LDIuMjUuODcsMy4zNmExNC44MSwxNC44MSwwLDAsMCwuNzEsMi4xLDEzLDEzLDAsMCwwLDMuMjMsNC4zNSwxMi4zNCwxMi4zNCwwLDAsMCw1LjU2LDIuNzIsMzQsMzQsMCwwLDAsNC44NS41NmMxLjE0LjA4LDIuMjksMCwzLjQ0LDBoMTIuODlaIi8+PHBhdGggZD0iTTIxOC43NSw1Mi4zOGwtLjI0LDBjLTYuMjIsMC0xMy42LDAtMTkuODEsMGExNC4yMywxNC4yMywwLDAsMS0xLjczLS4xMiwxLjMsMS4zLDAsMCwxLTEuMjUtMS40MWMwLS40MiwwLS44NCwwLTEuMjdWMjEuMjVhNy40NSw3LjQ1LDAsMCwwLS4wOC0uOTVoLTcuNzdhMi4zNywyLjM3LDAsMCwwLS4xLjY0YzAsNS4xOCwwLDExLjEzLDAsMTYuMywwLDMuNzgsMCw3LjU2LDAsMTEuMzNhMzEuMSwzMS4xLDAsMCwwLC4yNyw2LjMyQTUuMTQsNS4xNCwwLDAsMCwxODksNTdhNS4yMyw1LjIzLDAsMCwwLDQuMzEsMS44YzgsLjA3LDE3LjI2LDAsMjUuMzEsMGguMVoiLz48cGF0aCBkPSJNMTM0LjE1LDU4LjkyaC04TDEyNiw0Ni44MnMtMTUuNjgtMjYuMDYtMTYtMjYuNjhoOC4zNkwxMzQsNDYuMzRaIi8+PHBhdGggZD0iTTEzNC44MSw0NC45MmMtLjIzLS4xOS00LTYuMjctNC02LjI3bDExLjI5LTE4LjUxLDguMTksMFoiLz48cGF0aCBkPSJNMjkuMzQsNjAuNjhjLS4xMi0uMTYtLjI0LS4zMS0uMzQtLjQ2cS0zLjA4LTQuOC02LjE2LTkuNThhMy4yNCwzLjI0LDAsMCwwLS44Ny0uOWMtLjkxLS42Ni0xLjg0LTEuMzEtMi44LTEuOWEuODcuODcsMCwwLDEtLjQyLTEuMTVjLjMzLTEuMi42MS0yLjQzLDEtMy42MmEyLjU0LDIuNTQsMCwwLDAtLjEtMS44OGMtMS40MS0zLjM1LTQuNDItMTAuNDUtNC41Ny0xMC43Mi4xNiwwLDE1LjQzLDQuNjUsMTUuNyw0Ljc0bC0yLDEuMUwyMC4zNSw0MWMtLjYzLjM1LS42Mi41MywwLDFxNC43OSwzLjUxLDkuNTQsN2wuNjQuNDVhMzAuNjUsMzAuNjUsMCwwLDAtMS4xNCw1LjQ1QzI5LjIxLDU2LjM5LDI5LjM1LDU5LjQxLDI5LjM0LDYwLjY4WiIvPjxwYXRoIGQ9Ik00NC44NywyNi43MWMuMTEtLjEyLjE5LS4yNi4xMS0uMzlhLjc2Ljc2LDAsMCwwLS4zNC0uMjQsMi4xNCwyLjE0LDAsMCwwLS40Mi0uMTZjLS4zNS0uMTEtLjUxLjE4LS41MS40OXMuMTQuNjEuNDIuNjJhLjkxLjkxLDAsMCwwLC40My0uMUExLjI4LDEuMjgsMCwwLDAsNDQuODcsMjYuNzFaIi8+PHBhdGggZD0iTTQ1LjI2LDI3LjA5Yy0uMzguMTgtMS40My44NS0xLjYuOTUtMS42LDEtMy4yMiwxLjkzLTQuOCwyLjk0LTEuODgsMS4yMS0zLjcyLDIuNDktNS42LDMuNzItLjE2LjExLS40MywwLS42NSwwYTMuODcsMy44NywwLDAsMSwuMjUtLjU5YzAtLjA5LDUuMjItMy42OCw2LjUzLTQuNjMtLjMtLjE5LTUuMTYtMi43Mi01LjY0LTIuOS0uMzEtLjExLS41MS4wNi0uNTMuNDRzLS4xLDEtLjE1LDEuNDdjLS4yMiwyLS40NSw0LjA3LS42NCw2LjExYS43LjcsMCwwLDAsLjIzLjU4Yy4zLjE5LjY5LjIzLDEsLjM5LDIuMzksMS4yMiw0Ljc0LDIuNTEsNy4xNiwzLjY1YTEuOTQsMS45NCwwLDAsMCwxLjc5LjA5LDEuNzksMS43OSwwLDAsMCwuNzktMS4yNmMuNzItMy4zMywxLjUzLTYuNjQsMi4zMy0xMEExLjI2LDEuMjYsMCwwLDAsNDUuMjYsMjcuMDlaIi8+PHBhdGggZD0iTTQ5LjQ5LDI1Yy0uMDUtLjE5LS4yNS0uMzItLjM4LS40NmE3LDcsMCwwLDAtLjgzLS43Yy0uNDMtLjMzLS44Ny0uNjUtMS4zMi0uOTQtLjktLjU3LTEuNzktMS4xNC0yLjcyLTEuNjUtMS40NC0uNzktMy0xLjM3LTQuNDctMmExLjY4LDEuNjgsMCwwLDAtMiwuMzJMMzUuNSwyMS42N2E0LjQ0LDQuNDQsMCwwLDAtLjMzLjM3Yy45NC4zMiwxLjgzLjYxLDIuNzEuOTNsNS4zMywyYy4zMS4xMiwyLC42LDIuMTYuNjVhNC44OSw0Ljg5LDAsMCwwLDIuNTQuMTcsOS45Miw5LjkyLDAsMCwwLDEuMzItLjNBLjQ0LjQ0LDAsMCwwLDQ5LjQ5LDI1WiIvPjxwYXRoIGQ9Ik0zMi45NCwyMy4wNywzMS42OSwzNC43MWwtMTUtNC4yM3YtLjIxWiIvPjxwYXRoIGQ9Ik0zMi42NCwyMi40M2MtNS42OSwyLjQ4LTExLjE5LDUtMTYuNzUsNy40Mi0uMzYsMC0uNC0uMjEtLjMxLS41NS43Ni0yLjc4LDEuNTEtNS41OCwyLjI5LTguMzZhMy40MiwzLjQyLDAsMCwxLC42Mi0xLjM3LDMuMzksMy4zOSwwLDAsMSwzLjgzLS43NmMzLjEsMS41Miw2LjQ4LDIuMjEsOS43LDMuNFoiLz48cGF0aCBkPSJNNDMuOTMsMzguODJjLjIxLS45NC40Ny0xLjkzLjY3LTIuNzkuNjMtMi42OCwxLjI1LTUuMzYsMS45LTgsLjA2LS4yNi4yNi0uNjYuNDMtLjY4YTEuMTcsMS4xNywwLDAsMSwuODUuMzRRNTEuNDEsMzEuMjUsNTUsMzQuOWExLjIsMS4yLDAsMCwxLC4zLjczYzAsMS4xNSwwLDMuNTMsMCwzLjUzYTE3LDE3LDAsMCwwLTIuNTYtLjY4LDE5Ljg1LDE5Ljg1LDAsMCwwLTMuNy0uMjcsMzIuOTIsMzIuOTIsMCwwLDAtMy43MS4yOUE4LjM5LDguMzksMCwwLDAsNDMuOTMsMzguODJaIi8+PHBhdGggZD0iTTIwLjkzLDQxLjQ1bDEwLjY4LTUuODhjMCwuMzcuMDUuNjQuMDcuOTEuMTUsMi44Mi4yNSw2LjY5LjUyLDlhNCw0LDAsMCwxLS42NiwyLjU1LDUuNzEsNS43MSwwLDAsMS0uNjUuNyw5LjA5LDkuMDksMCwwLDEtLjgtLjUyTDIxLjQsNDEuODNDMjEuMjYsNDEuNzMsMjEuMTMsNDEuNjEsMjAuOTMsNDEuNDVaIi8+PHBhdGggZD0iTTU2LDM0LjlsLTcuNTctNy42MWMtLjItLjIxLS41NS0uNDEtLjI5LS43NGExLjEzLDEuMTMsMCwwLDEsLjY4LS4zMSw3LjMxLDcuMzEsMCwwLDEsMy40NS4wNywxMS42MSwxMS42MSwwLDAsMSw3LjMzLDcuMjMsMTEuNzUsMTEuNzUsMCwwLDEsMCw3LjIzYy0uMTYuNDgtLjY0LDEuNjctLjY0LDEuNjdzLS41MS0uMzgtLjYtLjQ3Yy0uNzEtLjY2LTIuMzktMi4zNS0yLjM5LTIuMzVaIi8+PHBhdGggZD0iTTE2Ljg2LDU0LjA3LDE4LjEzLDQ4YzEuMzEuODksMi41NSwxLjcyLDMuNzgsMi41N2ExLjYyLDEuNjIsMCwwLDEsLjM0LjQ3TDI4LjQsNjAuNmMuMTcuMjguMzYuNTUuNTUuODJsLS4xMi4xWiIvPjxwYXRoIGQ9Ik0zMi44Niw0NS43NWMtLjE3LTMuMjQtLjM0LTYuODktLjUyLTEwLjEuMzMuMTkuNTkuMzcuODYuNTFsNi43MiwzLjQ4YTcsNywwLDAsMSwuNjMuMzdzLS41NC4zMS0uODQuNTFjLS44OC41Ny0xLjc4LDEuMTMtMi42NSwxLjczbC0uNzYuNTNjLS42LjQ1LTEuMTkuOTItMS43NSwxLjQyUzMzLjQzLDQ1LjI0LDMyLjg2LDQ1Ljc1WiIvPjxwYXRoIGQ9Ik0xOS4yNyw0MiwxOCw0Ni42NSw5LjMxLDQwLjc0bDAtLjE5WiIvPjxwYXRoIGQ9Ik0zMywyMS43NWMtLjMtLjA4LTguODItMi44My05LjA3LTNzLS4xMi0uMywwLS40NWExLjM1LDEuMzUsMCwwLDEsLjQ3LS4zNSw1LjI5LDUuMjksMCwwLDEsMS4zMi0uMzFjLjMxLDAsLjYyLS4wOC45NC0uMTEsMS4wNi0uMTEsMi4xMy0uMTIsMy4yLS4xNGExLjQ0LDEuNDQsMCwwLDEsMS4zNywxQzMxLjczLDE5LjMzLDMyLjkxLDIxLjQ4LDMzLDIxLjc1WiIvPjxwYXRoIGQ9Ik0zNy4yNCwxOUMzNC45MSwyMS4xNywzNCwyMS45LDM0LDIxLjljLS42NS0xLjIxLTEuMjgtMi4zNC0xLjg5LTMuNDktLjE3LS4zMy4xNS0uNzMuNjYtLjc4YTMsMywwLDAsMSwuNzguMDdsMi40OS40QzM2LjU0LDE4LjIsMzcuODUsMTguNDUsMzcuMjQsMTlaIi8+PHBhdGggZD0iTTM5LjcsMjQuNDRhLjE1LjE1LDAsMCwxLDAsLjA5YzAsLjQyLS43Ni41Ny0xLjA2LjU5LS43Mi4wNi0xLjQ0LjA5LTIuMTYuMXMtMi4wOS4yOC0yLjc0LS40M2ExLjI5LDEuMjksMCwwLDEtLjIyLTEsNy40MSw3LjQxLDAsMCwxLC4xMS0xYzEuMS0uNTIsMi4xNC4xMiwzLjE5LjUxbDEuNzUuNjZDMzguNzgsMjQsMzkuNTgsMjQuMTcsMzkuNywyNC40NFoiLz48L3N2Zz4=
+description: Cyble Events for Vision Users. Must have Vision API access to use the
+  threat intelligence.
+detaileddescription: "Cyble Events is an integration which will help Existing Cyble
+  Vision users. This integration would allow users to access the API avaialable as
+  part of Vision Licensing and integrate the data into XSOAR. \n\n## Configure Cyble
+  Events on Cortex XSOAR\n\n1. Navigate to **Settings** > **Integrations** > **Servers
+  & Services**.\n2. Search for Cyble Events.\n3. Click **Add instance** to create and
+  configure a new integration instance.\n\n\n# Commands\n    \nYou can execute these
+  commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.\nAfter
+  you successfully execute a command, a DBot message appears in the War Room with
+  the command details.\n\nThis integration provides following command(s) which can
+  be used to access the Threat Intelligence\n\n**!cyble-vision-fetch-iocs**\n| **Parameter**
+  | **Description** | **Required** |\n| --- | --- | --- |\n| from | Returns records
+  started with given value | False |\n| limit | Number of records to return (max 1000).
+  Using a smaller limit will get faster responses. | False |\n| start_date | Timeline
+  start date in the format \"YYYY-MM-DD\". Need to used with end_date as timeline
+  range. | False |\n| end_date | Timeline end date in the format \"YYYY-MM-DD\". Need
+  to used with start_date as timeline range. | False |\n| type | Returns record by
+  type like (CIDR, CVE, domain, email, FileHash-IMPHASH, FileHash-MD5, FileHash-PEHASH,
+  FileHash-SHA1, FileHash-SHA256, FilePath, hostname, IPv4, IPv6, Mutex, NIDS, URI,
+  URL, YARA, osquery, Ja3, Bitcoinaddress, Sslcertfingerprint). | False |\n| keyword
+  | Returns records for the specified keyword | False|\n\n\n**!cyble-vision-fetch-events**\n|
+  **Parameter** | **Description** | **Required** |\n| --- | --- | --- |\n| from |
+  Returns records for the timeline starting from given indice | True |\n| limit |
+  Number of records to return (max 50). Using a smaller limit will get faster responses.
+  | True|\n| start_date | Timeline start date in the format \"YYYY/MM/DD\" | True
+  |\n| end_date | Timeline end date in the format \"YYYY/MM/DD\" | True |\n| order_by
+  | Sorting order for alert fetch either Ascending or Descending | True |\n\n\n**!cyble-vision-fetch-event-detail**\n|
+  **Parameter** | **Description** | **Required** |\n| --- | --- | --- |\n| event_type
+  | Event Type of the Incident | True |\n| event_id | Event ID of the incident | True
+  |"
+configuration:
+- display: Server URL (e.g. https://example.net)
+  name: url
+  defaultvalue: https://example.net
+  type: 0
+  required: true
+- display: Access Token
+  name: token
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- display: Incident Fetch Limit
+  name: max_fetch
+  defaultvalue: "1"
+  type: 0
+  required: true
+  additionalinfo: Maximum incidents to be fetched every time. Upper limit is 50 incidents.
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  type: python
+  commands:
+  - name: cyble-vision-fetch-iocs
+    arguments:
+    - name: from
+      description: Returns records started with given value
+      defaultValue: "0"
+    - name: limit
+      description: Number of records to return (max 1000). Using a smaller limit will
+        get faster responses.
+      defaultValue: "1"
+    - name: start_date
+      description: Timeline start date in the format "YYYY-MM-DD". Need to used with
+        end_date as timeline range.
+    - name: end_date
+      description: Timeline end date in the format "YYYY-MM-DD". Need to used with
+        start_date as timeline range.
+    - name: type
+      description: Returns record by type like (CIDR, CVE, domain, email, FileHash-IMPHASH,
+        FileHash-MD5, FileHash-PEHASH, FileHash-SHA1, FileHash-SHA256, FilePath, hostname,
+        IPv4, IPv6, Mutex, NIDS, URI, URL, YARA, osquery, Ja3, Bitcoinaddress, Sslcertfingerprint).
+    - name: keyword
+      description: Returns records for the specified keyword
+    outputs:
+    - contextPath: CybleEvents.IoCs.data
+      description: Returns indicator inital creation date
+      type: String
+    description: Fetch the indicators for the given timeline
+  - name: cyble-vision-fetch-events
+    arguments:
+    - name: from
+      required: true
+      default: true
+      description: Returns records for the timeline starting from given indice
+      defaultValue: "0"
+    - name: limit
+      required: true
+      default: true
+      description: Number of records to return (max 50). Using a smaller limit will
+        get faster responses.
+      defaultValue: "5"
+    - name: start_date
+      required: true
+      description: Timeline start date in the format "YYYY/MM/DD"
+    - name: end_date
+      required: true
+      description: Timeline end date in the format "YYYY/MM/DD"
+    - name: order_by
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - Ascending
+      - Descending
+      description: Sorting order for alert fetch either Ascending or Descending
+      defaultValue: Ascending
+    outputs:
+    - contextPath: CybleEvents.Events.cybleeventid
+      description: Returns the Incident Event list
+      type: String
+    - contextPath: CybleEvents.Events.cybleeventtype
+      type: String
+    - contextPath: CybleEvents.Events.severity
+      type: Number
+    - contextPath: CybleEvents.Events.occurred
+      type: Date
+    - contextPath: CybleEvents.Events.name
+      type: String
+    - contextPath: CybleEvents.Events.cybleeventname
+      type: String
+    - contextPath: CybleEvents.Events.cybleeventbucket
+      type: String
+    - contextPath: CybleEvents.Events.cybleeventkeyword
+      type: String
+    - contextPath: CybleEvents.Events.cybleeventalias
+      type: String
+    description: Fetch Incident event alerts based on the given parameters
+  - name: cyble-vision-fetch-event-detail
+    arguments:
+    - name: event_type
+      required: true
+      description: Event Type of the Incident
+    - name: event_id
+      required: true
+      description: Event ID of the incident
+    outputs:
+    - contextPath: CybleEvents.Events.Details
+      description: Returns details for given event of specific type
+      type: String
+    description: Fetch Incident detail based on event type and event ID
+  dockerimage: demisto/python3:3.9.8.24399
+  isfetch: true
+  runonce: false
+  subtype: python3
