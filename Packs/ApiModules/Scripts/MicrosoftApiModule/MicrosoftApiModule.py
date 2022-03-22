@@ -119,7 +119,7 @@ class MicrosoftClient(BaseClient):
             self.redirect_uri = redirect_uri
             if certificate_thumbprint and private_key:
                 try:
-                    import msal
+                    import msal  # pylint: disable=E0401
                     self.jwt = msal.oauth2cli.assertion.JwtAssertionCreator(
                         private_key,
                         'RS256',
