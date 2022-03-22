@@ -20,4 +20,4 @@ suppression_fields:
   - MyField1
   - MyField2
 xql_query: dataset = xdr_data | filter agent_id=$the_agent_id_field_in_the_result
-fromversion: 3.3
+fromversion: 3.3.0
