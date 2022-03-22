@@ -940,7 +940,6 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                 Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
                 if not (pack.zip_path and os.path.isfile(pack.zip_path)):
                     task_status = sign_and_zip_pack(pack, signature_key)
-                    task_status = False # TODO: remove
                     if not task_status:
                         # modify the pack's status to indicate the failure was in the dependencies zip step
                         pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
@@ -951,7 +950,6 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                     dep_pack = packs_for_current_marketplace_dict.get(dep_name)
                     if not (dep_pack.zip_path and os.path.isfile(dep_pack.zip_path)):
                         task_status = sign_and_zip_pack(dep_pack, signature_key)
-                        task_status = False  # TODO: remove
                         if not task_status:
                             # modify the pack's status to indicate the failure was in the dependencies zip step
                             pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
