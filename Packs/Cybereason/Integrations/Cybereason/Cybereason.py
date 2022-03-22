@@ -1319,7 +1319,6 @@ def unarchive_sensor():
 
 def delete_sensor():
     sensor_id = demisto.getArg('sensorID')
-    unarchive_reason = demisto.getArg('unarchiveReason')
 
     data = {
         "sensorsIds": [sensor_id]
@@ -1329,11 +1328,7 @@ def delete_sensor():
     if response.status_code == 204:
         output = "The selected Sensor with Sensor ID: {sensor_id} is not available for deleting.".format(sensor_id=sensor_id)
     elif response.status_code == 200:
-        output = ""
-        try:
-            output = "Sensor deleted successfully."
-        except Exception as e:
-            output = "Exception occurred while processing response for Delete action: " + str(e)
+        output = "Sensor deleted successfully."
     else:
         try:
             json_response = res.json()

@@ -83,12 +83,6 @@ script:
       name: sensorID
       required: true
       secret: false
-    - default: false
-      description: Reason for Deleting Cybereason Sensor.
-      isArray: false
-      name: deleteReason
-      required: true
-      secret: false
     deprecated: false
     description: Deletes a Sensor.
     execution: false
