@@ -41,10 +41,10 @@ tasks:
       version: -1
       name: cybereason-start-fetchfile
       description: Start fetching the file to download
-      script: Cybereason_copy|||cybereason-start-fetchfile
+      script: Cybereason|||cybereason-start-fetchfile
       type: regular
       iscommand: true
-      brand: Cybereason_copy
+      brand: Cybereason
     nexttasks:
       '#none#':
       - "2"
@@ -77,10 +77,10 @@ tasks:
       version: -1
       name: download-progress
       description: Return a batch id for files waiting for download
-      script: Cybereason_copy|||cybereason-fetchfile-progress
+      script: Cybereason|||cybereason-fetchfile-progress
       type: regular
       iscommand: true
-      brand: Cybereason_copy
+      brand: Cybereason
     nexttasks:
       '#none#':
       - "3"
@@ -111,10 +111,10 @@ tasks:
       version: -1
       name: download-files
       description: Downloads the actual file to the machine
-      script: Cybereason_copy|||cybereason-download-fetchfile
+      script: Cybereason|||cybereason-download-fetchfile
       type: regular
       iscommand: true
-      brand: Cybereason_copy
+      brand: Cybereason
     scriptarguments:
       batchID:
         simple: ${Download.progress.batchID}
