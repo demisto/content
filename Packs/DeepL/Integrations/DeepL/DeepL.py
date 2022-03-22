@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+register_module_line('DeepL', 'start', __line__())
+
 
 def test_module(client) -> str:
     result = client._http_request('GET', '/usage')
@@ -83,3 +85,6 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+
+register_module_line('DeepL', 'end', __line__())
