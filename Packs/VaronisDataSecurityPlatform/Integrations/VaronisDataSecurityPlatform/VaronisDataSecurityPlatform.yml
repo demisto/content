@@ -59,6 +59,7 @@ configuration:
   required: false
   type: 15
 - display: Varonis threat model name
+  additionalinfo: Comma-separated list of threat model names of alerts to fetch
   hidden: false
   name: threat_model
   required: false

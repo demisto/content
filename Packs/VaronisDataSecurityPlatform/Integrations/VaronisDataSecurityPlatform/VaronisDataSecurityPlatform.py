@@ -291,7 +291,7 @@ class Client(BaseClient):
         :param alert_status: status of the alert to search for. Options are 'Open', 'Closed' or 'Under investigation'
 
         :type threat_model: ``Optional[str]``
-        :param threat_model: threat model of the alert to search for.
+        :param threat_model: Comma-separated list of threat model names of alerts to fetch
 
         :type severity: ``Optional[str]``
         :param severity: severity of the alert to search for. Options are 'High', 'Medium' or 'Low'
@@ -304,7 +304,7 @@ class Client(BaseClient):
         request_params: Dict[str, Any] = {}
 
         if threat_model:
-            request_params['threatModel'] = threat_model
+            request_params['threatModels'] = argToList(threat_model)
 
         if severity:
             request_params['severity'] = severity
@@ -816,7 +816,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
     :param alert_status: status of the alert to search for. Options are 'Open', 'Closed' or 'Under investigation'
 
     :type threat_model: ``Optional[str]``
-    :param threat_model: threat model of the alert to search for.
+    :param threat_model: Comma-separated list of threat model names of alerts to fetch
 
     :type severity: ``Optional[str]``
     :param severity: severity of the alert to search for. Options are 'High', 'Medium' or 'Low'
