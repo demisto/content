@@ -40,10 +40,6 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-- display: Long running instance
-  name: longRunning
-  required: false
-  type: 8
 - defaultvalue: ''
   display: Use system proxy settings
   name: proxy
