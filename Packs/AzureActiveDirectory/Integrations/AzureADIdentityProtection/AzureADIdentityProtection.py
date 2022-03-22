@@ -266,30 +266,24 @@ def detection_to_incident(detection, detection_date):
     return incident
 
 
-def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: str, latest_detection_id: str) -> \
-        Tuple[List[Dict[str, str]], str, str]:
+def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: str) -> \
+        Tuple[List[Dict[str, str]], str]:
     """
     Given the detections retrieved from Azure Identity Protection, transforms their data to incidents format.
     """
     incidents: List[Dict[str, str]] = []
-    latest_incident_datetime = last_fetch_datetime
+    latest_incident_time = last_fetch_datetime
 
     for detection in detections:
-        if detection.get('id') == latest_detection_id:
-            continue
-
         detection_datetime = detection.get('detectedDateTime', '')
         incident = detection_to_incident(detection, date_str_to_azure_format(detection_datetime))
         incidents.append(incident)
 
         if datetime.strptime(date_str_to_azure_format(detection_datetime), DATE_FORMAT) > \
-                datetime.strptime(date_str_to_azure_format(latest_incident_datetime), DATE_FORMAT):
-            latest_incident_datetime = detection_datetime
-            latest_detection_id = detection.get('id', '')
+                datetime.strptime(date_str_to_azure_format(latest_incident_time), DATE_FORMAT):
+            latest_incident_time = detection_datetime
 
-    demisto.debug('This is the incidents: ', {'Incidents': incidents, 'latest_detection_id': latest_detection_id})
-
-    return incidents, latest_incident_datetime, latest_detection_id
+    return incidents, latest_incident_time
 
 
 def get_last_fetch_time(last_run, params):
@@ -301,18 +295,11 @@ def get_last_fetch_time(last_run, params):
         default_fetch_datetime = dateparser.parse(date_string=first_fetch, date_formats=[DATE_FORMAT])
         last_fetch = str(default_fetch_datetime.isoformat(timespec='milliseconds'))+'Z'
 
-    # last_fetch = date_str_to_azure_format(last_fetch)
-    # last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT)
     demisto.debug(f'[AzureADIdentityProtection] last_fetch: {last_fetch}')
     return last_fetch
 
 
 def build_filter(last_fetch, params):
-    demisto.debug(f'This is the last fetch: {last_fetch}')
-    # last_fetch = last_fetch.rstrip('0')
-    # demisto.debug(f'This is the last fetch after removing the zeros: {last_fetch}')
-    # last_fetch = f'{last_fetch}Z' if last_fetch[-1].upper() != 'Z' else last_fetch
-
     start_time_enforcing_filter = f"detectedDateTime gt {last_fetch}"
     user_supplied_filter = params.get('fetch_filter_expression', '')
     query_filter = f'({user_supplied_filter}) and {start_time_enforcing_filter}' if user_supplied_filter \
@@ -343,7 +330,6 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
     demisto.debug(f'[AzureIdentityProtection] last run: {last_run}')
 
     last_fetch = get_last_fetch_time(last_run, params)
-    latest_id = last_run.get('latest_detection_id', '')
     query_filter = build_filter(last_fetch, params)
     demisto.debug(f'[AzureIdentityProtection] last fetch is: {last_fetch}, filter is: {query_filter}')
 
@@ -354,17 +340,14 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
         user_principal_name=params.get('fetch_user_principal_name', ''),
     )
 
-    demisto.debug('This is the response: ', risk_detection_list_raw)
-
     detections: list = risk_detection_list_raw.get('value', [])
 
-    incidents, latest_detection_datetime, latest_detection_id = detections_to_incidents(detections, last_fetch, latest_id)
+    incidents, latest_detection_datetime = detections_to_incidents(detections, last_fetch)
     demisto.debug(f'[AzureIdentityProtection] Fetched {len(incidents)} incidents')
 
     demisto.debug(f'[AzureIdentityProtection] next run latest_detection_found: {latest_detection_datetime}')
     last_run = {
         'latest_detection_found': latest_detection_datetime,
-        'latest_detection_id': latest_detection_id,
     }
 
     return incidents, last_run
