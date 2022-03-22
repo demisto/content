@@ -63,6 +63,7 @@ run-validations:
          git clone --depth=1 -q https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_CI_BRANCH
         if [ "$?" != "0" ]; then
           echo "No such branch in content-test-conf: $UNDERSCORE_CI_BRANCH"
+          exit 0
         else
           echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
           exit 1
