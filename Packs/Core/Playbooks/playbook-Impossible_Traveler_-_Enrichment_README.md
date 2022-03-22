@@ -33,4 +33,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Impossible Traveler - Enrichment](Insert the link to your image here)
+![Impossible Traveler - Enrichment](https://raw.githubusercontent.com/demisto/content/f731e1a3ca654aca1ebe5ff29df935f2390c9099/Packs/Core/doc_files/Impossible_Traveler_-_Enrichment.png)
