@@ -88,7 +88,10 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int], firs
     
     if (last_fetch is None):
         last_fetch = first_fetch_time
-    params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
+        if (first_fetch_time is None):
+            params1 = {"start": f"None", "end": f"{now_time}", "size": max_fetch}
+        else:
+            params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
         
     if len(log_server_id) == 0:
         return_output('ok')
