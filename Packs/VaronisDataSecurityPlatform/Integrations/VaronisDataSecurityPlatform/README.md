@@ -79,7 +79,7 @@ Options are:
 | Varonis.Alert.AbnormalLocation | Boolean | Whether any of the geographical locations from which an alerted activity originated is new or abnormal to the organization, the user and peers, or only the user | 
 | Varonis.Alert.NumOfAlertedEvents | Number | Number of events with alerts | 
 | Varonis.Alert.UserName | String | Name of the users triggered alerts | 
-| Varonis.Alert.By.SamAccountName | String | Logon name used to support clients and servers running earlier versions of the Windows operating system, such as Windows NT 4.0.
+| Varonis.Alert.By.SamAccountName | String | Logon name used to support clients and servers running earlier versions of Windows operating system, such as Windows NT 4.0.
 In the dashboards \(other than the Alert dashboard\), this is the SAM account name of the user or group | 
 | Varonis.Alert.By.PreivilegedAccountType | String | Privileged account. Options are:
 - Service accounts
@@ -95,7 +95,7 @@ In the dashboards \(other than the Alert dashboard\), this is the SAM account na
 | Varonis.Alert.Device.ContainMaliciousExternalIP | Boolean | Whether the alert contains IPs known to be malicious | 
 | Varonis.Alert.Device.IPThreatTypes | String | Whether the alert contains IPs known to be malicious | 
 | Varonis.Pagination.Page | Number | Current page number requested by user | 
-| Varonis.Pagination.PageSize | Number | Amount of records on the page | 
+| Varonis.Pagination.PageSize | Number | Number of records on the page |
 
 #### Command example
 ```!varonis-get-alerts page=1 Alert_Status=Open max_results=1 Start_time=2022-02-16T13:00:00+02:00```
@@ -203,8 +203,8 @@ Get events applied to specific alerts
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| Alert_id | List of alert ids. | Required | 
-| max_results | The max number of alerts to retrieve (up to 5k). | Optional | 
+| Alert_id | List of alert IDs. | Required |
+| max_results | Maximum number of alerts to retrieve (up to 5k). | Optional |
 | page | Page number. Default is 1. | Optional | 
 
 
@@ -213,7 +213,7 @@ Get events applied to specific alerts
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Varonis.Event.Type | String | Event type | 
-| Varonis.Event.UTCTime | Date | Event time in utc format | 
+| Varonis.Event.UTCTime | Date | Event time UTC format |
 | Varonis.Event.Status | String | Filters according to the status of the event. Options are:
 - Fail
 - Success | 
@@ -258,7 +258,7 @@ In the dashboards \(other than the Alert dashboard\), this is the SAM account na
 | Varonis.Event.OnObject.DestinationIP | String | Destination IP address within the organization | 
 | Varonis.Event.OnObject.DestinationDevice | String | Destination host name for relevant services | 
 | Varonis.Pagination.Page | Number | Current page number requested by user | 
-| Varonis.Pagination.PageSize | Number | Amount of records on the page | 
+| Varonis.Pagination.PageSize | Number | Number of records on the page |
 
 #### Command example
 ```!varonis-get-alerted-events page=1 Alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C max_results=1```
