@@ -325,7 +325,14 @@ def change_password_user_command(client: MsGraphClient, args: Dict):
     force_change_password_next_sign_in = args.get('force_change_password_next_sign_in', 'true') == 'true'
     force_change_password_with_mfa = args.get('force_change_password_with_mfa', False) == 'true'
 
-    client.password_change_user(user, password, force_change_password_next_sign_in, force_change_password_with_mfa)
+    try:
+        client.password_change_user(user, password, force_change_password_next_sign_in, force_change_password_with_mfa)
+    except NotFoundError:
+        if client.handle_error:
+            human_readable = f'#### User -> {user} does not exist'
+            return human_readable, None, None
+        raise
+
     human_readable = f'User {user} password was changed successfully.'
     return human_readable, {}, {}
 
@@ -452,7 +459,15 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
 
 def revoke_user_session_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
-    client.revoke_user_session(user)
+
+    try:
+        client.revoke_user_session(user)
+    except NotFoundError:
+        if client.handle_error:
+            human_readable = f'#### User -> {user} does not exist'
+            return human_readable, None, None
+        raise
+
     human_readable = f'User: "{user}" sessions have been revoked successfully.'
     return human_readable, None, None
 
@@ -473,19 +488,19 @@ def main():
     commands = {
         'msgraph-user-test': test_function,
         'test-module': test_function,
-        'msgraph-user-unblock': unblock_user_command, # one
+        'msgraph-user-unblock': unblock_user_command,
         'msgraph-user-terminate-session': disable_user_account_command,
-        'msgraph-user-account-disable': disable_user_account_command, # done
-        'msgraph-user-update': update_user_command, # done
+        'msgraph-user-account-disable': disable_user_account_command,
+        'msgraph-user-update': update_user_command,
         'msgraph-user-change-password': change_password_user_command,
-        'msgraph-user-delete': delete_user_command, # done
+        'msgraph-user-delete': delete_user_command,
         'msgraph-user-create': create_user_command,
         'msgraph-user-get-delta': get_delta_command,
-        'msgraph-user-get': get_user_command, # was done
-        'msgraph-user-list': list_users_command, # ?
-        'msgraph-direct-reports': get_direct_reports_command, # done
-        'msgraph-user-get-manager': get_manager_command, # done
-        'msgraph-user-assign-manager': assign_manager_command, # done
+        'msgraph-user-get': get_user_command,
+        'msgraph-user-list': list_users_command,
+        'msgraph-direct-reports': get_direct_reports_command,
+        'msgraph-user-get-manager': get_manager_command,
+        'msgraph-user-assign-manager': assign_manager_command,
         'msgraph-user-session-revoke': revoke_user_session_command,
     }
     command = demisto.command()
