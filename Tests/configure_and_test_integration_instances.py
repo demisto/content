@@ -90,7 +90,6 @@ class Server:
 class XSIAMServer(Server):
 
     def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name):
-        # TODO
         super().__init__()
         self.name = name
         self.api_key = api_key
@@ -98,6 +97,9 @@ class XSIAMServer(Server):
         self.base_url = base_url
         self.xdr_auth_id = xdr_auth_id
         self.__client = None
+
+    def __str__(self):
+        return self.name
 
     @property
     def client(self):
@@ -107,11 +109,10 @@ class XSIAMServer(Server):
         return self.__client
 
     def reconnect_client(self):
-        # todo: change it
-        self.__client = demisto_client.configure(f'https://localhost:{self.ssh_tunnel_port}',
+        self.__client = demisto_client.configure(base_url=self.base_url,
                                                  verify_ssl=False,
-                                                 username=self.user_name,
-                                                 password=self.password)
+                                                 api_key=self.api_key,
+                                                 auth_id=self.xdr_auth_id)
         return self.__client
 
 
@@ -234,7 +235,6 @@ class Build:
         return tests_to_run
 
     def configure_servers_and_restart(self):
-        # TODO: override
         pass
 
     def install_nightly_pack(self):
@@ -704,8 +704,24 @@ class XSIAMBuild(Build):
         pass
 
     def install_nightly_pack(self):
-        # TODO
-        pass
+        """
+        Installs all existing packs in master
+        Collects all existing test playbooks, saves them to test_pack.zip
+        Uploads test_pack.zip to server
+        Args:
+            self: A build object
+        """
+        # Install all existing packs with latest version
+        self.concurrently_run_function_on_servers(function=install_all_content_packs_for_nightly,
+                                                  service_account=self.service_account)
+        # creates zip file test_pack.zip witch contains all existing TestPlaybooks
+        create_nightly_test_pack()
+        # uploads test_pack.zip to all servers
+        self.concurrently_run_function_on_servers(function=upload_zipped_packs,
+                                                  pack_path=f'{Build.test_pack_target}/test_pack.zip')
+
+        logging.info('Sleeping for 45 seconds while installing nightly packs')
+        sleep(45)
 
     def test_integrations_post_update(self, new_module_instances: list,
                                       modified_module_instances: list) -> tuple:
@@ -734,21 +750,7 @@ class XSIAMBuild(Build):
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         # no need to run this cuncurrently since we have only one server
-        threads_list = []
-
-        if not function:
-            raise Exception('Install method was not provided.')
-
-        # For each server url we install pack/ packs
-        for server in self.servers:
-            #  TODO: xsiam change internal ip
-            kwargs = {'client': server.client, 'host': server.internal_ip}
-            if service_account:
-                kwargs['service_account'] = service_account
-            if pack_path:
-                kwargs['pack_path'] = pack_path
-            threads_list.append(Thread(target=function, kwargs=kwargs))
-        run_threads_list(threads_list)
+        pass
 
 
 def options_handler():
@@ -1532,13 +1534,13 @@ def main():
     build = create_build_object()
     logging.info(f"Build Number: {build.ci_build_number}")
 
+    # add server config and restart servers
+    build.configure_servers_and_restart()  # only xsoar
+    build.disable_instances()  # disable all enabled integrations (Todo in xsiam too)
+
     # todo: delete
     if build.__class__ == XSIAMBuild:
         sys.exit(0)
-
-    # add server config and restart servers
-    build.configure_servers_and_restart()  # TODO: only xsoar
-    build.disable_instances()  # disable all enabled integrations (Todo in xsiam too)
 
     if build.is_nightly:
         # XSOAR Nightly: install all existing packs and upload all test playbooks that currently in master.

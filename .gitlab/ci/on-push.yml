@@ -271,7 +271,7 @@ slack-notify-nightly-build:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json" # all servers info, printed in create instanses step
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
     SERVER_TYPE: "XSIAM"
   needs: ["prepare-testing-bucket-mpv2"]
   stage: run-instances
@@ -285,8 +285,9 @@ slack-notify-nightly-build:
     - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
     - source XSIAMEnvVariables
     - echo "XSIAM chosen_machine_id is $XSIAM_CHOSEN_MACHINE_ID"
-    # todo: copy prod bucket to $XSIAM_CHOSEN_MACHINE_ID bucket.
-#    - gsutil -m cp -r "gs://$GCS_PRODUCTION_V2_BUCKET/content" "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID/" > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine.log" 2>&1
+    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+    - echo "Copying prod bucket to $XSIAM_CHOSEN_MACHINE_ID bucket."
+    - gsutil -m cp -r "gs://$GCS_PRODUCTION_V2_BUCKET/content" "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID/" > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine.log" 2>&1
 
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json # todo: check if meyotar
@@ -307,6 +308,7 @@ slack-notify-nightly-build:
     - exit $EXIT_CODE
   after_script:
     - echo "Job finished, removing lock file"
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
     - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_PIPELINE_ID"
     - echo "Finished removing lock file"
 
@@ -331,11 +333,13 @@ create_gcp_folders:
     - source $BASH_ENV
 #    - echo "Need to copy from marketplace-ci-build/content/builds/$BRANCH_NAME/$CI_BUILD_ID/marketplacev2/content to marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID/"
 #    - echo "Delete content"
+    - gsutil -m cp -r "gs://$GCS_PRODUCTION_V2_BUCKET/content" "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/qa2-test-9997461765391/" > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine.log" 2>&1
+    - gsutil -m cp -r "gs://$GCS_PRODUCTION_V2_BUCKET/content" "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/qa2-test-9994443226862/" > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine.log" 2>&1
     - gsutil -m cp -r "gs://$GCS_PRODUCTION_V2_BUCKET/content" "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/qa2-test-9997333835008/" > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine.log" 2>&1
 #    - gsutil rm -r "gs://marketplace-v2-dist-dev/content"
 #    - gsutil -m cp -r "gs://marketplace-ci-build/content/builds/xsiam-build-instances/2614610/marketplacev2/content" "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/xsoar-content-1/"
 #    - echo "Finished copying successfully."
-    - python3 ./Tests/gcp_update.py
+#    - python3 ./Tests/gcp_update.py
     - exit $EXIT_CODE
 
 
