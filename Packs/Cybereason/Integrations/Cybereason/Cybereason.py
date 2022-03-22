@@ -1463,6 +1463,183 @@ LOG('command is %s' % (demisto.command(),))
 session = requests.session()
 
 
+def get_file_guids(malop_id):
+    """Get all File GUIDs for the given malop"""
+    processes = fetch_malop_processes(malop_id)
+    img_file_guids = fetch_imagefile_guids(processes)
+    return img_file_guids
+
+
+def fetch_malop_processes(malop_id):
+    json_body = {
+        "queryPath":[
+            {
+                "requestedType":"MalopProcess",
+                "filters":[],
+                "guidList":[malop_id],
+                "connectionFeature":{
+                    "elementInstanceType":"MalopProcess",
+                    "featureName":"suspects"
+                }
+            },
+            {
+                "requestedType":"Process",
+                "filters":[],
+                "isResult":True
+            }
+        ],
+        "totalResultLimit":1000,
+        "perGroupLimit":1200,
+        "perFeatureLimit":1200,
+        "templateContext":"DETAILS",
+        "queryTimeout": None,
+        "customFields":[
+            "maliciousByDualExtensionByFileRootCause",
+            "creationTime",
+            "endTime",
+            "elementDisplayName"
+        ]
+    }
+    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    try:
+        result = response['data']['resultIdToElementDataMap']
+    except Exception as e:
+        raise ValueError("Exception when parsing JSON response: {}".format(str(e)))
+    return list(result.keys())
+
+
+def fetch_imagefile_guids(processes):
+    json_body = {
+        "queryPath":[
+            {
+                "requestedType":"Process",
+                "guidList":processes,
+                "result":True
+            }
+        ],
+        "totalResultLimit":1000,
+        "perGroupLimit":1000,
+        "perFeatureLimit":100,
+        "templateContext":"DETAILS",
+        "customFields":["ownerMachine","calculatedUser","parentProcess","execedBy","service","self","openedFiles","children","elementDisplayName","applicablePid","tid","creationTime","firstSeenTime","lastSeenTime","endTime","commandLine","decodedCommandLine","imageFilePath","iconBase64","isAggregate","isServiceHost","isDotNetProtected","imageFile","imageFile.extensionType","imageFile.correctedPath","imageFile.sha1String","imageFile.md5String","imageFile.productType","imageFile.companyName","imageFile.productName","imageFile.signerInternalOrExternal","imageFile.avRemediationStatus","imageFile.comments","fileAccessEvents","registryEvents","hookedFunctions","productType","imageFile.signedInternalOrExternal","imageFile.signatureVerifiedInternalOrExternal","imageFile.maliciousClassificationType","imageFile.isDownloadedFromInternet","imageFile.downloadedFromDomain","imageFile.downloadedFromIpAddress","imageFile.downloadedFromUrl","imageFile.downloadedFromUrlReferrer","imageFile.downloadedFromEmailFrom","imageFile.downloadedFromEmailMessageId","imageFile.downloadedFromEmailSubject","ownerMachine.isActiveProbeConnected","ownerMachine.osType","ownerMachine.osVersionType","ownerMachine.deviceModel","childrenCreatedByThread","failedToAccess","autorun","loadedModules","markedForPrevention","executionPrevented","ransomwareAutoRemediationSuspended","ransomwareAffectedFiles","totalNumOfInstances","lastMinuteNumOfInstances","lastSeenTimeStamp","cveEventsStr","isExectuedByWmi","wmiQueryStrings","wmiPersistentObjects","createdByWmi.wmiOperation","createdByWmi.clientPid","createdByWmi.isLocal","createdByWmi.clientProcess","createdByWmi.clientMachine","injectionMethod","originInjector","hostProcess","creatorThread","hostedChildren","isInjectingProcess","injectedChildren","isFullProcessMemoryDump","creatorProcess","createdChildren","seenCreation","newProcess","processRatio","hashRatio","connections","listeningConnections","externalConnections","internalConnections","localConnections","dynamicConfigurationConnections","incomingConnections","outgoingConnections","absoluteHighVolumeExternalConnections","totalNumberOfConnections","totalTransmittedBytes","totalReceivedBytes","resolvedDnsQueriesDomainToIp","resolvedDnsQueriesDomainToDomain","resolvedDnsQueriesIpToDomain","unresolvedDnsQueriesFromIp","unresolvedDnsQueriesFromDomain","cpuTime","memoryUsage","hasVisibleWindows","integrity","isHidden","logonSession","remoteSession","isWhiteListClassification","matchedWhiteListRuleIds"]
+    }
+    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    img_file_guids = dict()
+    result = response['data']['resultIdToElementDataMap']
+    try:
+        for process, details in result.items():
+            image_files= ('' if details['elementValues']['imageFile']['elementValues'] is None else details['elementValues']['imageFile']['elementValues'])           
+            for image_file in image_files:
+                img_file_guids[image_file['name']] = image_file['guid']
+    except Exception as e:
+        demisto.log(str(e))
+    return img_file_guids
+
+
+def start_fetchfile_command():
+    malop_id = demisto.getArg('malopGUID')
+    user_name = demisto.getArg('userName')
+    response = get_file_guids(malop_id)
+    for filename, file_guid in response.items():
+        resp = start_fetchfile(file_guid, user_name)
+        try:
+            if resp['status'] == "SUCCESS":
+                demisto.results("Successfully started fetching file for the given malop")
+        except Exception as e:
+            raise Exception ("Failed to start fetch file process")
+
+
+def start_fetchfile(element_id, user_name):
+    data = {
+        'elementGuids': [element_id],
+        'initiatorUserName':user_name
+    }
+    return http_request('POST', '/rest/fetchfile/start', data = json.dumps(data))
+
+
+def fetchfile_progress_command():
+    malop_id = demisto.getArg('malopGuid')
+    response = get_file_guids(malop_id)
+    timeout_sec = 60
+    interval_sec = 10
+    new_malop_comments = get_batch_id(response, timeout_sec, interval_sec)
+    filename=[]
+    status = []
+    message = []
+    for item in range(len(new_malop_comments)):
+        filename.append(new_malop_comments[item].get("name"))
+        status.append(new_malop_comments[item].get("isSuccess"))
+        message.append(new_malop_comments[item].get("message"))
+    ec = {
+        'Download.progress(val.MalopID && val.MalopID === obj.MalopID)': {
+            'fileName': filename,
+            'status': status,
+            'batchID': message,
+            'MalopID': malop_id
+        }
+    }
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': new_malop_comments,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'Filename: ' + str(filename) + ' Status: ' + str(status) + ' Batch ID: ' + str(message),
+        'EntryContext': ec
+    })
+
+
+def get_batch_id(suspect_files_guids, timeout_seconds, interval_seconds):
+    new_malop_comments = []
+    passed_seconds = timeout_seconds
+    progress_response = fetchfile_progress()
+    while passed_seconds > 0:
+        result = progress_response
+        for file_status in result['data']:
+            if file_status['fileName'] in suspect_files_guids.keys() and file_status['succeeded'] == True:
+                batch_id = file_status['batchId']
+                file_name = file_status['fileName']
+                new_malop_comments.append({ "isSuccess": True, "message": batch_id, "name": file_name})
+                del suspect_files_guids[file_status['fileName']]
+        time.sleep(interval_seconds) # Sleep for 10 seconds before next call
+        passed_seconds = passed_seconds - interval_seconds
+    for suspect_file in suspect_files_guids.keys():
+        malop_comment = "Could not download the file {} from source machine, even after waiting for {} seconds.".format(suspect_file, timeout_seconds)
+        new_malop_comments.append({ "isSuccess": False, "message": malop_comment})
+    return new_malop_comments
+
+
+def fetchfile_progress():
+    return http_request('GET', '/rest/fetchfile/downloads/progress')
+
+
+def download_fetchfile_command():
+    batch_id = demisto.getArg('batchID')
+    demisto.log('Downloading the file: {}'.format(batch_id))
+    response = download_fetchfile(batch_id)
+    file_download = fileResult('donwload.zip',response.content)
+    demisto.results(file_download)
+
+
+def download_fetchfile(batch_id):
+    url = '/rest/fetchfile/getfiles/{batch_id}'.format(batch_id=batch_id)
+    return http_request('GET', url, custom_response=True,return_json=False)
+
+
+def close_fetchfile_command():
+    batch_id = demisto.getArg('batchID')
+    resp = close_fetchfile(batch_id)
+    try:
+        if resp.json()['status'] == 'SUCCESS':
+            demisto.results('Successfully aborts a file download operation that is in progress.')
+    except Exception as e:
+        raise Exception('The given Batch ID does not exist')
+
+
+def close_fetchfile(batch_id):
+    url = '/rest/fetchfile/close/{batch_id}'.format(batch_id=batch_id)
+    return http_request('GET', url, custom_response=True,return_json=False)
+
+
 def main():
     auth = ''
     try:
@@ -1533,6 +1710,18 @@ def main():
 
         elif demisto.command() == 'cybereason-query-user':
             query_user_command()
+
+        elif demisto.command() == 'cybereason-start-fetchfile':
+            start_fetchfile_command()
+
+        elif demisto.command() == 'cybereason-fetchfile-progress':
+            fetchfile_progress_command()
+             
+        elif demisto.command() == 'cybereason-download-file':
+            download_fetchfile_command()
+
+        elif demisto.command() == 'cybereason-close-file-batch-id':
+            close_fetchfile_command()
 
         elif demisto.command() == 'cybereason-archive-sensor':
             archive_sensor()
