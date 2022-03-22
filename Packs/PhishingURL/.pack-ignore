@@ -2,3 +2,5 @@
 ignore=SC106
 [file:DBotUpdateLogoURLPhishing.yml]
 ignore=SC106
+[file:DBotUpdateLogoURLPhishing.yml]
+ignore=CJ105
