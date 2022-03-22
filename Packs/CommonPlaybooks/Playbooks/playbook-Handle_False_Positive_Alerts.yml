@@ -6,7 +6,7 @@ name: Handle False Positive Alerts
 ]
 description: |
   This playbook handles false positive alerts.
-  The playbook will create an alert exclusion, exception or add a file to allowlist based on the alert fields and playbook inputs.
+  It creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.
 starttaskid: "0"
 tasks:
   "0":
@@ -734,7 +734,7 @@ inputs:
 - key: ShouldCloseAutomatically
   value: {}
   required: false
-  description: Should we close alerts as false positive automatically? Specify true/false.
+  description: Should we automatically close false positive alerts? Specify true/false.
   playbookInputQuery:
 - key: sourceIP
   value:
@@ -742,7 +742,7 @@ inputs:
       root: alert
       accessor: hostip
   required: false
-  description: Host IP from the alert.
+  description: The host IP from the alert.
   playbookInputQuery:
 - key: username
   value:
@@ -750,7 +750,7 @@ inputs:
       root: alert
       accessor: username
   required: false
-  description: Username from the alert.
+  description: The username from the alert.
   playbookInputQuery:
 - key: alertName
   value:
@@ -758,7 +758,7 @@ inputs:
       root: alert
       accessor: name
   required: false
-  description: Alert name.
+  description: The alert name.
   playbookInputQuery:
 - key: FileSHA256
   value:
@@ -766,7 +766,7 @@ inputs:
       root: alert
       accessor: initiatorsha256
   required: false
-  description: File SHA256 from the alert.
+  description: The file SHA256 from the alert.
   playbookInputQuery:
 outputs: []
 tests:
