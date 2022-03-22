@@ -15,8 +15,18 @@ configuration:
   type: 4
 - display: Client ID
   name: credentials
-  required: true
+  required: false
   type: 9
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
 - display: Subscription ID
   name: subscriptionID
   required: true
@@ -60,8 +70,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Azure Sentinel integration to get and manage incidents and get
-  related entity information for incidents.
+description: Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
 display: Azure Sentinel
 name: Azure Sentinel
 script:
@@ -156,16 +165,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter results using OData syntax. For example: properties/createdTimeUtc
-        gt 2020-02-02T14:00:00Z`). For more information, see the Azure documentation:
-        https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter.'
+      description: 'Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information, see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter.'
       isArray: false
       name: filter
       required: false
       secret: false
     - default: false
-      description: A link that specifies a starting point to use for subsequent calls.
-        This argument overrides all of the other command arguments.
+      description: A link that specifies a starting point to use for subsequent calls. This argument overrides all of the other command arguments.
       isArray: false
       name: next_link
       required: false
@@ -242,9 +248,7 @@ script:
       description: Description of NextLink.
       type: String
     - contextPath: AzureSentinel.NextLink.URL
-      description: Used if an operation returns partial results. If a response contains
-        a NextLink element, its value specifies a starting point to use for subsequent
-        calls.
+      description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
     - contextPath: AzureSentinel.Incident.Etag
       description: The Etag of the incident.
@@ -295,18 +299,13 @@ script:
       description: Label that will be used to tag and filter on.
       type: unknown
     - contextPath: AzureSentinel.Watchlist.ItemsSearchKey
-      description: The search key is used to optimize query performance when using
-        watchlists for joins with other data. For example, enable a column with IP
-        addresses to be the designated SearchKey field, then use this field as the
-        key field when joining to other event data by IP address.
+      description: The search key is used to optimize query performance when using watchlists for joins with other data. For example, enable a column with IP addresses to be the designated SearchKey field, then use this field as the key field when joining to other event data by IP address.
       type: String
     - contextPath: AzureSentinel.NextLink.Description
       description: Description of NextLink.
       type: String
     - contextPath: AzureSentinel.NextLink.URL
-      description: Used if an operation returns partial results. If a response contains
-        a NextLink element, its value specifies a starting point to use for subsequent
-        calls.
+      description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
   - arguments:
     - default: false
@@ -359,25 +358,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: A file entry with raw content that represents the watchlist items
-        to create.
+      description: A file entry with raw content that represents the watchlist items to create.
       isArray: false
       name: file_entry_id
       required: true
       secret: false
     - default: false
-      description: The search key is used to optimize query performance when using
-        watchlists for joins with other data. For example, enable a column with IP
-        addresses to be the designated SearchKey field, then use this field as the
-        key field when joining to other event data by IP address.
+      description: The search key is used to optimize query performance when using watchlists for joins with other data. For example, enable a column with IP addresses to be the designated SearchKey field, then use this field as the key field when joining to other event data by IP address.
       isArray: false
       name: items_search_key
       required: true
       secret: false
     - default: false
       defaultValue: Text/Csv
-      description: The content type of the raw content. For now, only text/csv is
-        valid.
+      description: The content type of the raw content. For now, only text/csv is valid.
       isArray: false
       name: content_type
       required: false
@@ -421,8 +415,7 @@ script:
       description: List of labels relevant to this watchlist.
       type: Unknown
     - contextPath: AzureSentinel.Watchlist.ItemsSearchKey
-      description: The search key is used to optimize query performance when using
-        watchlists for joins with other data.
+      description: The search key is used to optimize query performance when using watchlists for joins with other data.
       type: String
   - arguments:
     - default: false
@@ -468,8 +461,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The reason the incident was closed. Required when updating the
-        status to Closed.
+      description: The reason the incident was closed. Required when updating the status to Closed.
       isArray: false
       name: classification
       predefined:
@@ -487,8 +479,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The classification reason the incident was closed with. Required
-        when updating the status to Closed and the classification is determined.
+      description: The classification reason the incident was closed with. Required when updating the status to Closed and the classification is determined.
       isArray: false
       name: classification_reason
       predefined:
@@ -499,8 +490,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The email address of the incident assignee. Note that the updated
-        API field is `owner.email`.
+      description: The email address of the incident assignee. Note that the updated API field is `owner.email`.
       isArray: false
       name: assignee_email
       required: false
@@ -602,15 +592,13 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of incident comments to return. The 
-        maximum value is 50.
+      description: The maximum number of incident comments to return. The maximum value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: A link that specifies a starting point to use for subsequent calls.
-        Using this argument overrides all of the other command arguments.
+      description: A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments.
       isArray: false
       name: next_link
       required: false
@@ -642,9 +630,7 @@ script:
       description: Description of NextLink.
       type: String
     - contextPath: AzureSentinel.NextLink.URL
-      description: Used if an operation returns a partial result. If a response contains
-        a NextLink element, its value specifies a starting point to use for subsequent
-        calls.
+      description: Used if an operation returns a partial result. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
   - arguments:
     - default: false
@@ -714,8 +700,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A link that specifies a starting point to use for subsequent calls.
-        Using this argument overrides all of the other command arguments.
+      description: A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments.
       isArray: false
       name: next_link
       required: false
@@ -731,9 +716,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter results using OData syntax. For example: properties/createdTimeUtc
-        gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation:
-        https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter.'
+      description: 'Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter.'
       isArray: false
       name: filter
       required: false
@@ -753,9 +736,7 @@ script:
       description: The description about NextLink.
       type: String
     - contextPath: AzureSentinel.NextLink.URL
-      description: Used if an operation returns a partial result. If a response contains
-        a NextLink element, its value specifies a starting point to use for subsequent
-        calls.
+      description: Used if an operation returns a partial result. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
     - contextPath: AzureSentinel.IncidentRelatedResource.IncidentID
       description: The incident ID.
@@ -827,8 +808,7 @@ script:
       description: The name of the product that published this alert.
       type: String
     - contextPath: AzureSentinel.IncidentAlert.ProductComponentName
-      description: The name of a component inside the product which generated the
-        alert.
+      description: The name of a component inside the product which generated the alert.
       type: String
   - arguments:
     - default: false
@@ -900,8 +880,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The JSON for the itemsKeyValue of the item (the key value is different
-        from watchlist to watchlist).
+      description: The JSON for the itemsKeyValue of the item (the key value is different from watchlist to watchlist).
       isArray: false
       name: item_key_value
       required: true
@@ -1253,8 +1232,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The hash type of the new indicator. This argument is mandatory
-        if the indicator type is file.
+      description: The hash type of the new indicator. This argument is mandatory if the indicator type is file.
       isArray: false
       name: hash_type
       predefined:
@@ -1265,8 +1243,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The confidence of the new threat indicator. Should be a number
-        between 0-100.
+      description: The confidence of the new threat indicator. Should be a number between 0-100.
       isArray: false
       name: confidence
       required: false
@@ -1471,7 +1448,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description:  A comma-separated list of threat types of the threat indicator.
+      description: A comma-separated list of threat types of the threat indicator.
       isArray: true
       name: threat_types
       predefined:
@@ -1809,7 +1786,7 @@ script:
     - contextPath: AzureSentinel.ThreatIndicator.Types
       description: The threat types of the indicator.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: demisto/crypto:1.0.0.27590
   feed: false
   isfetch: true
   longRunning: false
@@ -1820,6 +1797,5 @@ script:
   type: python
 tests:
 - TestAzureSentinelPlaybookV2
-- No test - Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests
-  folder
+- No test - Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests folder
 fromversion: 5.0.0

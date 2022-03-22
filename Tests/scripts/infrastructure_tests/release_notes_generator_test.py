@@ -3,6 +3,7 @@ import re
 from Utils.release_notes_generator import (get_release_notes_dict,
                                            generate_release_notes_summary,
                                            get_pack_entities,
+                                           get_pack_version_from_path,
                                            read_and_format_release_note,
                                            merge_version_blocks,
                                            EMPTY_LINES_REGEX,
@@ -67,7 +68,7 @@ class TestReadAndFormatReleaseNote:
         Then
         - Ensure formatted string is empty.
         """
-        rn_file = os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_1.md')
+        rn_file = os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_3.md')
         formatted_text = read_and_format_release_note(rn_file)
         assert formatted_text == ''
 
@@ -313,7 +314,7 @@ class TestGenerateReleaseNotesSummary:
           - empty lines (with dashes) are removed from the release notes summary.
         """
         release_notes_files = [
-            os.path.join(TEST_DATA_PATH, 'FakePack3', 'ReleaseNotes', '1_0_1.md')
+            os.path.join(TEST_DATA_PATH, 'FakePack3', 'ReleaseNotes', '1_0_3.md')
         ]
 
         packs_metadta_dict = {
@@ -349,7 +350,7 @@ class TestGenerateReleaseNotesSummary:
           - the summary does not contain release notes 1.0.1, because it is ignored.
         """
         release_notes_files = [
-            os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_1.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_3.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_1_0.md'),
         ]
         packs_metadta_dict = {
@@ -380,14 +381,14 @@ class TestMergeVersionBlocks:
         - Ensure that the content of both RN files appears in the result file.
         """
         release_notes_paths = [
-            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_1.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_3.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_2.md'),
         ]
 
         pack_versions_dict = {}
         for path in release_notes_paths:
             with open(path) as file_:
-                pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
+                pack_versions_dict[get_pack_version_from_path(path)] = file_.read()
 
         rn_block = aggregate_release_notes_for_marketplace(pack_versions_dict)
 
@@ -410,14 +411,14 @@ class TestMergeVersionBlocks:
         - Ensure that the content of both RN files appears in the result file.
         """
         release_notes_paths = [
-            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_1.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_3.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_2.md'),
         ]
 
         pack_versions_dict = {}
         for path in release_notes_paths:
             with open(path) as file_:
-                pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
+                pack_versions_dict[get_pack_version_from_path(path)] = file_.read()
 
         rn_block, latest_version = merge_version_blocks(pack_versions_dict)
 
@@ -425,7 +426,7 @@ class TestMergeVersionBlocks:
         assert '**XDR Alerts**' in rn_block
         assert 'First' in rn_block
         assert 'Second' in rn_block
-        assert latest_version == '1_0_2'
+        assert latest_version == '1.0.2'
 
     def test_sanity(self):
         """
@@ -446,7 +447,7 @@ class TestMergeVersionBlocks:
         pack_versions_dict = {}
         for path in release_notes_paths:
             with open(path) as file_:
-                pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
+                pack_versions_dict[get_pack_version_from_path(path)] = file_.read()
 
         rn_block = aggregate_release_notes('FakePack', pack_versions_dict, {})
 
@@ -454,8 +455,8 @@ class TestMergeVersionBlocks:
         assert 'FakePack1_Playbook2' in rn_block
         assert 'FakePack1_Integration1' in rn_block
         assert 'FakePack1_Integration2' in rn_block
-        assert 'v2_1_0' in rn_block
-        assert 'v1_1_0' not in rn_block
+        assert 'v2.1.0' in rn_block
+        assert 'v1.1.0' not in rn_block
 
     def test_similiar_entities(self):
         """
@@ -477,15 +478,15 @@ class TestMergeVersionBlocks:
         pack_versions_dict = {}
         for path in release_notes_paths:
             with open(path) as file_:
-                pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
+                pack_versions_dict[get_pack_version_from_path(path)] = file_.read()
 
         rn_block = aggregate_release_notes('FakePack', pack_versions_dict, {})
 
         assert rn_block.count('Integrations') == 1
         assert rn_block.count('FakePack1_Integration1') == 1
         assert rn_block.count('FakePack1_Integration2') == 1
-        assert 'v2_0_0' in rn_block
-        assert 'v1_1_0' not in rn_block
+        assert 'v2.0.0' in rn_block
+        assert 'v1.1.0' not in rn_block
         assert 'fake1 minor' in rn_block
         assert 'fake2 minor' in rn_block
         assert 'fake1 major' in rn_block

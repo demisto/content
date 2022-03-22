@@ -31,5 +31,8 @@
     "sla": 0,
     "threshold": 72,
     "isExtractingSpecificIndicatorTypes": false,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.0.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

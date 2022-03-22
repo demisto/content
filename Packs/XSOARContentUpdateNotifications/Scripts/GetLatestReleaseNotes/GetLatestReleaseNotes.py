@@ -20,6 +20,8 @@ def update_pack_info(pack_info):
 
 def main(args):
     content_data = args.get('content_data', [])
+    if not isinstance(content_data, list):
+        content_data = [content_data]
 
     for pack_info in content_data:
         update_pack_info(pack_info)

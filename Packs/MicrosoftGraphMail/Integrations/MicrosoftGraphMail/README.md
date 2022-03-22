@@ -29,7 +29,9 @@ The query parameter '$filter' is not supported when using the 'search' parameter
 | url | The server URL. | True |
 | auth_id | The ID (received from the admin consent - see the Detailed Instructions (?) section). | True |
 | tenant_id | The token (received from the admin consent - see the Detailed Instructions (?) section). | True |
-| enc_key | The Key (received from the admin consent - see the Detailed Instructions (?) section). | True |
+| enc_key | The key (received from the admin consent - see the Detailed Instructions (?) section). | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | isFetch | The fetched incidents. | False |
 | mailbox_to_fetch | The email address from which to fetch incidents (e.g. "example<span\>>@demisto.com"). | False |
 | folder_to_fetch | The name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing). | False |
@@ -972,7 +974,7 @@ Sends an email using Microsoft Graph.
 | attachCIDs | The comma-separated list of CIDs to embed attachments within the actual email. | Optional |
 | from | The email address from which to send the email. | Optional |
 | htmlBody | The content (body) of the email (in HTML format). | Optional |
-
+| replyTo | Email addresses that need to be used to reply to the message. Supports comma-separated values. | Optional |
 
 ##### Context Output
 
@@ -987,6 +989,7 @@ Sends an email using Microsoft Graph.
 | MicrosoftGraph.Email.toRecipients | String | The 'to' recipients of the email. |
 | MicrosoftGraph.Email.ccRecipients | String | The CC recipients of the email. |
 | MicrosoftGraph.Email.bccRecipients | String | The BCC recipients of the email. |
+| MicrosoftGraph.Email.replyTo | String | The replyTo recipients of the email. |
 
 
 ##### Command Example
@@ -1040,6 +1043,9 @@ Replies to the recipients of a message.
 | body | The comment of the replied message. | Required |
 | to | The comma-separated list of email addresses for the 'to' field. | Required |
 | from | The email address from which to reply. | Required |
+| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional |
+| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional |
+| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional |
 
 
 ##### Context Output

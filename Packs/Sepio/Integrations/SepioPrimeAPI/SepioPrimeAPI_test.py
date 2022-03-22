@@ -241,7 +241,8 @@ def test_sepio_query_system_events(requests_mock):
         'min_severity': 'Notice',
         'category': ['USB', 'Network'],
         'source': 'DESKTOP-9LR722S (192.168.100.128)',
-        'peripheral_type': '1,2,3'
+        'peripheral_type': '1,2,3',
+        'from_eventid': '1',
     }
 
     response = sepio_query_system_events_command(client, args)
@@ -394,7 +395,8 @@ def test_fetch_incidents(requests_mock):
         max_results=20)
 
     mock_new_last_run = {
-        'last_fetch': '2020-06-22T17:27:06Z'
+        'last_fetch': '2020-06-22T17:27:06Z',
+        'last_fetch_eventid': 406
     }
 
     assert new_last_run == mock_new_last_run

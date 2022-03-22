@@ -170,6 +170,7 @@ def test_build_message(client, tmp_path, mocker):
         'to_recipients': ['dummy@recipient.com'],  # disable-secrets-detection
         'cc_recipients': ['dummyCC@recipient.com'],  # disable-secrets-detection
         'bcc_recipients': ['dummyBCC@recipient.com'],  # disable-secrets-detection
+        'replyTo': ['dummyReplyTo@recipient.com'],  # disable-secrets-detection
         'subject': 'Dummy Subject',
         'body': 'Dummy Body',
         'body_type': 'text',
@@ -187,6 +188,8 @@ def test_build_message(client, tmp_path, mocker):
                         'ccRecipients': [{'emailAddress': {'address': 'dummyCC@recipient.com'}}],
                         # disable-secrets-detection
                         'bccRecipients': [{'emailAddress': {'address': 'dummyBCC@recipient.com'}}],
+                        # disable-secrets-detection
+                        'replyTo': [{'emailAddress': {'address': 'dummyReplyTo@recipient.com'}}],
                         # disable-secrets-detection
                         'subject': 'Dummy Subject', 'body': {'content': 'Dummy Body', 'contentType': 'text'},
                         'bodyPreview': 'Dummy Body', 'importance': 'Normal', 'flag': {'flagStatus': 'flagged'},

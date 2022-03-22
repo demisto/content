@@ -76,7 +76,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -93,7 +92,6 @@
                         "i": "1vduzkpmlh-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -112,7 +110,6 @@
                         "i": "1vduzkpmlh-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -169,7 +166,6 @@
                         "i": "1vduzkpmlh-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -188,7 +184,6 @@
                         "i": "1vduzkpmlh-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -207,7 +202,6 @@
                         "i": "1vduzkpmlh-4a31afa0-98ba-11e9-a519-93a53c759fe0",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -226,7 +220,6 @@
                         "i": "1vduzkpmlh-7717e580-9bed-11e9-9a3f-8b4b2158e260",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -310,7 +303,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -362,7 +354,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -397,7 +388,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -418,13 +408,13 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "emailbody",
-                                "height": 110,
+                                "height": 106,
                                 "id": "10382150-97f0-11e9-b8bd-0b00be54d2d3",
                                 "index": 0,
-                                "startCol": 0
+                                "startCol": 0,
+                                "sectionItemType": "field"
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -469,14 +459,14 @@
                                 "startCol": 0
                             },
                             {
-								"endCol": 2,
-								"fieldId": "reportedemailsubject",
-								"height": 22,
-								"id": "c69a5250-6279-11ec-8fa2-217b8b611613",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
+                                "endCol": 2,
+                                "fieldId": "reportedemailsubject",
+                                "height": 22,
+                                "id": "c69a5250-6279-11ec-8fa2-217b8b611613",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
                             {
                                 "endCol": 2,
                                 "fieldId": "reportedemailcc",
@@ -527,27 +517,24 @@
                                 "startCol": 0
                             },
                             {
-								"endCol": 2,
-								"fieldId": "emailrecipientscount",
-								"height": 22,
-								"id": "77a63970-6279-11ec-8fa2-217b8b611613",
-								"index": 9,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-                            {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "emailmessageid",
+                                "fieldId": "emailrecipientscount",
                                 "height": 22,
-                                "id": "b8a85bd0-97ef-11e9-b8bd-0b00be54d2d3",
+                                "id": "77a63970-6279-11ec-8fa2-217b8b611613",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "reportedemailmessageid",
+                                "height": 22,
+                                "id": "9f89b040-9896-11ec-a367-85147a55a6bf",
                                 "index": 10,
-                                "listId": "1vduzkpmlh-swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -574,58 +561,12 @@
                                 "listId": "swtuqptgvs-49052550-97f0-11e9-b8bd-0b00be54d2d3",
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "attachmenthash",
-                                "height": 22,
-                                "id": "bc56ef70-97f0-11e9-b8bd-0b00be54d2d3",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "attachmentname",
-                                "height": 22,
-                                "id": "609ba8b0-97f0-11e9-b8bd-0b00be54d2d3",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "attachmentsize",
-                                "height": 22,
-                                "id": "c2b35a70-97f0-11e9-b8bd-0b00be54d2d3",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "attachmentextension",
-                                "height": 22,
-                                "id": "bf294950-97f0-11e9-b8bd-0b00be54d2d3",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "attachmenttype",
-                                "height": 22,
-                                "id": "c47d4500-97f0-11e9-b8bd-0b00be54d2d3",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Email Attachments",
+                        "name": "Attached/Retrieved Email",
                         "static": false,
                         "w": 1,
                         "x": 1,
@@ -638,7 +579,6 @@
                         "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-067d4900-98b4-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -660,7 +600,7 @@
                         "type": "invTimeline",
                         "w": 1,
                         "x": 1,
-                        "y": 10
+                        "y": 12
                     },
                     {
                         "displayType": "ROW",
@@ -669,7 +609,6 @@
                         "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-cc557320-98b7-11e9-b34a-852d068f44fe",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -681,7 +620,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 1,
-                        "y": 7
+                        "y": 9
                     },
                     {
                         "description": "",
@@ -691,7 +630,6 @@
                         "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-3205ebf0-98cc-11e9-a519-93a53c759fe0",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -712,7 +650,6 @@
                         "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-0e149ea0-9d8e-11e9-a715-f7bbe72c84a2",
                         "isVisible": true,
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -754,7 +691,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -769,7 +705,6 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-b5924880-df88-11e9-9d3d-b355b2831118",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -805,7 +740,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -813,7 +747,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 5
+                        "y": 7
                     },
                     {
                         "description": "Critical Assets that were found, at the investigation stage, to be involved in the incident.",
@@ -832,7 +766,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -874,7 +807,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -902,7 +834,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -910,14 +841,13 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 14
+                        "y": 16
                     },
                     {
                         "h": 1,
                         "hideName": true,
                         "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-044bccb0-befa-11eb-b351-7bcfe92e5e24",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -965,7 +895,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -973,7 +902,76 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 10
+                        "y": 12
+                    },
+                    {
+                        "description": "Files extracted from attached or retrieved email files.",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-9729e140-a525-11ec-b99b-63f2bbee344a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "attachmentname",
+                                "height": 22,
+                                "id": "609ba8b0-97f0-11e9-b8bd-0b00be54d2d3",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "attachmentextension",
+                                "height": 22,
+                                "id": "bf294950-97f0-11e9-b8bd-0b00be54d2d3",
+                                "index": 1,
+                                "listId": "1vduzkpmlh-9729e140-a525-11ec-b99b-63f2bbee344a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "attachmenttype",
+                                "height": 22,
+                                "id": "c47d4500-97f0-11e9-b8bd-0b00be54d2d3",
+                                "index": 2,
+                                "listId": "1vduzkpmlh-9729e140-a525-11ec-b99b-63f2bbee344a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "attachmentsize",
+                                "height": 22,
+                                "id": "c2b35a70-97f0-11e9-b8bd-0b00be54d2d3",
+                                "index": 3,
+                                "listId": "1vduzkpmlh-9729e140-a525-11ec-b99b-63f2bbee344a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "attachmenthash",
+                                "height": 22,
+                                "id": "bc56ef70-97f0-11e9-b8bd-0b00be54d2d3",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Email Extracted Files",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 5
                     }
                 ],
                 "type": "custom"
@@ -1014,26 +1012,37 @@
     "edit": {
         "sections": [
             {
-                "description": "",
+                "description": "Trigger the incident based on a phishing email attachment.\n\nPlease fill in:\n1. A name for the incident.\n2. The email address for which you're making the report (optional).\n3. An EML or MSG file representing the phishing email, or containing another EML or MSG file of the phishing email within it.\n\nIf the reporter email address is left blank, user engagement will be skipped in the playbook.",
                 "fields": [
                     {
                         "fieldId": "incident_name",
                         "isVisible": true
                     },
                     {
+                        "fieldId": "incident_reporteremailaddress",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_attachment",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Add a phishing email",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "Optional - details regarding the incident itself (not specific to phishing).",
+                "fields": [
+                    {
                         "fieldId": "incident_occurred",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_reminder",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_owner",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_roles",
                         "isVisible": true
                     },
                     {
@@ -1049,137 +1058,12 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_phase",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_details",
                         "isVisible": true
                     }
                 ],
                 "isVisible": true,
-                "name": "Basic Information",
-                "query": null,
-                "queryType": "",
-                "readOnly": false,
-                "type": ""
-            },
-            {
-                "description": "",
-                "fields": [
-                    {
-                        "fieldId": "incident_emailto",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emailcc",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emailbcc",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emailfrom",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emailsenderip",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emailsubject",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emailreceived",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emailrecipientscount",
-                        "isVisible": true
-                    }
-                ],
-                "isVisible": true,
-                "name": "Email Fields",
-                "query": null,
-                "queryType": "",
-                "readOnly": false,
-                "type": ""
-            },
-            {
-                "description": "",
-                "fields": [
-                    {
-                        "fieldId": "incident_attachmentname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_attachment",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_attachmenthash",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_attachmentcount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_attachmentextension",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_attachmentid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_attachmenttype",
-                        "isVisible": true
-                    }
-                ],
-                "isVisible": true,
-                "name": "Email Attachment",
-                "query": null,
-                "queryType": "",
-                "readOnly": false,
-                "type": ""
-            },
-            {
-                "description": "",
-                "fields": [
-                    {
-                        "fieldId": "incident_emailmessageid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emailurlclicked",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emailsize",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emailsource",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emailclientname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emailreturnpath",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emailreplyto",
-                        "isVisible": true
-                    }
-                ],
-                "isVisible": true,
-                "name": "Email Extended Fields",
+                "name": "Incident Metadata",
                 "query": null,
                 "queryType": "",
                 "readOnly": false,
@@ -1379,11 +1263,11 @@
                 "description": "Information about the phishing email that was received.",
                 "fields": [
                     {
-                        "fieldId": "incident_emailfrom",
+                        "fieldId": "incident_reportedemailfrom",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_emailto",
+                        "fieldId": "incident_reportedemailto",
                         "isVisible": true
                     },
                     {
@@ -1391,7 +1275,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_emailsubject",
+                        "fieldId": "incident_reportedemailsubject",
                         "isVisible": true
                     },
                     {
@@ -1489,7 +1373,7 @@
             }
         ]
     },
-    "system": true,
+    "system": false,
     "version": -1,
     "fromVersion": "6.1.0",
     "description": ""

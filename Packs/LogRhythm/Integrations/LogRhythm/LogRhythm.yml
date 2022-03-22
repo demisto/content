@@ -2,9 +2,9 @@ commonfields:
   id: LogRhythm
   version: -1
 name: LogRhythm
-display: LogRhythm
+display: LogRhythm (Deprecated)
 category: Analytics & SIEM
-description: LogRhythm security intelligence
+description: Deprecated. Use the LogRhythmRest v2 integration instead.
 configuration:
 - display: Hostname, IP address or Server URL
   name: Host
@@ -552,6 +552,7 @@ script:
     description: Executes a query for logs that match query parameters.
   isfetch: true
   runonce: false
+deprecated: true
 tests:
 - LogRhythm-Test-Playbook
 fromversion: 5.0.0

@@ -1,0 +1,38 @@
+commonfields:
+  id: Giphy
+  version: -1
+name: Giphy
+display: Giphy
+system: true
+category: Utilities
+description: Display random GIF in the War Room (e.g. !giphy hello). Powered By Giphy.
+configuration:
+- display: Giphy URL
+  name: url
+  defaultvalue: http://api.giphy.com/v1/gifs/random
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: giphy
+    arguments:
+    - name: tag
+      default: true
+      description: The GIF tag to limit randomness by
+    - name: as-json
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Returns the response as JSON
+    description: Display random GIF in the War Room (e.g. !giphy hello)
+tests:
+- No tests
+fromversion: 5.0.0

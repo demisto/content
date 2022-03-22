@@ -51,3 +51,6 @@ ignore=BA110
 
 [file:RiskIQPassiveTotalWhoisWidgetScript.yml]
 ignore=BA110
+
+[file:PassiveTotal_image.png]
+ignore=IM111

@@ -1,0 +1,125 @@
+commonfields:
+  id: GuardiCore
+  version: -1
+name: GuardiCore
+display: GuardiCore
+category: Deception
+description: Data center breach detection
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: guardicore-get-incidents
+    arguments:
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - High
+      - Low
+      - Medium
+      description: Filter by severity.
+    - name: tag
+      description: Filter by tag.
+    - name: from_time
+      description: From which date to fetch incidents, format is DD-MM-YYYY.
+    - name: to_time
+      description: Until which date to fetch incidents, format is DD-MM-YYY.
+    - name: incident_type
+      description: Filter by type of incidents, e.g. Deception, Lateral Movement.
+    - name: source
+      description: Filter by source (hostname or IP address).
+    - name: destination
+      description: Filter by destination (hostname or IP address).
+    description: Display information about incidents (with filters).
+  - name: guardicore-uncommon-domains
+    arguments: []
+    description: Display the uncommon domains.
+  - name: guardicore-unresolved-domains
+    arguments: []
+    description: Display the unresolved domains.
+  - name: guardicore-show-endpoint
+    arguments:
+    - name: host_id
+      required: true
+      description: The host ID.
+    description: Display information about the endpoint given its ID.
+  - name: guardicore-dns-requests
+    arguments: []
+    description: Display the DNS requests.
+  - name: guardicore-search-endpoint
+    arguments:
+    - name: ip_address
+      description: The IP address of the endpoint.
+    - name: name
+      description: The hostname of the endpoint.
+    description: Display information about the endpoint by its hostname or IP address.
+  - name: guardicore-misconfigurations
+    arguments: []
+    description: Display the misconfigurations.
+  - name: guardicore-get-incident
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The ID of the incident.
+    description: Display information about the given incident.
+  - name: guardicore-get-incident-iocs
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The ID of the incident.
+    description: Display the IOCs (Indicators of Compromise) of the given incident.
+  - name: guardicore-get-incident-events
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the incident.
+    description: Display the events related to the given incidents.
+  - name: guardicore-get-incident-pcap
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the incident.
+    description: Retrieve the PCAP file attached to the given incident.
+  - name: guardicore-get-incident-attachments
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the incident.
+    description: Retrieve the files attached to the given incidents.
+  - name: guardicore-search-network-log
+    arguments:
+    - name: source
+      description: Filter by source (hostname or IP address).
+    - name: destination
+      description: Filter by destination (hostname or IP address).
+    - name: port
+      description: Filter by port number.
+    - name: uuid
+      description: Filter by Event ID.
+    description: Searches within the network log (with filters).
+fromversion: 5.0.0
+tests:
+- No tests

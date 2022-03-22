@@ -1,0 +1,31 @@
+{
+    "id": "indicator_cvssvector",
+    "version": -1,
+    "modified": "2022-01-24T12:16:28.689733898Z",
+    "name": "CVSS Vector",
+    "ownerOnly": false,
+    "cliName": "cvssvector",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CVE"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

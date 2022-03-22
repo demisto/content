@@ -695,7 +695,7 @@ def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
         return_results(MSG_NO_URL_GIVEN)
-        return [], ""
+        return [], msg_list
     urls = get_final_urls(urls, max_urls, model)
     urls = [demisto.executeCommand("UnEscapeURLs", {"input": x})[0]['Contents'] for x in urls]
     if debug:

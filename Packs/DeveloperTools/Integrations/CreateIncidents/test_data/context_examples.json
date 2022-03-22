@@ -1,0 +1,54 @@
+{
+  "CONTEXT_WITH_LABEL_WITH_FILE": {
+    "incidents": [
+      {
+        "name": "Potential phishing I received",
+        "occurred": "0001-01-01T00:00:00Z",
+        "labels": [
+          {
+            "type": "Email/subject",
+            "value": "Potential phishing I received"
+          },
+          {
+            "type": "Email",
+            "value": "example@example.com"
+          }
+        ],
+        "attachment": [
+          "example_path.eml"
+        ]
+      }
+    ]
+  },
+  "CONTEXT_WITHOUT_LABEL_WITH_FILES": {
+    "incidents": [
+      {
+        "name": "Potential phishing I received",
+        "occurred": "0001-01-01T00:00:00Z",
+        "attachment": [
+          "example_path.eml",
+          "example_path2.eml"
+        ]
+      }
+    ]
+  },
+  "CONTEXT_MULTIPLE": {
+    "incidents": [
+      {
+        "name": "Potential phishing I received",
+        "occurred": "0001-01-01T00:00:00Z",
+        "attachment": [
+          "example_path.eml"
+        ]
+      },
+      {
+        "name": "Potential phishing I received",
+        "occurred": "0001-01-01T00:00:00Z"
+      }
+    ]
+  },
+  "CONTEXT_EMPTY_WITHOUT_INCIDENTS": {},
+  "CONTEXT_EMPTY_WITH_INCIDENTS": {
+    "incidents": []
+  }
+}

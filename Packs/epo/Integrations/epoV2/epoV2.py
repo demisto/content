@@ -26,54 +26,6 @@ EPO_SYSTEM_ATTRIBUTE_MAP = {
     'Memory': 'EPOComputerProperties.TotalPhysicalMemory',
 }
 
-EPO_SYSTEM_ATTRIBUTE_MAP_EXTENDED = {
-    'AutoID': 'EPOBranchNode.AutoID',
-    'CPUSerialNum': 'EPOComputerProperties.CPUSerialNum',
-    'CPUSpeed': 'EPOComputerProperties.CPUSpeed',
-    'CPUType': 'EPOComputerProperties.CPUType',
-    'ComputerName': 'EPOComputerProperties.ComputerName',
-    'DefaultLangID': 'EPOComputerProperties.DefaultLangID',
-    'Description': 'EPOComputerProperties.Description',
-    'DomainName': 'EPOComputerProperties.DomainName',
-    'FreeDiskSpace': 'EPOComputerProperties.FreeDiskSpace',
-    'FreeMemory': 'EPOComputerProperties.FreeMemory',
-    'IPAddress': 'EPOComputerProperties.IPAddress',
-    'Hostname': 'EPOComputerProperties.IPHostName',
-    'IPSubnet': 'EPOComputerProperties.IPSubnet',
-    'IPSubnetMask': 'EPOComputerProperties.IPSubnetMask',
-    'IPV4x': 'EPOComputerProperties.IPV4x',
-    'IPV6': 'EPOComputerProperties.IPV6',
-    'IPXAddress': 'EPOComputerProperties.IPXAddress',
-    'NetAddress': 'EPOComputerProperties.NetAddress',
-    'NumOfCPU': 'EPOComputerProperties.NumOfCPU',
-    'OSBuildNum': 'EPOComputerProperties.OSBuildNum',
-    'OSOEMID': 'EPOComputerProperties.OSOEMID',
-    'OSPlatform': 'EPOComputerProperties.OSPlatform',
-    'OSServicePackVer': 'EPOComputerProperties.OSServicePackVer',
-    'OSType': 'EPOComputerProperties.OSType',
-    'OSVersion': 'EPOComputerProperties.OSVersion',
-    'ParentID': 'EPOComputerProperties.ParentID',
-    'SubnetAddress': 'EPOComputerProperties.SubnetAddress',
-    'SubnetMask': 'EPOComputerProperties.SubnetMask',
-    'SystemDescription': 'EPOComputerProperties.SystemDescription',
-    'SysvolFreeSpace': 'EPOComputerProperties.SysvolFreeSpace',
-    'SysvolTotalSpace': 'EPOComputerProperties.SysvolTotalSpace',
-    'TimeZone': 'EPOComputerProperties.TimeZone',
-    'TotalDiskSpace': 'EPOComputerProperties.TotalDiskSpace',
-    'TotalPhysicalMemory': 'EPOComputerProperties.TotalPhysicalMemory',
-    'UserName': 'EPOComputerProperties.UserName',
-    'UserProperty1': 'EPOComputerProperties.UserProperty1',
-    'UserProperty2': 'EPOComputerProperties.UserProperty2',
-    'UserProperty3': 'EPOComputerProperties.UserProperty3',
-    'UserProperty4': 'EPOComputerProperties.UserProperty4',
-    'AgentGUID': 'EPOLeafNode.AgentGUID',
-    'AgentVersion': 'EPOLeafNode.AgentVersion',
-    'ExcludedTags': 'EPOLeafNode.ExcludedTags',
-    'LastUpdate': 'EPOLeafNode.LastUpdate',
-    'ManagedState': 'EPOLeafNode.ManagedState',
-    'Tags': 'EPOLeafNode.Tags'
-}
-
 ''' CLIENT CLASS '''
 
 
@@ -118,9 +70,6 @@ class Client(BaseClient):
     def epo_get_latest_dat(self) -> Tuple[dict, str]:
         """
         a direct call to specific url to get the version of the most updated dat file
-
-        :type dat_url: ``str``
-        :param dat_url: A url that point to where McAfee stores the latest dat file metadata information
         dat file is the McAfee A/V software definitions file.
         """
         dat_file_url = 'http://update.nai.com/products/commonupdater/gdeltaavv.ini'
@@ -454,7 +403,8 @@ class Client(BaseClient):
             order (str): Order in which to return the results, in SQUID syntax.
                          Example: "(order (asc OrionTaskLogTask.StartDate) )"
             group (str): Group the results, in SQUID Syntax. Example: "(group EPOBranchNode.NodeName)"
-            joinTables (str):
+            join_tables (str): The comma-separated list of SQUID targets to join with the target
+                              type; * means join with all types
         Returns:
             query result
         """
@@ -839,21 +789,22 @@ def prettify_find_system(find_system: list, extended: bool = True) -> list:
     context_data_find_system = []
     for system in find_system:
         if extended:
-            data_dict = {}
-            for key in EPO_SYSTEM_ATTRIBUTE_MAP_EXTENDED:
-                data_dict[key] = system[EPO_SYSTEM_ATTRIBUTE_MAP_EXTENDED[key]]
-            context_data_find_system.append(data_dict)
+            system_xsoar = {}
+            for key in system:
+                modified_key = key.split('.')[1]
+                system_xsoar[modified_key] = system[key]
+            context_data_find_system.append(system_xsoar)
         else:
             context_data_find_system.append({
-                'Name': system[EPO_SYSTEM_ATTRIBUTE_MAP['Name']],
-                'Domain': system[EPO_SYSTEM_ATTRIBUTE_MAP['Domain']],
-                'Hostname': system[EPO_SYSTEM_ATTRIBUTE_MAP['Hostname']],
-                'IPAddress': system[EPO_SYSTEM_ATTRIBUTE_MAP['IPAddress']],
-                'OS': system[EPO_SYSTEM_ATTRIBUTE_MAP['OS']],
-                'OSVersion': system[EPO_SYSTEM_ATTRIBUTE_MAP['OSVersion']],
-                'Processor': system[EPO_SYSTEM_ATTRIBUTE_MAP['Processor']],
-                'Processors': system[EPO_SYSTEM_ATTRIBUTE_MAP['Processors']],
-                'Memory': system[EPO_SYSTEM_ATTRIBUTE_MAP['Memory']]
+                'Name': system.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Name')),
+                'Domain': system.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Domain')),
+                'Hostname': system.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Hostname')),
+                'IPAddress': system.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('IPAddress')),
+                'OS': system.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('OS')),
+                'OSVersion': system.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('OSVersion')),
+                'Processor': system.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Processor')),
+                'Processors': system.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Processors')),
+                'Memory': system.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Memory'))
             })
     return context_data_find_system
 
@@ -870,16 +821,16 @@ def system_to_md(system: dict, verbose: bool = False) -> str:
     """
     md = ''
     if verbose:
-        md += f'#### {system["EPOComputerProperties.ComputerName"]} \n'
-        md += "Attribute|Value\n-|-\n"
+        md += f'#### {system.get("EPOComputerProperties.ComputerName")} \n'
+        md += 'Attribute|Value\n-|-\n'
         for key in system:
             md += f'{key} | {system[key]}\n'
 
-        md += "---\n"
+        md += '---\n'
     else:
         md += '|'
         for key in EPO_SYSTEM_ATTRIBUTE_MAP:
-            md += f'{system[EPO_SYSTEM_ATTRIBUTE_MAP[key]]} |'
+            md += f'{system.get(EPO_SYSTEM_ATTRIBUTE_MAP.get(key))} |'
 
         md += '\n'
     return md
@@ -1033,8 +984,9 @@ def epo_get_current_dat_command(client: Client) -> CommandResults:
 def epo_command_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Executes the ePO command
     XSOAR CMD example: !epo-command command=system.find searchText=10.0.0.1
-    headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName Args: client (Client: BaseClient): a utility
-    class used for communicating with ePO Server args (dict): a dictionary that store the command argument.
+    headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName
+        Args: client (Client: BaseClient): a utility class used for communicating with ePO Server
+        args (dict): a dictionary that store the command argument.
 
     Returns:
         CommandResults
@@ -1061,20 +1013,22 @@ def epo_command_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     header_list: List[Any]
     if 'headers' in args:
         headers_list = list(args['headers'].split(','))
+        md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json, headers=headers_list)
     else:
         if isinstance(response_json, dict):
             headers_list = list(response_json.keys())
+            md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json, headers=headers_list)
         elif isinstance(response_json, str):
-            md = f'#### ePO command *{args["command"]} * results:\n  {raw_response}'
-            headers_list = []
+            md = f'#### ePO command *{args["command"]} * results:\n  {response_json}'
         elif isinstance(response_json, list) and len(response_json) and isinstance(response_json[0], str):
             headers_list = "output"
+            md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json, headers_list)
         else:
             try:
                 headers_list = list(set().union(*(entry.keys() for entry in response_json)))
+                md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json, headers_list)
             except Exception:
-                headers_list = []
-    md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json, headers=headers_list)
+                md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json)
 
     return CommandResults(
         raw_response=raw_response,
@@ -1209,16 +1163,17 @@ def epo_find_systems_command(client: Client, args: Dict[str, Any]) -> List[Comma
             )]
             count = 0
             for endpoint_info in endpoints:
-                endpoint = Common.Endpoint(id=endpoint_info.get('ComputerName', ''),
-                                           hostname=endpoint_info.get('IPHostName', ''),
-                                           ip_address=endpoint_info.get('IPAddress', ''),
-                                           domain=endpoint_info.get('DomainName', ''),
-                                           os=endpoint_info.get('OSType', ''),
-                                           os_version=endpoint_info.get('OSVersion', ''),
-                                           processor=endpoint_info.get('CPUType', ''),
-                                           processors=endpoint_info.get('NumOfCPU', ''),
-                                           memory=endpoint_info.get('TotalPhysicalMemory', '')
-                                           )
+                endpoint = Common.Endpoint(
+                    id=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Hostname', str).split('.')[1], ''),
+                    hostname=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Hostname', str).split('.')[1], ''),
+                    ip_address=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('IPAddress', str).split('.')[1], ''),
+                    domain=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Domain', str).split('.')[1], ''),
+                    os=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('OS', str).split('.')[1], ''),
+                    os_version=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('OSVersion', str).split('.')[1], ''),
+                    processor=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Processor', str).split('.')[1], ''),
+                    processors=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Processors', str).split('.')[1], ''),
+                    memory=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Memory', str).split('.')[1], ''))
+
                 md = tableToMarkdown('Endpoint information:',
                                      prettify_find_system([response_json[count]], False), removeNull=True)
                 res.append(CommandResults(readable_output=md, indicator=endpoint))
@@ -1251,16 +1206,16 @@ def epo_find_system_command(client: Client, args: Dict[str, Any]) -> CommandResu
     if len(response_json) > 0:
         md += systems_to_md(response_json, verbose)
         endpoint_info = prettify_find_system(list(response_json))
-        endpoint = Common.Endpoint(id=endpoint_info[0].get('ComputerName', ''),
-                                   hostname=endpoint_info[0].get('IPHostName', ''),
-                                   ip_address=endpoint_info[0].get('IPAddress', ''),
-                                   domain=endpoint_info[0].get('DomainName', ''),
-                                   os=endpoint_info[0].get('OSType', ''),
-                                   os_version=endpoint_info[0].get('OSVersion', ''),
-                                   processor=endpoint_info[0].get('CPUType', ''),
-                                   processors=endpoint_info[0].get('NumOfCPU', ''),
-                                   memory=endpoint_info[0].get('TotalPhysicalMemory', '')
-                                   )
+        endpoint = Common.Endpoint(
+            id=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Hostname', str).split('.')[1], ''),
+            hostname=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Hostname', str).split('.')[1], ''),
+            ip_address=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('IPAddress', str).split('.')[1], ''),
+            domain=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Domain', str).split('.')[1], ''),
+            os=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('OS', str).split('.')[1], ''),
+            os_version=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('OSVersion', str).split('.')[1], ''),
+            processor=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Processor', str).split('.')[1], ''),
+            processors=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Processors', str).split('.')[1], ''),
+            memory=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Memory', str).split('.')[1], ''))
         return CommandResults(
             raw_response=response,
             readable_output=md,
