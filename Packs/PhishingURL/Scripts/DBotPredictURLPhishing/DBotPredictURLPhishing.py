@@ -452,8 +452,8 @@ def get_score(pred_json):
     else:
         domain_age_key = pred_json[DOMAIN_AGE_KEY]
     total_weight_used = WEIGHT_HEURISTIC[DOMAIN_AGE_KEY] * use_age + WEIGHT_HEURISTIC[MODEL_KEY_LOGIN_FORM] \
-        + WEIGHT_HEURISTIC[MODEL_KEY_SEO] + WEIGHT_HEURISTIC[MODEL_KEY_URL_SCORE] \
-        + WEIGHT_HEURISTIC[MODEL_KEY_LOGO_FOUND] * use_logo
+                        + WEIGHT_HEURISTIC[MODEL_KEY_SEO] + WEIGHT_HEURISTIC[MODEL_KEY_URL_SCORE] \
+                        + WEIGHT_HEURISTIC[MODEL_KEY_LOGO_FOUND] * use_logo
     score = (use_age * WEIGHT_HEURISTIC[DOMAIN_AGE_KEY] * domain_age_key
              + WEIGHT_HEURISTIC[MODEL_KEY_LOGIN_FORM] * pred_json[MODEL_KEY_LOGIN_FORM]
              + WEIGHT_HEURISTIC[MODEL_KEY_SEO] * pred_json[MODEL_KEY_SEO]
@@ -483,7 +483,8 @@ def get_verdict(pred_json: Dict, is_white_listed: bool) -> Tuple[float, str]:
 
 
 def create_dict_context(url, last_url, verdict, pred_json, score, is_white_listed, output_rasterize):
-    return {'url_redirect': url, 'url': last_url, 'verdict': verdict, 'pred_json': pred_json, 'score': score, 'is_white_listed': is_white_listed,
+    return {'url_redirect': url, 'url': last_url, 'verdict': verdict, 'pred_json': pred_json, 'score': score,
+            'is_white_listed': is_white_listed,
             'output_rasterize': output_rasterize}
 
 
@@ -513,16 +514,17 @@ def get_prediction_single_url(model, url, force_model, debug):
 
     # Case where url is not valid
     if not valid_url:
-        return create_dict_context(url, url, MSG_INVALID_URL % (error, status_code), {}, SCORE_INVALID_URL, is_white_listed,
+        return create_dict_context(url, url, MSG_INVALID_URL % (error, status_code), {}, SCORE_INVALID_URL,
+                                   is_white_listed,
                                    {})
-
 
     # Rasterize html and image
     res_rasterize = demisto.executeCommand('rasterize', {'type': 'json',
-                                               'url': url,
-                                                'wait_time': WAIT_TIME_RASTERIZE
-                                               })
-    if KEY_IMAGE_RASTERIZE not in res_rasterize[0]['Contents'].keys() or KEY_IMAGE_HTML not in res_rasterize[0]['Contents'].keys():
+                                                         'url': url,
+                                                         'wait_time': WAIT_TIME_RASTERIZE
+                                                         })
+    if KEY_IMAGE_RASTERIZE not in res_rasterize[0]['Contents'].keys() or KEY_IMAGE_HTML not in res_rasterize[0][
+        'Contents'].keys():
         raise DemistoException(MSG_NEED_TO_UPDATE_RASTERIZE)
     if len(res_rasterize) > 0:
         output_rasterize = res_rasterize[0]['Contents']
@@ -534,31 +536,29 @@ def get_prediction_single_url(model, url, force_model, debug):
     # Get final url and redirection
     final_url = output_rasterize.get('current_url')
     if final_url != url:
-        url_redirect = '%s -> %s   (%s)' %(url, final_url, 'Prediction will be made on the last URL')
+        url_redirect = '%s -> %s   (%s)' % (url, final_url, 'Prediction will be made on the last URL')
     else:
         url_redirect = final_url
-
 
     # Check domain age from WHOIS command
     domain = extract_domainv2(final_url)
 
     # Check is domain in white list -  If yes we don't run the model
-    demisto.results('URL: %s' %final_url)
     if in_white_list(model, final_url):
         if not force_model:
             is_white_listed = True
-            return create_dict_context(url_redirect, final_url,  BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {})
+            return create_dict_context(url_redirect, final_url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN,
+                                       is_white_listed, {})
         else:
             is_white_listed = True
 
     try:
         res_whois = demisto.executeCommand('whois', {'query': domain, 'execution-timeout': 5
-                                               })
+                                                     })
     except ValueError:
         res_whois = []
         return_results('Please enable whois integration for more accurate prediction')
     is_new_domain = extract_created_date(res_whois)
-
 
     X_pred = create_X_pred(output_rasterize, final_url)
 
@@ -581,8 +581,9 @@ def return_general_summary(results, tag="Summary"):
     df_summary[KEY_FINAL_VERDICT] = [MAPPING_VERDICT_COLOR[x.get('verdict')] % x.get('verdict')
                                      if x.get('verdict') in MAPPING_VERDICT_COLOR.keys()
                                      else VERDICT_ERROR_COLOR % x.get('verdict') for x in results]
-    summary_context = [{KEY_CONTENT_SUMMARY_URL: x.get('url_redirect'), KEY_CONTENT_SUMMARY_FINAL_VERDICT: BENIGN_VERDICT,
-                        KEY_CONTENT_IS_WHITELISTED: 'True'} for x in results if x.get('is_white_listed')]
+    summary_context = [
+        {KEY_CONTENT_SUMMARY_URL: x.get('url_redirect'), KEY_CONTENT_SUMMARY_FINAL_VERDICT: BENIGN_VERDICT,
+         KEY_CONTENT_IS_WHITELISTED: 'True'} for x in results if x.get('is_white_listed')]
     df_summary_json = df_summary.to_dict(orient='records')
     return_entry = {
         "Type": entryTypes["note"],
@@ -703,7 +704,6 @@ def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_
 
 
 def update_model_docker_from_model(model_docker, model):
-
     model_docker.logos_dict = model.logos_dict
     model_docker.top_domains = model.top_domains
 
@@ -717,6 +717,7 @@ def update_model_docker_from_model(model_docker, model):
         'image'].named_steps.trans.top_domains = model.logos_dict
 
     return model_docker
+
 
 def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version, demisto_minor_version,
                           model_data):

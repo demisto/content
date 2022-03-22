@@ -31,6 +31,7 @@ UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 KEY_ADD_LOGO = 'AddLogo'
 KEY_REMOVE_LOGO = 'RemoveLogo'
 
+
 def get_minor_version_upgrade(model):
     model.minor = model.minor + 1
     return model.minor, model
@@ -53,7 +54,7 @@ def load_oob_model_from_model64(encoded_model, major, minor):
                                                    'modelExtraInfo': {
                                                        OOB_MAJOR_VERSION_INFO_KEY: major,
                                                        OOB_MINOR_VERSION_INFO_KEY: minor
-    }})
+                                                   }})
     if is_error(res):
         return_error(get_error(res))
     return MSG_SAVE_MODEL_IN_DEMISTO % (str(major), str(minor))
@@ -130,6 +131,7 @@ def load_model_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH):
     model = dill.load(open(path, 'rb'))  # guardrails-disable-line
     return model
 
+
 def image_from_base64_to_bytes(base64_message: str):
     """
     Transform image from base64 string into bytes
@@ -144,7 +146,7 @@ def image_from_base64_to_bytes(base64_message: str):
 def get_concat_logo_single_image(logo_list):
     number_of_image_per_row = 5
     width_new, height_new = 300, 300
-    images= [Image.open(io.BytesIO(image_bytes)) for image_bytes in logo_list]
+    images = [Image.open(io.BytesIO(image_bytes)) for image_bytes in logo_list]
     total_number_of_images = len(images)
     total_width = (number_of_image_per_row) * width_new
     max_height = (total_number_of_images // number_of_image_per_row + 1) * height_new
@@ -184,7 +186,6 @@ def display_all_logos(model):
     return_results(res)
 
 
-
 def main():
     msg_list = []
     logo_image_id = demisto.args().get('logoimageId', '')
@@ -212,7 +213,6 @@ def main():
     elif not logo_name:
         return_error(MSG_EMPTY_LOGO_NAME)
 
-
     res = demisto.getFilePath(logo_image_id)
     path = res['path']
     with open(path, 'rb') as file:
@@ -222,7 +222,6 @@ def main():
 
     # Case 1: model in demisto does not exist OR new major released but no logo were added -> load from docker
     if not exist or (demisto_major_version < MAJOR_VERSION and demisto_minor_version == MINOR_DEFAULT_VERSION):
-        demisto.results('Case 1')
         model = load_model_from_docker()
         if action == KEY_ADD_LOGO:
             success, msg = model.add_new_logo(logo_name, logo_content, associated_domains)
@@ -240,7 +239,6 @@ def main():
 
     # Case where there were new new model release -> load model from demisto
     elif (demisto_major_version == MAJOR_VERSION):
-        demisto.results('Case 2')
         model = load_demisto_model()
         if action == KEY_ADD_LOGO:
             success, msg = model.add_new_logo(logo_name, logo_content, associated_domains)
@@ -258,7 +256,6 @@ def main():
 
     # Case where new model release and logo were added -> transfer logo from model in demisto to new model in docker
     elif (demisto_major_version < MAJOR_VERSION) and (demisto_minor_version > MINOR_DEFAULT_VERSION):
-        demisto.results('Case 3')
         model_docker = load_model_from_docker()
         model_demisto = load_demisto_model()
         model_docker.logos_dict = model_demisto.logos_dict
@@ -284,8 +281,7 @@ def main():
     else:
         msg_list.append(MSG_WRONG_CONFIGURATION)
         return_error(MSG_WRONG_CONFIGURATION)
-    if debug:
-        demisto.results(msg_list)
+    demisto.results(msg_list)
     return msg_list
 
 
