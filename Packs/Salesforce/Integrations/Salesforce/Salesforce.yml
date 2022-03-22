@@ -1,64 +1,113 @@
+category: Case Management
 commonfields:
   id: Salesforce
   version: -1
-name: Salesforce
-display: Salesforce
-category: Case Management
-description: CRM Services
 configuration:
-- display: Instance URL
+- defaultvalue: https://login.salesforce.com
+  display: Instance URL
   name: InstanceURL
-  defaultvalue: https://login.salesforce.com
-  type: 0
   required: true
+  type: 0
 - display: Credentials
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
+  type: 9
 - display: Consumer Key
   name: clientID
-  defaultvalue: ""
-  type: 0
   required: true
+  type: 0
 - display: Consumer Secret
   name: clientSecret
-  defaultvalue: ""
-  type: 4
   required: true
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
+  required: false
   type: 8
-  required: false
-- display: 'Fetch type: cases/comments (Only fetch comments when using the SalesforceAskUser
-    automation)'
-  name: fetchType
-  defaultvalue: cases
-  type: 0
-  required: false
 - display: Use system proxy settings
   name: useproxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+- additionalinfo: Only fetch comments when using the SalesforceAskUser automation
+  defaultvalue: cases
+  display: 'Fetch type: cases/comments'
+  name: fetchType
+  options:
+  - cases
+  - comments
+  required: false
+  type: 15
+- additionalinfo: " E.g:  OwnerId='0056s000000wGoWAAX'"
+  display: Define a query to determine which objects to fetch.
+  name: condition
+  required: false
+  type: 0
+- additionalinfo: Additional fields to fetch
+  display: Fields to Fetch (only for cases/comments)
+  name: fetchFields
+  required: false
+  type: 12
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
+- additionalinfo: The First Fetch Time e.g. 1 hour, 3 days
+  display: First Fetch Time
+  name: firstFetchTime
+  required: false
+  type: 0
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Salesforce
+    to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to
+    XSOAR and Salesforce).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+- additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Salesforce.
+  defaultvalue: comments
+  display: Comment Entry Tag
+  name: comment_tag
+  required: false
+  type: 0
+- additionalinfo: When selected, closing the Salesforce ticket is mirrored in Cortex
+    XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  name: close_incident
+  required: false
+  type: 8
+- additionalinfo: When selected, closing the XSOAR incident is mirrored in Salesforce.
+  defaultvalue: 'false'
+  display: Close Mirrored Salesforce case
+  name: close_case
+  required: false
+  type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: CRM Services
+display: Salesforce
+name: Salesforce
 script:
-  script: ''
-  type: javascript
   commands:
-  - name: salesforce-search
-    arguments:
-    - name: pattern
+  - arguments:
+    - description: The string or number to search.
+      name: pattern
       required: true
-      description: The string or number to search.
+    description: Search records that contain values with pattern
+    name: salesforce-search
     outputs:
     - contextPath: SalesForce.Case.ID
       description: The ID of the case object.
@@ -194,20 +243,21 @@ script:
     - contextPath: SalesForce.Case.AccountId
       description: Case account ID
       type: string
-    description: Search records that contain values with pattern
-  - name: salesforce-query
-    arguments:
-    - name: query
+  - arguments:
+    - description: 'Query in SOQL format: "SELECT name from Account".'
+      name: query
       required: true
-      description: 'Query in SOQL format: "SELECT name from Account".'
     description: Queries Salesforce in SOQL format.
     execution: true
-  - name: salesforce-get-object
-    arguments:
-    - name: path
-      required: true
-      description: 'The object path. For example, "Case/5000Y000001EjzRQAS" for Object
-        "Case" with ID "5000Y000001EjzRQAS".'
+    name: salesforce-query
+  - arguments:
+    - description: The object path. For example, "Case/5000Y000001EjzRQAS" for Object
+        "Case" with ID "5000Y000001EjzRQAS".
+      name: path
+    - description: Object Id (in case no path is given) e.g. 5000Y000001EjzRQAS
+      name: oid
+    description: Returns an object by its path.
+    name: salesforce-get-object
     outputs:
     - contextPath: SalesForce.Case.ID
       description: The Object ID of the case.
@@ -325,16 +375,17 @@ script:
     - contextPath: SalesForce.User.Email
       description: The email of the user.
       type: string
-    description: Returns an object by its path.
-  - name: salesforce-update-object
-    arguments:
-    - name: path
+  - arguments:
+    - description: The object path. For example, "Case/5000Y000001EjzRQAS" for Object
+        "Case" with ID "5000Y000001EjzRQAS".
+      name: path
       required: true
-      description: 'The object path. For example, "Case/5000Y000001EjzRQAS" for Object
-        "Case" with ID "5000Y000001EjzRQAS".'
-    - name: json
+    - description: The JSON file with fields and values of the object to be updated.
+      name: json
       required: true
-      description: The JSON file with fields and values of the object to be updated.
+    description: Updates object fields.
+    execution: true
+    name: salesforce-update-object
     outputs:
     - contextPath: SalesForce.Case.ID
       description: The object ID of the case.
@@ -452,16 +503,16 @@ script:
     - contextPath: SalesForce.User.Email
       description: The email of the user.
       type: string
-    description: Updates object fields.
+  - arguments:
+    - description: The object path. For example, "Case" for Object "Case".
+      name: path
+      required: true
+    - description: The JSON file with fields and values of the object to be created.
+      name: json
+      required: true
+    description: Creates a new object.
     execution: true
-  - name: salesforce-create-object
-    arguments:
-    - name: path
-      required: true
-      description: 'The object path. For example, "Case" for Object "Case".'
-    - name: json
-      required: true
-      description: The JSON file with fields and values of the object to be created.
+    name: salesforce-create-object
     outputs:
     - contextPath: SalesForce.Case.ID
       description: The Object ID of the case.
@@ -579,18 +630,17 @@ script:
     - contextPath: SalesForce.User.Email
       description: The email of the user.
       type: string
-    description: Creates a new object.
-    execution: true
-  - name: salesforce-push-comment
-    arguments:
-    - name: oid
+  - arguments:
+    - description: The Object ID of subject.
+      name: oid
       required: true
-      description: The Object ID of subject.
-    - name: text
+    - description: Chat text
+      name: text
       required: true
-      description: Chat text
-    - name: link
-      description: Adds a link to the message.
+    - description: Adds a link to the message.
+      name: link
+    description: Adds a comment to Chatter.
+    name: salesforce-push-comment
     outputs:
     - contextPath: SalesForce.Comment.Body
       description: The body of the comment.
@@ -613,91 +663,14 @@ script:
     - contextPath: SalesForce.Comment.Visibility
       description: The visibility of the comment.
       type: string
-    description: Adds a comment to Chatter.
-  - name: salesforce-get-case
-    arguments:
-    - name: oid
-      description: The Object ID of the case.
-    - name: caseNumber
-      description: Case number of case
-    outputs:
-    - contextPath: SalesForce.Case.ID
-      description: The Object ID of the case.
-      type: string
-    - contextPath: SalesForce.Case.CaseNumber
-      description: The case number.
-      type: string
-    - contextPath: SalesForce.Case.Subject
-      description: The subject of the case.
-      type: string
-    - contextPath: SalesForce.Case.Description
-      description: The description of the case.
-      type: string
-    - contextPath: SalesForce.Case.CreateDate
-      description: The creation date of the case.
-      type: date
-    - contextPath: SalesForce.Case.ClosedDate
-      description: The closure date of the case.
-      type: date
-    - contextPath: SalesForce.Case.Owner
-      description: The owner of the case.
-      type: string
-    - contextPath: SalesForce.Case.Priority
-      description: 'The priority of the case. Can be: "Low", "Medium", or "High".'
-      type: string
-    - contextPath: SalesForce.Case.Origin
-      description: 'The origin of the case. Can be: "Web", "Phone", or "Email".'
-      type: string
-    - contextPath: SalesForce.Case.Status
-      description: 'The status of the case. Can be: "New", "Escalated", "On Hold",
-        or "Closed".'
-      type: string
-    - contextPath: SalesForce.Case.Reason
-      description: The reason for the case creation.
-      type: string
+  - arguments:
+    - description: The Object ID of the case.
+      name: oid
+    - description: Case number of case
+      name: caseNumber
     description: Returns information on a case. All arguments are optional, but you
       must specify at least one for the command to execute successfully.
-  - name: salesforce-create-case
-    arguments:
-    - name: subject
-      required: true
-      default: true
-      description: The case subject.
-    - name: description
-      description: The case description.
-    - name: status
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - New
-      - On Hold
-      - Closed
-      - Escalated
-      description: 'The Case Status. Can be: "New", "On Hold", "Closed", or "Escalated".
-        Default is New.'
-      defaultValue: New
-    - name: origin
-      auto: PREDEFINED
-      predefined:
-      - Email
-      - Phone
-      - Web
-      description: 'The case origin. Can be: "Email", "Phone", or "Web".'
-    - name: priority
-      auto: PREDEFINED
-      predefined:
-      - Low
-      - Medium
-      - High
-      description: 'The case priority. Can be: "Low", "Medium", or "High".'
-      defaultValue: Low
-    - name: type
-      auto: PREDEFINED
-      predefined:
-      - Question
-      - Problem
-      - Feature Request
-      description: 'The case type. Can be: "Question", "Problem", or "Feature Request".'
+    name: salesforce-get-case
     outputs:
     - contextPath: SalesForce.Case.ID
       description: The Object ID of the case.
@@ -733,46 +706,123 @@ script:
     - contextPath: SalesForce.Case.Reason
       description: The reason for the case creation.
       type: string
-    description: Creates a new case.
-  - name: salesforce-update-case
-    arguments:
-    - name: oid
-      description: The Object ID of the case.
-    - name: caseNumber
-      description: The case number.
-    - name: subject
+  - arguments:
+    - default: true
       description: The case subject.
-    - name: description
-      description: The case description.
-    - name: status
-      auto: PREDEFINED
+      name: subject
+      required: true
+    - description: The case description.
+      name: description
+    - auto: PREDEFINED
+      defaultValue: New
+      description: 'The Case Status. Can be: "New", "On Hold", "Closed", or "Escalated".
+        Default is New.'
+      name: status
       predefined:
       - New
       - On Hold
       - Closed
       - Escalated
-      description: 'The case status. Can be: "New", "On Hold", "Closed", or "Escalated".'
-    - name: origin
-      auto: PREDEFINED
+      required: true
+    - auto: PREDEFINED
+      description: 'The case origin. Can be: "Email", "Phone", or "Web".'
+      name: origin
       predefined:
       - Email
       - Phone
       - Web
-      description: 'The case origin. Can be: "Email", "Phone", or "Web".'
-    - name: priority
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: Low
+      description: 'The case priority. Can be: "Low", "Medium", or "High".'
+      name: priority
       predefined:
       - Low
       - Medium
       - High
-      description: 'The case priority. Can be: "Low", "Medium", or "High".'
-    - name: type
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: 'The case type. Can be: "Question", "Problem", or "Feature Request".'
+      name: type
       predefined:
       - Question
       - Problem
       - Feature Request
+    description: Creates a new case.
+    name: salesforce-create-case
+    outputs:
+    - contextPath: SalesForce.Case.ID
+      description: The Object ID of the case.
+      type: string
+    - contextPath: SalesForce.Case.CaseNumber
+      description: The case number.
+      type: string
+    - contextPath: SalesForce.Case.Subject
+      description: The subject of the case.
+      type: string
+    - contextPath: SalesForce.Case.Description
+      description: The description of the case.
+      type: string
+    - contextPath: SalesForce.Case.CreateDate
+      description: The creation date of the case.
+      type: date
+    - contextPath: SalesForce.Case.ClosedDate
+      description: The closure date of the case.
+      type: date
+    - contextPath: SalesForce.Case.Owner
+      description: The owner of the case.
+      type: string
+    - contextPath: SalesForce.Case.Priority
+      description: 'The priority of the case. Can be: "Low", "Medium", or "High".'
+      type: string
+    - contextPath: SalesForce.Case.Origin
+      description: 'The origin of the case. Can be: "Web", "Phone", or "Email".'
+      type: string
+    - contextPath: SalesForce.Case.Status
+      description: 'The status of the case. Can be: "New", "Escalated", "On Hold",
+        or "Closed".'
+      type: string
+    - contextPath: SalesForce.Case.Reason
+      description: The reason for the case creation.
+      type: string
+  - arguments:
+    - description: The Object ID of the case.
+      name: oid
+    - description: The case number.
+      name: caseNumber
+    - description: The case subject.
+      name: subject
+    - description: The case description.
+      name: description
+    - auto: PREDEFINED
+      description: 'The case status. Can be: "New", "On Hold", "Closed", or "Escalated".'
+      name: status
+      predefined:
+      - New
+      - On Hold
+      - Closed
+      - Escalated
+    - auto: PREDEFINED
+      description: 'The case origin. Can be: "Email", "Phone", or "Web".'
+      name: origin
+      predefined:
+      - Email
+      - Phone
+      - Web
+    - auto: PREDEFINED
+      description: 'The case priority. Can be: "Low", "Medium", or "High".'
+      name: priority
+      predefined:
+      - Low
+      - Medium
+      - High
+    - auto: PREDEFINED
       description: 'The case type. Can be: "Question", "Problem", or "Feature Request".'
+      name: type
+      predefined:
+      - Question
+      - Problem
+      - Feature Request
+    description: Updates case fields.
+    name: salesforce-update-case
     outputs:
     - contextPath: SalesForce.Case.ID
       description: The Object ID of the case.
@@ -808,16 +858,20 @@ script:
     - contextPath: SalesForce.Case.Reason
       description: Reason for the case creation.
       type: string
-    description: Updates case fields.
-  - name: salesforce-get-cases
-    arguments: []
+  - arguments: []
     description: Returns all cases.
-  - name: salesforce-close-case
-    arguments:
-    - name: oid
-      description: The case Object ID.
-    - name: caseNumber
-      description: The case number.
+    name: salesforce-get-cases
+  - arguments:
+    - description: The case Object ID.
+      name: oid
+    - description: The case number.
+      name: caseNumber
+    description: Close a case
+    important:
+    - contextPath: SalesForce.Case.Status
+      description: Case Status. Will be 'Closed'.
+      related: ''
+    name: salesforce-close-case
     outputs:
     - contextPath: SalesForce.Case.ID
       description: The Object ID of the case.
@@ -853,19 +907,16 @@ script:
     - contextPath: SalesForce.Case.Reason
       description: Reason for case creation
       type: string
-    important:
-    - contextPath: SalesForce.Case.Status
-      description: Case Status. Will be 'Closed'.
-      related: ""
-    description: Close a case
-  - name: salesforce-push-comment-threads
-    arguments:
-    - name: id
+  - arguments:
+    - description: The Chatter comment Thread ID
+      name: id
       required: true
-      description: The Chatter comment Thread ID
-    - name: text
+    - description: The comment text
+      name: text
       required: true
-      description: The comment text
+    description: Add the comment to the chatter thread. Use this command only after
+      salesforce-push-comment
+    name: salesforce-push-comment-threads
     outputs:
     - contextPath: SalesForce.Comment.Reply.Body
       description: Reply body
@@ -876,21 +927,20 @@ script:
     - contextPath: SalesForce.Comment.Reply.URL
       description: Reply URL link
       type: string
-    description: Add the comment to the chatter thread. Use this command only after
-      salesforce-push-comment
-  - name: salesforce-delete-case
-    arguments:
-    - name: oid
-      description: The Object ID of the case.
-    - name: caseNumber
-      description: The case number.
+  - arguments:
+    - description: The Object ID of the case.
+      name: oid
+    - description: The case number.
+      name: caseNumber
     description: Deletes a case.
-  - name: salesforce-get-casecomment
-    arguments:
-    - name: oid
-      description: Returns information of a case.
-    - name: caseNumber
-      description: The case number of the case.
+    name: salesforce-delete-case
+  - arguments:
+    - description: Returns information of a case.
+      name: oid
+    - description: The case number of the case.
+      name: caseNumber
+    description: Returns a comment through the case number.
+    name: salesforce-get-casecomment
     outputs:
     - contextPath: ID
       description: The ID of the case.
@@ -908,39 +958,47 @@ script:
         is Body.
       type: string
     - contextPath: CreatedById
-      description: 'The created date by ID.'
+      description: The created date by ID.
     - contextPath: CreatedDate
       description: The created date.
       type: string
     - contextPath: SystemModstamp
-      description: 'The SystemMod stamp.'
+      description: The SystemMod stamp.
       type: string
     - contextPath: LastModifiedDate
       description: 'The last modified date. '
       type: string
     - contextPath: LastModifiedById
-      description: 'The last modified date by ID.'
+      description: The last modified date by ID.
       type: string
     - contextPath: IsDeleted
       description: Whether the object has been moved to the Recycle Bin (true). Label
         is Deleted.
       type: boolean
-    description: Returns a comment through the case number.
-  - name: salesforce-post-casecomment
-    arguments:
-    - name: oid
-      description: The Object ID of the case.
-    - name: caseNumber
-      description: The case number of the case.
-    - name: text
-      description: Added Text to context
+  - arguments:
+    - description: The Object ID of the case.
+      name: oid
+    - description: The case number of the case.
+      name: caseNumber
+    - description: Added Text to context
+      name: text
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Make comment public (true or false). Default value is false
+      name: public
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
     description: The post comment through the case number.
-  - name: salesforce-get-user
-    arguments:
-    - name: oid
-      description: The Object ID of the case.
-    - name: caseNumber
-      description: The case number of the case.
+    name: salesforce-post-casecomment
+  - arguments:
+    - description: The Object ID of the case.
+      name: oid
+    - description: The case number of the case.
+      name: caseNumber
+    description: Returns the UserName through the case number.
+    name: salesforce-get-user
     outputs:
     - contextPath: ID
       description: The ID of the case.
@@ -953,7 +1011,7 @@ script:
         which includes the ideas and answers features.
       type: string
     - contextPath: CreatedById
-      description: 'Created by the ID.'
+      description: Created by the ID.
       type: string
     - contextPath: Email
       description: The user’s email address. Required.
@@ -982,22 +1040,75 @@ script:
     - contextPath: UserRoleId
       description: The ID of the user’s UserRole. Label is Role ID.
       type: string
-    description: Returns the UserName through the case number.
-  - name: salesforce-get-org
-    arguments:
-    - name: caseNumber
-      description: The case number of the case.
+  - arguments:
+    - description: The case number of the case.
+      name: caseNumber
+    description: 'Returns organization details from the case number. '
+    name: salesforce-get-org
     outputs:
     - contextPath: ID
       description: The unique ID of the case.
       type: string
     - contextPath: Name
-      description: 'Name of the account. Required. Label is Account Name. Maximum
-        size is 255 characters. If the account has a record type of Person Account,
-        this value is the concatenation of the FirstName, MiddleName, LastName, and
-        Suffix of the associated person contact. You cannot modify this value.'
+      description: Name of the account. Required. Label is Account Name. Maximum size
+        is 255 characters. If the account has a record type of Person Account, this
+        value is the concatenation of the FirstName, MiddleName, LastName, and Suffix
+        of the associated person contact. You cannot modify this value.
       type: string
-    description: 'Returns organization details from the case number. '
+  - arguments:
+    - description: The remote incident ID
+      name: id
+      required: true
+    - defaultValue: '0'
+      description: UTC timestamp in seconds. The incident is only updated if it was
+        modified after the last update time.
+      name: lastUpdate
+    description: Gets remote data from a remote incident. This method is only used
+      for debugging purposes and will not update the current incident.
+    name: get-remote-data
+  - arguments:
+    - name: lastUpdate
+      required: true
+    description: Available from Cortex XSOAR version 6.1.0. This command queries for
+      incidents that were modified since the last update. This method is only used
+      for debugging purposes.
+    name: get-modified-remote-data
+  - arguments: []
+    description: Returns the list of fields for an incident type.
+    name: get-mapping-fields
+  - arguments:
+    - defaultValue: Case
+      description: Salesforce Object name e.g. Case (default Case)
+      name: sobject
+      required: true
+    - description: Field definition to return
+      name: field
+      required: true
+    description: Describe Salesforce Object Field
+    name: salesforce-describe-sobject-field
+  - arguments:
+    - description: Case Object Id
+      name: caseoId
+    - description: Case Number
+      name: caseNumber
+    description: Return the list of files attached to the case
+    name: salesforce-list-case-files
+  - arguments:
+    - description: Case File Id
+      name: caseFileId
+    - description: Case Number
+      name: caseNumber
+    description: Retrieve case file by file id
+    name: salesforce-get-case-file-by-id
+  dockerimage: demisto/python3:3.10.1.27636
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
+  script: ''
+  subtype: python3
+  type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
