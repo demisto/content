@@ -53,7 +53,7 @@ args:
   - ModifiedDomainForLogo
   required: false
   secret: false
-comment: Add, remove, or modifiy logos from the URL Phishing model.
+comment: Add, remove, or modify logos from the URL Phishing model.
 commonfields:
   id: DBotUpdateLogoURLPhishing
   version: -1
