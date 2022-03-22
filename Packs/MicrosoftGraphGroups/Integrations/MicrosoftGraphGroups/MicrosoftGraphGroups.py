@@ -66,9 +66,10 @@ class MsGraphClient:
       Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
       """
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed):
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, handle_error):
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed)
+        self.handle_error = handle_error
 
     def test_function(self):
         """Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -113,7 +114,12 @@ class MsGraphClient:
         Returns:
             Response from API.
         """
-        group = self.ms_client.http_request(method='GET', url_suffix=f'groups/{group_id}')
+        try:
+            group = self.ms_client.http_request(method='GET', url_suffix=f'groups/{group_id}')
+        except NotFoundError:
+            if self.handle_error:
+                return {'Not found': True}
+            raise
         return group
 
     def create_group(self, properties: Dict[str, Optional[Any]]) -> Dict:
@@ -252,6 +258,10 @@ def get_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dic
     group_id = str(args.get('group_id'))
     group = client.get_group(group_id)
 
+    if group.get('Not found'):
+        human_readable = f'#### Group id -> {group_id} does not exist'
+        return human_readable, NO_OUTPUTS, NO_OUTPUTS
+
     group_readable, group_outputs = parse_outputs(group)
     human_readable = tableToMarkdown(name="Groups:", t=group_readable,
                                      headers=['ID', 'Display Name', 'Description', 'Created Date Time', 'Mail',
@@ -303,7 +313,13 @@ def delete_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
         Outputs.
     """
     group_id = str(args.get('group_id'))
-    client.delete_group(group_id)
+    try:
+        client.delete_group(group_id)
+    except NotFoundError:
+        if client.handle_error:
+            human_readable = f'#### Group id -> {group_id} does not exist'
+            return human_readable, NO_OUTPUTS, NO_OUTPUTS
+        raise
 
     # get the group data from the context
     group_data = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}(val.ID === "{group_id}")')
@@ -332,7 +348,14 @@ def list_members_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
     next_link = args.get('next_link')
     top = args.get('top')
     filter_ = args.get('filter')
-    members = client.list_members(group_id, next_link, top, filter_)
+
+    try:
+        members = client.list_members(group_id, next_link, top, filter_)
+    except NotFoundError:
+        if client.handle_error:
+            human_readable = f'#### Group id -> {group_id} does not exist'
+            return human_readable, NO_OUTPUTS, NO_OUTPUTS
+        raise
 
     if not members['value']:
         human_readable = f'The group {group_id} has no members.'
@@ -381,7 +404,13 @@ def add_member_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Di
     user_id = str(args.get('user_id'))
     required_properties = {
         "@odata.id": f'https://graph.microsoft.com/v1.0/users/{user_id}'}
-    client.add_member(group_id, required_properties)
+    try:
+        client.add_member(group_id, required_properties)
+    except NotFoundError:
+        if client.handle_error:
+            human_readable = f'#### Group id -> {group_id} does not exist'
+            return human_readable, NO_OUTPUTS, NO_OUTPUTS
+        raise
 
     human_readable = f'User {user_id} was added to the Group {group_id} successfully.'
     return human_readable, NO_OUTPUTS, NO_OUTPUTS
@@ -399,7 +428,14 @@ def remove_member_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict,
     """
     group_id = str(args.get('group_id'))
     user_id = str(args.get('user_id'))
-    client.remove_member(group_id, user_id)
+
+    try:
+        client.remove_member(group_id, user_id)
+    except NotFoundError:
+        if client.handle_error:
+            human_readable = f'#### Group id -> {group_id} does not exist'
+            return human_readable, NO_OUTPUTS, NO_OUTPUTS
+        raise
 
     human_readable = f'User {user_id} was removed from the Group "{group_id}" successfully.'
     return human_readable, NO_OUTPUTS, NO_OUTPUTS
@@ -417,6 +453,7 @@ def main():
     verify = not params.get('insecure', False)
     proxy = params.get('proxy')
     self_deployed: bool = params.get('self_deployed', False)
+    handle_error: bool = argToBoolean(params.get('handle_error', 'true'))
 
     if not enc_key:
         raise Exception('Key must be provided.')
@@ -440,7 +477,8 @@ def main():
 
     try:
         client = MsGraphClient(base_url=base_url, tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
-                               app_name=APP_NAME, verify=verify, proxy=proxy, self_deployed=self_deployed)
+                               app_name=APP_NAME, verify=verify, proxy=proxy, self_deployed=self_deployed,
+                               handle_error=handle_error)
         # Run the command
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())
         # create a war room entry
