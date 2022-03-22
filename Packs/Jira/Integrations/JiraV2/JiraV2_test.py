@@ -1323,3 +1323,106 @@ def test_get_attachment_data_url_processing(mocker, requests_mock):
 
     assert filename == 'filename'
     assert request.last_request.path == '/rest/api/2/attachment/content/16188'
+
+
+attribute_mock_response_email_exists = [
+    {'self': 'https://test.atlassian.net',
+     'accountId': 'TEST-ID',
+     'accountType': 'atlassian',
+     'emailAddress': 'some_email@mail.com',
+     'avatarUrls': {},
+     'displayName': 'some user',
+     'active': True,
+     'timeZone': 'Asia',
+     'locale': 'en_US'
+     }]
+
+attribute_mock_response_no_email = [
+    {'self': 'https://test.atlassian.net',
+     'accountId': 'TEST-ID',
+     'accountType': 'atlassian',
+     'emailAddress': '',
+     'avatarUrls': {},
+     'displayName': 'some user',
+     'active': True,
+     'timeZone': 'Asia',
+     'locale': 'en_US'
+     }]
+
+attribute_mock_response_no_email_multiple = [
+    {'self': 'https://test1.atlassian.net',
+     'accountId': 'TEST-ID1',
+     'accountType': 'atlassian',
+     'emailAddress': '',
+     'avatarUrls': {},
+     'displayName': 'some user1',
+     'active': True,
+     'timeZone': 'Asia',
+     'locale': 'en_US'
+     },
+    {'self': 'https://test2.atlassian.net',
+     'accountId': 'TEST-ID2',
+     'accountType': 'atlassian',
+     'emailAddress': '',
+     'avatarUrls': {},
+     'displayName': 'some user2',
+     'active': True,
+     'timeZone': 'Asia',
+     'locale': 'en_US'
+     }
+]
+
+
+@pytest.mark.parametrize('mock_response, expected_output', [(attribute_mock_response_email_exists, 'TEST-ID'),
+                                                            (attribute_mock_response_no_email, 'TEST-ID'),
+                                                            (attribute_mock_response_no_email_multiple,
+                                                             'Multiple account IDs found')])
+def test_get_account_id_from_attribute_valid_attribute_match(mocker, mock_response, expected_output):
+    """
+    Given:
+        - An email attribute.
+    When
+        - Running the get_account_id_from_attribute command when:
+         1. email matches the email in the response.
+         2. email in the response is hidden but there is only one option.
+         3. email in the response is hidden and there are multiple options.
+    Then
+        - Ensure the attribute was found and the output is correct.
+    """
+    from JiraV2 import get_account_id_from_attribute
+
+    mocker.patch('JiraV2.search_user', return_value=mock_response)
+    mocker.patch.object(demisto, "params", return_value=integration_params)
+    res = get_account_id_from_attribute(attribute='some_email@mail.com')
+    if len(mock_response) == 2:  # case number three
+        assert expected_output in res
+    else:
+        assert expected_output == res.outputs['AccountID']
+
+
+def test_get_account_id_from_attribute_attribute_do_not_match(mocker):
+    """
+    Given:
+        - An email attribute.
+    When
+        - Running the get_account_id_from_attribute command.
+    Then
+        - Ensure the attribute was found but no match for the email.
+    """
+    from JiraV2 import get_account_id_from_attribute
+    mock_response = [
+        {'self': 'https://test.atlassian.net',
+         'accountId': 'TEST-ID',
+         'accountType': 'atlassian',
+         'emailAddress': '',
+         'avatarUrls': {},
+         'displayName': 'some user',
+         'active': True,
+         'timeZone': 'Asia',
+         'locale': 'en_US'
+         }]
+    mocker.patch('JiraV2.search_user', return_value=mock_response)
+    mocker.patch.object(demisto, "params", return_value=integration_params)
+    res = get_account_id_from_attribute(attribute='some_email@mail.com')
+
+    assert res.outputs['AccountID'] == 'TEST-ID'
