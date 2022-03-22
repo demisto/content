@@ -1,4 +1,3 @@
-import subprocess
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 

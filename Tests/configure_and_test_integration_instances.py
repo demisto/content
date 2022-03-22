@@ -49,8 +49,7 @@ DOCKER_HARDENING_CONFIGURATION = {
     'docker.cpu.limit': '1.0',
     'docker.run.internal.asuser': 'true',
     'limit.docker.cpu': 'true',
-    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',
-    # noqa: E501
+    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}', # noqa: E501
     'powershell.pass.extra.keys': f'--env##no_proxy={NO_PROXY}',
 }
 DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
@@ -180,7 +179,7 @@ class Build:
 
     def __init__(self, options):
         self._proxy = None
-        self.servers = None
+        self.servers = []
         self.server_numeric_version = None
         self.git_sha1 = options.git_sha1
         self.branch_name = options.branch
@@ -238,7 +237,6 @@ class Build:
         pass
 
     def install_nightly_pack(self):
-        # todo: override. XSIAM and XSOAR manages this different
         pass
 
     def test_integrations_post_update(self, new_module_instances: list,
@@ -246,6 +244,9 @@ class Build:
         pass
 
     def configure_and_test_integrations_pre_update(self, new_integrations, modified_integrations) -> tuple:
+        pass
+
+    def test_integration_with_mock(self, instance: dict, pre_update: bool):
         pass
 
     @staticmethod
@@ -283,7 +284,7 @@ class Build:
 
     def install_packs(self, pack_ids=None):
         """
-        Install pack_ids or packs from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" folder, and packs dependencies.
+        Install pack_ids or packs from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
         Args:
             pack_ids: Packs to install on the server. If no packs provided, installs packs that was provided
             by previous step of the build.
@@ -461,7 +462,6 @@ class Build:
             instance_name = instance.get('name', '')
             # If there is a failure, test_integration_instance will print it
             if integration_of_instance not in self.unmockable_integrations and use_mock:
-                # todo: make sure xsiam will not get here
                 success = self.test_integration_with_mock(instance, pre_update)
             else:
                 testing_client = self.servers[0].reconnect_client()
@@ -704,36 +704,65 @@ class XSIAMBuild(Build):
 
     def install_nightly_pack(self):
         """
-        Installs all existing packs in master
+        Installs packs from content_packs_to_install.txt file
         Collects all existing test playbooks, saves them to test_pack.zip
         Uploads test_pack.zip to server
-        Args:
-            self: A build object
         """
-        # Install all existing packs with latest version
-        self.concurrently_run_function_on_servers(function=install_all_content_packs_for_nightly,
-                                                  service_account=self.service_account)
+        self.install_packs()
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
         create_nightly_test_pack()
-        # uploads test_pack.zip to all servers
-        self.concurrently_run_function_on_servers(function=upload_zipped_packs,
-                                                  pack_path=f'{Build.test_pack_target}/test_pack.zip')
+        # uploads test_pack.zip to all servers (we have only one xsiam server)
+        for server in self.servers:
+            upload_zipped_packs(client=server.client,
+                                host=server.name,
+                                pack_path=f'{Build.test_pack_target}/test_pack.zip')
 
         logging.info('Sleeping for 45 seconds while installing nightly packs')
         sleep(45)
 
     def test_integrations_post_update(self, new_module_instances: list,
                                       modified_module_instances: list) -> tuple:
-        # TODO
-        pass
+        """
+        Runs 'test-module on all integrations for post-update check
+        Args:
+            self: A build object
+            new_module_instances: A list containing new integrations instances to run test-module on
+            modified_module_instances: A list containing old (existing) integrations instances to run test-module on
+
+        Returns:
+            * A list of integration names that have failed the 'test-module' execution post update
+            * A list of integration names that have succeeded the 'test-module' execution post update
+        """
+        modified_module_instances.extend(new_module_instances)
+        successful_tests_post, failed_tests_post = self.instance_testing(modified_module_instances, pre_update=False,
+                                                                         use_mock=False)
+        return successful_tests_post, failed_tests_post
 
     def configure_and_test_integrations_pre_update(self, new_integrations, modified_integrations) -> tuple:
-        # TODO
-        pass
+        """
+        Configures integration instances that exist in the current version and for each integration runs 'test-module'.
+        Args:
+            self: Build object
+            new_integrations: A list containing new integrations names
+            modified_integrations: A list containing modified integrations names
 
-    def test_integration_with_mock(self, instance: dict, pre_update: bool):
-        # TODO: cant be done in xsiam
-        pass
+        Returns:
+            A tuple consists of:
+            * A list of modified module instances configured
+            * A list of new module instances configured
+            * A list of integrations that have failed the 'test-module' command execution
+            * A list of integrations that have succeeded the 'test-module' command execution
+            * A list of new integrations names
+        """
+        tests_for_iteration = self.get_tests()
+        modified_module_instances, new_module_instances = self.configure_server_instances(
+            tests_for_iteration,
+            new_integrations,
+            modified_integrations)
+        successful_tests_pre, failed_tests_pre = self.instance_testing(modified_module_instances,
+                                                                       pre_update=True,
+                                                                       use_mock=False)
+        return modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre
 
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number):
