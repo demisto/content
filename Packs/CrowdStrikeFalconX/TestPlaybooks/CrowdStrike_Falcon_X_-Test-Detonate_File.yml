@@ -1,6 +1,7 @@
 id: CrowdStrike_Falcon_X_-Test-Detonate_File
 version: -1
 name: CrowdStrike_Falcon_X_-Test-Detonate_File
+description: ""
 starttaskid: "0"
 tasks:
   "0":
@@ -181,4 +182,4 @@ view: |-
   }
 inputs: []
 outputs: []
-description: ''
+fromversion: 6.2.0
