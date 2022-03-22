@@ -131,10 +131,9 @@ def main():
                                                                     use_mock=False)
     #  Adding the new integrations to the instance test list and testing them.
     all_module_instances.extend(brand_new_integrations)
-    successful_tests_post, failed_tests_post = build.instance_testing(
-                                                                all_module_instances,
-                                                                pre_update=False,
-                                                                use_mock=False)
+    successful_tests_post, failed_tests_post = build.instance_testing(all_module_instances,
+                                                                      pre_update=False,
+                                                                      use_mock=False)
     #  Gather tests to add to test pack
     test_playbooks_from_id_set = build.id_set.get('TestPlaybooks', []) if build.id_set else None
     tests_to_add_to_test_pack = find_needed_test_playbook_paths(test_playbooks=test_playbooks_from_id_set,
