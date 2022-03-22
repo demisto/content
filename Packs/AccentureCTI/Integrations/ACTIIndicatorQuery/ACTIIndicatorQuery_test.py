@@ -35,7 +35,7 @@ def test_ip_command():
     Then:
         - return command results containing indicator, dbotscore and associated intelligence alerts, reports
 
-    """  
+    """
 
     url = 'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                     # noqa: E501
