@@ -2452,7 +2452,7 @@
             "playbookID": "Active Directory - Get User Manager Details - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_80k",
-            "fromversion": "4.5.0"
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Kafka V2",
@@ -2569,10 +2569,6 @@
         {
             "playbookID": "EmailReputationTest",
             "integrations": "Have I Been Pwned? V2"
-        },
-        {
-            "integrations": "Symantec Deepsight Intelligence",
-            "playbookID": "Symantec Deepsight Test"
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
@@ -2893,6 +2889,12 @@
             "playbookID": "HybridAnalysis-Test",
             "timeout": 500,
             "fromversion": "4.1.0",
+            "is_mockable": false
+        },
+        {
+            "integrations": "Hybrid Analysis",
+            "playbookID": "Detonate File - HybridAnalysis - Test",
+            "fromversion": "5.5.0",
             "is_mockable": false
         },
         {
@@ -5026,7 +5028,6 @@
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance - Issue 27112",
         "Prisma_Access-Test": "unskip after we will get Prisma Access instance - Issue 27112",
-        "Symantec Deepsight Test": "Issue 22971",
         "TestProofpointFeed": "Issue 22229",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "NetWitness Endpoint Test": "Issue 19878",
@@ -5126,7 +5127,6 @@
         "whois_test": "Issue 25648",
         "Autoextract - Test": "Issue 45293",
         "LogRhythm-Test-Playbook": "Issue 27164",
-        "Azure WAF - Test": "Issue 33741",
         "GSuiteAdmin-Test": "Issue 34784",
         "Microsoft_365_Defender-Test": "Issue 39390",
         "Tanium Threat Response - Request File Download v2 - Test": "Issue 46326",
@@ -5134,7 +5134,6 @@
         "EWS_O365_send_mail_test": "Issue 44200",
         "Phishing Investigation - Generic v2 - Campaign Test": "Issue 44740",
         "Cisco Umbrella Test": "Issue 24338",
-        "Azure NSG - Test": "Issue 33217",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
         "Fetch Indicators Test": "Issue 45490",
         "FormattedDateToEpochTest": "Issue 26724",
@@ -5145,7 +5144,8 @@
         "JsonToTable - Test Playbook": "Issue 44302",
         "Recorded Future Test": "Issue 26741",
         "Git_Integration-Test": "Issue 37800",
-        "RecordedFutureFeed - Test": "Issue 43923"
+        "RecordedFutureFeed - Test": "Issue 43923",
+        "RedLockTest": "Issue 24600"
     },
     "skipped_integrations": {
         
@@ -5386,6 +5386,9 @@
         "AWS - ACM",
         "AWS - Security Hub",
         "Cryptocurrency",
+        "EWS Mail Sender",
+        "CreateIncidents",
+        "VirusTotal (API v3)",
         "SNDBOX",
         "Whois",
         "Rasterize",

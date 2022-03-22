@@ -2,4 +2,4 @@
 ignore=IN145,IN124
 
 [file:CortexCoreIR.yml]
-ignore=IN145,IN124
+ignore=IN145,IN124,IN139

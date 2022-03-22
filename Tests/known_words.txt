@@ -86,6 +86,8 @@ OAuth
 Qualys
 Attivo
 Botsink
+Dbot
+OTX
 QRadar
 AdditionalPollingCommandName
 FireEye
@@ -108,3 +110,8 @@ SentinelOne
 URLs
 hostname
 EDR
+GetCampaignLowSimilarityIncidentsInfo
+ShowCampaignSenders
+ShowCampaignRecipients
+GetCampaignIncidentsInfo
+IsIncidentPartOfCampaign
