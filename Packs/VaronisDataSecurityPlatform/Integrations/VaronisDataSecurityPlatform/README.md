@@ -55,36 +55,17 @@ Get alerts from Varonis DA
 | Varonis.Alert.Name | String | Name of retrieved alert | 
 | Varonis.Alert.Time | Date | When was the alert triggered | 
 | Varonis.Alert.Severity | String | Alert severity | 
-| Varonis.Alert.Category | String | Alert category.
-Options are:
-- Reconnaissance 
-- Intrusion 
-- Exploitation 
-- Privilege Escalation 
-- Lateral Movement  | 
+| Varonis.Alert.Category | String | Alert category. Options are:<br>- Reconnaissance <br>- Intrusion <br>- Exploitation <br>- Privilege Escalation <br>- Lateral Movement  | 
 | Varonis.Alert.Country | String | Name of the country from which the event occurred | 
 | Varonis.Alert.State | String | Name of the state or regional subdivision from which the event occurred | 
-| Varonis.Alert.Status | String | Alert state. Options are:
-- Open
-- Under investigation
-- Closed | 
-| Varonis.Alert.CloseReason | String | Reason the alert was closed. Options are:
-- Resolved
-- Misconfiguration
-- Threat model disabled or deleted
-- Account misclassification
-- Legitimate activity
-- Other | 
+| Varonis.Alert.Status | String | Alert state. Options are:<br>- Open<br>- Under investigation<br>- Closed | 
+| Varonis.Alert.CloseReason | String | Reason the alert was closed. Options are:<br>- Resolved<br>- Misconfiguration<br>- Threat model disabled or deleted<br>- Account misclassification<br>- Legitimate activity<br>- Other | 
 | Varonis.Alert.BlacklistLocation | Boolean | Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred | 
 | Varonis.Alert.AbnormalLocation | Boolean | Whether any of the geographical locations from which an alerted activity originated is new or abnormal to the organization, the user and peers, or only the user | 
 | Varonis.Alert.NumOfAlertedEvents | Number | Number of events with alerts | 
 | Varonis.Alert.UserName | String | Name of the users triggered alerts | 
-| Varonis.Alert.By.SamAccountName | String | Logon name used to support clients and servers running earlier versions of Windows operating system, such as Windows NT 4.0.
-In the dashboards \(other than the Alert dashboard\), this is the SAM account name of the user or group | 
-| Varonis.Alert.By.PreivilegedAccountType | String | Privileged account. Options are:
-- Service accounts
-- Admin accounts
-- Executive accounts | 
+| Varonis.Alert.By.SamAccountName | String | Logon name used to support clients and servers running earlier versions of Windows operating system, such as Windows NT 4.0. In the dashboards \(other than the Alert dashboard\), this is the SAM account name of the user or group | 
+| Varonis.Alert.By.PreivilegedAccountType | String | Privileged account. Options are:<br>- Service accounts<br>- Admin accounts<br>- Executive accounts | 
 | Varonis.Alert.By.HasFollowUpIndicators | Boolean | Whether global flags, tags or notes are associated with the user | 
 | Varonis.Alert.On.ContainsFlaggedData | Boolean | Whether the data affected by the alerted events has global flags | 
 | Varonis.Alert.On.ContainsSensitiveData | Boolean | Filters according to whether the resource on which the event was performed is sensitive \(including subfolders\) | 
@@ -214,21 +195,12 @@ Get events applied to specific alerts
 | --- | --- | --- |
 | Varonis.Event.Type | String | Event type | 
 | Varonis.Event.UTCTime | Date | Event time UTC format |
-| Varonis.Event.Status | String | Filters according to the status of the event. Options are:
-- Fail
-- Success | 
+| Varonis.Event.Status | String | Filters according to the status of the event. Options are:<br>- Fail<br>- Success | 
 | Varonis.Event.Description | String | Description of the activity | 
 | Varonis.Event.Country | String | Name of the country from which the event occurred | 
 | Varonis.Event.State | String | Name of the state or regional subdivision from which the event occurred | 
 | Varonis.Event.Details.IsBlacklist | Boolean | Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred | 
-| Varonis.Event.Details.Operation | String | Type of operation that occurred during the event. Options are:
-- Accessed
-- Added
-- Changed
-- Removed
-- Sent
-- Received
-- Requested | 
+| Varonis.Event.Details.Operation | String | Type of operation that occurred during the event. Options are:<br>- Accessed<br>- Added<br>- Changed<br>- Removed<br>- Sent<br>- Received<br>- Requested | 
 | Varonis.Event.ByUser.Name | String | Name of the user that triggered the event | 
 | Varonis.Event.ByUser.UserType | String | Type of account, i.e., user or computer | 
 | Varonis.Event.ByUser.UserAccountType | String | Logon name used to support clients and servers running earlier versions of the Windows operating system, such as Windows NT 4.0.
@@ -248,13 +220,8 @@ In the dashboards \(other than the Alert dashboard\), this is the SAM account na
 | Varonis.Event.OnObject.FileServerOrDomain | String | File server of object on which the event was performed | 
 | Varonis.Event.OnObject.IsDisabledAccount | Boolean | Whether the account is disabled | 
 | Varonis.Event.OnObject.IsLockOutAccount | Boolean | Whether the account is lockout | 
-| Varonis.Event.OnObject.SAMAccountName | String | Logon name used to support clients and servers running earlier versions of the Windows operating system, such as Windows NT 4.0.
-In the dashboards \(other than the Alert dashboard\), this is the SAM account name of the user or group | 
-| Varonis.Event.OnObject.UserAccountType | String | Specified type of privileged account. Options are:
-- Service accounts
-- Admin accounts
-- Executive accounts
-- Test accounts | 
+| Varonis.Event.OnObject.SAMAccountName | String | Logon name used to support clients and servers running earlier versions of the Windows operating system, such as Windows NT 4.0. In the dashboards \(other than the Alert dashboard\), this is the SAM account name of the user or group | 
+| Varonis.Event.OnObject.UserAccountType | String | Specified type of privileged account. Options are:<br>- Service accounts<br>- Admin accounts<br>- Executive accounts<br>- Test accounts | 
 | Varonis.Event.OnObject.DestinationIP | String | Destination IP address within the organization | 
 | Varonis.Event.OnObject.DestinationDevice | String | Destination host name for relevant services | 
 | Varonis.Pagination.Page | Number | Current page number requested by user | 
