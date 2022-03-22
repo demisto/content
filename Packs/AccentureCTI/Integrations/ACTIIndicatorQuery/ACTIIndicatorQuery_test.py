@@ -35,10 +35,10 @@ def test_ip_command():
     Then:
         - return command results containing indicator, dbotscore and associated intelligence alerts, reports
 
-    """
+    """  
 
     url = 'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report'                                 # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                     # noqa: E501
     status_code = 200
     json_data = IP_RES_JSON
     intel_json_data = IP_INTEL_JSON
@@ -65,7 +65,7 @@ def test_ip_command():
         assert _is_intelligence_data_present_in_command_result(context_result, intel_json_data) is True
 
 
-def _test_ip_command_when_api_key_not_authorised_for_document_search():
+def test_ip_command_when_api_key_not_authorised_for_document_search():
     """
     Given:
         - a ip and api key not authorized for doc search
@@ -79,7 +79,7 @@ def _test_ip_command_when_api_key_not_authorised_for_document_search():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report'                                                        # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                        # noqa: E501
 
     status_code = 200
     error_status_code = 403
@@ -124,7 +124,7 @@ def test_domain_command():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/domain?key.values=mydomain.com'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'                                            # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                            # noqa: E501
 
     status_code = 200
     json_data = DOMAIN_RES_JSON
@@ -165,7 +165,7 @@ def test_domain_command_when_api_key_not_authorized_for_document_search():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/domain?key.values=mydomain.com'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'                                                                                # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                # noqa: E501
 
     status_code = 200
     error_status_code = 403
@@ -243,7 +243,7 @@ def test_uuid_command():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'                                                           # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                           # noqa: E501
 
     status_code = 200
     json_data = UUID_RES_JSON
@@ -284,7 +284,7 @@ def test_uuid_command_when_api_key_not_authorized_for_document_search():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'                                                                                                  # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                                  # noqa: E501
 
     status_code = 200
     error_status_code = 403
@@ -403,7 +403,7 @@ def test_url_command():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report'                                                             # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                             # noqa: E501
     status_code = 200
     json_data = URL_RES_JSON
     intel_json_data = URL_INTEL_JSON
@@ -443,7 +443,7 @@ def test_url_command_when_api_key_not_authorized_for_document_search():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report'                                                                                             # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                             # noqa: E501
 
     status_code = 200
     error_status_code = 403
