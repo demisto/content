@@ -20,6 +20,14 @@
     "fromVersion": "6.0.0",
     "extractSettings": {
         "mode": "All",
-        "fieldCliNameToExtractSettings": {}
+        "fieldCliNameToExtractSettings": {
+            "servicenowdetails": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "ER Token"
+                ]
+            }
+        }
     }
 }
