@@ -3678,7 +3678,7 @@ tasks:
       project_id:
         simple: ${GCPIAM.Project.projectId}
       role_id:
-        simple: xsoar-integration-project-role
+        simple: xsoar_integration_project_role
       stage:
         simple: GA
       title: {}
@@ -3752,7 +3752,7 @@ tasks:
         simple: ${GCPIAM.Organization.name}
       permissions: {}
       role_id:
-        simple: xsoar-integration-organization-role
+        simple: xsoar_integration_organization_role
       stage: {}
       title: {}
     separatecontext: false
