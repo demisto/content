@@ -10,7 +10,7 @@ APIVoid wraps up a number of services such as ipvoid & urlvoid.
     | --- | --- | --- |
     | API KEY |  | True |
     | Benign Reputation (Percentage) | If the percentage of detections is BELOW this value, the indicator is considered Benign | True |
-    | Suspicious Reputation (Percentage) | If the percentage of detections is ABOVE this value, the indicator is considered SUSPICIOUS | True |
+    | Suspicious Reputation (Percentage) | If the percentage of detections is ABOVE this value, the indicator is considered Suspicious | True |
     | Malicious Reputation (Percentage) | If the percentage of detections is ABOVE this value, the indicator is considered Malicious | True |
     | Malicious | Consider the indicator malicious if either "suspicious" or "bad" | True |
     | Trust any certificate (not secure) |  | False |
