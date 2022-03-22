@@ -279,7 +279,6 @@ class Build:
         return new_integrations_names, modified_integrations_names
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
-        # todo: no need in xsiam
         pass
 
     def install_packs(self, pack_ids=None):
