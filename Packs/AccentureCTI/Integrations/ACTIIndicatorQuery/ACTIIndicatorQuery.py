@@ -511,8 +511,7 @@ def main():
         'url': url_command,
         'ip': ip_command,
         'domain': domain_command,
-        'acti-get-ioc-by-uuid': uuid_command,
-        # 'acti-getThreatIntelReport': getThreatReport_command
+        'acti-get-ioc-by-uuid': uuid_command
     }
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('use_proxy', False)
