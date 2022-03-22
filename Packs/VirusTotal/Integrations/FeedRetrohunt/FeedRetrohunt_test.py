@@ -108,14 +108,10 @@ def test_fetch_indicators_command(mocker):
 
     indicators = fetch_indicators_command(client, None, [], limit=1)
     fields = indicators[0]['fields']
-    # last_job_id = demisto.getIntegrationContext().get('last_retrohunt_job_id')
-    # cursor = demisto.getIntegrationContext().get('last_retrohunt_job_matches_cursor')
 
     assert len(indicators) == 1
     assert fields['sha256'] == 'bd59949c6cbe8bd00ad114e2c1c8f4e2e79f90a818d4eddfbd76194e111c9ebb'
     assert fields['ssdeep'] == '49152:QnaMSPbcBVQej/1INRx+TSqTdX1HkQWRdhn:QaPoBhz1aRxcSUDkLdh'
-    # assert last_job_id == 'Jobidhere-123456789'
-    # assert cursor == 'STI1Ci4='
 
 
 def test_main_manual_command(mocker):
