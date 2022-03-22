@@ -96,6 +96,8 @@ class XSIAMServer(Server):
         self.base_url = base_url
         self.xdr_auth_id = xdr_auth_id
         self.__client = None
+        # we use client without demisto username
+        os.environ.pop('DEMISTO_USERNAME', None)
 
     def __str__(self):
         return self.name
@@ -1564,11 +1566,7 @@ def main():
 
     # add server config and restart servers
     build.configure_servers_and_restart()  # only xsoar
-    build.disable_instances()  # disable all enabled integrations (Todo in xsiam too)
-
-    # todo: delete
-    if build.__class__ == XSIAMBuild:
-        sys.exit(0)
+    build.disable_instances()  # disable all enabled integrations
 
     if build.is_nightly:
         # XSOAR Nightly: install all existing packs and upload all test playbooks that currently in master.
@@ -1577,6 +1575,10 @@ def main():
         # Install only modified packs.
         pack_ids = get_non_added_packs_ids(build)
         build.install_packs(pack_ids=pack_ids)
+
+        # todo: delete
+        if build.__class__ == XSIAMBuild:
+            sys.exit(0)
 
         # compares master to commit_sha and return two lists - new integrations and modified in the current branch
         new_integrations, modified_integrations = build.get_changed_integrations()
