@@ -1,6 +1,5 @@
-id: 283753ec-f912-4b44-8bcb-352de5b3fcc1
-version: 7
-vcShouldKeepItemLegacyProdMachine: false
+id: Digital Shadows - SHA1_IoC Assessment & Enrichment
+version: -1
 name: Digital Shadows - SHA1_IoC Assessment & Enrichment
 description: Enrichment of SHA1 IOC types - sub-playbook for IOC Assessment & Enrichment playbook
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -48,6 +48,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -114,6 +115,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "no":
       - "46"
@@ -191,8 +193,7 @@ tasks:
       id: 3e87bd44-9fb4-4f6e-8251-007b1f752476
       version: -1
       name: associateIndicatorsToIncident
-      description: Associate one or more indicators to incident. You can specify the
-        indicators by either indicator ID or the value of the indicator
+      description: Associate one or more indicators to incident. You can specify the indicators by either indicator ID or the value of the indicator
       script: Builtin|||associateIndicatorsToIncident
       type: regular
       iscommand: true
@@ -542,8 +543,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: ""
-  playbookInputQuery: null
+  description: A SHA1 hash to assess and enrich
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
   description: Indicator Value
@@ -551,4 +552,6 @@ outputs:
 - contextPath: DBotScore.Type
   description: Indicator Type
   type: string
-sourceplaybookid: 387936d1-0ef0-42b9-8349-03cfa91145e3
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

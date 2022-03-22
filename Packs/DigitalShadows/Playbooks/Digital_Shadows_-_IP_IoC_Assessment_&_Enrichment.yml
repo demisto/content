@@ -1,6 +1,5 @@
-id: dffd06c9-f7d8-418c-8a32-f60868aa2dd9
-version: 13
-vcShouldKeepItemLegacyProdMachine: false
+id: Digital Shadows - IP_IoC Assessment & Enrichment
+version: -1
 name: Digital Shadows - IP_IoC Assessment & Enrichment
 description: Enrichment of IP IOC types - sub-playbook for IOC Assessment & Enrichment playbook
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -248,6 +248,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "no":
       - "14"
@@ -430,6 +431,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -487,8 +489,7 @@ tasks:
       id: e26b2c39-bd55-4dbe-8445-a9f313025908
       version: -1
       name: associateIndicatorsToIncident
-      description: Associate one or more indicators to incident. You can specify the
-        indicators by either indicator ID or the value of the indicator
+      description: Associate one or more indicators to incident. You can specify the indicators by either indicator ID or the value of the indicator
       script: Builtin|||associateIndicatorsToIncident
       type: regular
       iscommand: true
@@ -551,8 +552,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: ""
-  playbookInputQuery: null
+  description: An IP address to assess and enrich
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
   description: Indicator Value
@@ -560,4 +561,6 @@ outputs:
 - contextPath: DBotScore.Type
   description: Indicator Type
   type: string
-sourceplaybookid: 387936d1-0ef0-42b9-8349-03cfa91145e3
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
