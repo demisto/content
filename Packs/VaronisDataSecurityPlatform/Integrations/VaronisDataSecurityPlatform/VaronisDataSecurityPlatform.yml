@@ -178,7 +178,7 @@ script:
       type: String
     - contextPath: Varonis.Alert.By.SamAccountName
       description: |-
-        Logon name used to support clients and servers running earlier versions of the Windows operating system, such as Windows NT 4.0.
+        Logon name used to support clients and servers running earlier versions of Windows operating system, such as Windows NT 4.0.
         In the dashboards (other than the Alert dashboard), this is the SAM account name of the user or group
       type: String
     - contextPath: Varonis.Alert.By.PreivilegedAccountType
@@ -221,7 +221,7 @@ script:
       description: Current page number requested by user
       type: Number
     - contextPath: Varonis.Pagination.PageSize
-      description: Amount of records on the page
+      description: Number of records on the page
       type: Number
   - arguments:
     - default: false
@@ -269,13 +269,13 @@ script:
     name: varonis-close-alert
   - arguments:
     - default: false
-      description: List of alert ids
+      description: List of alert IDs
       isArray: true
       name: Alert_id
       required: true
       secret: false
     - default: false
-      description: The max number of alerts to retrieve (up to 5k)
+      description: Maximum number of alerts to retrieve (up to 5k)
       isArray: false
       name: max_results
       required: false
@@ -296,7 +296,7 @@ script:
       description: Event type
       type: String
     - contextPath: Varonis.Event.UTCTime
-      description: Event time in utc format
+      description: Event time UTC format
       type: Date
     - contextPath: Varonis.Event.Status
       description: |-
@@ -410,7 +410,7 @@ script:
       description: Current page number requested by user
       type: Number
     - contextPath: Varonis.Pagination.PageSize
-      description: Amount of records on the page
+      description: Number of records on the page
       type: Number
   dockerimage: demisto/ntlm:1.0.0.24037
   feed: false
