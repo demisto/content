@@ -180,10 +180,10 @@ script:
     execution: false
     name: absolute-device-freeze-request
     outputs:
-    - contextPath: Absolute.FreezeRequest.RequestUid
+    - contextPath: Absolute.FreezeRequest.RequestUID
       description: The system-defined, unique identifier of the Freeze request.
       type: String
-    - contextPath: Absolute.FreezeRequest.DeviceUids
+    - contextPath: Absolute.FreezeRequest.SucceededDeviceUIDs
       description: An array of the unique devices identifiers that succeeded in creating a Freeze request.
       type: Unknown
   - arguments:
@@ -232,6 +232,150 @@ script:
     - contextPath: Absolute.FreezeRequestDetail.ID
       description: The system-defined, unique identifier of the Freeze request.
       type: String
+    - contextPath: Absolute.FreezeRequestDetail.AccountUid
+      description: The system-defined, unique identifier associated with this Absolute account.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.ActionRequestUid
+      description: The system-defined, unique identifier of the Freeze request (the same as ID).
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.DeviceUid
+      description: The system-defined, unique identifier of the device.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.actionUid
+      description: The system-defined, unique identifier of the Freeze action.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.statusUid
+      description: The system-defined, unique identifier of the Freeze status.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.messageKey
+      description: The reference key for the error message or the info message. Errors message statts with 'dds'. Info message starts with 'ddsui'.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.messageParams
+      description: A list of strings describing the error message when status is LaunchFailed. If status isn't LaunchFailed, messageParams is empty.
+      type: Unknown
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.message
+      description: The message for the status change that occurred.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.udpatedBy
+      description: The last entity to update the Freeze request.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.updatedUtc
+      description: The time (in Unix Epoch) that the Freeze request was last updated.
+      type: Date
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.triggerActionUid
+      description: The system-defined, unique identifier of a new Freeze request that replaces another Freeze request of the same type.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.eventType
+      description: Device freeze type event.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.ackClientTS
+      description: The acknowledgment timestamp (in UNIX Epoch local time) when the request was downloaded on the device.
+      type: Number
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.ackClientUtc
+      description: The acknowledgment timestamp (in UNIX Epoch UTC) when the request was downloaded to the device.
+      type: Number
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.instruction
+      description: All action instructions which are sent from device DFZ agent component.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.scheduledFreezeDateUTC
+      description: The date and time (in UNIX Epoch) that a Scheduled Freeze request was scheduled to be performed.
+      type: Number
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.messageName
+      description: The user-defined name for the Freeze message.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.htmlClear
+      description: The user-defined, HTML coded message shown on the device when the Freeze is applied (the same as Configuration.freezeMessage except it contains the HTML tags).
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.passcodeClear
+      description: The passcode that can be used to Unfreeze the device.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.passcodeOption
+      description: The type of passcode to unfreeze a device.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.freezeMessage
+      description: The content of the Freeze message without the HTML tags.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.freezeId
+      description: The user-friendly identifier of the request that is displayed in event history in the Absolute console (same as EventHistoryId).
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.configurationUid
+      description: The system-defined unique identifier assigned to the Freeze configuration.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.action
+      description: The type of action being performed on the device.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.type
+      description: The type of Freeze.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.passcodeLength
+      description: The length of the device unfreeze passcode when it is randomly generated.
+      type: Number
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.passcodeSalt
+      description: The salt used for hashing the passcode before the passcode is sent to the device.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.passcodeHashed
+      description: The hashed value of the passcode.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.html
+      description: The encoded value of Configuration.htmlClear.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.disableRemoteLogin
+      description: Whether remote login is disabled on the device.
+      type: Boolean
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.disableFileSharing
+      description: Whether file sharing is disabled on the device.
+      type: Boolean
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.Conditions.secondsUntilFreeze
+      description: The amount of time (in seconds) a device can be offline before the device is frozen.
+      type: Number
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.Conditions.scheduledFreezeDate
+      description: The date and time (in UTC) that a Scheduled Freeze request is scheduled to be performed.
+      type: Date
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.issuedUtc
+      description: The date and time (in UNIX Epoch) when the Freeze request was created.
+      type: Date
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.preLoginEnabled
+      description: Whether prelogin is enabled on the device.
+      type: Boolean
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.serviceControlList
+      description: List of service controls that the server sends to the device.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Name
+      description: The user-defined name for the Freeze request.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Requester
+      description: The user id of the entity that created the Freeze request.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.RequesterUid
+      description: The system-defined unique identifier of the user that created the Freeze request.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.CreatedUTC
+      description: The date and time (in UNIX Epoch) that the Freeze request was created.
+      type: Date
+    - contextPath: Absolute.FreezeRequestDetail.ChangedUTC
+      description: The date and time (in UNIX Epoch) that the Freeze request was last modified.
+      type: Date
+    - contextPath: Absolute.FreezeRequestDetail.NotificationEmails
+      description: An array of user-entered email addresses that will receive an email notification when the status of the Freeze request changes supports up to 10 email addresses.
+      type: Unknown
+    - contextPath: Absolute.FreezeRequestDetail.EventHistoryId
+      description: The user-friendly identifier of the request that is displayed in event history in the Absolute console (same as freezeId).
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.PolicyGroupUid
+      description: The system-defined unique identifier of the policy group that the device belongs to.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.PolicyConfigurationVersion
+      description: The version of configuration for the policy.
+      type: Number
+    - contextPath: Absolute.FreezeRequestDetail.FreezePolicyUid
+      description: The unique identifier of the Freeze policy.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Downloaded
+      description: Whether the Freeze request has been downloaded to the device.
+      type: Boolean
+    - contextPath: Absolute.FreezeRequestDetail.IsCurrent
+      description: Internal flag.
+      type: Boolean
   - arguments:
     - default: false
       description: The system-defined, unique identifier of the Freeze message.
@@ -283,7 +427,7 @@ script:
     execution: false
     name: absolute-device-freeze-message-create
     outputs:
-    - contextPath: Absolute.FreezeMessage.MessageUid
+    - contextPath: Absolute.FreezeMessage.ID
       description: The system-defined, unique identifier of the Freeze message.
       type: String
   - arguments:
@@ -324,7 +468,7 @@ script:
     - default: false
       description: A comma separateed list of device UIDs should be unenrolled.
       isArray: true
-      name: device_id
+      name: device_ids
       required: true
       secret: false
     deprecated: false
@@ -343,7 +487,7 @@ script:
       type: String
     - contextPath: Absolute.DeviceUnenroll.EligibleStatus
       description: 'The eligibility status of the device. Possible vales are: 0 for eligible, 1 for inactive or disabled and 2 for stolen.'
-      type: String
+      type: Number
     - contextPath: Absolute.DeviceUnenroll.Serial
       description: The identification number that is assigned to the device by the device manufacturer.
       type: String

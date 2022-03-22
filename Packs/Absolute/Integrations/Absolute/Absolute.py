@@ -27,7 +27,8 @@ ABSOLUTE_URL_REGION = {
 INTEGRATION = "Absolute"
 STRING_TO_SIGN_ALGORITHM = "ABS1-HMAC-SHA-256"
 STRING_TO_SIGN_SIGNATURE_VERSION = "abs1"
-DATE_FORMAT = '%Y%m%dT%H%M%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y%m%dT%H%M%SZ'
+DATE_FORMAT_FREEZE_DATE = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 DATE_FORMAT_CREDENTIAL_SCOPE = '%Y%m%d'
 DATE_FORMAT_K_DATE = '<%Y><%m><%d>'
 
@@ -216,23 +217,38 @@ class Client(BaseClient):
         return f'{STRING_TO_SIGN_ALGORITHM} Credential={self._token_id}/{credential_scope}, ' \
                f'SignedHeaders={canonical_headers}, Signature={signing_signature}'
 
-    def request_custom_device_fields(self, method: str, url_suffix: str, body: str = ""):
+    def api_request_absolute(self, method: str, url_suffix: str, body: str = "", success_status_code: tuple = None):
         """
         Makes an HTTP request to
         Args:
             method (str): HTTP request method (GET/POST/DELETE).
             url_suffix (str): The API endpoint.
             body (str): The body to set.
+            success_status_code (int): an HTTP status code of success
         """
+        if success_status_code is None:
+            success_status_code = [200]
         demisto.debug(f'current request is: method={method}, url suffix={url_suffix}, body={body}')
         self.prepare_request_for_api(method=method, canonical_uri=url_suffix, query_string='', payload=body)
+        full_url = urljoin(self._base_url, url_suffix)
+
         if method == 'GET':
             return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers)
-        else:
-            full_url = urljoin(self._base_url, url_suffix)
+
+        elif method == 'DELETE':
+            return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers,
+                                      ok_codes=tuple(success_status_code), resp_type='response')
+
+        elif method == 'PUT':
             res = requests.put(full_url, data=body, headers=self._headers, verify=self._verify)
-            if res.status_code != 200:
+            if res.status_code not in success_status_code:
                 raise DemistoException(f'{INTEGRATION} error: the operation was failed due to: {res.json()}')
+
+        elif method == 'POST':
+            res = requests.post(full_url, data=body, headers=self._headers, verify=self._verify)
+            if res.status_code not in success_status_code:
+                raise DemistoException(f'{INTEGRATION} error: the operation was failed due to: {res.json()}')
+            return res.json()
 
 
 ''' COMMAND FUNCTIONS '''
@@ -287,7 +303,7 @@ def parse_device_field_list_response(response: dict) -> Dict[str, Any]:
 
 def get_custom_device_field_list_command(args, client) -> CommandResults:
     device_id = args.get('device_id')
-    res = client.request_custom_device_fields('GET', f'/v2/devices/{device_id}/cdf')
+    res = client.api_request_absolute('GET', f'/v2/devices/{device_id}/cdf')
     outputs = parse_device_field_list_response(res)
     human_readable = tableToMarkdown(f'{INTEGRATION}: Custom device field list', outputs,
                                      headers=['DeviceUID', 'ESN'], removeNull=True)
@@ -301,8 +317,244 @@ def update_custom_device_field_command(args, client) -> CommandResults:
     field_value = args.get('value')
 
     payload = json.dumps({"cdfValues": [{'cdfUid': cdf_uid, 'fieldValue': field_value}]})
-    client.request_custom_device_fields('PUT', f'/v2/devices/{device_id}/cdf', body=payload)
+    client.api_request_absolute('PUT', f'/v2/devices/{device_id}/cdf', body=payload)
     return CommandResults(readable_output=f"Device {device_id} with value {field_value} was updated successfully.")
+
+
+def validate_device_freeze_type_offline(offline_time_seconds):
+    if not offline_time_seconds:
+        # the default is 30 days
+        offline_time_seconds = 22592000
+    else:
+        # must be between 1200 seconds (20 minutes) and 172800000 seconds (2000 days)
+        offline_time_seconds_valid = 1200 <= offline_time_seconds <= 172800000
+        if not offline_time_seconds_valid:
+            raise_error_on_missing_args('the offline_time_seconds arg is not valid. Must be between 1200 seconds '
+                                        f'(20 minutes) and 172800000 seconds (2000 days)')
+    return offline_time_seconds
+
+
+def raise_error_on_missing_args(msg):
+    raise DemistoException(
+        f'{INTEGRATION} error: {msg}')
+
+
+def validate_device_freeze_type_scheduled(scheduled_freeze_date):
+    if not scheduled_freeze_date:
+        raise_error_on_missing_args('when setting device_freeze_type to be Scheduled, you must specify the scheduled_'
+                                    f'freeze_date arg.')
+    return datetime.utcnow().strftime(DATE_FORMAT_FREEZE_DATE)
+
+
+def validate_passcode_type_args(passcode_type, passcode, passcode_length, payload):
+    if passcode_type == "UserDefined":
+        if not passcode:
+            raise_error_on_missing_args(
+                'when setting passcode_type to be UserDefined, you must specify the passcode arg.')
+        payload["passcodeDefinition"].update({"passcode": passcode})
+
+    elif passcode_type == "RandomForEach" or passcode_type == "RandomForAl":
+        not_valid_passcode_length = not passcode_length or passcode_length > 8 or passcode_length < 4
+        if not_valid_passcode_length:
+            raise_error_on_missing_args('hen setting passcode_type to be RandomForEach or RandomForAl, '
+                                        f'you must specify the passcode_length arg to be between 4 to 8.')
+        payload["passcodeDefinition"].update({"length": passcode_length})
+
+    return payload
+
+
+def parse_freeze_device_response(response: dict):
+    outputs = {'RequestUID': response.get('requestUid'), 'SucceededDeviceUIDs': response.get('deviceUids')}
+    errors = response.get('errors', [])
+    if errors:
+        human_readable_errors = []
+        for error in errors:
+            human_readable_errors.append({
+                'FailedDeviceUIDs': error.get('detail', []).get('deviceUids'),
+                'Message': error.get('message', ''),
+                'MessageKey': error.get('messageKey', ''),
+            })
+        outputs['Errors'] = human_readable_errors
+    return outputs
+
+
+def device_freeze_request_command(args, client) -> CommandResults:
+    request_name = args.get('request_name')
+    html_message = args.get('html_message')
+    message_name = args.get('message_name')
+    device_ids = argToList(args.get('device_ids'))
+    notification_emails = argToList(args.get('notification_emails'))
+    device_freeze_type = args.get('device_freeze_type')
+    passcode_type = args.get('passcode_type')
+
+    payload = {"name": request_name, "message": html_message, "messageName": message_name,
+               "freezeDefinition": {"deviceFreezeType": device_freeze_type}, "deviceUids": device_ids,
+               "notificationEmails": notification_emails, "passcodeDefinition": {"option": passcode_type}}
+
+    scheduled_freeze_date = args.get('scheduled_freeze_date')
+    offline_time_seconds = arg_to_number(args.get('offline_time_seconds'), required=False)
+    if device_freeze_type == "Scheduled":
+        scheduled_freeze_date = validate_device_freeze_type_scheduled(scheduled_freeze_date)
+        payload["freezeDefinition"].update({"scheduledFreezeDate": scheduled_freeze_date})
+
+    elif device_freeze_type == "Offline":
+        offline_time_seconds = validate_device_freeze_type_offline(offline_time_seconds)
+        payload["freezeDefinition"].update({"offlineTimeSeconds": offline_time_seconds})
+
+    passcode = args.get('passcode')
+    passcode_length = arg_to_number(args.get('passcode_length'), required=False)
+    payload = validate_passcode_type_args(passcode_type, passcode, passcode_length, payload)
+
+    res = client.api_request_absolute('POST', '/v2/device-freeze/requests', body=json.dumps(payload),
+                                      success_status_code=201)
+    outputs = parse_freeze_device_response(res)
+    human_readable = tableToMarkdown(f"{INTEGRATION} device freeze requests results", outputs, removeNull=True)
+    # todo add errors to yml after Meital's approve
+    return CommandResults(readable_output=human_readable, outputs=outputs, outputs_prefix="Absolute.FreezeRequest",
+                          outputs_key_field="RequestUID", raw_response=res)
+
+
+def remove_device_freeze_request_command(args, client) -> CommandResults:
+    device_ids = argToList(args.get('device_ids'))
+    remove_scheduled = args.get('remove_scheduled')
+    remove_offline = args.get('remove_offline')
+
+    # from the API docs: unfreeze - Make frozen devices usable immediately, Applies to all Freeze types.
+    # Always set to true
+    payload = {"deviceUids": device_ids, "unfreeze": "true", "removeScheduled": remove_scheduled,
+               "removeOffline": remove_offline}
+
+    client.api_request_absolute('PUT', '/v2/device-freeze/requests', body=json.dumps(payload), success_status_code=204)
+    return CommandResults(readable_output=f"Successfully removed freeze request for devices: {device_ids}.")
+
+
+def parse_get_device_freeze_response(response: []):
+    parsed_data = []
+    for freeze_request in response:
+        parsed_data.append({
+            'ID': freeze_request.get('id'),
+            'AccountUid': freeze_request.get('accountUid'),
+            'ActionRequestUid': freeze_request.get('actionRequestUid'),
+            'DeviceUid': freeze_request.get('deviceUid'),
+            'Name': freeze_request.get('name'),
+            'Statuses': freeze_request.get('statuses', []),
+            'Configuration': freeze_request.get('configuration', {}),
+            'Requester': freeze_request.get('requester'),
+            'RequesterUid': freeze_request.get('requesterUid'),
+            'CreatedUTC': freeze_request.get('createdUTC'),
+            'ChangedUTC': freeze_request.get('changedUTC'),
+            'NotificationEmails': freeze_request.get('notificationEmails'),
+            'EventHistoryId': freeze_request.get('eventHistoryId'),
+            'PolicyGroupUid': freeze_request.get('policyGroupUid'),
+            'PolicyConfigurationVersion': freeze_request.get('policyConfigurationVersion'),
+            'FreezePolicyUid': freeze_request.get('freezePolicyUid'),
+            'Downloaded': freeze_request.get('downloaded'),
+            'IsCurrent': freeze_request.get('isCurrent'),
+            # for the freeze message command
+            'Content': freeze_request.get('content'),
+            'CreatedBy': freeze_request.get('createdBy'),
+            'ChangedBy': freeze_request.get('changedBy'),
+        })
+    return parsed_data
+
+
+def parse_device_freeze_message_response(response):
+    if not isinstance(response, list):
+        # in case we got here from the f'/v2/device-freeze/messages/{message_id}' url, the response is a json
+        response = [response]
+    parsed_data = []
+    for freeze_request in response:
+        parsed_data.append({
+            'ID': freeze_request.get('id'),
+            'Name': freeze_request.get('name'),
+            'CreatedUTC': freeze_request.get('createdUTC'),
+            'ChangedUTC': freeze_request.get('changedUTC'),
+            'Content': freeze_request.get('content'),
+            'CreatedBy': freeze_request.get('createdBy'),
+            'ChangedBy': freeze_request.get('changedBy'),
+        })
+    return parsed_data
+
+
+def get_device_freeze_request_command(args, client) -> CommandResults:
+    request_uid = args.get('request_uid')
+    res = client.api_request_absolute('GET', f'/v2/device-freeze/requests/{request_uid}')
+    outputs = parse_get_device_freeze_response(res)
+
+    human_readable = tableToMarkdown(f'{INTEGRATION}: Freeze request details for: {request_uid}', outputs,
+                                     headers=['ID', 'Name', 'AccountUid', 'ActionRequestUid', 'EventHistoryId',
+                                              'FreezePolicyUid', 'CreatedUTC', 'ChangedUTC', 'Requester'],
+                                     removeNull=True)
+    return CommandResults(outputs=outputs, outputs_prefix="Absolute.FreezeRequestDetail", outputs_key_field='ID',
+                          readable_output=human_readable, raw_response=res)
+
+
+def list_device_freeze_message_command(args, client) -> CommandResults:
+    message_id = args.get('message_id')
+    if message_id:
+        res = client.api_request_absolute('GET', f'/v2/device-freeze/messages/{message_id}')
+    else:
+        res = client.api_request_absolute('GET', '/v2/device-freeze/messages', success_status_code=(200, 204))
+
+    outputs = parse_device_freeze_message_response(res)
+    human_readable = tableToMarkdown(f'{INTEGRATION}: Device freeze message details:', outputs,
+                                     headers=['ID', 'Name', 'CreatedUTC', 'ChangedUTC', 'ChangedBy', 'CreatedBy'],
+                                     removeNull=True)
+    return CommandResults(outputs=outputs, outputs_prefix="Absolute.FreezeMessage", outputs_key_field='ID',
+                          readable_output=human_readable, raw_response=res)
+
+
+def create_device_freeze_message_command(args, client) -> CommandResults:
+    html_message = args.get('html_message')
+    message_name = args.get('message_name')
+
+    payload = {"name": message_name, "content": html_message}
+
+    res = client.api_request_absolute('POST', '/v2/device-freeze/messages', body=json.dumps(payload),
+                                      success_status_code=(200, 201))
+    outputs = {'ID': res.get('id')}
+    human_readable = tableToMarkdown(f'{INTEGRATION}: New freeze message was created:', outputs)
+    return CommandResults(outputs=outputs, outputs_prefix="Absolute.FreezeMessage", outputs_key_field='ID',
+                          readable_output=human_readable, raw_response=res)
+
+
+def update_device_freeze_message_command(args, client) -> CommandResults:
+    message_id = args.get('message_id')
+    html_message = args.get('html_message')
+    message_name = args.get('message_name')
+    payload = {"name": message_name, "content": html_message}
+    client.api_request_absolute('PUT', f'/v2/device-freeze/messages/{message_id}', body=json.dumps(payload))
+    return CommandResults(readable_output=f'{INTEGRATION}: Freeze message: {message_id} was updated successfully')
+
+
+def delete_device_freeze_message_command(args, client) -> CommandResults:
+    message_id = args.get('message_id')
+    client.api_request_absolute('DELETE', f'/v2/device-freeze/messages/{message_id}', success_status_code=204)
+    return CommandResults(readable_output=f'{INTEGRATION}: Freeze message: {message_id} was deleted successfully')
+
+
+def parse_device_unenroll_response(response):
+    parsed_data = []
+    for device in response:
+        parsed_data.append({
+            'DeviceUid': device.get('deviceUid'),
+            'SystemName': device.get('systemName'),
+            'Username': device.get('username'),
+            'EligibleStatus': device.get('eligibleStatus'),
+            'Serial': device.get('serial'),
+            'ESN': device.get('esn'),
+        })
+    return parsed_data
+
+
+def device_unenroll_command(args, client) -> CommandResults:
+    device_ids = argToList(args.get('device_ids'))
+    payload = [{'deviceUid': device_id} for device_id in device_ids]
+    res = client.api_request_absolute('POST', '/v2/device-unenrollment/unenroll', body=json.dumps(payload))
+    outputs = parse_device_unenroll_response(res)
+    human_readable = tableToMarkdown(f'{INTEGRATION}: unenroll devices:', outputs, removeNull=True)
+    return CommandResults(outputs_prefix='Absolute.DeviceUnenroll', outputs=outputs, outputs_key_field='DeviceUid',
+                          readable_output=human_readable, raw_response=res)
 
 
 ''' MAIN FUNCTION '''
@@ -342,6 +594,30 @@ def main() -> None:
 
         elif demisto.command() == 'absolute-custom-device-field-update':
             return_results(update_custom_device_field_command(args=args, client=client))
+
+        elif demisto.command() == 'absolute-device-freeze-request':
+            return_results(device_freeze_request_command(args=args, client=client))
+
+        elif demisto.command() == 'absolute-device-remove-freeze-request':
+            return_results(remove_device_freeze_request_command(args=args, client=client))
+
+        elif demisto.command() == 'absolute-device-freeze-request-get':
+            return_results(get_device_freeze_request_command(args=args, client=client))
+
+        elif demisto.command() == 'absolute-device-freeze-message-list':
+            return_results(list_device_freeze_message_command(args=args, client=client))
+
+        elif demisto.command() == 'absolute-device-freeze-message-create':
+            return_results(create_device_freeze_message_command(args=args, client=client))
+
+        elif demisto.command() == 'absolute-device-freeze-message-update':
+            return_results(update_device_freeze_message_command(args=args, client=client))
+
+        elif demisto.command() == 'absolute-device-freeze-message-delete':
+            return_results(delete_device_freeze_message_command(args=args, client=client))
+
+        elif demisto.command() == 'absolute-device-unenroll':
+            return_results(device_unenroll_command(args=args, client=client))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
