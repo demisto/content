@@ -8,12 +8,12 @@ def url_to_uuid(url: str):
 
 
 def main():
-    uuids = []
-    input_urls = demisto.args().get('input')
-    input_urls = argToList(input_urls)
-    for url in input_urls:
-        uuids.append(url_to_uuid(url))
-    demisto.results(uuids)
+    uuids = []  # pragma: no cover
+    input_urls = demisto.args().get('input')  # pragma: no cover
+    input_urls = argToList(input_urls)  # pragma: no cover
+    for url in input_urls:  # pragma: no cover
+        uuids.append(url_to_uuid(url))  # pragma: no cover
+    demisto.results(uuids)  # pragma: no cover
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
