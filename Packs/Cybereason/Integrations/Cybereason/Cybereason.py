@@ -1381,14 +1381,8 @@ LOG('command is %s' % (demisto.command(),))
 session = requests.session()
 
 
-def handle_get_malop(malop_id):
-
-    suspect_files_guids = get_file_guids(malop_id)
-    return suspect_files_guids
-
-
 def get_file_guids(malop_id):
-    """Get any malop file guids contained in the given malop"""
+    """Get all File GUIDs for the given malop"""
     processes = fetch_malop_processes(malop_id)
     img_file_guids = fetch_imagefile_guids(processes)
     return img_file_guids
@@ -1455,7 +1449,6 @@ def fetch_imagefile_guids(processes):
             image_files= ('' if details['elementValues']['imageFile']['elementValues'] is None else details['elementValues']['imageFile']['elementValues'])           
             for image_file in image_files:
                 img_file_guids[image_file['name']] = image_file['guid']
-
     except Exception as e:
         demisto.log(str(e))
     return img_file_guids
@@ -1464,10 +1457,14 @@ def fetch_imagefile_guids(processes):
 def start_fetchfile_command():
     malop_id = demisto.getArg('malopGUID')
     user_name = demisto.getArg('userName')
-    response = handle_get_malop(malop_id)
+    response = get_file_guids(malop_id)
     for filename, file_guid in response.items():
         resp = start_fetchfile(file_guid, user_name)
-        demisto.results('Start fetchfile status is: {}'.format(resp['status']))
+        try:
+            if resp['status'] == "SUCCESS":
+                demisto.results("Successfully started fetching file for the given malop")
+        except Exception as e:
+            raise Exception ("Failed to start fetch file process")
 
 
 def start_fetchfile(element_id, user_name):
@@ -1484,7 +1481,29 @@ def fetchfile_progress_command():
     timeout_sec = 60
     interval_sec = 10
     new_malop_comments = get_batch_id(response, timeout_sec, interval_sec)
-    demisto.results(str(new_malop_comments))
+    filename=[]
+    status = []
+    message = []
+    for item in range(len(new_malop_comments)):
+        filename.append(new_malop_comments[item].get("name"))
+        status.append(new_malop_comments[item].get("isSuccess"))
+        message.append(new_malop_comments[item].get("message"))
+    ec = {
+        'Download.progress(val.MalopID && val.MalopID === obj.MalopID)': {
+            'fileName': filename,
+            'status': status,
+            'batchID': message,
+            'MalopID': malop_id
+        }
+    }
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': new_malop_comments,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'Filename: ' + str(filename) + ' Status: ' + str(status) + ' Batch ID: ' + str(message),
+        'EntryContext': ec
+    })
 
 
 def get_batch_id(suspect_files_guids, timeout_seconds, interval_seconds):
@@ -1513,7 +1532,7 @@ def fetchfile_progress():
 
 def download_fetchfile_command():
     batch_id = demisto.getArg('batchID')
-    demisto.results('Downloading the file to disk:{}'.format(batch_id))
+    demisto.log('Downloading the file: {}'.format(batch_id))
     response = download_fetchfile(batch_id)
     file_download = fileResult('donwload.zip',response.content)
     demisto.results(file_download)
@@ -1530,9 +1549,8 @@ def close_fetchfile_command():
     try:
         if resp.json()['status'] == 'SUCCESS':
             demisto.results('Successfully aborts a file download operation that is in progress.')
-
     except Exception as e:
-        raise Exception('The given Batch ID is not exist.')
+        raise Exception('The given Batch ID does not exist')
 
 
 def close_fetchfile(batch_id):
