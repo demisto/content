@@ -2270,7 +2270,8 @@ There is no context output for this command.
 ```!fireeye-hx-delete-indicator-condition category=Custom condition_id=myFIAYoWKoWqaaYQ7CxHVA== indicator_name=7f49e4c6-14d5-4b06-8d17-843fd17f79de type=execution```
 #### Human Readable Output
 
->None
+>Successfully deleted condition myFIAYoWKoWqaaYQ7CxHVA== (execution) of indicator 7f49e4c6-14d5-4b06-8d17-843fd17f79de (Custom)
+
 
 ### fireeye-hx-list-indicator-category
 ***
