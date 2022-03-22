@@ -1,7 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
+import time
+seconds = time.time()
 from typing import Dict, Any
 import traceback
 
@@ -33,7 +34,7 @@ def schedule_next_command(args):
         timeout_in_seconds=600)
 
 
-def security_and_compliance_delete_mail(user_id, email_subject, delete_from_brand, delete_type, args):
+def security_and_compliance_delete_mail(args, user_id, email_subject, delete_from_brand, delete_type, **kwargs):
     if not is_demisto_version_ge('6.2.0'):
         raise DemistoException('Deleting an email using this script for Security And Compliance integration is not '
                                'supported by this XSOAR server version. Please update your server version to 6.2.0 '
@@ -168,29 +169,35 @@ def delete_email(search_args, search_function, delete_args_function, delete_func
     if deletion_error_condition(resp):
         raise DeletionFailed(resp)
 
-def new_main():
-    # test all functions
-    # create get_search_arguments_func
-    # test Sec&Comp
-    # go over yml
-    args = demisto.args()
-    search_args = {'delete_type': args.get('delete_type')}
+
+def get_search_args(args):
     incident_info = demisto.incident()
     custom_fields = incident_info.get('CustomFields')
     message_id = custom_fields.get("reportedemailmessageid")
     delete_from_brand = args.get('delete_from_brand', incident_info.get('sourceBrand'))
-    search_args['delete_from_brand'] = delete_from_brand
-    search_args['user_id'] = custom_fields.get('reportedemailto')
-    search_args['email_subject'] = custom_fields.get('reportedemailsubject')
-    search_args['message_id'] = message_id
-    search_args['query'] = f'Rfc822msgid:{message_id}'
-    search_args['odata'] = f'"$filter=internetMessageId eq \'{message_id}\'"'
-    result = ''
-    deletion_failure_reason = ''
+    search_args = {'delete_type': args.get('delete_type'),
+                   'delete_from_brand': delete_from_brand,
+                   'user_id': custom_fields.get('reportedemailto'),
+                   'email_subject': custom_fields.get('reportedemailsubject'),
+                   'message_id': message_id,
+                   'query': f'Rfc822msgid:{message_id}',  # only relevant for Gmail
+                   'odata': f'"$filter=internetMessageId eq \'{message_id}\'"',  # only relevant for MSGraph
+                   }
 
+    return search_args
+
+def new_main():
+    # test all functions
+    # test Sec&Comp - tomorrow
+    # go over yml
+    args = demisto.args()
+    search_args = get_search_args(args)
+    result = 'Success'
+    deletion_failure_reason = ''
+    delete_from_brand = search_args['delete_from_brand']
     try:
         if delete_from_brand == 'SecurityAndCompliance':
-            pass # TODO: fix
+            security_and_compliance_delete_mail(args, **search_args)
         else:
             integrations_dict = {'Gmail': ('gmail-search', gmail_delete_args_function, 'gmail-delete-mail'),
                                  'EWS365': ('ews-search-mailbox', ews_delete_args_function, 'ews-delete-items',
@@ -213,6 +220,7 @@ def new_main():
         return_error(f'Failed to execute DeleteEmail. Error: {str(e)}')
     finally:
         return result, deletion_failure_reason
+
 
 
 
