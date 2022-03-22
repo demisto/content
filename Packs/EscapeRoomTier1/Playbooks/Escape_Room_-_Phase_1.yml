@@ -166,7 +166,6 @@ tasks:
       version: -1
       name: Questionnaire
       playbookName: Questionnaire
-      scriptName: AreValuesEqual
       type: playbook
       iscommand: false
       brand: ""
@@ -174,19 +173,19 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
-    results:
-    - AreValuesEqual
-    separatecontext: false
+    separatecontext: true
     loop:
       iscommand: false
-      scriptArguments:
-        left:
-          complex:
-            root: Questionnaire.Time
-            accessor: Answers
-        right:
-          simple: Correct
-      exitCondition: "yes"
+      builtincondition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Questionnaire.Time.Answers
+            iscontext: true
+          right:
+            value:
+              simple: Correct
+      exitCondition: ""
       wait: 1
       max: 100
     view: |-

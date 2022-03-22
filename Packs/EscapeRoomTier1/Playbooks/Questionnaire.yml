@@ -65,12 +65,12 @@ tasks:
         simple: hello
       methods: []
       format: ""
-      bcc:
-      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
     form:
       questions:
       - id: "0"
@@ -109,7 +109,7 @@ tasks:
       - id: "2"
         label: ""
         labelarg:
-          simple: "The first Bar to join the content team was"
+          simple: The first Bar to join the content team was
         required: true
         gridcolumns: []
         defaultrows: []
@@ -212,10 +212,8 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      append: {}
       key:
         simple: Questionnaire.Time.Answers
-      stringify: {}
       value:
         simple: Correct
     separatecontext: false
@@ -248,10 +246,8 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      append: {}
       key:
         simple: Questionnaire.Time.Answers
-      stringify: {}
       value:
         simple: Incorrect
     separatecontext: false
@@ -339,11 +335,8 @@ tasks:
     scriptarguments:
       all:
         simple: "no"
-      index: {}
       key:
         simple: Content - Office Hours
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
