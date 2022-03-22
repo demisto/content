@@ -31,6 +31,28 @@ script:
     description: 'can smithers login successfully?'
     execution: false
     name: check-login
+  - arguments:
+    - default: false
+      description: 'what did you expect to find here? a hint?'
+      isArray: false
+      name: answer
+      required: true
+      secret: false
+    deprecated: false
+    description: run to find hints
+    execution: false
+    name: when-is-next-next
+  - arguments:
+    - default: false
+      description: 'what did you expect to find here? a hint?'
+      isArray: false
+      name: answer
+      required: true
+      secret: false
+    deprecated: false
+    description: run to find hints
+    execution: false
+    name: who-am-i
   isfetch: false
   runonce: false
   script: '-'

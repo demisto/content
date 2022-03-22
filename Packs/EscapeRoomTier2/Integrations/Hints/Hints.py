@@ -73,6 +73,20 @@ def check_login(args):
         return_error(exc.body)
 
 
+def when_is_next_next(args):
+    if args.get('answer') == '2022-04-02T12:30':
+        return CommandResults(readable_output='I run after classification & mapping and right before an incident is created...')
+    else:
+        return_error('Wrong !')
+
+
+def who_am_i(args):
+    if args.get('answer').lower() in {'nir zuk'}:
+        return CommandResults(readable_output='TaDA!!!')
+    else:
+        return_error('That is not who I am !')
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -87,6 +101,8 @@ def main() -> None:
     commands = {
         'hint': hint,
         'check-login': check_login,
+        'when-is-next-next': when_is_next_next,
+        'who-am-i': who_am_i
     }
 
     demisto.debug(f'Command being called is {command}')
