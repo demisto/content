@@ -64,13 +64,14 @@ class MsGraphClient:
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 redirect_uri, auth_code):
+                 redirect_uri, auth_code, handle_error):
         grant_type = AUTHORIZATION_CODE if self_deployed else CLIENT_CREDENTIALS
         resource = None if self_deployed else ''
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
                                          redirect_uri=redirect_uri, auth_code=auth_code, grant_type=grant_type,
                                          resource=resource)
+        self.handle_error = handle_error
 
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
@@ -227,14 +228,30 @@ def test_function(client, _):
 
 def disable_user_account_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
-    client.disable_user_account_session(user)
+
+    try:
+        client.disable_user_account_session(user)
+    except NotFoundError:
+        if client.handle_error:
+            human_readable = f'#### User -> {user} does not exist'
+            return human_readable, None, None
+        raise
+
     human_readable = f'user: "{user}" account has been disabled successfully.'
     return human_readable, None, None
 
 
 def unblock_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
-    client.unblock_user(user)
+
+    try:
+        client.unblock_user(user)
+    except NotFoundError:
+        if client.handle_error:
+            human_readable = f'#### User -> {user} does not exist'
+            return human_readable, None, None
+        raise
+
     human_readable = f'"{user}" unblocked. It might take several minutes for the changes to take affect across all ' \
                      f'applications. '
     return human_readable, None, None
@@ -242,7 +259,15 @@ def unblock_user_command(client: MsGraphClient, args: Dict):
 
 def delete_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
-    client.delete_user(user)
+
+    try:
+        client.delete_user(user)
+    except NotFoundError:
+        if client.handle_error:
+            human_readable = f'#### User -> {user} does not exist'
+            return human_readable, None, None
+        raise
+
     human_readable = f'user: "{user}" was deleted successfully.'
     return human_readable, None, None
 
@@ -283,7 +308,14 @@ def update_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     updated_fields = args.get('updated_fields')
 
-    client.update_user(user, updated_fields)
+    try:
+        client.update_user(user, updated_fields)
+    except NotFoundError:
+        if client.handle_error:
+            human_readable = f'#### User -> {user} does not exist'
+            return human_readable, None, None
+        raise
+
     return get_user_command(client, args)
 
 
@@ -356,7 +388,13 @@ def list_users_command(client: MsGraphClient, args: Dict):
 def get_direct_reports_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
 
-    raw_reports = client.get_direct_reports(user)
+    try:
+        raw_reports = client.get_direct_reports(user)
+    except NotFoundError:
+        if client.handle_error:
+            human_readable = f'#### User -> {user} does not exist'
+            return human_readable, None, None
+        raise
 
     reports_readable, reports = parse_outputs(raw_reports)
     human_readable = tableToMarkdown(name=f"{user} - direct reports", t=reports_readable, removeNull=True)
@@ -372,7 +410,15 @@ def get_direct_reports_command(client: MsGraphClient, args: Dict):
 
 def get_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
-    manager_data = client.get_manager(user)
+
+    try:
+        manager_data = client.get_manager(user)
+    except NotFoundError:
+        if client.handle_error:
+            human_readable = f'#### User -> {user} does not exist'
+            return human_readable, None, None
+        raise
+
     manager_readable, manager_outputs = parse_outputs(manager_data)
     human_readable = tableToMarkdown(name=f"{user} - manager", t=manager_readable, removeNull=True)
     outputs = {
@@ -386,8 +432,19 @@ def get_manager_command(client: MsGraphClient, args: Dict):
 
 def assign_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
-    manager = args.get('manager')
-    client.assign_manager(user, manager)
+    manager = args.get('manager', 'None')
+
+    try:
+        client.assign_manager(user, manager)
+    except NotFoundError as e:
+        if client.handle_error:
+            if manager in str(e):
+                human_readable = f'#### Manager -> {manager} does not exist'
+            else:
+                human_readable = f'#### User -> {user} does not exist'
+            return human_readable, None, None
+        raise
+
     human_readable = f'A manager was assigned to user "{user}". It might take several minutes for the changes ' \
                      'to take affect across all applications.'
     return human_readable, None, None
@@ -411,23 +468,24 @@ def main():
     redirect_uri = params.get('redirect_uri', '')
     auth_code = params.get('auth_code', '')
     proxy = params.get('proxy', False)
+    handle_error = argToBoolean(params.get('handle_error', 'true'))
 
     commands = {
         'msgraph-user-test': test_function,
         'test-module': test_function,
-        'msgraph-user-unblock': unblock_user_command,
+        'msgraph-user-unblock': unblock_user_command, # one
         'msgraph-user-terminate-session': disable_user_account_command,
-        'msgraph-user-account-disable': disable_user_account_command,
-        'msgraph-user-update': update_user_command,
+        'msgraph-user-account-disable': disable_user_account_command, # done
+        'msgraph-user-update': update_user_command, # done
         'msgraph-user-change-password': change_password_user_command,
-        'msgraph-user-delete': delete_user_command,
+        'msgraph-user-delete': delete_user_command, # done
         'msgraph-user-create': create_user_command,
         'msgraph-user-get-delta': get_delta_command,
-        'msgraph-user-get': get_user_command,
-        'msgraph-user-list': list_users_command,
-        'msgraph-direct-reports': get_direct_reports_command,
-        'msgraph-user-get-manager': get_manager_command,
-        'msgraph-user-assign-manager': assign_manager_command,
+        'msgraph-user-get': get_user_command, # was done
+        'msgraph-user-list': list_users_command, # ?
+        'msgraph-direct-reports': get_direct_reports_command, # done
+        'msgraph-user-get-manager': get_manager_command, # done
+        'msgraph-user-assign-manager': assign_manager_command, # done
         'msgraph-user-session-revoke': revoke_user_session_command,
     }
     command = demisto.command()
@@ -437,7 +495,7 @@ def main():
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
                                               self_deployed=self_deployed, redirect_uri=redirect_uri,
-                                              auth_code=auth_code)
+                                              auth_code=auth_code, handle_error=handle_error)
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
         return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 

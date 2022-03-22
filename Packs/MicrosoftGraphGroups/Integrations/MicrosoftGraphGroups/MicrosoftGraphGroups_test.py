@@ -42,7 +42,7 @@ def test_parse_outputs():
 def test_commands(command, args, response, expected_result, mocker):
     client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
                            auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
-                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed')
+                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed', handle_error=False)
     mocker.patch.object(client.ms_client, 'http_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
@@ -65,7 +65,7 @@ def test_list_members_command(args, response, expected_result, mocker):
     """
     client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
                            auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
-                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed')
+                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed', handle_error=False)
     mocker.patch.object(client.ms_client, 'http_request', return_value=response)
     mocker.patch.object(demisto, 'dt', return_value=RESPONSE_GET_GROUP)
     result = list_members_command(client, args)

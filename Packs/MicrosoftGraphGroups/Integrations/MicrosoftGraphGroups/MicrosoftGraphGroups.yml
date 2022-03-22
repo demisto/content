@@ -52,7 +52,7 @@ configuration:
   type: 4
   hidden: true
   additionalinfo: Use the "Token" parameter instead.
-- display: Suppress errors for non found group
+- display: Suppress errors for non found groups
   name: handle_error
   required: false
   defaultvalue: true
