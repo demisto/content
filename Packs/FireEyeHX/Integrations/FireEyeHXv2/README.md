@@ -2244,3 +2244,155 @@ There is no context output for this command.
 #### Human Readable Output
 
 >data acquisition 102 deleted successfully
+
+### fireeye-hx-delete-indicator-condition
+***
+Delete an indicator condition.
+
+
+#### Base Command
+
+`fireeye-hx-delete-indicator-condition`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| category | The indicator category. | Required | 
+| indicator_name | The name of the indicator. Use the `uri_name` value. | Required | 
+| type | The condition type. Possible values are: presence, execution. | Required | 
+| condition_id | The condition ID. It is part of the response when you request a list of all conditions known to the HX Series appliance. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fireeye-hx-delete-indicator-condition category=Custom condition_id=myFIAYoWKoWqaaYQ7CxHVA== indicator_name=7f49e4c6-14d5-4b06-8d17-843fd17f79de type=execution```
+#### Human Readable Output
+
+>None
+
+### fireeye-hx-list-indicator-category
+***
+List indicator categories.
+
+
+#### Base Command
+
+`fireeye-hx-list-indicator-category`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search | Performs a search of indicator categories. Searchable values are based on the name, display_name, retention_policy, ui_edit_policy, ui_signature_enabled, ui_source_alerts_enabled. | Optional | 
+| name | Filter for indicator categories with the specified name. | Optional | 
+| display_name | Filter for indicator categories with given display name. | Optional | 
+| retention_policy | Retention policy. Possible values are: manual, auto, intel. | Optional | 
+| ui_edit_policy | UI edit policy. Possible values are: full, edit_delete, delete, read_only. | Optional | 
+| ui_signature_enabled | Whether to enable the UI signature. Possible values are: true, false. | Optional | 
+| ui_source_alerts_enabled | Whether to enable the UI source alerts. Possible values are: true, false. | Optional | 
+| share_mode | Share mode. Possible values are: restricted, unrestricted, silent, visible, any. | Optional | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| offset | Result offset. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeHX.IndicatorCategory.uri_name | number | Policy ID of the indicator category. | 
+| FireEyeHX.IndicatorCategory.name | string | Name of the indicator category. | 
+| FireEyeHX.IndicatorCategory._revision | number | Revision of the indicator category. | 
+| FireEyeHX.IndicatorCategory.display_name | string | Display name of the indicator category. | 
+| FireEyeHX.IndicatorCategory.retention_policy | string | Retention policy of the indicator category. | 
+| FireEyeHX.IndicatorCategory.ui_edit_policy | string | UI edit policy of the indicator category. | 
+| FireEyeHX.IndicatorCategory.ui_signature_enabled | boolean | Whether the UI signature is enabled. | 
+| FireEyeHX.IndicatorCategory.ui_source_alerts_enabled | boolean | Whether the UI source alerts is enabled. | 
+| FireEyeHX.IndicatorCategory.share_mode | string | Share mode of the indicator category. | 
+
+#### Command example
+```!fireeye-hx-list-indicator-category search=fireEye```
+#### Context Example
+```json
+{
+    "FireEyeHX": {
+        "IndicatorCategory": [
+            {
+                "_id": 4,
+                "_revision": "20200423145028596495100030",
+                "display_name": null,
+                "name": "FireEye",
+                "retention_policy": "auto",
+                "share_mode": "unrestricted",
+                "ui_edit_policy": "delete",
+                "ui_signature_enabled": true,
+                "ui_source_alerts_enabled": true,
+                "uri_name": "FireEye",
+                "url": "/hx/api/v3/indicator_categories/fireeye"
+            },
+            {
+                "_id": 8,
+                "_revision": "20200423145028596495100038",
+                "display_name": "FireEye Restricted",
+                "name": "FireEye Restricted",
+                "retention_policy": "auto",
+                "share_mode": "restricted",
+                "ui_edit_policy": "delete",
+                "ui_signature_enabled": true,
+                "ui_source_alerts_enabled": true,
+                "uri_name": "fireeye_restricted",
+                "url": "/hx/api/v3/indicator_categories/fireeye_restricted"
+            },
+            {
+                "_id": 5,
+                "_revision": "20200423145028596495100032",
+                "display_name": null,
+                "name": "FireEye-CMS",
+                "retention_policy": "auto",
+                "share_mode": "unrestricted",
+                "ui_edit_policy": "delete",
+                "ui_signature_enabled": true,
+                "ui_source_alerts_enabled": true,
+                "uri_name": "FireEye-CMS",
+                "url": "/hx/api/v3/indicator_categories/fireeye_cms"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### 3 Indicator categories found
+>|Name|Policy ID|
+>|---|---|
+>| FireEye | 4 |
+>| FireEye Restricted | 8 |
+>| FireEye-CMS | 5 |
+
+
+### fireeye-hx-delete-indicator
+***
+Delete an indicator.
+
+
+#### Base Command
+
+`fireeye-hx-delete-indicator`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| category | The category name. | Required | 
+| indicator_name | The name of the indicator. Use the `uri_name` value. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fireeye-hx-delete-indicator category=Custom indicator_name=7f49e4c6-14d5-4b06-8d17-843fd17f79de```
+#### Human Readable Output
+
+>Successfully deleted indicator 7f49e4c6-14d5-4b06-8d17-843fd17f79de from the Custom category
+
