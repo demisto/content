@@ -261,6 +261,12 @@ class PackStatus(enum.Enum):
     FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING = "Failed uploading pack while creating dependencies zip"
 
 
+SKIPPED_STATUS_CODES = {
+        PackStatus.PACK_ALREADY_EXISTS.name,
+        PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name,
+        PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name,
+    }
+
 
 class Changelog(object):
     """

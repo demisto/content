@@ -21,7 +21,8 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     json_write
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
-    CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH
+    CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH, \
+    SKIPPED_STATUS_CODES
 from demisto_sdk.commands.common.tools import run_command, str2bool, open_id_set_file
 
 from Tests.scripts.utils.log_util import install_logging
@@ -806,11 +807,6 @@ def get_packs_summary(packs_list):
     Returns: 3 lists of packs - successful_packs, skipped_packs & failed_packs
 
     """
-    skipped_status_codes = {
-        PackStatus.PACK_ALREADY_EXISTS.name,
-        PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name,
-        PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name,
-    }
 
     successful_packs = []
     skipped_packs = []
@@ -818,7 +814,7 @@ def get_packs_summary(packs_list):
     for pack in packs_list:
         if pack.status == PackStatus.SUCCESS.name:
             successful_packs.append(pack)
-        elif pack.status in skipped_status_codes:
+        elif pack.status in SKIPPED_STATUS_CODES:
             skipped_packs.append(pack)
         else:
             failed_packs.append(pack)
@@ -934,7 +930,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
     """
     logging.info("Starting to collect pack with dependencies zips")
     for pack_name, pack in packs_for_current_marketplace_dict.items():
-        if pack.status == PackStatus.SUCCESS.name:
+        if pack.status == PackStatus.SUCCESS.name or pack.status in SKIPPED_STATUS_CODES:
             # avoid trying to upload dependencies zip for failed packs
             try:
                 logging.info(f"Collecting dependencies of {pack_name}")
