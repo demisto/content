@@ -27,10 +27,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2e14779f-7f47-4445-845c-bfea5627cbe3
+    taskid: c06f241d-50cd-49ab-804b-044cdb2ff4a4
     type: start
     task:
-      id: 2e14779f-7f47-4445-845c-bfea5627cbe3
+      id: c06f241d-50cd-49ab-804b-044cdb2ff4a4
       version: -1
       name: ""
       description: '-'
@@ -50,69 +50,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 334792b6-7e5d-4494-85a1-aa4bc2274105
-    type: playbook
-    task:
-      id: 334792b6-7e5d-4494-85a1-aa4bc2274105
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
-      Ids:
-        complex:
-          root: csfalconx
-          accessor: resource.submitted_id
-      Interval:
-        complex:
-          root: inputs.Interval
-      PollingCommandArgName:
-        simple: ids
-      PollingCommandName:
-        simple: cs-fx-get-analysis-status
-      Timeout:
-        complex:
-          root: inputs.Timeout
-      dt:
-        simple: csfalconx(val.resource.state !== 'success').resource.id
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 1530
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: c7c659db-15a7-4c9b-8f3d-72713eefe5f1
+    taskid: fdf2631b-fa80-4139-809c-d210adb1a4e8
     type: regular
     task:
-      id: c7c659db-15a7-4c9b-8f3d-72713eefe5f1
+      id: fdf2631b-fa80-4139-809c-d210adb1a4e8
       version: -1
       name: CrowdStrike Falcon X Get Report
       description: Get a full version of a sandbox report.
@@ -137,12 +84,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 73843b9d-b556-4e1c-895c-93ae4f6671dc
+    taskid: 43667acd-3231-4b33-817c-8b9bad0345f1
     type: title
     task:
-      id: 73843b9d-b556-4e1c-895c-93ae4f6671dc
+      id: 43667acd-3231-4b33-817c-8b9bad0345f1
       version: -1
       name: Done
       description: finished
@@ -160,12 +111,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: ee402758-5d33-4edd-89fb-816dee6233c5
+    taskid: e6ed377b-1aa9-4f62-87e8-d83a3d57203f
     type: condition
     task:
-      id: ee402758-5d33-4edd-89fb-816dee6233c5
+      id: e6ed377b-1aa9-4f62-87e8-d83a3d57203f
       version: -1
       name: Is CrowdStrike Falcon X enabled?
       description: |
@@ -216,12 +171,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 44e9c26f-c38e-4c1c-8b60-80a92220810e
+    taskid: dfdac7f5-ca54-4809-81bc-bdcbdb2359c8
     type: condition
     task:
-      id: 44e9c26f-c38e-4c1c-8b60-80a92220810e
+      id: dfdac7f5-ca54-4809-81bc-bdcbdb2359c8
       version: -1
       name: Filter taskId
       description: Checks that only valid files have been sent to detonation.
@@ -232,7 +191,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "2"
+      - "3"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -252,12 +211,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: dd7a0c59-4cf4-4a46-8316-19dadac61a1b
+    taskid: fbaee6c2-4a32-498a-8c1a-63edaa5fdbdf
     type: condition
     task:
-      id: dd7a0c59-4cf4-4a46-8316-19dadac61a1b
+      id: fbaee6c2-4a32-498a-8c1a-63edaa5fdbdf
       version: -1
       name: Is file type supported?
       description: Checks if the file type is supported.
@@ -319,12 +282,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: e0e4b29f-fe26-47b2-8930-00d6087bdbeb
+    taskid: 81b83784-f0d9-41b5-8c4f-c7cdd18aea51
     type: regular
     task:
-      id: e0e4b29f-fe26-47b2-8930-00d6087bdbeb
+      id: 81b83784-f0d9-41b5-8c4f-c7cdd18aea51
       version: -1
       name: Set File to context
       description: Set the file object into context.
@@ -336,7 +303,6 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      append: {}
       key:
         simple: File
       value:
@@ -353,12 +319,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 813639b9-9c78-44dc-8600-afad5cc1c5db
+    taskid: 851c8a42-3855-46a0-8b2c-43c9098ddf76
     type: condition
     task:
-      id: 813639b9-9c78-44dc-8600-afad5cc1c5db
+      id: 851c8a42-3855-46a0-8b2c-43c9098ddf76
       version: -1
       name: Is there a File to Detonate?
       description: Checks that there is a file in the playbook’s input.
@@ -389,12 +359,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 33e04243-7824-4475-8ea1-5c2366c22fd6
+    taskid: 7b97b671-a1df-406d-8447-1b9321e7cdfb
     type: regular
     task:
-      id: 33e04243-7824-4475-8ea1-5c2366c22fd6
+      id: 7b97b671-a1df-406d-8447-1b9321e7cdfb
       version: -1
       name: CrowdStrike Falcon X Upload File to Sandbox
       description: Upload a file for sandbox analysis.
@@ -406,12 +380,10 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      comment: {}
       file:
         simple: ${inputs.File.EntryID}
       file_name:
         simple: inputs.File.EntryID
-      is_confidential: {}
     separatecontext: false
     view: |-
       {
@@ -423,12 +395,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 5a968f27-55f8-4761-88d0-a89b4d023bda
+    taskid: 1bb5ab60-cfcc-470a-879e-0bb8e97014b5
     type: regular
     task:
-      id: 5a968f27-55f8-4761-88d0-a89b4d023bda
+      id: 1bb5ab60-cfcc-470a-879e-0bb8e97014b5
       version: -1
       name: CrowdStrike FalconX Detonate Uploaded File
       description: Submit a sample SHA256 for sandbox analysis.
@@ -440,18 +416,14 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      action_script: {}
-      command_line: {}
-      document_password: {}
       enable_tor:
         simple: "false"
       environment_id:
         simple: '160: Windows 10'
       sha256:
         simple: ${csfalconx.resource.sha256}
-      submit_name: {}
-      system_date: {}
-      system_time: {}
+      polling:
+        simple: "true"
     separatecontext: false
     view: |-
       {
@@ -463,6 +435,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -482,74 +458,77 @@ inputs:
       root: File
   required: false
   description: The file to detonate. The file is taken from the context.
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "15"
   required: false
   description: How much time to wait before a timeout occurs (minutes)
+  playbookInputQuery:
 outputs:
-    - contextPath: csfalconx.resource.id
-      description: Analysis ID.
-      type: String
-    - contextPath: csfalconx.resource.verdict
-      description: Analysis verdict.
-      type: String
-    - contextPath: csfalconx.resource.created_timestamp
-      description: Analysis start time.
-      type: String
-    - contextPath: csfalconx.resource.environment_id
-      description: Environment ID.
-      type: String
-    - contextPath: csfalconx.resource.snadbox.environment_description
-      description: Environment description.
-      type: String
-    - contextPath: csfalconx.resource.threat_score
-      description: Score of the threat.
-      type: Int
-    - contextPath: csfalconx.resource.submit_url
-      description: URL submitted for analysis.
-      type: String
-    - contextPath: csfalconx.resource.submission_type
-      description: Type of submitted artifact, for example file, URL, etc.
-      type: String
-    - contextPath: csfalconx.resource.filetype
-      description: File type.
-      type: String
-    - contextPath: csfalconx.resource.filesize
-      description: File size.
-      type: Int
-    - contextPath: csfalconx.resource.sha256
-      description: SHA256 hash of the submitted file.
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_strict_csv_artifact_id
-      description: ID of the IOC pack to download (CSV).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_broad_csv_artifact_id
-      description: ID of the IOC pack to download (CSV).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_strict_json_artifact_id
-      description: ID of the IOC pack to download (JSON).
-      type: Int
-    - contextPath: csfalconx.resource.ioc_report_broad_json_artifact_id
-      description: ID of the IOC pack to download (JSON).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_strict_stix_artifact_id
-      description: ID of the IOC pack to download (STIX).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_broad_stix_artifact_id
-      description: ID of the IOC pack to download (STIX).
-      type: Int
-    - contextPath: csfalconx.resource.ioc_report_strict_maec_artifact_id
-      description: ID of the IOC pack to download (MAEC).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
-      description: ID of the IOC pack to download (MAEC).
-      type: String
-fromversion: 5.0.0
+- contextPath: csfalconx.resource.id
+  description: Analysis ID.
+  type: String
+- contextPath: csfalconx.resource.verdict
+  description: Analysis verdict.
+  type: String
+- contextPath: csfalconx.resource.created_timpestamp
+  description: Analysis start time.
+  type: String
+- contextPath: csfalconx.resource.environment_id
+  description: Environment ID.
+  type: String
+- contextPath: csfalconx.resource.snadbox.environment_description
+  description: Environment description.
+  type: String
+- contextPath: csfalconx.resource.threat_score
+  description: Score of the threat.
+  type: Int
+- contextPath: csfalconx.resource.submit_url
+  description: URL submitted for analysis.
+  type: String
+- contextPath: csfalconx.resource.submission_type
+  description: Type of submitted artifact, for example file, URL, etc.
+  type: String
+- contextPath: csfalconx.resource.filetype
+  description: File type.
+  type: String
+- contextPath: csfalconx.resource.filesize
+  description: File size.
+  type: Int
+- contextPath: csfalconx.resource.sha256
+  description: SHA256 hash of the submitted file.
+  type: String
+- contextPath: csfalconx.resource.ioc_report_strict_csv_artifact_id
+  description: ID of the IOC pack to download (CSV).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_broad_csv_artifact_id
+  description: ID of the IOC pack to download (CSV).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_strict_json_artifact_id
+  description: ID of the IOC pack to download (JSON).
+  type: Int
+- contextPath: csfalconx.resource.ioc_report_broad_json_artifact_id
+  description: ID of the IOC pack to download (JSON).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_strict_stix_artifact_id
+  description: ID of the IOC pack to download (STIX).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_broad_stix_artifact_id
+  description: ID of the IOC pack to download (STIX).
+  type: Int
+- contextPath: csfalconx.resource.ioc_report_strict_maec_artifact_id
+  description: ID of the IOC pack to download (MAEC).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
+  description: ID of the IOC pack to download (MAEC).
+  type: String
+fromversion: 6.1.0
 tests:
- -  No tests
+- CrowdStrike_Falcon_X_-Test-Detonate_URL

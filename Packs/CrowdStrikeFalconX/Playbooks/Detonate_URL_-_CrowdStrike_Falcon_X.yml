@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5efceda5-4236-42ed-882f-e26acb6f4756
+    taskid: 4017bd36-8d38-4dcd-872b-684daedd4094
     type: start
     task:
-      id: 5efceda5-4236-42ed-882f-e26acb6f4756
+      id: 4017bd36-8d38-4dcd-872b-684daedd4094
       version: -1
       name: ""
       iscommand: false
@@ -33,12 +33,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: fc1f205f-4605-402d-805d-57b7d4b4cef7
+    taskid: 1674fddb-adb8-41c6-8346-062a50e3138c
     type: condition
     task:
-      id: fc1f205f-4605-402d-805d-57b7d4b4cef7
+      id: 1674fddb-adb8-41c6-8346-062a50e3138c
       version: -1
       name: Is CrowdStrike Falcon X enabled?
       description: |
@@ -93,12 +95,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 66063116-5734-4166-82b3-aa4c0f629285
+    taskid: b203954e-b6c9-418d-8855-61c4c6721078
     type: title
     task:
-      id: 66063116-5734-4166-82b3-aa4c0f629285
+      id: b203954e-b6c9-418d-8855-61c4c6721078
       version: -1
       name: Done
       description: Done
@@ -110,7 +114,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1140
+          "y": 1010
         }
       }
     note: false
@@ -118,12 +122,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 9ab16bf8-de8e-4201-8561-992345b51280
+    taskid: 571ab91f-89a4-47b4-8bc9-55be860ea9c5
     type: regular
     task:
-      id: 9ab16bf8-de8e-4201-8561-992345b51280
+      id: 571ab91f-89a4-47b4-8bc9-55be860ea9c5
       version: -1
       name: CrowdStrike Falcon X Get Report
       description: Get a full version of a sandbox report.
@@ -142,7 +148,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 935
+          "y": 800
         }
       }
     note: false
@@ -150,12 +156,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 251b7acf-b9ad-4122-8968-788528be9bc1
+    taskid: f31df25a-7af7-441d-830d-d399eedca956
     type: regular
     task:
-      id: 251b7acf-b9ad-4122-8968-788528be9bc1
+      id: f31df25a-7af7-441d-830d-d399eedca956
       version: -1
       name: CrowdStrike Falcon X Submit URL
       description: Submit a URL or FTP for sandbox analysis.
@@ -165,20 +173,15 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "8"
     scriptarguments:
-      action_script: {}
-      command_line: {}
-      document_password: {}
-      enable_tor: {}
       environment_id:
         simple: '160: Windows 10'
-      submit_name: {}
-      system_date: {}
-      system_time: {}
       url:
         complex:
           root: inputs.URL
+      polling:
+        simple: "true"
     separatecontext: false
     view: |-
       {
@@ -192,12 +195,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 7bda06fb-0f5a-487b-8242-69d776363760
+    taskid: e9af4fba-5374-4ad2-82b0-53706cd7e5a9
     type: condition
     task:
-      id: 7bda06fb-0f5a-487b-8242-69d776363760
+      id: e9af4fba-5374-4ad2-82b0-53706cd7e5a9
       version: -1
       name: Is there a URL to detonate?
       description: Checks whether there's a file to detonate.
@@ -230,72 +235,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "16":
-    id: "16"
-    taskid: 92f6cd66-9c00-4782-85e6-4b9ebe0fd014
-    type: playbook
-    task:
-      id: 92f6cd66-9c00-4782-85e6-4b9ebe0fd014
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
-      Ids:
-        complex:
-          root: csfalconx
-          accessor: resource.submitted_id
-      Interval:
-        complex:
-          root: inputs.Interval
-      PollingCommandArgName:
-        simple: ids
-      PollingCommandName:
-        simple: cs-fx-get-analysis-status
-      Timeout:
-        complex:
-          root: inputs.Timeout
-      dt:
-        simple: csfalconx(val.resource.state !== 'success').resource.id
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1205,
+        "height": 1075,
         "width": 677.5,
         "x": 162.5,
         "y": 0
@@ -331,57 +278,57 @@ inputs:
   description: How much time to wait before a timeout occurs  (minutes)
   playbookInputQuery:
 outputs:
-    - contextPath: csfalconx.resource.id
-      description: Analysis ID.
-      type: String
-    - contextPath: csfalconx.resource.verdict
-      description: Analysis verdict.
-      type: String
-    - contextPath: csfalconx.resource.created_timestamp
-      description: Analysis start time.
-      type: String
-    - contextPath: csfalconx.resource.environment_id
-      description: Environment ID.
-      type: String
-    - contextPath: csfalconx.resource.environment_description
-      description: Environment description.
-      type: String
-    - contextPath: csfalconx.resource.threat_score
-      description: Score of the threat.
-      type: Int
-    - contextPath: csfalconx.resource.submit_url
-      description: URL submitted for analysis.
-      type: String
-    - contextPath: csfalconx.resource.submission_type
-      description: Type of submitted artifact, for example file, URL, etc.
-      type: String
-    - contextPath: csfalconx.resource.sha256
-      description: SHA256 hash of the submitted file.
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_strict_csv_artifact_id
-      description: ID of the IOC pack to download (CSV).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_broad_csv_artifact_id
-      description: ID of the IOC pack to download (CSV).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_strict_json_artifact_id
-      description: ID of the IOC pack to download (JSON).
-      type: Int
-    - contextPath: csfalconx.resource.ioc_report_broad_json_artifact_id
-      description: ID of the IOC pack to download (JSON).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_strict_stix_artifact_id
-      description: ID of the IOC pack to download (STIX).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_broad_stix_artifact_id
-      description: ID of the IOC pack to download (STIX).
-      type: Int
-    - contextPath: csfalconx.resource.ioc_report_strict_maec_artifact_id
-      description: ID of the IOC pack to download (MAEC).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
-      description: ID of the IOC pack to download (MAEC).
-      type: String
-fromversion: 5.0.0
+- contextPath: csfalconx.resource.id
+  description: Analysis ID.
+  type: String
+- contextPath: csfalconx.resource.verdict
+  description: Analysis verdict.
+  type: String
+- contextPath: csfalconx.resource.created_timpestamp
+  description: Analysis start time.
+  type: String
+- contextPath: csfalconx.resource.environment_id
+  description: Environment ID.
+  type: String
+- contextPath: csfalconx.resource.environment_description
+  description: Environment description.
+  type: String
+- contextPath: csfalconx.resource.threat_score
+  description: Score of the threat.
+  type: Int
+- contextPath: csfalconx.resource.submit_url
+  description: URL submitted for analysis.
+  type: String
+- contextPath: csfalconx.resource.submission_type
+  description: Type of submitted artifact, for example file, URL, etc.
+  type: String
+- contextPath: csfalconx.resource.sha256
+  description: SHA256 hash of the submitted file.
+  type: String
+- contextPath: csfalconx.resource.ioc_report_strict_csv_artifact_id
+  description: ID of the IOC pack to download (CSV).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_broad_csv_artifact_id
+  description: ID of the IOC pack to download (CSV).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_strict_json_artifact_id
+  description: ID of the IOC pack to download (JSON).
+  type: Int
+- contextPath: csfalconx.resource.ioc_report_broad_json_artifact_id
+  description: ID of the IOC pack to download (JSON).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_strict_stix_artifact_id
+  description: ID of the IOC pack to download (STIX).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_broad_stix_artifact_id
+  description: ID of the IOC pack to download (STIX).
+  type: Int
+- contextPath: csfalconx.resource.ioc_report_strict_maec_artifact_id
+  description: ID of the IOC pack to download (MAEC).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
+  description: ID of the IOC pack to download (MAEC).
+  type: String
+fromversion: 6.1.0
 tests:
- -  No tests
+- No tests (auto formatted)

@@ -1,6 +1,7 @@
 id: CrowdStrike_Falcon_X_-Test-Detonate_URL
 version: -1
 name: CrowdStrike_Falcon_X_-Test-Detonate_URL
+description: ""
 starttaskid: "0"
 tasks:
   "0":
@@ -142,5 +143,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.1.0
-description: ''
+fromversion: 5.0.0
