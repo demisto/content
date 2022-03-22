@@ -87,7 +87,7 @@ ALERT_OUTPUT = [
 ]
 
 EVENT_COLUMNS = [
-    'Event.ID',  # TODO need to clarify spec
+    'Event.ID',
     'Event.Type.Name',
     'Event.TimeUTC',
     'Event.Status.Name',
@@ -122,7 +122,7 @@ EVENT_COLUMNS = [
 ]
 
 EVENT_OUTPUT = [
-    'Event.ID',  # TODO need to clarify spec
+    'Event.ID',
     'Event.Type',
     'Event.UTCTime',
     'Event.Status',
@@ -179,7 +179,7 @@ class Client(BaseClient):
         :type password: ``str``
         :param password: Password
 
-        :return: Dict containing the authentication token, token type, expiration time (sec) [TODO get sure that in sec]
+        :return: Dict containing the authentication token, token type, expiration time (sec)
         :rtype: ``Dict[str, Any]``
         """
         ntlm = HttpNtlmAuth(username, password)
@@ -379,21 +379,7 @@ class SearchQueryBuilder(object):
         self._entity_name = entity_name
         self._request_params = request_params
         self._alert_id_column_name = alert_id_column_name
-
-    def build(self) -> Dict[str, Any]:
-        """Generate search query
-
-        :return: The search query
-        :rtype: ``Dict[str, Any]``
-        """
-        query: Dict[str, Any] = dict()
-        query['rows'] = {'columns': self._columns}
-        query['query'] = {
-            'entityName': self._entity_name,
-            'requestParams': self._request_params,
-            'filter': {'filterOperator': 0, 'filters': self._filters}
-        }
-        return query
+        self._ordering: List[Any] = []
 
     def create_alert_id_filter(self, alerts: List[str]):
         """Add alert id filter to the search query
@@ -415,6 +401,30 @@ class SearchQueryBuilder(object):
 
         self._filters.append(filter_obj)
 
+    def create_ordering(self, order_column: str, sort_order: str):
+        self._ordering.append({
+            'path': order_column,
+            "sortOrder": sort_order
+        })
+
+    def build(self) -> Dict[str, Any]:
+        """Generate search query
+
+        :return: The search query
+        :rtype: ``Dict[str, Any]``
+        """
+        query: Dict[str, Any] = dict()
+        query['rows'] = {
+            'columns': self._columns,
+            'ordering': self._ordering
+        }
+        query['query'] = {
+            'entityName': self._entity_name,
+            'requestParams': self._request_params,
+            'filter': {'filterOperator': 0, 'filters': self._filters}
+        }
+        return query
+
 
 class SearchAlertsQueryBuilder(SearchQueryBuilder):
     """ Builder class, needed for generation a search query for alerts
@@ -425,7 +435,7 @@ class SearchAlertsQueryBuilder(SearchQueryBuilder):
             ALERT_COLUMNS,
             client,
             'Alert',
-            {'searchSource': 1, 'searchSourceName': 'Alert'},  # TODO: find out where does this object come from
+            {'searchSource': 1, 'searchSourceName': 'Alert'},
             'Alert.ID'
         )
 
@@ -512,7 +522,7 @@ class SearchEventQueryBuilder(SearchQueryBuilder):
             EVENT_COLUMNS,
             client,
             'Event',
-            {"searchSource": 1, "searchSourceName": "Event"},  # TODO: find out where does this object come from
+            {"searchSource": 1, "searchSourceName": "Event"},
             'Event.Alert.ID'
         )
 
@@ -529,9 +539,13 @@ def get_query_range(count: int, page: int):
     :return: A query range
     :rtype: ``str``
     """
-    if count:
-        return f'from={(page-1)*count}&to={page*count-1}'
-    return ''
+    if page < 1:
+        raise ValueError('page value can\'t be less than  1')
+
+    if count < 1:
+        raise ValueError('max results value can\'t be less than  1')
+
+    return f'from={(page-1)*count + 1}&to={page*count}'
 
 
 def get_search_result_path(search_response: List[Any]) -> str:
@@ -678,6 +692,7 @@ def varonis_get_alerts(
         builder.create_time_interval_filter(start, end)
     if alert_guids and len(alert_guids) > 0:
         builder.create_alert_id_filter(alert_guids)
+    builder.create_ordering('Alert.Time', 'Asc')
 
     query = builder.build()
     data_range = get_query_range(count, page)
@@ -757,6 +772,7 @@ def varonis_get_alerted_events(client: Client, alerts: List[str], count: int, pa
     """
     builder = SearchEventQueryBuilder(client)
     builder.create_alert_id_filter(alerts)
+    builder.create_ordering('Event.TimeUTC', 'Asc')
     query = builder.build()
     data_range = get_query_range(count, page)
 
@@ -785,8 +801,8 @@ def test_module(client: Client) -> str:
         client.varonis_get_enum(THREAT_MODEL_ENUM_ID)
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if 'Unauthorized' in str(e):
+            message = 'Authorization Error: token is incorrect or expired.'
         else:
             raise e
     return message
@@ -1015,7 +1031,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     """
     alerts = args.get('Alert_id', None)
     page = args.get('page', '1')
-    max_results = args.get('max_results', None)
+    max_results = args.get('max_results', '5000')
 
     alerts = try_convert(alerts, lambda x: argToList(x))
     max_results = try_convert(

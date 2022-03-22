@@ -12,6 +12,7 @@ you are implementing with your integration
 
 import json
 import io
+import demistomock as demisto
 from pytest_mock import MockerFixture
 
 from VaronisDataSecurityPlatform import Client
@@ -168,6 +169,8 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
         'varonis_get_search_result',
         return_value=util_load_json('test_data/varonis_get_alerts_api_response.json')
     )
+
+    mocker.patch.object(demisto, 'debug', return_value=None)
 
     last_run = {
         'last_fetched_id': 150
