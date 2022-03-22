@@ -3,25 +3,47 @@ version: -1
 name: T1036 - Masquerading
 description: |-
   This playbook handles masquerading alerts based on MITRE T1036 technique.
-
   An attacker might leverage Microsoft Windows well-known image names to run malicious processes without being caught.
 
-  Attacker's Goals:
+  **Attacker's Goals:**
+
   An attacker is attempting to masquerade as standard windows images by using a trusted name to execute malicious code.
 
-  Investigative Actions:
+  **Investigative Actions:**
+
   Investigate the executed process image and verify if it is malicious using:
+
   * XDR trusted signers
   * VT trusted signers
   * VT detection rate
   * NSRL DB
 
-  Response Actions:
-  * Block the indicator
-  * Quarantine or delete the file
+  **Response Actions**
+
+  The playbook's first response action is a containment plan which is based on the initial data provided within the alert. In that phase, the playbook will execute:
+
+  * Auto block indicators
+  * Auto file quarantine
+  * Manual endpoint isolation
+
+  When the playbook proceeds, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
+
+  This phase will execute the following containment actions:
+
+  * Manual block indicators
+  * Manual file quarantine
+  * Auto endpoint isolation
+
+  And the following eradication actions:
+
+  * Manual process termination
+  * Manual file deletion
+  * Manual reset of the user’s password
 
   External resources:
+
   [MITRE Technique T1036](https://attack.mitre.org/techniques/T1036/)
+
   [Possible Microsoft process masquerading](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/possible-microsoft-process-masquerading.html)
 starttaskid: "0"
 tasks:
@@ -309,10 +331,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 8dfed33e-e9e5-4ef1-834c-fa731f9857f1
+    taskid: 424947cb-b0a5-49da-813c-b5b9368090ed
     type: playbook
     task:
-      id: 8dfed33e-e9e5-4ef1-834c-fa731f9857f1
+      id: 424947cb-b0a5-49da-813c-b5b9368090ed
       version: -1
       name: Containment Plan
       description: |-
@@ -334,7 +356,15 @@ tasks:
       - "90"
     scriptarguments:
       AutoContainment:
-        simple: "False"
+        complex:
+          root: inputs.AutoContainment
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "false"
       BlockIndicators:
         simple: "True"
       ClearUserSessions:
@@ -378,7 +408,8 @@ tasks:
         complex:
           root: inputs.FileRemediation
       HostAutoContainment:
-        simple: "True"
+        complex:
+          root: inputs.HostAutoContainment
       IAMUserDomain:
         simple: '@demisto.com'
       UserContainment:
@@ -732,10 +763,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 452ea03c-c3f8-4e86-813e-50efaa974669
+    taskid: 42bdace5-daa8-4c32-8d51-7ab46b210345
     type: playbook
     task:
-      id: 452ea03c-c3f8-4e86-813e-50efaa974669
+      id: 42bdace5-daa8-4c32-8d51-7ab46b210345
       version: -1
       name: Containment Plan
       description: |-
@@ -757,7 +788,15 @@ tasks:
       - "14"
     scriptarguments:
       AutoContainment:
-        simple: "True"
+        complex:
+          root: inputs.AutoContainment
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "true"
       BlockIndicators:
         simple: "True"
       ClearUserSessions:
@@ -821,7 +860,7 @@ tasks:
       FileRemediation:
         simple: Quarantine
       HostAutoContainment:
-        simple: "False"
+        simple: "false"
       IAMUserDomain:
         simple: '@demisto.com'
       UserContainment:
@@ -1136,10 +1175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "94":
     id: "94"
-    taskid: d5d673a3-574a-4ada-8ce0-fe287241790b
+    taskid: b5c5394f-5fa0-4fdc-8292-8c8ba2f4acba
     type: playbook
     task:
-      id: d5d673a3-574a-4ada-8ce0-fe287241790b
+      id: b5c5394f-5fa0-4fdc-8292-8c8ba2f4acba
       version: -1
       name: Endpoint Investigation Plan
       description: |-
@@ -1248,6 +1287,21 @@ inputs:
     simple: "false"
   required: false
   description: Whether to execute the Recovery playbook.
+  playbookInputQuery:
+- key: AutoContainment
+  value: {}
+  required: false
+  description: |-
+    Whether to execute automatically or manually the containment plan tasks:
+    * Block indicators
+    * Quarantine file
+    * Disable user
+  playbookInputQuery:
+- key: HostAutoContainment
+  value:
+    simple: "true"
+  required: false
+  description: Whether to execute endpoint isolation automatically or manually based on the Endpoint Investigation findings.
   playbookInputQuery:
 outputs: []
 tests:

@@ -13,11 +13,20 @@ Investigate the scanner IP address using:
 * Endpoint Investigation Plan playbook
 * Entity enrichment
 
-**Response Actions:**
+**Response Actions**
 
-* Block IP - Generic v3
-* Report IP to AbuseIPDB
-* Endpoint isolation
+The playbook's response actions are based on the initial data provided within the alert. In that phase, the playbook will execute:
+
+* Auto block IP address
+* Report IP address (If configured as true in the playbook inputs)
+
+When the playbook proceeds, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan playbook, is executed.
+This phase will execute the following containment actions:
+
+* Auto endpoint isolation
+* Manual block indicators
+* Manual file quarantine
+* Manual disable user
 
 **External resources:**
 
@@ -29,12 +38,12 @@ Investigate the scanner IP address using:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Containment Plan
-* Block IP - Generic v3
-* Recovery Plan
 * Handle False Positive Alerts
-* Endpoint Investigation Plan
 * NGFW Internal Scan
+* Containment Plan
+* Recovery Plan
+* Block IP - Generic v3
+* Endpoint Investigation Plan
 
 ### Integrations
 * CortexCoreIR
@@ -44,9 +53,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * SearchIncidentsV2
 
 ### Commands
-* abuseipdb-report-ip
-* ip
 * send-mail
+* ip
+* abuseipdb-report-ip
 * closeInvestigation
 
 ## Playbook Inputs
@@ -60,6 +69,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | AutoRecovery | Whether to execute the Recovery playbook. | false | Optional |
 | SOCEmailAddress | The SOC email address. |  | Optional |
 | reportIPAddress | Whether to report the IP address to AbuseIPDB or not. | false | Optional |
+| AutoContainment | Whether to execute automatically or manually the containment plan tasks:<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user | false | Optional |
+| HostAutoContainment | Whether to execute endpoint isolation automatically or manually. | false | Optional |
 
 ## Playbook Outputs
 ---
@@ -67,4 +78,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![NGFW Scan](Insert the link to your image here)
+![NGFW Scan](https://raw.githubusercontent.com/demisto/content/b9b3e36e6893e95be5de09876efce94acec09da8/Packs/Core/doc_files/NGFW_Scan.png)

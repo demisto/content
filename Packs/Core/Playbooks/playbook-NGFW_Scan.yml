@@ -17,11 +17,20 @@ description: |-
   * Endpoint Investigation Plan playbook
   * Entity enrichment
 
-  **Response Actions:**
+  **Response Actions**
 
-  * Block IP - Generic v3
-  * Report IP to AbuseIPDB
-  * Endpoint isolation
+  The playbook's response actions are based on the initial data provided within the alert. In that phase, the playbook will execute:
+
+  * Auto block IP address
+  * Report IP address (If configured as true in the playbook inputs)
+
+  When the playbook proceeds, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan playbook, is executed.
+  This phase will execute the following containment actions:
+
+  * Auto endpoint isolation
+  * Manual block indicators
+  * Manual file quarantine
+  * Manual disable user
 
   **External resources:**
 
@@ -503,23 +512,43 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: a055287c-6474-4afb-86dd-05e0f90b8f3f
+    taskid: d59bde26-4667-41ec-8e8a-c38c87a3b7a4
     type: playbook
     task:
-      id: a055287c-6474-4afb-86dd-05e0f90b8f3f
+      id: d59bde26-4667-41ec-8e8a-c38c87a3b7a4
       version: -1
       name: NGFW Internal Scan
+      description: |-
+        This playbook investigate a scan where the source is an internal IP address.
+
+        An attacker might initiate an internal scan for discovery, lateral movement and more.
+
+        **Attacker's Goals:**
+
+        An attacker can leverage a scan for open ports and vulnerable systems on remote endpoints in an attempt to identify the endpoint operating system, firewall configuration, and exploitable services.
+
+        **Investigative Actions:**
+
+        * Endpoint Investigation Plan playbook
+
+        **Response Actions:**
+
+        * Endpoint isolation
+        * Block indicators
       playbookName: NGFW Internal Scan
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "27"
     scriptarguments:
       AutoCloseAlert:
         simple: "false"
+      AutoContainment:
+        simple: "false"
+      HostAutoContainment:
+        simple: "true"
       scannerIP:
         complex:
           root: inputs.scannerIP
@@ -590,10 +619,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 563782ad-a2f9-4e55-8473-07db9456782d
+    taskid: 06dcc969-335b-4309-8e46-5979aeff8158
     type: playbook
     task:
-      id: 563782ad-a2f9-4e55-8473-07db9456782d
+      id: 06dcc969-335b-4309-8e46-5979aeff8158
       version: -1
       name: Containment Plan
       description: |-
@@ -615,7 +644,8 @@ tasks:
       - "43"
     scriptarguments:
       AutoContainment:
-        simple: "False"
+        complex:
+          root: inputs.AutoContainment
       BlockIndicators:
         simple: "True"
       ClearUserSessions:
@@ -656,12 +686,13 @@ tasks:
       FileRemediation:
         simple: Quarantine
       HostAutoContainment:
-        simple: Fasle
+        complex:
+          root: inputs.HostAutoContainment
       IAMUserDomain:
         simple: '@demisto.com'
       UserContainment:
         simple: Fasle
-    separatecontext: false
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
@@ -834,10 +865,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 2d8b99fe-5ca4-4b08-88ff-7b671337578d
+    taskid: b84fcf1d-129f-4b82-822a-be68527e7710
     type: playbook
     task:
-      id: 2d8b99fe-5ca4-4b08-88ff-7b671337578d
+      id: b84fcf1d-129f-4b82-822a-be68527e7710
       version: -1
       name: Recovery Plan
       description: |-
@@ -858,8 +889,8 @@ tasks:
       releaseFile:
         simple: "false"
       unIsolateEndpoint:
-        simple: "true"
-    separatecontext: false
+        simple: "false"
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
@@ -1026,10 +1057,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: f0805a35-443c-412d-85c9-d1403276077d
+    taskid: edd23e16-504a-450d-857b-1c93cd09c0d2
     type: playbook
     task:
-      id: f0805a35-443c-412d-85c9-d1403276077d
+      id: edd23e16-504a-450d-857b-1c93cd09c0d2
       version: -1
       name: Endpoint Investigation Plan
       description: |-
@@ -1083,7 +1114,7 @@ tasks:
           root: inputs.scannerIP
       timeRange:
         simple: 2 hours ago
-    separatecontext: true
+    separatecontext: false
     loop:
       iscommand: false
       exitCondition: ""
@@ -1148,6 +1179,7 @@ tasks:
       id: b0f3e23a-43a5-4394-806c-b097064ea017
       version: -1
       name: Should report the IP to AbuseIPDB ?
+      description: Whether to report the IP the AbuseIPDB or not
       type: condition
       iscommand: false
       brand: ""
@@ -1310,6 +1342,22 @@ inputs:
     simple: "false"
   required: false
   description: Whether to report the IP address to AbuseIPDB or not.
+  playbookInputQuery:
+- key: AutoContainment
+  value:
+    simple: "false"
+  required: false
+  description: |-
+    Whether to execute automatically or manually the containment plan tasks:
+    * Block indicators
+    * Quarantine file
+    * Disable user
+  playbookInputQuery:
+- key: HostAutoContainment
+  value:
+    simple: "false"
+  required: false
+  description: Whether to execute endpoint isolation automatically or manually.
   playbookInputQuery:
 outputs: []
 tests:

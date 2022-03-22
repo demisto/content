@@ -9,18 +9,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Active Directory - Get User Manager Details
 
 ### Integrations
-* CoreIOCs
-* CortexCoreIR
+This playbook does not use any integrations.
 
 ### Scripts
-* ParseJSON
 * DeleteContext
-* http
 * Set
+* http
+* ParseJSON
 
 ### Commands
 * ad-get-user
-* ip
 
 ## Playbook Inputs
 ---
@@ -35,4 +33,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Impossible Traveler - IP Enrichment](Insert the link to your image here)
+![Impossible Traveler - Enrichment](Insert the link to your image here)

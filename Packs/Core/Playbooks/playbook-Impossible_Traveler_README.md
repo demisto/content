@@ -13,11 +13,18 @@ Investigate the IP addresses and identities involved in the detected activity us
 * Impossible Traveler - Enrichment playbook
 * CalculateGeoDistance automation
 
-**Response Action:**
+**Response Actions**
 
-* Block the IP address
-* Clear the user's sessions
-* Disable the user
+The playbook's first response actions are based on the data available within the alert. In that phase, the playbook will execute:
+
+* Manual block indicators if the IP address found malicious
+* Manual disable user
+* Manual clear of the user’s sessions (Okta)
+
+When the playbook continues, after validating the activity with the user’s manager, another phase of response actions is being executed, which includes:
+
+* Auto block indicators 
+
 
 **External Resources:**
 
@@ -28,7 +35,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Containment Plan
-* Impossible Traveler - IP Enrichment
+* Impossible Traveler - Enrichment
 
 ### Integrations
 This playbook does not use any integrations.
@@ -49,9 +56,9 @@ This playbook does not use any integrations.
 | MaxMilesPerHourAllowed | The maximum miles per hour that is still considered reasonable. If the geographical distance and difference in time between logins is greater than this value, the user will be considered an impossible traveler. | 400 | Optional |
 | WhitelistedIPs | CSV of IP addresses that are allowed to be used across long distances. |  | Optional |
 | ContactUserManager | Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler. | True | Optional |
-| UserManagerEmail | The manager email address. |  | Optional |
-| AutoContainment | Whether to execute the containment automatically or manually. | False | Optional |
-| AbuseIPDBThreshold | The threshold for AbuseIPDB score to be considered as malicious. | 80 | Optional |
+| UserManagerEmail | The user's manager email address | poc@demistodev.com | Optional |
+| AutoContainment | Whether to execute auto containment or not | False | Optional |
+| AbuseIPDBThreshold | The score needed from AbuseIPDB to consider IP address as malicious | 80 | Optional |
 
 ## Playbook Outputs
 ---
@@ -82,4 +89,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Impossible Traveler](Insert the link to your image here)
+![Impossible Traveler](https://raw.githubusercontent.com/demisto/content/b9b3e36e6893e95be5de09876efce94acec09da8/Packs/Core/doc_files/Impossible_Traveler.png)

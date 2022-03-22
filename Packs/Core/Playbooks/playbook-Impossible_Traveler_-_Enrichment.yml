@@ -1,6 +1,6 @@
-id: Impossible Traveler - IP Enrichment
+id: Impossible Traveler - Enrichment
 version: -1
-name: Impossible Traveler - IP Enrichment
+name: Impossible Traveler - Enrichment
 description: |-
   This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler main playbook alert and enrich them based on:
   * Geo location
@@ -20,13 +20,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "11"
+      - "13"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -875
+          "y": -715
         }
       }
     note: false
@@ -194,44 +194,6 @@ tasks:
         "position": {
           "x": 450,
           "y": 940
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: 8df9334e-0d66-4f06-8e09-0a72705de8c2
-    type: regular
-    task:
-      id: 8df9334e-0d66-4f06-8e09-0a72705de8c2
-      version: -1
-      name: Get login IP location information
-      description: Gets geolocation information about the IP that the user logged in from.
-      script: '|||ip'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      ip:
-        complex:
-          root: inputs.sourceip
-          transformers:
-          - operator: uniq
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -740
         }
       }
     note: false
@@ -773,10 +735,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1880,
+        "height": 1720,
         "width": 1950,
         "x": -340,
-        "y": -875
+        "y": -715
       }
     }
   }

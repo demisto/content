@@ -1,7 +1,7 @@
 id: NGFW Internal Scan
 version: -1
 name: NGFW Internal Scan
-description: |-
+description: |
   This playbook investigate a scan where the source is an internal IP address.
 
   An attacker might initiate an internal scan for discovery, lateral movement and more.
@@ -14,10 +14,13 @@ description: |-
 
   * Endpoint Investigation Plan playbook
 
-  **Response Actions:**
+  **Response Actions**
 
-  * Endpoint isolation
-  * Block indicators
+  The playbook's response actions are based on the Endpoint Investigation Plan playbook results. In that phase, the playbook will execute:
+
+  * Auto endpoint isolation
+  * Manual block indicators
+  * Manual file quarantine
 starttaskid: "0"
 tasks:
   "0":
@@ -51,10 +54,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: b47fc3ea-d04a-4798-8a2f-6132587d5c05
+    taskid: 87c1a8ec-c2f2-4b91-8721-f44652f1634c
     type: playbook
     task:
-      id: b47fc3ea-d04a-4798-8a2f-6132587d5c05
+      id: 87c1a8ec-c2f2-4b91-8721-f44652f1634c
       version: -1
       name: Account Enrichment - Generic v2.1
       description: |-
@@ -97,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 790fc053-197e-4403-8070-fc1c3ef2d894
+    taskid: 3b1f62bc-537c-469a-89a7-ee93d9235e5b
     type: playbook
     task:
-      id: 790fc053-197e-4403-8070-fc1c3ef2d894
+      id: 3b1f62bc-537c-469a-89a7-ee93d9235e5b
       version: -1
       name: Get endpoint details - Generic
       description: "This playbook uses the generic command !endpoint to retrieve details on a specific endpoint.\nThis command currently supports the following integrations:\n- Palo Alto Networks Cortex XDR - Investigation and Response.\n- CrowdStrike Falcon. "
@@ -230,10 +233,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 3f1cc4c7-17ea-41a2-8ed3-79281fa2c6b1
+    taskid: 7dfb9c5d-5ad6-4bdd-881f-bfce33da263c
     type: playbook
     task:
-      id: 3f1cc4c7-17ea-41a2-8ed3-79281fa2c6b1
+      id: 7dfb9c5d-5ad6-4bdd-881f-bfce33da263c
       version: -1
       name: Containment Plan
       description: |-
@@ -255,7 +258,8 @@ tasks:
       - "16"
     scriptarguments:
       AutoContainment:
-        simple: "False"
+        complex:
+          root: inputs.AutoContainment
       BlockIndicators:
         simple: "False"
       ClearUserSessions:
@@ -296,12 +300,13 @@ tasks:
       FileRemediation:
         simple: Quarantine
       HostAutoContainment:
-        simple: "True"
+        complex:
+          root: inputs.HostAutoContainment
       IAMUserDomain:
         simple: '@xsoar.com'
       UserContainment:
         simple: "False"
-    separatecontext: true
+    separatecontext: false
     loop:
       iscommand: false
       exitCondition: ""
@@ -560,10 +565,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 6ec67510-e306-4a39-88ff-2546d8ca060e
+    taskid: 9f808ed4-3737-4536-8bb2-276ed2c9e330
     type: playbook
     task:
-      id: 6ec67510-e306-4a39-88ff-2546d8ca060e
+      id: 9f808ed4-3737-4536-8bb2-276ed2c9e330
       version: -1
       name: Endpoint Investigation Plan
       description: |-
@@ -615,7 +620,7 @@ tasks:
           root: inputs.scannerIP
       timeRange:
         simple: 24 hours ago
-    separatecontext: false
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
@@ -658,13 +663,27 @@ inputs:
       root: alert
       accessor: hostip
   required: false
-  description: The source IP address of the attacker.
+  description: The scanner IP address
   playbookInputQuery:
 - key: AutoCloseAlert
   value:
     simple: "false"
   required: false
   description: Whether to close the alert automatically or manually after an analyst's review.
+  playbookInputQuery:
+- key: AutoContainment
+  value: {}
+  required: false
+  description: |-
+    Whether to execute automatically or manually the containment plan tasks:
+    * Block indicators
+    * Quarantine file
+    * Disable user
+  playbookInputQuery:
+- key: HostAutoContainment
+  value: {}
+  required: false
+  description: Whether to execute endpoint isolation automatically or manually.
   playbookInputQuery:
 outputs: []
 tests:
