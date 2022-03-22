@@ -2,6 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import dill
+from PIL import Image
+import io
 
 # remove patch version 0,0
 
@@ -9,7 +11,8 @@ MAJOR_VERSION = 1
 MINOR_DEFAULT_VERSION = 0
 
 URL_PHISHING_MODEL_NAME = "url_phishing_model"
-MSG_EMPTY_NAME_OR_URL = "Empty logo name or logo image ID"
+MSG_EMPTY_NAME_OR_URL = "Empty logo name or/and logo image ID"
+MSG_EMPTY_LOGO_NAME = "Empty logo name argument"
 OOB_VERSION_INFO_KEY = 'oob_version'
 OOB_MAJOR_VERSION_INFO_KEY = 'major'
 OOB_MINOR_VERSION_INFO_KEY = 'minor'
@@ -22,10 +25,11 @@ MSG_WRONG_CONFIGURATION = "Wrong configuration of the model"
 MSG_SAVE_MODEL_IN_DEMISTO = "Saved model version %s.%s"
 MSG_TRANSFER_LOGO = "Transfer logo from demisto model into new docker model"
 MSG_ERROR_READING_MODEL = "Error reading model %s from Demisto"
-MSG_NEED_TO_KNOW_WHICH_ACTION = "Need to choose one of the action: Add/Remove logo"
+MSG_NEED_TO_KNOW_WHICH_ACTION = "Need to choose one of the action: Add/Remove/Amend logo"
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 
 KEY_ADD_LOGO = 'AddLogo'
+KEY_REMOVE_LOGO = 'RemoveLogo'
 
 def get_minor_version_upgrade(model):
     model.minor = model.minor + 1
@@ -137,25 +141,53 @@ def image_from_base64_to_bytes(base64_message: str):
     return message_bytes
 
 
+def get_concat_logo_single_image(logo_list):
+    number_of_image_per_row = 5
+    width_new, height_new = 300, 300
+    images= [Image.open(io.BytesIO(image_bytes)) for image_bytes in logo_list]
+    total_number_of_images = len(images)
+    total_width = (number_of_image_per_row) * width_new
+    max_height = (total_number_of_images // number_of_image_per_row + 1) * height_new
+    new_im = Image.new('RGB', (total_width, max_height))
+    number_image_x = 0
+    x_offset = 0
+    y_offset = 0
+    new_size = (width_new, height_new)
+    for im in images:
+        im = im.resize(new_size)
+        if number_image_x >= number_of_image_per_row:
+            x_offset = 0
+            y_offset += height_new
+            number_image_x = 0
+        new_im.paste(im, (x_offset, y_offset))
+        x_offset += width_new
+        number_image_x += 1
+    buf = io.BytesIO()
+    new_im.save(buf, format='JPEG')
+    return buf.getvalue()
+
+
 def display_all_logos(model):
-    demisto.results(model.custom_logo_associated_domain)
-    demisto.results(model.logos_dict)
+    description = ""
+    logo_list = []
     for name, logo in model.logos_dict.items():
         custom_associated_logo = model.custom_logo_associated_domain.get(name, '')
         if name in model.custom_logo_associated_domain.keys():
-            description = 'Custom Logo with name %s is associated with domains: %s' %(name, ','.join(custom_associated_logo))
+            description = description + ", %s (%s, %s)" % (name, 'Custom Logo', ','.join(custom_associated_logo))
         else:
-            description = 'This logo is not custom and cannot be changed'
-        filename = "Logo name: %s" %name
-        res = fileResult(filename=filename, data=image_from_base64_to_bytes(logo))
-        res['Type'] = entryTypes['image']
-        return_results(res)
-        demisto.results(description)
+            description = description + ", %s (%s)" % (name, 'Default Logo')
+        logo_list.append(logo)
+    description = description[1:]
+    merged_logos = get_concat_logo_single_image([image_from_base64_to_bytes(logo) for logo in logo_list])
+    res = fileResult(filename=description, data=merged_logos)
+    res['Type'] = entryTypes['image']
+    return_results(res)
+
 
 
 def main():
     msg_list = []
-    logo_image_id = demisto.args().get('logo_image_id', '')
+    logo_image_id = demisto.args().get('logoimageId', '')
     logo_name = demisto.args().get('logoName', '')
     debug = demisto.args().get('debug', 'False') == 'True'
     display_logos = demisto.args().get('displayLogos', 'False') == 'True'
@@ -163,7 +195,7 @@ def main():
     action = demisto.args().get('action', None)
 
     if not action and not display_logos:
-        demisto.results(MSG_NEED_TO_KNOW_WHICH_ACTION)
+        return_error(MSG_NEED_TO_KNOW_WHICH_ACTION)
         return
 
     if display_logos:
@@ -175,8 +207,11 @@ def main():
         display_all_logos(model)
         return
 
-    if not logo_image_id or not logo_name:
+    if (action == KEY_ADD_LOGO) and (not logo_image_id or not logo_name):
         return_error(MSG_EMPTY_NAME_OR_URL)
+    elif not logo_name:
+        return_error(MSG_EMPTY_LOGO_NAME)
+
 
     res = demisto.getFilePath(logo_image_id)
     path = res['path']
@@ -187,11 +222,14 @@ def main():
 
     # Case 1: model in demisto does not exist OR new major released but no logo were added -> load from docker
     if not exist or (demisto_major_version < MAJOR_VERSION and demisto_minor_version == MINOR_DEFAULT_VERSION):
+        demisto.results('Case 1')
         model = load_model_from_docker()
         if action == KEY_ADD_LOGO:
             success, msg = model.add_new_logo(logo_name, logo_content, associated_domains)
-        else:
+        elif action == KEY_REMOVE_LOGO:
             success, msg = model.remove_logo(logo_name)
+        else:
+            success, msg = model.update_domain_for_custom_logo(logo_name, associated_domains)
         msg_list.append(msg)
         if success:
             minor, model = get_minor_version_upgrade(model)
@@ -202,11 +240,14 @@ def main():
 
     # Case where there were new new model release -> load model from demisto
     elif (demisto_major_version == MAJOR_VERSION):
+        demisto.results('Case 2')
         model = load_demisto_model()
         if action == KEY_ADD_LOGO:
             success, msg = model.add_new_logo(logo_name, logo_content, associated_domains)
-        else:
+        elif action == KEY_REMOVE_LOGO:
             success, msg = model.remove_logo(logo_name)
+        else:
+            success, msg = model.update_domain_for_custom_logo(logo_name, associated_domains)
         msg_list.append(msg)
         if success:
             minor, model = get_minor_version_upgrade(model)
@@ -217,6 +258,7 @@ def main():
 
     # Case where new model release and logo were added -> transfer logo from model in demisto to new model in docker
     elif (demisto_major_version < MAJOR_VERSION) and (demisto_minor_version > MINOR_DEFAULT_VERSION):
+        demisto.results('Case 3')
         model_docker = load_model_from_docker()
         model_demisto = load_demisto_model()
         model_docker.logos_dict = model_demisto.logos_dict
@@ -225,8 +267,10 @@ def main():
         msg_list.append(MSG_TRANSFER_LOGO)
         if action == KEY_ADD_LOGO:
             success, msg = model_docker.add_new_logo(logo_name, logo_content, associated_domains)
-        else:
+        elif action == KEY_REMOVE_LOGO:
             success, msg = model_docker.remove_logo(logo_name)
+        else:
+            success, msg = model_docker.update_domain_for_custom_logo(logo_name, associated_domains)
         msg_list.append(msg)
         if success:
             model_docker.minor = demisto_minor_version

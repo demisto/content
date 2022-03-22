@@ -104,10 +104,10 @@ script: '-'
 subtype: python3
 system: false
 tags:
-- ''
+- 'ml'
 timeout: '0'
 type: python
-dockerimage: devdemisto/mlurlphishing:1.0.0.27612
+dockerimage: devdemisto/mlurlphishing:1.0.0.27687
 runas: DBotRole
 runonce: false
 tests:

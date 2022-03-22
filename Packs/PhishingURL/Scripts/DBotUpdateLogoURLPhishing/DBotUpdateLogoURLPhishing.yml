@@ -1,12 +1,12 @@
 args:
 - default: false
-  description: ID in demisto of the uploaded image.
+  description: '"Entry ID" in XSOAR'
   isArray: false
-  name: logo_image_id
+  name: logoimageId
   required: false
   secret: false
 - default: false
-  description: Name of the logo. The name won't impact the model.
+  description: Name of the logo. The name is the unique identifier for each logo.
   isArray: false
   name: logoName
   required: false
@@ -25,7 +25,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: If True it will only display the logo in the current mode.
+  description: If True it will only display all the logos inside the model.
   isArray: false
   name: displayLogos
   predefined:
@@ -34,25 +34,26 @@ args:
   required: false
   secret: false
 - default: false
-  isArray: false
-  name: updateDomainForCustomLogo
-  required: false
-  secret: false
-- default: false
+  description: Comma-separated list of domains that are associated to the logo defined
+    in the logoName argument. It will only be used if action argument is AddLogo or
+    ModifiedDomainForLogo.
   isArray: true
   name: associatedDomains
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
+  description: Action that we want to execute on the model. Will be ignore if displayLogos
+    is set to True.
   isArray: false
   name: action
   predefined:
   - RemoveLogo
-  - ' AddLogo'
+  - AddLogo
+  - ModifiedDomainForLogo
   required: false
   secret: false
-comment: Update the URL Phishing model with new logo
+comment: Add Remove or amend logos from the URL Phishing model
 commonfields:
   id: DBotUpdateLogoURLPhishing
   version: -1
@@ -61,9 +62,11 @@ name: DBotUpdateLogoURLPhishing
 script: '-'
 subtype: python3
 system: false
+tags:
+- ml
 timeout: '0'
 type: python
-dockerimage: devdemisto/mlurlphishing:1.0.0.27612
+dockerimage: devdemisto/mlurlphishing:1.0.0.27657
 runas: DBotRole
 runonce: false
 tests:
