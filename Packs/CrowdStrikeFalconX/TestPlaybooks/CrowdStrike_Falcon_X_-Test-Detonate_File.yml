@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f7f4a814-ea8b-44b8-8208-bd4230f5664a
+    taskid: 0febfd58-06a1-4831-8160-30b15e923847
     type: start
     task:
-      id: f7f4a814-ea8b-44b8-8208-bd4230f5664a
+      id: 0febfd58-06a1-4831-8160-30b15e923847
       version: -1
       name: ""
       iscommand: false
@@ -31,19 +31,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 74ba98b3-a33e-4d33-8be2-74b2a6d4b81b
+    taskid: 3bc7bc7b-cf09-40c9-8191-658cf6ce571b
     type: regular
     task:
-      id: 74ba98b3-a33e-4d33-8be2-74b2a6d4b81b
+      id: 3bc7bc7b-cf09-40c9-8191-658cf6ce571b
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
       type: regular
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -51,6 +50,8 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
+      keysToKeep: {}
     separatecontext: false
     view: |-
       {
@@ -64,14 +65,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 82d3c4a4-de65-47b2-83fa-aec942d77f2b
+    taskid: 7fc6a518-4ddb-425c-8f12-1ca517d6bf45
     type: regular
     task:
-      id: 82d3c4a4-de65-47b2-83fa-aec942d77f2b
+      id: 7fc6a518-4ddb-425c-8f12-1ca517d6bf45
       version: -1
       name: Set File
       description: Sends an http request and returns the response as JSON.
@@ -83,14 +82,21 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
+      body: {}
       filename:
         simple: test.pdf
+      headers: {}
+      insecure: {}
       method:
         simple: GET
+      password: {}
+      proxy: {}
       saveAsFile:
         simple: "yes"
+      unsecure: {}
       url:
         simple: http://www.pdf995.com/samples/pdf.pdf
+      username: {}
     separatecontext: false
     view: |-
       {
@@ -104,42 +110,20 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 3b25abd0-7753-4d11-8599-312802b2b180
+    taskid: 7043a945-5200-40c5-8f48-b62e4b1c7573
     type: playbook
     task:
-      id: 3b25abd0-7753-4d11-8599-312802b2b180
+      id: 7043a945-5200-40c5-8f48-b62e4b1c7573
       version: -1
       name: Detonate File - CrowsStrike Falcon X
-      playbookName: Detonate File - CrowdStrike Falcon X
+      playbookName: Detonate File - CrowsStrike Falcon X
+      playbookId: Detonate File - CrowdStrike Falcon X
       type: playbook
       iscommand: false
       brand: ""
-      description: |-
-        Detonates a File using CrowdStrike Falcon X sandbox.
-        Accepted file formats:
-        Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
-        Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
-        PDF
-        APK
-        Executable JAR
-        Windows script component: .sct
-        Windows shortcut: .lnk
-        Windows help: .chm
-        HTML application: .hta
-        Windows script file: .wsf
-        Javascript: .js
-        Visual Basic: .vbs, .vbe
-        Shockwave Flash: .swf
-        Perl: .pl
-        Powershell: .ps1, .psd1, .psm1
-        Scalable vector graphics: .svg
-        Python: .py
-        Linux ELF executables
-        Email files: MIME RFC 822 .eml, Outlook .msg.
+      description: ''
     separatecontext: true
     view: |-
       {
@@ -153,21 +137,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    scriptarguments:
-      File:
-        complex:
-          root: File
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "30"
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -182,4 +151,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.2.0
+fromversion: 5.0.0

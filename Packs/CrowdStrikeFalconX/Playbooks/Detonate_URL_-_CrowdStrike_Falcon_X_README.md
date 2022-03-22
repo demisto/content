@@ -34,7 +34,7 @@ This playbook does not use any scripts.
 |-------------------------------------------------------|---------------------------------------------------------|----------|
 | csfalconx.resource.id                                 | Analysis ID.                                            | String   |
 | csfalconx.resource.verdict                            | Analysis verdict.                                       | String   |
-| csfalconx.resource.created_timpestamp                 | Analysis start time.                                    | String   |
+| csfalconx.resource.created_timestamp                 | Analysis start time.                                    | String   |
 | csfalconx.resource.environment_id                     | Environment ID.                                         | String   |
 | csfalconx.resource.environment_description            | Environment description.                                | String   |
 | csfalconx.resource.threat_score                       | Score of the threat.                                    | Int      |
