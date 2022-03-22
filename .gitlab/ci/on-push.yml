@@ -60,7 +60,7 @@ run-validations:
       else
         # replace slashes ('/') in the branch name, if exist, with underscores ('_')
         UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
-        git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_CI_BRANCH >/dev/null
+         git clone --depth=1 -q https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_CI_BRANCH
         if [ "$?" != "0" ]; then
           echo "No such branch in content-test-conf: $UNDERSCORE_CI_BRANCH"
         else
