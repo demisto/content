@@ -1,21 +1,21 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "eventstartdate",
+    "cliName": "cryptosimeventstartdate",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_eventstartdate",
+    "id": "incident_cryptosimeventstartdate",
     "isReadOnly": false,
     "locked": false,
-    "name": "Event Start Date",
+    "name": "CRYPTOSIM Event Start Date",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
     "propagationLabels": [
-        "all"
+        "Cryptosim Correlation Alerts"
     ],
     "required": false,
     "sla": 0,

@@ -1,21 +1,21 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "pluginid",
+    "cliName": "cryptosimpluginid",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_pluginid",
+    "id": "incident_cryptosimpluginid",
     "isReadOnly": false,
     "locked": false,
-    "name": "Plugin ID",
+    "name": "CRYPTOSIM Plugin ID",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
     "propagationLabels": [
-        "all"
+        "Cryptosim Correlation Alerts"
     ],
     "required": false,
     "sla": 0,

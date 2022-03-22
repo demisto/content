@@ -1,21 +1,21 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "correlationid",
+    "cliName": "cryptosimcorrelationid",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_correlationid",
+    "id": "incident_cryptosimcorrelationid",
     "isReadOnly": false,
     "locked": false,
-    "name": "Correlation ID",
+    "name": "CRYPTOSIM Correlation ID",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
     "propagationLabels": [
-        "all"
+        "Cryptosim Correlation Alerts"
     ],
     "required": false,
     "sla": 0,

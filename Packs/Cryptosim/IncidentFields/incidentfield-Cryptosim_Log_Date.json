@@ -1,21 +1,21 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "logdate",
+    "cliName": "cryptosimlogdate",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_logdate",
+    "id": "incident_cryptosimlogdate",
     "isReadOnly": false,
     "locked": false,
-    "name": "Log Date",
+    "name": "CRYPTOSIM Log Date",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
     "propagationLabels": [
-        "all"
+        "Cryptosim Correlation Alerts"
     ],
     "required": false,
     "sla": 0,

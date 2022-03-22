@@ -1,10 +1,10 @@
 {
-    "id": "Cryptosim Correlation Alerts Type",
+    "id": "Cryptosim Correlation Alerts",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Cryptosim Correlation Alerts Type",
-    "prevName": "Cryptosim Correlation Alerts Type",
+    "name": "Cryptosim Correlation Alerts",
+    "prevName": "Cryptosim Correlation Alerts",
     "color": "#3d8b10",
     "hours": 0,
     "days": 0,
