@@ -11,7 +11,6 @@ import dateparser
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
-from CoreIRApiModule import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -2489,6 +2488,7 @@ def main():
     except Exception as err:
         demisto.error(traceback.format_exc())
         return_error(str(err))
+
 
 from CoreIRApiModule import *
 

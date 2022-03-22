@@ -1420,19 +1420,6 @@ class CoreClient(BaseClient):
         endpoints_count = reply.get('reply').get('total_count', 0)
         return endpoints_count, reply
 
-    def get_original_alerts(self, alert_id_list):
-        res = self._http_request(
-            method='POST',
-            url_suffix='/alerts/get_original_alerts/',
-            json_data={
-                'request_data': {
-                    'alert_id_list': alert_id_list,
-                }
-            },
-        )
-        return res.get('reply', {})
-
-
     def add_exclusion(self, indicator, name, status="ENABLED", comment=None):
         request_data: Dict[str, Any] = {
             'indicator': indicator,
