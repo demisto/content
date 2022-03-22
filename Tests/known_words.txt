@@ -115,3 +115,6 @@ ShowCampaignSenders
 ShowCampaignRecipients
 GetCampaignIncidentsInfo
 IsIncidentPartOfCampaign
+Adopt-a-Pack
+CVE
+IOC

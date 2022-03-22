@@ -1,8 +1,7 @@
 id: a920cb78-2075-4c46-8749-7d858c2aa2bd
-version: 87
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Digital Shadows - Domain Alert Intelligence (Automated)
-description: Provides intelligence and reputation outputs based on the most recent Impersonating Domain, Subdomain or Phishing URL reported by Digital Shadows SearchLight
+description: Provides intelligence and reputation outputs based on the most recent Impersonating Domain, Subdomain or Phishing URL reported by Digital Shadows SearchLight.
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -186,8 +186,7 @@ tasks:
       - "13"
     scriptarguments:
       extend-context:
-        simple: Description=content.entity.description::Associated Indicators=content.entity.indicators.title::Phishing
-          URL=content.entity.url
+        simple: Description=content.entity.description::Associated Indicators=content.entity.indicators.title::Phishing URL=content.entity.url
       filter_types:
         simple: INDICATOR_FEED
       query:
@@ -380,8 +379,7 @@ tasks:
       id: 8c941eda-9291-44d4-887a-5ef4d78a2ce9
       version: -1
       name: associateIndicatorsToIncident
-      description: Associate one or more indicators to incident. You can specify the
-        indicators by either indicator ID or the value of the indicator
+      description: Associate one or more indicators to incident. You can specify the indicators by either indicator ID or the value of the indicator
       script: Builtin|||associateIndicatorsToIncident
       type: regular
       iscommand: true
@@ -424,6 +422,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -450,6 +449,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "No":
       - "9"
@@ -513,6 +513,9 @@ inputs:
               simple: PHISHING_ATTEMPT
       accessor: id
   required: false
-  description: ""
-  playbookInputQuery: null
+  description: "The ID of a Phishing Attempt incident raised by Digital Shadows SearchLight"
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

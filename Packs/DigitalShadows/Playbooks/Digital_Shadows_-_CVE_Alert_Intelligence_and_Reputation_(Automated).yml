@@ -1,8 +1,7 @@
 id: 1ce16163-cad4-4400-8172-4a4d09bd20d0
-version: 45
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Digital Shadows - CVE Alert Intelligence and Reputation (Automated)
-description: Provides intelligence and reputation outputs to the Client based on the most recent CVE alert reported on their infrastructure by Digital Shadows SearchLight
+description: Provides intelligence and reputation outputs to the Client based on the most recent CVE alert reported on their infrastructure by Digital Shadows SearchLight.
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -93,13 +93,11 @@ tasks:
       - "9"
     scriptarguments:
       extend-context:
-        simple: Profile Name=content.entity.primaryTag.name::Profile Description=content.entity.threatLevel.reason::Risk
-          Assessment=content.entity.threatLevel.type
+        simple: Profile Name=content.entity.primaryTag.name::Profile Description=content.entity.threatLevel.reason::Risk Assessment=content.entity.threatLevel.type
       filter_dateRange:
         simple: P365D
       query:
-        simple: ${DigitalShadows.Vulnerabilities.CveId} AND (type=[Actors] OR type=[Campaigns]
-          OR type=[Criminal locations] OR type=[TTPs])
+        simple: ${DigitalShadows.Vulnerabilities.CveId} AND (type=[Actors] OR type=[Campaigns] OR type=[Criminal locations] OR type=[TTPs])
       sort_property:
         simple: sortDate
     separatecontext: false
@@ -139,8 +137,7 @@ tasks:
       ignore-outputs:
         simple: "false"
       query:
-        simple: ${DigitalShadows.Vulnerabilities.CveId} AND ((tag=[Vulnerability exploited]
-          AND type=[Intelligence updates]) OR (CVE AND source=[alienvault otx]))
+        simple: ${DigitalShadows.Vulnerabilities.CveId} AND ((tag=[Vulnerability exploited] AND type=[Intelligence updates]) OR (CVE AND source=[alienvault otx]))
       sort_property:
         simple: sortDate
     separatecontext: false
@@ -176,8 +173,7 @@ tasks:
       - "12"
     scriptarguments:
       extend-context:
-        simple: CVSS 3.0 Score=content.entity.cvss3Score.baseScore::Description=content.entity.description::Related
-          CPEs=content.entity.relatedCPEs::Existing Exploits=content.entity.title
+        simple: CVSS 3.0 Score=content.entity.cvss3Score.baseScore::Description=content.entity.description::Related CPEs=content.entity.relatedCPEs::Existing Exploits=content.entity.title
       filter_types:
         simple: VULNERABILITY_EXPLOIT
       query:
@@ -223,9 +219,7 @@ tasks:
       ignore-outputs:
         simple: "false"
       query:
-        simple: ${DigitalShadows.Vulnerabilities.CveId} AND (type=[Dark web pages]
-          OR type=[Chat messages] OR type=[Forum posts] OR type=[Marketplace listings]
-          OR type=[Pastes])
+        simple: ${DigitalShadows.Vulnerabilities.CveId} AND (type=[Dark web pages] OR type=[Chat messages] OR type=[Forum posts] OR type=[Marketplace listings] OR type=[Pastes])
       sort_property:
         simple: sortDate
     separatecontext: false
@@ -570,7 +564,9 @@ inputs:
             value:
               simple: id
   required: true
-  description: ""
-  playbookInputQuery: null
+  description: "The ID of a CVE incident raised by Digital Shadows SearchLight"
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: 717dd5bf-3626-47cb-8c88-2415bd2d2ef1
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
