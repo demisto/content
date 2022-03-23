@@ -1,6 +1,3 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
 """Cimtrak Integration for Cortex XSOAR (aka Demisto)
 
 
@@ -19,19 +16,19 @@ from CommonServerPython import *  # noqa: F401
  IT MAY DESCRIBE, IN WHOLE OR IN PART.
 
 """
-import json
-import time
+import urllib3
+import dateparser
 import traceback
-from datetime import datetime
-from operator import itemgetter
 from typing import Any, Dict, List, Optional, Union
 
-import dateparser
 ################################################################
 # CimTrak Python API Begin
 ################################################################
 import requests
-import urllib3
+import json
+from operator import itemgetter
+from datetime import datetime
+import time
 
 
 class CimTrak:
@@ -1550,7 +1547,7 @@ def test_module(client: Client, first_fetch_time: int) -> str:
             return "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
-    return "Unknown error"
+    return request_response["status"] + " : " + request_response["errorDescription"]
 
 
 def fetch_incidents(
@@ -1662,8 +1659,8 @@ def get_events_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Event.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -1739,8 +1736,8 @@ def file_analysis_by_hash_command(client: Client, args: Dict[str, Any]) -> List[
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.FileAnalysis.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -1780,8 +1777,8 @@ def file_analysis_by_object_detail_id_command(client: Client, args: Dict[str, An
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.FileAnalysis.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -1821,8 +1818,8 @@ def check_file_against_trusted_file_registry_by_hash_command(client: Client, arg
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.TrustedFileRegistry.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -1860,8 +1857,8 @@ def promote_authoritative_baseline_files_command(client: Client, args: Dict[str,
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.AuthoritizeBaseline.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -1902,8 +1899,8 @@ def demote_authoritative_baseline_files_command(client: Client, args: Dict[str, 
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.AuthoritizeBaseline.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -1944,8 +1941,8 @@ def update_task_disposition_command(client: Client, args: Dict[str, Any]) -> Lis
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.TaskDisposition.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -1983,8 +1980,8 @@ def get_tickets_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Ticket.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2047,8 +2044,8 @@ def get_ticket_tasks_command(client: Client, args: Dict[str, Any]) -> List[Comma
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.TicketTask.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2143,8 +2140,8 @@ def add_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Ticket.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2240,8 +2237,8 @@ def update_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandR
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Ticket.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2307,8 +2304,8 @@ def add_ticket_comment_command(client: Client, args: Dict[str, Any]) -> List[Com
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Ticket.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2336,8 +2333,8 @@ def add_hash_allow_list_command(client: Client, args: Dict[str, Any]) -> List[Co
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.AllowList.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2385,8 +2382,8 @@ def add_hash_deny_list_command(client: Client, args: Dict[str, Any]) -> List[Com
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.DenyList.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2430,8 +2427,8 @@ def delete_hash_allow_list_command(client: Client, args: Dict[str, Any]) -> List
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.AllowList.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2473,8 +2470,8 @@ def delete_hash_deny_list_command(client: Client, args: Dict[str, Any]) -> List[
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.DenyList.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2514,8 +2511,8 @@ def get_sub_generations_command(client: Client, args: Dict[str, Any]) -> List[Co
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.SubGenerations.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2569,8 +2566,8 @@ def deploy_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Deploy.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2592,8 +2589,8 @@ def get_object_group_command(client: Client, args: Dict[str, Any]) -> List[Comma
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.ObjectGroup.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2665,8 +2662,8 @@ def unlock_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Unlock.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2688,8 +2685,8 @@ def lock_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Lock.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2711,8 +2708,8 @@ def get_object_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Object.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2781,8 +2778,8 @@ def force_sync_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Sync.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2804,8 +2801,8 @@ def view_file_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Sync.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2847,8 +2844,8 @@ def run_report_by_name_command(client: Client, args: Dict[str, Any]) -> List[Com
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Sync.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2888,8 +2885,8 @@ def deploy_by_date_command(client: Client, args: Dict[str, Any]) -> List[Command
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Deploy.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2913,8 +2910,8 @@ def get_current_compliance_items_command(client: Client, args: Dict[str, Any]) -
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.ComplianceItems.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -2970,8 +2967,8 @@ def get_objects_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Objects.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -3048,8 +3045,8 @@ def get_agent_info_command(client: Client, args: Dict[str, Any]) -> List[Command
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.AgentInfo.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -3098,8 +3095,8 @@ def get_compliance_archive_details_command(client: Client, args: Dict[str, Any])
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Compliance.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -3187,8 +3184,8 @@ def get_compliance_archive_summary_command(client: Client, args: Dict[str, Any])
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Compliance.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -3253,8 +3250,8 @@ def compliance_scan_children_command(client: Client, args: Dict[str, Any]) -> Li
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Compliance.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -3280,8 +3277,8 @@ def compliance_scan_with_summary_command(client: Client, args: Dict[str, Any]) -
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Compliance.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -3346,8 +3343,8 @@ def get_agent_object_id_by_alternate_system_id_command(client: Client, args: Dic
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Object.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -3385,8 +3382,8 @@ def get_agent_object_by_name_command(client: Client, args: Dict[str, Any]) -> Li
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Object.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -3455,8 +3452,8 @@ def get_agent_object_by_alternate_id_command(client: Client, args: Dict[str, Any
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Object.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
@@ -3525,8 +3522,8 @@ def get_agent_object_by_ip_command(client: Client, args: Dict[str, Any]) -> List
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'],
-            outputs_prefix='CimTrak.CommandStatus',
+            readable_output=response['status'] + ' : ' + response['errorDescription'],
+            outputs_prefix='CimTrak.Object.CommandStatus',
             outputs_key_field='status',
             outputs=command_status
         )
