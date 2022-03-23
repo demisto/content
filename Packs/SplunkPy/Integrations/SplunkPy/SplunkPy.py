@@ -44,7 +44,7 @@ MIRROR_DIRECTION = {
     'Incoming And Outgoing': 'Both'
 }
 OUTGOING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency']
-INCOMING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'status_label']
+INCOMING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'status_label', 'reviewer']
 
 # =========== Enrichment Mechanism Globals ===========
 ENABLED_ENRICHMENTS = params.get('enabled_enrichments', [])
@@ -116,7 +116,6 @@ def get_next_start_time(latests_incident_fetched_time, now, were_new_incidents_f
 
 def create_incident_custom_id(incident):
     incident_raw_data = json.loads(incident["rawJSON"])
-
     fields_to_add = ['_cd', 'index', '_time', '_indextime', '_raw']
     fields_supplied_by_user = demisto.params().get('unique_id_fields', '')
     fields_supplied_by_user = '' if not fields_supplied_by_user else fields_supplied_by_user
@@ -471,6 +470,8 @@ class Notable:
             incident["severity"] = severity_to_level(notable_data['urgency'])
         if demisto.get(notable_data, 'rule_description'):
             incident["details"] = notable_data["rule_description"]
+        if demisto.get(notable_data, 'reviewer'):
+            incident["notablereviewer"] = notable_data["reviewer"]
 
         incident["occurred"] = occurred
         notable_data = parse_notable(notable_data)
