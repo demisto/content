@@ -6,6 +6,11 @@ seconds = time.time()
 from typing import Dict, Any
 import traceback
 
+import time
+seconds = time.time()
+from typing import Dict, Any
+import traceback
+
 EMAIL_INTEGRATIONS = ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'MicrosoftGraphMail',
                       'SecurityAndCompliance']
 
@@ -46,19 +51,21 @@ def security_and_compliance_delete_mail(args, user_id, email_subject, using_bran
     query = f'from:{user_id} AND subject:{email_subject}'
     search_name = args.get('search_name')
     is_finished_searching = args.get('is_finished_searching')
-
+    print("here1")
     if not is_finished_searching:
         if not search_name:
             # first time, creating the search
+            print("here2")
             search_name = f'search_for_delete_{seconds}'
             execute_command('o365-sc-new-search', {'kql': query, 'search_name': search_name,
                                                    'using-brand': using_brand})
             execute_command('o365-sc-start-search', {'search_name': search_name, 'using-brand': using_brand})
             args['search_name'] = search_name
+            print(args)
 
         # the search already exists, but not finished
         results = execute_command('o365-sc-get-search', {'search_name': search_name, 'using-brand': using_brand})
-        print(len(results))
+        print(results)
         if results[0].get('Status') != 'Complete':
             return CommandResults(scheduled_command=schedule_next_command(args))
 
@@ -102,7 +109,6 @@ def agari_delete_args_function(search_result=None, search_args=None):
 
 
 def ews_delete_args_function(search_result, search_args):
-    print(search_result)
     delete_type = f'{search_args["delete-type"].lower()}'
     item_id = search_result[0].get('itemId')
     return {'item-ids': item_id, 'delete-type': delete_type, 'using-brand': search_args['using-brand']}
@@ -154,14 +160,15 @@ def main():
     delete_from_brand = search_args['using-brand']
     try:
         if delete_from_brand not in EMAIL_INTEGRATIONS:
-            raise DemistoExsception(
+            raise DemistoException(
                 f'Can not delete email using the chosen brand. The possible brands are: {EMAIL_INTEGRATIONS}')
 
         if delete_from_brand == 'SecurityAndCompliance':
             search_args = replace_in_keys(search_args, '-', '_')
             result = security_and_compliance_delete_mail(args, **search_args)
             if isinstance(result, CommandResults):
-                return result
+                return_results(result)
+                result = 'In progress'
         else:
             integrations_dict = {'Gmail': ('gmail-search', gmail_delete_args_function, 'gmail-delete-mail'),
                                  'EWSO365': ('ews-search-mailbox', ews_delete_args_function, 'ews-delete-items',
@@ -183,12 +190,14 @@ def main():
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute DeleteEmail. Error: {str(e)}')
+    # TODO: add fields population
+    # TODO: add check if the email was already deleted
 
     finally:
         search_args.update({'result': result, 'deletion_failure_reason': deletion_failure_reason})
         search_args = replace_in_keys(search_args, '-', '_')
         return_results(CommandResults(
-            readable_output='',
+            readable_output='',  # TODO: add hr
             outputs_prefix='DeleteReportedEmail',
             outputs_key_field='message_id',
             raw_response='',

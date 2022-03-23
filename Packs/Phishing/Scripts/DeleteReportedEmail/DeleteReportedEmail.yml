@@ -28,6 +28,7 @@ commonfields:
   version: -1
 enabled: false
 name: DeleteReportedEmail
+polling: true
 outputs:
 - contextPath: DeleteReportedEmail.result
   description: 'Whether the deletion operation was successful, skipped, or failed'
