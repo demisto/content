@@ -3,8 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import time
 seconds = time.time()
-import time
-seconds = time.time()
 from typing import Dict, Any
 import traceback
 
@@ -97,7 +95,7 @@ def msgraph_delete_args_function(search_result, search_args):
 def agari_delete_args_function(search_result=None, search_args=None):
     agari_message_id = demisto.get(demisto.context(), 'incident.apdglobalmessageid')
     return {'operation': 'delete', 'id': agari_message_id,
-     'using-brand': delete_from_brand}
+     'using-brand': search_args['using-brand']} # TODO: fix
 
 
 def ews_delete_args_function(search_result, search_args):
@@ -146,7 +144,6 @@ def get_search_args(args):
     return search_args
 
 def main():
-    # test all functions
     # test Sec&Comp - tomorrow
     # go over yml
     args = demisto.args()
@@ -179,6 +176,13 @@ def main():
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute DeleteEmail. Error: {str(e)}')
     finally:
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='CloudConvert.Task',
+            outputs_key_field='id',
+            raw_response=results,
+            outputs=remove_empty_elements(results_data),
+        )
         return result, deletion_failure_reason
 
 

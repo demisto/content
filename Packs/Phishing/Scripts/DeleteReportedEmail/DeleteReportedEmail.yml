@@ -17,13 +17,16 @@ args:
   secret: false
 comment: 'Use this script to delete a reported phishing email from the mailbox it was reported to'
 commonfields:
-  id: DeleteEmail
+  id: DeleteReportedEmail
   version: -1
 enabled: false
-name: DeleteEmail
+name: DeleteReportedEmail
 outputs:
-- contextPath: BaseScript.Output
-  description: '[Enter a description of the data returned in this output.]'
+- contextPath: DeleteReportedEmail.result
+  description: 'Whether the deletion operation was successful, skipped, or failed'
+  type: String
+- contextPath: DeleteReportedEmail.deletion_failure_reason
+  description: 'The reason of failure if the deletion operation failed or skipped'
   type: String
 script: '-'
 system: false
