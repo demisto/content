@@ -3810,7 +3810,7 @@ def panorama_register_ip_tag_command(args: dict):
     persistent = args.get('persistent', 'true')
     persistent = '1' if persistent == 'true' else '0'
     # if not given, timeout will be 0 and persistent will be used
-    timeout = int(args.get('timeout', '0'))
+    timeout = arg_to_number(args.get('timeout', '0'))
 
     major_version = get_pan_os_major_version()
 
@@ -3926,10 +3926,7 @@ def panorama_register_user_tag_command(args: dict):
     tag = args['tag']
     users = argToList(args['Users'])
     # if not given, timeout will be 0 (never expires)
-    timeout = int(args.get('timeout', '0'))
-
-    if major_version <= 8 and timeout:
-        raise DemistoException('The timeout argument is only applicable on 9.x PAN-OS versions or higher.')
+    timeout = arg_to_number(args.get('timeout', '0'))
 
     result = panorama_register_user_tag(tag, users, timeout)
 

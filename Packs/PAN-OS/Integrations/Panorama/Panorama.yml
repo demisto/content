@@ -1954,8 +1954,6 @@ script:
       isArray: true
       name: Users
       required: true
-    - description: Timeout value to automatically unregister the users (in seconds). Only applicable to PAN-OS 9.x and higher.
-      name: timeout
     description: Registers users to a tag. This command is only available for PAN-OS
       version 9.x and above.
     deprecated: true
