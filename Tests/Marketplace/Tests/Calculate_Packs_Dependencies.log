@@ -1,0 +1,5 @@
+[32m[2021-09-14 18:53:05][0m - [MainProcess] - [MainThread] - [1;30m[INFO][0m - Calculating pack1 pack dependencies.
+[32m[2021-09-14 18:53:05][0m - [MainProcess] - [MainThread] - [1;30m[DEBUG][0m - [36mIterating dependency pack1 for pack pack1[0m
+[32m[2021-09-14 18:53:05][0m - [MainProcess] - [MainThread] - [1;30m[DEBUG][0m - [36mIterating dependency pack2 for pack pack1[0m
+[32m[2021-09-14 18:53:05][0m - [MainProcess] - [MainThread] - [1;30m[DEBUG][0m - [36mIterating dependency pack3 for pack pack1[0m
+[32m[2021-09-14 18:53:05][0m - [MainProcess] - [MainThread] - [1;30m[DEBUG][0m - [36mIterating dependency pack4 for pack pack1[0m
