@@ -262,10 +262,10 @@ class PackStatus(enum.Enum):
 
 
 SKIPPED_STATUS_CODES = {
-        PackStatus.PACK_ALREADY_EXISTS.name,
-        PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name,
-        PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name,
-    }
+    PackStatus.PACK_ALREADY_EXISTS.name,
+    PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name,
+    PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name,
+}
 
 
 class Changelog(object):
