@@ -48,4 +48,6 @@ ignore=SC101
 
 [known_words]
 CreateIndicatorRelationship
-
+CommonServerPython
+CommonServer
+mergeVersionedIntegrationContext
