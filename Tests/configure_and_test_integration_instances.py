@@ -1546,6 +1546,10 @@ def get_non_added_packs_ids(build: Build):
     added_files = filter(lambda x: x, added_files.split('\n'))
     added_pack_ids = map(lambda x: x.split('/')[1], added_files)
     # build.pack_ids_to_install contains new packs and modified. added_pack_ids contains new packs only.
+    # todo: delete
+    logging.info(f'pack_ids_to_install: {set(build.pack_ids_to_install)}')
+    logging.info(f'added_pack_ids: {set(added_pack_ids)}')
+
     return set(build.pack_ids_to_install) - set(added_pack_ids)
 
 
@@ -1575,6 +1579,8 @@ def main():
     else:
         # Install only modified packs.
         pack_ids = get_non_added_packs_ids(build)
+        # todo: delete
+        logging.info(f'Got non added packs ids: {pack_ids}')
         build.install_packs(pack_ids=pack_ids)
 
         # todo: delete
