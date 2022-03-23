@@ -17,7 +17,8 @@ from CommonServerPython import set_to_integration_context_with_retries, xml2json
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
+    remove_duplicates_from_list_arg
 import CommonServerPython
 
 try:
@@ -730,7 +731,7 @@ class TestTableToMarkdown:
     def test_with_json_transformer_simple():
         with open('test_data/simple_data_example.json') as f:
             simple_data_example = json.load(f)
-        name_transformer = JsonTransformer(keys=['first', 'second'])
+        name_transformer = JsonTransformer(keys=['first', 'second'], is_nested=False)
         json_transformer_mapping = {'name': name_transformer}
         table = tableToMarkdown("tableToMarkdown test", simple_data_example,
                                 json_transform_mapping=json_transformer_mapping)
@@ -738,15 +739,15 @@ class TestTableToMarkdown:
             expected_table = """### tableToMarkdown test
 |name|value|
 |---|---|
-| **first**:<br>	***a***: val<br><br>***second***: b | val1 |
-| **first**:<br>	***a***: val2<br><br>***second***: d | val2 |
+| **first**:<br>	***a***: val<br>***second***: b | val1 |
+| **first**:<br>	***a***: val2<br>***second***: d | val2 |
 """
         else:
             expected_table = u"""### tableToMarkdown test
 |name|value|
 |---|---|
-| <br>***second***: b<br>**first**:<br>	***a***: val | val1 |
-| <br>***second***: d<br>**first**:<br>	***a***: val2 | val2 |
+| ***second***: b<br>**first**:<br>	***a***: val | val1 |
+| ***second***: d<br>**first**:<br>	***a***: val2 | val2 |
 """
         assert expected_table == table
 
@@ -793,14 +794,20 @@ class TestTableToMarkdown:
         expected_table = """### tableToMarkdown test
 |name|changelog|
 |---|---|
-| Active Directory Query | **1.0.4**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.4**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>**1.0.5**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.5**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>**1.0.6**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.6**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br> |
+| Active Directory Query | **1.0.4**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>**1.0.5**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>**1.0.6**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br> |
 """
-
         assert expected_table == table
 
     @staticmethod
     def test_with_json_transformer_func():
-
+        """
+        Given:
+          - Double nested json table.
+        When:
+          - Calling tableToMarkdown with JsonTransformer set to custom function.
+        Then:
+          - The table constructed with the transforming function.
+        """
         def changelog_to_str(json_input):
             return ', '.join(json_input.keys())
 
@@ -814,6 +821,61 @@ class TestTableToMarkdown:
 |name|changelog|
 |---|---|
 | Active Directory Query | 1.0.4, 1.0.5, 1.0.6 |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transform_list():
+        """
+        Given:
+          - Nested json table with a list.
+        When:
+          - Calling tableToMarkdown with `is_auto_json_transform=True`.
+        Then:
+          - Create a markdown table with the list
+        """
+        with open('test_data/nested_data_in_list.json') as f:
+            data_with_list = json.load(f)
+        table = tableToMarkdown("tableToMarkdown test", data_with_list, is_auto_json_transform=True)
+        if IS_PY3:
+            expected_table = """### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| **-**	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: error1, error2, error3<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test.txt<br>**-**	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: <br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| **-**	**command**:<br>		**params**:<br>			**-**	***value***: test.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: error1, error2, error3<br>	***startTime***: null<br>**-**	**command**:<br>		**params**:<br>			**-**	***value***: test222.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: <br>	***startTime***: null | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transform_list_keys():
+        """
+        Given:
+          - Nested json table with a list.
+        When:
+          - Calling tableToMarkdown with `is_auto_json_transform=True`.
+        Then:
+          - Create a markdown table with the list only with given keys
+        """
+        with open('test_data/nested_data_in_list.json') as f:
+            data_with_list = json.load(f)
+        table = tableToMarkdown("tableToMarkdown test", data_with_list,
+                                json_transform_mapping={'Commands': JsonTransformer(keys=('commandStatus', 'command'))})
+        if IS_PY3:
+            expected_table = """### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| **-**	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test.txt<br>**-**	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| **-**	**command**:<br>		**params**:<br>			**-**	***value***: test.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***commandStatus***: Completed<br>**-**	**command**:<br>		**params**:<br>			**-**	***value***: test222.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***commandStatus***: Completed | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
 """
         assert expected_table == table
 
@@ -991,6 +1053,16 @@ def test_argToList():
     assert argToList(test5) == [1]
     assert argToList(test6) == ['1']
     assert argToList(test7) == [True]
+
+
+@pytest.mark.parametrize('args, field, expected_output', [
+    ({'ids': "1,2,3"}, 'ids', ["1", "2", "3"]),
+    ({'ids': "1,2,1"}, 'ids', ["1", "2"]),
+    ({'ids': ""}, 'ids', []),
+    ({'ids': ""}, 'name', []),
+])
+def test_remove_duplicates_from_list_arg(args, field, expected_output):
+    assert len(remove_duplicates_from_list_arg(args, field)) == len(expected_output)
 
 
 def test_remove_nulls():
@@ -1229,6 +1301,24 @@ def test_debug_logger_replace_strs(mocker):
     for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass', TEST_SSH_KEY,
               TEST_SSH_KEY_ESC, TEST_PASS_JSON_CHARS):
         assert s not in msg
+
+
+def test_add_sensitive_log_strs(mocker):
+    """
+    Given:
+       - Debug mode command
+    When
+       - Adding sensitive strings to the log
+    Then
+       - Ensure that both LOG and _requests_logger mask the sensitive str
+    """
+    sensitive_str = '%%This_is_API_key%%'
+    from CommonServerPython import add_sensitive_log_strs, LOG
+    mocker.patch('CommonServerPython._requests_logger', DebugLogger())
+    CommonServerPython._requests_logger.log_start_debug()
+    add_sensitive_log_strs(sensitive_str)
+    assert sensitive_str not in LOG(sensitive_str)
+    assert sensitive_str not in CommonServerPython._requests_logger.int_logger(sensitive_str)
 
 
 def test_build_curl_post_noproxy():
@@ -1920,7 +2010,8 @@ class TestCommandResults:
             indicator='8.8.8.8',
             integration_name='Test',
             indicator_type=DBotScoreType.IP,
-            score=Common.DBotScore.GOOD
+            score=Common.DBotScore.GOOD,
+            message='test comment'
         )
 
         ip = Common.IP(
@@ -1962,7 +2053,8 @@ class TestCommandResults:
                         'Indicator': '8.8.8.8',
                         'Vendor': 'Test',
                         'Score': 1,
-                        'Type': 'ip'
+                        'Type': 'ip',
+                        'Message': 'test comment'
                     }
                 ]
             },
@@ -6324,7 +6416,6 @@ class TestTracebackLineNumberAdgustment:
         CommonServerPython.register_module_line('Cactus', 'statr', -5)
         CommonServerPython.register_module_line('Cactus', 'statr', 0, -1)
 
-
     @staticmethod
     def test_fix_traceback_line_numbers():
         import CommonServerPython
@@ -6350,3 +6441,81 @@ Exception: WTF?!!!'''
         result = CommonServerPython.fix_traceback_line_numbers(traceback)
         assert result == expected_traceback
 
+
+PACK_VERSION_INFO = [
+    (
+        {'context': {'IntegrationBrand': 'PaloAltoNetworks_PrismaCloudCompute'}, 'integration': True},
+        ''
+    ),
+    (
+        {'context': {'ScriptName': 'test-script'}, 'integration': False},
+        ''
+    ),
+    (
+        {},
+        'test-pack'
+    ),
+    (
+        {'context': {'IntegrationBrand': 'PagerDuty v2'}, 'integration': True},
+        ''
+    )
+]
+
+
+def get_pack_version_mock_internal_http_request(method, uri, body):
+    if method == 'POST':
+        if uri == '/contentpacks/marketplace/search':
+            if 'integrationsQuery' in body:  # whether its an integration that needs to be searched
+                integration_brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
+                if integration_brand == 'PaloAltoNetworks_PrismaCloudCompute':
+                    return {
+                        'body': '{"packs":[{"currentVersion":"1.0.0","contentItems":'
+                                '{"integration":[{"name":"Palo Alto Networks - Prisma Cloud Compute"}]}}]}'
+                    }
+                elif integration_brand == 'PagerDuty v2':
+                    return {
+                        'body': '{"packs":[{"currentVersion":"1.0.0","contentItems":'
+                                '{"integration":[{"name":"PagerDuty v2"}]}}]}'
+                    }
+            elif 'automationQuery' in body:  # whether its a script/automation that needs to be searched
+                return {
+                    'body': '{"packs":[{"currentVersion":"1.0.0",'
+                            '"contentItems":{"automation":[{"name":"test-script"}]}}]}'
+                }
+            else:  # whether its a pack that needs to be searched
+                return {
+                    'body': '{"packs":[{"currentVersion":"1.0.0","name":"test-pack"}]}'
+                }
+        if uri == '/settings/integration/search':
+            # only used in an integration where the brand/name/id is not equal to the display name
+            return {
+                'body': '{"configurations":[{"id":"PaloAltoNetworks_PrismaCloudCompute",'
+                        '"display":"Palo Alto Networks - Prisma Cloud Compute"}]}'
+            }
+    return {}
+
+
+@pytest.mark.parametrize(
+    'calling_context_mock, pack_name', PACK_VERSION_INFO
+)
+def test_get_pack_version(mocker, calling_context_mock, pack_name):
+    """
+    Given -
+        Case1: an integration that its display name is not the same as the integration brand/name/id.
+        Case2: a script/automation.
+        Case3: a pack name.
+        Case4: an integration that its display name is the same as the integration brand/name/id.
+
+    When -
+        executing the get_pack_version function.
+
+    Then -
+        Case1: the pack version of which the integration is a part of is returned.
+        Case2: the pack version of which the script is a part of is returned.
+        Case3: the pack version of the requested pack is returned.
+        Case4: the pack version of which the integration is a part of is returned.
+    """
+    from CommonServerPython import get_pack_version
+    mocker.patch('demistomock.callingContext', calling_context_mock)
+    mocker.patch.object(demisto, 'internalHttpRequest', side_effect=get_pack_version_mock_internal_http_request)
+    assert get_pack_version(pack_name=pack_name) == '1.0.0'
