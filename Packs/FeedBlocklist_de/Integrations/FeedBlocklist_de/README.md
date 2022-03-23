@@ -1,5 +1,4 @@
 Use the Blocklist.de feed integration to fetch indicators from the feed.
-This integration was integrated and tested with version xx of Blocklist_de Feed
 
 ## Configure Blocklist_de Feed on Cortex XSOAR
 
