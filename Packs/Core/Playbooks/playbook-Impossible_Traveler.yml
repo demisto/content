@@ -285,8 +285,8 @@ tasks:
     task:
       id: 94fb6bd2-f332-41e6-864a-c27747ff9476
       version: -1
-      name: Close investigation
-      description: Closes the investigation.
+      name: Close alert
+      description: Closes the alert.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
