@@ -9238,7 +9238,7 @@ def get_updated_last_run_object(last_run, incidents, fetch_limit, look_back, sta
     else:
         new_last_run = {
             'time': start_fetch_time,
-            'limit': last_run.get('limit') + fetch_limit,
+            'limit': last_run.get('limit', fetch_limit) + fetch_limit,
         }
 
     return new_last_run

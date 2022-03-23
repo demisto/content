@@ -6403,9 +6403,6 @@ class TestFetchWithLookBack:
         last_run = demisto.getLastRun()
         fetch_limit = last_run.get('limit') or fetch_limit_param
 
-        if not last_run.get('limit'):
-            last_run['limit'] = fetch_limit
-
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run, first_fetch, look_back, time_zone)
 
         query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
