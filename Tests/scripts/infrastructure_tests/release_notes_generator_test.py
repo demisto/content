@@ -596,7 +596,7 @@ class TestMergeVersionBlocks:
 
     @pytest.mark.parametrize('Pack_name, versions_ls, expected_results, expected_version', [
         ("FakePack7", ["1_0_1.md", "1_0_2.md"],
-         "#### Integeration\n***Breaking Change*** some change\n\n##### entity1\n- Fixed something\n\n#### Scripts\n"
+         "#### Integrations\n***Breaking Change*** some change\n\n##### entity1\n- Fixed something\n\n#### Scripts\n"
          "***Breaking Change*** some change\n***Breaking Changes*** some changes\n\n##### entity1\n- Fixed something", "1.0.2"),
         ("FakePack8", ["1_13_44.md", "1_14_0.md"],
          "#### Scripts\n***Breaking Change*** The following breaking change applies for organizations"
