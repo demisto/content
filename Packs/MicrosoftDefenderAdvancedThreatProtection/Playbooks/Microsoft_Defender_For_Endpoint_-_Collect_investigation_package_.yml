@@ -1,13 +1,7 @@
-id: 8d6603be-227b-48fb-8f77-0b0ff3d572db
-version: 1
-vcShouldKeepItemLegacyProdMachine: false
-name: 'Microsoft Security Defender For Endpoint - Collect investigation package '
-description: "This playbook aims to simplify the collection of investigation package
-  retrieval into XSOAR from only supported machines (according to the article -  https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/collect-investigation-package?view=o365-worldwide).
-  \n\nThe playbook receives information regarding the target devices (by hostnames,
-  IPs, device ids), validates that those devices exist, and retrieves the collection
-  package from those machines into the XSOAR console. Note that this action may time
-  and the average size of such a package is around ~15 MB."
+id: 'Microsoft Defender For Endpoint - Collect investigation package'
+version: -1
+name: 'Microsoft Defender For Endpoint - Collect investigation package'
+description: "This playbook aims to simplify the collection of investigation package retrieval into XSOAR from only supported machines (according to the article -  https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/collect-investigation-package?view=o365-worldwide). \n\nThe playbook receives information regarding the target devices (by hostnames, IPs, device ids), validates that those devices exist, and retrieves the collection package from those machines into the XSOAR console. Note that this action may time and the average size of such a package is around ~15 MB."
 starttaskid: "0"
 tasks:
   "0":
@@ -20,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -47,6 +42,7 @@ tasks:
       version: -1
       name: Auto collect investigation package from the Endpoint?
       type: condition
+      description: Validate if the auto-collect is set
       iscommand: false
       brand: ""
     nexttasks:
@@ -127,10 +123,13 @@ tasks:
       id: 4db57d68-6de7-4fa9-87a3-377329afdb37
       version: -1
       name: Approve Investigation package collection
+      description: Approve Investigation package collection
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "8"
       "Yes":
       - "3"
     separatecontext: false
@@ -145,14 +144,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Approve isolation
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -245,6 +244,7 @@ tasks:
       version: -1
       name: Are there any windows machine IDs?
       type: condition
+      description: Are there any windows machine IDs?
       iscommand: false
       brand: ""
     nexttasks:
@@ -288,6 +288,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -416,22 +417,24 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Choose if to skip user validation on retrieving the Investigation pack
-    within the provided assets.
-  playbookInputQuery: null
+  description: Choose if to skip user validation on retrieving the Investigation pack within the provided assets.
+  playbookInputQuery:
 - key: Hostnames
   value: {}
   required: false
   description: Comma-separated values of hostnames
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: MachineIDs
   value: {}
   required: false
   description: Comma-separated values of machine IDs
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IPs
   value: {}
   required: false
   description: Comma-separated values of machine IPs
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
