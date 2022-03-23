@@ -2,7 +2,7 @@ id: T1036 - Masquerading
 version: -1
 name: T1036 - Masquerading
 description: |-
-  This playbook handles masquerading alerts based on MITRE T1036 technique.
+  This playbook handles masquerading alerts based on the MITRE T1036 technique.
   An attacker might leverage Microsoft Windows well-known image names to run malicious processes without being caught.
 
   **Attacker's Goals:**
@@ -26,7 +26,7 @@ description: |-
   * Auto file quarantine
   * Manual endpoint isolation
 
-  When the playbook proceeds, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
+  When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
 
   This phase will execute the following containment actions:
 
@@ -174,7 +174,7 @@ tasks:
       id: 35d35d70-6bb9-4932-84e9-33955870fe0b
       version: -1
       name: Manuel Review - Should continue to investigate?
-      description: Whether to continue the investigation or not in case the verdict is possible false positive.
+      description: Whether to continue the investigation in case the verdict is a possible false positive.
       type: condition
       iscommand: false
       brand: ""
@@ -338,15 +338,15 @@ tasks:
       version: -1
       name: Containment Plan
       description: |-
-        This playbook handles all the containment actions available with XSIAM.
-        The playbook allows to contain the incident with one of the following tasks:
+        This playbook handles all the containment actions available with Cortex XSIAM.
+        The playbook enables you to contain the incident with one of the following tasks:
         * Isolate endpoint
         * Disable account
         * Quarantine file
         * Block indicators
         * Clear user session (currently, the playbook supports only Okta)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs enable you to manipulate the execution flow. Review the inputs description.
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -460,13 +460,13 @@ tasks:
       version: -1
       name: Eradication Plan
       description: |-
-        This playbook handles all the eradication actions available with XSIAM.
-        The playbook allows to eradicate the incident with one of the following tasks:
+        This playbook handles all the eradication actions available with Cortex XSIAM.
+        The playbook enables you to eradicate the incident with one of the following tasks:
         * Reset user password
         * Delete file
         * Kill process (currently, the playbook supports terminating a process by name)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs enable you to manipulate the execution flow. Review the inputs description.
       playbookName: Eradication Plan
       type: playbook
       iscommand: false
@@ -602,7 +602,7 @@ tasks:
       id: afc2d5e9-36c2-4e7a-8e12-bdada1fc16e2
       version: -1
       name: Got possible verdict?
-      description: Checks the verdict received from Enrichment for Verdict sub-playbook.
+      description: Checks the verdict received from the Enrichment for Verdict sub-playbook.
       type: condition
       iscommand: false
       brand: ""
@@ -770,15 +770,15 @@ tasks:
       version: -1
       name: Containment Plan
       description: |-
-        This playbook handles all the containment actions available with XSIAM.
-        The playbook allows to contain the incident with one of the following tasks:
+        This playbook handles all the containment actions available with Cortex XSIAM.
+        The playbook enables you to contain the incident with one of the following tasks:
         * Isolate endpoint
         * Disable account
         * Quarantine file
         * Block indicators
         * Clear user session (currently, the playbook supports only Okta)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs enable you to manipulate the execution flow. Review the inputs description.
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -980,7 +980,7 @@ tasks:
       id: cce1446a-20a3-4b0d-855c-9ef077a9931b
       version: -1
       name: Should execute recovery plan?
-      description: Checks the user input for whether to run the Recovery Plan sub-playbook or not.
+      description: Checks the user input for whether to run the Recovery Plan sub-playbook.
       type: condition
       iscommand: false
       brand: ""
@@ -1025,7 +1025,7 @@ tasks:
       id: 7b6b27ef-db7d-4461-8e67-2e6c0a5e8ffb
       version: -1
       name: Should close alert automatically?
-      description: Checks the user input for whether to close the alert automatically or not.
+      description: Checks the user input for whether to close the alert automatically.
       type: condition
       iscommand: false
       brand: ""
@@ -1101,12 +1101,12 @@ tasks:
       version: -1
       name: Recovery Plan
       description: |-
-        This playbook handles all the recovery actions available with XSIAM.
-        The playbook allows to recover  from the incident with one of the following tasks:
+        This playbook handles all the recovery actions available with Cortex XSIAM.
+        The playbook enables you to recover  from the incident with one of the following tasks:
         * Unisolate endpoint
         * Restore quarantined file
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs enables you to manipulate the execution flow. Review the inputs description.
       playbookName: Recovery Plan
       type: playbook
       iscommand: false
@@ -1182,15 +1182,15 @@ tasks:
       version: -1
       name: Endpoint Investigation Plan
       description: |-
-        This playbook handles all the endpoint investigation actions available with XSIAM.
-        The playbook allows to investigate and hunt for more information using one of the following tasks:
+        This playbook handles all the endpoint investigation actions available with Cortex XSIAM.
+        The playbook enables you to investigate and hunt for more information using one of the following tasks:
         * Pre-defined MITRE Tactics
         * Host fields (Host ID)
         * Attacker fields (Attacker IP, External host)
         * MITRE techniques
         * File hash (currently, the playbook supports only SHA256)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs enables you to manipulate the execution flow. Review the inputs description.
       playbookName: Endpoint Investigation Plan
       type: playbook
       iscommand: false
@@ -1280,7 +1280,7 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Whether to close the alert automatically or manually after an analyst's review.
+  description: Whether to close the alert automatically or manually, after an analyst's review.
   playbookInputQuery:
 - key: AutoRecovery
   value:
