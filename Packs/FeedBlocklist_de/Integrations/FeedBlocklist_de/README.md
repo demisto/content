@@ -1,6 +1,6 @@
 Use the Blocklist.de feed integration to fetch indicators from the feed.
 
-## Configure Blocklist_de Feed on Cortex XSOAR
+## Configure Blocklist.de Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Blocklist.de Feed.
