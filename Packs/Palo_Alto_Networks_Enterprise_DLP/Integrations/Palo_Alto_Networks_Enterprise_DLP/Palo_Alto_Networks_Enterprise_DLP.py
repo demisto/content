@@ -315,25 +315,19 @@ def update_incident(client: Client, incident_id: str, feedback: str, user_id: st
     feedback_enum = FeedbackStatus[feedback.upper()]
     result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region, report_id, dlp_channel)
 
+    output = {
+        'feedback': feedback_enum.value,
+        'success': status == 200
+    }
     if feedback_enum == FeedbackStatus.EXCEPTION_GRANTED:
         minutes = result_json['expiration_duration_in_minutes']
-        exemption_duration = minutes/60
-        output = [exemption_duration]
-        result = CommandResults(
-            outputs_prefix="Exemption",
-            outputs=output,
-            readable_output=tableToMarkdown("Exemption", output, headers=["Duration (hours)"]))
-        demisto.results(result.to_context())
-    else:
-        output = {
-            'feedback': feedback_enum.value,
-            'success': status == 200
-        }
-        result = CommandResults(
-            outputs_prefix="IncidentUpdate",
-            outputs_key_field='feedback',
-            outputs=output)
-        demisto.results(result.to_context())
+        output['exemption_duration'] = minutes/60
+
+    result = CommandResults(
+        outputs_prefix="IncidentUpdate",
+        outputs_key_field='feedback',
+        outputs=output)
+    demisto.results(result.to_context())
 
 
 def parse_incident_details(compressed_details: str):

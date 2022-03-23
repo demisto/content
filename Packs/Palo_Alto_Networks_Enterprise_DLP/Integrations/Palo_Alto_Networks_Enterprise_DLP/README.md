@@ -155,6 +155,8 @@ Retrieve the customized Slack bot message from the DLP integration instance
 #### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| user | the user's name used for greeting in the message | Required |
+| app_name | the name of the Cloud app that the user tried to upload the file to | Required |
 | file_name | The file that triggered the incident. | Required | 
 | data_profile_name | DLP data profile name. | Required |
 | snippets | The violation snippets. | Optional |
@@ -163,5 +165,31 @@ Retrieve the customized Slack bot message from the DLP integration instance
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-|  DLP.slack_message | bool | Whether or not violations can be exempted for this data profile. | 
+|  DLP.slack_message | string | The slack message  |
+
+
+### pan-dlp-reset-last-run
+***
+Resets the fetch incidents last run value, which resets the fetch to its initial fetch state. 
+**Please Note**: It is recommended to *disable* and then *enable* the DLP instance for the reset to take effect immediately.
+
+#### Base Command
+
+`pan-dlp-reset-last-run`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!pan-dlp-reset-last-run```
+
+#### Human Readable Output
+
+>fetch-incidents was reset successfully.
+
+
 

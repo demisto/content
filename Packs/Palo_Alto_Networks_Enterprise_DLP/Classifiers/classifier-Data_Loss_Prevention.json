@@ -12,7 +12,11 @@
 					"complex": null,
 					"simple": "incidentDetails.app_details.name"
 				},
-				"DLP Channel": {
+                "PAN DLP Action": {
+					"complex": null,
+					"simple": "action"
+				},
+				"PAN DLP Channel": {
 					"complex": null,
 					"simple": "channel"
 				},
@@ -37,7 +41,11 @@
                     "complex": null,
                     "simple": "region"
                 },
-                "DLP Report ID": {
+                "PAN DLP Previous Feedback": {
+					"complex": null,
+					"simple": "previousNotification.feedback_status"
+				},
+                "PAN DLP Report ID": {
 					"complex": null,
 					"simple": "reportId"
 				},

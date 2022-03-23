@@ -47,10 +47,9 @@ configuration:
     the option to request an exemption
 - display: Slack Bot Message
   name: dlp_slack_message
-  defaultvalue: 'Hi ${user}!🔔\n\n*We need your feedback* \nYour upload of *$file_name*
+  defaultvalue: 'Hi $user!🔔\n\n*We need your feedback* \nYour upload of *$file_name*
     on *$app_name* was blocked due to company policy. This file contains sensitive
-    information which violates *$data_profile_name* policy. \n\n $snippets\n\nPlease
-    confirm if this file contains sensitive information:'
+    information which violates *$data_profile_name* policy. \n\n $snippets'
   type: 12
   required: false
   additionalinfo: The Slack message to send to the user to ask for feedback
@@ -151,6 +150,9 @@ script:
       description: The Slack bot message
       type: string
     description: Get the Slack bot message to send to the user for gathering feedback
+  - name: pan-dlp-reset-last-run
+    description: Resets the fetch incidents last run value, which resets the fetch
+        to its initial fetch state.
   dockerimage: demisto/python3:3.10.1.27636
   isFetchSamples: true
   longRunning: true
