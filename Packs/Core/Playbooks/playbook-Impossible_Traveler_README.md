@@ -1,6 +1,6 @@
 This playbook handles impossible traveler alerts.
 
-Impossible Traveler event occurs when a multiple login attempts seen for a user from multiple remote countries in a short period of time, which should normally be impossible. This may indicate the account is compromised.
+An Impossible Traveler event occurs when multiple login attempts are seen for a user from multiple remote countries in a short period of time, which shouldn't be possible. This may indicate the account is compromised.
 
 **Attacker's Goals:**
 
@@ -47,37 +47,37 @@ When the playbook continues, after validating the activity with the user’s man
     3. Fill the value with 'Impossible traveler' and keep the 'contains' condition.
     4. Click **Create**.
 
-* **Note** that the playbook triggers are being executed by their order, please consider changing the trigger position for the execution order to be as intended. If not, other trigger may override the new trigger.
+**Note**: The playbook triggers are being executed according to its order. Consider changing the trigger position for the execution order as intended. If not, other trigger may override the new trigger.
 
 Click **Save**.
 
 ### Playbook inputs
 
-Before executing the playbook, please review the inputs and change them default values if needed.
+Before executing the playbook, review the inputs and change the default values, if needed.
 
 Important playbook inputs you should pay attention to:
 
-1. MaxMilesPerHourAllowed - This input is being used as a threshold for the maximum allowed miles an employee can travel in one hour, later on, the distance between the involved IP addresses will be checked and filtered against this input. 
+1. *MaxMilesPerHourAllowed*:  Used as a threshold for the maximum allowed miles an employee can travel in one hour. Later on, the distance between the involved IP addresses will be checked and filtered against this input. 
 
-2. AutoContainment - This input is responsible for whether to execute the following response actions automatically or manually:
+2. *AutoContainment*: Whether to execute the following response actions automatically or manually:
     1. Block indicators
     2. Quarantine file
     3. Disable user
 
-3. WhitelistedIPs - CSV of IP addresses that are allowed to be used across long distances. Note that if your organization is actively using VPN services, we highly recommend whitelisting the known IP addresses to reduce the risk of false positives. 
+3. *WhitelistedIPs*: A comma separated list of IP addresses that are allowed to be used across long distances. If your organization is actively using VPN services, we highly recommend whitelisting the known IP addresses to reduce the risk of false positives. 
 
-4. ContactUserManager - This input is responsible for whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler.
+4. *ContactUserManager*: Considers whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler.
 
-5. AbuseIPDBThreshold - This input is being used as a threshold for the minimum score AbuseIPDB gives the IP address to be considered a malicious IP.
+5. *AbuseIPDBThreshold*: Used as a threshold for the minimum score AbuseIPDB gives the IP address to be considered a malicious IP.
 
 ### Playbook remediation plan
 
-In this playbook the remediation plan happens in two different phases:
+In this playbook the remediation plan happens in two phases:
 
-1. On an early stage of the playbook execution, the Containment Plan sub-playbook is being used for blocking the IP if found malicious and, if Oktav2 is enabled, clearing the suspected user active sessions.
-2. On a later stage, If the distance between the checked IP addresses was allowed by the manager (configured in the MaxMilesPerHourAllowed playbook input), the playbook will close the alert, otherwise, if the distance isn’t allowed, the manager (if configured) will be asked to approve/disapprove the source country involved in the abnormal activity.
+1. At an early stage of playbook execution, the Containment Plan sub-playbook blocks the IP (if found malicious) and if Oktav2 is enabled, clears the suspected user active sessions.
+2. At a later stage, if the distance between the checked IP addresses was allowed by the manager (configured in the MaxMilesPerHourAllowed playbook input), the playbook closes the alert, but if the distance isn’t allowed, the manager (if configured) will be asked to approve/disapprove the source country involved in the abnormal activity.
 
-On the final phase, the IP addresses marked as suspicious will be filtered against the whitelisted IPs provided in the playbook inputs, and the ones that aren’t whitelisted will be blocked.
+In the final phase, the IP addresses marked as suspicious will be filtered against the whitelisted IPs provided in the playbook inputs, and the ones that aren’t whitelisted will be blocked.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -102,39 +102,39 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| MaxMilesPerHourAllowed | The maximum miles per hour that is still considered reasonable. If the geographical distance and difference in time between logins is greater than this value, the user will be considered an impossible traveler. | 400 | Optional |
+| MaxMilesPerHourAllowed | The maximum miles per hour that is considered reasonable. If the geographical distance and difference in time between logins is greater than this value, the user will be considered an impossible traveler. | 400 | Optional |
 | WhitelistedIPs | CSV of IP addresses that are allowed to be used across long distances. |  | Optional |
 | ContactUserManager | Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler. | True | Optional |
-| UserManagerEmail | The user's manager email address | poc@demistodev.com | Optional |
-| AutoContainment | Whether to execute auto containment or not | False | Optional |
-| AbuseIPDBThreshold | The score needed from AbuseIPDB to consider IP address as malicious | 80 | Optional |
+| UserManagerEmail | The user's manager email address. | `poc@demistodev.com` | Optional |
+| AutoContainment | Whether to execute auto containment. | False | Optional |
+| AbuseIPDBThreshold | The score needed from AbuseIPDB to consider IP address as malicious. | 80 | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Account.Email.Address | The email address object associated with the Account | string |
-| DBotScore | Indicator, Score, Type, Vendor | unknown |
-| Account.ID | The unique Account DN \(Distinguished Name\) | string |
-| Account.Username | The Account username | string |
-| Account.Email | The email address associated with the Account | unknown |
-| Account.Type | Type of the Account entity | string |
-| Account.Groups | The groups the Account is a part of | unknown |
-| Account | Account object | unknown |
-| Account.DisplayName | The Account display name | string |
-| Account.Manager | The Account's manager | string |
-| DBotScore.Indicator | The indicator value | string |
-| DBotScore.Type | The indicator's type | string |
-| DBotScore.Vendor | The indicator's vendor | string |
-| DBotScore.Score | The indicator's score | number |
-| IP | The IP objects | unknown |
-| Endpoint | The Endpoint's object | unknown |
-| Endpoint.Hostname | The hostname to enrich | string |
-| Endpoint.OS | Endpoint OS | string |
-| Endpoint.IP | List of endpoint IP addresses | unknown |
-| Endpoint.MAC | List of endpoint MAC addresses | unknown |
-| Endpoint.Domain | Endpoint domain name | string |
+| Account.Email.Address | The email address object associated with the Account. | string |
+| DBotScore | Indicator, Score, Type, Vendor. | unknown |
+| Account.ID | The unique Account DN \(Distinguished Name\). | string |
+| Account.Username | The username of the Account. | string |
+| Account.Email | The email address associated with the Account. | unknown |
+| Account.Type | The type of the Account entity. | string |
+| Account.Groups | The groups that the Account is part of. | unknown |
+| Account | The Account object. | unknown |
+| Account.DisplayName | The display name of the Account. | string |
+| Account.Manager | The manager of the Account. | string |
+| DBotScore.Indicator | The indicator value. | string |
+| DBotScore.Type | The indicator's type. | string |
+| DBotScore.Vendor | The indicator's vendor. | string |
+| DBotScore.Score | The indicator's score. | number |
+| IP | The IP objects. | unknown |
+| Endpoint | The Endpoint's object. | unknown |
+| Endpoint.Hostname | The hostname to enrich. | string |
+| Endpoint.OS | The endpoint OS. | string |
+| Endpoint.IP | The list of endpoint IP addresses. | unknown |
+| Endpoint.MAC | The list of endpoint MAC addresses. | unknown |
+| Endpoint.Domain | The endpoint domain name. | string |
 
 ## Playbook Image
 ---
