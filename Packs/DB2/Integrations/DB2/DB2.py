@@ -342,15 +342,13 @@ def query_command(client: Client, args: Dict, *_) -> CommandResults:
     except Exception as err:
         client.close()
         demisto.error(f"error:\n {err}")
-        
         if str(err).lower() == "column information cannot be retrieved: ":
             human_readable = f"{sql_query} Command Executed Successfully"
             return CommandResults(readable_output=human_readable)
-        
         raise DemistoException(err)
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
+def test_module(client: Client, *_) -> str:
     """
     If the connection in the client was successful the test will return OK
     if it wasn't an exception will be raised
