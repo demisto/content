@@ -1591,9 +1591,6 @@ def main():
 
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
 
-        # todo: delete
-        if build.__class__ == XSIAMBuild:
-            sys.exit(0)
         # Changes marketplace bucket to the new one that was created. Installs all (new and modified)
         # required packs from current branch.
         installed_content_packs_successfully = build.update_content_on_servers()
@@ -1602,6 +1599,9 @@ def main():
         # to check that modified integrations was not broken. Wrapper for `instance_testing` function.
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)
+        # todo: delete
+        if build.__class__ == XSIAMBuild:
+            sys.exit(0)
         # prints results
         success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                       new_integrations, build)
