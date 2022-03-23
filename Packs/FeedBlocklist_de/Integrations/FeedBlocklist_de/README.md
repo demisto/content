@@ -56,5 +56,3 @@ There is no context output for this command.
 >| 1.1.1.1 | IP | value: 1.1.1.1<br>type: IP<br>tags: null |
 >| 2.2.2.2 | IP | value: 2.2.2.2<br>type: IP<br>tags: null |
 >| 3.3.3.3 | IP | value: 3.3.3.3<br>type: IP<br>tags: null |
-
-
