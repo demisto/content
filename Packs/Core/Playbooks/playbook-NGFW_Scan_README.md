@@ -20,7 +20,7 @@ The playbook's response actions are based on the initial data provided within th
 * Automatically block IP address
 * Report IP address to AbuseIPDB (If configured as true in the playbook inputs)
 
-When the playbook proceeds, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan playbook, is executed.
+When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan playbook, is executed.
 This phase will execute the following containment actions:
 
 * Auto endpoint isolation
@@ -51,7 +51,7 @@ This phase will execute the following containment actions:
     3. Fill the value with 'Scan' and keep the 'contains' condition.
     4. Click **Create**
 
-* **Note** that the playbook triggers are being executed by their order, please consider changing the trigger position for the execution order to be as intended. If not, other trigger may override the new trigger.
+* **Note** that the playbook triggers are executed according to its order. Consider changing the trigger position for the execution order as intended. If not, other trigger may override the new trigger.
 
 Click **Save**.
 
@@ -61,23 +61,23 @@ Before executing the playbook, please review the inputs and change them default 
 
 Important playbook inputs you should pay attention to:
 
-1. blockKnownScanner - This input is responsible for whether a benign IP address that has been previously seen in more than 5 alerts should be blocked.
+1. *blockKnownScanner*: Whether a benign IP address that has been previously seen in more than 5 alerts should be blocked.
 
-2. reportIPAddress - This input is relevant for those who enabled AbuseIPDB integration, and is responsible for whether to report back to AbuseIPDB the IP address or not.
+2. *reportIPAddress*: (Relevant for an enabled AbuseIPDB integration) Whether to report the IP address to AbuseIPDB.
 
-3. AutoContainment - This input is responsible for whether to execute the following response actions automatically or manually:
+3. *AutoContainment*: Whether to execute the following response actions automatically or manually:
     1. Block indicators
     2. Quarantine file
     3. Disable user
 
-4. HostAutoContainment - This input is responsible for whether to execute Endpoint Isolation automatically or manually.
+4. *HostAutoContainment*: Whether to execute Endpoint Isolation automatically or manually.
 
 ### Playbook remediation plan
 
 In this playbook the remediation plan happens in two different phases:
 
-1. On an early stage of the playbook execution, if the IP address verdict is malicious, the IP will be blocked using the Block IP - Generic v3 playbook.
-2. On a later stage, the playbook executes the **Endpoint Investigation Plan** intended to look for additional activity involves the scanner IP address. On this phase, based on the results of the Endpoint Investigation Plan playbook, the SOC will be notified and the Containment Plan playbook will be executed.
+1. At an early stage of the playbook execution, if the IP address verdict is malicious, the IP is blocked using the Block IP - Generic v3 playbook.
+2. At a later stage, the playbook executes the **Endpoint Investigation Plan**, which searches for additional activity involving the scanner IP address. In this phase, based on the results of the Endpoint Investigation Plan playbook, the SOC is notified, and the Containment Plan playbook will be executed.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -108,12 +108,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| scannerIP | The scanner IP address. | alert.hostip | Optional |
+| scannerIP | The IP address of the scanner. | alert.hostip | Optional |
 | blockKnownScanner | Whether to block the IP address based on previously seen scanning alerts. | true | Optional |
-| AutoCloseAlert | Whether to close the alert automatically or manually after an analyst's review. | false | Optional |
+| AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | false | Optional |
 | AutoRecovery | Whether to execute the Recovery playbook. | false | Optional |
-| SOCEmailAddress | The SOC email address. |  | Optional |
-| reportIPAddress | Whether to report the IP address to AbuseIPDB or not. | false | Optional |
+| SOCEmailAddress | The email address of the SOC. |  | Optional |
+| reportIPAddress | Whether to report the IP address to AbuseIPDB. | false | Optional |
 | AutoContainment | Whether to execute automatically or manually the containment plan tasks:<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user | false | Optional |
 | HostAutoContainment | Whether to execute endpoint isolation automatically or manually. | false | Optional |
 
