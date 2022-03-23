@@ -142,7 +142,6 @@ def get_search_args(args):
 
 def main():
     # test Sec&Comp - tomorrow
-    # go over yml
     args = demisto.args()
     search_args = get_search_args(args)
     result = ''
@@ -175,7 +174,7 @@ def main():
 
     finally:
         search_args.update({'result': result, 'deletion_failure_reason': deletion_failure_reason})
-        replace_in_keys(search_args, '-', '_')
+        search_args = replace_in_keys(search_args, '-', '_')
         return_results(CommandResults(
             readable_output='',
             outputs_prefix='DeleteReportedEmail',
