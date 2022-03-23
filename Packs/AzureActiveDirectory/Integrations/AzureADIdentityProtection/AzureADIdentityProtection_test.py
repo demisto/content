@@ -3,7 +3,6 @@ import io
 import json
 import random
 
-import dateparser
 from datetime import datetime, timedelta
 
 import pytest
