@@ -17,8 +17,8 @@ Investigate the scanner IP address using:
 
 The playbook's response actions are based on the initial data provided within the alert. In that phase, the playbook will execute:
 
-* Auto block IP address
-* Report IP address (If configured as true in the playbook inputs)
+* Automatically block IP address
+* Report IP address to AbuseIPDB (If configured as true in the playbook inputs)
 
 When the playbook proceeds, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan playbook, is executed.
 This phase will execute the following containment actions:
