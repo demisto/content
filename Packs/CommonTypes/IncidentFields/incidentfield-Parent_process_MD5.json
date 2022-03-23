@@ -10,7 +10,7 @@
     "id": "incident_parentprocessmd5",
     "isReadOnly": false,
     "locked": false,
-    "name": "Parent process MD5",
+    "name": "Parent Process MD5",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,

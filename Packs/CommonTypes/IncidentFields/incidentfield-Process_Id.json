@@ -1,7 +1,7 @@
 {
     "id": "incident_processid",
     "version": -1,
-    "name": "Process Id",
+    "name": "Process ID",
     "ownerOnly": false,
     "cliName": "processid",
     "type": "multiSelect",
