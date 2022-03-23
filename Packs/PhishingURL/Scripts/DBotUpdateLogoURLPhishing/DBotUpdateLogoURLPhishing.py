@@ -21,6 +21,7 @@ MALICIOUS_VERDICT = "malicious"
 BENIGN_VERDICT = "benign"
 SUSPICIOUS_VERDICT = "suspicious"
 
+MSG_ID_NOT_EXIST = "File ID does not seems to exist"
 MSG_WRONG_CONFIGURATION = "Wrong configuration of the model"
 MSG_SAVE_MODEL_IN_DEMISTO = "Saved model version %s.%s"
 MSG_TRANSFER_LOGO = "Transfer logo from demisto model into new docker model"
@@ -47,16 +48,17 @@ def load_oob_model_from_model64(encoded_model, major, minor):
     :param minor: minor version
     :return: msg
     """
-    res = demisto.executeCommand('createMLModel', {'modelData': encoded_model.decode('utf-8'),
-                                                   'modelName': URL_PHISHING_MODEL_NAME,
-                                                   'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT],
-                                                   'modelOverride': 'true',
-                                                   'modelHidden': True,
-                                                   'modelType': 'url_phishing',
-                                                   'modelExtraInfo': {
-                                                       OOB_MAJOR_VERSION_INFO_KEY: major,
-                                                       OOB_MINOR_VERSION_INFO_KEY: minor
-                                                   }})
+    res = demisto.executeCommand('createMLModel', {
+        'modelData': encoded_model.decode('utf-8'),
+        'modelName': URL_PHISHING_MODEL_NAME,
+        'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT],
+        'modelOverride': 'true',
+        'modelHidden': True,
+        'modelType': 'url_phishing',
+        'modelExtraInfo': {
+            OOB_MAJOR_VERSION_INFO_KEY: major,
+            OOB_MINOR_VERSION_INFO_KEY: minor
+        }})
     if is_error(res):
         return_error(get_error(res))
     return MSG_SAVE_MODEL_IN_DEMISTO % (str(major), str(minor))
@@ -187,6 +189,7 @@ def display_all_logos(model):
     res['Type'] = entryTypes['image']
     return_results(res)
 
+
 def execute_action(action, logo_name, logo_content, associated_domains, model):
     if action == KEY_ADD_LOGO:
         success, msg = model.add_new_logo(logo_name, logo_content, associated_domains)
@@ -201,7 +204,6 @@ def main():
     msg_list = []
     logo_image_id = demisto.args().get('logoimageId', '')
     logo_name = demisto.args().get('logoName', '')
-    debug = demisto.args().get('debug', 'False') == 'True'
     associated_domains = demisto.args().get('associatedDomains', '').split(',')
     action = demisto.args().get('action', None)
 
@@ -224,14 +226,16 @@ def main():
     if (action == KEY_MODIFY_LOGO) and (not logo_name):
         return_error(MSG_EMPTY_LOGO_NAME)
 
-
-    if action==KEY_ADD_LOGO:
-        res = demisto.getFilePath(logo_image_id)
-        path = res['path']
-        with open(path, 'rb') as file:
-            logo_content = file.read()
+    if action == KEY_ADD_LOGO:
+        try:
+            res = demisto.getFilePath(logo_image_id)
+            path = res['path']
+            with open(path, 'rb') as file:
+                logo_content = file.read()
+        except ValueError:
+            return_error(MSG_ID_NOT_EXIST)
     else:
-        logo_content = None
+        logo_content = bytearray()
 
     exist, demisto_major_version, demisto_minor_version = oob_model_exists_and_updated()
 
@@ -246,7 +250,6 @@ def main():
             msg_list.append(msg)
         else:
             return_error(msg)
-
 
     # Case where there were new new model release -> load model from demisto
     elif (demisto_major_version == MAJOR_VERSION):

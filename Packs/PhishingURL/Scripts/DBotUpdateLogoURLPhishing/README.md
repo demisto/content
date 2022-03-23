@@ -16,7 +16,6 @@ Add, remove, or modify logos from the URL Phishing model.
 | --- | --- |
 | logoimageId | "Entry ID" in XSOAR |
 | logoName | Name of the logo. The name is the unique identifier for the logo. |
-| debug | Whether to enter debug mode. |
 | associatedDomains | Comma-separated list of domains that are associated to the logo defined in the logoName argument. It will only be used if the action argument is AddLogo or ModifiedDomainForLogo. |
 | action | Action to execute on the model. Will be ignored if displayLogos is set to True. |
 

@@ -11,17 +11,6 @@ args:
   name: logoName
   required: false
   secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: 'False'
-  description: Whether to enter debug mode.
-  isArray: false
-  name: debug
-  predefined:
-  - 'False'
-  - 'True'
-  required: false
-  secret: false
 - default: false
   description: Comma-separated list of domains that are associated to the logo defined
     in the logoName argument. It will only be used if the action argument is AddLogo
@@ -56,7 +45,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: devdemisto/mlurlphishing:1.0.0.27701
+dockerimage: demisto/mlurlphishing:1.0.0.27710
 runas: DBotRole
 runonce: false
 tests:

@@ -105,9 +105,9 @@ subtype: python3
 system: false
 tags:
 - ml
-timeout: '0'
+timeout: 480ns
 type: python
-dockerimage: devdemisto/mlurlphishing:1.0.0.27701
+dockerimage: demisto/mlurlphishing:1.0.0.27710
 runas: DBotRole
 runonce: false
 tests:

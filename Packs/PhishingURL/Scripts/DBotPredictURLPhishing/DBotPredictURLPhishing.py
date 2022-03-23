@@ -452,8 +452,8 @@ def get_score(pred_json):
     else:
         domain_age_key = pred_json[DOMAIN_AGE_KEY]
     total_weight_used = WEIGHT_HEURISTIC[DOMAIN_AGE_KEY] * use_age + WEIGHT_HEURISTIC[MODEL_KEY_LOGIN_FORM] \
-                        + WEIGHT_HEURISTIC[MODEL_KEY_SEO] + WEIGHT_HEURISTIC[MODEL_KEY_URL_SCORE] \
-                        + WEIGHT_HEURISTIC[MODEL_KEY_LOGO_FOUND] * use_logo
+        + WEIGHT_HEURISTIC[MODEL_KEY_SEO] + WEIGHT_HEURISTIC[MODEL_KEY_URL_SCORE] \
+        + WEIGHT_HEURISTIC[MODEL_KEY_LOGO_FOUND] * use_logo
     score = (use_age * WEIGHT_HEURISTIC[DOMAIN_AGE_KEY] * domain_age_key
              + WEIGHT_HEURISTIC[MODEL_KEY_LOGIN_FORM] * pred_json[MODEL_KEY_LOGIN_FORM]
              + WEIGHT_HEURISTIC[MODEL_KEY_SEO] * pred_json[MODEL_KEY_SEO]
@@ -523,8 +523,8 @@ def get_prediction_single_url(model, url, force_model, debug):
                                                          'url': url,
                                                          'wait_time': WAIT_TIME_RASTERIZE
                                                          })
-    if KEY_IMAGE_RASTERIZE not in res_rasterize[0]['Contents'].keys() or KEY_IMAGE_HTML not in res_rasterize[0][
-        'Contents'].keys():
+    if KEY_IMAGE_RASTERIZE not in res_rasterize[0]['Contents'].keys() or KEY_IMAGE_HTML \
+            not in res_rasterize[0]['Contents'].keys():
         raise DemistoException(MSG_NEED_TO_UPDATE_RASTERIZE)
     if len(res_rasterize) > 0:
         output_rasterize = res_rasterize[0]['Contents']
