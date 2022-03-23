@@ -7739,7 +7739,7 @@ class Topology:
 
         topology.username = username
         topology.password = password
-        topology.api_key = api_key
+        topology.api_key = str(api_key or "")
 
         return topology
 
