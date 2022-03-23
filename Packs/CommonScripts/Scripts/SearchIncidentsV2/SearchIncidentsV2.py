@@ -23,10 +23,12 @@ def is_valid_args(args: Dict):
         if _key in array_args:
             try:
                 if _key == 'id':
+                    if isinstance(value, list):
+                        value = ','.join(value)
                     if not isinstance(value, (int, str)):
                         error_msg.append(
                             f'Error while parsing the incident id with the value: {value}. The given type: '
-                            f'{type(value)} is not a valid type for an ID. The supported id types are: int and str')
+                            f'{type(value)} is not a valid type for an ID. The supported id types are: int, list and str')
                     elif isinstance(value, str):
                         _ = bytes(value, "utf-8").decode("unicode_escape")
                 else:
