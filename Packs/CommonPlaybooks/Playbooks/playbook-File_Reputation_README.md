@@ -47,4 +47,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![File Reputation](Insert the link to your image here)
+![File Reputation](https://raw.githubusercontent.com/demisto/content/7df4a9f44ec165fd2ada5db51510745f12518296/Packs/CommonPlaybooks/doc_files/File_Reputation.png)
