@@ -282,6 +282,7 @@ slack-notify-nightly-build:
     # todo: chnge it:
 #    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - echo -e "Sanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\nSanity Test - Playbook with integration\nSanity Test - Playbook with no integration" > "$ARTIFACTS_FOLDER/filter_file.txt"
+    - echo -e "Sanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\nSanity Test - Playbook with integration\nSanity Test - Playbook with no integration" > "/artifacts/filter_file.txt"
     - echo -e "Base\nDeveloperTools\nHelloWorld\nGmail" > "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
     - echo "Authing to GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
