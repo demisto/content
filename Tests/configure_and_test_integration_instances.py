@@ -1579,13 +1579,7 @@ def main():
     else:
         # Install only modified packs.
         pack_ids = get_non_added_packs_ids(build)
-        # todo: delete
-        logging.info(f'Got non added packs ids: {pack_ids}')
         build.install_packs(pack_ids=pack_ids)
-
-        # todo: delete
-        if build.__class__ == XSIAMBuild:
-            sys.exit(0)
 
         # compares master to commit_sha and return two lists - new integrations and modified in the current branch
         new_integrations, modified_integrations = build.get_changed_integrations()
@@ -1597,6 +1591,9 @@ def main():
 
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
 
+        # todo: delete
+        if build.__class__ == XSIAMBuild:
+            sys.exit(0)
         # Changes marketplace bucket to the new one that was created. Installs all (new and modified)
         # required packs from current branch.
         installed_content_packs_successfully = build.update_content_on_servers()
