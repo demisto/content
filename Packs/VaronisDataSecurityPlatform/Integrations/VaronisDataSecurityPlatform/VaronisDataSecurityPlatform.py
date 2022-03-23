@@ -310,7 +310,7 @@ class Client(BaseClient):
             request_params['severity'] = severity
 
         if alert_status:
-            request_params['status'] = alert_status
+            request_params['status'] = ALERT_STATUSES[alert_status]
 
         if from_alert_id:
             request_params['fromAlertId'] = from_alert_id
