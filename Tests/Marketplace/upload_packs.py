@@ -930,7 +930,9 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
     """
     logging.info("Starting to collect pack with dependencies zips")
     for pack_name, pack in packs_for_current_marketplace_dict.items():
-        if pack.status == PackStatus.SUCCESS.name or pack.status in SKIPPED_STATUS_CODES:
+        if pack.status != PackStatus.SUCCESS.name and pack.status not in SKIPPED_STATUS_CODES:
+            # avoid trying to upload dependencies zip for failed packs
+            continue
             # avoid trying to upload dependencies zip for failed packs
             try:
                 logging.info(f"Collecting dependencies of {pack_name}")
