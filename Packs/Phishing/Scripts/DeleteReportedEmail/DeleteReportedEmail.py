@@ -149,7 +149,9 @@ def main():
     delete_from_brand = search_args['using-brand']
     try:
         if delete_from_brand == 'SecurityAndCompliance':
-            security_and_compliance_delete_mail(args, **search_args)
+            result = security_and_compliance_delete_mail(args, **search_args)
+            if isinstance(result, CommandResults):
+                return result
         else:
             integrations_dict = {'Gmail': ('gmail-search', gmail_delete_args_function, 'gmail-delete-mail'),
                                  'EWSO365': ('ews-search-mailbox', ews_delete_args_function, 'ews-delete-items',
@@ -169,7 +171,7 @@ def main():
         result = 'Failed'
         deletion_failure_reason = f'Failed deleting email: {e}'
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
+        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute DeleteEmail. Error: {str(e)}')
 
     finally:
