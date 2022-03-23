@@ -6,6 +6,9 @@ seconds = time.time()
 from typing import Dict, Any
 import traceback
 
+EMAIL_INTEGRATIONS = ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'MicrosoftGraphMail',
+                      'SecurityAndCompliance']
+
 
 class ReDeleteException(Exception):
     def __init__(self):
@@ -34,7 +37,7 @@ def schedule_next_command(args):
         timeout_in_seconds=600)
 
 
-def security_and_compliance_delete_mail(args, user_id, email_subject, delete_from_brand, delete_type, **kwargs):
+def security_and_compliance_delete_mail(args, user_id, email_subject, using_brand, delete_type, **kwargs):
     if not is_demisto_version_ge('6.2.0'):
         raise DemistoException('Deleting an email using this script for Security And Compliance integration is not '
                                'supported by this XSOAR server version. Please update your server version to 6.2.0 '
@@ -47,34 +50,34 @@ def security_and_compliance_delete_mail(args, user_id, email_subject, delete_fro
     if not is_finished_searching:
         if not search_name:
             # first time, creating the search
-            search_name = f'search_for_delete_{time()}'
+            search_name = f'search_for_delete_{seconds}'
             execute_command('o365-sc-new-search', {'kql': query, 'search_name': search_name,
-                                                   'using-brand': delete_from_brand})
-            execute_command('o365-sc-start-search', {'search_name': search_name, 'using-brand': delete_from_brand})
+                                                   'using-brand': using_brand})
+            execute_command('o365-sc-start-search', {'search_name': search_name, 'using-brand': using_brand})
             args['search_name'] = search_name
 
         # the search already exists, but not finished
-        results = execute_command('o365-sc-get-search', {'search_name': search_name, 'using-brand': delete_from_brand})
-
-        if results.get('Status') != 'Complete':
+        results = execute_command('o365-sc-get-search', {'search_name': search_name, 'using-brand': using_brand})
+        print(len(results))
+        if results[0].get('Status') != 'Complete':
             return CommandResults(scheduled_command=schedule_next_command(args))
 
         # the search is finished
         if results.get('SuccessResults'):
             # the email was found
             execute_command('o365-sc-new-search-action', {'search_name': search_name, 'purge_type': delete_type,
-                                                          'using-brand': delete_from_brand})
+                                                          'using-brand': using_brand})
             args['is_finished_searching'] = True
             return CommandResults(scheduled_command=schedule_next_command(args))
     else:
         results = execute_command('o365-sc-get-search-action', {'search_action_name': search_name,
-                                                                'using-brand': delete_from_brand})
+                                                                'using-brand': using_brand})
         if results.get('Status') != 'Complete':
             return CommandResults(scheduled_command=schedule_next_command(args))
         execute_command('o365-sc-remove-search-action', {'search_action_name': search_name,
-                                                         'using-brand': delete_from_brand})
+                                                         'using-brand': using_brand})
         execute_command('o365-sc-remove-search', {'search_name': search_name,
-                                                  'using-brand': delete_from_brand})
+                                                  'using-brand': using_brand})
         return 'Success'
 
 
@@ -95,7 +98,7 @@ def msgraph_delete_args_function(search_result, search_args):
 def agari_delete_args_function(search_result=None, search_args=None):
     agari_message_id = demisto.get(demisto.context(), 'incident.apdglobalmessageid')
     return {'operation': 'delete', 'id': agari_message_id,
-     'using-brand': search_args['using-brand']} # TODO: fix
+            'using-brand': search_args['using-brand']}  # TODO: fix
 
 
 def ews_delete_args_function(search_result, search_args):
@@ -106,7 +109,7 @@ def ews_delete_args_function(search_result, search_args):
 
 
 def delete_email(search_args, search_function, delete_args_function, delete_function, deletion_error_condition=
-    lambda x: 'successfully' not in x):
+lambda x: 'successfully' not in x):
     search_result = None
     if search_function:
         search_result = execute_command(search_function, search_args)
@@ -127,37 +130,44 @@ def get_search_args(args):
 
     search_args = {
         'delete-type': args.get('delete_type'),
-                   'using-brand': delete_from_brand,
-                   'email_subject': custom_fields.get('reportedemailsubject'),
-                   'message-id': message_id,
-                   }
+        'using-brand': delete_from_brand,
+        'email_subject': custom_fields.get('reportedemailsubject'),
+        'message-id': message_id,
+    }
     additional_args = {
         'Gmail': {'query': f'Rfc822msgid:{message_id}', 'user-id': user_id},
         'EWSO365': {'target-mailbox': user_id},
-        'EWS v2': {'target-mailbox': user_id},'MicrosoftGraphMail': {'user_id': user_id, 'odata': f'"$filter=internetMessageId eq \'{message_id}\'"'}}
+        'EWS v2': {'target-mailbox': user_id},
+        'MicrosoftGraphMail': {'user_id': user_id, 'odata': f'"$filter=internetMessageId eq \'{message_id}\'"'},
+        'SecurityAndCompliance': {'user_id': user_id}
+    }
 
-    search_args.update(additional_args[delete_from_brand])
+    search_args.update(additional_args.get(delete_from_brand, {}))
     return search_args
 
 
 def main():
-    # test Sec&Comp - tomorrow
     args = demisto.args()
     search_args = get_search_args(args)
     result = ''
     deletion_failure_reason = ''
     delete_from_brand = search_args['using-brand']
     try:
+        if delete_from_brand not in EMAIL_INTEGRATIONS:
+            raise DemistoExsception(
+                f'Can not delete email using the chosen brand. The possible brands are: {EMAIL_INTEGRATIONS}')
+
         if delete_from_brand == 'SecurityAndCompliance':
+            search_args = replace_in_keys(search_args, '-', '_')
             result = security_and_compliance_delete_mail(args, **search_args)
             if isinstance(result, CommandResults):
                 return result
         else:
             integrations_dict = {'Gmail': ('gmail-search', gmail_delete_args_function, 'gmail-delete-mail'),
                                  'EWSO365': ('ews-search-mailbox', ews_delete_args_function, 'ews-delete-items',
-                                            lambda x: not isinstance(x, list)),
+                                             lambda x: not isinstance(x, list)),
                                  'EWS v2': ('ews-search-mailbox', ews_delete_args_function, 'ews-delete-items',
-                                           lambda x: not isinstance(x, list)),
+                                            lambda x: not isinstance(x, list)),
                                  'Agari Phishing Defense': (None, agari_delete_args_function, 'apd-remediate-message'),
                                  'MicrosoftGraphMail': ('msgraph-mail-list-emails', msgraph_delete_args_function,
                                                         'msgraph-mail-delete-email')}

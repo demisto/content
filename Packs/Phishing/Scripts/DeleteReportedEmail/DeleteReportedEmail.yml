@@ -15,6 +15,13 @@ args:
   name: delete_from_brand
   required: false
   secret: false
+- default: false
+  description: 'argument used for the generic polling flow within the security and compliance search.'
+  isArray: false
+  name: search_name
+  required: false
+  secret: false
+  hidden: true
 comment: 'Use this script to delete a reported phishing email from the mailbox it was reported to'
 commonfields:
   id: DeleteReportedEmail
