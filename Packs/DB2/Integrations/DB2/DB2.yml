@@ -45,7 +45,7 @@ script:
       name: limit
     - defaultValue: "0"
       description: The offset at which to start the result
-      name: skip
+      name: offset
     - description: A comma separated list of names which will be replaced in query having ':<name>'
       name: bind_variables_name
     - description: A comma separated list of values corresponding to `bind_variables_name` or values in order of '?' mark to be replaced in query

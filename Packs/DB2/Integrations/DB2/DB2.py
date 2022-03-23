@@ -315,7 +315,7 @@ def query_command(client: Client, args: Dict, *_) -> CommandResults:
     """
     sql_query = str(args.get("query"))
     limit = int(args.get("limit", 50))
-    skip = int(args.get("skip", 0))
+    skip = int(args.get("offset", 0))
     bind_variable_name = args.get("bind_variables_name", "")
     bind_variable_values = args.get("bind_variables_values", "")
 
@@ -342,7 +342,12 @@ def query_command(client: Client, args: Dict, *_) -> CommandResults:
     except Exception as err:
         client.close()
         demisto.error(f"error:\n {err}")
-        return CommandResults(readable_output="No results found")
+        
+        if str(err).lower() == "column information cannot be retrieved: ":
+            human_readable = f"{sql_query} Command Executed Successfully"
+            return CommandResults(readable_output=human_readable)
+        
+        raise DemistoException(err)
 
 
 def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
@@ -350,7 +355,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
     If the connection in the client was successful the test will return OK
     if it wasn't an exception will be raised
     """
-    return "ok", {}, []
+    return "ok"
 
 
 def main():
