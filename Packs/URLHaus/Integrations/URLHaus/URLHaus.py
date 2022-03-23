@@ -645,7 +645,7 @@ def run_file_command(hash: str, params: dict) -> CommandResults:
     elif (file_information['query_status'] == 'ok' and not file_information['md5_hash']) or \
             file_information['query_status'] == 'no_results':
         return get_indicator_with_dbotscore_unknown(indicator=hash,
-                                                    indicator_type=hash_type,
+                                                    indicator_type='file',
                                                     reliability=params.get('reliability'))
 
     elif file_information['query_status'] in ['invalid_md5', 'invalid_sha256']:
