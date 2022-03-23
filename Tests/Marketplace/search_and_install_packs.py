@@ -334,7 +334,7 @@ def install_packs(client: demisto_client,
     }
     logging.info(f'Installing packs on server {host}')
     packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
-    logging.debug(f'Installing the following packs on server {host}:\n{packs_to_install_str}')
+    logging.info(f'Installing the following packs on server {host}:\n{packs_to_install_str}')
 
     # make the pack installation request
     try:
@@ -346,11 +346,12 @@ def install_packs(client: demisto_client,
                                                                             _request_timeout=request_timeout)
 
         if 200 <= status_code < 300:
+            logging.info(f'Response data: {response_data}')
             packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for
                           pack in
                           ast.literal_eval(response_data)]
             logging.success(f'Packs were successfully installed on server {host}')
-            logging.debug(f'The following packs were successfully installed on server {host}:\n{packs_data}')
+            logging.info(f'The following packs were successfully installed on server {host}:\n{packs_data}')
         else:
             result_object = ast.literal_eval(response_data)
             message = result_object.get('message', '')
