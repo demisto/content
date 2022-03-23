@@ -150,8 +150,7 @@ class MandiantClient(BaseClient):
         Returns:
             List: list indicators.
         """
-        if not params:
-            params = {}
+        params = params if params else {}
         try:
             url = f'/v4/{MAP_TYPE_TO_URL[indicator_type]}'
 
@@ -525,8 +524,7 @@ def fetch_indicators(client: MandiantClient, args: Dict = None, update_context: 
     Returns:
         List of all indicators
     """
-    if not args:
-        args = {}
+    args = args if args else {}
     limit = int(args.get('limit', client.limit))
     metadata = argToBoolean(args.get('indicatorMetadata', client.metadata))
     enrichment = argToBoolean(args.get('indicatorRelationships', client.enrichment))
