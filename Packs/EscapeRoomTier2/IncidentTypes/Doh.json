@@ -17,6 +17,7 @@
     "default": false,
     "autorun": true,
     "disabled": false,
+    "playbook": "Escape Room - Phase 2",
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
     "detached": false,

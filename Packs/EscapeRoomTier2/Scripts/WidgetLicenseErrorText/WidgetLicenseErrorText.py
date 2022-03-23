@@ -43,15 +43,15 @@ INVALID_LICENSE_HINT = '''
 #### Go get it from the [secret place]({incidents_page})
 '''
 
-SUCCESS_GIFS = [
+SUCCESS_GIFS = (
     # 'https://media.giphy.com/media/a0h7sAqON67nO/giphy.gif',
     # 'https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif',
     # 'https://media.giphy.com/media/gd0Dqg6rYhttBVCZqd/giphy.gif',
     # 'https://media.giphy.com/media/Q81NcsY6YxK7jxnr4v/giphy.gif',
-    'https://media.giphy.com/media/MCZ39lz83o5lC/giphy.gif',
-    'https://media.giphy.com/media/fvlGGxUci1BiJuBET9/giphy.gif',
-    'https://media.giphy.com/media/Wq3gAYYuERDSU9DAbT/giphy.gif',
-]
+    '![](https://media.giphy.com/media/MCZ39lz83o5lC/giphy.gif)'  # Uncle Ben
+    '![](https://media.giphy.com/media/Wq3gAYYuERDSU9DAbT/giphy.gif)'  # Bot
+    '![](https://media.giphy.com/media/fvlGGxUci1BiJuBET9/giphy.gif)'  # Spiderman
+)
 
 SUCCESS_MESSAGE = '''
 Now that you have the license issue sorted out.
@@ -98,7 +98,7 @@ def is_valid_license():
 
 
 def create_starting_incident():
-    res = execute_command('getIncidents', args={'name': 'Springdfield', 'raw-reponse': 'true'})
+    res = execute_command('getIncidents', args={'name': 'Springfield Nuclear Power Plant', 'raw-reponse': 'true'})
     if res['total']:
         # already created an incident
         return
@@ -149,14 +149,14 @@ def main():
         time_from = dateparser.parse(args.get('from', '0001-01-01T00:00:00Z'))
         local_time_from = utc_to_time(time_from)
         from_times = {
-            time_from.date().strftime('%m-%d'),
-            local_time_from.date().strftime('%m-%d'),
+            time_from.strftime('%m-%d'),
+            local_time_from.strftime('%m-%d'),
         }
         time_to = dateparser.parse(args.get('to', '0001-01-01T00:00:00Z'))
         local_time_to = utc_to_time(time_to)
         to_times = {
-            time_to.date().strftime('%m-%d'),
-            local_time_to.date().strftime('%m-%d'),
+            time_to.strftime('%m-%d'),
+            local_time_to.strftime('%m-%d'),
         }
 
         if is_valid_license():
@@ -164,11 +164,8 @@ def main():
                 create_starting_incident()
                 text = SUCCESS_MESSAGE
             else:
-                text = (
-                    f'![]({random.choice(SUCCESS_GIFS)})'
-                    f'![]({random.choice(SUCCESS_GIFS)})'
-                    f'![]({random.choice(SUCCESS_GIFS)})'
-                )
+                text = SUCCESS_GIFS
+
         elif is_correct_date_range(from_times, to_times):
             if gif_or_text == 'text':
                 demisto_urls = demisto.demistoUrls()
@@ -180,6 +177,7 @@ def main():
                     f'![]({random.choice(INVALID_LICENSE_GIFS)})'
                     f'![]({random.choice(INVALID_LICENSE_GIFS)})'
                 )
+
         else:
             if gif_or_text == 'text':
                 text = WRONG_DATE_RANGE_HINT

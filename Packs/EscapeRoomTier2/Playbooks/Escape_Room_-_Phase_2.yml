@@ -1,0 +1,137 @@
+id: Escape Room - Phase 2
+version: -1
+name: Escape Room - Phase 2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3b67bc94-b2f0-4b20-87ad-ea23bab52b9b
+    type: start
+    task:
+      id: 3b67bc94-b2f0-4b20-87ad-ea23bab52b9b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c79d1869-fa90-4381-821f-54f3d034f61b
+    type: regular
+    task:
+      id: c79d1869-fa90-4381-821f-54f3d034f61b
+      version: -1
+      name: check-login
+      description: can smithers login successfully?
+      script: '|||check-login'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: bb57860b-ad25-4bd3-886f-d1f684cb7190
+    type: regular
+    task:
+      id: bb57860b-ad25-4bd3-886f-d1f684cb7190
+      version: -1
+      name: when-is-next-next
+      description: run to find hints
+      script: '|||when-is-next-next'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 58469208-ac3b-40ba-85bd-8bbf65a2e65a
+    type: regular
+    task:
+      id: 58469208-ac3b-40ba-85bd-8bbf65a2e65a
+      version: -1
+      name: who-am-i
+      description: run to find hints
+      script: '|||who-am-i'
+      type: regular
+      iscommand: true
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
