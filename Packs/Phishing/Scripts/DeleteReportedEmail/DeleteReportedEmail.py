@@ -107,17 +107,13 @@ def ews_delete_args_function(search_result, search_args):
 
 def delete_email(search_args, search_function, delete_args_function, delete_function, deletion_error_condition=
     lambda x: 'successfully' not in x):
-    result = None
-    print(search_args)
+    search_result = None
     if search_function:
         search_result = execute_command(search_function, search_args)
         if not search_result or isinstance(search_result, str):
             raise ReDeleteException()
     delete_args = delete_args_function(search_result, search_args)
-    print(delete_args)
     resp = execute_command(delete_function, delete_args)
-    print(deletion_error_condition(resp))
-    print(resp)
     if deletion_error_condition(resp):
         raise DeletionFailed(resp)
 
@@ -142,6 +138,7 @@ def get_search_args(args):
 
     search_args.update(additional_args[delete_from_brand])
     return search_args
+
 
 def main():
     # test Sec&Comp - tomorrow
@@ -175,15 +172,16 @@ def main():
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute DeleteEmail. Error: {str(e)}')
+
     finally:
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='CloudConvert.Task',
-            outputs_key_field='id',
-            raw_response=results,
-            outputs=remove_empty_elements(results_data),
-        )
-        return result, deletion_failure_reason
+        search_args.update({'result': result, 'deletion_failure_reason': deletion_failure_reason})
+        return_results(CommandResults(
+            readable_output='',
+            outputs_prefix='DeleteReportedEmail',
+            outputs_key_field='message-id',
+            raw_response='',
+            outputs=search_args,
+        ))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
