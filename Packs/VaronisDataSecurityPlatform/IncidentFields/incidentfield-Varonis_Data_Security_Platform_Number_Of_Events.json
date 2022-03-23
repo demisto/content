@@ -15,7 +15,7 @@
     "id": "incident_varonisdatasecurityplatformnumberofevents",
     "isReadOnly": false,
     "locked": false,
-    "name": "Varonis Data Security Platform Number Of Events",
+    "name": "Varonis Data Security Platform Number of Events",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

@@ -15,7 +15,7 @@
     "id": "incident_varonisdatasecurityplatformonfileserverordomain",
     "isReadOnly": false,
     "locked": false,
-    "name": "Varonis Data Security Platform On File Server Or Domain",
+    "name": "Varonis Data Security Platform on File Server or Domain",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

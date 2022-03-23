@@ -149,7 +149,7 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
 
     requests_mock.get(
         'https://test.com/api/alert/alert/GetAlertsID'
-        '?threatModel=Suspicious&severity=Medium&status=Open&fromAlertId=150&bulkSize=200',
+        '?threatModels=Suspicious&severity=Medium&status=1&fromAlertId=150&bulkSize=200',
         json=util_load_json('test_data/demisto_get_alert_ids.json'))
 
     client = Client(

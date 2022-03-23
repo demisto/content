@@ -103,7 +103,7 @@
                         ]
                     }
                 },
-                "Varonis Data Security Platform By Privileged Account Type": {
+                "Varonis Data Security Platform by Privileged Account Type": {
                     "simple": "By.PreivilegedAccountType"
                 },
                 "Varonis Data Security Platform Close Reason": {
@@ -241,10 +241,10 @@
                         ]
                     }
                 },
-                "Varonis Data Security Platform Number Of Events": {
+                "Varonis Data Security Platform Number of Events": {
                     "simple": "NumOfAlertedEvents"
                 },
-                "Varonis Data Security Platform On File Server Or Domain": {
+                "Varonis Data Security Platform on File Server or Domain": {
                     "simple": "On.FileServerOrDomain"
                 },
                 "Varonis Data Security Platform sAMAccountName": {

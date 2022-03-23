@@ -291,7 +291,7 @@ class Client(BaseClient):
         :param alert_status: status of the alert to search for. Options are 'Open', 'Closed' or 'Under investigation'
 
         :type threat_model: ``Optional[str]``
-        :param threat_model: threat model of the alert to search for.
+        :param threat_model: Comma-separated list of threat model names of alerts to fetch
 
         :type severity: ``Optional[str]``
         :param severity: severity of the alert to search for. Options are 'High', 'Medium' or 'Low'
@@ -304,13 +304,13 @@ class Client(BaseClient):
         request_params: Dict[str, Any] = {}
 
         if threat_model:
-            request_params['threatModel'] = threat_model
+            request_params['threatModels'] = argToList(threat_model)
 
         if severity:
             request_params['severity'] = severity
 
         if alert_status:
-            request_params['status'] = alert_status
+            request_params['status'] = ALERT_STATUSES[alert_status]
 
         if from_alert_id:
             request_params['fromAlertId'] = from_alert_id
@@ -832,7 +832,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
     :param alert_status: status of the alert to search for. Options are 'Open', 'Closed' or 'Under investigation'
 
     :type threat_model: ``Optional[str]``
-    :param threat_model: threat model of the alert to search for.
+    :param threat_model: Comma-separated list of threat model names of alerts to fetch
 
     :type severity: ``Optional[str]``
     :param severity: severity of the alert to search for. Options are 'High', 'Medium' or 'Low'
@@ -868,7 +868,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
             demisto.debug('API returned no alerts')
             return next_run, incidents
 
-        result = varonis_get_alerts(client, None, None, None, None, len(alert_guids), 1, alert_guids)
+        result = varonis_get_alerts(client, None, None, None, None, MAX_INCIDENTS_TO_FETCH_PER_RUN, 1, alert_guids)
         alerts_output = create_output(ALERT_OUTPUT, result['rows'])
 
         if not alerts_output:
