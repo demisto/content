@@ -187,7 +187,7 @@ class Build:
         self.branch_name = options.branch
         self.ci_build_number = options.build_number
         # todo delete:
-        self.is_nightly = options.is_nightly
+        self.is_nightly = True  # options.is_nightly
         self.secret_conf = get_json_file(options.secret)
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
