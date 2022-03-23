@@ -22,7 +22,9 @@ For more details about the authentication used in this integration, see [Microso
 | url | Server URL | True |
 | auth_id | ID \(received from the admin consent \- see Detailed Instructions \(?\) | True |
 | tenant_id | Token \(received from the admin consent \- see Detailed Instructions \(?\) section\) | True |
-| enc_key | Key \(received from the admin consent \- see Detailed Instructions \(?\) | True |
+| enc_key | Key \(received from the admin consent \- see Detailed Instructions \(?\) | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | self_deployed | Use a self deployed Azure Application | False |
