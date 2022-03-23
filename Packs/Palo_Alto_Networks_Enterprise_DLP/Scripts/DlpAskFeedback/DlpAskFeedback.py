@@ -69,19 +69,32 @@ def main():
     data_profile_name = args.get('data_profile_name')
     snippets = args.get('snippets', '')
     app_name = args.get('app_name')
+    user_display_name = args.get('user_display_name')
+    question_type = args.get('question_type')
+    include_violation_detail = args.get('include_violation_detail')
 
-    res = demisto.executeCommand('pan-dlp-slack-message',
-                                 {'file_name': file_name,
-                                  'data_profile_name': data_profile_name,
-                                  'app_name': app_name,
-                                  'snippets': snippets
-                                  })
-    if isError(res[0]):
-        demisto.results(res)
-        sys.exit(0)
-    demisto.info(f'DLPAskFeedback - received slack message {json.dumps(res)}')
-    message = demisto.get(res[0], 'Contents.message')
-    message = message.encode('latin-1', 'backslashreplace').decode('unicode-escape')
+    message = ''
+    if include_violation_detail == 'True':
+        res = demisto.executeCommand('pan-dlp-slack-message',
+                                     {
+                                      'user': user_display_name,
+                                      'file_name': file_name,
+                                      'data_profile_name': data_profile_name,
+                                      'app_name': app_name,
+                                      'snippets': snippets
+                                      })
+        if isError(res[0]):
+            demisto.results(res)
+            sys.exit(0)
+        demisto.info(f'DLPAskFeedback - received slack message {json.dumps(res)}')
+        message = demisto.get(res[0], 'Contents.message')
+        message = message.encode('latin-1', 'backslashreplace').decode('unicode-escape')
+        message += '\n\n'
+
+    if question_type == 'ABOUT_EXEMPTION':
+        message += 'Do you want to request a temporary exemption?'
+    else:
+        message += 'Please confirm if this file contains sensitive information:'
 
     lifetime = '1 day'
     try:
@@ -110,7 +123,7 @@ def main():
         'default_response': 'NoResponse'
     })
 
-    to = demisto.get(demisto.args(), 'user')
+    to = demisto.get(demisto.args(), 'user_id')
 
     if to:
         args['to'] = to

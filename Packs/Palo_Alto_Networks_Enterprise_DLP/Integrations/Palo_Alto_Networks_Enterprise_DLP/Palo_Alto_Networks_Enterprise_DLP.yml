@@ -21,6 +21,15 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Environment
+  name: env
+  type: 15
+  required: false
+  options:
+  - production
+  - staging
+  additionalinfo: The DLP environment to connect to. Staging environment is for testing
+    only.
 - display: DLP Regions
   name: dlp_regions
   type: 16
@@ -38,10 +47,10 @@ configuration:
     the option to request an exemption
 - display: Slack Bot Message
   name: dlp_slack_message
-  defaultvalue: '*We need your feedback* \nYour upload of *$file_name* on *$app_name*
-      was blocked due to company policy. This file contains sensitive information which
-      violates *$data_profile_name* policy. \n\n $snippets\n\nPlease confirm if this
-      file contains sensitive information:'
+  defaultvalue: 'Hi ${user}!🔔\n\n*We need your feedback* \nYour upload of *$file_name*
+    on *$app_name* was blocked due to company policy. This file contains sensitive
+    information which violates *$data_profile_name* policy. \n\n $snippets\n\nPlease
+    confirm if this file contains sensitive information:'
   type: 12
   required: false
   additionalinfo: The Slack message to send to the user to ask for feedback
@@ -60,10 +69,10 @@ script:
     - name: fetch_snippets
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: If "true", will include snippets with the reports. Default is "false". 
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      description: If "true", will include snippets with the reports. Default is "false".
+      defaultValue: 'false'
     outputs:
     - contextPath: DLP.Report.DataProfile
       description: Data profile name.
@@ -80,66 +89,69 @@ script:
     description: Fetches DLP reports associated with a report ID.
   - name: pan-dlp-update-incident
     arguments:
-        - name: incident_id
-          required: true
-          description: The id of the incident to update
-        - name: feedback
-          required: true
-          auto: PREDEFINED
-          predefined:
-            - PENDING_RESPONSE
-            - CONFIRMED_SENSITIVE
-            - CONFIRMED_FALSE_POSITIVE
-            - EXCEPTION_REQUESTED
-            - EXCEPTION_GRANTED
-          description: The user feedback
-        - name: user_id
-          required: true
-          description: The id of the user from whom the feedback is collected
-        - name: region
-          description: The region where the incident was originated
-        - name: report_id
-          description: The DLP report id, needed only for granting exemption
-        - name: dlp_channel
-          description: The DLP channel, needed only for granting exemption
+    - name: incident_id
+      required: true
+      description: The id of the incident to update
+    - name: feedback
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - PENDING_RESPONSE
+      - CONFIRMED_SENSITIVE
+      - CONFIRMED_FALSE_POSITIVE
+      - EXCEPTION_REQUESTED
+      - EXCEPTION_GRANTED
+      description: The user feedback
+    - name: user_id
+      required: true
+      description: The id of the user from whom the feedback is collected
+    - name: region
+      description: The region where the incident was originated
+    - name: report_id
+      description: The DLP report id, needed only for granting exemption
+    - name: dlp_channel
+      description: The DLP channel, needed only for granting exemption
     outputs:
-      - contextPath: DLP.IncidentUpdate.success
-        description: Whether or not the update was successful
-        type: boolean
-      - contextPath: DLP.IncidentUpdate.exemption_duration
-        description: Exemption duration, only available for "EXCEPTION_GRANTED"
-        type: number
+    - contextPath: DLP.IncidentUpdate.success
+      description: Whether or not the update was successful
+      type: boolean
+    - contextPath: DLP.IncidentUpdate.exemption_duration
+      description: Exemption duration, only available for "EXCEPTION_GRANTED"
+      type: number
     description: Update a DLP incident with user feedback
   - name: pan-dlp-exemption-eligible
     arguments:
-        - name: data_profile
-          required: true
-          description: The name of the data profile
+    - name: data_profile
+      required: true
+      description: The name of the data profile
     outputs:
-      - contextPath: DLP.exemption.eligible
-        description: Whether or not the data profile is eligible for exemption
-        type: boolean
+    - contextPath: DLP.exemption.eligible
+      description: Whether or not the data profile is eligible for exemption
+      type: boolean
     description: Determines if exemption can be granted on incidents from a certain
       data profile
   - name: pan-dlp-slack-message
     arguments:
-      - name: file_name
-        required: true
-        description: The name of the file that triggered the incident
-      - name: data_profile_name
-        required: true
-        description: The data profile name associated with the incident
-      - name: app_name
-        required: true
-        description: The name of the application that performed the upload
-      - name: snippets
-        description: The snippets of the violation
+    - name: user
+      required: true
+      description: The name of the user that will receive this message
+    - name: file_name
+      required: true
+      description: The name of the file that triggered the incident
+    - name: data_profile_name
+      required: true
+      description: The data profile name associated with the incident
+    - name: app_name
+      required: true
+      description: The name of the application that performed the upload
+    - name: snippets
+      description: The snippets of the violation
     outputs:
-      - contextPath: DLP.slack_message
-        description: The Slack bot message
-        type: string
+    - contextPath: DLP.slack_message
+      description: The Slack bot message
+      type: string
     description: Get the Slack bot message to send to the user for gathering feedback
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.1.27636
   isFetchSamples: true
   longRunning: true
   runonce: false

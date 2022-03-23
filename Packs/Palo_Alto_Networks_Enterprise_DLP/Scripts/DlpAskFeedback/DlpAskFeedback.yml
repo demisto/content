@@ -20,11 +20,30 @@ args:
   description: The application that performed the upload
 - name: task
   description: A manual task that this task can close
-- name: user
+- name: user_display_name
+  description: The name of the user used for greeting in the Slack message
+- name: user_id
   required: true
-  description: The recipient to ask for feedback from
+  description: The user Id to identify the recipient on Slack
 - name: snippets
   description: The snippets of the violationscripttarget
+- name: include_violation_detail
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - "True"
+  - "False"
+  description: Whether or not to include violation detail in the message
+  defaultValue: "True"
+- name: question_type
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - ABOUT_FILE
+  - ABOUT_EXEMPTION
+  description: What kind of question to ask the user, about the file content or about
+    exemption
+  defaultValue: ABOUT_FILE
 subtype: python3
 dependson:
   must:
@@ -32,7 +51,7 @@ dependson:
   should:
   - SlackV2|||send-notification
 runonce: false
-dockerimage: demisto/python3:3.10.1.26972
+dockerimage: demisto/python3:3.10.1.27636
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

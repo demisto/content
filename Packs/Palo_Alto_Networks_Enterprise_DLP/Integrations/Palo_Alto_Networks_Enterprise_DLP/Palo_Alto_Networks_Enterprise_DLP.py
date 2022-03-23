@@ -27,7 +27,7 @@ FETCH_SLEEP = 5  # sleep between fetches (in seconds)
 LAST_FETCH_TIME = 'last_fetch_time'
 DEFAULT_FIRST_FETCH = '60 minutes'
 ACCESS_TOKEN = 'access_token'
-
+RESET_KEY = 'reset'
 
 class FeedbackStatus(Enum):
     PENDING_RESPONSE = 'PENDING_RESPONSE'
@@ -36,6 +36,7 @@ class FeedbackStatus(Enum):
     EXCEPTION_REQUESTED = 'EXCEPTION_REQUESTED'
     OPERATIONAL_ERROR = 'OPERATIONAL_ERROR'
     EXCEPTION_GRANTED = 'EXCEPTION_GRANTED'
+    EXCEPTION_NOT_REQUESTED = 'EXCEPTION_NOT_REQUESTED'
 
 
 class Client(BaseClient):
@@ -313,21 +314,26 @@ def update_incident(client: Client, incident_id: str, feedback: str, user_id: st
                     report_id: str, dlp_channel: int):
     feedback_enum = FeedbackStatus[feedback.upper()]
     result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region, report_id, dlp_channel)
-    result = {
-        'success': status == 200,
-        'feedback': feedback_enum.value
-    }
 
     if feedback_enum == FeedbackStatus.EXCEPTION_GRANTED:
         minutes = result_json['expiration_duration_in_minutes']
-        result['exemption_duration'] = minutes / 60
-
-    results = CommandResults(
-        outputs_prefix='DLP.IncidentUpdate',
-        outputs_key_field='feedback',
-        outputs=result
-    )
-    demisto.results(results.to_context())
+        exemption_duration = minutes/60
+        output = [exemption_duration]
+        result = CommandResults(
+            outputs_prefix="Exemption",
+            outputs=output,
+            readable_output=tableToMarkdown("Exemption", output, headers=["Duration (hours)"]))
+        demisto.results(result.to_context())
+    else:
+        output = {
+            'feedback': feedback_enum.value,
+            'success': status == 200
+        }
+        result = CommandResults(
+            outputs_prefix="IncidentUpdate",
+            outputs_key_field='feedback',
+            outputs=output)
+        demisto.results(result.to_context())
 
 
 def parse_incident_details(compressed_details: str):
@@ -340,12 +346,15 @@ def parse_incident_details(compressed_details: str):
 def fetch_incidents(client: Client, start_time: int, end_time: int, regions: str):
     print_debug_msg(f'Start fetching incidents between {start_time} and {end_time}.')
 
-    incident_map = client.get_dlp_incidents(start_time, end_time, regions)
+    notification_map = client.get_dlp_incidents(start_time, end_time, regions)
     incidents = []
-    for region in incident_map:
-        raw_incidents = incident_map[region]
-        for raw_incident in raw_incidents:
+    for region in notification_map:
+        notifications = notification_map[region]
+        for notification in notifications:
+            raw_incident = notification['incident']
+            previous_notifications = notification['previous_notifications']
             raw_incident['region'] = region
+            raw_incident['previousNotification'] = previous_notifications[0] if len(previous_notifications) > 0 else None
             incident_creation_time = dateparser.parse(raw_incident['createdAt'])
             parsed_details = parse_incident_details(raw_incident['incidentDetails'])
             raw_incident['incidentDetails'] = parsed_details
@@ -360,6 +369,30 @@ def fetch_incidents(client: Client, start_time: int, end_time: int, regions: str
             incidents.append(incident)
     return incidents
 
+def is_reset_triggered():
+    """
+    Checks if reset of integration context have been made by the user.
+    Because fetch is long running execution, user communicates with us
+    by calling 'pan-dlp-reset-last-run' command which sets reset flag in
+    context.
+
+    Returns:
+        (bool):
+        - True if reset flag was set. If 'handle_reset' is true, also resets integration context.
+        - False if reset flag was not found in integration context.
+    """
+    ctx = get_integration_context()
+    if ctx and RESET_KEY in ctx:
+        print_debug_msg('Reset fetch-incidents.')
+        set_integration_context({'samples': '[]'})
+        return True
+    return False
+
+
+def get_base_url(params: dict):
+    url = STAGING_BASE_URL if params.get('env') == 'staging' else BASE_URL
+    return url
+
 
 def long_running_execution_command(params: Dict):
     """
@@ -371,7 +404,7 @@ def long_running_execution_command(params: Dict):
     """
     regions = demisto.get(params, 'dlp_regions', '')
     refresh_token = params.get('refresh_token')
-    url = BASE_URL if params.get('env') == 'prod' else STAGING_BASE_URL
+    url = get_base_url(params)
     while True:
         try:
             integration_context = demisto.getIntegrationContext()
@@ -389,9 +422,16 @@ def long_running_execution_command(params: Dict):
                 regions=regions
             )
             print_debug_msg(f"Received {len(incidents)} incidents")
-            # new_end_time = math.floor(datetime.now().timestamp()) if not end_time else end_time
-            demisto.setIntegrationContext({LAST_FETCH_TIME: end_time, ACCESS_TOKEN: client.access_token})
-            demisto.createIncidents(incidents)
+            if not is_reset_triggered():
+                demisto.createIncidents(incidents)
+                new_ctx = {
+                    LAST_FETCH_TIME: end_time,
+                    ACCESS_TOKEN: client.access_token,
+                    'samples': incidents
+                }
+                demisto.setIntegrationContext(new_ctx)
+            elif len(incidents) > 0:
+                print_debug_msg(f"Skipped {len(incidents)} incidents because of reset")
 
         except Exception:
             demisto.error('Error occurred during long running loop')
@@ -420,7 +460,9 @@ def exemption_eligible(args: dict, params: dict):
 def slack_bot_message(args: dict, params: dict):
     message_template = params.get('dlp_slack_message', '')
     template = Template(message_template)
-    message = template.substitute(file_name=args.get('file_name'),
+    message = template.substitute(
+                                  user=args.get('user'),
+                                  file_name=args.get('file_name'),
                                   data_profile_name=args.get('data_profile_name'),
                                   app_name=args.get('app_name'),
                                   snippets=args.get('snippets', ""))
@@ -435,6 +477,30 @@ def slack_bot_message(args: dict, params: dict):
     demisto.results(results.to_context())
 
 
+def fetch_incidents_command() -> List[Dict]:
+    """
+    Fetch incidents implemented, for mapping purposes only.
+    Returns list of samples saved by long running execution.
+
+    Returns:
+        (List[Dict]): List of incidents samples.
+    """
+    ctx = get_integration_context()
+    return ctx.get('samples', [])
+
+
+def reset_last_run_command() -> str:
+    """
+    Puts the reset flag inside integration context.
+    Returns:
+        (str): 'fetch-incidents was reset successfully'.
+    """
+    ctx = get_integration_context()
+    ctx[RESET_KEY] = 'true'
+    set_to_integration_context_with_retries(ctx)
+    return 'fetch-incidents was reset successfully.'
+
+
 def main():
     """ Main Function"""
     try:
@@ -442,7 +508,7 @@ def main():
         params = demisto.params()
         access_token = params.get('access_token')
         refresh_token = params.get('refresh_token')
-        url = BASE_URL if params.get('env') == 'prod' else STAGING_BASE_URL
+        url = get_base_url(params)
         client = Client(url, refresh_token, access_token, params.get('insecure'), params.get('proxy'))
         args = demisto.args()
         if demisto.command() == 'pan-dlp-get-report':
@@ -451,19 +517,7 @@ def main():
             report_json, status_code = client.get_dlp_report(report_id, fetch_snippets)
             parse_dlp_report(report_json)
         elif demisto.command() == 'fetch-incidents':
-            last_run = demisto.getLastRun()
-            last_fetch_time = last_run.get(LAST_FETCH_TIME) if last_run else None
-            now = math.floor(datetime.now().timestamp())
-            last_fetch_time = now - 3600 if not last_fetch_time else last_fetch_time
-            incidents = fetch_incidents(
-                client=client,
-                start_time=last_fetch_time,
-                end_time=now,
-                regions=params.get('dlp_regions')
-            )
-
-            demisto.setLastRun({LAST_FETCH_TIME: now})
-            demisto.incidents(incidents)
+            demisto.incidents(fetch_incidents_command())
         elif demisto.command() == 'long-running-execution':
             long_running_execution_command(params)
         elif demisto.command() == 'pan-dlp-update-incident':
@@ -478,6 +532,8 @@ def main():
             exemption_eligible(args, params)
         elif demisto.command() == 'pan-dlp-slack-message':
             slack_bot_message(args, params)
+        elif demisto.command() == 'pan-dlp-reset-last-run':
+            return_results(reset_last_run_command())
         elif demisto.command() == "test-module":
             test(client)
 
