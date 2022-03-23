@@ -21,16 +21,6 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-  display: Certificate Thumbprint
-  name: certificate_thumbprint
-  required: false
-  type: 4
-- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  display: Private Key
-  name: private_key
-  required: false
-  type: 14
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -658,7 +648,7 @@ script:
       description: The last event time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.Alert.LastUpdateTime
-      description: The first event time that triggered the alert on that machine.
+      description: The UTC time of the last update.
       type: Date
     - contextPath: MicrosoftATP.Alert.ResolvedTime
       description: The date and time the alert status changed
@@ -817,7 +807,7 @@ script:
       description: The last event time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.Alert.LastUpdateTime
-      description: The first event time that triggered the alert on that machine.
+      description: The UTC time of the last update.
       type: Date
     - contextPath: MicrosoftATP.Alert.ResolvedTime
       description: The date and time the alert status changed
@@ -861,6 +851,9 @@ script:
         range, e.g. 60 minutes, 6 hours, 1 day etc.
       required: false
       isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
     description: 'Allows you to run programmatic queries like in Microsoft Defender
       ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can
@@ -1020,7 +1013,7 @@ script:
       description: The last event time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.Alert.LastUpdateTime
-      description: The first event time that triggered the alert on that machine.
+      description: The UTC time of the last update.
       type: Date
     - contextPath: MicrosoftATP.Alert.ResolvedTime
       description: The date and time the alert status changed
@@ -1087,10 +1080,10 @@ script:
       description: The count of user logons.
       type: Number
     - contextPath: MicrosoftATP.AlertUser.User.DomainAdmin
-      description: True if domain admin, False otherwise.
+      description: The domain admin.
       type: Number
     - contextPath: MicrosoftATP.AlertUser.User.NetworkUser
-      description: True if domain admin, False otherwise.
+      description: The network user.
       type: Number
     - contextPath: MicrosoftATP.AlertUser.AlertID
       description: The alert ID.
@@ -2598,7 +2591,7 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: The SHA1 hash of the file.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.SHA512
       description: The SHA512 hash of the file.
@@ -2835,7 +2828,7 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: The SHA1 hash of the file.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.SHA512
       description: The SHA512 hash of the file.
@@ -3236,7 +3229,7 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: The SHA1 hash of the file.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.SHA512
       description: The SHA512 hash of the file.
@@ -3914,7 +3907,7 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: The SHA1 hash of the file.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.SHA512
       description: The SHA512 hash of the file.
@@ -4896,7 +4889,7 @@ script:
       description: The last event time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.Alert.LastUpdateTime
-      description: The first event time that triggered the alert on that machine.
+      description: The UTC time of the last update.
       type: Date
     - contextPath: MicrosoftATP.Alert.ResolvedTime
       description: The date and time in which the status of the alert was changed
