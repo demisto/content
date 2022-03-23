@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Impossible Traveler
-description: "This playbook handles impossible traveler alerts.\n\nImpossible Traveler event occurs when a multiple login attempts seen for a user from multiple remote countries in a short period of time, which should normally be impossible. This may indicate the account is compromised.\n\n**Attacker's Goals:**\n\nGain user-account credentials.\n\n**Investigative Actions:**\n\nInvestigate the IP addresses and identities involved in the detected activity using:\n\n* Impossible Traveler - Enrichment playbook\n* CalculateGeoDistance automation\n\n**Response Actions**\n\nThe playbook's first response actions are based on the data available within the alert. In that phase, the playbook will execute:\n\n* Manual block indicators if the IP address found malicious\n* Manual disable user\n* Manual clear of the user’s sessions (Okta)\n\nWhen the playbook continues, after validating the activity with the user’s manager, another phase of response actions is being executed, which includes:\n\n* Auto block indicators \n\n\n**External Resources:**\n\n[Impossible traveler alert](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/impossible-traveler---sso.html)"
+description: "This playbook handles impossible traveler alerts.\n\nAn Impossible Traveler event occurs when multiple login attempts seen for a user from multiple remote countries in a short period of time, which shouldn't be possible. This may indicate the account is compromised.\n\n**Attacker's Goals:**\n\nGain user-account credentials.\n\n**Investigative Actions:**\n\nInvestigate the IP addresses and identities involved in the detected activity using:\n\n* Impossible Traveler - Enrichment playbook\n* CalculateGeoDistance automation\n\n**Response Actions**\n\nThe playbook's first response actions are based on the data available within the alert. In that phase, the playbook will execute:\n\n* Manual block indicators if the IP address found malicious\n* Manual disable user\n* Manual clear of the user’s sessions (Okta)\n\nWhen the playbook continues, after validating the activity with the user’s manager, another phase of response actions is being executed, which includes:\n\n* Auto block indicators \n\n\n**External Resources:**\n\n[Impossible traveler alert](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/impossible-traveler---sso.html)"
 starttaskid: "0"
 tasks:
   "0":
@@ -181,7 +181,7 @@ tasks:
       id: c57d6b8b-9e75-4e4c-8fde-647015300e2b
       version: -1
       name: Did the user login from IP addresses on allow list?
-      description: Checks whether both user login events originated from IP addresses on allow list.
+      description: Checks whether both user login events originated from IP addresses on the allow list.
       type: condition
       iscommand: false
       brand: ""
@@ -246,7 +246,7 @@ tasks:
       id: d912768b-29a7-4497-8d4b-6592fa102827
       version: -1
       name: Are there IPs configured on allow list?
-      description: Checks whether allow list IPs were configured.
+      description: Checks whether the allow list IPs were configured.
       type: condition
       iscommand: false
       brand: ""
@@ -547,7 +547,7 @@ tasks:
       version: -1
       name: Impossible Traveler - Enrichment
       description: |-
-        This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler main playbook alert and enrich them based on:
+        This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert and enriches them based on the following:
         * Geo location
         * AD
       playbookName: Impossible Traveler - Enrichment
@@ -589,7 +589,7 @@ tasks:
       id: 954a463e-36fd-4351-8d28-1948c2dde3eb
       version: -1
       name: Set containment actions
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -668,7 +668,7 @@ tasks:
       id: 529ded5a-2995-45b4-80e2-eb353dba26de
       version: -1
       name: Calculate geographical distance between logins
-      description: Compute the distance between two sets of coordinates, in miles.
+      description: Computes the distance between two sets of coordinates, in miles.
       tags:
       - geodistance
       scriptName: impossibleTravelerGetDistance
@@ -842,7 +842,7 @@ tasks:
       version: -1
       name: Containment Plan
       description: |-
-        This playbook handles all the containment actions available with XSIAM.
+        This playbook handles all the containment actions available with Cortex XSIAM.
         The playbook allows to contain the incident with one of the following tasks:
         * Isolate endpoint
         * Disable account
@@ -850,7 +850,7 @@ tasks:
         * Block indicators
         * Clear user session (currently, the playbook supports only Okta)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -951,7 +951,7 @@ tasks:
         * Block indicators
         * Clear user session (currently, the playbook supports only Okta)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -1052,12 +1052,12 @@ inputs:
   value:
     simple: "400"
   required: false
-  description: The maximum miles per hour that is still considered reasonable. If the geographical distance and difference in time between logins is greater than this value, the user will be considered an impossible traveler.
+  description: The maximum miles per hour that is considered reasonable. If the geographical distance and difference in time between logins is greater than this value, the user will be considered an impossible traveler.
   playbookInputQuery:
 - key: WhitelistedIPs
   value: {}
   required: false
-  description: CSV of IP addresses that are allowed to be used across long distances.
+  description: A comma separated list of IP addresses that are allowed to be used across long distances.
   playbookInputQuery:
 - key: ContactUserManager
   value:
@@ -1069,79 +1069,79 @@ inputs:
   value:
     simple: poc@demistodev.com
   required: false
-  description: The user's manager email address
+  description: The user's manager email address.
   playbookInputQuery:
 - key: AutoContainment
   value:
     simple: "False"
   required: false
-  description: Whether to execute auto containment or not
+  description: Whether to execute auto containment.
   playbookInputQuery:
 - key: AbuseIPDBThreshold
   value:
     simple: "80"
   required: false
-  description: The score needed from AbuseIPDB to consider IP address as malicious
+  description: The score needed from AbuseIPDB to consider IP address as malicious.
   playbookInputQuery:
 outputs:
 - contextPath: Account.Email.Address
-  description: The email address object associated with the Account
+  description: The email address object associated with the Account.
   type: string
 - contextPath: DBotScore
-  description: Indicator, Score, Type, Vendor
+  description: Indicator, Score, Type, Vendor.
   type: unknown
 - contextPath: Account.ID
-  description: The unique Account DN (Distinguished Name)
+  description: The unique Account DN (Distinguished Name).
   type: string
 - contextPath: Account.Username
-  description: The Account username
+  description: The username of the Account.
   type: string
 - contextPath: Account.Email
-  description: The email address associated with the Account
+  description: The email address associated with the Account.
 - contextPath: Account.Type
-  description: Type of the Account entity
+  description: The type of the Account entity.
   type: string
 - contextPath: Account.Groups
-  description: The groups the Account is a part of
+  description: The groups that the Account is a part of.
 - contextPath: Account
   description: Account object
   type: unknown
 - contextPath: Account.DisplayName
-  description: The Account display name
+  description: The display name of the Account.
   type: string
 - contextPath: Account.Manager
-  description: The Account's manager
+  description: The manager of the Account.
   type: string
 - contextPath: DBotScore.Indicator
-  description: The indicator value
+  description: The indicator value.
   type: string
 - contextPath: DBotScore.Type
-  description: The indicator's type
+  description: The indicator's type.
   type: string
 - contextPath: DBotScore.Vendor
-  description: The indicator's vendor
+  description: The indicator's vendor.
   type: string
 - contextPath: DBotScore.Score
-  description: The indicator's score
+  description: The indicator's score.
   type: number
 - contextPath: IP
-  description: The IP objects
+  description: The IP objects.
   type: unknown
 - contextPath: Endpoint
-  description: The Endpoint's object
+  description: The Endpoint's object.
   type: unknown
 - contextPath: Endpoint.Hostname
-  description: The hostname to enrich
+  description: The hostname to enrich.
   type: string
 - contextPath: Endpoint.OS
-  description: Endpoint OS
+  description: The Endpoint OS.
   type: string
 - contextPath: Endpoint.IP
-  description: List of endpoint IP addresses
+  description: The list of Endpoint IP addresses.
 - contextPath: Endpoint.MAC
-  description: List of endpoint MAC addresses
+  description: The list of Endpoint MAC addresses.
 - contextPath: Endpoint.Domain
-  description: Endpoint domain name
+  description: The domain name of the Endpoint.
   type: string
 tests:
 - No tests (auto formatted)
