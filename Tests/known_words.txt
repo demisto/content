@@ -116,3 +116,6 @@ ShowCampaignRecipients
 GetCampaignIncidentsInfo
 IsIncidentPartOfCampaign
 automations
+DBotRole
+GetIncidentsByQuery
+FindSimilarIncidentsByText
