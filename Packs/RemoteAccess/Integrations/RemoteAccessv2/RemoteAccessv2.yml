@@ -33,8 +33,7 @@ configuration:
   name: key_algorithms
   required: false
   type: 0
-description: Performs file transfer between Cortex XSOAR and a remote machine, and executes 
-  commands on the remote machine.
+description: This integration transfers files between Cortex XSOAR and a remote machine and executes commands on the remote machine.
 display: RemoteAccess v2
 name: RemoteAccess v2
 script:
