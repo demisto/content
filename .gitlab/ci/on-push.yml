@@ -279,7 +279,7 @@ slack-notify-nightly-build:
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-    # todo: chnge it:
+    # todo: change it:
 #    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - echo -e "Sanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\nSanity Test - Playbook with integration\nSanity Test - Playbook with no integration" > "$ARTIFACTS_FOLDER/filter_file.txt"
     - echo -e "Sanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\nSanity Test - Playbook with integration\nSanity Test - Playbook with no integration" > "/builds/xsoar/content/artifacts/filter_file.txt"
@@ -295,11 +295,12 @@ slack-notify-nightly-build:
     - gsutil -m cp -r "gs://$GCS_PRODUCTION_V2_BUCKET/content" "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID/" > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine.log" 2>&1
 
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
-    # todo: uncomment
-#    - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
+    # todo: delete first line
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
 
       # todo: add support for run_tests
-#    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
 #    - |
 #      if [[ -f ./Tests/failed_tests.txt ]]; then
 #        cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt

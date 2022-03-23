@@ -186,8 +186,7 @@ class Build:
         self.git_sha1 = options.git_sha1
         self.branch_name = options.branch
         self.ci_build_number = options.build_number
-        # todo delete:
-        self.is_nightly = True  # options.is_nightly
+        self.is_nightly = options.is_nightly
         self.secret_conf = get_json_file(options.secret)
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
@@ -1548,10 +1547,6 @@ def get_non_added_packs_ids(build: Build):
     added_files = filter(lambda x: x, added_files.split('\n'))
     added_pack_ids = map(lambda x: x.split('/')[1], added_files)
     # build.pack_ids_to_install contains new packs and modified. added_pack_ids contains new packs only.
-    # todo: delete
-    logging.info(f'pack_ids_to_install: {set(build.pack_ids_to_install)}')
-    logging.info(f'added_pack_ids: {set(added_pack_ids)}')
-
     return set(build.pack_ids_to_install) - set(added_pack_ids)
 
 
