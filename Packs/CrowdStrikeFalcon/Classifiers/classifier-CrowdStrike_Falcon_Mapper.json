@@ -24,6 +24,9 @@
                 "Behaviour Tactic": {
                     "simple": "behaviors.tactic"
                 },
+                "Technique": {
+					"simple": "behaviors.technique"
+				},
                 "CMD line": {
                     "simple": "behaviors.cmdline"
                 },
@@ -135,6 +138,7 @@
                         ]
                     }
                 },
+<<<<<<< HEAD
                 "Action": {
                     "simple": "behaviors.pattern_disposition_details"
                 },
@@ -264,6 +268,19 @@
                 },
                 "severity": {
                     "simple": "max_severity_displayname"
+=======
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "detection_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+                "IncomingMirrorError": {
+                  "simple": "in_mirror_error"
+>>>>>>> 078cc1a0bfc6f3ce69127714770fc605fd341ad0
                 }
             }
         },
@@ -321,12 +338,18 @@
                 "Start Time": {
                     "simple": "start"
                 },
+                "Source Status": {
+					"simple": "status"
+                },
                 "State": {
                     "simple": "state"
                 },
                 "Tactic": {
                     "simple": "tactics"
                 },
+                "Tags": {
+					"simple": "tags"
+				},
                 "Technique": {
                     "simple": "techniques"
                 },
@@ -383,6 +406,7 @@
                         ]
                     }
                 },
+<<<<<<< HEAD
                 "Detection URL": {
                     "complex": {
                         "filters": [],
@@ -416,6 +440,19 @@
                 },
                 "Source MAC Address": {
                     "simple": "hosts.mac_address"
+=======
+                "dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "incident_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+                "IncomingMirrorError": {
+                  "simple": "in_mirror_error"
+>>>>>>> 078cc1a0bfc6f3ce69127714770fc605fd341ad0
                 }
             }
         },

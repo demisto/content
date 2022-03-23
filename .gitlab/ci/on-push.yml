@@ -6,7 +6,6 @@
 trigger-private-build:
   tags:
     - gke
-    - us-west1
   needs: []
   stage: unittests-and-validations
   extends:
@@ -50,7 +49,6 @@ run-validations:
 create-instances:
   tags:
     - gke
-    - us-west1
   extends:
     - .default-job-settings
   rules:
@@ -61,6 +59,7 @@ create-instances:
     policy: pull-push
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    KUBERNETES_CPU_REQUEST: 1000m
   needs: []
   stage: create-instances
   script:
@@ -111,7 +110,6 @@ create-instances:
 prepare-testing-bucket-mpv2:
   tags:
     - gke
-    - us-west1
   extends:
     - .default-job-settings
   rules:
@@ -121,6 +119,7 @@ prepare-testing-bucket-mpv2:
     policy: pull-push
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    KUBERNETES_CPU_REQUEST: 1000m
   needs: []
   stage: create-instances
   script:
@@ -156,7 +155,6 @@ prepare-testing-bucket-mpv2:
 .test_content_on_server_instances_base:
   tags:
     - gke
-    - us-west1
   extends:
     - .default-job-settings
     - .push-rule
@@ -238,7 +236,6 @@ server_master:
 fan-in-nightly:
   tags:
     - gke
-    - us-west1
   stage: fan-in
   rules:
     - if: '$NIGHTLY'
@@ -260,3 +257,4 @@ slack-notify-nightly-build:
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
+    SLACK_JOB: 'true'
