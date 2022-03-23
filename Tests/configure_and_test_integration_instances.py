@@ -1518,7 +1518,6 @@ def test_pack_zip(content_path, target):
     with zipfile.ZipFile('/builds/xsoar/content/artifacts/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip2:
         with zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
             zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
-            zip2.writestr('test_pack/metadata.json', test_pack_metadata())
             for test_path, test in test_files(content_path):
                 if not test_path.endswith('.yml'):
                     continue
@@ -1531,7 +1530,9 @@ def test_pack_zip(content_path, target):
                     else:
                         test_target = f'test_pack/TestPlaybooks/{test}'
                     zip_file.writestr(test_target, test_file.read())
-                    zip2.writestr(test_target, test_file.read())
+    # todo: delete
+    import shutil
+    shutil.copyfile(f'{target}/test_pack.zip', '/builds/xsoar/content/artifacts/marketplacev2/test_pack.zip')
 
 
 def get_non_added_packs_ids(build: Build):
