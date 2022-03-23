@@ -9136,7 +9136,7 @@ def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=
     :rtype: ``CommandResults``
     '''
     if not DBotScoreType.is_valid_type(indicator_type):
-        raise ValueError(f'{indicator_type} is invalid')
+        raise ValueError('indicator type is invalid')
 
     dbot_score = Common.DBotScore(indicator=indicator,
                                   indicator_type=indicator_type,
@@ -9144,18 +9144,18 @@ def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=
                                   reliability=reliability)
 
     integration_name = dbot_score.integration_name or 'Results'
-    indicator_: Any = None
+    indicator_ = None
     if indicator_type == 'file':
-        if sha1Regex(indicator):
+        if sha1Regex.match(indicator):
             indicator_ = Common.File(dbot_score=dbot_score, sha1=indicator)
             indicator_type = 'sha1'
-        elif sha256Regex(indicator):
+        elif sha256Regex.match(indicator):
             indicator_ = Common.File(dbot_score=dbot_score, sha256=indicator)
             indicator_type = 'sha256'
-        elif sha512Regex(indicator):
+        elif sha512Regex.match(indicator):
             indicator_ = Common.File(dbot_score=dbot_score, sha512=indicator)
             indicator_type = 'sha512'
-        elif md5Regex(indicator):
+        elif md5Regex.match(indicator):
             indicator_ = Common.File(dbot_score=dbot_score, md5=indicator)
             indicator_type = 'md5'
 

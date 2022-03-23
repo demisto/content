@@ -6518,7 +6518,7 @@ def test_get_pack_version(mocker, calling_context_mock, pack_name):
     mocker.patch.object(demisto, 'internalHttpRequest', side_effect=get_pack_version_mock_internal_http_request)
     assert get_pack_version(pack_name=pack_name) == '1.0.0'
 
-TEST_GET_INDICATOR_WITH_DBOTSCORE_UNKNOWN = {
+TEST_GET_INDICATOR_WITH_DBOTSCORE_UNKNOWN = [
     (
         {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12',
          'indicator_type': DBotScoreType.FILE, 'reliability': DBotScoreReliability.A},
@@ -6528,6 +6528,11 @@ TEST_GET_INDICATOR_WITH_DBOTSCORE_UNKNOWN = {
         {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': DBotScoreType.FILE,
         'reliability': DBotScoreReliability.B},
         {'instance': Common.File, 'indicator_type': 'MD5', 'reliability': 'B - Usually reliable'}
+    ),
+    (
+        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': DBotScoreType.FILE,
+        'reliability': DBotScoreReliability.B},
+        {'instance': Common.File, 'indicator_type': 'MD5', 'reliability': 'B - Usually reliable', 'integration_name': 'test'}
     ),
     (
         {'indicator': '8.8.8.8', 'indicator_type': DBotScoreType.IP},
@@ -6541,15 +6546,26 @@ TEST_GET_INDICATOR_WITH_DBOTSCORE_UNKNOWN = {
         {'indicator': 'google.com', 'indicator_type': DBotScoreType.DOMAIN, 'reliability': DBotScoreReliability.A},
         {'instance': Common.Domain, 'indicator_type': 'DOMAIN', 'reliability': 'A - Completely reliable'}
     )
-}
-@pytest.mark.parametrize('args', TEST_GET_INDICATOR_WITH_DBOTSCORE_UNKNOWN)
-def test_get_indicator_with_dbotscore_unknown(args, expected):
+]
+@pytest.mark.parametrize('args, expected', TEST_GET_INDICATOR_WITH_DBOTSCORE_UNKNOWN)
+def test_get_indicator_with_dbotscore_unknown(mocker, args, expected):
 
     from CommonServerPython import get_indicator_with_dbotscore_unknown
 
-    results = get_indicator_with_dbotscore_unknown(*args)
+    if expected.get('integration_name'):
+        mocker.patch('CommonServerPython.Common.DBotScore',
+                     return_value=Common.DBotScore(indicator=args['indicator'],
+                                                   indicator_type=args['indicator_type'],
+                                                   score=0,
+                                                   integration_name=expected['integration_name'],
+                                                   reliability=args['reliability']))
+    results = get_indicator_with_dbotscore_unknown(**args)
 
     assert expected['indicator_type'] in results.readable_output
     assert isinstance(results.indicator, expected['instance'])
     assert results.indicator.dbot_score.score == 0
     assert results.indicator.dbot_score.reliability == expected['reliability']
+    if expected.get('integration_name'):
+        assert expected['integration_name'] in results.readable_output
+    else:
+        assert 'Results:' in results.readable_output
