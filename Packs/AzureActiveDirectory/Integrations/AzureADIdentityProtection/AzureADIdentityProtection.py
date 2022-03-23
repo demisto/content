@@ -276,10 +276,11 @@ def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetim
 
     for detection in detections:
         detection_datetime = detection.get('detectedDateTime', '')
-        incident = detection_to_incident(detection, date_str_to_azure_format(detection_datetime))
+        detection_datetime_in_azure_format = date_str_to_azure_format(detection_datetime)
+        incident = detection_to_incident(detection, detection_datetime_in_azure_format)
         incidents.append(incident)
 
-        if datetime.strptime(date_str_to_azure_format(detection_datetime), DATE_FORMAT) > \
+        if datetime.strptime(detection_datetime_in_azure_format, DATE_FORMAT) > \
                 datetime.strptime(date_str_to_azure_format(latest_incident_time), DATE_FORMAT):
             latest_incident_time = detection_datetime
 
@@ -342,12 +343,12 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
 
     detections: list = risk_detection_list_raw.get('value', [])
 
-    incidents, latest_detection_datetime = detections_to_incidents(detections, last_fetch)
+    incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch)
     demisto.debug(f'[AzureIdentityProtection] Fetched {len(incidents)} incidents')
 
-    demisto.debug(f'[AzureIdentityProtection] next run latest_detection_found: {latest_detection_datetime}')
+    demisto.debug(f'[AzureIdentityProtection] next run latest_detection_found: {latest_detection_time}')
     last_run = {
-        'latest_detection_found': latest_detection_datetime,
+        'latest_detection_found': latest_detection_time,
     }
 
     return incidents, last_run
