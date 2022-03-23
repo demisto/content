@@ -172,6 +172,7 @@ tasks:
       id: 58df7ac3-e6e9-4da5-88ec-3a6b8268872b
       version: -1
       name: Check file detections
+      description: "Check file detections."
       type: condition
       iscommand: false
       brand: ""
@@ -301,6 +302,7 @@ tasks:
       id: 0daec705-f44f-4630-872a-ecfa3227ddab
       version: -1
       name: Check NSRL search results
+      description: "Check NSRL search results."
       type: condition
       iscommand: false
       brand: ""
@@ -418,6 +420,7 @@ tasks:
       id: df8ccfaa-c452-4c35-837c-4e80a383b1d1
       version: -1
       name: Check file signature
+      description: "Check file signature."
       type: condition
       iscommand: false
       brand: ""
@@ -578,6 +581,7 @@ tasks:
       id: 96728cac-a5cf-41e5-8cde-43882c9dd70f
       version: -1
       name: Check file signature
+      description: "Check file signature."
       type: condition
       iscommand: false
       brand: ""
@@ -823,12 +827,16 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: VTFileVerdict
+  description: VirusTotal file verdict.
   type: unknown
 - contextPath: NSRLFileVerdict
+  description: NSRL file verdict.
   type: unknown
 - contextPath: VTFileSigners
+  description: VirusTotal file signers.
   type: unknown
 - contextPath: XDRFileSigners
+  description: XDR file signers.
   type: unknown
 tests:
 - No tests.

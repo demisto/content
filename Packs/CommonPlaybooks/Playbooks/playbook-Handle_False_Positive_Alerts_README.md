@@ -36,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Handle False Positive Alerts](Insert the link to your image here)
+![Handle False Positive Alerts](https://raw.githubusercontent.com/demisto/content/83139fce8bb3f76917669e780df144115da69c90/Packs/CommonPlaybooks/doc_files/Handle_False_Positive_Alerts.png)
