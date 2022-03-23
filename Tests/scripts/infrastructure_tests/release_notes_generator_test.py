@@ -607,8 +607,7 @@ class TestMergeVersionBlocks:
          "[https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html\n"
          "](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html)\n"
          "- ##### GetIncidentsByQuery\n- ##### FindSimilarIncidentsByText\n\n##### CommonServerPython\n"
-         "- Fixed a typo in the error message when trying to create an indicator with an unsupported score value.", '1.14.0')
-        ])
+         "- Fixed a typo in the error message when trying to create an indicator with an unsupported score value.", '1.14.0')])
     def test_merge_rns_with_gerneral_announcment(self, Pack_name, versions_ls, expected_results, expected_version):
         """
             Given:
