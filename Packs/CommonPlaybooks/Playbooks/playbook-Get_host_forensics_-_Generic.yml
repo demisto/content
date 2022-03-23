@@ -1,8 +1,16 @@
-id: 'Get host forensics - Generic'
-version: -1
-name: 'Get host forensics - Generic'
-description: "This playbook retrieves forensics from hosts.\nThe available integration:\n\
-  - Illusive networks. "
+id: 414faa37-bae8-4d0c-8dd7-738e7a159cf0
+version: 4
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    itemVersion: 2.1.15
+    fromServerVersion: 6.0.0
+    toServerVersion: ""
+    definitionid: ""
+vcShouldKeepItemLegacyProdMachine: false
+name: Get host forensics - Generic
+description: "This playbook retrieves forensics from hosts.\nThe available integration:\n-
+  Illusive networks. \n- Microsoft Defender For Endpoint."
 starttaskid: "0"
 tasks:
   "0":
@@ -15,15 +23,15 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
+      - "5"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 377.5,
           "y": 50
         }
       }
@@ -32,6 +40,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 44e2bef7-db14-418e-8899-05b87ce087c1
@@ -47,7 +57,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "3"
       "yes":
       - "4"
@@ -60,8 +70,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 190
+          "x": 162.5,
+          "y": 195
         }
       }
     note: false
@@ -69,6 +79,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: a407e17a-7005-4b1a-87c0-00e1e1c2cae2
@@ -80,13 +92,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 670
+          "x": 377.5,
+          "y": 545
         }
       }
     note: false
@@ -94,6 +105,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 4e87acfb-c838-448f-8c35-a81c306b37bf
@@ -106,7 +119,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -126,8 +138,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 390
+          "x": -30,
+          "y": 370
         }
       }
     note: false
@@ -135,16 +147,104 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c7004145-36f8-47b3-8bbf-b08852b7b00c
+    type: condition
+    task:
+      id: c7004145-36f8-47b3-8bbf-b08852b7b00c
+      version: -1
+      name: Is Microsoft Defender For Endpoint Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Defender Advanced Threat Protection
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 1fb6f15e-7c4b-429b-8974-e30dcac00512
+    type: playbook
+    task:
+      id: 1fb6f15e-7c4b-429b-8974-e30dcac00512
+      version: -1
+      name: 'Microsoft Defender For Endpoint - Collect investigation package '
+      description: "This playbook aims to simplify the collection of investigation
+        package retrieval into XSOAR from only supported machines (according to the
+        article -  https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/collect-investigation-package?view=o365-worldwide).
+        \n\nThe playbook receives information regarding the target devices (by hostnames,
+        IPs, device ids), validates that those devices exist, and retrieves the collection
+        package from those machines into the XSOAR console. Note that this action
+        may time and the average size of such a package is around ~15 MB."
+      playbookName: 'Microsoft Defender For Endpoint - Collect investigation package '
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AutoCollectinvestigationPackege:
+        simple: "True"
+      Hostnames:
+        simple: ${inputs.fqdn_or_ip}
+      IPs:
+        simple: ${inputs.fqdn_or_ip}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 795,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "2_3_no": 0.47
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 685,
-        "width": 650,
-        "x": 450,
+        "height": 560,
+        "width": 1205,
+        "x": -30,
         "y": 50
       }
     }
@@ -155,20 +255,18 @@ inputs:
   required: false
   description: 'If using the illusive integration to retrieve additional forensics,
     provide fqdn_or_ip of the host from which to get the forensics. '
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: start_date
   value: {}
   required: false
   description: 'Date_range must be "number date_range_unit", examples: (2 hours, 4
     minutes,6 months, 1 day, etc.).'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: end_date
   value: {}
   required: false
   description: 'Date_range must be "number date_range_unit", examples: (2 hours, 4
     minutes,6 months, 1 day, etc.).'
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
-tests:
-- no tests
-fromversion: 6.0.0
+sourceplaybookid: Get host forensics - Generic
