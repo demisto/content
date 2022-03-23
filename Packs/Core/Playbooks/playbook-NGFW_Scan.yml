@@ -24,7 +24,7 @@ description: |-
   * Auto block IP address
   * Report IP address (If configured as true in the playbook inputs)
 
-  When the playbook proceeds, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan playbook, is executed.
+  When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan playbook, is executed.
   This phase will execute the following containment actions:
 
   * Auto endpoint isolation
@@ -76,7 +76,7 @@ tasks:
       id: fc3beac8-29a6-4c5e-860a-88da98d2f465
       version: -1
       name: Check if scanner IP Address is external
-      description: Checks if the scanner IP address is internal or external.
+      description: Checks whether the scanner IP address is internal or external.
       type: condition
       iscommand: false
       brand: ""
@@ -328,7 +328,7 @@ tasks:
       id: 7cf5d18d-0e5c-45a8-84c2-337e2987903e
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the Cortex XSIAM user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
@@ -462,7 +462,7 @@ tasks:
       id: d5aa0ea2-289c-4fe0-8dfb-c64b2e52fd19
       version: -1
       name: Should block repetitive scanning from benign IP Address?
-      description: Checks whether repetitive scanning from benign IP addresses should be blocked or not.
+      description: Checks whether repetitive scanning from benign IP addresses should be blocked.
       type: condition
       iscommand: false
       brand: ""
@@ -585,7 +585,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -626,7 +626,7 @@ tasks:
       version: -1
       name: Containment Plan
       description: |-
-        This playbook handles all the containment actions available with XSIAM.
+        This playbook handles all the containment actions available with Cortex XSIAM.
         The playbook allows to contain the incident with one of the following tasks:
         * Isolate endpoint
         * Disable account
@@ -634,7 +634,7 @@ tasks:
         * Block indicators
         * Clear user session (currently, the playbook supports only Okta)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -751,7 +751,7 @@ tasks:
       id: 9d36e4d2-085a-49ec-835a-c1cafe1e89d1
       version: -1
       name: Should execute recovery plan?
-      description: Whether to execute the recovery plan or not.
+      description: Whether to execute the recovery plan.
       type: condition
       iscommand: false
       brand: ""
@@ -796,7 +796,7 @@ tasks:
       id: 603b1088-07d0-4656-8b8d-ce58e06cf7e6
       version: -1
       name: Should close alert automatically?
-      description: Whether to close the alert automatically or not.
+      description: Whether to close the alert automatically.
       type: condition
       iscommand: false
       brand: ""
@@ -872,12 +872,12 @@ tasks:
       version: -1
       name: Recovery Plan
       description: |-
-        This playbook handles all the recovery actions available with XSIAM.
-        The playbook allows to recover  from the incident with one of the following tasks:
+        This playbook handles all the recovery actions available with Cortex XSIAM.
+        The playbook enables you to recover from the incident with one of the following tasks:
         * Unisolate endpoint
         * Restore quarantined file
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs enable you to manipulate the execution flow. Review the inputs description.
       playbookName: Recovery Plan
       type: playbook
       iscommand: false
@@ -1064,15 +1064,15 @@ tasks:
       version: -1
       name: Endpoint Investigation Plan
       description: |-
-        This playbook handles all the endpoint investigation actions available with XSIAM.
-        The playbook allows to investigate and hunt for more information using one of the following tasks:
+        This playbook handles all the endpoint investigation actions available with Cortex XSIAM.
+        The playbook enables you to investigate and hunt for more information using one of the following tasks:
         * Pre-defined MITRE Tactics
         * Host fields (Host ID)
         * Attacker fields (Attacker IP, External host)
         * MITRE techniques
         * File hash (currently, the playbook supports only SHA256)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs enable you to manipulate the execution flow. Review the inputs description.
       playbookName: Endpoint Investigation Plan
       type: playbook
       iscommand: false
@@ -1324,7 +1324,7 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Whether to close the alert automatically or manually after an analyst's review.
+  description: Whether to close the alert automatically or manually, after an analyst's review.
   playbookInputQuery:
 - key: AutoRecovery
   value:
@@ -1341,7 +1341,7 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Whether to report the IP address to AbuseIPDB or not.
+  description: Whether to report the IP address to AbuseIPDB.
   playbookInputQuery:
 - key: AutoContainment
   value:
