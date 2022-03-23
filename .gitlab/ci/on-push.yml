@@ -62,7 +62,7 @@ run-validations:
         UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
         if ! [[git clone --depth=1 -q https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_CI_BRANCH]];
         then
-            echo "Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
+            echo >&2 "Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
             exit 1
         fi
       fi
