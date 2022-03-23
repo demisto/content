@@ -612,15 +612,19 @@ class TestMergeVersionBlocks:
     def test_merge_rns_with_gerneral_announcment(self, Pack_name, versions_ls, expected_results, expected_version):
         """
             Given:
-                - Case 1: pack_versions_dict of two consecutive versions, both containing scripts with changes announcments,
+                - Case 1: two consecutive versions of RN, both containing scripts with changes announcments,
                 One of them contain entity with description and one of them contain entity with an empty description.
                 One RN also contain integration changes announcments and the other contain entity with description.
+                - Case 2: two consecutive versions of RN, one contain a script with changes announcments and two entities
+                listed in this announcments and one of them contain a script with an entity with description.
             When:
                 - Using merge_version_blocks function.
             Then:
                 Ensure that the merge was done correctly.
                 - Case 1: Should create a merged RN with anouncments as the top descrition of each category, two categories with
                 one entity with descrition each. The other entity with the empty description should be omitted.
+                - Case 2: Should create a merged RN with the anouncment at the top of the category 
+                including the two related entities, and under entity with descrition under the anouncment.
         """
         release_notes_paths = [os.path.join(TEST_DATA_PATH, Pack_name, 'ReleaseNotes', ver) for ver in versions_ls]
 
