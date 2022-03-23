@@ -620,7 +620,7 @@ tasks:
           root: inputs.scannerIP
       timeRange:
         simple: 24 hours ago
-    separatecontext: true
+    separatecontext: false
     loop:
       iscommand: false
       exitCondition: ""

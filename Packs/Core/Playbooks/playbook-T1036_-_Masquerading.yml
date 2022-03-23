@@ -574,7 +574,7 @@ tasks:
         simple: (initiatorsha256:${inputs.initiatorsha256} or hostip:${inputs.IP} or username:${inputs.User} or url:${inputs.URL}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
       threshold:
         simple: "5"
-    separatecontext: true
+    separatecontext: false
     loop:
       iscommand: false
       exitCondition: ""

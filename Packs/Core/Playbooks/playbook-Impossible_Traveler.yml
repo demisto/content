@@ -560,7 +560,7 @@ tasks:
     scriptarguments:
       sourceip:
         simple: ${ImpossibleTravelerIPs}
-    separatecontext: true
+    separatecontext: false
     loop:
       iscommand: false
       exitCondition: ""
