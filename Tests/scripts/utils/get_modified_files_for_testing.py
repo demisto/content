@@ -159,10 +159,10 @@ def create_type_to_file(files_string: str) -> Dict[FileType, Set[str]]:
 
 
 def filter_modified_files(files_string: str, id_set: dict) -> Dict[FileType, Set[str]]:
-    """Classifies the files in the diff list (files_string) using tools.find_type
+    """filter out the files in the diff list (files_string) that are not only supported in marketplacev2
 
     Returns:
-        A dict of {FileType: Set of files}
+        string list of diff files that are supported only in marketplacev2
     """
     v2_files_string = ''
     for line in files_string.split("\n"):
@@ -178,6 +178,8 @@ def filter_modified_files(files_string: str, id_set: dict) -> Dict[FileType, Set
                 if (file_status in ("m", "a") or file_status.startswith("r")) and file_path.startswith("Packs/"):
                     if file_path.endswith('.py'):
                         file_path = file_path.rstrip('py')
+                    elif file_path.endswith('_description.md'):
+                        file_path = file_path.rstrip('_description.md')
                     file_data = file_path.split('/')
                     obj_repo_name = replace_to_id_set_name(file_data[2])
                     for obj in id_set.get(obj_repo_name):

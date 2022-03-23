@@ -58,29 +58,23 @@ def get_pack_supported_marketplace_version(pack_name: str, id_set: dict) -> list
         return []
 
 
-def is_pack_compatible_with_marketplace(pack_name: str, marketplace_version: str, id_set: dict,
-                                        compatible_only_with_this_marketplace) -> Tuple[bool, str]:
+def is_pack_compatible_with_marketplace(pack_name: str, marketplace_version: str, id_set: dict) -> Tuple[bool, str]:
     """Checks if content pack is supported in the given marketplace_version:
     Args:
         pack_name (str): The pack name to check if it should be tested
         marketplace_version (str): the marketplace version to collect tests for ('xsoar'/'marketplacev2').
         id_set (dict): Structure which holds all content entities to extract pack names from.
-        compatible_only_with_this_marketplace
     Returns:
         bool: True if should be tested, False otherwise
     """
     pack_marketplace_versions = get_pack_supported_marketplace_version(pack_name, id_set)
-    if not compatible_only_with_this_marketplace and marketplace_version not in pack_marketplace_versions:
+    if marketplace_version not in pack_marketplace_versions:
         return False, f'This pack with marketplace version {pack_marketplace_versions} is not supported in the' \
-                      f' {marketplace_version} marketplace version'
-    elif compatible_only_with_this_marketplace and [marketplace_version] != pack_marketplace_versions:
-        return False, f'This pack with marketplace version {pack_marketplace_versions} is not only supported in the' \
                       f' {marketplace_version} marketplace version'
     return True, ''
 
 
-def should_test_content_pack(pack_name: str, marketplace_version: str, id_set: dict,
-                             compatible_only_with_this_marketplace) -> Tuple[bool, str]:
+def should_test_content_pack(pack_name: str, marketplace_version: str, id_set: dict) -> Tuple[bool, str]:
     """Checks if content pack should be tested in the build:
         - Content pack is not in skipped packs
         - Content pack is certified
@@ -90,7 +84,6 @@ def should_test_content_pack(pack_name: str, marketplace_version: str, id_set: d
         pack_name (str): The pack name to check if it should be tested
         marketplace_version (str): the marketplace version to collect tests for ('xsoar'/'marketplacev2').
         id_set (dict): Structure which holds all content entities to extract pack names from.
-        compatible_only_with_this_marketplace
 
     Returns:
         bool: True if should be tested, False otherwise
@@ -104,12 +97,10 @@ def should_test_content_pack(pack_name: str, marketplace_version: str, id_set: d
         return False, 'Pack is not XSOAR supported'
     if is_pack_deprecated(pack_path):
         return False, 'Pack is Deprecated'
-    return is_pack_compatible_with_marketplace(pack_name, marketplace_version, id_set,
-                                               compatible_only_with_this_marketplace)
+    return is_pack_compatible_with_marketplace(pack_name, marketplace_version, id_set)
 
 
-def should_install_content_pack(pack_name: str, marketplace_version: str, id_set: dict,
-                                compatible_only_with_this_marketplace) -> Tuple[bool, str]:
+def should_install_content_pack(pack_name: str, marketplace_version: str, id_set: dict) -> Tuple[bool, str]:
     """Checks if content pack should be installed:
         - Content pack is not in skipped packs
         - Content pack is not deprecated
@@ -119,7 +110,6 @@ def should_install_content_pack(pack_name: str, marketplace_version: str, id_set
         pack_name (str): The pack name to check if it should be tested.
         marketplace_version (str): the marketplace version to collect tests for ('xsoar'/'marketplacev2').
         id_set (dict): Structure which holds all content entities to extract pack names from.
-        compatible_only_with_this_marketplace
     Returns:
         bool: True if should be installed, False otherwise
     """
@@ -132,5 +122,4 @@ def should_install_content_pack(pack_name: str, marketplace_version: str, id_set
         return False, f'Pack should be ignored as it one of the files to ignore: {IGNORED_FILES}'
     if is_pack_deprecated(pack_path):
         return False, 'Pack is Deprecated'
-    return is_pack_compatible_with_marketplace(pack_name, marketplace_version, id_set,
-                                               compatible_only_with_this_marketplace)
+    return is_pack_compatible_with_marketplace(pack_name, marketplace_version, id_set)
