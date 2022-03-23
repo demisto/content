@@ -1515,20 +1515,23 @@ def test_pack_zip(content_path, target):
     """
     Iterates over all TestPlaybooks folders and adds all files from there to test_pack.zip' file.
     """
-    with zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
-        zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
-        for test_path, test in test_files(content_path):
-            if not test_path.endswith('.yml'):
-                continue
-            test = test.name
-            with open(test_path, 'r') as test_file:
-                if not (test.startswith('playbook-') or test.startswith('script-')):
-                    test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
-                    test_file.seek(0)
-                    test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
-                else:
-                    test_target = f'test_pack/TestPlaybooks/{test}'
-                zip_file.writestr(test_target, test_file.read())
+    with zipfile.ZipFile('/builds/xsoar/content/artifacts/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip2:
+        with zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
+            zip2.writestr('test_pack/metadata.json', test_pack_metadata())
+            for test_path, test in test_files(content_path):
+                if not test_path.endswith('.yml'):
+                    continue
+                test = test.name
+                with open(test_path, 'r') as test_file:
+                    if not (test.startswith('playbook-') or test.startswith('script-')):
+                        test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
+                        test_file.seek(0)
+                        test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
+                    else:
+                        test_target = f'test_pack/TestPlaybooks/{test}'
+                    zip_file.writestr(test_target, test_file.read())
+                    zip2.writestr(test_target, test_file.read())
 
 
 def get_non_added_packs_ids(build: Build):
