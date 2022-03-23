@@ -7507,6 +7507,7 @@ class Topology:
         self.ha_active_devices: dict = {}
         self.username: str = ""
         self.password: str = ""
+        self.api_key: str = ""
 
     def get_peer(self, serial: str):
         """Given a serial, get it's peer, if part of a HA pair."""
