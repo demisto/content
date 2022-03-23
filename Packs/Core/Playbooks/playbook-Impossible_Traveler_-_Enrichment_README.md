@@ -1,6 +1,7 @@
 This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler main playbook alert and enrich them based on:
 * Geo location
-* AD
+* Active Directory
+* Verdict enrichment e.g. VirusTotal, AbuseIPDB, etc.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -9,15 +10,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Active Directory - Get User Manager Details
 
 ### Integrations
-This playbook does not use any integrations.
+* CoreIOCs
+* CortexCoreIR
 
 ### Scripts
-* DeleteContext
-* Set
 * http
+* Set
+* DeleteContext
 * ParseJSON
 
 ### Commands
+* ip
 * ad-get-user
 
 ## Playbook Inputs
@@ -33,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Impossible Traveler - Enrichment](https://raw.githubusercontent.com/demisto/content/f731e1a3ca654aca1ebe5ff29df935f2390c9099/Packs/Core/doc_files/Impossible_Traveler_-_Enrichment.png)
+![Impossible Traveler - Enrichment](Insert the link to your image here)

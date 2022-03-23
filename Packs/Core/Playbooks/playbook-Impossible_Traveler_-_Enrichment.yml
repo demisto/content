@@ -4,7 +4,8 @@ name: Impossible Traveler - Enrichment
 description: |-
   This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler main playbook alert and enrich them based on:
   * Geo location
-  * AD
+  * Active Directory
+  * IP enrichment e.g. VirusTotal, AbuseIPDB, etc.
 starttaskid: "0"
 tasks:
   "0":
@@ -20,13 +21,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "13"
+      - "28"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -715
+          "y": -865
         }
       }
     note: false
@@ -229,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -580
+          "y": -570
         }
       }
     note: false
@@ -727,6 +728,41 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 840ab143-98a6-4984-8459-8d36947800cd
+    type: regular
+    task:
+      id: 840ab143-98a6-4984-8459-8d36947800cd
+      version: -1
+      name: Get IP address verdict
+      description: Checks the specified IP address against the AbuseIP database.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.sourceip
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -735,10 +771,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1720,
+        "height": 1870,
         "width": 1950,
         "x": -340,
-        "y": -715
+        "y": -865
       }
     }
   }
@@ -751,4 +787,5 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
+marketplaces: ["marketplacev2"]
 fromversion: 6.6.0
