@@ -1402,8 +1402,9 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
                          f'{pformat(failed_only_after_update_string)}.\n'
                          f'This indicates that your updates introduced breaking changes to the integration.')
     else:
-        # creating this file to indicates that this instance passed post update tests
-        if build:
+        # creating this file to indicates that this instance passed post update tests,
+        # uses this file in XSOAR destroy instances
+        if build and build.__class__ == XSOARBuild:
             with open("./Tests/is_post_update_passed_{}.txt".format(build.ami_env.replace(' ', '')), 'a'):
                 pass
 
