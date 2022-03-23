@@ -171,11 +171,14 @@ tasks:
       id: e26a72e6-844c-498b-89e2-00d189f6d392
       version: -1
       name: File Reputation
+      description: "This playbook checks the file reputation and set the verdict as
+        a new context key.\n\nThe verdict is composed by 3 main components:\n\n* VirusTotal
+        detection rate\n* Digital certificate signers\n* NSRL DB\n\nNote: a user can
+        provide a list of trusted signers of his own using the playbook inputs\n "
       playbookName: File Reputation
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -540,11 +543,17 @@ tasks:
       id: 9d2786ee-3f56-4a0f-8dbd-3bf0c6c83cdd
       version: -1
       name: URL Enrichment - Generic v2
+      description: |-
+        Enrich URLs using one or more integrations.
+
+        URL enrichment includes:
+        * SSL verification for URLs
+        * Threat information
+        * Providing of URL screenshots
       playbookName: URL Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: 'Enrich URLs using one or more integrations.'
     nexttasks:
       '#none#':
       - "28"
@@ -910,11 +919,14 @@ tasks:
       id: 5ae3c4ec-83cb-4d65-855c-2a3e5d36dbab
       version: -1
       name: AWS IAM - User enrichment
+      description: |
+        Enrich AWS IAM user information from AWS Identity and Access Management.
+        - List user access keys
+        - Get user information
       playbookName: AWS IAM - User enrichment
       type: playbook
       iscommand: false
       brand: ""
-      description: 'Enrich AWS IAM user information from AWS Identity and Access Management.'
     nexttasks:
       '#none#':
       - "25"
@@ -1028,11 +1040,14 @@ tasks:
       id: 7a5f5b09-325b-4998-80e2-7c720f73f30b
       version: -1
       name: Domain Enrichment - Generic v2
+      description: |-
+        Enrich domains using one or more integrations.
+        Domain enrichment includes:
+        * Threat information
       playbookName: Domain Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: 'Enrich domains using one or more integrations.'
     nexttasks:
       '#none#':
       - "45"
@@ -1354,8 +1369,8 @@ inputs:
   playbookInputQuery:
 - key: query
   value:
-    simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP} or username:${inputs.User}
-      or url:${inputs.URL}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+    simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and alertsource:${alert.sourceBrand}
+      and alertname:${alert.name}
   required: false
   description: |-
     A query for the previous alerts search.
