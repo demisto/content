@@ -175,12 +175,13 @@ def main():
 
     finally:
         search_args.update({'result': result, 'deletion_failure_reason': deletion_failure_reason})
+        replace_in_keys(search_args, '-', '_')
         return_results(CommandResults(
             readable_output='',
             outputs_prefix='DeleteReportedEmail',
-            outputs_key_field='message-id',
+            outputs_key_field='message_id',
             raw_response='',
-            outputs=search_args,
+            outputs=remove_empty_elements(search_args),
         ))
 
 

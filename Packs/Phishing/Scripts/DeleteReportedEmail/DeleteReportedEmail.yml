@@ -28,6 +28,18 @@ outputs:
 - contextPath: DeleteReportedEmail.deletion_failure_reason
   description: 'The reason of failure if the deletion operation failed or skipped'
   type: String
+- contextPath: DeleteReportedEmail.delete_type
+  description: 'Whether the deletion operation was hard or soft'
+  type: String
+- contextPath: DeleteReportedEmail.using_brand
+  description: 'The email service that was used to delete the email'
+  type: String
+- contextPath: DeleteReportedEmail.email_subject
+  description: 'The subject of the deleted email'
+  type: String
+- contextPath: DeleteReportedEmail.message_id
+  description: 'The message id of the deleted email'
+  type: String
 script: '-'
 system: false
 tags:
