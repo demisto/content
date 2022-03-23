@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: EWS v2
+  id: EWS v2 -custom
   version: -1
 configuration:
 - display: Email address
@@ -92,8 +92,8 @@ configuration:
   required: false
   type: 8
 description: Exchange Web Services and Office 365 (mail)
-display: EWS v2
-name: EWS v2
+display: EWS v2 -custom
+name: EWS v2 -custom
 script:
   commands:
   - arguments:
@@ -1228,7 +1228,7 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-  dockerimage: demisto/py-ews:1.0.0.23126
+  dockerimage: demisto/py3ews:1.0.0.23229
   feed: false
   isfetch: true
   longRunning: false

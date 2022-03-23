@@ -7,7 +7,7 @@ from multiprocessing import Process
 import dateparser
 import exchangelib
 from CommonServerPython import *
-from cStringIO import StringIO
+from io import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Body, Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
@@ -22,7 +22,7 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ResponseMessageError, TransportError)
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
-from exchangelib.services import EWSAccountService, EWSService
+from exchangelib.services.common import EWSAccountService, EWSService
 from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
                                  EXCHANGE_2010_SP2, EXCHANGE_2013,
@@ -31,7 +31,8 @@ from future import utils as future_utils
 from requests.exceptions import ConnectionError
 
 # Define utf8 as default encoding
-reload(sys)
+import importlib
+importlib.reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=E1101
 
 # Ignore warnings print to stdout
@@ -571,11 +572,9 @@ def fix_2010():
 
 def str_to_unicode(obj):
     if isinstance(obj, dict):
-        obj = {k: str_to_unicode(v) for k, v in obj.iteritems()}
+        obj = {k: str_to_unicode(v) for k, v in obj.items()}
     elif isinstance(obj, list):
         obj = map(str_to_unicode, obj)
-    elif isinstance(obj, str):
-        obj = unicode(obj, "utf-8")
     return obj
 
 
@@ -987,9 +986,9 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
 
     raw_dict = {}
     for field, value in item.__dict__.items():
-        if type(value) in [str, unicode, int, float, bool, Body, HTMLBody, None]:
+        if type(value) in [str, int, float, bool, Body, HTMLBody, None]:
             try:
-                if isinstance(value, basestring):
+                if isinstance(value, str):
                     value.encode('utf-8')  # type: ignore
                 raw_dict[field] = value
             except Exception:
@@ -1592,7 +1591,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
 
     if not selected_all_fields:
         searched_items_result = [
-            {k: v for (k, v) in i.iteritems()
+            {k: v for (k, v) in i.items()
              if k in keys_to_camel_case(restricted_fields)} for i in searched_items_result]
 
         for item in searched_items_result:
@@ -1660,7 +1659,7 @@ def get_contacts(limit, target_mailbox=None):
     def parse_contact(contact):
         contact_dict = dict((k, v if not isinstance(v, EWSDateTime) else v.ewsformat())
                             for k, v in contact.__dict__.items()
-                            if isinstance(v, basestring) or isinstance(v, EWSDateTime))
+                            if isinstance(v, str) or isinstance(v, EWSDateTime))
         if isinstance(contact, Contact) and contact.physical_addresses:
             contact_dict['physical_addresses'] = map(parse_physical_address, contact.physical_addresses)
         if isinstance(contact, Contact) and contact.phone_numbers:
