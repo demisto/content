@@ -1,4 +1,5 @@
 import copy
+from itertools import product
 from json import JSONDecodeError
 from typing import Tuple, List, Dict, Callable
 from CommonServerPython import *
@@ -11,6 +12,7 @@ urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 APP_NAME = 'ms-defender-atp'
+TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 ''' HELPER FUNCTIONS '''
 
@@ -198,14 +200,17 @@ class MsClient:
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch):
+                 alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
+                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
-            scope=Scopes.security_center_apt_service)
-        self.alert_severities_to_fetch = alert_severities_to_fetch,
+            scope=Scopes.security_center_apt_service, certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key)
+        self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
+        self.max_alerts_to_fetch = max_fetch
 
     def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
@@ -330,6 +335,18 @@ class MsClient:
             'ScanType': scan_type
         }
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+
+    def list_alerts_by_params(self, filter_req=None, params=None):
+        """Retrieves a collection of Alerts.
+
+        Returns:
+            dict. Alerts info
+        """
+        cmd_url = '/alerts'
+        if not params:
+            params = {'$filter': filter_req} if filter_req else None
+
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
     def list_alerts(self, filter_req=None, limit=None, evidence=False, creation_time=None):
         """Retrieves a collection of Alerts.
@@ -884,6 +901,7 @@ class MsClient:
             'action': action,
             'title': indicator_title,
             'description': description,
+            'generateAlert': True,
         }
         body.update(assign_params(  # optional params
             severity=severity,
@@ -1850,20 +1868,23 @@ def stop_and_quarantine_file_command(client: MsClient, args: dict):
     """Stop execution of a file on a machine and delete it.
 
     Returns:
-        (str, dict, dict). Human readable, context, raw response
+         CommandResults
     """
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
-    machine_id = args.get('machine_id')
-    file_sha1 = args.get('file_hash')
+    machine_ids = argToList(args.get('machine_id'))
+    file_sha1s = argToList(args.get('file_hash'))
     comment = args.get('comment')
-    machine_action_response = client.stop_and_quarantine_file(machine_id, file_sha1, comment)
-    action_data = get_machine_action_data(machine_action_response)
-    human_readable = tableToMarkdown(f'Stopping the execution of a file on {machine_id} machine and deleting it:',
-                                     action_data, headers=headers, removeNull=True)
-    entry_context = {
-        'MicrosoftATP.MachineAction(val.ID === obj.ID)': action_data
-    }
-    return human_readable, entry_context, machine_action_response
+    command_results = []
+    for machine_id, file_sha1 in product(machine_ids, file_sha1s):
+        machine_action_response = client.stop_and_quarantine_file(machine_id, file_sha1, comment)
+        action_data = get_machine_action_data(machine_action_response)
+        human_readable = tableToMarkdown(f'Stopping the execution of a file on {machine_id} machine and deleting it:',
+                                         action_data, headers=headers, removeNull=True)
+
+        command_results.append(CommandResults(outputs_prefix='MicrosoftATP.MachineAction', outputs_key_field='id',
+                                              readable_output=human_readable, outputs=action_data,
+                                              raw_response=machine_action_response))
+    return command_results
 
 
 def get_investigations_by_id_command(client: MsClient, args: dict):
@@ -2322,22 +2343,86 @@ def add_remove_machine_tag_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
-def fetch_incidents(client: MsClient, last_run):
-    last_alert_fetched_time = get_last_alert_fetched_time(last_run, client.alert_time_to_fetch)
-    existing_ids = last_run.get('existing_ids', [])
-    latest_creation_time = last_alert_fetched_time
-    filter_alerts_creation_time = create_filter_alerts_creation_time(last_alert_fetched_time)
-    alerts = client.list_alerts(filter_alerts_creation_time)['value']
+def fetch_incidents(client: MsClient, last_run, fetch_evidence):
+    first_fetch_time = dateparser.parse(client.alert_time_to_fetch,
+                                        settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
 
-    incidents, new_ids, latest_creation_time = all_alerts_to_incidents(alerts, latest_creation_time, existing_ids,
-                                                                       client.alert_status_to_fetch,
-                                                                       client.alert_severities_to_fetch)
+    if last_run:
+        last_fetch_time = last_run.get('last_alert_fetched_time')
+        # handling old version of time format:
+        if not last_fetch_time.endswith('Z'):
+            last_fetch_time = last_fetch_time + "Z"
 
-    demisto.setLastRun({
-        'last_alert_fetched_time': datetime.strftime(latest_creation_time, '%Y-%m-%dT%H:%M:%S'),
-        'existing_ids': new_ids
-    })
-    demisto.incidents(incidents)
+    else:
+        last_fetch_time = datetime.strftime(first_fetch_time, TIME_FORMAT)
+
+    latest_created_time = dateparser.parse(last_fetch_time,
+                                           settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+
+    params = _get_incidents_query_params(client, fetch_evidence, last_fetch_time)
+    demisto.debug(f'getting alerts using {params=}')
+    incidents = []
+    # get_alerts:
+    try:
+        alerts = client.list_alerts_by_params(params=params)['value']
+    except DemistoException as err:
+        big_query_err_msg = 'Verify that the server URL parameter is correct and that you have access to the server' \
+                            ' from your host.'
+        if str(err).startswith(big_query_err_msg):
+            demisto.debug(f'Query crashed API, probably due to a big response. Params sent to query: {params}')
+            raise Exception(
+                f'Failed to fetch {client.max_alerts_to_fetch} alerts. This may caused due to large amount of alert. '
+                f'Try using a lower limit.')
+        demisto.debug(f'Query crashed API. Params sent to query: {params}')
+        raise err
+
+    for alert in alerts:
+        alert_time = dateparser.parse(alert['alertCreationTime'],
+                                      settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+        # to prevent duplicates, adding incidents with creation_time > last fetched incident
+        if last_fetch_time:
+            if alert_time <= dateparser.parse(last_fetch_time,
+                                              settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'}):
+                demisto.debug(f"{INTEGRATION_NAME} - alert {str(alert)} was created at {alert['alertCreationTime']}."
+                              f' Skipping.')
+                continue
+
+        incidents.append({
+            'rawJSON': json.dumps(alert),
+            'name': f'{INTEGRATION_NAME} Alert {alert["id"]}',
+            'occurred': alert['alertCreationTime']
+        })
+
+        # Update last run and add incident if the incident is newer than last fetch
+        if alert_time > latest_created_time:
+            latest_created_time = alert_time
+
+    # last alert is the newest as we ordered by it ascending
+    demisto.debug(f'got {len(incidents)} incidents from the API.')
+    last_run['last_alert_fetched_time'] = datetime.strftime(latest_created_time, TIME_FORMAT)
+    return incidents, last_run
+
+
+def _get_incidents_query_params(client, fetch_evidence, last_fetch_time):
+    filter_query = f'alertCreationTime+gt+{last_fetch_time}'
+    if client.alert_status_to_fetch:
+        statuses = argToList(client.alert_status_to_fetch)
+        status_filter_list = [f"status+eq+'{status}'" for status in statuses]
+        if len(status_filter_list) > 1:
+            status_filter_list = list(map(lambda x: f'({x})', status_filter_list))
+        filter_query = filter_query + ' and (' + ' or '.join(status_filter_list) + ')'
+    if client.alert_severities_to_fetch:
+        severities = argToList(client.alert_severities_to_fetch)
+        severities_filter_list = [f"severity+eq+'{severity}'" for severity in severities]
+        if len(severities_filter_list) > 1:
+            severities_filter_list = list(map(lambda x: f'({x})', severities_filter_list))
+        filter_query = filter_query + ' and (' + ' or '.join(severities_filter_list) + ')'
+    params = {'$filter': filter_query}
+    params['$orderby'] = 'alertCreationTime asc'
+    if fetch_evidence:
+        params['$expand'] = 'evidence'
+    params['$top'] = client.max_alerts_to_fetch
+    return params
 
 
 def create_filter_alerts_creation_time(last_alert_fetched_time):
@@ -2481,6 +2566,7 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
             ],
             removeNull=True
         )
+
         outputs = {'MicrosoftATP.Indicators(val.id == obj.id)': indicators}
         std_outputs = build_std_output(indicators)
         outputs.update(std_outputs)
@@ -3064,11 +3150,6 @@ def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
     return machines_outputs
 
 
-def remove_duplicates_from_list_arg(args: dict, field: str):
-    convert_to_list = argToList(args.get(field))
-    return list(set(convert_to_list))
-
-
 ''' EXECUTION CODE '''
 ''' LIVE RESPONSE CODE '''
 
@@ -3380,13 +3461,20 @@ def main():
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
     alert_severities_to_fetch = params.get('fetch_severity')
     alert_status_to_fetch = params.get('fetch_status')
     alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
+    max_alert_to_fetch = arg_to_number(params.get('max_fetch', 50))
+    fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
 
-    if not enc_key:
-        raise Exception('Key must be provided.')
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
     if not auth_id:
         raise Exception('Authentication ID must be provided.')
     if not tenant_id:
@@ -3399,12 +3487,16 @@ def main():
         client = MsClient(
             base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
-            alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch)
+            alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
+            max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key
+        )
         if command == 'test-module':
             test_module(client)
 
         elif command == 'fetch-incidents':
-            fetch_incidents(client, last_run)
+            incidents, last_run = fetch_incidents(client, last_run, fetch_evidence)
+            demisto.setLastRun(last_run)
+            demisto.incidents(incidents)
 
         elif command == 'microsoft-atp-isolate-machine':
             return_outputs(*isolate_machine_command(client, args))
@@ -3464,7 +3556,7 @@ def main():
             return_outputs(*remove_app_restriction_command(client, args))
 
         elif command == 'microsoft-atp-stop-and-quarantine-file':
-            return_outputs(*stop_and_quarantine_file_command(client, args))
+            return_results(stop_and_quarantine_file_command(client, args))
 
         elif command == 'microsoft-atp-list-investigations':
             return_outputs(*get_investigations_by_id_command(client, args))

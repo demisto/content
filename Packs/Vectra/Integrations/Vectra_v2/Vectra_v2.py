@@ -141,6 +141,7 @@ class Client:
             'query_string': query_string,
             'page_size': self.fetch_size,
             'page': 1,
+            'order_field': 'last_timestamp'
         }
         raw_response = self.http_request(params=params, url_suffix='search/detections')  # type: ignore
         demisto.info("\n\n Queried Successfully\n\n")

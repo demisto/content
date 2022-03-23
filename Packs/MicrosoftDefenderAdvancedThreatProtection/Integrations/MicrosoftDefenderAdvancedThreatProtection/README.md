@@ -49,6 +49,8 @@ For more details about the authentication used in this integration, see [Microso
     | Host URL | The URL to the Microsoft Defender for Endpoint server, including the scheme. | `https://api.securitycenter.windows.com` |
     | ID | The ID used to gain access to the integration. | N/A |
     | Token | A piece of data that servers use to verify for authenticity. | eea810f5-a6f6 |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | A97BF50B7BB6D909CE8CAAF9FA8109A571134C33 |
+    | Private Key | Used for certificate authentication. The private key of the registered certificate. | eea810f5-a6f6 |
     | Fetch Incidents | Whether to fetch the incidents. | N/A |
     | Incident Type | The type of incident to select. | Phishing |
     | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated values supported. | New,Resolved |
@@ -1811,11 +1813,11 @@ Machine.StopAndQuarantine
 `microsoft-atp-stop-and-quarantine-file`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| machine_id | The ID  of the machine. | Required | 
-| file_hash | The file SHA1 hash to stop and quarantine on the machine. | Required | 
-| comment | The comment to associate with the action. | Required | 
+| **Argument Name** | **Description**                                                                                                                          | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| machine_id | The ID of the machine. When providing multiple values, each will be checked for the same hash.                                           | Required | 
+| file_hash | The file SHA1 hash to stop and quarantine on the machine. When providing multiple values, each will be checked for the same machine_id.  | Required | 
+| comment | The comment to associate with the action.                                                                                                | Required | 
 
 
 ##### Context Output
