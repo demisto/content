@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -43,6 +44,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -84,6 +86,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -128,6 +131,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: true
     loop:
       iscommand: false
@@ -175,8 +179,7 @@ tasks:
       - "1"
     scriptarguments:
       value:
-        simple: In the next task, you need to mark the task as completed in order
-          to check whether your answer is correct
+        simple: In the next task, you need to mark the task as completed in order to check whether your answer is correct
     separatecontext: false
     view: |-
       {
@@ -210,9 +213,7 @@ tasks:
       - "2"
     scriptarguments:
       value:
-        simple: In the next task, you need to push your answer to the Context Data
-          under the key WhenIsNextNext and mark the task as completed in order to
-          check whether your answer is correct
+        simple: In the next task, you need to push your answer to the Context Data under the key WhenIsNextNext and mark the task as completed in order to check whether your answer is correct
     separatecontext: false
     view: |-
       {
@@ -246,9 +247,7 @@ tasks:
       - "3"
     scriptarguments:
       value:
-        simple: In the next task, you need to push your answer to the Context Data
-          under the key WhoAmI and mark the task as completed in order to check whether
-          your answer is correct
+        simple: In the next task, you need to push your answer to the Context Data under the key WhoAmI and mark the task as completed in order to check whether your answer is correct
     separatecontext: false
     view: |-
       {
@@ -278,3 +277,7 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: ''

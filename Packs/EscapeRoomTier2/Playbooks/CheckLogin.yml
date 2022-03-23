@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -42,6 +43,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -108,3 +110,7 @@ outputs:
 - contextPath: MrBurns.Present
   description: What a nice present.
   type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: ''
