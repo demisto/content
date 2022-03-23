@@ -11,12 +11,15 @@ CONF_PATH="./Tests/conf.json"
 echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
 source $BASH_ENV
 
-if [ -z "$XSIAM_CHOSEN_MACHINE_ID" ]
-then
-      demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "$MEM_CHECK" --is-ami $IS_AMI_RUN -d "$1"
-else
-      demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "$MEM_CHECK" --is-ami $IS_AMI_RUN -d "$1" --xsiam-machine "$XSIAM_CHOSEN_MACHINE_ID" --xsiam-servers-path $XSIAM_SERVERS_PATH
-fi
+demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "$MEM_CHECK" --is-ami $IS_AMI_RUN -d "$1" --xsiam-machine "$XSIAM_CHOSEN_MACHINE_ID" --xsiam-servers-path $XSIAM_SERVERS_PATH --server-type "$SERVER_TYPE"
+
+
+#if [ -z "$XSIAM_CHOSEN_MACHINE_ID" ]
+#then
+#      demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "$MEM_CHECK" --is-ami $IS_AMI_RUN -d "$1" --server-type "$SERVER_TYPE"
+#else
+#      demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "$MEM_CHECK" --is-ami $IS_AMI_RUN -d "$1" --xsiam-machine "$XSIAM_CHOSEN_MACHINE_ID" --xsiam-servers-path $XSIAM_SERVERS_PATH --server-type "$SERVER_TYPE"
+#fi
 
 RETVAL=$?
 
