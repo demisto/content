@@ -670,8 +670,8 @@ script:
       required: false
       default: false
       secret: false
-    - name: csv_file
-      description: 'Base64 encoded CSV data from which to create the vulnerability sync batch.'
+    - name: entry_id
+      description: 'Entry ID of the CSV file to upload'
       type: 'string'
       isArray: false
       required: true
