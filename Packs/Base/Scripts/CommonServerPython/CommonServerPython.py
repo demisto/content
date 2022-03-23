@@ -9123,6 +9123,9 @@ def get_pack_version(pack_name=''):
 
 def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=None):
     '''
+    Used for cases where the api response to an indicator is not found,
+    returns CommandResults with readable_output generic in this case, and indicator with DBotScore unknown
+
     :type indicator: ``str``
     :param name: The value of the indicator
 
@@ -9132,8 +9135,8 @@ def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=
     :type reliability: ``DBotScoreReliability``
     :param reliability: use DBotScoreReliability class
 
-    :return: CommandResults with readable_output of the indicator and result table, and an indicator with dbot_score unknown.
     :rtype: ``CommandResults``
+    :return: CommandResults
     '''
     if not DBotScoreType.is_valid_type(indicator_type):
         raise ValueError('indicator type is invalid')
