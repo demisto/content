@@ -852,7 +852,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
             demisto.debug('API returned no alerts')
             return next_run, incidents
 
-        result = varonis_get_alerts(client, None, None, None, None, len(alert_guids), 1, alert_guids)
+        result = varonis_get_alerts(client, None, None, None, None, MAX_INCIDENTS_TO_FETCH_PER_RUN, 1, alert_guids)
         alerts_output = create_output(ALERT_OUTPUT, result['rows'])
 
         if not alerts_output:
