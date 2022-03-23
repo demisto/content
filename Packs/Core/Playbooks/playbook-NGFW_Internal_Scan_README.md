@@ -1,4 +1,4 @@
-This playbook investigate a scan where the source is an internal IP address.
+This playbook investigates a scan where the source is an internal IP address.
 
 An attacker might initiate an internal scan for discovery, lateral movement and more.
 
@@ -42,8 +42,8 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| scannerIP | The scanner IP address | alert.hostip | Optional |
-| AutoCloseAlert | Whether to close the alert automatically or manually after an analyst's review. | false | Optional |
+| scannerIP | The scanner IP address. | alert.hostip | Optional |
+| AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | false | Optional |
 | AutoContainment | Whether to execute automatically or manually the containment plan tasks:<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user |  | Optional |
 | HostAutoContainment | Whether to execute endpoint isolation automatically or manually. |  | Optional |
 
