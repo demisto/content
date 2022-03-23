@@ -7199,3 +7199,4 @@ fromversion: 5.0.0
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
+- test_pan_os_topology_commands
