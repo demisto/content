@@ -11,11 +11,11 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 
 LOGIN_VICTORY_MESSAGE = '''# Congratulations
-![](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier2/images/access_MrBurns.gif')
+![](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier2/images/access_MrBurns.gif)
 Oh, password policy. It's one of these annoying buzzwords. We prefer to call it an unrequested security surplus.
 
 You freed my Smithers from the cold chains of the password policy prison.
-I shall grant you a present, check the context.
+I shall grant you a present: dHlwZTpQb3dlclNoZWxsIC10YWdzOmluZnJhLEpTT04=
 
 And now Smithers, Release the hounds!
 '''
@@ -68,21 +68,29 @@ def check_login(args):
                                           password=password, verify_ssl=False)
         client.generic_request(path='/health', method='GET')
 
-        return CommandResults(readable_output=LOGIN_VICTORY_MESSAGE, outputs={'MrBurns.Present': 'dHlwZTpQb3dlclNoZWxsIC10YWdzOmluZnJhLEpTT04='})
+        return CommandResults(
+            readable_output=LOGIN_VICTORY_MESSAGE,
+            outputs={'MrBurns.Present': 'dHlwZTpQb3dlclNoZWxsIC10YWdzOmluZnJhLEpTT04='}
+        )
     except ApiException as exc:  # pylint: disable=W0703
-        return_error(exc.body)
+        return CommandResults(readable_output=exc.body)
 
 
 def when_is_next_next(args):
     if args.get('answer') == '2022-04-02T12:30':
-        return CommandResults(readable_output='I run after classification & mapping and right before an incident is created...')
+        return CommandResults(
+            readable_output='I run after classification & mapping and right before an incident is created...',
+            outputs={'WhenIsNextNext.Answer': 'GoodJob'})
     else:
-        return_error('Wrong !')
+        return_error('Wrong!')
 
 
 def who_am_i(args):
     if args.get('answer').lower() in {'nir zuk'}:
-        return CommandResults(readable_output='TaDA!!!')
+        return CommandResults(
+            readable_output='TaDA!!!',
+            outputs={'Nir.Zuk': 'Finish'}
+        )
     else:
         return_error('That is not who I am !')
 
