@@ -1,0 +1,222 @@
+id: WhoAmI
+version: -1
+name: WhoAmI
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bb47b102-e26e-4d3d-80ea-d0d6bccf08a1
+    type: start
+    task:
+      id: bb47b102-e26e-4d3d-80ea-d0d6bccf08a1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a73e1a71-c052-4396-809e-11d2bf837b85
+    type: condition
+    task:
+      id: a73e1a71-c052-4396-809e-11d2bf837b85
+      version: -1
+      name: Are the answers correct?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Nir.Zuk
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 5a9b233b-acb6-49f0-8bc2-645d6a1e6bc9
+    type: regular
+    task:
+      id: 5a9b233b-acb6-49f0-8bc2-645d6a1e6bc9
+      version: -1
+      name: You are correct!
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: Me
+      value:
+        simple: Wow
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f57e1999-f0f0-4b27-89d2-b863df052b68
+    type: title
+    task:
+      id: f57e1999-f0f0-4b27-89d2-b863df052b68
+      version: -1
+      name: Set score
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c88d0a4c-57e3-4d18-8a64-1355cca44f7b
+    type: title
+    task:
+      id: c88d0a4c-57e3-4d18-8a64-1355cca44f7b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 1440f3f8-b89e-444a-8114-05a89dfdcef7
+    type: regular
+    task:
+      id: 1440f3f8-b89e-444a-8114-05a89dfdcef7
+      version: -1
+      name: who-am-i
+      description: run to find hints
+      script: '|||who-am-i'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      answer:
+        simple: ${WhoAmI}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 880,
+        "width": 595,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs:
+- contextPath: Me
+  description: Person.
+  type: string

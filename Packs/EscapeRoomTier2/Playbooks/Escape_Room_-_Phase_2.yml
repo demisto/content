@@ -5,17 +5,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3b67bc94-b2f0-4b20-87ad-ea23bab52b9b
+    taskid: f07c9c17-1fbb-4a21-8d5a-e950af0258a2
     type: start
     task:
-      id: 3b67bc94-b2f0-4b20-87ad-ea23bab52b9b
+      id: f07c9c17-1fbb-4a21-8d5a-e950af0258a2
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     separatecontext: false
     view: |-
       {
@@ -33,20 +33,150 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c79d1869-fa90-4381-821f-54f3d034f61b
-    type: regular
+    taskid: 3e300ca9-51f0-4acf-854b-b87862d9de8e
+    type: playbook
     task:
-      id: c79d1869-fa90-4381-821f-54f3d034f61b
+      id: 3e300ca9-51f0-4acf-854b-b87862d9de8e
       version: -1
-      name: check-login
-      description: can smithers login successfully?
-      script: '|||check-login'
-      type: regular
-      iscommand: true
+      name: CheckLogin
+      playbookName: CheckLogin
+      type: playbook
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "5"
+    separatecontext: true
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MrBurns.Present
+            iscontext: true
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7fefbcdd-f58f-49e1-8aac-ca204b12299e
+    type: playbook
+    task:
+      id: 7fefbcdd-f58f-49e1-8aac-ca204b12299e
+      version: -1
+      name: WhenIsNextNext
+      playbookName: WhenIsNextNext
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: true
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NextNext
+            iscontext: true
+          right:
+            value:
+              simple: Correct
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e63f27af-448c-42b8-871a-3e59b34a11df
+    type: playbook
+    task:
+      id: e63f27af-448c-42b8-871a-3e59b34a11df
+      version: -1
+      name: WhoAmI
+      playbookName: WhoAmI
+      type: playbook
+      iscommand: false
+      brand: ""
+    separatecontext: true
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Me
+            iscontext: true
+          right:
+            value:
+              simple: Wow
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ea9400ef-ce1a-42e3-8c45-24e8e5aa90ff
+    type: regular
+    task:
+      id: ea9400ef-ce1a-42e3-8c45-24e8e5aa90ff
+      version: -1
+      name: Print instructions
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      value:
+        simple: In the next task, you need to mark the task as completed in order
+          to check whether your answer is correct
     separatecontext: false
     view: |-
       {
@@ -62,50 +192,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: bb57860b-ad25-4bd3-886f-d1f684cb7190
+  "5":
+    id: "5"
+    taskid: dad986b1-1126-4ad8-8ef4-ca146a4752f4
     type: regular
     task:
-      id: bb57860b-ad25-4bd3-886f-d1f684cb7190
+      id: dad986b1-1126-4ad8-8ef4-ca146a4752f4
       version: -1
-      name: when-is-next-next
-      description: run to find hints
-      script: '|||when-is-next-next'
+      name: Print instructions
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 58469208-ac3b-40ba-85bd-8bbf65a2e65a
-    type: regular
-    task:
-      id: 58469208-ac3b-40ba-85bd-8bbf65a2e65a
-      version: -1
-      name: who-am-i
-      description: run to find hints
-      script: '|||who-am-i'
-      type: regular
-      iscommand: true
-      brand: ""
+      - "2"
+    scriptarguments:
+      value:
+        simple: In the next task, you need to push your answer to the Context Data
+          under the key WhenIsNextNext and mark the task as completed in order to
+          check whether your answer is correct
     separatecontext: false
     view: |-
       {
@@ -121,12 +228,48 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 200982d1-1134-4ac0-890e-5e6e02159932
+    type: regular
+    task:
+      id: 200982d1-1134-4ac0-890e-5e6e02159932
+      version: -1
+      name: Print instructions
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      value:
+        simple: In the next task, you need to push your answer to the Context Data
+          under the key WhoAmI and mark the task as completed in order to check whether
+          your answer is correct
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
+        "height": 1115,
         "width": 380,
         "x": 50,
         "y": 50
