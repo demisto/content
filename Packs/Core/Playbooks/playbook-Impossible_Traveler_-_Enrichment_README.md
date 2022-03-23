@@ -1,4 +1,4 @@
-This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler main playbook alert and enrich them based on:
+This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert and enriches them based on the following:
 * Geo location
 * Active Directory
 * Verdict enrichment e.g. VirusTotal, AbuseIPDB, etc.
