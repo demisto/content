@@ -124,8 +124,8 @@ def construct_entities_block(entities_data: dict) -> str:
     for entity_type, entities_description in sorted(entities_data.items()):
         pretty_entity_type = re.sub(r'(\w)([A-Z])', r'\1 \2', entity_type)
         release_notes += f'#### {pretty_entity_type}\n'
-        if 'special_msg' in entities_description:
-            release_notes += f'{str(entities_description.pop("special_msg"))}\n'
+        if '[special_msg]' in entities_description:
+            release_notes += f'{str(entities_description.pop("[special_msg]"))}\n'
         for name, description in entities_description.items():
             if entity_type in ('Connections', 'IncidentTypes', 'IndicatorTypes', 'Layouts', 'IncidentFields',
                                'Incident Types', 'Indicator Types', 'Incident Fields'):
@@ -333,7 +333,7 @@ def merge_version_blocks(pack_versions_dict: dict) -> Tuple[str, str]:
             entity_section = section[1] or section[3]
             entities_data.setdefault(entity_type, {})
             if not entity_section.strip().startswith('#####'):
-                entity_section = "##### special_msg\n" + entity_section
+                entity_section = "##### [special_msg]\n" + entity_section
             # extract release notes comments by entity
             # assuming all entity titles start with level 5 header ("#####") and then a list of all comments
             entity_comments = ENTITY_SECTION_REGEX.findall(entity_section)
