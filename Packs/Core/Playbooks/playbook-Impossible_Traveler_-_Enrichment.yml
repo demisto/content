@@ -2,7 +2,7 @@ id: Impossible Traveler - Enrichment
 version: -1
 name: Impossible Traveler - Enrichment
 description: |-
-  This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler main playbook alert and enrich them based on:
+  This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert, and enriches them based on the following:
   * Geo location
   * Active Directory
   * IP enrichment e.g. VirusTotal, AbuseIPDB, etc.
@@ -212,7 +212,7 @@ tasks:
       id: 648c7ef2-9607-4b0a-832e-cd336da1c563
       version: -1
       name: Get coordinates for the IP Addresses
-      description: Sends http request. Returns the response as json.
+      description: Sends an HTTP request. Returns the response as Json.
       scriptName: http
       type: regular
       iscommand: false
@@ -294,7 +294,7 @@ tasks:
       id: 64a4ddd2-e5bf-4586-84ec-1ebb57812236
       version: -1
       name: Set Location
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -346,7 +346,7 @@ tasks:
       id: 44f5608d-032c-47e2-82ec-6923fb39431c
       version: -1
       name: Set Event Time
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -391,7 +391,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-admin/playbooks/automations.html
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -427,7 +427,7 @@ tasks:
       id: e24cc311-2f9f-4707-875f-851c2f5fc4c1
       version: -1
       name: Set IP Address
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -483,7 +483,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-admin/playbooks/automations.html
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -519,7 +519,7 @@ tasks:
       id: 551b7910-0643-4b54-8c4f-2c3aa08d6701
       version: -1
       name: Create Impossible Traveler Events
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -575,7 +575,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-admin/playbooks/automations.html
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -611,7 +611,7 @@ tasks:
       id: 8b425d6e-2abc-474e-8400-1a4a24c1141c
       version: -1
       name: Set Country
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -662,7 +662,7 @@ tasks:
       id: f49b343b-6623-4160-8285-339d2787c6bc
       version: -1
       name: Set event identity
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -782,7 +782,7 @@ inputs:
 - key: sourceip
   value: {}
   required: false
-  description: The source IP to iterate over
+  description: The source IP to iterate over.
   playbookInputQuery:
 outputs: []
 tests:
