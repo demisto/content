@@ -1,10 +1,10 @@
-This playbook checks the file reputation and set the verdict as a new context key.
+This playbook checks the file reputation and sets the verdict as a new context key.
 
 The verdict is composed by 3 main components:
 
-* VirusTotal detection rate
-* Digital certificate signers
-* NSRL DB
+* VirusTotal detection rate.
+* Digital certificate signers.
+* NSRL DB.
 
 Note: a user can provide a list of trusted signers of his own using the playbook inputs
  
