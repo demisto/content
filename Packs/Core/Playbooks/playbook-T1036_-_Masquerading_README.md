@@ -59,36 +59,36 @@ External resources:
     3. Fill the value with 'T1036' and select all.
     4. Click **Create**.
     
-* **Note** that the playbook triggers are being executed by their order, please consider changing the trigger position for the execution order to be as intended. If not, other trigger may override the new trigger.
+* **Note** that the playbook triggers are executed according to its order. Consider changing the trigger position for the execution order as intended. If not, other trigger may override the new trigger.
 
 Click **Save**.
 
 ### Playbook inputs
 
-Before executing the playbook, please review the inputs and change them default values if needed.
+Before executing the playbook, review the inputs and change the default values, if needed.
 
 Important playbook inputs you should pay attention to:
 
-1. FileRemediation - Under the second phase of the playbook remediation, there are two sub-playbooks:
+1. *FileRemediation*: Under the second phase of the playbook remediation, there are two sub-playbooks:
     1. Containment Plan
     2. Eradication Plan
 
-One can quarantine a file while the other can delete it. Since both can be executed together, this playbook input allows you to decide which response action the playbook should execute
+One playbook can quarantine a file and the other can delete it. Since both can be executed together, this playbook input allows you to decide which response action the playbook should execute.
 
-2. AutoContainment - This input is responsible for whether to execute the following response actions automatically or manually:
+2. *AutoContainment*: Whether to execute the following response actions automatically or manually:
     1. Block indicators
     2. Quarantine file
     3. Disable user
     
-3. HostAutoContainment - This input is responsible for whether to execute Endpoint Isolation automatically or manually.
+3. *HostAutoContainment*: Whether to execute Endpoint Isolation automatically or manually.
 
 
 ### Playbook remediation plan
 
 In this playbook the remediation plan happens in two different phases:
 
-1. On an early stage of the playbook execution, the Containment Plan sub-playbook is being used for **File quarantine** and **Block indicators**.
-2. On a later stage, the playbook executes the **Endpoint Investigation Plan** intended to look for additional activity on the alerted endpoint. On this phase, based on the results of the Endpoint Investigation Plan playbook, both Containment and Eradication Plan sub-playbook are being executed.
+1. At an early stage of the playbook execution, the Containment Plan sub-playbook is being used for **File quarantine** and **Block indicators**.
+2. At a later stage, the playbook executes the **Endpoint Investigation Plan**, which searches for additional activity on the alerted endpoint. In this phase, based on the results of the Endpoint Investigation Plan playbook, both Containment and Eradication Plan sub-playbooks are being executed.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -115,8 +115,8 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| FileRemediation | Should be either 'Quarantine' or 'Delete'. | Quarantine | Required |
-| AutoCloseAlert | Whether to close the alert automatically or manually after an analyst's review. | false | Optional |
+| FileRemediation | Can be 'Quarantine' or 'Delete'. | Quarantine | Required |
+| AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | false | Optional |
 | AutoRecovery | Whether to execute the Recovery playbook. | false | Optional |
 | AutoContainment | Whether to execute automatically or manually the containment plan tasks:<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user |  | Optional |
 | HostAutoContainment | Whether to execute endpoint isolation automatically or manually based on the Endpoint Investigation findings. | true | Optional |
