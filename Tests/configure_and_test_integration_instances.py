@@ -186,8 +186,7 @@ class Build:
         self.git_sha1 = options.git_sha1
         self.branch_name = options.branch
         self.ci_build_number = options.build_number
-        # todo: delete.
-        self.is_nightly = True # options.is_nightly
+        self.is_nightly = options.is_nightly
         self.secret_conf = get_json_file(options.secret)
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
@@ -1515,24 +1514,20 @@ def test_pack_zip(content_path, target):
     """
     Iterates over all TestPlaybooks folders and adds all files from there to test_pack.zip' file.
     """
-    with zipfile.ZipFile('/builds/xsoar/content/artifacts/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip2:
-        with zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
-            zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
-            for test_path, test in test_files(content_path):
-                if not test_path.endswith('.yml'):
-                    continue
-                test = test.name
-                with open(test_path, 'r') as test_file:
-                    if not (test.startswith('playbook-') or test.startswith('script-')):
-                        test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
-                        test_file.seek(0)
-                        test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
-                    else:
-                        test_target = f'test_pack/TestPlaybooks/{test}'
-                    zip_file.writestr(test_target, test_file.read())
-    # todo: delete
-    import shutil
-    shutil.copyfile(f'{target}/test_pack.zip', '/builds/xsoar/content/artifacts/marketplacev2/test_pack.zip')
+    with zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
+        for test_path, test in test_files(content_path):
+            if not test_path.endswith('.yml'):
+                continue
+            test = test.name
+            with open(test_path, 'r') as test_file:
+                if not (test.startswith('playbook-') or test.startswith('script-')):
+                    test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
+                    test_file.seek(0)
+                    test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
+                else:
+                    test_target = f'test_pack/TestPlaybooks/{test}'
+                zip_file.writestr(test_target, test_file.read())
 
 
 def get_non_added_packs_ids(build: Build):
