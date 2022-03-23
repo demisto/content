@@ -2571,6 +2571,10 @@
             "integrations": "Have I Been Pwned? V2"
         },
         {
+            "integrations": "Symantec Deepsight Intelligence",
+            "playbookID": "Symantec Deepsight Test"
+        },
+        {
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
@@ -5028,6 +5032,7 @@
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance - Issue 27112",
         "Prisma_Access-Test": "unskip after we will get Prisma Access instance - Issue 27112",
+        "Symantec Deepsight Test": "Issue 22971",
         "TestProofpointFeed": "Issue 22229",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "NetWitness Endpoint Test": "Issue 19878",
@@ -5100,7 +5105,6 @@
         "Carbon Black Edr - Test": "Jira ticket XDR-43185",
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
-        "RemoteAccessTest": "Issue 44245",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
         "XsoarPowershellTesting-Test": "Issue 32689",
         "MicrosoftManagementActivity - Test": "Issue 43922",
