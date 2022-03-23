@@ -138,137 +138,6 @@
                         ]
                     }
                 },
-<<<<<<< HEAD
-                "Action": {
-                    "simple": "behaviors.pattern_disposition_details"
-                },
-                "Agents ID": {
-                    "simple": "device.device_id"
-                },
-                "Alert Confidence": {
-                    "simple": "max_confidence"
-                },
-                "Cloud Account ID": {
-                    "simple": "device.service_provider_account_id"
-                },
-                "Cloud Provider": {
-                    "simple": "device.service_provider"
-                },
-                "Detection URL": {
-                    "complex": {
-                        "filters": [],
-                        "root": "detection_id",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "delimiter": {
-                                        "value": {
-                                            "simple": "ldt:"
-                                        }
-                                    },
-                                    "fields": {
-                                        "value": {
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "Cut"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "value": {
-                                            "simple": "1"
-                                        }
-                                    },
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "/"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": ":"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "prefix": {
-                                        "value": {
-                                            "simple": "https://falcon.crowdstrike.com/activity/detections/detail/"
-                                        }
-                                    },
-                                    "suffix": {
-                                        "value": {
-                                            "simple": "?processView=table"
-                                        }
-                                    }
-                                },
-                                "operator": "concat"
-                            }
-                        ]
-                    }
-                },
-                "Device Status": {
-                    "simple": "device.status"
-                },
-                "Event Type": {
-                    "simple": "incident_type"
-                },
-                "File Extension": {
-                    "simple": "behaviors.alleged_filetype"
-                },
-                "File Names": {
-                    "simple": "behaviors.filename"
-                },
-                "Objective": {
-                    "simple": "behaviors.objective"
-                },
-                "Org Unit": {
-                    "simple": "hostinfo.active_directory_dn_display"
-                },
-                "Parent Process SHA256": {
-                    "simple": "behaviors.parent_details.parent_sha256"
-                },
-                "Parent process MD5": {
-                    "simple": "behaviors.parent_details.parent_md5"
-                },
-                "Scenario": {
-                    "simple": "behaviors.scenario"
-                },
-                "Source External IPs": {
-                    "simple": "device.external_ip"
-                },
-                "Source IPs": {
-                    "simple": "device.local_ip"
-                },
-                "Source MAC Address": {
-                    "simple": "device.mac_address"
-                },
-                "Src NT Domain": {
-                    "simple": "device.machine_domain"
-                },
-                "Tactic": {
-                    "simple": "behaviors.tactic"
-                },
-                "Tactic ID": {
-                    "simple": "behaviors.tactic_id"
-                },
-                "Technique": {
-                    "simple": "behaviors.technique"
-                },
-                "Technique ID": {
-                    "simple": "behaviors.technique_id"
-                },
-                "User SID": {
-                    "simple": "behaviors.user_id"
-                },
-                "severity": {
-                    "simple": "max_severity_displayname"
-=======
 				"dbotMirrorDirection": {
 					"simple": "mirror_direction"
 				},
@@ -280,7 +149,6 @@
 				},
                 "IncomingMirrorError": {
                   "simple": "in_mirror_error"
->>>>>>> 078cc1a0bfc6f3ce69127714770fc605fd341ad0
                 }
             }
         },
@@ -406,41 +274,6 @@
                         ]
                     }
                 },
-<<<<<<< HEAD
-                "Detection URL": {
-                    "complex": {
-                        "filters": [],
-                        "root": "incident_id",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "prefix": {
-                                        "value": {
-                                            "simple": "https://falcon.crowdstrike.com/crowdscore/incidents/details/"
-                                        }
-                                    },
-                                    "suffix": {}
-                                },
-                                "operator": "concat"
-                            }
-                        ]
-                    }
-                },
-                "Device Status": {
-                    "simple": "hosts.status"
-                },
-                "Org Unit": {
-                    "simple": "hosts.ou"
-                },
-                "Source External IPs": {
-                    "simple": "hosts.external_ip"
-                },
-                "Source IPs": {
-                    "simple": "hosts.local_ip"
-                },
-                "Source MAC Address": {
-                    "simple": "hosts.mac_address"
-=======
                 "dbotMirrorDirection": {
 					"simple": "mirror_direction"
 				},
@@ -452,7 +285,6 @@
 				},
                 "IncomingMirrorError": {
                   "simple": "in_mirror_error"
->>>>>>> 078cc1a0bfc6f3ce69127714770fc605fd341ad0
                 }
             }
         },
