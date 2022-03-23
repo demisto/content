@@ -2,7 +2,7 @@ id: NGFW Internal Scan
 version: -1
 name: NGFW Internal Scan
 description: |
-  This playbook investigate a scan where the source is an internal IP address.
+  This playbook investigates a scan where the source is an internal IP address.
 
   An attacker might initiate an internal scan for discovery, lateral movement and more.
 
@@ -240,7 +240,7 @@ tasks:
       version: -1
       name: Containment Plan
       description: |-
-        This playbook handles all the containment actions available with XSIAM.
+        This playbook handles all the containment actions available with Cortex XSIAM.
         The playbook allows to contain the incident with one of the following tasks:
         * Isolate endpoint
         * Disable account
@@ -248,7 +248,7 @@ tasks:
         * Block indicators
         * Clear user session (currently, the playbook supports only Okta)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -572,15 +572,15 @@ tasks:
       version: -1
       name: Endpoint Investigation Plan
       description: |-
-        This playbook handles all the endpoint investigation actions available with XSIAM.
-        The playbook allows to investigate and hunt for more information using one of the following tasks:
+        This playbook handles all the endpoint investigation actions available with Cortex XSIAM.
+        The playbook enables you to investigate and hunt for more information using one of the following tasks:
         * Pre-defined MITRE Tactics
         * Host fields (Host ID)
         * Attacker fields (Attacker IP, External host)
         * MITRE techniques
         * File hash (currently, the playbook supports only SHA256)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs enable you to manipulate the execution flow. Review the inputs description.
       playbookName: Endpoint Investigation Plan
       type: playbook
       iscommand: false
@@ -669,7 +669,7 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Whether to close the alert automatically or manually after an analyst's review.
+  description: Whether to close the alert automatically or manually, after an analyst's review.
   playbookInputQuery:
 - key: AutoContainment
   value: {}
