@@ -9121,6 +9121,61 @@ def get_pack_version(pack_name=''):
     return pack_version
 
 
+def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=None):
+    '''
+    :type indicator: ``str``
+    :param name: The value of the indicator
+
+    :type indicator_type: ``DBotScoreType``
+    :param indicator_type: use DBotScoreType class
+
+    :type reliability: ``DBotScoreReliability``
+    :param reliability: use DBotScoreReliability class
+
+    :return: CommandResults with readable_output of the indicator and result table, and an indicator with dbot_score unknown.
+    :rtype: ``CommandResults``
+    '''
+    if not DBotScoreType.is_valid_type(indicator_type):
+        raise ValueError(f'{indicator_type} is invalid')
+
+    dbot_score = Common.DBotScore(indicator=indicator,
+                                  indicator_type=indicator_type,
+                                  score=Common.DBotScore.NONE,
+                                  reliability=reliability)
+
+    integration_name = dbot_score.integration_name or 'Results'
+    indicator_: Any = None
+    if indicator_type == 'file':
+        if sha1Regex(indicator):
+            indicator_ = Common.File(dbot_score=dbot_score, sha1=indicator)
+            indicator_type = 'sha1'
+        elif sha256Regex(indicator):
+            indicator_ = Common.File(dbot_score=dbot_score, sha256=indicator)
+            indicator_type = 'sha256'
+        elif sha512Regex(indicator):
+            indicator_ = Common.File(dbot_score=dbot_score, sha512=indicator)
+            indicator_type = 'sha512'
+        elif md5Regex(indicator):
+            indicator_ = Common.File(dbot_score=dbot_score, md5=indicator)
+            indicator_type = 'md5'
+
+    elif indicator_type == 'ip':
+        indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)
+    elif indicator_type == 'url':
+        indicator_ = Common.URL(url=indicator, dbot_score=dbot_score)
+    elif indicator_type == 'domain':
+        indicator_ = Common.Domain(domain=indicator, dbot_score=dbot_score)
+    elif indicator_type == 'email':
+        indicator_ = Common.EMAIL(address=indicator, dbot_score=dbot_score)
+
+    indicator_type = indicator_type.upper()
+    readable_output = tableToMarkdown(name=f'{integration_name}:',
+                                      t={indicator_type: indicator, 'Result': 'Not found'},
+                                      headers=[indicator_type, 'Result'])
+
+    return CommandResults(readable_output=readable_output, indicator=indicator_)
+
+
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################
