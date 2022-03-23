@@ -280,6 +280,10 @@
             "mandatory": false,
             "display_name": "EWS"
         },
+            "MicrosoftDefenderAdvancedThreatProtection": {
+            "mandatory": false,
+            "display_name": "Microsoft Defender for Endpoint"
+        },
         "FiltersAndTransformers": {
             "mandatory": true,
             "display_name": "Filters And Transformers"
@@ -352,6 +356,7 @@
         "IllusiveNetworks",
         "McAfee-TIE",
         "EWS",
+        "MicrosoftDefenderAdvancedThreatProtection",
         "McAfee ePO v2"
     ],
     "marketplaces": [
