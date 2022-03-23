@@ -12,7 +12,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Will require an additional password as an argument to run any command
+- additionalinfo: Requires an additional password as an argument to run any command
     of this module.
   displaypassword: Additional Password
   name: additional_password
@@ -33,8 +33,8 @@ configuration:
   name: key_algorithms
   required: false
   type: 0
-description: File transfer between Cortex XSOAR and a remote machine, and execution
-  of commands on the remote machine.
+description: Performs file transfer between Cortex XSOAR and a remote machine, and executes 
+  commands on the remote machine.
 display: RemoteAccess v2
 name: RemoteAccess v2
 script:
@@ -47,14 +47,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: Password. Required to match the Additional Password parameter if
-        it was supplied in order to run the command.
+      description: Password required to match the Additional Password parameter if
+        it was supplied to run the command.
       isArray: false
       name: additional_password
       required: false
       secret: false
     - default: false
-      description: Timeout for command, in seconds.
+      description: Timeout for command in seconds.
       isArray: false
       name: timeout
       required: false
@@ -92,14 +92,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Password. Required to match the Additional Password parameter if
-        it was supplied in order to run the command.
+      description: Password required to match the Additional Password parameter if
+        it was supplied to run the command.
       isArray: false
       name: additional_password
       required: false
       secret: false
     - default: false
-      description: Timeout for command, in seconds.
+      description: Timeout for command in seconds.
       isArray: false
       name: timeout
       required: false
@@ -145,7 +145,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Timeout for command, in seconds.
+      description: Timeout for command in seconds.
       isArray: false
       name: timeout
       required: false
