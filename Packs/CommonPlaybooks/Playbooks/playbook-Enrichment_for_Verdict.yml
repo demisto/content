@@ -648,7 +648,7 @@ tasks:
       id: 3cc70d44-9fde-47f1-8953-37a87446c690
       version: -1
       name: Set SuspectedVerdict to Suspicious File
-      description: Set a value in context under the key you entered.
+      description: Set the SuspectedVerdict key in context to Suspicious File.
       scriptName: Set
       type: regular
       iscommand: false
@@ -684,7 +684,7 @@ tasks:
       id: 8471b302-5b7d-40e6-80c4-26885685b255
       version: -1
       name: Set SuspectedVerdict to Suspicious IP
-      description: Set a value in context under the key you entered.
+      description: Set the SuspectedVerdict key in context to Suspicious IP.
       scriptName: Set
       type: regular
       iscommand: false
@@ -720,7 +720,7 @@ tasks:
       id: 62b2bce2-3d36-4404-812b-37c064f6f034
       version: -1
       name: Set SuspectedVerdict to Suspicious URL
-      description: Set a value in context under the key you entered.
+      description: Set the SuspectedVerdict key in context to Suspicious URL.
       scriptName: Set
       type: regular
       iscommand: false
@@ -756,7 +756,7 @@ tasks:
       id: d5f8721d-a5fc-4830-8ae6-6548554db946
       version: -1
       name: Set PreviousVerdict to Previously closed as False Positive
-      description: Set a value in context under the key you entered.
+      description: Set the PreviousVerdict key in context to closed as False Positive.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1181,7 +1181,7 @@ tasks:
       id: 56202f0a-3cfd-4940-8a2a-d2ff2fc6d796
       version: -1
       name: Set SuspectedVerdict to Suspicious Domain
-      description: Set a value in context under the key you entered.
+      description: Set the SuspectedVerdict key in context to Suspicious Domain.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1478,7 +1478,7 @@ outputs:
   description: The IP objects.
   type: unknown
 - contextPath: DBotScore
-  description: Indicator, Score, Type, Vendor
+  description: Indicator's dbot Score, dbot Type and Vendor.
   type: unknown
 - contextPath: Endpoint
   description: The endpoint's object.

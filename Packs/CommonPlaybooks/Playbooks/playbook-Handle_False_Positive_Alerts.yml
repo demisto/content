@@ -46,7 +46,7 @@ tasks:
       id: be9db9ac-960d-4191-8d6a-d11b21bb1b91
       version: -1
       name: Add the source IP to Alert Exclusion list
-      description: Adds exclusion.
+      description: Add the source IP to Alert Exclusion list.
       script: '|||core-add-exclusion'
       type: regular
       iscommand: true
@@ -106,7 +106,7 @@ tasks:
       id: 3fdcb924-95fb-4c80-813a-3b5bf700c0d0
       version: -1
       name: Add the file to the allowed list automatically?
-      description: Explain the options
+      description: Should the playbook add the file to the allowed list automatically?
       type: condition
       iscommand: false
       brand: ""
@@ -247,7 +247,7 @@ tasks:
       id: fb1c3fc8-9407-4586-8190-2593c65d77fe
       version: -1
       name: Alert Closing
-      description: commands.local.cmd.close.inv
+      description: Close the alert.
       type: title
       iscommand: false
       brand: Builtin
@@ -353,7 +353,7 @@ tasks:
       id: fc5dca23-a528-4f14-81bc-e4603a63a335
       version: -1
       name: Close alert as FP
-      description: commands.local.cmd.close.inv
+      description: Close the alert as false positive.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -577,7 +577,7 @@ tasks:
       id: 55f04aa2-8ca8-4069-8c10-fe377a4ff6a9
       version: -1
       name: Add the host IP and username to Alert Exclusion list
-      description: Adds exclusion.
+      description: Add the host IP and username to Alert Exclusion list.
       script: '|||core-add-exclusion'
       type: regular
       iscommand: true
@@ -667,7 +667,7 @@ tasks:
       id: f16eee8e-e537-458e-8a5f-9e3afa34b0af
       version: -1
       name: Add the file SHA256 to Alert Exclusion list
-      description: Adds exclusion.
+      description: Add the file SHA256 to Alert Exclusion list.
       script: '|||core-add-exclusion'
       type: regular
       iscommand: true

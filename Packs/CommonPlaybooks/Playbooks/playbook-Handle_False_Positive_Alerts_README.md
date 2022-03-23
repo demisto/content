@@ -1,4 +1,5 @@
 This playbook handles false positive alerts.
+It creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.
 
 
 ## Dependencies
@@ -23,11 +24,11 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ShouldCloseAutomatically | Should we close alerts as false positive automatically? Specify true/false. | alert.initiatormd5 | Optional |
-| HostIP | Host IP from the alert. | alert.hostip | Optional |
-| username | Username from the alert. | alert.username | Optional |
-| alertName | Alert name. | alert.name | Optional |
-| FileSHA256 | File SHA256 from the alert. | alert.initiatorsha256 | Optional |
+| ShouldCloseAutomatically | Should we automatically close false positive alerts? Specify true/false. |  | Optional |
+| sourceIP | The host IP from the alert. | alert.hostip | Optional |
+| username | The username from the alert. | alert.username | Optional |
+| alertName | The alert name. | alert.name | Optional |
+| FileSHA256 | The file SHA256 from the alert. | alert.initiatorsha256 | Optional |
 
 ## Playbook Outputs
 ---
@@ -35,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Handle False Positive Alerts](https://raw.githubusercontent.com/demisto/content/2d66f3f4c673e252f4f8d44aa944b450b84ee12c/Packs/CommonPlaybooks/doc_files/Handle_False_Positive_Alerts.png)
+![Handle False Positive Alerts](Insert the link to your image here)
