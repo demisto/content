@@ -34,6 +34,51 @@ This phase will execute the following containment actions:
 
 [Port Scan](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/port-scan.html)
 
+## How to use this playbook
+
+### Create a new playbook trigger
+
+1. Click on the **Incident Response** icon on the left menu ![img.png](img.png)
+2. Under **Automation** click on **Incident Configuration**.
+3. Select **Playbook Triggers** on the left panel.
+4. Click on **New Trigger**.
+5. Choose a trigger name e.g. Scanner Response.
+6. Under **Playbook To Run**, select NGFW Scan.
+7. Add trigger description - optional.
+8. Create a filter for the playbook trigger.
+    1. Click on 'select field'.
+    2. Choose 'Alert name'.
+    3. Fill the value with 'Scan' and keep the 'contains' condition.
+    4. Click **Create**
+
+* **Note** that the playbook triggers are being executed by their order, please consider changing the trigger position for the execution order to be as intended. If not, other trigger may override the new trigger.
+
+Click **Save**.
+
+### Playbook inputs
+
+Before executing the playbook, please review the inputs and change them default values if needed.
+
+Important playbook inputs you should pay attention to:
+
+1. blockKnownScanner - This input is responsible for whether a benign IP address that has been previously seen in more than 5 alerts should be blocked.
+
+2. reportIPAddress - This input is relevant for those who enabled AbuseIPDB integration, and is responsible for whether to report back to AbuseIPDB the IP address or not.
+
+3. AutoContainment - This input is responsible for whether to execute the following response actions automatically or manually:
+    1. Block indicators
+    2. Quarantine file
+    3. Disable user
+
+4. HostAutoContainment - This input is responsible for whether to execute Endpoint Isolation automatically or manually.
+
+### Playbook remediation plan
+
+In this playbook the remediation plan happens in two different phases:
+
+1. On an early stage of the playbook execution, if the IP address verdict is malicious, the IP will be blocked using the Block IP - Generic v3 playbook.
+2. On a later stage, the playbook executes the **Endpoint Investigation Plan** intended to look for additional activity involves the scanner IP address. On this phase, based on the results of the Endpoint Investigation Plan playbook, the SOC will be notified and the Containment Plan playbook will be executed.
+
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
