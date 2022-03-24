@@ -3810,7 +3810,7 @@ def panorama_register_ip_tag_command(args: dict):
     persistent = args.get('persistent', 'true')
     persistent = '1' if persistent == 'true' else '0'
     # if not given, timeout will be 0 and persistent will be used
-    timeout = int(args.get('timeout', '0'))
+    timeout = arg_to_number(args.get('timeout', '0'))
 
     major_version = get_pan_os_major_version()
 
@@ -3892,10 +3892,13 @@ def panorama_unregister_ip_tag_command(args: dict):
 
 
 @logger
-def panorama_register_user_tag(tag: str, users: List):
+def panorama_register_user_tag(tag: str, users: List, timeout: str):
     entry: str = ''
     for user in users:
-        entry += f'<entry user=\"{user}\"><tag><member>{tag}</member></tag></entry>'
+        if timeout:
+            entry += f'<entry user=\"{user}\"><tag><member timeout="{timeout}">{tag}</member></tag></entry>'
+        else:
+            entry += f'<entry user=\"{user}\"><tag><member>{tag}</member></tag></entry>'
 
     params = {
         'type': 'user-id',
@@ -3922,8 +3925,10 @@ def panorama_register_user_tag_command(args: dict):
         raise Exception('The panorama-register-user-tag command is only available for PAN-OS 9.X and above versions.')
     tag = args['tag']
     users = argToList(args['Users'])
+    # if not given, timeout will be 0 (never expires)
+    timeout = arg_to_number(args.get('timeout', '0'))
 
-    result = panorama_register_user_tag(tag, users)
+    result = panorama_register_user_tag(tag, users, timeout)
 
     # get existing Users for this tag
     context_users = demisto.dt(demisto.context(), 'Panorama.DynamicTags(val.Tag ==\"' + tag + '\").Users')
