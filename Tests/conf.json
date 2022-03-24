@@ -1019,8 +1019,8 @@
         {
             "integrations": "Panorama",
             "instance_names": [
-                "palo_alto_panorama",
-                "palo_alto_firewall"
+                "palo_alto_firewall_9.0",
+                "palo_alto_panorama_9.0"
             ],
             "playbookID": "test_pan_os_topology_commands",
             "fromversion": "6.1.0",
