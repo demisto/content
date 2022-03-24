@@ -1,7 +1,7 @@
 {
-    "TASK_0": "flowchart TB\nsubgraph <h1>#0 Playbook Triggered</h1>\ndirection TB\nContent[\"Here we should have the task data.\"]",
-    "TASK_1": "flowchart TB\nsubgraph <h1>#1 Do something</h1>\ndirection TB\nContent[\"Here we should have the task data.\"]",
-    "TASK_2": "flowchart TB\nsubgraph <h1>#2 Is Output Valid?</h1>\ndirection TB\nContent[\"Here we should have the task data.\"]",
-    "TASK_3": "flowchart TB\nsubgraph <h1>#3 Done</h1>\ndirection TB\nContent[\"Here we should have the task data.\"]",
-    "TASK_4": "flowchart TB\nsubgraph <h1>#4 Print Error</h1>\ndirection TB\nContent[\"Here we should have the task data.\"]"
+    "TASK_0": "flowchart TB\nsubgraph TASK_0\ndirection TB\nContent[\"<h1>#0 Playbook Triggered</h1>\"]",
+    "TASK_1": "flowchart TB\nsubgraph TASK_1\ndirection TB\nContent[\"<h1>#1 Do something</h1>\"]",
+    "TASK_2": "flowchart TB\nsubgraph TASK_2\ndirection TB\nContent[\"<h1>#2 Is Output Valid?</h1>\"]",
+    "TASK_3": "flowchart TB\nsubgraph TASK_3\ndirection TB\nContent[\"<h1>#3 Done</h1>\"]",
+    "TASK_4": "flowchart TB\nsubgraph TASK_4\ndirection TB\nContent[\"<h1>#4 Print Error</h1>\"]"
 }
