@@ -60,7 +60,7 @@ def main():
             f'\n{t.red}ERROR: Contribution form was not filled for PR: {pr_number}.\nMake sure to register your'
             f' contribution by filling the contribution registration form in - https://forms.gle/XDfxU4E61ZwEESSMA'
         )
-        exit_status = 1
+        sys.exit(1)
 
     print(f'{t.cyan}Check that one of Community/Partner/Internal labels exist in PR {pr_number}')
     if not (is_community_label_exist ^ is_partner_label_exist ^ is_internal_label_exist):
@@ -68,11 +68,11 @@ def main():
             f'{t.red}ERROR: PR labels {pr_label_names} '
             f'must contain one of {COMMUNITY_LABEL}/{PARTNER_LABEL}/{INTERNAL_LABEL} labels'
         )
-        exit_status = 1
+        sys.exit(1)
 
     print(f'{t.cyan}PR labels {pr_label_names} are valid')
     print(f'{t.cyan} Contribution form was filled successfully for PR: {pr_number}')
-    sys.exit(exit_status)
+    sys.exit(0)
 
 
 if __name__ == "__main__":
