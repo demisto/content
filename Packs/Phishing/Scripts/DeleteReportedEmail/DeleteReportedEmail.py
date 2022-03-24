@@ -22,7 +22,7 @@ class DeletionFailed(Exception):
 class DeletionArgs:
 
     @staticmethod
-    def gmail(search_result, search_args):
+    def gmail(search_result: dict, search_args: dict):
         """
         Parse the arguments needed for the delete operation for Gmail integration.
         Args:
@@ -33,13 +33,13 @@ class DeletionArgs:
             The args needed for the deletion operation
 
         """
-        is_permanent = True if search_args['delete-type'] == 'Hard' else False
+        is_permanent = True if search_args['delete-type'] == 'hard' else False
         gmail_message_id = search_result[0].get('id')
         return {'user-id': search_args['user-id'], 'message-id': gmail_message_id, 'permanent': is_permanent,
                 'using-brand': search_args['using-brand']}
 
     @staticmethod
-    def msgraph(search_result, search_args):
+    def msgraph(search_result: dict, search_args: dict):
         """
         Parse the arguments needed for the delete operation for O365 - MSGraph integration.
         Args:
@@ -56,7 +56,7 @@ class DeletionArgs:
         return {'user_id': search_args['user_id'], 'message_id': internal_id, 'using-brand': search_args['using-brand']}
 
     @staticmethod
-    def agari(search_args):
+    def agari(search_args: dict):
         """
         Parse the arguments needed for the delete operation for Agari Phishing Defence integration.
         Args:
@@ -71,7 +71,7 @@ class DeletionArgs:
                 'using-brand': search_args['using-brand']}
 
     @staticmethod
-    def ews(search_result, search_args):
+    def ews(search_result: dict, search_args: dict):
         """
         Parse the arguments needed for the delete operation for EWS integrations (EWS365, EWSv2).
         Args:
@@ -82,7 +82,7 @@ class DeletionArgs:
             The args needed for the deletion operation
 
         """
-        delete_type = f'{search_args["delete-type"].lower()}'
+        delete_type = f'{search_args["delete-type"]}'
         item_id = search_result[0].get('itemId')
         return {'item-ids': item_id, 'delete-type': delete_type, 'using-brand': search_args['using-brand']}
 
@@ -98,7 +98,7 @@ def check_demisto_version():
                                'O365 - Security And Compliance - Search And Delete ')
 
 
-def schedule_next_command(args):
+def schedule_next_command(args: dict):
     """
     Handle the creation of the ScheduleCommand object
     Returns:
@@ -116,7 +116,7 @@ def schedule_next_command(args):
         timeout_in_seconds=600)
 
 
-def was_email_already_deleted(search_args, e):
+def was_email_already_deleted(search_args: dict, e: Exception):
     """
     Checks if the email was already deleted by this script, using the context data info.
     Args:
@@ -138,7 +138,7 @@ def was_email_already_deleted(search_args, e):
     return 'Skipped', str(e)
 
 
-def was_email_found_security_and_compliance(search_results):
+def was_email_found_security_and_compliance(search_results: dict):
     """
     Checks if the search command using the Security & Compliance integration has found the email of interest.
     Args:
@@ -155,7 +155,8 @@ def was_email_found_security_and_compliance(search_results):
     return False
 
 
-def security_and_compliance_delete_mail(args, user_id, email_subject, using_brand, delete_type):
+def security_and_compliance_delete_mail(args: dict, user_id: str, email_subject: str, using_brand: str,
+                                        delete_type: str):
     """
     Search and delete the email using the Security & Compliance integration, preformed by the genric polling flow.
     Args:
@@ -196,7 +197,7 @@ def security_and_compliance_delete_mail(args, user_id, email_subject, using_bran
     # create the deletion action if it does not already exists
     if search_action_name not in search_actions_list:
         execute_command('o365-sc-new-search-action',
-                        {'search_name': search_name, 'action': 'Purge', 'purge_type': delete_type,
+                        {'search_name': search_name, 'action': 'Purge', 'purge_type': delete_type.capitalize(),
                          'using-brand': using_brand})
 
     results = execute_command('o365-sc-get-search-action', {'search_action_name': search_action_name,
@@ -212,8 +213,8 @@ def security_and_compliance_delete_mail(args, user_id, email_subject, using_bran
     return 'Success', None
 
 
-def delete_email(search_args, search_function, delete_args_function, delete_function, deletion_error_condition=
-lambda x: 'successfully' not in x):
+def delete_email(search_args: dict, search_function: str, delete_args_function: callable, delete_function: str,
+                 deletion_error_condition: callable = lambda x: 'successfully' not in x):
     """
     Generic function to preform the search and delete operations.
     Args:
@@ -236,7 +237,7 @@ lambda x: 'successfully' not in x):
         raise DeletionFailed(resp)
 
 
-def get_search_args(args):
+def get_search_args(args: dict):
     """
     Get the parsed arguments needed for the search operation
     Args:

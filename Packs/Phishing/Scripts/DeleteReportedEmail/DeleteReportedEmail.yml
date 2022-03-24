@@ -7,8 +7,8 @@ args:
   secret: false
   auto: PREDEFINED
   predefined:
-    - Soft
-    - Hard
+    - soft
+    - hard
 - default: false
   description: 'The brand of which you wish to delete this email from. the default value is the incident using brand.'
   isArray: false
