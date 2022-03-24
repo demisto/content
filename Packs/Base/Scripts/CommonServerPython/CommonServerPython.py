@@ -9149,7 +9149,7 @@ def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=
     :type address_type: ``str``
     :param address_type: Use only in case that the indicator is Cryptocurrency
 
-    :rtype: ``CommandResults``
+    :rtype: ``CommandResults`` 
     :return: CommandResults
     '''
     if not DBotScoreType.is_valid_type(indicator_type) and not context_prefix or indicator_type is DBotScoreType.CUSTOM and not context_prefix:
