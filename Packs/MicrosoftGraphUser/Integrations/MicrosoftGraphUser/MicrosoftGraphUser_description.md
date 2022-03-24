@@ -19,22 +19,6 @@ In order to use the ***msgraph-user-change-password*** command, you must use wit
 
 **Note:** When using the Authorization Code flow, make sure the user you authenticate with has the relevant roles in Azure AD in order to execute the operation.
 
-### Self deployed configuration with Client Credentials flow
-1. Enter your client ID in the **ID** parameter field.
-2. Enter your client secret in the **Key** parameter field.
-3. Enter your tenant ID in the **Token** parameter field.
-[yy](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
-   
-### Self deployed configuration with Authorization Code flow
-1. Make sure the following permissions are granted for the app registration:
-   API/Permission name `Directory.AccessAsUser.All` of type `Delegated`
-2. Copy the following URL and replace the **TENANT_ID**, **CLIENT_ID** and **REDIRECT_URI** with your own client ID and redirect URI, accordingly.
-```https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=code&scope=offline_access%20directory.accessasuser.all&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI```
-3. Enter the link and you will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. You will be automatically redirected to a link with the following structure:
-```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
-4. Copy the **AUTH_CODE** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization Code** parameter.
-5. Enter your client ID in the **ID** parameter field.
-6. Enter your client secret in the **Key** parameter field.
-7. Enter your tenant ID in the **Token** parameter field.
-8. Enter your redirect URI in the **Redirect URI** parameter field.
-[zz](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user)
+### Self deployed configuration
+- [Client Credentials flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
+- [Authorization Code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user)
