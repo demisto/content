@@ -972,6 +972,33 @@
                         "w": 1,
                         "x": 1,
                         "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-06e56860-a85f-11ec-8585-0dac7af6e9b0",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "domainsquattingresult",
+                                "height": 22,
+                                "id": "131c1610-a85f-11ec-8585-0dac7af6e9b0",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Domain-squatting Check",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 7
                     }
                 ],
                 "type": "custom"
