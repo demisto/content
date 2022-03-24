@@ -56,6 +56,21 @@ SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE = {
     ]
 }
 
+GET_FULL_REPORT_HTTP_RESPONSE_EMPTY = {
+    "errors": [],
+    "meta": {
+        "powered_by": "falconx-api",
+        "query_time": 0.006237549,
+        "quota": {
+            "in_progress": 2,
+            "total": 100,
+            "used": 47
+        },
+        "trace_id": "trace_id"
+    },
+    "resources": []
+}
+
 GET_FULL_REPORT_HTTP_RESPONSE = {
     "errors": [],
     "meta": {

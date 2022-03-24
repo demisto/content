@@ -7,7 +7,7 @@ jobs:
     if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 2
       - name: Get changed files
@@ -16,7 +16,7 @@ jobs:
         with:
           separator: ';'
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '3.8'
       - name: Install Python Dependencies

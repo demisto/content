@@ -1569,50 +1569,55 @@ def messages() -> Response:
     """
     Main handler for messages sent to the bot
     """
-    demisto.debug('Processing POST query...')
-    headers: dict = cast(Dict[Any, Any], request.headers)
-    if validate_auth_header(headers) is False:
-        demisto.info(f'Authorization header failed: {str(headers)}')
-    else:
-        request_body: dict = request.json
-        integration_context: dict = get_integration_context()
-        service_url: str = request_body.get('serviceUrl', '')
-        if service_url:
-            service_url = service_url[:-1] if service_url.endswith('/') else service_url
-            integration_context['service_url'] = service_url
-            set_integration_context(integration_context)
-
-        channel_data: dict = request_body.get('channelData', {})
-        event_type: str = channel_data.get('eventType', '')
-
-        conversation: dict = request_body.get('conversation', {})
-        conversation_type: str = conversation.get('conversationType', '')
-        conversation_id: str = conversation.get('id', '')
-
-        message_text: str = request_body.get('text', '')
-
-        # Remove bot mention
-        bot_name = integration_context.get('bot_name', '')
-        formatted_message: str = message_text.replace(f'<at>{bot_name}</at>', '')
-
-        value: dict = request_body.get('value', {})
-
-        if event_type == 'teamMemberAdded':
-            demisto.info('New Microsoft Teams team member was added')
-            member_added_handler(integration_context, request_body, channel_data)
-        elif value:
-            # In TeamsAsk process
-            demisto.info('Got response from user in MicrosoftTeamsAsk process')
-            entitlement_handler(integration_context, request_body, value, conversation_id)
-        elif conversation_type == 'personal':
-            demisto.info('Got direct message to the bot')
-            direct_message_handler(integration_context, request_body, conversation, formatted_message)
+    try:
+        demisto.debug('Processing POST query...')
+        headers: dict = cast(Dict[Any, Any], request.headers)
+        if validate_auth_header(headers) is False:
+            demisto.info(f'Authorization header failed: {str(headers)}')
         else:
-            demisto.info('Got message mentioning the bot')
-            message_handler(integration_context, request_body, channel_data, formatted_message)
-    demisto.info('Finished processing Microsoft Teams activity successfully')
-    demisto.updateModuleHealth('')
-    return Response(status=200)
+            request_body: dict = request.json
+            integration_context: dict = get_integration_context()
+            service_url: str = request_body.get('serviceUrl', '')
+            if service_url:
+                service_url = service_url[:-1] if service_url.endswith('/') else service_url
+                integration_context['service_url'] = service_url
+                set_integration_context(integration_context)
+
+            channel_data: dict = request_body.get('channelData', {})
+            event_type: str = channel_data.get('eventType', '')
+
+            conversation: dict = request_body.get('conversation', {})
+            conversation_type: str = conversation.get('conversationType', '')
+            conversation_id: str = conversation.get('id', '')
+
+            message_text: str = request_body.get('text', '')
+
+            # Remove bot mention
+            bot_name = integration_context.get('bot_name', '')
+            formatted_message: str = message_text.replace(f'<at>{bot_name}</at>', '')
+
+            value: dict = request_body.get('value', {})
+
+            if event_type == 'teamMemberAdded':
+                demisto.info('New Microsoft Teams team member was added')
+                member_added_handler(integration_context, request_body, channel_data)
+            elif value:
+                # In TeamsAsk process
+                demisto.info('Got response from user in MicrosoftTeamsAsk process')
+                entitlement_handler(integration_context, request_body, value, conversation_id)
+            elif conversation_type == 'personal':
+                demisto.info('Got direct message to the bot')
+                direct_message_handler(integration_context, request_body, conversation, formatted_message)
+            else:
+                demisto.info('Got message mentioning the bot')
+                message_handler(integration_context, request_body, channel_data, formatted_message)
+        demisto.info('Finished processing Microsoft Teams activity successfully')
+        demisto.updateModuleHealth('')
+        return Response(status=200)
+    except Exception as e:
+        err_msg = f'Error occurred when handling incoming message {str(e)}'
+        demisto.error(err_msg)
+        return Response(response=err_msg, status=400)
 
 
 def ring_user_request(call_request_data):

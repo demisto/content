@@ -16,9 +16,9 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ### Commands
-* panorama-create-address
-* panorama-edit-address-group
-* panorama-get-address-group
+* pan-os-create-address
+* pan-os-edit-address-group
+* pan-os-get-address-group
 
 ## Playbook Inputs
 ---

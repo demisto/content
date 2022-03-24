@@ -177,6 +177,16 @@ configuration:
   - '60'
   required: false
   type: 15
+- additionalinfo: Sort detections by "DETECTION_TIME" or by "CREATED_TIME". If not
+    specified, it defaults to "CREATED_TIME". This configuration is applicable to "Detection alerts" only.
+  defaultvalue: CREATED_TIME
+  display: List Basis
+  name: fetch_detection_by_list_basis
+  options:
+  - CREATED_TIME
+  - DETECTION_TIME
+  required: false
+  type: 15
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -3245,7 +3255,7 @@ script:
       description: A page token that can be provided to the next call to view the
         next page of Rules. Absent if this is the last page.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.24037
+  dockerimage: demisto/googleapi-python3:1.0.0.26733
   feed: false
   isfetch: true
   longRunning: false

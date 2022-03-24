@@ -14,3 +14,6 @@ ignore=IF100
 
 [file:RubrikPolaris.yml]
 ignore=IN145
+
+[file:RubrikPolaris_image.png]
+ignore=IM111

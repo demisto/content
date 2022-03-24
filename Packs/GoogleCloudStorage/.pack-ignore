@@ -12,3 +12,6 @@ ignore=auto-test
 
 [file:GoogleCloudStorage.yml]
 ignore=IN145
+
+[file:GoogleCloudStorage_image.png]
+ignore=IM111

@@ -153,6 +153,7 @@ def test_fetch_samples(samples: list[dict], mocker):
                                        'occurred: 2003-10-11T22:14:15.003Z',
                             'name': 'Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]',
                             'occurred': '2003-10-11T22:14:15.003Z',
+                            'type': 'test',
                             'rawJSON': '{"app_name": "evntslog", "facility": "local4", "host_name": '
                                        '"mymachine.example.com", "msg": "BOMAn application event log '
                                        'entry", "msg_id": "ID47", "process_id": 123, "sd": '
@@ -188,6 +189,7 @@ def test_fetch_samples(samples: list[dict], mocker):
                                           'timestamp: 2021-11-09T17:07:20',
                                'name': 'Syslog from [mymachine.example.com][2021-11-09T17:07:20]',
                                'occurred': None,
+                               'type': 'test',
                                'rawJSON': '{"app_name": null, "facility": "log_alert", "host_name": '
                                           '"mymachine.example.com", "msg": "softwareupdated[288]: Removing '
                                           'client SUUpdateServiceClient pid=90550, uid=375597002, '
@@ -213,7 +215,7 @@ def test_create_incident_from_syslog_message(extracted_msg: SyslogMessageExtract
     Then:
     - Ensure expected incident is created
     """
-    assert create_incident_from_syslog_message(extracted_msg) == expected
+    assert create_incident_from_syslog_message(extracted_msg, incident_type='test') == expected
 
 
 INCIDENT_EXAMPLE = {'name': 'Syslog from [mymachine.example.com][2021-11-09T17:07:20]',

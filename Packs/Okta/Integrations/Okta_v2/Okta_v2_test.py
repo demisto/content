@@ -1,6 +1,6 @@
 from Okta_v2 import Client, get_user_command, get_group_members_command, create_user_command, \
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command, \
-    get_zone_command, list_zones_command, update_zone_command, list_users_command
+    get_zone_command, list_zones_command, update_zone_command, list_users_command, create_zone_command
 import pytest
 import json
 import io
@@ -727,6 +727,19 @@ def test_update_zone_command(mocker, args):
     mocker.patch.object(client, 'get_zone', return_value=okta_zone)
     mocker.patch.object(client, 'update_zone', return_value=my_okta_zone)
     readable, outputs, _ = update_zone_command(client, args)
+    assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ({'gateway_ips': '8.8.8.8', 'name': 'NewZoneName'})
+    ])
+def test_create_zone_command(mocker, args):
+    my_okta_zone = okta_zone
+    my_okta_zone['name'] = 'NewZoneName'
+    mocker.patch.object(client, 'create_zone', return_value=okta_zone)
+    readable, outputs, _ = create_zone_command(client, args)
     assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
 
 
