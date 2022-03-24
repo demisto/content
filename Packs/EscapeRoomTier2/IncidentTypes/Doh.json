@@ -18,6 +18,7 @@
     "autorun": true,
     "disabled": false,
     "playbookId": "Escape Room - Phase 2",
+    "layout": "Escape Room Layout",
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
     "detached": false,

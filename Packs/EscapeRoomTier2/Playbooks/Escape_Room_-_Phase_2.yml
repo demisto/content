@@ -213,7 +213,7 @@ tasks:
       - "2"
     scriptarguments:
       value:
-        simple: In the next task, you need to push your answer to the Context Data under the key WhenIsNextNext and mark the task as completed in order to check whether your answer is correct
+        simple: In the next task, you need to push your answer to the Context Data under the key WhenIsNextNext and mark the task as completed in order to check whether your answer is correct. The date format is YYYY-MM-DDThh:mm
     separatecontext: false
     view: |-
       {
