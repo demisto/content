@@ -1,0 +1,30 @@
+{
+    "id": "EDL Change",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "EDL Change",
+    "prevName": "EDL Change",
+    "color": "#9FA8DA",
+    "playbookId": "Modify EDL",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "d67303c1-bff3-45f3-82ae-024bc61b5f92",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.0.0"
+}

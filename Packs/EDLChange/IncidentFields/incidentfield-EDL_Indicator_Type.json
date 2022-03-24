@@ -1,0 +1,41 @@
+{
+    "id": "incident_edlindicatortype",
+    "version": -1,
+    "modified": "2022-03-23T23:34:00.720288746-03:00",
+    "name": "Manual EDL Change Indicator Type",
+    "ownerOnly": false,
+    "description": "Only relevant if adding to EDL. Type of indicators to add to EDL.",
+    "cliName": "edlindicatortype",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "IP",
+        "IPv6",
+        "CIDR",
+        "IPv6CIDR",
+        "URL",
+        "Domain",
+        "DomainGlob"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "EDL Change"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": false,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}
