@@ -93,17 +93,16 @@ class Client(BaseClient):
         return response
 
     def service_record_list_request(self, type_: str, fields: List[str] = None, offset: int = None, limit: int = None,
-                                    ids: List[str] = None, archive: int = None,
-                                    filters: Dict[str, str] = None):
+                                    ids: List[str] = None, archive: int = None, filters: Dict[str, Any] = None):
         params = assign_params(type=type_, fields=fields, offset=offset, limit=limit, ids=ids, archive=archive)
-        params.update(filters)
+        params.update(filters or {})
 
         response = self._http_request('GET', 'sr', params=params, cookies=self._cookies)
 
         return response
 
     def service_record_search_request(self, type_: str, query: str, fields: List[str] = None, offset: int = None,
-                                      limit: int = None, archive: int = None, filters: Dict[str, str] = None):
+                                      limit: int = None, archive: int = None, filters: Dict[str, Any] = None):
         params = assign_params(type=type_, fields=fields, offset=offset, limit=limit, query=query, archive=archive)
         params.update(filters)
 
@@ -227,7 +226,7 @@ def service_record_readable_response(responses: Union[dict, List[dict], str]) ->
     return readable_response
 
 
-def extract_filters(custom_fields_keys: List[str], custom_fields_values: List[str]) -> Dict[str, str]:
+def extract_filters(custom_fields_keys: List[str], custom_fields_values: List[str]) -> Dict[str, Any]:
     filters = {}
     for key, value in zip(custom_fields_keys, custom_fields_values):
         filters[key] = value
@@ -337,7 +336,7 @@ def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
     offset = arg_to_number(args.get('offset'))
     limit = arg_to_number(args.get('limit'))
 
-    response = client.asset_search_request(query, fields, limit, offset)
+    response = client.asset_search_request(str(query), fields, limit, offset)
     headers = ['id', 'name', 'info']
     readable_response = asset_list_readable_response(response, 'value')
     command_results = CommandResults(
@@ -407,7 +406,7 @@ def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     offset = arg_to_number(args.get('offset'))
     limit = arg_to_number(args.get('limit'))
 
-    response = client.user_search_request(query, fields, type_, offset, limit)
+    response = client.user_search_request(str(query), fields, type_, offset, limit)
     headers = ['id', 'name', 'isAdmin', 'isManager', 'isSysAidAdmin', 'isGuest']
     command_results = CommandResults(
         outputs_prefix='SysAid.User',
@@ -434,7 +433,7 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
     custom_fields_values = argToList(args.get('custom_fields_values'))
     filters = extract_filters(custom_fields_keys, custom_fields_values)
 
-    response = client.service_record_list_request(type_, fields, offset, limit, ids, archive, filters)
+    response = client.service_record_list_request(str(type_), fields, offset, limit, ids, archive, filters)
     headers = ['id', 'title', 'status']
     readable_response = service_record_readable_response(response)
     command_results = CommandResults(
@@ -463,7 +462,7 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
     custom_fields_values = argToList(args.get('custom_fields_values'))
     filters = extract_filters(custom_fields_keys, custom_fields_values)
 
-    response = client.service_record_search_request(type_, query, fields, offset, limit, archive, filters)
+    response = client.service_record_search_request(str(type_), str(query), fields, offset, limit, archive, filters)
     headers = ['id', 'title', 'status']
     readable_response = service_record_readable_response(response)
     command_results = CommandResults(
@@ -485,7 +484,7 @@ def service_record_update_command(client: Client, args: Dict[str, Any]) -> Comma
     id_ = args.get('id')
     info = set_service_record_info(args)
 
-    response = client.service_record_update_request(id_, info)
+    response = client.service_record_update_request(str(id_), info)
     if response.ok:
         msg = f'Service Record {id_} Updated Successfully.'
     else:
@@ -502,7 +501,7 @@ def service_record_close_command(client: Client, args: Dict[str, Any]) -> Comman
     id_ = args.get('id')
     solution = args.get('solution')
 
-    response = client.service_record_close_request(id_, solution)
+    response = client.service_record_close_request(str(id_), solution)
     if response.status_code == 200:
         msg = f'Service Record {id_} Closed Successfully.'
     elif response.status_code == 400:
@@ -522,7 +521,7 @@ def service_record_template_get_command(client: Client, args: Dict[str, Any]) ->
     type_ = args.get('type')
     template_id = args.get('template_id')
 
-    response = client.service_record_template_get_request(type_, fields, template_id)
+    response = client.service_record_template_get_request(str(type_), fields, template_id)
     readable_response = template_readable_response(response)
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecordTemplate',
@@ -545,7 +544,7 @@ def service_record_create_command(client: Client, args: Dict[str, Any]) -> Comma
     template_id = args.get('template_id')
     info = set_service_record_info(args)
 
-    response = client.service_record_create_request(type_, info, fields, template_id)
+    response = client.service_record_create_request(str(type_), info, fields, template_id)
     headers = ['id', 'title', 'status']
     readable_response = service_record_readable_response(response)
     command_results = CommandResults(
