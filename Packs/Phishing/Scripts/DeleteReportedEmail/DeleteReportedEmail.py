@@ -6,22 +6,28 @@ seconds = time.time()
 from typing import Dict, Any
 import traceback
 
-import time
-seconds = time.time()
-from typing import Dict, Any
-import traceback
-
 EMAIL_INTEGRATIONS = ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'MicrosoftGraphMail',
                       'SecurityAndCompliance']
 
 
-class ReDeleteException(Exception):
+class MissingEmailException(Exception):
     def __init__(self):
-        super().__init__('Email was not found in mailbox, is it possible that the email was already deleted.')
+        super().__init__('Email was not found in mailbox.It is possible that the email was already deleted manually.')
 
 
 class DeletionFailed(Exception):
     pass
+
+
+def was_email_already_deleted(search_args, e):
+    delete_email_from_context = demisto.get(demisto.context(), 'DeleteReportedEmail')
+    if not isinstance(delete_email_from_context, list):
+        delete_email_from_context = [delete_email_from_context]
+    for item in delete_email_from_context:
+        message_id = item.get('messge_id')
+        if message_id == search_args.get('message_id') and search_args.get('Status') == 'Success':
+            return 'Success', ''
+    return 'Skipped', str(e)
 
 
 def schedule_next_command(args):
@@ -35,14 +41,15 @@ def schedule_next_command(args):
         'polling': True,
         **args,
     }
+    print(f'polling args:{polling_args}')
     return ScheduledCommand(
-        command='!DeleteEmail',
+        command='DeleteReportedEmail',
         next_run_in_seconds=60,
         args=polling_args,
         timeout_in_seconds=600)
 
 
-def security_and_compliance_delete_mail(args, user_id, email_subject, using_brand, delete_type, **kwargs):
+def security_and_compliance_delete_mail(args, user_id, email_subject, using_brand, delete_type, message_id):
     if not is_demisto_version_ge('6.2.0'):
         raise DemistoException('Deleting an email using this script for Security And Compliance integration is not '
                                'supported by this XSOAR server version. Please update your server version to 6.2.0 '
@@ -51,41 +58,45 @@ def security_and_compliance_delete_mail(args, user_id, email_subject, using_bran
     query = f'from:{user_id} AND subject:{email_subject}'
     search_name = args.get('search_name')
     is_finished_searching = args.get('is_finished_searching')
-    print("here1")
+    print("entering func")
     if not is_finished_searching:
         if not search_name:
             # first time, creating the search
-            print("here2")
+            print("first search")
             search_name = f'search_for_delete_{seconds}'
             execute_command('o365-sc-new-search', {'kql': query, 'search_name': search_name,
                                                    'using-brand': using_brand})
             execute_command('o365-sc-start-search', {'search_name': search_name, 'using-brand': using_brand})
             args['search_name'] = search_name
-            print(args)
 
         # the search already exists, but not finished
+        print("calling get search")
         results = execute_command('o365-sc-get-search', {'search_name': search_name, 'using-brand': using_brand})
-        print(results)
-        if results[0].get('Status') != 'Complete':
-            return CommandResults(scheduled_command=schedule_next_command(args))
+        if results[0].get('Status') != 'Completed':
+            print("returning ScheduledCommand")
+            return 'In progress', schedule_next_command(args) # consider removing the commsndResults
 
         # the search is finished
-        if results.get('SuccessResults'):
-            # the email was found
-            execute_command('o365-sc-new-search-action', {'search_name': search_name, 'purge_type': delete_type,
-                                                          'using-brand': using_brand})
-            args['is_finished_searching'] = True
-            return CommandResults(scheduled_command=schedule_next_command(args))
+        print("search is finished")
+        # the email was found
+        execute_command('o365-sc-new-search-action',
+                        {'search_name': search_name, 'action': 'Purge', 'purge_type': delete_type,
+                         'using-brand': using_brand})
+        args['is_finished_searching'] = 'true'
+        print(f'args after adding:{args}')
+        return 'In progress', schedule_next_command(args)
     else:
+        print("search is finished - starting to delete")
         results = execute_command('o365-sc-get-search-action', {'search_action_name': search_name,
                                                                 'using-brand': using_brand})
-        if results.get('Status') != 'Complete':
-            return CommandResults(scheduled_command=schedule_next_command(args))
+        if results.get('Status') != 'Completed':
+            print("not finished deleting yet")
+            return schedule_next_command(args)
         execute_command('o365-sc-remove-search-action', {'search_action_name': search_name,
                                                          'using-brand': using_brand})
         execute_command('o365-sc-remove-search', {'search_name': search_name,
                                                   'using-brand': using_brand})
-        return 'Success'
+        return 'Success', None
 
 
 def gmail_delete_args_function(search_result, search_args):
@@ -120,7 +131,7 @@ lambda x: 'successfully' not in x):
     if search_function:
         search_result = execute_command(search_function, search_args)
         if not search_result or isinstance(search_result, str):
-            raise ReDeleteException()
+            raise MissingEmailException()
     delete_args = delete_args_function(search_result, search_args)
     resp = execute_command(delete_function, delete_args)
     if deletion_error_condition(resp):
@@ -138,7 +149,7 @@ def get_search_args(args):
         'delete-type': args.get('delete_type'),
         'using-brand': delete_from_brand,
         'email_subject': custom_fields.get('reportedemailsubject'),
-        'message-id': message_id,
+        'message-id': message_id, # TODO: not in sec & comp
     }
     additional_args = {
         'Gmail': {'query': f'Rfc822msgid:{message_id}', 'user-id': user_id},
@@ -154,10 +165,12 @@ def get_search_args(args):
 
 def main():
     args = demisto.args()
+    print(args)
     search_args = get_search_args(args)
-    result = ''
-    deletion_failure_reason = ''
+    result = None
+    deletion_failure_reason = None
     delete_from_brand = search_args['using-brand']
+    scheduled_command = None
     try:
         if delete_from_brand not in EMAIL_INTEGRATIONS:
             raise DemistoException(
@@ -165,10 +178,7 @@ def main():
 
         if delete_from_brand == 'SecurityAndCompliance':
             search_args = replace_in_keys(search_args, '-', '_')
-            result = security_and_compliance_delete_mail(args, **search_args)
-            if isinstance(result, CommandResults):
-                return_results(result)
-                result = 'In progress'
+            result, scheduled_command = security_and_compliance_delete_mail(args, **search_args)
         else:
             integrations_dict = {'Gmail': ('gmail-search', gmail_delete_args_function, 'gmail-delete-mail'),
                                  'EWSO365': ('ews-search-mailbox', ews_delete_args_function, 'ews-delete-items',
@@ -180,29 +190,35 @@ def main():
                                                         'msgraph-mail-delete-email')}
             delete_email(search_args, *integrations_dict[delete_from_brand])
             result = 'Success'
+        # else:
+        #     search_args = replace_in_keys(search_args, '-', '_')
 
-    except ReDeleteException as e:
-        result = 'Skipped'
-        deletion_failure_reason = f'Skipped deleting email: {e}'
+    except MissingEmailException as e:
+        result, deletion_failure_reason = was_email_already_deleted(search_args, e)
     except DeletionFailed as e:
         result = 'Failed'
-        deletion_failure_reason = f'Failed deleting email: {e}'
+        deletion_failure_reason = f'Failed deleting email: {str(e)}'
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute DeleteEmail. Error: {str(e)}')
     # TODO: add fields population
-    # TODO: add check if the email was already deleted
 
     finally:
         search_args.update({'result': result, 'deletion_failure_reason': deletion_failure_reason})
-        search_args = replace_in_keys(search_args, '-', '_')
-        return_results(CommandResults(
-            readable_output='',  # TODO: add hr
+        search_args = remove_empty_elements(replace_in_keys(search_args, '-', '_'))
+        return_results(
+            CommandResults(
+            readable_output=tableToMarkdown(
+                'Deletion Results',
+                search_args,
+                headerTransform=string_to_table_header,
+            ),
             outputs_prefix='DeleteReportedEmail',
             outputs_key_field='message_id',
             raw_response='',
-            outputs=remove_empty_elements(search_args),
-        ))
+            outputs=search_args,
+            scheduled_command = scheduled_command
+            ))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

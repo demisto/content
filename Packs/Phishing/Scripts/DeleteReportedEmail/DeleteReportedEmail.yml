@@ -21,7 +21,31 @@ args:
   name: search_name
   required: false
   secret: false
-  hidden: true
+  hidden: false
+- default: false
+  description: 'argument used for the generic polling flow within the security and compliance search.'
+  isArray: false
+  name: is_finished_searching
+  required: false
+  secret: false
+  hidden: false
+  defaultValue: false
+- auto: PREDEFINED
+  default: false
+  description: Use XSOAR built-in polling to retrieve the result when it's ready.
+  isArray: false
+  name: polling
+  defaultValue: true
+  predefined:
+    - 'true'
+    - 'false'
+- default: false
+  description: Interval in seconds between each poll.
+  isArray: false
+  name: interval_in_seconds
+  required: false
+  secret: false
+  defaultValue: '60'
 comment: 'Use this script to delete a reported phishing email from the mailbox it was reported to'
 commonfields:
   id: DeleteReportedEmail
