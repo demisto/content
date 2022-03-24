@@ -295,7 +295,7 @@
         },
         {
             "type": "markdown",
-            "data": "### Messages:\nOffice coffee breaks will be served on floors 13, 16, 18, and 33.\nJoin us at exactly 9:00 AM for a delicious continental breakfast (coffee \u0026 sweets).\n",
+            "data": "### Messages:\nOffice coffee breaks will be served on floors 13, 16, 18, and 33.\nJoin us at exactly 09:00 for a delicious continental breakfast (coffee \u0026 sweets).\n",
             "layout": {
                 "columnPos": 0,
                 "h": 1,

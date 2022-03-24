@@ -21,15 +21,15 @@ AUTO_EXTRACT_DETAILS = (
     ' scripts defined for the indicator type.\n'
     'Cortex XSOAR recommends that you turn off Auto Extract using the server configurations for the different'
     ' Auto Extract options and only turn it on for those specific scenarios where it is necessary.\n'
-    '![autoextract](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials'
-    '/Packs/EscapeRoomTier1/images/autoextract.png)'
+    '![autoextract](https://user-images.githubusercontent.com/30797606/159860634-a031b732-87d7-41c5-a165-c3a2c52c8f1d.png)'
 )
+# image is: Packs/EscapeRoomTier1/images/autoextract.png
 
 DUPLICATE_INCIDENT = (
     'This is a duplicate of a previous incident. try fetching the original incident again.\n'
-    '![Nothing to see](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials'
-    '/Packs/EscapeRoomTier1/images/snowincident_NothingToSee.png)'
+    '![Nothing to see](https://user-images.githubusercontent.com/30797606/159861060-41783cfb-ddcd-413a-bede-7a79bc60b87e.gif)'
 )
+# image is: Packs/EscapeRoomTier1/images/snowincident_NothingToSee.gif
 
 
 def validate_credentials(credentials):
