@@ -214,7 +214,7 @@ references:
           echo "Skipping validations when uploading to a test bucket."
           exit 0
         fi
-
+        pip3 install git+https://github.com/demisto/demisto-sdk.git@eli/docker_helper_improve#egg=demisto-sdk
         echo "demisto-sdk version: $(demisto-sdk --version)"
         echo "mypy version: $(mypy --version)"
         echo "flake8 py2 version: $(python2 -m flake8 --version)"
@@ -224,7 +224,7 @@ references:
         echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         mkdir ./unit-tests
-        demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
+        demisto-sdk lint -p 8 -a --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
 
   generate_coverage_reports: &generate_coverage_reports
     run:
