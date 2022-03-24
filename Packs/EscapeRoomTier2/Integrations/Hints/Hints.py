@@ -88,7 +88,7 @@ def when_is_next_next(args):
 def who_am_i(args):
     if args.get('answer').lower() in {'nir zuk'}:
         return CommandResults(
-            readable_output='TaDA!!!',
+            readable_output='# Congrats!!!\nYou managed to escape our War Room.\nNow get back to work!',
             outputs={'Nir.Zuk': 'Finish'}
         )
     else:
