@@ -35,7 +35,6 @@ args:
   description: Use XSOAR built-in polling to retrieve the result when it's ready.
   isArray: false
   name: polling
-  defaultValue: true
   predefined:
     - 'true'
     - 'false'
@@ -45,7 +44,6 @@ args:
   name: interval_in_seconds
   required: false
   secret: false
-  defaultValue: '60'
 comment: 'Use this script to delete a reported phishing email from the mailbox it was reported to'
 commonfields:
   id: DeleteReportedEmail
