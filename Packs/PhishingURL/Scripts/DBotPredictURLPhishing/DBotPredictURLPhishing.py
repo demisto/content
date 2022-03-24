@@ -33,7 +33,6 @@ MSG_SOMETHING_WRONG_IN_RASTERIZE = "Something went wrong with rasterize"
 MSG_ENABLE_WHOIS = "Please enable whois integration for more accurate prediction"
 MSG_MODEL_VERSION_IN_DEMISTO = "Model version in demisto: %s.%s"
 MSG_NO_MODEL_IN_DEMISTO = "There is no existing model version in demisto"
-MSG_INVALID_URL = "Error: %s (status code:%s)"
 MSG_NO_URL_GIVEN = "Please input at least one URL"
 MSG_FAILED_RASTERIZE = "Rasterize error: ERR_NAME_NOT_RESOLVED"
 MSG_IMPOSSIBLE_CONNECTION = "Failed to establish a new connection - Name or service not known"
@@ -42,6 +41,7 @@ MSG_UPDATE_LOGO = "Update demisto model from docker model version %s.%s and tran
 MSG_WRONG_CONFIG_MODEL = 'Wrong configuration of the model'
 MSG_NO_ACTION_ON_MODEL = "Use current model"
 MSG_WHITE_LIST = "White List"
+MSG_REDIRECT = 'Prediction will be made on the last URL'
 MSG_NEED_TO_UPDATE_RASTERIZE = "Please update install and update rasterize pack"
 EMPTY_STRING = ""
 URL_PHISHING_MODEL_NAME = "url_phishing_model"
@@ -539,7 +539,7 @@ def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
     # Get final url and redirection
     final_url = output_rasterize.get('current_url', url)
     if final_url != url:
-        url_redirect = '%s -> %s   (%s)' % (url, final_url, 'Prediction will be made on the last URL')
+        url_redirect = '%s -> %s   (%s)' % (url, final_url, MSG_REDIRECT)
     else:
         url_redirect = final_url
 
