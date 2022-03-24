@@ -65,7 +65,7 @@ def main():
     if not (is_community_label_exist ^ is_partner_label_exist ^ is_internal_label_exist):
         print(
             f'{t.red}ERROR: PR labels {pr_label_names} '
-            f'must contain only one of {COMMUNITY_LABEL}/{PARTNER_LABEL}/{INTERNAL_LABEL} labels'
+            f'must contain one of {COMMUNITY_LABEL}/{PARTNER_LABEL}/{INTERNAL_LABEL} labels'
         )
         sys.exit(1)
 
