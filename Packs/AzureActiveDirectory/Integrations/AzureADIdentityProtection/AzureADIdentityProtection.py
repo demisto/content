@@ -311,6 +311,60 @@ def build_filter(last_fetch, params):
     return query_filter
 
 
+# TODO: move to CommonServerPython?
+from datetime import datetime, timedelta
+from typing import Callable, Dict
+def fetch_last_run(fetch_func: Callable,
+                   params,
+                   time_format_func: Callable = None,
+                   integration_name=''):
+    '''
+      An abstraction for the lastRun fetch flow.
+
+      Args:
+        fetch_func (Callable): User supplied function to fetch incidents,
+          uses last time as a parameter and returns the new time.
+        params (Dict[str, str]): Demisto configuration object
+        time_format_func (Callable): A user defined function to convert date
+                            time into the intergration specified date format.
+        integration_name (str): Integration name as prefix for debug logs.
+      Returns:
+        None
+    '''
+
+    log_prefix = f'[{integration_name}]' if integration_name else '[Debug]'
+
+    last_run = demisto.getLastRun()
+    demisto.debug(f'{log_prefix} last run: {last_run}')
+
+    # If this is the first time running, set to the integration configuration
+    initial_offset_string = f"{params.get('first_fetch') or '1 days'} ago"
+    initial_offset = dateparser.parse(date_string=initial_offset_string)
+                                      #date_formats=[DATE_FORMAT])
+
+    if not last_run.get('last_time_run', None):
+        demisto.debug(f'{log_prefix} first run, setting to initial offset: '
+                      f'{initial_offset_string}')
+        last_run['last_time_run'] = initial_offset
+
+    # If the user supplied a time conversion function, use it.
+    if time_format_func:
+        last_run['last_time_run'] = time_format_func(last_run['last_time_run'])
+
+    # Calling the user's fetch function
+    demisto.debug(f'{log_prefix} fetching...')
+    res = fetch_func(last_run)
+
+    new_last_run = {
+        'last_time_run': res.get('last_time_run', initial_offset),
+        'last_etag': res.get('last_etag',
+                                  last_run.get('last_etag', None))
+    }
+    demisto.debug(f'{log_prefix} done fetching! setting new last run: {new_last_run}')
+    demisto.setLastRun(new_last_run)
+    demisto.incidents(res.get('incidents', []))
+
+
 def date_str_to_azure_format(date_str):
     """
     Given a string representing a date in some general format, modifies the date to Azure format.
@@ -329,32 +383,32 @@ def date_str_to_azure_format(date_str):
 
 
 def fetch_incidents(client: AADClient, params: Dict[str, str]):
-    last_run: Dict[str, str] = demisto.getLastRun()
-    demisto.debug(f'[AzureIdentityProtection] last run: {last_run}')
+    def fetch_func(last_fetch):
+        query_filter = build_filter(last_fetch, params)
+        demisto.debug(f'[AzureIdentityProtection] last fetch is: {last_fetch}, filter is: {query_filter}')
 
-    last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, params)
-    query_filter = build_filter(last_fetch, params)
-    demisto.debug(f'[AzureIdentityProtection] last fetch is: {last_fetch}, filter is: {query_filter}')
+        risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(
+            limit=int(params.get('max_fetch', '50')),
+            filter_expression=query_filter,
+            user_id=params.get('fetch_user_id', ''),
+            user_principal_name=params.get('fetch_user_principal_name', ''),
+        )
 
-    risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(
-        limit=int(params.get('max_fetch', '50')),
-        filter_expression=query_filter,
-        user_id=params.get('fetch_user_id', ''),
-        user_principal_name=params.get('fetch_user_principal_name', ''),
-    )
+        detections: list = risk_detection_list_raw.get('value', [])
 
-    detections: list = risk_detection_list_raw.get('value', [])
+        last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT)
+        incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch_datetime)
+        demisto.debug(f'[AzureIdentityProtection] Fetched {len(incidents)} incidents')
+        latest_detection_time = latest_detection_time.strftime(DATE_FORMAT)
+        return {
+            'last_time_run': latest_detection_time
+            'incidents': incidents
+        }
 
-    incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch_datetime)
-    demisto.debug(f'[AzureIdentityProtection] Fetched {len(incidents)} incidents')
+    fetch_last_run(fetch_func,  params,
+                   time_format_func=date_str_to_azure_format,
+                   integration_name='AzureIdentityProtection')
 
-    latest_detection_time = latest_detection_time.strftime(DATE_FORMAT)
-    demisto.debug(f'[AzureIdentityProtection] next run latest_detection_found: {latest_detection_time}')
-    last_run = {
-        'latest_detection_found': latest_detection_time
-    }
-
-    return incidents, last_run
 
 
 def start_auth(client: AADClient) -> CommandResults:
@@ -416,9 +470,7 @@ def main() -> None:
         elif command == 'azure-ad-identity-protection-risky-user-dismiss':
             return_results(azure_ad_identity_protection_risky_users_dismiss_command(client, **args))
         elif command == 'fetch-incidents':
-            incidents, last_run = fetch_incidents(client, params)
-            demisto.incidents(incidents)
-            demisto.setLastRun(last_run)
+            fetch_incidents(client, params)
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
