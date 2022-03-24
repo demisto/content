@@ -493,6 +493,7 @@ def list_devices(client: Client, args: Dict[str, Any]) -> CommandResults:
     result = client.list_devices(org_id, group_id, limit, page)
 
     excluded_keys = [
+        'compatibility_checks',
         'os_version_id',
         'instance_id',
         'detail',
@@ -541,6 +542,7 @@ def list_organization_users(client: Client, args: Dict[str, Any]) -> CommandResu
         'prefs',
         'orgs.trial_end_time',
         'orgs.trial_expired',
+        'orgs.access_key',
     ]
 
     for i in range(len(result)):

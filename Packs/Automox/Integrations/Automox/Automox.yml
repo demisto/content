@@ -234,22 +234,22 @@ script:
       type: String
   - name: automox-organizations-list
     arguments:
-      - name: limit
-        description: 'The maximum number of results to return per page.'
-        type: 'number'
-        isArray: false
-        required: false
-        default: false
-        defaultValue: 50
-        secret: false
-      - name: page
-        description: 'The page of results to return.'
-        type: 'number'
-        isArray: false
-        required: false
-        default: false
-        defaultValue: 0
-        secret: false
+    - name: limit
+      description: 'The maximum number of results to return per page.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 50
+      secret: false
+    - name: page
+      description: 'The page of results to return.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 0
+      secret: false
     deprecated: false
     description: 'List all Automox organizations based on user permissions.'
     execution: false
@@ -278,22 +278,22 @@ script:
   - name: automox-organization-users-list
     description: 'List all Automox users within an organization.'
     arguments:
-      - name: limit
-        description: 'The maximum number of results to return per page.'
-        type: 'number'
-        isArray: false
-        required: false
-        default: false
-        defaultValue: 50
-        secret: false
-      - name: page
-        description: 'The page of results to return.'
-        type: 'number'
-        isArray: false
-        required: false
-        default: false
-        defaultValue: 0
-        secret: false
+    - name: limit
+      description: 'The maximum number of results to return per page.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 50
+      secret: false
+    - name: page
+      description: 'The page of results to return.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 0
+      secret: false
     deprecated: false
     execution: false
     outputs:
@@ -783,21 +783,6 @@ script:
     deprecated: false
     execution: false
     outputs:
-    - contextPath: Automox.Policies.id
-      description: 'Identifier of policy'
-      type: Number
-    - contextPath: Automox.Policies.organization_id
-      description: 'Identifier of organization'
-      type: Number
-    - contextPath: Automox.Policies.name
-      description: 'Name of policy'
-      type: String
-    - contextPath: Automox.Policies.policy_type_name
-      description: 'Policy type name'
-      type: String
-    - contextPath: Automox.Policies.server_groups
-      description: 'List of identifiers for device groups assigned to the policy'
-      type: Number
   - name: automox-device-delete
     description: "Delete a device from Automox"
     arguments:
@@ -1087,7 +1072,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.1.27636
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
