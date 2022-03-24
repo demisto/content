@@ -4373,14 +4373,23 @@
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
-            "fromversion": "5.0.0",
+            "fromversion": "6.1.0",
             "integrations": [
                 "CrowdStrike Falcon X"
-            ]
+            ],
+            "timeout" : 1800
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
-            "fromversion": "5.0.0",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "CrowdStrike Falcon X"
+            ],
+            "timeout" : 1800
+        },
+        {
+            "playbookID": "CrowdStrike_FalconX_Test",
+            "fromversion": "6.1.0",
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5183,7 +5192,6 @@
         "ZeroFox": "Issue 29284",
         "Symantec Management Center": "Issue 23960",
         "Fidelis Elevate Network": "Issue 26453",
-        "CrowdStrike Falcon X": "Issue 26209",
         "ArcSight Logger": "Issue 19117",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
@@ -5437,7 +5445,8 @@
         "Cortex Data Lake",
         "Mail Listener v2",
         "EDL",
-        "Create-Mock-Feed-Relationships"
+        "Create-Mock-Feed-Relationships",
+        "CrowdStrike Falcon X"
     ],
     "private_tests": [
         "HelloWorldPremium_Scan-Test",
