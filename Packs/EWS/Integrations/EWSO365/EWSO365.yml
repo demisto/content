@@ -22,16 +22,6 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-  display: Certificate Thumbprint
-  name: certificate_thumbprint
-  required: false
-  type: 4
-- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  display: Private Key
-  name: private_key
-  required: false
-  type: 14
 - additionalinfo: Mailbox to run commands on and to fetch incidents from.
   display: Email Address
   name: default_target_mailbox
@@ -1213,7 +1203,7 @@ script:
     description: Sends an email.
     execution: false
     name: send-mail
-  dockerimage: demisto/py3ews:1.0.0.27257
+  dockerimage: demisto/py3ews:1.0.0.23229
   feed: false
   isfetch: true
   longRunning: false
