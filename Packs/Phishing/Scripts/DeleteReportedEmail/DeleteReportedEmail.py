@@ -37,14 +37,14 @@ def schedule_next_command(args):
         ScheduleCommand object that will cal this script again.
     """
     polling_args = {
-        'interval_in_seconds': 60,
+        'interval_in_seconds': 120,
         'polling': True,
         **args,
     }
     print(f'polling args:{polling_args}')
     return ScheduledCommand(
         command='DeleteReportedEmail',
-        next_run_in_seconds=60,
+        next_run_in_seconds=120,
         args=polling_args,
         timeout_in_seconds=600)
 
@@ -56,8 +56,9 @@ def security_and_compliance_delete_mail(args, user_id, email_subject, using_bran
                                'or later, or delete the email using the playbook: '
                                'O365 - Security And Compliance - Search And Delete ')
     query = f'from:{user_id} AND subject:{email_subject}'
-    search_name = args.get('search_name')
-    is_finished_searching = args.get('is_finished_searching')
+    search_name = args.get('search_name', '')
+    is_finished_searching = search_name[:-8] == 'finished'
+    print(is_finished_searching)
     print("entering func")
     if not is_finished_searching:
         if not search_name:
@@ -74,7 +75,7 @@ def security_and_compliance_delete_mail(args, user_id, email_subject, using_bran
         results = execute_command('o365-sc-get-search', {'search_name': search_name, 'using-brand': using_brand})
         if results[0].get('Status') != 'Completed':
             print("returning ScheduledCommand")
-            return 'In progress', schedule_next_command(args) # consider removing the commsndResults
+            return 'In progress', schedule_next_command(args)
 
         # the search is finished
         print("search is finished")
@@ -82,19 +83,19 @@ def security_and_compliance_delete_mail(args, user_id, email_subject, using_bran
         execute_command('o365-sc-new-search-action',
                         {'search_name': search_name, 'action': 'Purge', 'purge_type': delete_type,
                          'using-brand': using_brand})
-        args['is_finished_searching'] = 'true'
+        args['search_name'] = f'{search_name}-finished'
         print(f'args after adding:{args}')
         return 'In progress', schedule_next_command(args)
     else:
         print("search is finished - starting to delete")
-        results = execute_command('o365-sc-get-search-action', {'search_action_name': search_name,
+        results = execute_command('o365-sc-get-search-action', {'search_action_name': search_name.split('-')[0],
                                                                 'using-brand': using_brand})
         if results.get('Status') != 'Completed':
             print("not finished deleting yet")
             return schedule_next_command(args)
-        execute_command('o365-sc-remove-search-action', {'search_action_name': search_name,
+        execute_command('o365-sc-remove-search-action', {'search_action_name': search_name.split('-')[0],
                                                          'using-brand': using_brand})
-        execute_command('o365-sc-remove-search', {'search_name': search_name,
+        execute_command('o365-sc-remove-search', {'search_name': search_name.split('-')[0],
                                                   'using-brand': using_brand})
         return 'Success', None
 
@@ -206,8 +207,7 @@ def main():
     finally:
         search_args.update({'result': result, 'deletion_failure_reason': deletion_failure_reason})
         search_args = remove_empty_elements(replace_in_keys(search_args, '-', '_'))
-        return_results(
-            CommandResults(
+        command_results = CommandResults(
             readable_output=tableToMarkdown(
                 'Deletion Results',
                 search_args,
@@ -217,8 +217,10 @@ def main():
             outputs_key_field='message_id',
             raw_response='',
             outputs=search_args,
-            scheduled_command = scheduled_command
-            ))
+            scheduled_command=scheduled_command
+            )
+        print(command_results.to_context())
+        return_results(command_results)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
