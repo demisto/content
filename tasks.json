@@ -1,7 +1,7 @@
 {
-    "TASK_0": "graph TD\nA[Hello] -->|Get money| B(Go shopping)\nB --> C{Let me thinksssssx<br/>sssssssssssssssssssuuu<br />tttsssssssssssssssssssssss}\nC -->|One| D[Laptop]\nC -->|Two| E[iPhone]\nC -->|Three| F[Car]",
-    "TASK_1": "graph TD\nA[World] -->|Get money| B(Go shopping)\nB --> C{Let me thinksssssx<br/>sssssssssssssssssssuuu<br />tttsssssssssssssssssssssss}\nC -->|One| D[Laptop]\nC -->|Two| E[iPhone]\nC -->|Three| F[Car]",
-    "TASK_2": "graph TD\nA[How] -->|Get money| B(Go shopping)\nB --> C{Let me thinksssssx<br/>sssssssssssssssssssuuu<br />tttsssssssssssssssssssssss}\nC -->|One| D[Laptop]\nC -->|Two| E[iPhone]\nC -->|Three| F[Car]",
-    "TASK_3": "graph TD\nA[Are] -->|Get money| B(Go shopping)\nB --> C{Let me thinksssssx<br/>sssssssssssssssssssuuu<br />tttsssssssssssssssssssssss}\nC -->|One| D[Laptop]\nC -->|Two| E[iPhone]\nC -->|Three| F[Car]",
-    "TASK_4": "graph TD\nA[You] -->|Get money| B(Go shopping)\nB --> C{Let me thinksssssx<br/>sssssssssssssssssssuuu<br />tttsssssssssssssssssssssss}\nC -->|One| D[Laptop]\nC -->|Two| E[iPhone]\nC -->|Three| F[Car]"
+    "TASK_0": "flowchart TB\nsubgraph <h1>#0 Playbook Triggered</h1>\ndirection TB\nContent[\"\"]",
+    "TASK_1": "flowchart TB\nsubgraph <h1>#1 Do something</h1>\ndirection TB\nContent[\"<b>Automation: gcp-iam-group-get</b><hr><table width=&quot;100%&quot;><thead><tr><th>Argument</th><th>Value</th></tr></thead><tbody><tr><td>group_name</td><td>hello</td></tr></tbody></table>\"]",
+    "TASK_2": "flowchart TB\nsubgraph <h1>#2 Is Output Valid?</h1>\ndirection TB\nContent[\"<b>Condition: </b>\"]",
+    "TASK_3": "flowchart TB\nsubgraph <h1>#3 Done</h1>\ndirection TB\nContent[\"\"]",
+    "TASK_4": "flowchart TB\nsubgraph <h1>#4 Print Error</h1>\ndirection TB\nContent[\"<b>Automation: PrintErrorEntry</b><hr><table width=&quot;100%&quot;><thead><tr><th>Argument</th><th>Value</th></tr></thead><tbody><tr><td>message</td><td>this is an error</td></tr></tbody></table>\"]"
 }
