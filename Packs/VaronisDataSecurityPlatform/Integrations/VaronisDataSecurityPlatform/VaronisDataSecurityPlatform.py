@@ -951,7 +951,9 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     result = varonis_get_alerts(client, alert_statuses, threat_model_names, start_time, end_time, max_results, page, None)
     outputs = create_output(ALERT_OUTPUT, result['rows'])
     page_size = result['rowsCount']
-    outputs = enrich_with_pagination(outputs, page, page_size)
+    if outputs:
+        outputs = enrich_with_pagination(outputs, page, page_size)
+
     return CommandResults(
         outputs_prefix='Varonis',
         outputs_key_field='Varonis.Alert.ID',
@@ -1048,7 +1050,9 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     result = varonis_get_alerted_events(client, alerts, max_results, page)
     outputs = create_output(EVENT_OUTPUT, result['rows'])
     page_size = result['rowsCount']
-    outputs = enrich_with_pagination(outputs, page, page_size)
+    if outputs:
+        outputs = enrich_with_pagination(outputs, page, page_size)
+
     return CommandResults(
         outputs_prefix='Varonis',
         outputs_key_field='Varonis.Event.ID',
