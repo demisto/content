@@ -1,4 +1,4 @@
-id: DBotPredictURLPhishing_test
+id: DBotUpdateLogoURLPhishing_test
 version: 2
 vcShouldKeepItemLegacyProdMachine: false
 name: DBotUpdateLogoURLPhishing_test
