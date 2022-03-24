@@ -152,5 +152,5 @@ switch (command) {
         var ids = argToList(args.ids);
         return deleteIncidents(ids);
     default:
-        throw 'Demisto REST APIs - unknown command';
+        throw 'Core REST APIs - unknown command';
 }
