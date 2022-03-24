@@ -1,10 +1,18 @@
+import pytest
 from unittest.mock import patch
+import demistomock as demisto
 
 integration_params = {
     'url': 'http://test.io',
     'credentials': {'identifier': 'test', 'password': 'pass'},
     'fetch_time': '7 days',
 }
+
+
+@pytest.fixture(autouse=True)
+def set_mocks(mocker):
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
+
 
 test_get_filtered_issues_response = {
     "data": {
@@ -491,11 +499,113 @@ test_bad_token_repsonse = {
 }
 
 
-def test_bad_get_token(response, capfd):
+def test_bad_get_token(capfd):
     with capfd.disabled():
         with patch('requests.post') as mocked_request:
-            mocked_request().return_value = test_bad_token_repsonse
-            from Wiz import get_token
+            with pytest.raises(Exception):
+                mocked_request().return_value = test_bad_token_repsonse
+                from Wiz import get_token
 
-            res = get_token()
-            assert res == test_bad_token_repsonse
+                res = get_token()
+                assert res == test_bad_token_repsonse
+
+
+test_issue_severity_crit_response = {
+    "id": "12345678-2222-3333-1111-ff5fa2ff7f71",
+    "note": "",
+    "severity": "CRITICAL",
+    "status": "OPEN",
+    "dueAt": None,
+    "resolutionReason": None
+}
+
+
+def test_translate_severity_crit(capfd):
+    with capfd.disabled():
+        from Wiz import translate_severity
+
+        res = translate_severity(test_issue_severity_crit_response)
+        assert res == 4
+
+
+test_issue_severity_high_response = {
+    "id": "12345678-2222-3333-1111-ff5fa2ff7f71",
+    "note": "",
+    "severity": "HIGH",
+    "status": "OPEN",
+    "dueAt": None,
+    "resolutionReason": None
+}
+
+
+def test_translate_severity_high(capfd):
+    with capfd.disabled():
+        from Wiz import translate_severity
+
+        res = translate_severity(test_issue_severity_high_response)
+        assert res == 3
+
+
+test_issue_severity_med_response = {
+    "id": "12345678-2222-3333-1111-ff5fa2ff7f71",
+    "note": "",
+    "severity": "MEDIUM",
+    "status": "OPEN",
+    "dueAt": None,
+    "resolutionReason": None
+}
+
+
+def test_translate_severity_med(capfd):
+    with capfd.disabled():
+        from Wiz import translate_severity
+
+        res = translate_severity(test_issue_severity_med_response)
+        assert res == 2
+
+
+test_issue_severity_low_response = {
+    "id": "12345678-2222-3333-1111-ff5fa2ff7f71",
+    "note": "",
+    "severity": "LOW",
+    "status": "OPEN",
+    "dueAt": None,
+    "resolutionReason": None
+}
+
+
+def test_translate_severity_low(capfd):
+    with capfd.disabled():
+        from Wiz import translate_severity
+
+        res = translate_severity(test_issue_severity_low_response)
+        assert res == 1
+
+
+test_issue_severity_info_response = {
+    "id": "12345678-2222-3333-1111-ff5fa2ff7f71",
+    "note": "",
+    "severity": "INFORMATIONAL",
+    "status": "OPEN",
+    "dueAt": None,
+    "resolutionReason": None
+}
+
+
+def test_translate_severity_info(capfd):
+    with capfd.disabled():
+        from Wiz import translate_severity
+
+        res = translate_severity(test_issue_severity_info_response)
+        assert res == 0.5
+
+
+test_build_incidents_response = None
+
+
+def test_build_incidents_none(capfd):
+    with capfd.disabled():
+        from Wiz import build_incidents
+
+        res = build_incidents(test_build_incidents_response)
+        assert res == {}
