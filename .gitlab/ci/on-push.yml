@@ -139,7 +139,7 @@ prepare-testing-bucket-mpv2:
     - section_end "Calculate Packs Dependencies"
 
     - section_start "Replace Cortex XSOAR" --collapsed
-    - find $ARTIFACTS_FOLDER/content_packs -type f -not \( -path "./ReleaseNotes*"\) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
+    - find $ARTIFACTS_FOLDER/content_packs -type f -not \( -path "./ReleaseNotes*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
     - zip -r $ARTIFACTS_FOLDER/content_packs.zip $ARTIFACTS_FOLDER/content_packs
     - zip -r $ARTIFACTS_FOLDER/all_content.zip $ARTIFACTS_FOLDER/all_content
     - zip -r $ARTIFACTS_FOLDER/content_new.zip $ARTIFACTS_FOLDER/content_new
