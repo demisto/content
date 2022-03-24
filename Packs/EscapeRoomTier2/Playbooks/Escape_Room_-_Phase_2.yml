@@ -244,3 +244,7 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: ''
