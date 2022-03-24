@@ -139,6 +139,7 @@ ShowCampaignSenders
 ShowCampaignRecipients
 GetCampaignIncidentsInfo
 IsIncidentPartOfCampaign
+markdown
 Rasterize
 GetCampaignLowSimilarityIncidentsInfo
 ShowCampaignSenders
