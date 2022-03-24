@@ -6546,8 +6546,36 @@ TEST_GET_INDICATOR_WITH_DBOTSCORE_UNKNOWN = [
         {'instance': Common.URL, 'indicator_type': 'URL', 'reliability': 'A - Completely reliable'}
     ),
     (
-        {'indicator': 'google.com', 'indicator_type': DBotScoreType.DOMAIN, 'reliability': DBotScoreReliability.A},
-        {'instance': Common.Domain, 'indicator_type': 'DOMAIN', 'reliability': 'A - Completely reliable'}
+        {'indicator': 'google.com', 'indicator_type': DBotScoreType.DOMAIN},
+        {'instance': Common.Domain, 'indicator_type': 'DOMAIN', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.ACCOUNT},
+        {'instance': Common.Account, 'indicator_type': 'ACCOUNT', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CRYPTOCURRENCY, 'address_type': 'bitcoin'},
+        {'instance': Common.Cryptocurrency, 'indicator_type': 'BITCOIN', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CERTIFICATE},
+        {'instance': Common.Certificate, 'indicator_type': 'CERTIFICATE', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': 'test', 'context_prefix': 'test'},
+        {'instance': Common.CustomIndicator, 'indicator_type': 'TEST', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': 'test'},
+        {'error_message': 'indicator type is invalid'}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CRYPTOCURRENCY},
+        {'error_message': 'Missing address_type parameter'}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CVE},
+        {'error_message': 'DBotScoreType.CVE is unsupported'}
     )
 ]
 
@@ -6565,13 +6593,18 @@ def test_get_indicator_with_dbotscore_unknown(mocker, args, expected):
                                                    integration_name=expected['integration_name'],
                                                    reliability=args['reliability'],
                                                    message='No results found'))
-    results = get_indicator_with_dbotscore_unknown(**args)
+    try:
+        results = get_indicator_with_dbotscore_unknown(**args)
+    except ValueError as e:
+        assert str(e) == expected['error_message']
+        return
 
     assert expected['indicator_type'] in results.readable_output
     assert isinstance(results.indicator, expected['instance'])
     assert results.indicator.dbot_score.score == 0
     assert results.indicator.dbot_score.reliability == expected['reliability']
     assert results.indicator.dbot_score.message == 'No results found'
+
     if expected.get('integration_name'):
         assert expected['integration_name'] in results.readable_output
     else:

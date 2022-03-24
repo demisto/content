@@ -9128,7 +9128,8 @@ def get_pack_version(pack_name=''):
     return pack_version
 
 
-def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=None):
+def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=None,
+                                         context_prefix=None, address_type=None):
     '''
     Used for cases where the api response to an indicator is not found,
     returns CommandResults with readable_output generic in this case, and indicator with DBotScore unknown
@@ -9137,26 +9138,37 @@ def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=
     :param name: The value of the indicator
 
     :type indicator_type: ``DBotScoreType``
-    :param indicator_type: use DBotScoreType class
+    :param indicator_type: use DBotScoreType class [Unsupport in types CVE and ATTACKPATTERN]
 
     :type reliability: ``DBotScoreReliability``
     :param reliability: use DBotScoreReliability class
 
+    :type context_prefix: ``str``
+    :param context_prefix: Use only in case that the indicator is CustomIndicator
+
+    :type address_type: ``str``
+    :param address_type: Use only in case that the indicator is Cryptocurrency
+
     :rtype: ``CommandResults``
     :return: CommandResults
     '''
-    if not DBotScoreType.is_valid_type(indicator_type):
+    if not DBotScoreType.is_valid_type(indicator_type) and not context_prefix or indicator_type is DBotScoreType.CUSTOM and not context_prefix:
         raise ValueError('indicator type is invalid')
 
+    if indicator_type in [DBotScoreType.CVE, DBotScoreType.ATTACKPATTERN]:
+        msg_error = 'DBotScoreType.{} is unsupported'.format(indicator_type.upper())
+        raise ValueError(msg_error)
+
     dbot_score = Common.DBotScore(indicator=indicator,
-                                  indicator_type=indicator_type,
+                                  indicator_type=indicator_type
+                                  if DBotScoreType.is_valid_type(indicator_type) else DBotScoreType.CUSTOM,
                                   score=Common.DBotScore.NONE,
                                   reliability=reliability,
                                   message='No results found')
 
     integration_name = dbot_score.integration_name or 'Results'
     indicator_ = None
-    if indicator_type == 'file':
+    if indicator_type is DBotScoreType.FILE:
         if sha1Regex.match(indicator):
             indicator_ = Common.File(dbot_score=dbot_score, sha1=indicator)
             indicator_type = 'sha1'
@@ -9170,14 +9182,36 @@ def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=
             indicator_ = Common.File(dbot_score=dbot_score, md5=indicator)
             indicator_type = 'md5'
 
-    elif indicator_type == 'ip':
+    elif indicator_type is DBotScoreType.IP:
         indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)
-    elif indicator_type == 'url':
+
+    elif indicator_type is DBotScoreType.URL:
         indicator_ = Common.URL(url=indicator, dbot_score=dbot_score)
-    elif indicator_type == 'domain':
+
+    elif indicator_type is DBotScoreType.DOMAIN:
         indicator_ = Common.Domain(domain=indicator, dbot_score=dbot_score)
-    elif indicator_type == 'email':
+
+    elif indicator_type is DBotScoreType.EMAIL:
         indicator_ = Common.EMAIL(address=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.CERTIFICATE:
+        indicator_ = Common.Certificate(subject_dn=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.ACCOUNT:
+        indicator_ = Common.Account(id=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.CRYPTOCURRENCY:
+        if not address_type:
+            raise ValueError('Missing address_type parameter')
+        indicator_ = Common.Cryptocurrency(address=indicator, address_type=address_type, dbot_score=dbot_score)
+        indicator_type = address_type
+
+    else:
+        indicator_ = Common.CustomIndicator(indicator_type=indicator_type,
+                                            value=indicator,
+                                            dbot_score=dbot_score,
+                                            data={},
+                                            context_prefix=context_prefix)
 
     indicator_type = indicator_type.upper()
     readable_output = tableToMarkdown(name=f'{integration_name}:',
