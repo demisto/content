@@ -27,9 +27,10 @@ Please refer to the video tutorial [found here](https://live.paloaltonetworks.co
     | `paginated_count` | Number of objects to return in each paginated call. | False |
     | `proxy_url` | Proxy URL to use in Slack API calls. | False |
     | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from XSOAR. Only supported in Cortex XSOAR V6.1 and above. | False |
-    | `permitted_notifications` | Types of Notifications to send in the dedicated channel. | False |
+    | `permitted_notifications` | Types of notifications to send (to individual users and to the dedicated Slack channel, if specified). | False |
     | `common_channels` | For workspaces where a handful of channels are consistently being used, you may add them as a CSV in the format ChannelName:ChannelID. | False |
     | `disable_caching` | When configured, Disable Caching will prevent the integration from paginating to search for Users or Conversations. Additionally, it will prevent excess data from being stored to the integration context. If this parameter is disabled, the instance may create high memory usage. | False |
+    | `mirroring` | Enable Incident Mirroring. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

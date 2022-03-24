@@ -84,6 +84,7 @@ There is no context output for this command.
     "GenericSQL": {
         "GenericSQL": {
             "Query": "select * from TestTable", 
+            "Headers": ["LastName", "ID", "FirstName"],
             "InstanceName": "MySQL_new_schema", 
             "Result": [
                 {
@@ -122,7 +123,7 @@ There is no context output for this command.
 > | 55555 | Zohar | Tamar |
 
 ##### Command Example
-```!query query="INSERT into TestTable(ID, LastName, FirstName) VALUES (11211, :x , :y)" bind_variables_names=x,y bind_variables_values="test,playbook"```
+```!query query="INSERT into TestTable(ID, LastName, FirstName) VALUES (11111, :x , :y)" bind_variables_names=x,y bind_variables_values="test,playbook"```
 
 ##### Context Example
 ```
@@ -133,7 +134,7 @@ There is no context output for this command.
 Command executed
 
 ##### Command Example
-```!query query="delete from TestTable where ID=11211"```
+```!query query="delete from TestTable where ID=11111"```
 
 ##### Context Example
 ```
@@ -174,6 +175,7 @@ There is no context output for this command.
     "GenericSQL": {
         "GenericSQL": {
             "Query": "select * from TestTable", 
+            "Headers": ["LastName", "ID", "FirstName"],
             "InstanceName": "MySQL_new_schema", 
             "Result": [
                 {
@@ -212,7 +214,7 @@ There is no context output for this command.
 > | 55555 | Zohar | Tamar |
 
 ##### Command Example
-```!sql-command query="INSERT into TestTable(ID, LastName, FirstName) VALUES (11211, :x , :y)" bind_variables_names=x,y bind_variables_values="test,playbook"```
+```!sql-command query="INSERT into TestTable(ID, LastName, FirstName) VALUES (11111, :x , :y)" bind_variables_names=x,y bind_variables_values="test,playbook"```
 
 ##### Context Example
 ```
@@ -223,7 +225,7 @@ There is no context output for this command.
 Command executed
 
 ##### Command Example
-```!sql-command query="delete from TestTable where ID=11211"```
+```!sql-command query="delete from TestTable where ID=11111"```
 
 ##### Context Example
 ```

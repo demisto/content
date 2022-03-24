@@ -1,2 +1,6 @@
 [file:WootCloud.yml]
 ignore=IN126,IN145
+
+
+[file:WootCloud_image.png]
+ignore=IM111

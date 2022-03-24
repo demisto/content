@@ -23,8 +23,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * AreValuesEqual
 
 ### Commands
-* panorama-edit-rule
-* panorama-list-rules
+* pan-os-edit-rule
+* pan-os-list-rules
 
 ## Playbook Inputs
 ---
@@ -43,7 +43,7 @@ There are no outputs for this playbook.
 
 ## Known Limitations
 ---
-The log forwarding profile needs to be configured manually and provided to this playbook as an input. [link](https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started/get-started-with-cortex-data-lake/forward-logs-to-cortex-data-lake)
+The log forwarding profile needs to be configured manually and provided to this playbook as an input. [link](https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started/get-started-with-cortex-data-lake/start-sending-to-cortex-data-lake)
 In the future, we’ll support auto-creation of Cortex Data Lake log forwarding profiles.
 
 ## Playbook Image

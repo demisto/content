@@ -8,18 +8,30 @@ configuration:
   name: url
   required: true
   type: 0
-- display: ID or Client ID - see Detailed Instructions (?)
-  name: _auth_id
+- displaypassword: ID or Client ID - see Detailed Instructions (?)
+  name: creds_auth_id
   required: false
-  type: 0
-- display: Token or Tenant ID - see Detailed Instructions (?)
-  name: _tenant_id
+  type: 9
+  hiddenusername: true
+- displaypassword: Token or Tenant ID - see Detailed Instructions (?)
+  name: creds_tenant_id
   required: false
-  type: 0
+  type: 9
+  hiddenusername: true
 - displaypassword: Key or Client Secret - see Detailed Instructions (?)
   name: credentials
   required: false
   type: 9
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
   hiddenusername: true
 - display: Fetch incidents
   name: isFetch
@@ -68,12 +80,21 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: ID or Client ID - see Detailed Instructions (?)
+  name: _auth_id
+  required: false
+  type: 0
+  hidden: true
+- display: Token or Tenant ID - see Detailed Instructions (?)
+  name: _tenant_id
+  required: false
+  type: 0
+  hidden: true
 - display: Key or Client Secret (Deprecated)
   name: enc_key
   required: false
   type: 4
   hidden: true
-  additionalinfo: Use the "Key or Client Secret - see Detailed Instructions (?) (Recommended)" parameter instead.
 - display: ID or Client ID - see Detailed Instructions (?) (Deprecated)
   name: auth_id
   required: false
@@ -1207,7 +1228,7 @@ script:
     - contextPath: MicrosoftGraph.SentMail.ID
       description: The immutable ID of the message.
       type: String
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: demisto/crypto:1.0.0.27590
   feed: false
   isfetch: true
   longRunning: false

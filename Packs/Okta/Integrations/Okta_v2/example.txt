@@ -24,3 +24,4 @@ okta-delete-user username=testForDocs@test.com
 okta-get-zone zoneID=nzoqsmcx1qWYJ6w3355
 okta-update-zone zoneID=nzoqsmcx1qWYJ6w3355 zoneName=MyZone
 okta-list-zones
+okta-create-zone name="test_xsoar_4" gateway_ips="8.8.8.8"

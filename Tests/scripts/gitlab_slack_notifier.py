@@ -1,14 +1,15 @@
 import argparse
+from datetime import datetime, timedelta
 import logging
 import os
 from typing import Tuple, Optional
-
 import gitlab
 from slack import WebClient as SlackClient
 
 from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.scripts.utils.log_util import install_logging
+from demisto_sdk.commands.coverage_analyze.tools import get_total_coverage
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
@@ -164,6 +165,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
 
     # report failing jobs
     content_fields = []
+    coverage_slack_msg = None
     failed_jobs_names = {job.name for job in pipeline_failed_jobs}
     if failed_jobs_names:
         content_fields.append({
@@ -190,6 +192,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     # report failing test-playbooks
     if 'content nightly' in triggering_workflow_lower:
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR)
+        coverage_slack_msg = construct_coverage_slack_msg()
 
     slack_msg = [{
         'fallback': title,
@@ -198,6 +201,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
         'title_link': pipeline_url,
         'fields': content_fields
     }]
+    slack_msg.append(coverage_slack_msg) if coverage_slack_msg else None
     return slack_msg
 
 
@@ -215,6 +219,20 @@ def collect_pipeline_data(gitlab_client, project_id, pipeline_id) -> Tuple[str, 
             failed_jobs.append(job)
 
     return pipeline.web_url, failed_jobs
+
+
+def construct_coverage_slack_msg():
+    coverage_today = get_total_coverage(filename=os.path.join(ROOT_ARTIFACTS_FOLDER, 'coverage_report/coverage-min.json'))
+    yasterday = datetime.now() - timedelta(days=1)
+    coverage_yasterday = get_total_coverage(date=yasterday)
+    color = 'good' if coverage_today >= coverage_yasterday else 'danger'
+    title = f'content code coverage: {coverage_today}'
+
+    return {
+        'fallback': title,
+        'color': color,
+        'title': title,
+    }
 
 
 def main():

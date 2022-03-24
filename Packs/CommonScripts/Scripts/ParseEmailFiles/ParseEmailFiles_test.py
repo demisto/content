@@ -6,7 +6,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
-    data_to_md, create_headers_map, DataModel, handle_eml
+    data_to_md, create_headers_map, DataModel, handle_eml, parse_nesting_level
 
 
 def exec_command_for_file(
@@ -1276,3 +1276,23 @@ def test_decode_attachment_payload_base64(payload, answer):
 
     from ParseEmailFiles import decode_attachment_payload
     assert answer == decode_attachment_payload(MockedMessage(payload))
+
+
+@pytest.mark.parametrize('nesting_level_to_return, output, res', [('All files', ['output1'], ('output1', ['output1'])),
+                                                                  ('Outer file', ['output1', 'output2', 'output3'],
+                                                                   ('output1', 'output1')),
+                                                                  ('Inner file', ['output1', 'output2', 'output3'],
+                                                                   ('output3', 'output3'))])
+def test_parse_nesting_level(nesting_level_to_return, output, res):
+    """
+    Given:
+    - parsed email output, nesting_level_to_return param - All files.
+    - parsed email output, nesting_level_to_return param - Outer file.
+    - parsed email output, nesting_level_to_return param - Inner file.
+    When:
+    - Getting all nested emails.
+    - Getting only outer email file.
+    - Getting only inner email file.
+    Then: Validate that returned result as expected.
+    """
+    assert parse_nesting_level(nesting_level_to_return, output) == res

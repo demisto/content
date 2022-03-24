@@ -17,6 +17,7 @@ USE_PROXY = demisto.params().get('proxy', True)
 API_KEY = demisto.params()['APIKey']
 SERVICE_KEY = demisto.params()['ServiceKey']
 FETCH_INTERVAL = demisto.params()['FetchInterval']
+DEFAULT_REQUESTOR = demisto.params().get('DefaultRequestor', '')
 
 SERVER_URL = 'https://api.pagerduty.com/'
 CREATE_EVENT_URL = 'https://events.pagerduty.com/v2/enqueue'
@@ -48,6 +49,8 @@ ON_CALLS_USERS_SUFFIX = 'oncalls?include%5B%5D=users'
 USERS_NOTIFICATION_RULE = 'users/{0}/notification_rules'
 GET_INCIDENTS_SUFFIX = 'incidents?include%5B%5D=assignees'
 USERS_CONTACT_METHODS_SUFFIX = 'users/{0}/contact_methods'
+RESPONDER_REQUESTS_SUFFIX = 'incidents/{0}/responder_requests'
+RESPONSE_PLAY_SUFFIX = 'response_plays/{0}/run'
 
 '''CONTACT_METHOD_TYPES'''
 SMS_CONTACT_TYPE = 'sms_contact_method'
@@ -81,7 +84,7 @@ CONTACT_METHODS_HEADERS = ['ID', 'Type', 'Details']
 SERVICES_HEADERS = ['ID', 'Name', 'Status', 'Created At', 'Integration']
 NOTIFICATION_RULES_HEADERS = ['ID', 'Type', 'Urgency', 'Notification timeout(minutes)']
 SCHEDULES_HEADERS = ['ID', 'Name', 'Today', 'Time Zone', 'Escalation Policy', 'Escalation Policy ID']
-USERS_ON_CALL_NOW_HEADERS = ['ID', 'Email', 'Name', 'Role', 'User Url', 'Time Zone']
+USERS_ON_CALL_NOW_HEADERS = ['ID', 'Schedule ID', 'Email', 'Name', 'Role', 'User Url', 'Time Zone']
 INCIDENTS_HEADERS = ['ID', 'Title', 'Description', 'Status', 'Created On', 'Urgency', 'Html Url', 'Incident key',
                      'Assigned To User', 'Service ID', 'Service Name', 'Escalation Policy', 'Last Status Change On',
                      'Last Status Change By', 'Number Of Escalations', 'Resolved By User', 'Resolve Reason']
@@ -89,15 +92,20 @@ INCIDENTS_HEADERS = ['ID', 'Title', 'Description', 'Status', 'Created On', 'Urge
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url, params_dict=None, data=None):
+def http_request(method, url, params_dict=None, data=None, json_data=None, additional_headers=None):
     LOG('running %s request with url=%s\nparams=%s' % (method, url, json.dumps(params_dict)))
+    headers = DEFAULT_HEADERS.copy()
+    if not additional_headers:
+        additional_headers = {}
+    headers.update(additional_headers)
     try:
         res = requests.request(method,
                                url,
                                verify=USE_SSL,
                                params=params_dict,
-                               headers=DEFAULT_HEADERS,
-                               data=data
+                               headers=headers,
+                               data=data,
+                               json=json_data
                                )
         res.raise_for_status()
 
@@ -134,13 +142,16 @@ def test_module():
     demisto.results('ok')
 
 
-def extract_on_call_user_data(users):
+def extract_on_call_user_data(users, schedule_id=None):
     """Extact data about user from a given schedule."""
     outputs = []
     contexts = []
     for user in users:
         output = {}
         context = {}
+        if schedule_id:
+            output['Schedule ID'] = schedule_id
+            context['ScheduleID'] = output['Schedule ID']
 
         output['ID'] = user.get('id')
         output['Name'] = user.get('name')
@@ -159,16 +170,13 @@ def extract_on_call_user_data(users):
         outputs.append(output)
         contexts.append(context)
 
-    return {
-        'Type': entryTypes['note'],
-        'Contents': users,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(USERS_ON_CALL, outputs, USERS_ON_CALL_NOW_HEADERS),
-        'EntryContext': {
-            'PagerDutyUser(val.ID==obj.ID)': contexts
-        }
-    }
+    return CommandResults(
+        outputs_prefix='PagerDutyUser',
+        outputs_key_field='ID',
+        outputs=contexts,
+        raw_response=users,
+        readable_output=tableToMarkdown(USERS_ON_CALL, outputs, USERS_ON_CALL_NOW_HEADERS, removeNull=True),
+    )
 
 
 def extract_on_call_now_user_data(users_on_call_now):
@@ -183,7 +191,10 @@ def extract_on_call_now_user_data(users_on_call_now):
 
         data = oncalls[i]
         user = data.get('user')
-
+        schedule_id = (data.get('schedule') or {}).get('id')
+        if schedule_id:
+            output['Schedule ID'] = schedule_id
+            context['ScheduleID'] = output['Schedule ID']
         output['ID'] = user.get('id')
         output['Name'] = user.get('name')
         output['Role'] = user.get('role')
@@ -202,16 +213,13 @@ def extract_on_call_now_user_data(users_on_call_now):
         outputs.insert(escal_level - 1, output)
         contexts.insert(escal_level - 1, context)
 
-    return {
-        'Type': entryTypes['note'],
-        'Contents': users_on_call_now,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(USERS_ON_CALL_NOW, outputs, USERS_ON_CALL_NOW_HEADERS),
-        'EntryContext': {
-            'PagerDutyUser(val.ID===obj.ID)': contexts
-        }
-    }
+    return CommandResults(
+        outputs_prefix='PagerDutyUser',
+        outputs_key_field='ID',
+        outputs=contexts,
+        raw_response=users_on_call_now,
+        readable_output=tableToMarkdown(USERS_ON_CALL_NOW, outputs, USERS_ON_CALL_NOW_HEADERS, removeNull=True),
+    )
 
 
 def parse_incident_data(incidents):
@@ -486,6 +494,35 @@ def extract_users_notification_role(user_notification_role):
     }
 
 
+def extract_responder_request(responder_request_response):
+    """Extract the users that were requested to respond"""
+    outputs = []
+    responder_request = responder_request_response.get("responder_request")
+    for request in responder_request.get("responder_request_targets", []):
+        request = request.get("responder_request_target")
+        output = {}
+        output["Type"] = request.get("type")
+        output["ID"] = request.get("id")
+        if output["Type"] == "user":
+            responder_user = request.get("incidents_responders", [])[0].get("user")
+        else:
+            responder_user = [x.get("user") for x in request.get("incidents_responders", [])]
+        output["ResponderType"] = responder_user.get("type")
+        output["ResponderName"] = responder_user.get("summary")
+        output["Message"] = responder_request.get("message")
+        output["IncidentID"] = (responder_request.get("incident") or {}).get("id")
+        output["RequesterID"] = responder_request.get("requester", {}).get("id")
+        output["IncidentSummary"] = (responder_request.get("incident") or {}).get("summary")
+        outputs.append(output)
+    return CommandResults(
+        outputs_prefix='PagerDuty.ResponderRequests',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=outputs,
+        readable_output=tableToMarkdown(CONTACT_METHODS, outputs, CONTACT_METHODS_HEADERS, removeNull=True)
+    )
+
+
 '''COMMANDS'''
 
 
@@ -581,7 +618,7 @@ def get_on_call_users_command(scheduleID, since=None, until=None):
 
     url = SERVER_URL + ON_CALL_BY_SCHEDULE_SUFFIX.format(scheduleID)
     users_on_call = http_request('GET', url, param_dict)
-    return extract_on_call_user_data(users_on_call.get('users', []))
+    return extract_on_call_user_data(users_on_call.get('users', []), scheduleID)
 
 
 def get_on_call_now_users_command(limit=None, escalation_policy_ids=None, schedule_ids=None):
@@ -712,6 +749,75 @@ def get_service_keys():
     }
 
 
+def add_responders_to_incident(incident_id, message, user_requests=None, escalation_policy_requests="",
+                               requestor_id=None):
+    """
+    Send a new responder request for the specified incident. A responder is a specific User to respond to the Incident.
+    If the Requestor ID is not specified in command arguments, the Default Requestor defined in instance
+    parameter is used.
+
+    Args:
+        incident_id (str): The ID of the PagerDuty Incident
+        message (str): The message sent with the responder request.
+        user_requests (str): Comma separated list of User targets the responder request is being sent to
+        escalation_policy_requests (str): Comma separated list of
+            escalation policy targets the responder request is being sent to.
+        requestor_id (str): The user id of the requester.
+    """
+
+    if not user_requests:
+        user_requests = DEFAULT_REQUESTOR
+    if not requestor_id:
+        requestor_id = DEFAULT_REQUESTOR
+    url = SERVER_URL + RESPONDER_REQUESTS_SUFFIX.format(incident_id)
+    body = {
+        'requester_id': requestor_id,
+        'message': message,
+        'responder_request_targets': []
+    }
+    for user_id in user_requests.split(","):
+        body['responder_request_targets'].append({
+            'responder_request_target': {
+                "id": user_id,
+                "type": 'user_reference'
+            }
+        })
+    for escalation_policy_id in escalation_policy_requests:
+        body['responder_request_targets'].append({
+            'responder_request_target': {
+                "id": escalation_policy_id,
+                "type": 'escalation_policy_reference'
+            }
+        })
+    response = http_request('POST', url, json_data=body)
+    return extract_responder_request(response)
+
+
+def run_response_play(incident_id, from_email, response_play_uuid):
+    """
+    Run a specified response play on a given incident.
+    Response Plays are a package of Incident Actions that can be applied during an Incident's life cycle.
+    Args:
+        incident_id:string The ID of the PagerDuty Incident
+        from_email:string, The email address of a valid user associated with the account making the request.
+        response_play_uuid:list, The response play ID of the response play associated with the request.
+    """
+    url = SERVER_URL + RESPONSE_PLAY_SUFFIX.format(response_play_uuid)
+    body = {
+        'incident': {
+            'id': incident_id,
+            'type': 'incident_reference'
+        }
+    }
+    response = http_request('POST', url, json_data=body, additional_headers={"From": from_email})
+    if response != {"status": "ok"}:
+        raise Exception("Status NOT Ok - {}".format(response))
+    return CommandResults(
+        readable_output="Response play successfully run to the incident " + incident_id + " by " + from_email,
+        raw_response=response
+    )
+
+
 ''' EXECUTION CODE '''
 
 
@@ -727,11 +833,11 @@ def main():
         elif demisto.command() == 'PagerDuty-submit-event':
             demisto.results(submit_event_command(**demisto.args()))
         elif demisto.command() == 'PagerDuty-get-users-on-call':
-            demisto.results(get_on_call_users_command(**demisto.args()))
+            return_results(get_on_call_users_command(**demisto.args()))
         elif demisto.command() == 'PagerDuty-get-all-schedules':
             demisto.results(get_all_schedules_command(**demisto.args()))
         elif demisto.command() == 'PagerDuty-get-users-on-call-now':
-            demisto.results(get_on_call_now_users_command(**demisto.args()))
+            return_results(get_on_call_now_users_command(**demisto.args()))
         elif demisto.command() == 'PagerDuty-get-contact-methods':
             demisto.results(get_users_contact_methods_command(**demisto.args()))
         elif demisto.command() == 'PagerDuty-get-users-notification':
@@ -744,8 +850,12 @@ def main():
             demisto.results(get_incident_data())
         elif demisto.command() == 'PagerDuty-get-service-keys':
             demisto.results(get_service_keys())
+        elif demisto.command() == 'PagerDuty-add-responders':
+            return_results(add_responders_to_incident(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-run-response-play':
+            return_results(run_response_play(**demisto.args()))
     except Exception as err:
-        return_error(err)
+        return_error(str(err))
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

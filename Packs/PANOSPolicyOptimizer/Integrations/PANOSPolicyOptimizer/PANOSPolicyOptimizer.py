@@ -388,7 +388,7 @@ def policy_optimizer_app_and_usage_command(client: Client, args: dict) -> Comman
 
 def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResults:
     """
-    Gets the DAG
+    Gets the Dynamic Address group.
     """
     dag = str(args.get('dag'))
     raw_response = client.policy_optimizer_get_dag(dag)
@@ -398,8 +398,8 @@ def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResul
 
     try:
         result = result['result']['dyn-addr-grp']['entry'][0]['member-list']['entry']
-    except KeyError:
-        raise Exception(f'Dynamic Address Group: {dag} was not found.')
+    except (KeyError, TypeError, IndexError):
+        return CommandResults(readable_output=f'Dynamic Address Group {dag} was not found.', raw_response=raw_response)
 
     return CommandResults(
         outputs_prefix='PanOS.PolicyOptimizer.DAG',

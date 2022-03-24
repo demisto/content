@@ -1,8 +1,8 @@
 import pytest
 import requests_mock
-from AnsibleTower import Client, delete_host, job_template_launch, create_ad_hoc_command, output_content
+from AnsibleTower import Client, delete_host, job_template_launch, create_ad_hoc_command, list_job_events_by_id, output_content
 from test_data.test_responses import JOB_TEMPLATE_LAUNCH_RES, ADHOC_COMMAND_LAUNCH_RES, JOB_TEMPLATE_EXPECTED, \
-    ADHOC_COMMAND_LAUNCH_EXPECTED
+    ADHOC_COMMAND_LAUNCH_EXPECTED, ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_RES, ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_EXPECTED
 
 API_URL = "https://example"
 
@@ -28,9 +28,15 @@ test_data = [
         ADHOC_COMMAND_LAUNCH_RES,
         ADHOC_COMMAND_LAUNCH_EXPECTED,
         'AnsibleAWX.AdhocCommand(val.id && val.id == obj.id)'
+    ),
+    (
+        list_job_events_by_id,
+        {"job_id": "39"},
+        ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_RES,
+        ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_EXPECTED,
+        'AnsibleAWX.JobEvents(val.id && val.id == obj.id)'
     )
 ]
-
 
 remove_fields_test_responses = [
     (
