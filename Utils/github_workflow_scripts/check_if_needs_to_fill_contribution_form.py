@@ -57,7 +57,7 @@ def main():
     print(f'{t.cyan}Check that {CONTRIBUTION_FORM_FILLED_LABEL} label exist in PR {pr_number}')
     if not is_contribution_form_filled_label_exist:
         print(
-            f'\n{t.red}ERROR: Contribution form was not filled for PR: {pr_number}.\nMake sure to register your'
+            f'{t.red}ERROR: Contribution form was not filled for PR: {pr_number}.\nMake sure to register your'
             f' contribution by filling the contribution registration form in - https://forms.gle/XDfxU4E61ZwEESSMA'
         )
         sys.exit(1)
