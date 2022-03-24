@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from cStringIO import StringIO
+from io import StringIO
 import logging
 import warnings
 import traceback
@@ -57,7 +57,7 @@ import exchangelib  # noqa: E402
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter  # noqa: E402
 from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, \
     EXCHANGE_2016  # noqa: E402
-from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, ServiceAccount, Configuration, NTLM, \
+from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, Credentials, Configuration, NTLM, \
     BASIC, DIGEST, Version, DELEGATE  # noqa: E402
 from exchangelib.errors import ErrorItemNotFound, UnauthorizedError  # noqa: E402
 
@@ -319,7 +319,7 @@ def prepare():
         os.environ['NO_PROXY'] = EWS_SERVER
 
     version = get_version(VERSION_STR)
-    credentials = ServiceAccount(username=USERNAME, password=PASSWORD)
+    credentials = Credentials(username=USERNAME, password=PASSWORD)
     config_args = {
         'credentials': credentials,
         'auth_type': get_auth_method(AUTH_METHOD_STR),

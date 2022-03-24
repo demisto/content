@@ -4,7 +4,7 @@ import subprocess
 import warnings
 from multiprocessing import Process
 
-import dateparser
+# import dateparser
 import exchangelib
 from CommonServerPython import *
 from io import StringIO
@@ -27,13 +27,13 @@ from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
                                  EXCHANGE_2010_SP2, EXCHANGE_2013,
                                  EXCHANGE_2016)
-from future import utils as future_utils
+# from future import utils as future_utils
 from requests.exceptions import ConnectionError
 
 # Define utf8 as default encoding
-import importlib
-importlib.reload(sys)
-sys.setdefaultencoding('utf8')  # pylint: disable=E1101
+# import importlib
+# importlib.reload(sys)
+# sys.setdefaultencoding('utf8')  # pylint: disable=E1101
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
@@ -41,10 +41,10 @@ warnings.filterwarnings("ignore")
 # Docker BC
 MNS = None
 TNS = None
-if exchangelib.__version__ == "1.12.0":
-    MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
-else:
-    MNS, TNS = exchangelib.transport.MNS, exchangelib.transport.TNS  # pylint: disable=E1101
+# if exchangelib.__version__ == "1.12.0":
+MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
+# else:
+#     MNS, TNS = exchangelib.util.MNS, exchangelib.transport.TNS  # pylint: disable=E1101
 
 # consts
 VERSIONS = {
@@ -2099,7 +2099,7 @@ def sub_main():
     args = prepare_args(demisto.args())
     fix_2010()
     try:
-        protocol = get_protocol()
+        # protocol = get_protocol()
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'fetch-incidents':
@@ -2279,5 +2279,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins"):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
