@@ -1,8 +1,8 @@
 commonfields:
-  id: Demisto Lock
+  id: Core Lock
   version: -1
-name: Demisto Lock
-display: Demisto Lock
+name: Core Lock
+display: Core Lock
 category: Utilities
 description: Locking mechanism that prevents concurrent execution of different tasks
 configuration:

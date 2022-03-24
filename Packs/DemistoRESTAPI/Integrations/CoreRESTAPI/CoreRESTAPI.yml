@@ -1,17 +1,17 @@
 commonfields:
-  id: Demisto REST API
+  id: Core REST API
   version: -1
-name: Demisto REST API
-display: Demisto REST API
+name: Core REST API
+display: Core REST API
 category: Utilities
-description: Use Demisto REST APIs
+description: Use Core REST APIs
 configuration:
-- display: Demisto Server URL
+- display: Core Server URL
   name: url
   defaultvalue: https://127.0.0.1
   type: 0
   required: true
-- display: Demisto Server API Key
+- display: Core Server API Key
   name: apikey
   type: 4
   required: true
