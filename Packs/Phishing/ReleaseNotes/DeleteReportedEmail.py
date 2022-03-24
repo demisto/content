@@ -1,7 +1,8 @@
 from CommonServerPython import *
-from typing import Callable, Union
-import traceback
 import time
+import traceback
+from typing import Callable, Union
+
 seconds = time.time()
 
 EMAIL_INTEGRATIONS = ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'MicrosoftGraphMail',
