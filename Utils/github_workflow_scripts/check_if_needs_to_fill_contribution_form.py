@@ -69,7 +69,7 @@ def main():
     if not verify_labels(pr_label_names=pr_label_names):
         print(
             f'{t.red}ERROR: PR labels {pr_label_names} must contain'
-            f' Contribution form filled label and one of Community/Partner/Internal labels'
+            f' Contribution Form Filled label and one of Community/Partner/Internal labels'
         )
         exit_status = 1
 
