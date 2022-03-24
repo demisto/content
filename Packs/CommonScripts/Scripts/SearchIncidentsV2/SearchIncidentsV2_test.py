@@ -46,6 +46,7 @@ def test_is_valid_args(_input, expected_output):
 data_test_is_id_valid = [
     (123, True),
     ('123', True),
+    ('1,2,3', True),
     (123.3, False),
 ]
 
