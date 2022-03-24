@@ -64,7 +64,7 @@ switch (command) {
         [lock, version] = getLock();
 
         if (lock.guid === guid) {
-            var md = '### Demisto Locking Mechanism\n';
+            var md = '### Core Locking Mechanism\n';
             md += 'Lock acquired successfully\n';
             md += 'GUID: ' + guid;
             return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
@@ -85,14 +85,14 @@ switch (command) {
             setVersionedIntegrationContext(integrationContext, sync);
         }
 
-        var md = '### Demisto Locking Mechanism\n';
+        var md = '### Core Locking Mechanism\n';
         md += 'Lock released successfully';
         return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
 
     case ('demisto-lock-release-all' || 'core-lock-release-all'):
         setVersionedIntegrationContext({}, sync);
 
-        var md = '### Demisto Locking Mechanism\n';
+        var md = '### Core Locking Mechanism\n';
         md += 'All locks released successfully';
         return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
 
@@ -101,7 +101,7 @@ switch (command) {
         var obj = [];
 
         var res;
-        var md = '### Demisto Locking Mechanism\n';
+        var md = '### Core Locking Mechanism\n';
         var locks = (lockName === 'Default') ? Object.keys(integrationContext) : [lockName];
 
         locks.forEach(function(lock){
