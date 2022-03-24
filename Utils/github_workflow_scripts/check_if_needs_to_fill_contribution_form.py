@@ -154,22 +154,13 @@ def main():
     repo_name: str = 'content'
     exit_status = 0
     packs_without_metadata_or_support = set()
-    not_filled_packs = set()
+    community_and_partner_packs = set()
 
     github_client: Github = Github(github_token, verify=False)
     content_repo: Repository = github_client.get_repo(f'{org_name}/{repo_name}')
     pr: PullRequest = content_repo.get_pull(int(pr_number))
     pr_files = pr.get_files()
     t = Terminal()
-
-    pr_label_names = [label.name for label in pr.labels]
-
-    if not verify_labels(pr_label_names=pr_label_names):
-        print(
-            f'{t.red}ERROR: PR labels {pr_label_names} must contain Contribution '
-            f'Form Filled label and one of Community/Partner/Internal labels'
-        )
-        sys.exit(1)
 
     for pack_name in get_pack_names_from_pr(pr_files):
         if pr_metadata_filename := get_metadata_filename_from_pr(pr_files, pack_name):
@@ -184,7 +175,7 @@ def main():
             print(f'\n{pack_name} pack is XSOAR supported. Contribution form should not be filled for XSOAR supported '
                   f'contributions.')
         else:
-            not_filled_packs.add(pack_name)
+            community_and_partner_packs.add(pack_name)
             print(f'{pack_name} pack is {support_type} supported.')
             exit_status = 1
 
@@ -192,9 +183,18 @@ def main():
         print(f'{t.red}ERROR: {METADATA} file / pack support is missing for the following packs: '
               f'{packs_without_metadata_or_support}')
 
-    if not_filled_packs:
+    # if there are partner/community packs that does not have Contribution Form Filled label, then
+    # the contribution form was not filled.
+    is_contribution_form_filled_label_exist = 1
+    if community_and_partner_packs and not is_contribution_form_filled_label_exist:
         print(f'\n{t.red}ERROR: Contribution form was not filled for PR: {pr_number}.\nMake sure to register your contribution'
               f' by filling the contribution registration form in - https://forms.gle/XDfxU4E61ZwEESSMA')
+
+    pr_label_names = [label.name for label in pr.labels]
+
+    if not verify_labels(pr_label_names=pr_label_names):
+        print(f'{t.red}ERROR: PR labels {pr_label_names} must contain one of Community/Partner/Internal labels')
+        exit_status = 1
 
     sys.exit(exit_status)
 
