@@ -35,6 +35,7 @@ MSG_MODEL_VERSION_IN_DEMISTO = "Model version in demisto: %s.%s"
 MSG_NO_MODEL_IN_DEMISTO = "There is no existing model version in demisto"
 MSG_NO_URL_GIVEN = "Please input at least one URL"
 MSG_FAILED_RASTERIZE = "Rasterize error: ERR_NAME_NOT_RESOLVED"
+MSG_FAILED_RASTERIZE_TIMEOUT = "Timeout rasterize"
 MSG_IMPOSSIBLE_CONNECTION = "Failed to establish a new connection - Name or service not known"
 MSG_UPDATE_MODEL = "Update demisto model from docker model version %s.%s"
 MSG_UPDATE_LOGO = "Update demisto model from docker model version %s.%s and transfering logos from demisto version %s.%s"
@@ -42,7 +43,7 @@ MSG_WRONG_CONFIG_MODEL = 'Wrong configuration of the model'
 MSG_NO_ACTION_ON_MODEL = "Use current model"
 MSG_WHITE_LIST = "White List"
 MSG_REDIRECT = 'Prediction will be made on the last URL'
-MSG_NEED_TO_UPDATE_RASTERIZE = "Please update install and update rasterize pack"
+MSG_NEED_TO_UPDATE_RASTERIZE = "Please update install and/or update rasterize pack"
 EMPTY_STRING = ""
 URL_PHISHING_MODEL_NAME = "url_phishing_model"
 OUT_OF_THE_BOX_MODEL_PATH = '/model/model_docker.pkl'
@@ -104,6 +105,7 @@ KEY_CONTENT_SUMMARY_FINAL_VERDICT = 'FinalVerdict'
 
 KEY_IMAGE_RASTERIZE = "image_b64"
 KEY_IMAGE_HTML = "html"
+KEY_CURRENT_URL_RASTERIZE = 'current_url'
 
 KEY_FINAL_VERDICT = "Final Verdict"
 
@@ -120,7 +122,7 @@ MAPPING_VERDICT_TO_DISPLAY_VERDICT = {
 
 TIMEOUT_REQUESTS = 5
 WAIT_TIME_RASTERIZE = 5
-TIMEOUT_RASTERIZE = 8
+TIMEOUT_RASTERIZE = 20
 
 DOMAIN_CHECK_RASTERIZE = 'google.com'
 
@@ -515,14 +517,21 @@ def extract_created_date(entry_list: List):
 def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
     is_white_listed = False
     # Rasterize html and image
-    try:
-        res_rasterize = demisto.executeCommand('rasterize', {'type': 'json',
-                                                             'url': url,
-                                                             'wait_time': WAIT_TIME_RASTERIZE,
-                                                             'execution-timeout': TIMEOUT_RASTERIZE
-                                                             })
-    except Exception as e:
-        return create_dict_context(url, url, MSG_FAILED_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
+    res_rasterize = demisto.executeCommand('rasterize', {'type': 'json',
+                                                         'url': url,
+                                                         'wait_time': WAIT_TIME_RASTERIZE,
+                                                         'execution-timeout': TIMEOUT_RASTERIZE
+                                                         })
+    if is_error(res_rasterize):
+        error = get_error(res_rasterize)
+        if 'disabled' or 'enabled' in error:
+            raise DemistoException(MSG_NEED_TO_UPDATE_RASTERIZE)
+        elif 'timeout' in error:
+            return create_dict_context(url, url, MSG_FAILED_RASTERIZE_TIMEOUT, {}, SCORE_INVALID_URL, is_white_listed, {})
+        elif 'ERR_NAME_NOT_RESOLVED' in error:
+            return create_dict_context(url, url, MSG_FAILED_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
+        else:
+            return create_dict_context(url, url, error, {}, SCORE_INVALID_URL, is_white_listed, {})
 
     if len(res_rasterize) > 0 and isinstance(res_rasterize[0]['Contents'], str):
         return create_dict_context(url, url, MSG_FAILED_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
@@ -536,8 +545,11 @@ def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
     else:
         create_dict_context(url, url, MSG_SOMETHING_WRONG_IN_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
 
+    if KEY_CURRENT_URL_RASTERIZE not in output_rasterize.keys():
+        raise DemistoException(MSG_NEED_TO_UPDATE_RASTERIZE)
+
     # Get final url and redirection
-    final_url = output_rasterize.get('current_url', url)
+    final_url = output_rasterize.get(KEY_CURRENT_URL_RASTERIZE, url)
     if final_url != url:
         url_redirect = '%s -> %s   (%s)' % (url, final_url, MSG_REDIRECT)
     else:
@@ -554,11 +566,12 @@ def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
                                        is_white_listed, {})
         else:
             is_white_listed = True
+    res_whois = []
     if who_is_enabled:
         try:
             res_whois = demisto.executeCommand('whois', {'query': domain, 'execution-timeout': 5
                                                          })
-        except ValueError:
+        except Exception as e:
             res_whois = []
     is_new_domain = extract_created_date(res_whois)
 
@@ -755,15 +768,6 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
     return model, msg_list
 
 
-def check_if_rasterize_installed():
-    try:
-        res = demisto.executeCommand('rasterize', {'type': 'json',
-                                                   'url': DOMAIN_CHECK_RASTERIZE,
-                                                   })
-    except ValueError:
-        raise DemistoException(MSG_NEED_TO_UPDATE_RASTERIZE)
-
-
 def check_if_whois_installed():
     try:
         demisto.executeCommand('whois', {'query': DOMAIN_CHECK_RASTERIZE, 'execution-timeout': 5
@@ -775,7 +779,6 @@ def check_if_whois_installed():
 
 
 def main():
-    check_if_rasterize_installed()
     who_is_enabled = check_if_whois_installed()
     try:
         msg_list = []  # type: List
