@@ -15,18 +15,20 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 class Client(BaseClient):
 
-    def correlation_alerts(self, start_time=None):
+    def correlation_alerts(self, last_fetch_time=None):
         args = demisto.args()
- 
-        end_time = datetime.now()
-        
-        interval_time = end_time - timedelta(minutes=demisto.params().get('incidentFetchInterval', 360))
-        
-        if start_time is None or start_time < interval_time:
-            start_time = interval_time
 
+        end_time = datetime.now()
+        interval_time = end_time - timedelta(minutes=int(demisto.params().get('incidentFetchInterval', 360)))
+
+        formatted_start_time = datetime.strptime(last_fetch_time, DATE_FORMAT) if last_fetch_time is not None else None
+
+        if last_fetch_time is None or formatted_start_time < interval_time:
+            formatted_start_time = interval_time
+
+        return_results(formatted_start_time)
         parameters = {
-            'startDate': args.get('startDate', start_time.isoformat()),
+            'startDate': args.get('startDate', formatted_start_time.isoformat()),
             'endDate': args.get('endDate', end_time.isoformat()),
             'showSolved': args.get('showSolved', False),
             'crrPluginId': args.get('crrPluginId', -1),
@@ -37,6 +39,7 @@ class Client(BaseClient):
             'srcPort': args.get('srcPort', None),
             'destPort': args.get('destPort', None),
             'riskOperatorID': args.get('riskOperatorID', "equal"),
+            "limit": args.get("limit",100),
             "isJsonLog": True
         }
 
@@ -44,8 +47,20 @@ class Client(BaseClient):
                                   data=json.dumps(parameters))
 
     def correlations(self):
-        return self._http_request("GET", data={}, url_suffix="correlations")
+        args = demisto.args()
+        
+        limit = str(args.get("limit",100))
+        limit_url = "limit=" + limit
+        
+        sort_type = str(args.get("sortType","asc"))
+        sort_type_url = "sortType=" + sort_type
+        
+        base_url = "correlations?"
+        api_url = base_url + limit_url + "&" + sort_type_url
+        return self._http_request("GET", data={}, url_suffix=api_url)
 
+    def connection_test(self):
+        return self._http_request("GET", data={}, url_suffix="connectiontest")
 
 ''' COMMAND FUNCTIONS '''
 
@@ -85,7 +100,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        if client.correlations().get('StatusCode') == 200:
+        if client.connection_test().get('StatusCode') == 200:
             message = 'ok'
         else:
             raise Exception(f"""StatusCode: 
@@ -107,15 +122,13 @@ def fetch_incidents(client: Client):
 
     max_results = arg_to_number(arg=demisto.params().get('max_fetch'), arg_name='max_fetch', required=False)
 
-    first_fetch_time = arg_to_datetime(demisto.params().get('first_fetch')).isoformat()
+    first_fetch_time = arg_to_datetime(demisto.params().get('first_fetch')).strftime(DATE_FORMAT)
 
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('last_fetch', first_fetch_time)
 
-
-    incidentsList=[]
-    alert_response = client.correlation_alerts(start_time=datetime.strptime(last_fetch,DATE_FORMAT))
-
+    incidentsList = []
+    alert_response = client.correlation_alerts(last_fetch_time=last_fetch)
     incident_data = alert_response['Data']
 
     for inc in incident_data:
@@ -156,7 +169,8 @@ def fetch_incidents(client: Client):
         created_incident = datetime.strptime(time_stamp, DATE_FORMAT)
         last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
         if created_incident > last_fetch:
-            last_fetch = created_incident
+
+            last_fetch = created_incident + timedelta(milliseconds=10)
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': last_fetch}
