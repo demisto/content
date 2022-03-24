@@ -228,11 +228,12 @@ script:
       name: Alert_id
       required: true
       secret: false
-    - default: false
-      description: |-
-        Alert new status:
-        - Open
-        - Under Investigation
+    - auto: PREDEFINED
+      predefined:
+      - Open
+      - Under Investigation
+      default: false
+      description: Alert new status
       isArray: false
       name: Status
       required: true
@@ -248,15 +249,16 @@ script:
       name: Alert_id
       required: true
       secret: false
-    - default: false
-      description: |-
-        The reason the alert was closed. Default options are:
-        - Resolved
-        - Misconfiguration
-        - Threat model disabled or deleted
-        - Account misclassification
-        - Legitimate activity
-        - Other
+    - auto: PREDEFINED
+      default: false
+      description: The reason the alert was closed
+      predefined:
+      - Resolved
+      - Misconfiguration
+      - Threat model disabled or deleted
+      - Account misclassification
+      - Legitimate activity
+      - Other
       isArray: false
       name: Close_Reason
       required: true
