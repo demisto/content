@@ -11,6 +11,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
+  defaultvalue: Varonis DSP Incident
 - display: The FQDN/IP the integration should connect to
   hidden: false
   name: url
@@ -59,7 +60,8 @@ configuration:
   name: threat_model
   required: false
   type: 0
-- display: Varonis alert status
+- defaultvalue: Open
+  display: Varonis alert status
   hidden: false
   name: status
   options:

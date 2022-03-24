@@ -1129,10 +1129,10 @@ def main() -> None:
             return_results(varonis_get_alerts_command(client, demisto.args()))
 
         elif demisto.command() == 'varonis-update-alert-status':
-            varonis_update_alert_status_command(client, demisto.args())
+            return_results(varonis_update_alert_status_command(client, demisto.args()))
 
         elif demisto.command() == 'varonis-close-alert':
-            varonis_close_alert_command(client, demisto.args())
+            return_results(varonis_close_alert_command(client, demisto.args()))
 
         elif demisto.command() == 'varonis-get-alerted-events':
             return_results(varonis_get_alerted_events_command(client, demisto.args()))
