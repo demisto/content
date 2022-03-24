@@ -4478,8 +4478,8 @@
                 {
                     "SearchAndDelete": {"simple": "True"},
                     "GetOriginalEmail": {"simple": "True"},
-                    "SearchAndDeleteIntegration": {"Simple": "O365"},
-                    "O365DeleteType": {"Simple": "Soft"}
+                    "SearchAndDeleteIntegration": {"simple": "O365"},
+                    "O365DeleteType": {"simple": "Soft"}
                 }
             },
             "memory_threshold": 160,
