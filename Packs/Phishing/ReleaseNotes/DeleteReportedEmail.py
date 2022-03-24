@@ -33,8 +33,12 @@ class DeletionArgs:
         """
         is_permanent = True if search_args['delete-type'] == 'hard' else False
         gmail_message_id = search_result[0].get('id')
-        return {'user-id': search_args['user-id'], 'message-id': gmail_message_id, 'permanent': is_permanent,
-                'using-brand': search_args['using-brand']}
+        return {
+            'user-id': search_args['user-id'],
+            'message-id': gmail_message_id,
+            'permanent': is_permanent,
+            'using-brand': search_args['using-brand'],
+        }
 
     @staticmethod
     def msgraph(search_result: dict, search_args: dict):
@@ -53,7 +57,11 @@ class DeletionArgs:
         if not results:
             raise MissingEmailException()
         internal_id = results[0].get('id')
-        return {'user_id': search_args['user_id'], 'message_id': internal_id, 'using-brand': search_args['using-brand']}
+        return {
+            'user_id': search_args['user_id'],
+            'message_id': internal_id,
+            'using-brand': search_args['using-brand'],
+        }
 
     @staticmethod
     def agari(search_args: dict):
@@ -67,8 +75,11 @@ class DeletionArgs:
 
         """
         agari_message_id = demisto.get(demisto.context(), 'incident.apdglobalmessageid')
-        return {'operation': 'delete', 'id': agari_message_id,
-                'using-brand': search_args['using-brand']}
+        return {
+            'operation': 'delete',
+            'id': agari_message_id,
+            'using-brand': search_args['using-brand'],
+        }
 
     @staticmethod
     def ews(search_result: dict, search_args: dict):
@@ -84,7 +95,11 @@ class DeletionArgs:
         """
         delete_type = f'{search_args["delete-type"]}'
         item_id = search_result[0].get('itemId')
-        return {'item-ids': item_id, 'delete-type': delete_type, 'using-brand': search_args['using-brand']}
+        return {
+            'item-ids': item_id,
+            'delete-type': delete_type,
+            'using-brand': search_args['using-brand'],
+        }
 
 
 def check_demisto_version():
@@ -113,7 +128,8 @@ def schedule_next_command(args: dict):
         command='DeleteReportedEmail',
         next_run_in_seconds=120,
         args=polling_args,
-        timeout_in_seconds=600)
+        timeout_in_seconds=600,
+    )
 
 
 def was_email_already_deleted(search_args: dict, e: Exception):
@@ -267,7 +283,7 @@ def get_search_args(args: dict):
         'EWSO365': {'target-mailbox': user_id},
         'EWS v2': {'target-mailbox': user_id},
         'MicrosoftGraphMail': {'user_id': user_id, 'odata': f'"$filter=internetMessageId eq \'{message_id}\'"'},
-        'SecurityAndCompliance': {'user_id': user_id}
+        'SecurityAndCompliance': {'user_id': user_id},
     }
 
     search_args.update(additional_args.get(delete_from_brand, {}))
@@ -289,14 +305,15 @@ def main():
             result, scheduled_command = security_and_compliance_delete_mail(args, **security_and_compliance_args)
 
         else:
-            integrations_dict = {'Gmail': ('gmail-search', DeletionArgs.gmail, 'gmail-delete-mail'),
-                                 'EWSO365': ('ews-search-mailbox', DeletionArgs.ews, 'ews-delete-items',
-                                             lambda x: not isinstance(x, list)),
-                                 'EWS v2': ('ews-search-mailbox', DeletionArgs.ews, 'ews-delete-items',
-                                            lambda x: not isinstance(x, list)),
-                                 'Agari Phishing Defense': (None, DeletionArgs.agari, 'apd-remediate-message'),
-                                 'MicrosoftGraphMail': ('msgraph-mail-list-emails', DeletionArgs.msgraph,
-                                                        'msgraph-mail-delete-email')}
+            integrations_dict = {
+                'Gmail': ('gmail-search', DeletionArgs.gmail, 'gmail-delete-mail'),
+                'EWSO365': ('ews-search-mailbox', DeletionArgs.ews, 'ews-delete-items',
+                             lambda x: not isinstance(x, list)),
+                'EWS v2': ('ews-search-mailbox', DeletionArgs.ews, 'ews-delete-items',
+                            lambda x: not isinstance(x, list)),
+                'Agari Phishing Defense': (None, DeletionArgs.agari, 'apd-remediate-message'),
+                'MicrosoftGraphMail': ('msgraph-mail-list-emails', DeletionArgs.msgraph, 'msgraph-mail-delete-email'),
+                                 }
             result = delete_email(search_args, *integrations_dict[delete_from_brand])
 
     except MissingEmailException as e:
