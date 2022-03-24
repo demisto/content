@@ -39,7 +39,7 @@ class Client(BaseClient):
             'srcPort': args.get('srcPort', None),
             'destPort': args.get('destPort', None),
             'riskOperatorID': args.get('riskOperatorID', "equal"),
-            "limit": args.get("limit",100),
+            "limit": int(args.get("limit",100)),
             "isJsonLog": True
         }
 

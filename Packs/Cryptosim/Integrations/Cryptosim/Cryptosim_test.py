@@ -21,7 +21,7 @@ test_client = Client(
 )
 
 
-def test_correlations_command():
+def test_correlations_command(client):
     mock_response = {'StatusCode': 200,
                      'Data': [
                          {'Name': "Correlation1", 'CorrelationId': 1},
@@ -39,7 +39,7 @@ def test_correlations_command():
     assert results.outputs_prefix == 'Correlations'
 
 
-def test_correlation_alerts_command():
+def test_correlation_alerts_command(client):
     mock_response = {'StatusCode': 200,
                      'Data': [
                          {'CorrelationAlert': {"NAME": "name1", "changedKey1": "changedVal1"},
@@ -58,7 +58,7 @@ def test_correlation_alerts_command():
 
     results = correlation_alerts_command(test_client)
     assert results.outputs.keys() == ['StatusCode', 'Data', 'OutParameters']
-    assert results.outputs_prefix == 'Correlations'
+    assert results.outputs_prefix == 'CorrelationAlerts'
 
 
 def test_fetch_incidents(client):
