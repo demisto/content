@@ -17,7 +17,16 @@
         "base",
         "common"
     ],
-    "dependencies": {},
+    "dependencies": {
+        "rasterize": {
+            "mandatory": false,
+            "display_name": "Rasterize"
+        },
+        "whois": {
+            "mandatory": false,
+            "display_name": "WHOIS"
+        }
+    },
     "marketplaces": [
         "xsoar",
         "marketplacev2"
