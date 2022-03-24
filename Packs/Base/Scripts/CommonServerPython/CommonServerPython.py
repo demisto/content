@@ -9151,7 +9151,8 @@ def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=
     dbot_score = Common.DBotScore(indicator=indicator,
                                   indicator_type=indicator_type,
                                   score=Common.DBotScore.NONE,
-                                  reliability=reliability)
+                                  reliability=reliability,
+                                  message='No results found')
 
     integration_name = dbot_score.integration_name or 'Results'
     indicator_ = None

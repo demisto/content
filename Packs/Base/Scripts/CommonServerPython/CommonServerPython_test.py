@@ -6563,13 +6563,15 @@ def test_get_indicator_with_dbotscore_unknown(mocker, args, expected):
                                                    indicator_type=args['indicator_type'],
                                                    score=0,
                                                    integration_name=expected['integration_name'],
-                                                   reliability=args['reliability']))
+                                                   reliability=args['reliability'],
+                                                   message='No results found'))
     results = get_indicator_with_dbotscore_unknown(**args)
 
     assert expected['indicator_type'] in results.readable_output
     assert isinstance(results.indicator, expected['instance'])
     assert results.indicator.dbot_score.score == 0
     assert results.indicator.dbot_score.reliability == expected['reliability']
+    assert results.indicator.dbot_score.message == 'No results found'
     if expected.get('integration_name'):
         assert expected['integration_name'] in results.readable_output
     else:
