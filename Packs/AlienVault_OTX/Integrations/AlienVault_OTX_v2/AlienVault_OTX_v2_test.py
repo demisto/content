@@ -6,7 +6,7 @@ import pytest
 # Import local packages
 from AlienVault_OTX_v2 import \
     calculate_dbot_score, Client, file_command, url_command, domain_command, ip_command, \
-    delete_duplicated_entities, build_context_indicator_no_results_status
+    delete_duplicated_entities
 from CommonServerPython import *
 import demistomock as demisto
 
@@ -738,57 +738,6 @@ def test_ip_command_on_404(mocker, ip_, raw_response, expected):
     mocker.patch.object(client, 'query', side_effect=[raw_response])
     command_results = ip_command(client, ip_, 'IPv4')
     assert command_results[0].indicator.dbot_score.score == expected
-
-
-DBOT_SCORE_UNKNOWN = [
-
-    (
-        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': 'file',
-         'integration_name': 'test'},
-        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': 'file',
-         'sha1': None, 'sha256': None, 'md5': 'd26cec10398f2b10202d23c966022dce'}
-    ),
-    (
-        {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'indicator_type': 'file',
-         'integration_name': 'test'},
-        {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'indicator_type': 'file',
-         'sha1': None,
-         'sha256': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'md5': None}
-    ),
-    (
-        {'indicator': 'cf23df2207d99a74fbe169e3eba035e633b65d94', 'indicator_type': 'file',
-         'integration_name': 'test'},
-        {'indicator': 'cf23df2207d99a74fbe169e3eba035e633b65d94', 'indicator_type': 'file',
-         'sha1': 'cf23df2207d99a74fbe169e3eba035e633b65d94', 'sha256': None, 'md5': None}
-    ),
-    (
-        {'indicator': '8.8.8.8', 'indicator_type': 'ip', 'integration_name': 'test'},
-        {'indicator': '8.8.8.8', 'indicator_type': 'ip'}
-    ),
-    (
-        {'indicator': 'www.example.com', 'indicator_type': 'url', 'integration_name': 'test'},
-        {'indicator': 'www.example.com', 'indicator_type': 'url'}
-    ),
-    (
-        {'indicator': 'example.com', 'indicator_type': 'domain', 'integration_name': 'test'},
-        {'indicator': 'example.com', 'indicator_type': 'domain'}
-    )
-]
-
-
-@pytest.mark.parametrize('inputs, expected_return', DBOT_SCORE_UNKNOWN)
-def test_build_context_indicator_no_results_status(inputs, expected_return):
-
-    results = build_context_indicator_no_results_status(indicator=inputs.get('indicator'),
-                                                        indicator_type=inputs.get('indicator_type'),
-                                                        integration_name='test')
-
-    assert results.indicator.dbot_score.score == 0
-    assert results.indicator.dbot_score.indicator_type == expected_return.get('indicator_type')
-    if results.indicator.dbot_score.indicator_type == 'file':
-        assert results.indicator.sha1 == expected_return.get('sha1')
-        assert results.indicator.sha256 == expected_return.get('sha256')
-        assert results.indicator.md5 == expected_return.get('md5')
 
 
 @pytest.mark.parametrize('entities_list,field_name,expected_results', [

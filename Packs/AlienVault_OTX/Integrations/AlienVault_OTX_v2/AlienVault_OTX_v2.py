@@ -89,47 +89,6 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def build_context_indicator_no_results_status(indicator: str, indicator_type: str,
-                                              integration_name: str, reliability: Any = None) -> CommandResults:
-    indicator_map = {
-        'file': DBotScoreType.FILE,
-        'ip': DBotScoreType.IP,
-        'domain': DBotScoreType.DOMAIN,
-        'url': DBotScoreType.URL
-    }
-
-    dbot_score = Common.DBotScore(indicator=indicator,
-                                  score=Common.DBotScore.NONE,
-                                  indicator_type=indicator_map[indicator_type],
-                                  integration_name=integration_name,
-                                  reliability=reliability)
-    indicator_: Any = None
-    if indicator_type == 'file':
-        if sha1Regex.match(indicator):
-            indicator_ = Common.File(sha1=indicator, dbot_score=dbot_score)
-            indicator_type = 'sha1'
-        if sha256Regex.match(indicator):
-            indicator_ = Common.File(sha256=indicator, dbot_score=dbot_score)
-            indicator_type = 'sha256'
-        if md5Regex.match(indicator):
-            indicator_ = Common.File(md5=indicator, dbot_score=dbot_score)
-            indicator_type = 'md5'
-
-    elif indicator_type == 'ip':
-        indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)
-
-    elif indicator_type == 'domain':
-        indicator_ = Common.Domain(domain=indicator, dbot_score=dbot_score)
-
-    elif indicator_type == 'url':
-        indicator_ = Common.URL(url=indicator, dbot_score=dbot_score)
-
-    readable_output = tableToMarkdown(name=f'{integration_name}:',
-                                      t={indicator_type.upper(): indicator, 'Result': 'Not found'},
-                                      headers=[indicator_type.upper(), 'Result'])
-    return CommandResults(readable_output=readable_output, indicator=indicator_)
-
-
 def calculate_dbot_score(client: Client, raw_response: Union[dict, None]) -> float:
     """
     calculate DBot score for query
@@ -427,10 +386,9 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                 relationships=relationships
             ))
         else:
-            command_results.append(build_context_indicator_no_results_status(indicator=ip_,
-                                                                             indicator_type='ip',
-                                                                             integration_name=INTEGRATION_NAME,
-                                                                             reliability=client.reliability))
+            command_results.append(get_indicator_with_dbotscore_unknown(indicator=ip_,
+                                                                        indicator_type=DBotScoreType.IP,
+                                                                        reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query.')]
     return command_results
@@ -485,10 +443,9 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
                 relationships=relationships
             ))
         else:
-            command_results.append(build_context_indicator_no_results_status(indicator=domain,
-                                                                             indicator_type='domain',
-                                                                             integration_name=INTEGRATION_NAME,
-                                                                             reliability=client.reliability))
+            command_results.append(get_indicator_with_dbotscore_unknown(indicator=domain,
+                                                                        indicator_type=DBotScoreType.DOMAIN,
+                                                                        reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query')]
 
@@ -561,10 +518,9 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                 relationships=relationships
             ))
         else:
-            command_results.append(build_context_indicator_no_results_status(indicator=hash_,
-                                                                             indicator_type='file',
-                                                                             integration_name=INTEGRATION_NAME,
-                                                                             reliability=client.reliability))
+            command_results.append(get_indicator_with_dbotscore_unknown(indicator=hash_,
+                                                                        indicator_type=DBotScoreType.FILE,
+                                                                        reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query')]
 
@@ -592,10 +548,9 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
         raw_response = client.query(section='url', argument=url)
         if raw_response:
             if raw_response == 404:
-                command_results.append(build_context_indicator_no_results_status(indicator=url,
-                                                                                 indicator_type='url',
-                                                                                 integration_name=INTEGRATION_NAME,
-                                                                                 reliability=client.reliability))
+                command_results.append(get_indicator_with_dbotscore_unknown(indicator=url,
+                                                                            indicator_type=DBotScoreType.URL,
+                                                                            reliability=client.reliability))
             else:
 
                 relationships = []

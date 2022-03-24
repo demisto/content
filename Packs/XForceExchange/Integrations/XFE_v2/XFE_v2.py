@@ -67,49 +67,6 @@ class Client(BaseClient):
         return self._http_request('GET', f'/whois/{host}')
 
 
-def build_context_indicator_no_results_status(indicator: str, indicator_type: str,
-                                              integration_name: str, reliability: Any = None) -> CommandResults:
-
-    indicator_map = {
-        'file': DBotScoreType.FILE,
-        'ip': DBotScoreType.IP,
-        'domain': DBotScoreType.DOMAIN,
-        'url': DBotScoreType.URL
-    }
-
-    dbot_score = Common.DBotScore(indicator=indicator,
-                                  score=Common.DBotScore.NONE,
-                                  indicator_type=indicator_map[indicator_type],
-                                  integration_name=integration_name,
-                                  reliability=reliability)
-    indicator_: Any = None
-    if indicator_type == 'file':
-        if sha1Regex.match(indicator):
-            indicator_ = Common.File(sha1=indicator, dbot_score=dbot_score)
-            indicator_type = 'sha1'
-        if sha256Regex.match(indicator):
-            indicator_ = Common.File(sha256=indicator, dbot_score=dbot_score)
-            indicator_type = 'sha256'
-        if md5Regex.match(indicator):
-            indicator_ = Common.File(md5=indicator, dbot_score=dbot_score)
-            indicator_type = 'md5'
-
-    elif indicator_type == 'ip':
-        indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)
-
-    elif indicator_type == 'domain':
-        indicator_ = Common.Domain(domain=indicator, dbot_score=dbot_score)
-
-    elif indicator_type == 'url':
-        indicator_ = Common.URL(url=indicator, dbot_score=dbot_score)
-
-    readable_output = tableToMarkdown(name=f'{integration_name}:',
-                                      t={indicator_type.upper(): indicator, 'Result': 'Not found'},
-                                      headers=[indicator_type.upper(), 'Result'])
-
-    return CommandResults(readable_output=readable_output, indicator=indicator_)
-
-
 def calculate_score(score: int, threshold: int) -> int:
     """
     Calculates and converts X-Force Exchange score into Demisto score.
@@ -262,10 +219,9 @@ def domain_command(client: Client, args: Dict[str, str]) -> List[CommandResults]
     for domain in domains:
         report = client.url_report(domain)
         if report == "Not Found":
-            command_results.append(build_context_indicator_no_results_status(indicator=domain,
-                                                                             indicator_type='domain',
-                                                                             integration_name='XFE',
-                                                                             reliability=client.reliability))
+            command_results.append(get_indicator_with_dbotscore_unknown(indicator=domain,
+                                                                        indicator_type=DBotScoreType.DOMAIN,
+                                                                        reliability=client.reliability))
             continue
 
         dbot_score = Common.DBotScore(indicator=domain,
@@ -307,10 +263,9 @@ def url_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
     for url in urls:
         report = client.url_report(url)
         if report == "Not Found":
-            command_results.append(build_context_indicator_no_results_status(indicator=url,
-                                                                             indicator_type='url',
-                                                                             integration_name='XFE',
-                                                                             reliability=client.reliability))
+            command_results.append(get_indicator_with_dbotscore_unknown(indicator=url,
+                                                                        indicator_type=DBotScoreType.URL,
+                                                                        reliability=client.reliability))
             continue
 
         dbot_score = Common.DBotScore(indicator=url,
@@ -432,10 +387,9 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
             report = client.file_report(file_hash)
         except Exception as err:
             if 'Error in API call [404] - Not Found' in str(err):
-                command_results.append(build_context_indicator_no_results_status(indicator=file_hash,
-                                                                                 indicator_type='file',
-                                                                                 integration_name='XFE',
-                                                                                 reliability=client.reliability))
+                command_results.append(get_indicator_with_dbotscore_unknown(indicator=file_hash,
+                                                                            indicator_type=DBotScoreType.FILE,
+                                                                            reliability=client.reliability))
                 continue
             else:
                 raise ValueError(err)

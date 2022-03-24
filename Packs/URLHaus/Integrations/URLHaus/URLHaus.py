@@ -352,7 +352,7 @@ def process_query_info(url_information: dict, uri: str, params: dict) -> Command
 
         if re.match(urlRegex, uri):
             return get_indicator_with_dbotscore_unknown(indicator=uri,
-                                                        indicator_type='url',
+                                                        indicator_type=DBotScoreType.URL,
                                                         reliability=params.get('reliability'))
         human_readable = f'## URLhaus reputation for {uri}\n' \
                          f'Invalid URL!'
@@ -501,7 +501,7 @@ def run_domain_command(domain: str, params: dict) -> CommandResults:
             relationships=relationships)
     elif domain_information['query_status'] == 'no_results':
         return get_indicator_with_dbotscore_unknown(indicator=domain,
-                                                    indicator_type='domain',
+                                                    indicator_type=DBotScoreType.DOMAIN,
                                                     reliability=params.get('reliability'))
 
     elif domain_information['query_status'] == 'invalid_host':
@@ -645,7 +645,7 @@ def run_file_command(hash: str, params: dict) -> CommandResults:
     elif (file_information['query_status'] == 'ok' and not file_information['md5_hash']) or \
             file_information['query_status'] == 'no_results':
         return get_indicator_with_dbotscore_unknown(indicator=hash,
-                                                    indicator_type='file',
+                                                    indicator_type=DBotScoreType.FILE,
                                                     reliability=params.get('reliability'))
 
     elif file_information['query_status'] in ['invalid_md5', 'invalid_sha256']:
