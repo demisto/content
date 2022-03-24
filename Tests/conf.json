@@ -1018,6 +1018,16 @@
         },
         {
             "integrations": "Panorama",
+            "instance_names": [
+                "palo_alto_panorama",
+                "palo_alto_firewall"
+            ],
+            "playbookID": "test_pan_os_topology_commands",
+            "fromversion": "6.1.0",
+            "timeout": 1000
+        },
+        {
+            "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
