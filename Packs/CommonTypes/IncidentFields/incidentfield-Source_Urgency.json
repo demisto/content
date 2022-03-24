@@ -1,11 +1,11 @@
 {
- "id": "incident_title",
+ "id": "incident_sourceurgency",
  "version": -1,
- "modified": "2020-09-06T10:29:12.755957238Z",
- "name": "Title",
+ "modified": "2022-03-22T16:10:10.985952Z",
+ "name": "Source Urgency",
  "ownerOnly": false,
- "description": "Title",
- "cliName": "title",
+ "description": "Source Urgency",
+ "cliName": "sourceurgency",
  "type": "shortText",
  "closeForm": false,
  "editForm": true,
@@ -22,15 +22,7 @@
   "SysAid Change",
   "SysAid Incident",
   "SysAid Problem",
-  "SysAid Request",
-  "IAM - New Hire",
-  "IAM - Terminate User",
-  "IAM - Update User",
-  "User Profile",
-  "IAM - Sync User",
-  "IAM - Rehire User",
-  "Mandiant Automated Defense Incident",
-  "OpsGenie Incident"
+  "SysAid Request"
  ],
  "associatedToAll": false,
  "unmapped": false,
@@ -38,5 +30,5 @@
  "caseInsensitive": true,
  "sla": 0,
  "threshold": 72,
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }

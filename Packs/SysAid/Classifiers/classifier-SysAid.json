@@ -1,0 +1,49 @@
+{
+	"defaultIncidentType": "SysAid Incident",
+	"description": "Classifies SysAid incidents, requests, problems and changes.",
+	"feed": false,
+	"id": "SysAid Classifier",
+	"keyTypeMap": {
+		"Change": "SysAid Change",
+		"Incident": "SysAid Incident",
+		"Request": "SysAid Request",
+		"Problem": "SysAid Problem"
+	},
+	"locked": false,
+	"mapping": null,
+	"name": "SysAid Classifier",
+	"packID": "SysAid",
+	"propagationLabels": [
+		"all"
+	],
+	"toServerVersion": "",
+	"transformer": {
+		"complex": {
+			"accessor": "valueCaption",
+			"filters": [
+				[
+					{
+						"left": {
+							"isContext": true,
+							"value": {
+								"simple": "info.key"
+							}
+						},
+						"operator": "isEqualString",
+						"right": {
+							"value": {
+								"simple": "sr_type"
+							}
+						}
+					}
+				]
+			],
+			"root": "info",
+			"transformers": []
+		}
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1,
+	"fromServerVersion": "6.0.0"
+}

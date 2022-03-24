@@ -733,5 +733,7 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.10.1.27636
 fromversion: 6.0.0
+defaultclassifier: SysAid Classifier
+defaultmapperin: SysAid Mapper
 tests:
 - No tests (auto formatted)
