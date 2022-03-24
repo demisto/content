@@ -1,7 +1,7 @@
 {
-    "TASK_0": "flowchart TB\nContent[\"#0 Playbook Triggered\"]",
-    "TASK_1": "flowchart TB\nContent[\"#1 Do something\"]",
-    "TASK_2": "flowchart TB\nContent[\"#2 Is Output Valid?\"]",
-    "TASK_3": "flowchart TB\nContent[\"#3 Done\"]",
-    "TASK_4": "flowchart TB\nContent[\"#4 Print Error\"]"
+    "TASK_0": "flowchart TB\nContent[#0 Playbook Triggered]",
+    "TASK_1": "flowchart TB\nContent[#1 Do something]",
+    "TASK_2": "flowchart TB\nContent[#2 Is Output Valid?]",
+    "TASK_3": "flowchart TB\nContent[#3 Done]",
+    "TASK_4": "flowchart TB\nContent[#4 Print Error]"
 }
