@@ -116,6 +116,16 @@
             "playbookID": "FireEyeNX-Test"
         },
         {
+            "integrations": "FireEyeHX v2",
+            "playbookID": "FireEyeHX_v2",
+            "fromversion": "6.2.0",
+            "timeout": 1200
+        },
+        {
+            "integrations": "FireEyeHX v2",
+            "playbookID": "FireEyeHXv2_without_polling"
+        },
+        {
             "integrations": "EmailRepIO",
             "playbookID": "TestEmailRepIOPlaybook",
             "fromversion": "5.0.0"
@@ -2442,7 +2452,7 @@
             "playbookID": "Active Directory - Get User Manager Details - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_80k",
-            "fromversion": "4.5.0"
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Kafka V2",
@@ -2886,6 +2896,12 @@
             "is_mockable": false
         },
         {
+            "integrations": "Hybrid Analysis",
+            "playbookID": "Detonate File - HybridAnalysis - Test",
+            "fromversion": "5.5.0",
+            "is_mockable": false
+        },
+        {
             "integrations": "Elasticsearch v2",
             "instance_names": "es_v7",
             "playbookID": "Elasticsearch_v2_test"
@@ -2942,11 +2958,13 @@
         },
         {
             "integrations": "EWSO365",
+            "instance_names": "ewso365_dev_team",
             "playbookID": "EWS_O365_test",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "EWSO365",
+            "instance_names": "ewso365_dev_team",
             "playbookID": "EWS_O365_send_mail_test",
             "fromversion": "5.0.0"
         },
@@ -4355,14 +4373,23 @@
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
-            "fromversion": "5.0.0",
+            "fromversion": "6.1.0",
             "integrations": [
                 "CrowdStrike Falcon X"
-            ]
+            ],
+            "timeout" : 1800
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
-            "fromversion": "5.0.0",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "CrowdStrike Falcon X"
+            ],
+            "timeout" : 1800
+        },
+        {
+            "playbookID": "CrowdStrike_FalconX_Test",
+            "fromversion": "6.1.0",
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5050,6 +5077,7 @@
         "Cortex Data Lake Test": "Issue 24346",
         "Phishing - Core - Test - Incident Starter": "Issue 26784",
         "Phishing - Core - Test - Actual Incident": "Issue 45227",
+        "Phishing v2 - Test - Incident Starter": "Issue 46660",
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
@@ -5087,7 +5115,6 @@
         "Carbon Black Edr - Test": "Jira ticket XDR-43185",
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
-        "RemoteAccessTest": "Issue 44245",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
         "XsoarPowershellTesting-Test": "Issue 32689",
         "MicrosoftManagementActivity - Test": "Issue 43922",
@@ -5114,7 +5141,6 @@
         "whois_test": "Issue 25648",
         "Autoextract - Test": "Issue 45293",
         "LogRhythm-Test-Playbook": "Issue 27164",
-        "Azure WAF - Test": "Issue 33741",
         "GSuiteAdmin-Test": "Issue 34784",
         "Microsoft_365_Defender-Test": "Issue 39390",
         "Tanium Threat Response - Request File Download v2 - Test": "Issue 46326",
@@ -5122,12 +5148,18 @@
         "EWS_O365_send_mail_test": "Issue 44200",
         "Phishing Investigation - Generic v2 - Campaign Test": "Issue 44740",
         "Cisco Umbrella Test": "Issue 24338",
-        "Azure NSG - Test": "Issue 33217",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
         "Fetch Indicators Test": "Issue 45490",
         "FormattedDateToEpochTest": "Issue 26724",
         "CrowdstrikeFalconSandbox2 Test": "Issue 46845",
-        "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)": "Issue 44543"
+        "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)": "Issue 44543",
+        "CarbonBlackLiveResponseCloud-Test": "Issue 39282",
+        "Panorama Best Practise - Test": "Issue 43826",
+        "JsonToTable - Test Playbook": "Issue 44302",
+        "Recorded Future Test": "Issue 26741",
+        "Git_Integration-Test": "Issue 37800",
+        "RecordedFutureFeed - Test": "Issue 43923",
+        "RedLockTest": "Issue 24600"
     },
     "skipped_integrations": {
         
@@ -5161,7 +5193,6 @@
         "ZeroFox": "Issue 29284",
         "Symantec Management Center": "Issue 23960",
         "Fidelis Elevate Network": "Issue 26453",
-        "CrowdStrike Falcon X": "Issue 26209",
         "ArcSight Logger": "Issue 19117",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
@@ -5368,6 +5399,9 @@
         "AWS - ACM",
         "AWS - Security Hub",
         "Cryptocurrency",
+        "EWS Mail Sender",
+        "CreateIncidents",
+        "VirusTotal (API v3)",
         "SNDBOX",
         "Whois",
         "Rasterize",
@@ -5412,7 +5446,8 @@
         "Cortex Data Lake",
         "Mail Listener v2",
         "EDL",
-        "Create-Mock-Feed-Relationships"
+        "Create-Mock-Feed-Relationships",
+        "CrowdStrike Falcon X"
     ],
     "private_tests": [
         "HelloWorldPremium_Scan-Test",
