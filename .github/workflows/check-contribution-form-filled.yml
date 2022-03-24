@@ -15,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: master
+          ref: fix_contribution_form_filled_script
       - name: Setup Python
         uses: actions/setup-python@v3
         with:

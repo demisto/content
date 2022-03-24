@@ -9,6 +9,7 @@ with open("test_data/search_output.json") as f:
 data = raw["data"]
 threats = data["threats"]
 client = Client("https://www.threathq.com", ("username", "password"), tags=['tag1', 'tag2'], tlp_color='RED')
+TEST = "JUST A TEST"
 
 
 class TestFetchIndicators:

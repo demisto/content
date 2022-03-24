@@ -5,6 +5,8 @@ from CommonServerPython import *  # noqa: F401
 requests.packages.urllib3.disable_warnings()
 
 
+TEST = "TEST"
+
 class Client(BaseClient):
     pass
 
