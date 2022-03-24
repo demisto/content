@@ -31,6 +31,7 @@ Hostnames
 LTM
 Src
 Srcs
+SafeNet
 Subdomains
 Dsts
 Dst
