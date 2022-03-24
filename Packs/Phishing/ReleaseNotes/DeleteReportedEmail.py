@@ -1,7 +1,7 @@
 from CommonServerPython import *
+from typing import Callable, Union
 import time
 import traceback
-from typing import Callable, Union
 
 seconds = time.time()
 
