@@ -54,22 +54,22 @@ def main():
     is_partner_label_exist = PARTNER_LABEL in pr_label_names
     is_internal_label_exist = INTERNAL_LABEL in pr_label_names
 
-    print(f'{t.cyan}Check that Contribution Form Filled label exist in PR {pr_number}\n')
+    print(f'{t.cyan}Check that Contribution Form Filled label exist in PR {pr_number}')
     if not is_contribution_form_filled_label_exist:
         print(
             f'\n{t.red}ERROR: Contribution form was not filled for PR: {pr_number}.\nMake sure to register your'
-            f' contribution by filling the contribution registration form in - https://forms.gle/XDfxU4E61ZwEESSMA\n'
+            f' contribution by filling the contribution registration form in - https://forms.gle/XDfxU4E61ZwEESSMA'
         )
         exit_status = 1
 
-    print(f'{t.cyan}Check that one of Community/Partner/Internal labels exist in PR {pr_number}\n')
+    print(f'{t.cyan}Check that one of Community/Partner/Internal labels exist in PR {pr_number}')
     if not (is_community_label_exist ^ is_partner_label_exist ^ is_internal_label_exist):
         print(
-            f'{t.red}ERROR: PR labels {pr_label_names} must contain one of Community/Partner/Internal labels\n'
+            f'{t.red}ERROR: PR labels {pr_label_names} must contain one of Community/Partner/Internal labels'
         )
         exit_status = 1
 
-    print(f'{t.cyan}PR labels {pr_label_names} are valid\n')
+    print(f'{t.cyan}PR labels {pr_label_names} are valid')
     print(f'{t.cyan} Contribution form was filled successfully for PR: {pr_number}')
     sys.exit(exit_status)
 
