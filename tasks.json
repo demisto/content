@@ -1,0 +1,7 @@
+{
+    "TASK_0": "graph TD\nA[Hello] -->|Get money| B(Go shopping)\nB --> C{Let me thinksssssx<br/>sssssssssssssssssssuuu<br />tttsssssssssssssssssssssss}\nC -->|One| D[Laptop]\nC -->|Two| E[iPhone]\nC -->|Three| F[Car]",
+    "TASK_1": "graph TD\nA[World] -->|Get money| B(Go shopping)\nB --> C{Let me thinksssssx<br/>sssssssssssssssssssuuu<br />tttsssssssssssssssssssssss}\nC -->|One| D[Laptop]\nC -->|Two| E[iPhone]\nC -->|Three| F[Car]",
+    "TASK_2": "graph TD\nA[How] -->|Get money| B(Go shopping)\nB --> C{Let me thinksssssx<br/>sssssssssssssssssssuuu<br />tttsssssssssssssssssssssss}\nC -->|One| D[Laptop]\nC -->|Two| E[iPhone]\nC -->|Three| F[Car]",
+    "TASK_3": "graph TD\nA[Are] -->|Get money| B(Go shopping)\nB --> C{Let me thinksssssx<br/>sssssssssssssssssssuuu<br />tttsssssssssssssssssssssss}\nC -->|One| D[Laptop]\nC -->|Two| E[iPhone]\nC -->|Three| F[Car]",
+    "TASK_4": "graph TD\nA[You] -->|Get money| B(Go shopping)\nB --> C{Let me thinksssssx<br/>sssssssssssssssssssuuu<br />tttsssssssssssssssssssssss}\nC -->|One| D[Laptop]\nC -->|Two| E[iPhone]\nC -->|Three| F[Car]"
+}
