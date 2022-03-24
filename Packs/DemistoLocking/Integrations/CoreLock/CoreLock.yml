@@ -77,7 +77,7 @@ script:
           all locks
     description: Show information on locks
   - name: core-lock-release-all
-    arguments: [ ]
+    arguments: []
     description: Release all locks
   runonce: false
 fromversion: 5.0.0

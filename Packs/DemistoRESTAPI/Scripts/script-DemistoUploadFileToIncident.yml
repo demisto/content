@@ -1,9 +1,9 @@
 commonfields:
   id: DemistoUploadFileToIncident
-  id_x2: CoreUploadFileToIncident
+  id_x2: UploadFileToIncident
   version: -1
 name: DemistoUploadFileToIncident
-name_x2: CoreUploadFileToIncident
+name_x2: UploadFileToIncident
 deprecated: true
 script: >-
   args = demisto.args()

@@ -12,13 +12,19 @@ configuration:
   type: 0
   required: true
 - display: Core Server API Key
-  name: apikey
-  type: 4
-  required: true
+  name: creds_apikey
+  type: 9
+  required: false
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+- display: Core Server API Key
+  name: apikey
+  type: 4
+  required: false
+  hidden: true
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -153,8 +159,8 @@ script:
         required: true
         description: IDs of the incidents to delete
         isArray: true
-    description: Delete Demisto incidents
-    execution: true
+      description: Delete Demisto incidents
+      execution: true
   runonce: false
 tests:
 - DemistoUploadFileV2 Test
