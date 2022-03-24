@@ -166,6 +166,31 @@
 						]
 					}
 				},
+				"Closing Reason": {
+					"complex": {
+						"accessor": "valueCaption",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "info.key"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "closure_information"
+										}
+									}
+								}
+							]
+						],
+						"root": "info",
+						"transformers": []
+					}
+				},
 				"Department": {
 					"complex": {
 						"accessor": "valueCaption",
@@ -1000,6 +1025,31 @@
 								"operator": "DateStringToISOFormat"
 							}
 						]
+					}
+				},
+				"Closing Reason": {
+					"complex": {
+						"accessor": "valueCaption",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "info.key"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "closure_information"
+										}
+									}
+								}
+							]
+						],
+						"root": "info",
+						"transformers": []
 					}
 				},
 				"Department": {
@@ -1838,6 +1888,31 @@
 						]
 					}
 				},
+				"Closing Reason": {
+					"complex": {
+						"accessor": "valueCaption",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "info.key"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "closure_information"
+										}
+									}
+								}
+							]
+						],
+						"root": "info",
+						"transformers": []
+					}
+				},
 				"Department": {
 					"complex": {
 						"accessor": "valueCaption",
@@ -2672,6 +2747,31 @@
 								"operator": "DateStringToISOFormat"
 							}
 						]
+					}
+				},
+				"Closing Reason": {
+					"complex": {
+						"accessor": "valueCaption",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "info.key"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "closure_information"
+										}
+									}
+								}
+							]
+						],
+						"root": "info",
+						"transformers": []
 					}
 				},
 				"Department": {
