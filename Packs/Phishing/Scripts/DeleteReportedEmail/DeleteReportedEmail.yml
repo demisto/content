@@ -1,6 +1,6 @@
 args:
-- default: Soft
-  description: # TODO: add a description indicating how hard and soft are different in each integration, ask ido
+- default: soft
+  description: 'The type of deletion - soft allows restoring, hard doesnt. Not relevant for O365 and Search & Compliance.'
   isArray: false
   name: delete_type
   required: false

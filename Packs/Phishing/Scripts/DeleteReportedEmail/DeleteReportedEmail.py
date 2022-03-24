@@ -1,10 +1,8 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
+from typing import Callable, Union
+import traceback
 import time
 seconds = time.time()
-from typing import Dict, Any
-import traceback
 
 EMAIL_INTEGRATIONS = ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'MicrosoftGraphMail',
                       'SecurityAndCompliance']
@@ -52,6 +50,8 @@ class DeletionArgs:
         """
         results = search_result[0].get('value', [])
         results = [res for res in results if res.get('internetMessageId') == search_args['message-id']]
+        if not results:
+            raise MissingEmailException()
         internal_id = results[0].get('id')
         return {'user_id': search_args['user_id'], 'message_id': internal_id, 'using-brand': search_args['using-brand']}
 
@@ -133,7 +133,7 @@ def was_email_already_deleted(search_args: dict, e: Exception):
         delete_email_from_context = [delete_email_from_context]
     for item in delete_email_from_context:
         message_id = item.get('messge_id')
-        if message_id == search_args.get('message_id') and search_args.get('Status') == 'Success':
+        if message_id == search_args.get('message_id') and item.get('result') == 'Success':
             return 'Success', ''
     return 'Skipped', str(e)
 
@@ -184,7 +184,7 @@ def security_and_compliance_delete_mail(args: dict, user_id: str, email_subject:
     results = execute_command('o365-sc-get-search', {'search_name': search_name, 'using-brand': using_brand})
 
     if not was_email_found_security_and_compliance(results):
-        raise MissingEmailException
+        raise MissingEmailException()
 
     # check if the search is complete
     if results[0].get('Status') != 'Completed':
@@ -213,17 +213,20 @@ def security_and_compliance_delete_mail(args: dict, user_id: str, email_subject:
     return 'Success', None
 
 
-def delete_email(search_args: dict, search_function: str, delete_args_function: callable, delete_function: str,
-                 deletion_error_condition: callable = lambda x: 'successfully' not in x):
+def delete_email(search_args: dict, search_function: str,
+                 delete_args_function: Union[Callable[[dict, dict], dict],
+                                             Callable[[dict], dict]], delete_function: str,
+                 deletion_error_condition: Callable[[str], bool] = lambda x: 'successfully' not in x):
     """
     Generic function to preform the search and delete operations.
     Args:
         search_args: arguments needed to preform the search command.
         search_function: a string representing the search command.
-        delete_args_function: a funcion that parses the arguments needed to preform the search command.
+        delete_args_function: a function that parses the arguments needed to preform the search command.
         delete_function: a string representing the delete command.
         deletion_error_condition: a condition to validate if the deletion was successful or not.
-
+    Returns:
+        Success if the deletion succeeded, fails otherwise
     """
     if search_function:
         search_result = execute_command(search_function, search_args)
@@ -235,6 +238,7 @@ def delete_email(search_args: dict, search_function: str, delete_args_function: 
     resp = execute_command(delete_function, delete_args)
     if deletion_error_condition(resp):
         raise DeletionFailed(resp)
+    return 'Success'
 
 
 def get_search_args(args: dict):
@@ -273,19 +277,17 @@ def get_search_args(args: dict):
 def main():
     args = demisto.args()
     search_args = get_search_args(args)
-    result = None
-    deletion_failure_reason = None
+    result, deletion_failure_reason, scheduled_command = None, None, None
     delete_from_brand = search_args['using-brand']
-    scheduled_command = None
     try:
         if delete_from_brand not in EMAIL_INTEGRATIONS:
             raise DemistoException(
                 f'Can not delete email using the chosen brand. The possible brands are: {EMAIL_INTEGRATIONS}')
 
         if delete_from_brand == 'SecurityAndCompliance':
-            security_and_compliance_args = {k.replace('-', '_'): v for k, v in search_args if k != 'message-id'}
-
+            security_and_compliance_args = {k.replace('-', '_'): v for k, v in search_args.items() if k != 'message-id'}
             result, scheduled_command = security_and_compliance_delete_mail(args, **security_and_compliance_args)
+
         else:
             integrations_dict = {'Gmail': ('gmail-search', DeletionArgs.gmail, 'gmail-delete-mail'),
                                  'EWSO365': ('ews-search-mailbox', DeletionArgs.ews, 'ews-delete-items',
@@ -295,35 +297,35 @@ def main():
                                  'Agari Phishing Defense': (None, DeletionArgs.agari, 'apd-remediate-message'),
                                  'MicrosoftGraphMail': ('msgraph-mail-list-emails', DeletionArgs.msgraph,
                                                         'msgraph-mail-delete-email')}
-            delete_email(search_args, *integrations_dict[delete_from_brand])
-            result = 'Success'
+            result = delete_email(search_args, *integrations_dict[delete_from_brand])
 
     except MissingEmailException as e:
         result, deletion_failure_reason = was_email_already_deleted(search_args, e)
     except DeletionFailed as e:
-        result = 'Failed'
-        deletion_failure_reason = f'Failed deleting email: {str(e)}'
+        result, deletion_failure_reason = 'Failed', f'Failed deleting email: {str(e)}'
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute DeleteEmail. Error: {str(e)}')
-    # TODO: add fields population
 
     finally:
         search_args.update({'result': result, 'deletion_failure_reason': deletion_failure_reason})
         search_args = remove_empty_elements(replace_in_keys(search_args, '-', '_'))
-        command_results = CommandResults(
-            readable_output=tableToMarkdown(
-                'Deletion Results',
-                search_args,
-                headerTransform=string_to_table_header,
-            ),
-            outputs_prefix='DeleteReportedEmail',
-            outputs_key_field='message_id',
-            raw_response='',
-            outputs=search_args,
-            scheduled_command=scheduled_command
-            )
-        return_results(command_results)
+        demisto.executeCommand('setIncident',
+                               {'emaildeleteresult': result,
+                                "emaildeletereason": deletion_failure_reason})
+        return_results(
+            CommandResults(
+                readable_output=tableToMarkdown(
+                    'Deletion Results',
+                    search_args,
+                    headerTransform=string_to_table_header,
+                ),
+                outputs_prefix='DeleteReportedEmail',
+                outputs_key_field='message_id',
+                raw_response='',
+                outputs=search_args,
+                scheduled_command=scheduled_command,
+                ))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
