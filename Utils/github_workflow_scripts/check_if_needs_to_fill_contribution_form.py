@@ -40,7 +40,6 @@ def main():
 
     org_name = 'demisto'
     repo_name = 'content'
-    exit_status = 0
 
     github_client: Github = Github(github_token, verify=False)
     content_repo: Repository = github_client.get_repo(f'{org_name}/{repo_name}')
