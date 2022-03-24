@@ -22,14 +22,6 @@ args:
   required: false
   secret: false
   hidden: false
-- default: false
-  description: 'argument used for the generic polling flow within the security and compliance search.'
-  isArray: false
-  name: is_finished_searching
-  required: false
-  secret: false
-  hidden: false
-  defaultValue: false
 - auto: PREDEFINED
   default: false
   description: Use XSOAR built-in polling to retrieve the result when it's ready.
