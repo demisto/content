@@ -894,7 +894,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. |
 | MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. |
 | MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. |
-| MicrosoftATP.Alert.LastUpdateTime | Date | The first event time that triggered the alert on that machine. |
+| MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. |
 | MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved'. |
 | MicrosoftATP.Alert.MachineID | String | The machine ID that is associated with the alert. |
 | MicrosoftATP.Alert.ComputerDNSName | String | The machine DNS name. |
@@ -1035,7 +1035,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. | 
 | MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. | 
 | MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
 | MicrosoftATP.Alert.MachineID | String | The ID of the machine that is associated with the alert. | 
 | MicrosoftATP.Alert.ComputerDNSName | String | The DNS name of the machine. | 
@@ -1155,7 +1155,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. | 
 | MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. | 
 | MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
 | MicrosoftATP.Alert.MachineID | String | The machine ID that is associated with the alert. | 
 | MicrosoftATP.Alert.ComputerDNSName | String | The DNS name of the machine. | 
@@ -1244,8 +1244,8 @@ User.Read.All
 | MicrosoftATP.AlertUser.User.LeastPrevalentMachineID | String | The least prevalent machine ID. | 
 | MicrosoftATP.AlertUser.User.LogonTypes | String | The user logon types. | 
 | MicrosoftATP.AlertUser.User.LogonCount | Number | The user logon count. | 
-| MicrosoftATP.AlertUser.User.DomainAdmin | Number | Whether the user is the domain admin. | 
-| MicrosoftATP.AlertUser.User.NetworkUser | Number | Whether the user is the domain admin. | 
+| MicrosoftATP.AlertUser.User.DomainAdmin | Number | The domain admin. |
+| MicrosoftATP.AlertUser.User.NetworkUser | Number | The network admin. |
 | MicrosoftATP.AlertUser.AlertID | String | The ID of the alert. | 
 
 
@@ -2101,7 +2101,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.DomainAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. | 
 | MicrosoftATP.DomainAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.DomainAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.DomainAlert.Alerts.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.DomainAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. | 
 | MicrosoftATP.DomainAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
 | MicrosoftATP.DomainAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. | 
 | MicrosoftATP.DomainAlert.Alerts.ComputerDNSName | String | The machine DNS name. | 
@@ -2312,7 +2312,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.FileAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. | 
 | MicrosoftATP.FileAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.FileAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.FileAlert.Alerts.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.FileAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. | 
 | MicrosoftATP.FileAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
 | MicrosoftATP.FileAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. | 
 | MicrosoftATP.FileAlert.Alerts.ComputerDNSName | String | The DNS name of the machine. | 
@@ -2485,7 +2485,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.IPAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. | 
 | MicrosoftATP.IPAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.IPAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.IPAlert.Alerts.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.IPAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. | 
 | MicrosoftATP.IPAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
 | MicrosoftATP.IPAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. | 
 | MicrosoftATP.IPAlert.Alerts.ComputerDNSName | String | The DNS name of the machine. | 
@@ -2552,7 +2552,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.UserAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. | 
 | MicrosoftATP.UserAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.UserAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.UserAlert.Alerts.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.UserAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. | 
 | MicrosoftATP.UserAlert.Alerts.ResolvedTime | Date | The date and time when the status of the alert was changed to "Resolved". | 
 | MicrosoftATP.UserAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. | 
 | MicrosoftATP.UserAlert.Alerts.ComputerDNSName | String | The DNS name of the machine. | 
@@ -4481,7 +4481,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. | 
 | MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. | 
 | MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved'. | 
 | MicrosoftATP.Alert.MachineID | String | The machine ID that is associated with the alert. | 
 | MicrosoftATP.Alert.ComputerDNSName | String | The machine DNS name. | 
