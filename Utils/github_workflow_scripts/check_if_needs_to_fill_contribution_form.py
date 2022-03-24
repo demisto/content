@@ -67,6 +67,7 @@ def main():
         )
         exit_status = 1
 
+    print(f'{t.cyan} Contribution form was filled successfully for PR: {pr_number}')
     sys.exit(exit_status)
 
 
