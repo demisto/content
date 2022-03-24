@@ -132,14 +132,17 @@ def verify_labels(pr_label_names):
     """
     Verify that the external PR contains the following labels:
 
-    one of 'Community'/'Partner'/'Internal' labels
+    'Contribution Form Filled' and either one of 'Community'/'Partner'/'Internal' labels
 
     """
+    is_contribution_form_filled_label_exist = CONTRIBUTION_FORM_FILLED_LABEL in pr_label_names
     is_community_label_exist = COMMUNITY_LABEL in pr_label_names
     is_partner_label_exist = PARTNER_LABEL in pr_label_names
     is_internal_label_exist = INTERNAL_LABEL in pr_label_names
 
-    return is_community_label_exist ^ is_partner_label_exist ^ is_internal_label_exist
+    if is_contribution_form_filled_label_exist:
+        return is_community_label_exist ^ is_partner_label_exist ^ is_internal_label_exist
+    return False
 
 
 def main():
@@ -158,7 +161,15 @@ def main():
     pr: PullRequest = content_repo.get_pull(int(pr_number))
     pr_files = pr.get_files()
     t = Terminal()
+
     pr_label_names = [label.name for label in pr.labels]
+
+    if not verify_labels(pr_label_names=pr_label_names):
+        print(
+            f'{t.red}ERROR: PR labels {pr_label_names} must contain Contribution '
+            f'Form Filled label and one of Community/Partner/Internal labels'
+        )
+        sys.exit(1)
 
     for pack_name in get_pack_names_from_pr(pr_files):
         if pr_metadata_filename := get_metadata_filename_from_pr(pr_files, pack_name):
@@ -172,7 +183,7 @@ def main():
         elif support_type == XSOAR_SUPPORT:
             print(f'\n{pack_name} pack is XSOAR supported. Contribution form should not be filled for XSOAR supported '
                   f'contributions.')
-        elif CONTRIBUTION_FORM_FILLED_LABEL not in pr_label_names:
+        else:
             not_filled_packs.add(pack_name)
             print(f'{pack_name} pack is {support_type} supported.')
             exit_status = 1
@@ -184,12 +195,6 @@ def main():
     if not_filled_packs:
         print(f'\n{t.red}ERROR: Contribution form was not filled for PR: {pr_number}.\nMake sure to register your contribution'
               f' by filling the contribution registration form in - https://forms.gle/XDfxU4E61ZwEESSMA')
-
-    if not verify_labels(pr_label_names=pr_label_names):
-        print(
-            f'{t.red}ERROR: PR labels {pr_label_names} must contain one of Community/Partner/Internal labels'
-        )
-        exit_status = 1
 
     sys.exit(exit_status)
 
