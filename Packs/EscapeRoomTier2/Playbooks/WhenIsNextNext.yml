@@ -13,7 +13,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -34,13 +33,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 630f1d9e-2506-46b2-841a-5b173cb5de80
+    taskid: 5e643fe3-7694-42c6-8127-7f3c9b3eb60e
     type: condition
     task:
-      id: 630f1d9e-2506-46b2-841a-5b173cb5de80
+      id: 5e643fe3-7694-42c6-8127-7f3c9b3eb60e
       version: -1
       name: Are the answers correct?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
       type: condition
       iscommand: false
       brand: ""
@@ -56,7 +57,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: WhenIsNextNextAnswer
+              simple: WhenIsNextNext.Answer
             iscontext: true
     view: |-
       {
@@ -119,7 +120,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -149,7 +149,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -167,10 +166,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 05beb823-eca1-443a-8f10-b1c1a644cdb5
+    taskid: 5cc1d48b-6e97-4896-8bcc-5318ed00fcfa
     type: regular
     task:
-      id: 05beb823-eca1-443a-8f10-b1c1a644cdb5
+      id: 5cc1d48b-6e97-4896-8bcc-5318ed00fcfa
       version: -1
       name: when-is-next-next
       description: run to find hints
@@ -183,7 +182,7 @@ tasks:
       - "2"
     scriptarguments:
       answer:
-        simple: ${input.value}
+        simple: ${inputs.value}
     separatecontext: false
     view: |-
       {
@@ -196,9 +195,11 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
+locked: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -217,12 +218,8 @@ inputs:
     simple: ${WhenIsNextNext}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: NextNext
   description: Whether answers are correct or not.
   type: string
-tests:
-- No tests (auto formatted)
-fromversion: 6.0.0
-description: ''

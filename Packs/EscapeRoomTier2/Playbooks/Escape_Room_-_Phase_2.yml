@@ -13,7 +13,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -22,49 +21,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 3e300ca9-51f0-4acf-854b-b87862d9de8e
-    type: playbook
-    task:
-      id: 3e300ca9-51f0-4acf-854b-b87862d9de8e
-      version: -1
-      name: CheckLogin
-      playbookName: CheckLogin
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: true
-    loop:
-      iscommand: false
-      builtincondition:
-      - - operator: isExists
-          left:
-            value:
-              simple: MrBurns.Present
-            iscontext: true
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
+          "y": 65
         }
       }
     note: false
@@ -109,7 +66,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 575
         }
       }
     note: false
@@ -119,19 +76,128 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: e63f27af-448c-42b8-871a-3e59b34a11df
+  "4":
+    id: "4"
+    taskid: 7e8749ba-2fda-45f3-8216-d6050aae9bac
+    type: regular
+    task:
+      id: 7e8749ba-2fda-45f3-8216-d6050aae9bac
+      version: -1
+      name: Print instructions
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      value:
+        simple: 'I got this info from a customer and I don''t know what to do with
+          it: dHlwZTpQb3dlclNoZWxsIC10YWdzOmluZnJhLEpTT04='
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c3af41d9-7659-4f4a-8da7-53aed1d11f26
+    type: regular
+    task:
+      id: c3af41d9-7659-4f4a-8da7-53aed1d11f26
+      version: -1
+      name: Print instructions
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: In the next task, you need to push your answer to the Context Data
+          under the key WhenIsNextNext and mark the task as completed in order to
+          check whether your answer is correct. The date format is YYYY-MM-DDThh:mm
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 844291ec-4146-46fd-8a85-827ea1027db4
+    type: regular
+    task:
+      id: 844291ec-4146-46fd-8a85-827ea1027db4
+      version: -1
+      name: Print instructions
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      value:
+        simple: In the next task, you need to push your answer to the Context Data
+          under the key WhoAmI and mark the task as completed in order to check whether
+          your answer is correct
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e49d7133-0159-4d86-8af0-cb5d2a405ad5
     type: playbook
     task:
-      id: e63f27af-448c-42b8-871a-3e59b34a11df
+      id: e49d7133-0159-4d86-8af0-cb5d2a405ad5
       version: -1
       name: WhoAmI
       playbookName: WhoAmI
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+    scriptarguments:
+      value:
+        simple: ${WhoAmI}
     separatecontext: true
     loop:
       iscommand: false
@@ -146,12 +212,12 @@ tasks:
               simple: Wow
       exitCondition: ""
       wait: 1
-      max: 100
+      max: 0
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 925
         }
       }
     note: false
@@ -161,123 +227,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: ea9400ef-ce1a-42e3-8c45-24e8e5aa90ff
-    type: regular
-    task:
-      id: ea9400ef-ce1a-42e3-8c45-24e8e5aa90ff
-      version: -1
-      name: Print instructions
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      value:
-        simple: In the next task, you need to mark the task as completed in order to check whether your answer is correct
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: dad986b1-1126-4ad8-8ef4-ca146a4752f4
-    type: regular
-    task:
-      id: dad986b1-1126-4ad8-8ef4-ca146a4752f4
-      version: -1
-      name: Print instructions
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      value:
-        simple: In the next task, you need to push your answer to the Context Data under the key WhenIsNextNext and mark the task as completed in order to check whether your answer is correct. The date format is YYYY-MM-DDThh:mm
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 200982d1-1134-4ac0-890e-5e6e02159932
-    type: regular
-    task:
-      id: 200982d1-1134-4ac0-890e-5e6e02159932
-      version: -1
-      name: Print instructions
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      value:
-        simple: In the next task, you need to push your answer to the Context Data under the key WhoAmI and mark the task as completed in order to check whether your answer is correct
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+system: true
+locked: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
+        "height": 955,
         "width": 380,
         "x": 50,
-        "y": 50
+        "y": 65
       }
     }
   }
 inputs: []
 outputs: []
-tests:
-- No tests (auto formatted)
-fromversion: 6.0.0
-description: ''
+quiet: true
