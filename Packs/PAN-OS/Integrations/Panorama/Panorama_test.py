@@ -1,7 +1,11 @@
 import json
 
 import pytest
-
+import xml.etree.ElementTree as ElementTree
+from unittest.mock import patch, MagicMock
+from panos.device import Vsys
+from panos.panorama import Panorama, DeviceGroup, Template
+from panos.firewall import Firewall
 import demistomock as demisto
 from CommonServerPython import DemistoException
 
@@ -1022,3 +1026,343 @@ class TestDevices:
             requests_mock.get(Panorama.URL, text=data_file.read())
         Panorama.VSYS = None  # this a Panorama instance
         assert list(Panorama.devices()) == [('target1', 'vsys1'), ('target1', 'vsys2'), ('target2', None)]
+
+
+def load_xml_root_from_test_file(xml_file: str) -> ElementTree.Element:
+    """Given an XML file, loads it and returns the root element"""
+    xml_tree = ElementTree.parse(xml_file)
+    return xml_tree.getroot()
+
+
+MOCK_PANORAMA_SERIAL = "111222334455"
+MOCK_FIREWALL_1_SERIAL = "111111111111111"
+MOCK_FIREWALL_2_SERIAL = "222222222222222"
+MOCK_FIREWALL_3_SERIAL = "333333333333333"
+
+
+@pytest.fixture
+def mock_firewall():
+    mock_firewall = MagicMock(spec=Firewall)
+    mock_firewall.serial = MOCK_FIREWALL_1_SERIAL
+    mock_firewall.hostname = None
+
+    return mock_firewall
+
+
+@pytest.fixture
+def mock_panorama():
+    mock_panorama = MagicMock(spec=Panorama)
+    mock_panorama.serial = MOCK_PANORAMA_SERIAL
+    mock_panorama.hostname = None
+    return mock_panorama
+
+
+def mock_device_groups():
+    mock_device_group = MagicMock(spec=DeviceGroup)
+    mock_device_group.name = "test-dg"
+    return [mock_device_group]
+
+
+def mock_templates():
+    mock_template = MagicMock(spec=Template)
+    mock_template.name = "test-template"
+    return [mock_template]
+
+
+def mock_vsys():
+    mock_vsys = MagicMock(spec=Vsys)
+    mock_vsys.name = "vsys1"
+    return [mock_vsys]
+
+
+@pytest.fixture
+def mock_topology(mock_panorama, mock_firewall):
+    from Panorama import Topology
+    topology = Topology()
+    topology.panorama_objects = {
+        MOCK_PANORAMA_SERIAL: mock_panorama,
+    }
+    topology.firewall_objects = {
+        MOCK_FIREWALL_1_SERIAL: mock_firewall
+    }
+    topology.ha_active_devices = {
+        MOCK_PANORAMA_SERIAL: mock_panorama,
+        MOCK_FIREWALL_1_SERIAL: mock_firewall
+    }
+    return topology
+
+
+class TestTopology:
+    """Tests the Topology class and all of it's methods"""
+    SHOW_HA_STATE_ENABLED_XML = "test_data/show_ha_state_enabled.xml"
+    SHOW_HA_STATE_DISABLED_XML = "test_data/show_ha_state_disabled.xml"
+    SHOW_DEVICES_ALL_XML = "test_data/panorama_show_devices_all.xml"
+
+    @patch("Panorama.Topology.get_all_child_firewalls")
+    @patch("Panorama.run_op_command")
+    def test_add_firewall_device_object(self, patched_run_op_command, _, mock_firewall):
+        """
+        Given the XML output of show ha state and a firewall object, test it is correctly added to the topology.
+        """
+        from Panorama import Topology
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_HA_STATE_DISABLED_XML)
+        topology = Topology()
+        topology.add_device_object(mock_firewall)
+
+        assert MOCK_FIREWALL_1_SERIAL in topology.firewall_objects
+
+    @patch("Panorama.Topology.get_all_child_firewalls")
+    @patch("Panorama.run_op_command")
+    def test_add_panorama_device_object(self, patched_run_op_command, _, mock_panorama):
+        """
+        Given the output of show_ha_state with no entries, assert that the Panorama device has been added to the topolog
+        as a panorama type device.
+        """
+        from Panorama import Topology
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_HA_STATE_DISABLED_XML)
+        topology = Topology()
+        topology.add_device_object(mock_panorama)
+
+        assert MOCK_PANORAMA_SERIAL in topology.panorama_objects
+        assert MOCK_PANORAMA_SERIAL in topology.ha_active_devices
+        assert MOCK_PANORAMA_SERIAL not in topology.firewall_objects
+
+    @patch("Panorama.run_op_command")
+    def test_get_all_child_firewalls(self, patched_run_op_command, mock_panorama):
+        """
+        Given the output of show devices all, assert that all the devices are added correctly to the topology with the correct
+        HA State information.
+        """
+        from Panorama import Topology
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_DEVICES_ALL_XML)
+        topology = Topology()
+
+        topology.get_all_child_firewalls(mock_panorama)
+        # 222... firewall should be Active, with 111... as it's peer
+        assert MOCK_FIREWALL_2_SERIAL in topology.ha_active_devices
+        assert topology.ha_active_devices.get(MOCK_FIREWALL_2_SERIAL) == MOCK_FIREWALL_1_SERIAL
+
+        # 333... is standalone
+        assert MOCK_FIREWALL_3_SERIAL in topology.ha_active_devices
+        assert topology.ha_active_devices.get(MOCK_FIREWALL_3_SERIAL) == "STANDALONE"
+
+    @patch("Panorama.run_op_command")
+    def test_get_active_devices(self, patched_run_op_command, mock_panorama):
+        """
+        Given a topology with a mixture of active and passive devices, assert that active_devices() returns the correct lists
+        of objects.
+        """
+        from Panorama import Topology
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_DEVICES_ALL_XML)
+        topology = Topology()
+        topology.add_device_object(mock_panorama)
+
+        result_list = list(topology.active_devices())
+        # Should be 3; panorama, one active firewall in a pair, and one stanadlone firewall (from panorama_show_devices_all.xml)
+        assert len(result_list) == 3
+
+        # Same as above by try filtering by serial number
+        result_list = list(topology.active_devices(filter_str=MOCK_FIREWALL_3_SERIAL))
+        assert len(result_list) == 1
+
+        # Now try just getting the "top level" devices - should only return Panorama
+        result_list = list(topology.active_top_level_devices())
+        assert len(result_list) == 1
+        assert isinstance(result_list[0], Panorama)
+
+    @patch("Panorama.Template.refreshall", return_value=mock_templates())
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_get_containers(self, _, __, ___, mock_panorama):
+        """
+        Given a list of device groups, vsys and templates, and a device, assert that get_all_object_containers() correctly returns
+        the specified containers.
+        """
+        from Panorama import Topology
+        topology = Topology()
+        topology.add_device_object(mock_panorama)
+        result = topology.get_all_object_containers()
+
+        # Because it's panorama, should be; [shared, device-group, template]
+        assert len(result) == 3
+
+
+class TestUtilityFunctions:
+    """Tests all the utility fucntions like dataclass_to_dict, etc"""
+    SHOW_JOBS_ALL_XML = "test_data/show_jobs_all.xml"
+
+    def test_dataclass_from_dict(self, mock_panorama):
+        """Given a dictionary and dataclass type, assert that it is correctly converted into the dataclass."""
+        from Panorama import dataclass_from_dict, CommitStatus
+        example_dict = {
+            "job-id": "10",
+            "commit-type": "whatever",
+            "status": "OK",
+            "device-type": "firewall"
+        }
+
+        mock_panorama.hostname = None
+        result_dataclass: CommitStatus = dataclass_from_dict(mock_panorama, example_dict, CommitStatus)
+        assert result_dataclass.job_id
+        assert result_dataclass.commit_type
+        assert result_dataclass.status
+        assert result_dataclass.device_type
+        # With no hostname, hostid should be the serial number of the device
+        assert result_dataclass.hostid == MOCK_PANORAMA_SERIAL
+
+        mock_panorama.hostname = "test"
+        mock_panorama.serial = None
+        result_dataclass: CommitStatus = dataclass_from_dict(mock_panorama, example_dict, CommitStatus)
+        # With a hostname and no serial, hostid shold be the hostname
+        assert result_dataclass.hostid == "test"
+
+    def test_flatten_xml_to_dict(self):
+        """Given an XML element, assert that it is converted into a flat dictionary."""
+        from Panorama import flatten_xml_to_dict, ShowJobsAllResultData
+
+        xml_element = load_xml_root_from_test_file(TestUtilityFunctions.SHOW_JOBS_ALL_XML)
+        result_element = xml_element.find("./result/job")
+        result = flatten_xml_to_dict(result_element, {}, ShowJobsAllResultData)
+        assert "type" in result
+
+    def test_resolve_host_id(self, mock_panorama):
+        """Given a device object, test the hostid, the unique ID of the device from the perspective of the new commands,
+        can always be resolved as either the hostname or serial number. Pan-os-python will populate only one of these, depending
+        on how the device has been connected."""
+        from Panorama import resolve_host_id
+        mock_panorama.hostname = None
+        result = resolve_host_id(mock_panorama)
+
+        assert result == MOCK_PANORAMA_SERIAL
+
+        mock_panorama.hostname = "test"
+        mock_panorama.serial = None
+        result = resolve_host_id(mock_panorama)
+
+        assert result == "test"
+
+    def test_resolve_container_name(self, mock_panorama):
+        """Same as hostid but resolve it for a container, like a device group or template. This will always return the name
+        attribute unless it's a device itself, which is the case for shared objects."""
+        from Panorama import resolve_container_name
+        # Test the "shared" container
+        assert resolve_container_name(mock_panorama) == "shared"
+
+        device_group = mock_device_groups()[0]
+        assert resolve_container_name(device_group) == "test-dg"
+
+
+class TestPanoramaCommand:
+    """
+    Test all the commands relevant to Panorama
+    All of these commands use the real XML in test_data to ensure it is parsed and converted to dataclasses correctly.
+    """
+
+    SHOW_DEVICEGROUPS_XML = "test_data/show_device_groups.xml"
+    SHOW_TEMPLATESTACK_XML = "test_data/show_template_stack.xml"
+
+    @patch("Panorama.run_op_command")
+    def test_get_device_groups(self, patched_run_op_command, mock_topology):
+        """Given the output XML for show device groups, assert it is parsed into the dataclasses correctly."""
+        from Panorama import PanoramaCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestPanoramaCommand.SHOW_DEVICEGROUPS_XML)
+
+        result = PanoramaCommand.get_device_groups(mock_topology)
+        assert len(result) == 2
+        assert result[0].name
+        assert result[0].hostid
+        assert result[0].connected
+        assert result[0].serial
+        assert result[0].last_commit_all_state_sp
+
+    @patch("Panorama.run_op_command")
+    def test_get_template_stacks(self, patched_run_op_command, mock_topology):
+        """Given the output XML for show template-stacks, assert it is parsed into the dataclasses correctly."""
+        from Panorama import PanoramaCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestPanoramaCommand.SHOW_TEMPLATESTACK_XML)
+        result = PanoramaCommand.get_template_stacks(mock_topology)
+        assert len(result) == 2
+        assert result[0].name
+        assert result[0].hostid
+        assert result[0].connected
+        assert result[0].serial
+        assert result[0].last_commit_all_state_tpl
+
+
+class TestUniversalCommand:
+    """Test all the commands relevant to both Panorama and Firewall devices"""
+    SHOW_SYSTEM_INFO_XML = "test_data/show_system_info.xml"
+
+    @patch("Panorama.run_op_command")
+    def test_get_system_info(self, patched_run_op_command, mock_topology):
+        """Given the output XML for show system info, assert it is parsed into the dataclasses correctly."""
+        from Panorama import UniversalCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_SYSTEM_INFO_XML)
+
+        result = UniversalCommand.get_system_info(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result.result_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+
+class TestFirewallCommand:
+    """Test all the commands relevant only to Firewall instances"""
+
+    SHOW_ARP_XML = "test_data/show_arp_all.xml"
+    SHOW_ROUTING_SUMMARY_XML = "test_data/show_routing_summary.xml"
+    SHOW_ROUTING_ROUTE_XML = "test_data/show_routing_route.xml"
+
+    @patch("Panorama.run_op_command")
+    def test_get_arp_table(self, patched_run_op_command, mock_topology):
+        """Given the output XML for show arp, assert it is parsed into the dataclasses correctly."""
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_ARP_XML)
+        result = FirewallCommand.get_arp_table(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result.result_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+    @patch("Panorama.run_op_command")
+    def test_get_routing_summary(self, patched_run_op_command, mock_topology):
+        """Given the output XML for show route summary, assert it is parsed into the dataclasses correctly."""
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_ROUTING_SUMMARY_XML)
+        result = FirewallCommand.get_routing_summary(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result.result_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+    @patch("Panorama.run_op_command")
+    def test_get_routes(self, patched_run_op_command, mock_topology):
+        """Given the output XML for show route, assert it is parsed into the dataclasses correctly."""
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_ROUTING_ROUTE_XML)
+        result = FirewallCommand.get_routes(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result.result_data:
+            for value in result_dataclass.__dict__.values():
+                # Attribute may be int 0
+                assert value is not None
+
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
