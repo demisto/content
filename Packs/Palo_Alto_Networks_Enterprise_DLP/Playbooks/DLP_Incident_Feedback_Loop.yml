@@ -707,10 +707,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 470a4f79-e313-4629-8b3b-e36fb52d3f16
+    taskid: 415619a7-63e4-4ac4-84ad-04765eedcb43
     type: regular
     task:
-      id: 470a4f79-e313-4629-8b3b-e36fb52d3f16
+      id: 415619a7-63e4-4ac4-84ad-04765eedcb43
       version: -1
       name: Send notice about exemption
       description: Sends a message to a user, group, or channel.
@@ -725,7 +725,7 @@ tasks:
       blocks:
         simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\":
           \"mrkdwn\",\n\t\t\t\t\"text\": \"Thank you for the request. Your temporary
-          exemption for ${incident.filename} is enabled now for ${IncidentUpdate.exemption_duration.[0]}
+          exemption for ${incident.filename} is enabled now for ${Exemption.duration}
           hours. Please try again.\"\n\t\t\t}\n\t\t}\n\t]"
       to:
         simple: ${Slack.User.Email}

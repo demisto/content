@@ -174,12 +174,16 @@ class Client(BaseClient):
         return resp
 
     def update_dlp_incident(self, incident_id: str, feedback: FeedbackStatus, user_id: str, region: str,
-                            report_id: str, dlp_channel: int):
+                            report_id: str, dlp_channel: str):
         """
                 Update Incident with user provided feedback
                 Args:
                     incident_id: The id of the incident to update
                     feedback: 'business_justified', 'true_positive' or 'false_positive'
+                    user_id: The user that initiated the request
+                    region: The DLP region
+                    report_id: The report ID for the incident
+                    dlp_channel: The DLP channel (service name)
 
                 Returns: DLP Incident json
                 """
@@ -311,7 +315,7 @@ def print_debug_msg(msg: str):
 
 
 def update_incident(client: Client, incident_id: str, feedback: str, user_id: str, region: str,
-                    report_id: str, dlp_channel: int):
+                    report_id: str, dlp_channel: str):
     feedback_enum = FeedbackStatus[feedback.upper()]
     result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region, report_id, dlp_channel)
 
@@ -321,12 +325,16 @@ def update_incident(client: Client, incident_id: str, feedback: str, user_id: st
     }
     if feedback_enum == FeedbackStatus.EXCEPTION_GRANTED:
         minutes = result_json['expiration_duration_in_minutes']
-        output['exemption_duration'] = minutes/60
-
-    result = CommandResults(
-        outputs_prefix="IncidentUpdate",
-        outputs_key_field='feedback',
-        outputs=output)
+        output['duration'] = minutes/60
+        result = CommandResults(
+            outputs_prefix="Exemption",
+            outputs_key_field='duration',
+            outputs=output)
+    else:
+        result = CommandResults(
+            outputs_prefix="IncidentUpdate",
+            outputs_key_field='feedback',
+            outputs=output)
     demisto.results(result.to_context())
 
 

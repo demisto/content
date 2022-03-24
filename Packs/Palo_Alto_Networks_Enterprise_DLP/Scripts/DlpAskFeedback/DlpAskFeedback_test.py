@@ -90,7 +90,7 @@ def test_slack_ask_user(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
-        'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
+        'user_id': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
         'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse', 'using-brand': 'SlackV3'
     })
     mocker.patch.object(demisto, 'results')

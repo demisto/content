@@ -9,8 +9,8 @@ def test_update_incident(requests_mock):
     user_id = 'someone@somewhere.com'
     requests_mock.post(f'{DLP_URL}/public/incident-feedback/{incident_id}?feedback_type=CONFIRMED_SENSITIVE&region=us')
     client = Client(DLP_URL, "", "", False, None)
-    result, status = client.update_dlp_incident(incident_id, FeedbackStatus.CONFIRMED_SENSITIVE, user_id, 'us')
+    result, status = client.update_dlp_incident(incident_id, FeedbackStatus.CONFIRMED_SENSITIVE, user_id, 'us', 'A12345', 'ngfw')
     request = requests_mock.last_request
     assert status == 200
     assert result == {}
-    assert request.text == json.dumps({"user_id": user_id})
+    assert request.text == json.dumps({"user_id": user_id, "report_id": "A12345", "service_name": 'ngfw'})
