@@ -13,7 +13,6 @@ source $BASH_ENV
 
 demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "$MEM_CHECK" --is-ami $IS_AMI_RUN -d "$1" --xsiam-machine "$XSIAM_CHOSEN_MACHINE_ID" --xsiam-servers-path $XSIAM_SERVERS_PATH --server-type "$SERVER_TYPE" --use-retries
 
-
 #if [ -z "$XSIAM_CHOSEN_MACHINE_ID" ]
 #then
 #      demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "$MEM_CHECK" --is-ami $IS_AMI_RUN -d "$1" --server-type "$SERVER_TYPE"
