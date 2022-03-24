@@ -38,7 +38,7 @@ This phase will execute the following containment actions:
 
 ### Create a new playbook trigger
 
-1. Click on the **Incident Response** icon on the left menu ![img.png](img.png)
+1. Click on the **Incident Response** icon on the left menu.
 2. Under **Automation** click on **Incident Configuration**.
 3. Select **Playbook Triggers** on the left panel.
 4. Click on **New Trigger**.
