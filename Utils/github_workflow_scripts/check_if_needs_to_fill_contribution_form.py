@@ -54,7 +54,7 @@ def main():
     is_partner_label_exist = PARTNER_LABEL in pr_label_names
     is_internal_label_exist = INTERNAL_LABEL in pr_label_names
 
-    print(f'{t.cyan}Check that Contribution Form Filled label exist in PR {pr_number}')
+    print(f'{t.cyan}Check that {CONTRIBUTION_FORM_FILLED_LABEL} label exist in PR {pr_number}')
     if not is_contribution_form_filled_label_exist:
         print(
             f'\n{t.red}ERROR: Contribution form was not filled for PR: {pr_number}.\nMake sure to register your'
@@ -65,7 +65,8 @@ def main():
     print(f'{t.cyan}Check that one of Community/Partner/Internal labels exist in PR {pr_number}')
     if not (is_community_label_exist ^ is_partner_label_exist ^ is_internal_label_exist):
         print(
-            f'{t.red}ERROR: PR labels {pr_label_names} must contain one of Community/Partner/Internal labels'
+            f'{t.red}ERROR: PR labels {pr_label_names} '
+            f'must contain one of {COMMUNITY_LABEL}/{PARTNER_LABEL}/{INTERNAL_LABEL} labels'
         )
         exit_status = 1
 
