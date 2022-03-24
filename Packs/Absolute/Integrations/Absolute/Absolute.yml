@@ -524,7 +524,6 @@ script:
     - contextPath: Absolute.DeviceUnenroll.ESN
       description: The unique Electronic SerialNumber (ESN) that is assigned to the agent installed on the device.
       type: String
-
   isfetch: false
   runonce: false
   script: '-'

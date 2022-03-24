@@ -56,10 +56,6 @@ class Client(BaseClient):
         self._headers = headers
         self._x_abs_date = x_abs_date
 
-    def validate_absolute_api_url(self):
-        if self._base_url not in ABSOLUTE_URL_TO_API_URL.keys():
-            DemistoException(f"{INTEGRATION} Error: The Absolute server url {self._base_url} in not a valid url.")
-
     def prepare_request_for_api(self, method: str, canonical_uri: str, query_string: str, payload: str):
         """
         The Absolute v2 API requires following 5 steps in order to properly authorize the API request.
@@ -105,10 +101,7 @@ class Client(BaseClient):
         """
         if not query_string:
             return ""
-        query_list = query_string.split()
-        query_list.sort()
-        encoded_query_list = [urllib.parse.quote(query.encode('utf-8'), safe='=&') for query in query_list]
-        return '&'.join(encoded_query_list)
+        return urllib.parse.quote(query_string, safe='=&')
 
     def prepare_canonical_headers(self) -> str:
         """
@@ -226,11 +219,13 @@ class Client(BaseClient):
             body (str): The body to set.
             success_status_code (int): an HTTP status code of success
         """
+        demisto.debug(f'current request is: method={method}, url suffix={url_suffix}, body={body}')
+        full_url = urljoin(self._base_url, url_suffix)
+
         if success_status_code is None:
             success_status_code = [200]
-        demisto.debug(f'current request is: method={method}, url suffix={url_suffix}, body={body}')
+
         self.prepare_request_for_api(method=method, canonical_uri=url_suffix, query_string='', payload=body)
-        full_url = urljoin(self._base_url, url_suffix)
 
         if method == 'GET':
             return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers)
@@ -251,36 +246,17 @@ class Client(BaseClient):
             return res.json()
 
 
-''' COMMAND FUNCTIONS '''
-
-
 def sign(key, msg):
     return hmac.new(key, msg.encode('utf-8'), hashlib.sha256).digest()
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    message: str = ''
+    """Tests API connectivity to Absolute """
     try:
-        client.validate_absolute_api_url()
-
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
+        client.api_request_absolute('GET', '/v2/device-freeze/messages', success_status_code=(200, 204))
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
@@ -553,8 +529,26 @@ def device_unenroll_command(args, client) -> CommandResults:
     res = client.api_request_absolute('POST', '/v2/device-unenrollment/unenroll', body=json.dumps(payload))
     outputs = parse_device_unenroll_response(res)
     human_readable = tableToMarkdown(f'{INTEGRATION}: unenroll devices:', outputs, removeNull=True)
+    return CommandResults(outputs_prefix='Absolute.DeviceUnenroll', outputs=outputs, readable_output=human_readable,
+                          raw_response=res)
+
+
+def get_device_application_list_command(args, client) -> CommandResults:
+    device_ids = argToList(args.get('device_ids'))
+
+    res = client.api_request_absolute('GET', '/v2/sw/deviceapplications')
+    outputs = parse_device_unenroll_response(res)
+    human_readable = tableToMarkdown(f'{INTEGRATION}: unenroll devices:', outputs, removeNull=True)
     return CommandResults(outputs_prefix='Absolute.DeviceUnenroll', outputs=outputs, outputs_key_field='DeviceUid',
                           readable_output=human_readable, raw_response=res)
+
+
+def validate_absolute_api_url(base_url):
+    if base_url not in ABSOLUTE_URL_TO_API_URL.keys():
+        raise_error_on_missing_args(
+            f"The Absolute server url {base_url} in not a valid url. "
+            f"Possible options: {list(ABSOLUTE_URL_TO_API_URL.keys())}")
+    return ABSOLUTE_URL_TO_API_URL[base_url]
 
 
 ''' MAIN FUNCTION '''
@@ -562,14 +556,14 @@ def device_unenroll_command(args, client) -> CommandResults:
 
 def main() -> None:
     params = demisto.params()
-    base_url = ABSOLUTE_URL_TO_API_URL[params.get('url')]
-    token_id = params.get('token')
-    secret_key = params.get('secret_key', {}).get('password')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
     try:
+        base_url = validate_absolute_api_url(params.get('url'))
+        token_id = params.get('token')
+        secret_key = params.get('secret_key', {}).get('password')
+        verify_certificate = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
+
+        demisto.debug(f'Command being called is {demisto.command()}')
         host = base_url.split('https://')[-1]
         x_abs_date = datetime.utcnow().strftime(DATE_FORMAT)
         headers: Dict = {"host": host, "content-type": "application/json", "x-abs-date": x_abs_date}
@@ -585,9 +579,7 @@ def main() -> None:
         )
         args = demisto.args()
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            return_results(test_module(client))
 
         elif demisto.command() == 'absolute-custom-device-field-list':
             return_results(get_custom_device_field_list_command(args=args, client=client))
@@ -618,6 +610,9 @@ def main() -> None:
 
         elif demisto.command() == 'absolute-device-unenroll':
             return_results(device_unenroll_command(args=args, client=client))
+
+        elif demisto.command() == 'absolute-device-application-list':
+            return_results(get_device_application_list_command(args=args, client=client))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
