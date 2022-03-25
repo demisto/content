@@ -150,7 +150,7 @@ def get_concat_logo_single_image(logo_list):
     width_new, height_new = 300, 300
     images = [Image.open(io.BytesIO(image_bytes)) for image_bytes in logo_list]
     total_number_of_images = len(images)
-    total_width = (number_of_image_per_row) * width_new
+    total_width = number_of_image_per_row * width_new
     max_height = (total_number_of_images // number_of_image_per_row + 1) * height_new
     new_im = Image.new('RGB', (total_width, max_height))
     number_image_x = 0
