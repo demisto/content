@@ -8,7 +8,6 @@ import requests
 from CommonServerPython import *  # noqa: F401
 
 requests.packages.urllib3.disable_warnings()
-
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 apiVersion = "v1"
 '''GLOBALS/PARAMS'''
@@ -79,7 +78,7 @@ def get_log_list(base_url, username, password):
     return_results(results)
 
 
-def fetch_incidents(base_url, username, password, last_run: Dict[str, int], first_fetch_time: Optional[int]):
+def fetch_incidents(base_url, username, password, last_run: Dict[str, int], first_fetch_time: Optional[int]) -> Tuple[Dict[str, int], List[dict]]:
     
     access_token, refresh_token, headers1 = login(base_url, username, password)
     log_list = loglist(base_url, access_token, refresh_token, headers1)
@@ -122,6 +121,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int], firs
     })
     remove_url = base_url + '/napi/api/v1/apikey/remove'
     requests.request("POST", remove_url, headers=headers1, data=logout, verify=verify_certificate)
+    next_run = {'last_fetch': now_time}
     return next_run, incidents
 
 
