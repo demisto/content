@@ -1614,10 +1614,15 @@ def fetchfile_progress():
 
 def download_fetchfile_command():
     batch_id = demisto.getArg('batchID')
-    demisto.log('Downloading the file: {}'.format(batch_id))
+    demisto.log('Downloading the file with this Batch ID: {}'.format(batch_id))
     response = download_fetchfile(batch_id)
-    file_download = fileResult('donwload.zip',response.content)
-    demisto.results(file_download)
+    if response.status_code == 200:
+        file_download = fileResult('download.zip', response.content)
+        demisto.results(file_download)
+    elif response.status_code == 500:
+        demisto.results('The given Batch ID has expired')
+    else:
+        demisto.results('Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(response.status_code))
 
 
 def download_fetchfile(batch_id):
