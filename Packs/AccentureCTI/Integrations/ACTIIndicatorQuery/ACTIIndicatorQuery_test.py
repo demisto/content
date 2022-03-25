@@ -1,5 +1,5 @@
 import requests_mock
-from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score                             # noqa: E501
+from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown                          # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import *
 import demistomock as demisto
@@ -38,7 +38,7 @@ def test_ip_command():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report'                                 # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                     # noqa: E501
     status_code = 200
     json_data = IP_RES_JSON
     intel_json_data = IP_INTEL_JSON
@@ -79,7 +79,7 @@ def test_ip_command_when_api_key_not_authorised_for_document_search():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report'                                                        # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                        # noqa: E501
 
     status_code = 200
     error_status_code = 403
@@ -124,7 +124,7 @@ def test_domain_command():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/domain?key.values=mydomain.com'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'                                            # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                            # noqa: E501
 
     status_code = 200
     json_data = DOMAIN_RES_JSON
@@ -165,7 +165,7 @@ def test_domain_command_when_api_key_not_authorized_for_document_search():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/domain?key.values=mydomain.com'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'                                                                                # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                # noqa: E501
 
     status_code = 200
     error_status_code = 403
@@ -243,7 +243,7 @@ def test_uuid_command():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'                                                           # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                           # noqa: E501
 
     status_code = 200
     json_data = UUID_RES_JSON
@@ -284,7 +284,7 @@ def test_uuid_command_when_api_key_not_authorized_for_document_search():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'                                                                                                  # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                                  # noqa: E501
 
     status_code = 200
     error_status_code = 403
@@ -403,7 +403,7 @@ def test_url_command():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report'                                                             # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                             # noqa: E501
     status_code = 200
     json_data = URL_RES_JSON
     intel_json_data = URL_INTEL_JSON
@@ -443,7 +443,7 @@ def test_url_command_when_api_key_not_authorized_for_document_search():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report'                                                                                             # noqa: E501
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                             # noqa: E501
 
     status_code = 200
     error_status_code = 403
@@ -494,3 +494,96 @@ def test_calculate_dbot_score():
     assert _calculate_dbot_score(5) == 3
     assert _calculate_dbot_score(6) == 3
     assert _calculate_dbot_score(7) == 3
+
+
+def test_fix_markdown():
+    text_to_update = "##Key Findings and Judgements\n\n* The sophisticated [cyber espionage operation](/#/node/intelligence"\
+        "_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4) was selective; it used supply-chain attack techniques,"\
+        " mainly a malicious update of a widely used product from IT monitoring firm SolarWinds,"\
+        " but its final target list appears to number only in the hundreds. Known targets include public-"\
+        " and private-sector entities, mostly in the US, including IT vendors, US government entities, and think"\
+        " tanks (#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4)."
+    expected_output = "## Key Findings and Judgements\n\n* The sophisticated [cyber espionage operation](https://intelgraph."\
+        "idefense.com/#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4) was selective; it"\
+        " used supply-chain attack techniques, mainly a malicious update of a widely used product from IT "\
+        "monitoring firm SolarWinds, but its final target list appears to number only in the hundreds. Known "\
+        "targets include public- and private-sector entities, mostly in the US, including IT vendors, US "\
+        "government entities, and think tanks (https://intelgraph.idefense.com/#/node/intelligence_alert"\
+        "/view/a655306d-bd95-426d-8c93-ebeef57406e4)."
+    output = fix_markdown(text_to_update)
+    assert expected_output == output
+
+
+def test_getThreatReport_ia_command():
+    """
+    Given:
+        - an URL
+
+    When:
+        - running ThreatReport command and fetch IA/IR
+
+    Then:
+        - return command results containing UUID, dbotscore
+
+    """
+    url = 'https://test.com/rest/document/v0/a487dfdc-08b4-4909-82ea-2d934c27d901'
+    status_code = 200
+    json_res = RES_JSON_IA
+
+    expected_output = expected_output_ia
+
+    uuid_to_check = {'uuid': 'a487dfdc-08b4-4909-82ea-2d934c27d901'}
+
+    with requests_mock.Mocker() as m:
+        m.get(url, status_code=status_code, json=json_res)
+        doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
+        results = getThreatReport_command(doc_search_client, uuid_to_check, DBotScoreReliability.B)
+        output = results.to_context().get('EntryContext', {})
+        assert output.get('IAIR(val.value && val.value == obj.value)', []) == expected_output.get('IA')
+        assert output.get(DBOT_KEY, []) == expected_output.get('DBot')
+
+
+def test_getThreatReport_ir_command():
+    """
+    Given:
+        - an URL
+
+    When:
+        - running ThreatReport command and fetch IA/IR
+
+    Then:
+        - return command results containing UUID, dbotscore
+
+    """
+    url = 'https://test.com/rest/document/v0/bdc9d16f-6040-4894-8544-9c98986a41fd'
+    status_code = 200
+    json_res = RES_JSON_IR
+
+    expected_output = expected_output_ir
+
+    uuid_to_check = {'uuid': 'bdc9d16f-6040-4894-8544-9c98986a41fd'}
+
+    with requests_mock.Mocker() as m:
+        m.get(url, status_code=status_code, json=json_res)
+        doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
+        results = getThreatReport_command(doc_search_client, uuid_to_check, DBotScoreReliability.B)
+        output = results.to_context().get('EntryContext', {})
+        assert output.get('IAIR(val.value && val.value == obj.value)', []) == expected_output.get('IR')
+        assert output.get(DBOT_KEY, []) == expected_output.get('DBot')
+
+
+def test_getThreatReport_not_found():
+    url = 'https://test.com/rest/document/v0/a487dfdc-08b4-49a09-82ea-2d934c27d901'
+    status_code = 200
+    json_res = None
+
+    expected_output = 'No report was found for UUID: a487dfdc-08b4-49a09-82ea-2d934c27d901 !!'
+
+    uuid_to_check = {'uuid': 'a487dfdc-08b4-49a09-82ea-2d934c27d901'}
+
+    with requests_mock.Mocker() as m:
+        m.get(url, status_code=status_code, json=json_res)
+        doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
+        results = getThreatReport_command(doc_search_client, uuid_to_check, DBotScoreReliability.B)
+        output = results.to_context().get('HumanReadable')
+        assert expected_output in output
