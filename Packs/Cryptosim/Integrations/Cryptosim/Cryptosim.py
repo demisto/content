@@ -14,19 +14,20 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-
     def correlation_alerts(self, last_fetch_time=None):
         args = demisto.args()
 
-        end_time = datetime.now()
+        end_time = datetime.utcnow() + timedelta(hours=int(demisto.params().get("time_zone",3)))
         interval_time = end_time - timedelta(minutes=int(demisto.params().get('incidentFetchInterval', 360)))
 
-        formatted_start_time = datetime.strptime(last_fetch_time, DATE_FORMAT) if last_fetch_time is not None else None
+        formatted_start_time = datetime.strptime(last_fetch_time, DATE_FORMAT) + timedelta(hours=int(demisto.params().get("time_zone",3))) if last_fetch_time is not None else None
 
         if last_fetch_time is None or formatted_start_time < interval_time:
             formatted_start_time = interval_time
 
-        return_results(formatted_start_time)
+        if formatted_start_time >= end_time:
+            formatted_start_time = formatted_start_time - timedelta(minutes=int(demisto.params().get('incidentFetchInterval', 360)))
+
         parameters = {
             'startDate': args.get('startDate', formatted_start_time.isoformat()),
             'endDate': args.get('endDate', end_time.isoformat()),
@@ -48,40 +49,52 @@ class Client(BaseClient):
 
     def correlations(self):
         args = demisto.args()
-        
+
         limit = str(args.get("limit",100))
         limit_url = "limit=" + limit
-        
+
         sort_type = str(args.get("sortType","asc"))
         sort_type_url = "sortType=" + sort_type
-        
+
         base_url = "correlations?"
         api_url = base_url + limit_url + "&" + sort_type_url
         return self._http_request("GET", data={}, url_suffix=api_url)
 
     def connection_test(self):
-        return self._http_request("GET", data={}, url_suffix="connectiontest")
+        return self._http_request("GET", data={}, url_suffix="correlations?limit=1")
+
 
 ''' COMMAND FUNCTIONS '''
-
-
-def correlations_command(client: Client):
-    result = client.correlations()
-
-    return CommandResults(
-        outputs_prefix='Correlations',
-        outputs_key_field='',
-        outputs=result,
-    )
 
 
 def correlation_alerts_command(client: Client):
 
     # Call the Client function and get the raw response
     result = client.correlation_alerts()
-
+    readable_data = []
+    for res in result["Data"]:
+        res = res["CorrelationAlert"]
+        readable_data.append(
+            {"ID": res.get('ID', ""), "CORRELATIONID": res.get('CORRELATIONID', ""),
+            "RULEID": res.get('RULEID', ""), "NAME": res.get('NAME', ""),
+            "Severity": res.get('RISK', ""),
+             "Created At": res.get('EVENTSTARTDATE', "")})
+    markdown = tableToMarkdown('Messages', readable_data, headers=['ID', 'CORRELATIONID', 'NAME', 'RULEID', 'Severity', 'Created At'])
     return CommandResults(
         outputs_prefix='CorrelationAlerts',
+        outputs_key_field='',
+        readable_output=markdown,
+        outputs=result,
+    )
+
+
+
+def correlations_command(client: Client):
+    result = client.correlations()
+
+
+    return CommandResults(
+        outputs_prefix='Correlations',
         outputs_key_field='',
         outputs=result,
     )
@@ -103,8 +116,8 @@ def test_module(client: Client) -> str:
         if client.connection_test().get('StatusCode') == 200:
             message = 'ok'
         else:
-            raise Exception(f"""StatusCode: 
-                            {client.correlations().get('StatusCode')}, 
+            raise Exception(f"""StatusCode:
+                            {client.correlations().get('StatusCode')},
                             Error: {client.correlations().get('ErrorMessage')}
                             """)
     except DemistoException as e:
@@ -118,18 +131,18 @@ def test_module(client: Client) -> str:
 ''' INCIDENT '''
 
 
-def fetch_incidents(client: Client):
+def fetch_incidents(client: Client,params):
 
-    max_results = arg_to_number(arg=demisto.params().get('max_fetch'), arg_name='max_fetch', required=False)
+    max_results = arg_to_number(arg=params.get('max_fetch'), arg_name='max_fetch', required=False)
 
-    first_fetch_time = arg_to_datetime(demisto.params().get('first_fetch')).strftime(DATE_FORMAT)
+    first_fetch_time = arg_to_datetime(params.get('first_fetch'), "1 hour").strftime(DATE_FORMAT)
 
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('last_fetch', first_fetch_time)
 
     incidentsList = []
     alert_response = client.correlation_alerts(last_fetch_time=last_fetch)
-    incident_data = alert_response['Data']
+    incident_data = alert_response.get("Data",[])
 
     for inc in incident_data:
 
@@ -161,19 +174,20 @@ def fetch_incidents(client: Client):
             'occurred': time_stamp,
             'rawJSON': json.dumps(incident_object),
             "severity": severity,
-            'type': 'Crpyotsim CorrelationAlert'
+            'type': 'Crpyotsim Correlation Alerts'
         }
 
         incidentsList.append(incident)
 
         created_incident = datetime.strptime(time_stamp, DATE_FORMAT)
-        last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
+        last_fetch = datetime.strptime(last_fetch, DATE_FORMAT) if isinstance(last_fetch, str) else last_fetch
         if created_incident > last_fetch:
-
             last_fetch = created_incident + timedelta(milliseconds=10)
 
+    last_fetch = last_fetch.strftime(DATE_FORMAT) if not isinstance(last_fetch,str) else last_fetch
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': last_fetch}
+
     return next_run, incidentsList
 
 
@@ -232,8 +246,9 @@ def main() -> None:
 
         elif demisto.command() == 'fetch-incidents':
 
-            next_run, incidents = fetch_incidents(client)
-
+            next_run, incidents = fetch_incidents(client, params)
+            demisto.error(json.dumps(next_run))
+            demisto.error(json.dumps(incidents))
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 

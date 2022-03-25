@@ -30,6 +30,13 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+- display: Timezone(as hour)
+  additionalinfo: Define the timezone to get correct logs from db. (default:3) eg. 3, 5, -5)
+  defaultvalue: '3'
+  hidden: false
+  name: time_zone
+  required: false
+  type: 0
 - display: Incident type
   name: incidentType
   required: false
@@ -112,7 +119,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue:
+      defaultValue: 'equal'
       description: 'risk operator name. It can be equal, greaternumber, greaterorequalnumber, lessnumber, lessnumberorequal, notequal. Default: equal'
       isArray: false
       name: riskOperatorID
@@ -120,7 +127,7 @@ script:
       secret: false
     - default: false
       defaultValue:
-      description: 'The limit to get how many correlations get. Default: 100.'
+      description: 'The limit to get how many correlation alerts get. Default: 100.'
       isArray: false
       name: limit
       required: false
