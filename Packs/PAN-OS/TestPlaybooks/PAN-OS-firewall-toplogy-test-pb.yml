@@ -1,8 +1,8 @@
+description: Test playbook for firewall toplogy commands
 id: PAN-OS-firewall-topology-test-pb
 inputs: []
 name: PAN-OS-firewall-topology-test-pb
 outputs: []
-sourceplaybookid: 7b7f7de9-594f-44b4-8c16-12fab5a79273
 starttaskid: "0"
 tasks:
   "0":
@@ -463,3 +463,4 @@ view: |-
       }
     }
   }
+fromversion: 6.1.0

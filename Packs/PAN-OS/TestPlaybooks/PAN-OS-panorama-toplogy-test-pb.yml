@@ -1,3 +1,4 @@
+description: Test playbook for panorama toplogy commands
 id: PAN-OS-panorama-topology-test-pb
 inputs: []
 name: PAN-OS-panorama-topology-test-pb
@@ -649,3 +650,4 @@ view: |-
       }
     }
   }
+fromversion: 6.1.0
