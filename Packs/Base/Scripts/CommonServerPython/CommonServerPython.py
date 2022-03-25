@@ -2723,6 +2723,9 @@ class Common(object):
         :type reliability: ``DBotScoreReliability``
         :param reliability: use DBotScoreReliability class
 
+        :type message: ``str``
+        :param message: Used to message on the api response, for example: When return api response is "Not found".
+
         :return: None
         :rtype: ``None``
         """
@@ -2737,7 +2740,7 @@ class Common(object):
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
         def __init__(self, indicator, indicator_type, integration_name='', score=None, malicious_description=None,
-                     reliability=None):
+                     reliability=None, message=None):
 
             if not DBotScoreType.is_valid_type(indicator_type):
                 raise TypeError('indicator_type must be of type DBotScoreType enum')
@@ -2759,6 +2762,7 @@ class Common(object):
             self.score = score
             self.malicious_description = malicious_description
             self.reliability = reliability
+            self.message = message
 
         @staticmethod
         def is_valid_score(score):
@@ -2786,6 +2790,9 @@ class Common(object):
 
             if self.reliability:
                 dbot_context['Reliability'] = self.reliability
+
+            if self.message:
+                dbot_context['Message'] = self.message
 
             ret_value = {
                 Common.DBotScore.get_context_path(): dbot_context
@@ -6534,7 +6541,7 @@ ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9
 ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'  # noqa: E501
 ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'  # noqa: E501
 ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'  # noqa: E501
-emailRegex = r'\b[^@]{1,64}@[^@]{1,253}\.[^@]+\b'
+emailRegex = r'\b[^@\s]{1,64}@[^@\s]{1,253}\.[^@\s]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?i)((?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/|www\[?\.\]?|ftp\[?\.\]?|(?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/www\[?\.\]?))(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)(\[?\.\]?[A-Za-z]{2,6})?)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6})|(0\[?x\]?[0-9a-fA-F]{8})|([0-7]{4}\.[0-7]{4}\.[0-7]{4}\.[0-7]{4})|([0-9]{1,10}))($|\/\S+|\/$|:[0-9]{1,5}($|\/\S*))|^(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?))(\/([0-9]|[12][0-9]|3[0-2])\/\S+|\/[A-Za-z]\S*|\/([3-9]{2}|[0-9]{3,})\S*|(:[0-9]{1,5}\/\S+))$)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6}(((\/\S+))|(:[0-9]{1,5}\/\S+))$)|\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b((\/([0-9]|[1-5][0-9]|6[0-4])\/\S+|\/[A-Za-z]\S*|\/((6[5-9]|[7-9][0-9])|[0-9]{3,}|65)\S*|(:[0-9]{1,5}\/\S+))$))'  # noqa: E501
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
@@ -7016,6 +7023,21 @@ except Exception as ex:
     # Should fail silently so that if there is a problem with the logger it will
     # not affect the execution of commands and playbooks
     demisto.info('Failed initializing DebugLogger: {}'.format(ex))
+
+
+def add_sensitive_log_strs(sensitive_str):
+    """
+    Adds the received string to both LOG and DebugLogger. The logger will mask the string each time he encounters it.
+
+    :type sensitive_str: ``str``
+    :param sensitive_str: The string to be replaced.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    if _requests_logger:
+        _requests_logger.int_logger.add_replace_strs(sensitive_str)
+    LOG.add_replace_strs(sensitive_str)
 
 
 def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
@@ -9013,6 +9035,97 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
         return inner
 
     return dec
+
+
+def get_pack_version(pack_name=''):
+    """
+    Get a pack version.
+    The version can be retrieved either by a pack name or by the calling script/integration in which
+    script/integration is part of.
+
+    To get the version of the pack in which the calling script/integration is part of,
+    just call the function without pack_name.
+
+    :type pack_name: ``str``
+    :param pack_name: the pack name as mentioned in the pack metadata file to query its version.
+            use only if querying by a pack name.
+
+    :return: The pack version in which the integration/script is part of / the version of the requested pack name in
+        case provided. in case not found returns empty string.
+    :rtype: ``str``
+    """
+    def _get_packs_by_query(_body_request):
+        packs_body_response = demisto.internalHttpRequest(
+            'POST', uri='/contentpacks/marketplace/search', body=json.dumps(body_request)
+        )
+        return _load_response(_response=packs_body_response.get('body')).get('packs') or []
+
+    def _load_response(_response):
+        try:
+            return json.loads(_response)
+        except json.JSONDecodeError:
+            demisto.debug('Unable to load response {response}'.format(response=_response))
+            return {}
+
+    def _extract_current_pack_version(_packs, _query_type, _entity_name):
+        # in case we have more than 1 pack returned from the search, need to make sure to retrieve the correct pack
+        if query_type == 'automation' or query_type == 'integration':
+            for pack in _packs:
+                for content_entity in (pack.get('contentItems') or {}).get(_query_type) or []:
+                    if (content_entity.get('name') or '') == _entity_name:
+                        return pack.get('currentVersion') or ''
+        else:
+            for pack in _packs:
+                if pack.get('name') == _entity_name:
+                    return pack.get('currentVersion') or ''
+        return ''
+
+    def _extract_integration_display_name(_integration_brand):
+        integrations_body_response = demisto.internalHttpRequest(
+            'POST', uri='/settings/integration/search', body=json.dumps({})
+        )
+        integrations_body_response = _load_response(_response=integrations_body_response.get('body'))
+        integrations = integrations_body_response.get('configurations') or []
+
+        for integration in integrations:
+            integration_display_name = integration.get('display')
+            if integration.get('id') == _integration_brand and integration_display_name:
+                return integration_display_name
+        return ''
+    # query by pack name
+    if pack_name:
+        entity_name = pack_name
+        body_request = {'packsQuery': entity_name}
+        query_type = 'pack'
+    # query by integration name
+    elif demisto.callingContext.get('integration'):  # True means its integration, False means its script/automation.
+        entity_name = (demisto.callingContext.get('context') or {}).get('IntegrationBrand') or ''
+        body_request = {'integrationsQuery': entity_name}
+        query_type = 'integration'
+    # query by script/automation name
+    else:
+        entity_name = (demisto.callingContext.get('context') or {}).get('ScriptName') or ''
+        body_request = {'automationQuery': entity_name}
+        query_type = 'automation'
+
+    pack_version = _extract_current_pack_version(
+        _packs=_get_packs_by_query(_body_request=body_request),
+        _query_type=query_type,
+        _entity_name=entity_name
+    )
+    if not pack_version and query_type == 'integration':
+        # handle the case where the display name of the integration is not the same as the integration brand
+        integration_display = _extract_integration_display_name(_integration_brand=entity_name)
+        if integration_display and integration_display != entity_name:
+            body_request['integrationsQuery'] = integration_display
+
+            return _extract_current_pack_version(
+                _packs=_get_packs_by_query(_body_request=body_request),
+                _query_type=query_type,
+                _entity_name=integration_display
+            )
+        return ''
+    return pack_version
 
 
 ###########################################

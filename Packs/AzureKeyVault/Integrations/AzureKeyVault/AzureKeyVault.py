@@ -23,7 +23,7 @@ class KeyVaultClient:
 
     def __init__(self, tenant_id: str, client_id: str, client_secret: str,
                  subscription_id: str, resource_group_name: str,
-                 verify: bool, proxy: bool):
+                 verify: bool, proxy: bool, certificate_thumbprint: Optional[str], private_key: Optional[str]):
 
         self.ms_client = MicrosoftClient(
             self_deployed=True,
@@ -40,7 +40,9 @@ class KeyVaultClient:
             resource='',
             scope='',
             tenant_id=tenant_id,
-            ok_codes=(200, 201, 202, 204, 400, 401, 403, 404)
+            ok_codes=(200, 201, 202, 204, 400, 401, 403, 404),
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key
         )
 
     def http_request(self, method: str, url_suffix: str = None, full_url: str = None,
@@ -1272,18 +1274,26 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
+        client_secret = params.get('client_secret')
+        certificate_thumbprint = params.get('certificate_thumbprint')
+        private_key = params.get('private_key')
+        if not client_secret and not (certificate_thumbprint and private_key):
+            raise DemistoException('Client Secret or Certificate Thumbprint and Private Key must be provided. For further information see https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
+
         requests.packages.urllib3.disable_warnings()
         client: KeyVaultClient = KeyVaultClient(tenant_id=params.get('tenant_id', None),
                                                 client_id=params.get(
                                                     'client_id', None),
-                                                client_secret=params.get(
-                                                    'client_secret', None),
+                                                client_secret=client_secret,
                                                 subscription_id=params.get(
                                                     'subscription_id', None),
                                                 resource_group_name=params.get(
                                                     'resource_group_name', None),
                                                 verify=verify_certificate,
-                                                proxy=proxy)
+                                                proxy=proxy,
+                                                certificate_thumbprint=certificate_thumbprint,
+                                                private_key=private_key,
+                                                )
 
         commands = {
             'azure-key-vault-create-update': create_or_update_key_vault_command,

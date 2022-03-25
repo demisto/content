@@ -1,4 +1,5 @@
 import json
+import os
 from unittest.mock import patch, Mock
 
 import pytest
@@ -808,27 +809,31 @@ def test_validate_project_and_subscription_id(mock1, pubsub_client):
     assert pubsub_client.pull_messages.call_count == 1
 
 
-@patch('GoogleCloudSCC.handle_proxy')
-def test_get_http_client_with_proxy(mock1, client):
+def test_get_http_client_with_proxy(mocker, client):
     """
     Scenario: Validate that proxy is set in http object
 
     Given:
-    - proxy is given
+    - proxy
+      insecure
+      path to custom certificate
 
     When:
-    - correct proxy provided
+    - correct proxy, insecure and certificate path arguments provided
 
     Then:
-    - Ensure command that proxy should set in Http object
+    - Ensure command that proxy, insecure and certificate path should set in Http object
     """
-    mock1.return_value = {"https": "admin:password@127.0.0.1:3128"}
-    http_obj = client.get_http_client_with_proxy(True)
+    mocker.patch('GoogleCloudSCC.handle_proxy', return_value={"https": "admin:password@127.0.0.1:3128"})
+    mocker.patch.dict(os.environ, {"REQUESTS_CA_BUNDLE": "path/to/cert"})
+    http_obj = client.get_http_client_with_proxy(True, True)
 
     assert http_obj.proxy_info.proxy_host == "127.0.0.1"
     assert http_obj.proxy_info.proxy_port == 3128
     assert http_obj.proxy_info.proxy_user == "admin"
     assert http_obj.proxy_info.proxy_pass == "password"
+    assert http_obj.disable_ssl_certificate_validation
+    assert http_obj.ca_certs == "path/to/cert"
 
 
 def test_google_name_parser():
