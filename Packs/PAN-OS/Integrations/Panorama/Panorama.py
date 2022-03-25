@@ -7687,7 +7687,9 @@ class Topology:
         return Topology.filter_devices({**self.firewall_objects, **self.panorama_objects}, filter_string)
 
     @classmethod
-    def build_from_string(cls, hostnames: str, username: str, password: str, api_key: Optional[str] = None):
+    def build_from_string(
+        cls, hostnames: str, username: str, password: str, port: Optional[str] = 443, api_key: Optional[str] = None
+    ):
         """
         Splits a csv list of hostnames and builds the topology based on it. This allows you to pass a series of PanOS hostnames
         into the topology instead of building it from each device.
@@ -7696,6 +7698,7 @@ class Topology:
         :param hostnames: A string of hostnames in CSV format, ex. hostname1,hostname2
         :param username: The PAN-OS username
         :param password: the PAN-OS password
+        :param port: The PAN-OS port
         :param api_key: The PAN-OS api key
         """
         topology = cls()
@@ -7704,13 +7707,15 @@ class Topology:
                 if api_key:
                     device = PanDevice.create_from_device(
                         hostname=hostname,
-                        api_key=api_key
+                        api_key=api_key,
+                        port=port
                     )
                 else:
                     device = PanDevice.create_from_device(
                         hostname=hostname,
                         api_username=username,
                         api_password=password,
+                        port=port
                     )
                 # Set the timeout
                 device.timeout = DEVICE_TIMEOUT
@@ -9221,7 +9226,9 @@ def get_topology() -> Topology:
     """
     Builds and returns the Topology instance
     """
-    server_url = demisto.params().get('server')
+    params = demisto.params()
+    server_url = params.get('server')
+    port = arg_to_number(arg=params.get('port', '443'))
     parsed_url = urlparse(server_url)
     hostname = parsed_url.hostname
     params = demisto.params()
@@ -9231,7 +9238,8 @@ def get_topology() -> Topology:
         hostname,
         username="",
         password="",
-        api_key=api_key
+        api_key=api_key,
+        port=port
     )
 
 
