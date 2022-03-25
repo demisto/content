@@ -87,6 +87,36 @@ def parse_asset(asset: dict) -> dict:
     }
 
 
+def get_saved_queries(api_obj: Union[Users, Devices]) -> CommandResults:  # noqa: F821, F405
+    """Get assets with their defined fields returned by a saved query."""
+    args: dict = demisto.args()
+    assets = api_obj.saved_query.get()
+    return command_results(assets=assets, api_obj=api_obj)
+
+
+def tag_logic(
+    client: Connect, method_name: str
+) -> CommandResults:  # noqa: F821, F405
+    args: dict = demisto.args()
+    tag_name: str = args["tag_name"]
+    internal_axon_id: str = args["id"]
+    api_obj = client.devices if args["type"] == "devices" else client.users
+    api_name = api_obj.__class__.__name__
+    if method_name == "add":
+        res = api_obj.labels.add(rows=[internal_axon_id], labels=[tag_name])
+    else:
+        res = api_obj.labels.remove(rows=[internal_axon_id], labels=[tag_name])
+    # res is count of rows included in the output, regardless of success.
+    readable_output = f"{res} {api_name}(s) updated."
+    demisto.log(str(res))
+    return CommandResults(
+        outputs_prefix=f"Axonius.asset.updates",
+        readable_output=readable_output,
+        outputs=res,
+        raw_response=res,
+    )
+
+
 def get_by_sq(api_obj: Union[Users, Devices]) -> CommandResults:  # noqa: F821, F405
     """Get assets with their defined fields returned by a saved query."""
     args: dict = demisto.args()
@@ -209,6 +239,30 @@ def main():
         elif command == "axonius-get-devices-by-mac-regex":
             results = get_by_value(api_obj=client.devices, method_name="mac_regex")
             return_results(results)
+        elif command == "axonius-get-devices-by-mac-regex":
+            results = get_by_value(api_obj=client.devices, method_name="mac_regex")
+            return_results(results)
+
+        elif command == "axonius-get-devices-savedquery":
+            results = get_saved_queries(api_obj=client.devices)
+            return_results(results)
+        elif command == "axonius-get-users-savedquery":
+            results = get_saved_queries(api_obj=client.users)
+            return_results(results)
+
+        elif command == "axonius-add-tag":
+            results = tag_logic(client=client, method_name="add")
+            return_results(results)
+        elif command == "axonius-remove-tag":
+            results = tag_logic(client=client, method_name="remove")
+            return_results(results)
+        elif command == "axonius-tag-user":
+            results = get_by_value(api_obj=client.devices, method_name="add")
+            return_results(results)
+        elif command == "axonius-remove-tag-user":
+            results = get_by_value(api_obj=client.devices, method_name="remove")
+            return_results(results)
+
 
     except Exception as exc:
         demisto.error(traceback.format_exc())
