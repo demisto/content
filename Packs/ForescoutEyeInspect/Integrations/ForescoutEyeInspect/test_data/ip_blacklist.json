@@ -1,0 +1,45 @@
+{
+    "total_count": 4114,
+    "results": [
+        {
+            "address": "1.160.139.122",
+            "comment": "North Korean Trojan"
+        },
+        {
+            "address": "1.169.112.88",
+            "comment": "North Korean Trojan: Joanap Backdoor Trojan and Brambul SMB Worm (listed in https://www.us-cert.gov/ncas/alerts/TA18-149A)"
+        },
+        {
+            "address": "1.170.194.142",
+            "comment": "North Korean Trojan: Joanap Backdoor Trojan and Brambul SMB Worm (listed in https://www.us-cert.gov/ncas/alerts/TA18-149A)"
+        },
+        {
+            "address": "1.186.218.107",
+            "comment": "North Korean Trojan: Joanap Backdoor Trojan and Brambul SMB Worm (listed in https://www.us-cert.gov/ncas/alerts/TA18-149A)"
+        },
+        {
+            "address": "2.50.22.137",
+            "comment": "North Korean DDOS Botnet malware (listed in https://www.us-cert.gov/ncas/alerts/TA17-164A)"
+        },
+        {
+            "address": "2.50.22.189",
+            "comment": "North Korean DDOS Botnet malware (listed in https://www.us-cert.gov/ncas/alerts/TA17-164A)"
+        },
+        {
+            "address": "2.50.25.205",
+            "comment": "North Korean DDOS Botnet malware (listed in https://www.us-cert.gov/ncas/alerts/TA17-164A)"
+        },
+        {
+            "address": "2.50.27.239",
+            "comment": "North Korean DDOS Botnet malware (listed in https://www.us-cert.gov/ncas/alerts/TA17-164A)"
+        },
+        {
+            "address": "2.50.40.245",
+            "comment": "North Korean DDOS Botnet malware (listed in https://www.us-cert.gov/ncas/alerts/TA17-164A)"
+        },
+        {
+            "address": "2.93.86.36",
+            "comment": "North Korean DDOS Botnet malware (listed in https://www.us-cert.gov/ncas/alerts/TA17-164A)"
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+!forescout-ei-host-list page=1 limit=1
+!forescout-ei-link-list page=1 limit=1
+!forescout-ei-vulnerability-info-get cve_id=CVE-2019-20218
+!forescout-ei-alert-list page=1 limit=1
+!forescout-ei-alert-pcap-get alert_id=1
+!forescout-ei-sensor-list page=1 limit=1
+!forescout-ei-sensor-module-list sensor_id=2 page=1 limit=1
+!forescout-ei-sensor-module-update sensor_id=2 module_id=5 started=true
+!forescout-ei-sensor-module-delete sensor_id=2 module_id=5
+!forescout-ei-ip-blacklist-get sensor_id=2 page=1 limit=1
+!forescout-ei-ip-blacklist-add sensor_id=2 address=3.4.5.6 comment=Malicious
+!forescout-ei-domain-blacklist-get sensor_id=2 page=1 limit=1
+!forescout-ei-domain-blacklist-add sensor_id=2 domain_name=malicious.xyz comment=Maleware
+!forescout-ei-ssl-client-blacklist-get sensor_id=2 page=1 limit=1
+!forescout-ei-ssl-client-blacklist-add sensor_id=2 application_name=Shodan ja3_hash=0ad94fcb7d3a2c56679fbd004f6b12cd comment=Malicious
+!forescout-ei-file-operation-blacklist-get sensor_id=2 page=1 limit=1
+!forescout-ei-file-operation-blacklist-add sensor_id=2 matching_type=REGEX file_or_folder=\\.mal$ operation=WRITE comment=Virus
+!forescout-ei-diagnostics-information-get
+!forescout-ei-diagnostic-logs-get sensor_id=2
+!forescout-ei-group-policy-list page=1 limit=1
+!forescout-ei-group-policy-create name="example policy" description="policy" constraints="[{\"type\": \"os_version\", \"operator\": \"equals\", \"os_version\": \"Windows 10\"}]"
+!forescout-ei-group-policy-update policy_id=20 name="example policy" description="policy" constraints="[{\"type\": \"os_version\", \"operator\": \"equals\", \"os_version\": \"Windows 10\"}]"
+!forescout-ei-group-policy-hosts-assign policy_id=20 filter_type=address filter_value=192.168.1.1
+!forescout-ei-group-policy-hosts-unassign policy_id=20 filter_type=address filter_value=192.168.1.1
+!forescout-ei-group-policy-delete policy_id=20
+!forescout-ei-ip-reuse-domain-list page=2 limit=1
+!forescout-ei-hosts-changelog-list page=1 limit=1

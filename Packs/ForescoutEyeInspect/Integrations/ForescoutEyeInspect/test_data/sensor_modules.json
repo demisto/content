@@ -1,0 +1,104 @@
+{
+    "total_count": 9,
+    "results": [
+        {
+            "id": 1,
+            "sensor_id": 2,
+            "engine": "THREAT_LIBRARY",
+            "singleton": true,
+            "name": "Industrial threat library (ITL)",
+            "description": "",
+            "started": true,
+            "operational_mode": "",
+            "date_last_update": "1970-01-01T01:00:00.000+01:00"
+        },
+        {
+            "id": 2,
+            "sensor_id": 2,
+            "engine": "PARSING",
+            "singleton": true,
+            "name": "Malformed packet",
+            "description": "",
+            "started": true,
+            "operational_mode": "",
+            "date_last_update": "1970-01-01T01:00:00.000+01:00"
+        },
+        {
+            "id": 3,
+            "sensor_id": 2,
+            "engine": "EVENT_LOGGING",
+            "singleton": true,
+            "name": "Event logging",
+            "description": "",
+            "started": true,
+            "operational_mode": "",
+            "date_last_update": "1970-01-01T01:00:00.000+01:00"
+        },
+        {
+            "id": 4,
+            "sensor_id": 2,
+            "engine": "MITM",
+            "singleton": true,
+            "name": "Man-in-the-middle",
+            "description": "",
+            "started": true,
+            "operational_mode": "",
+            "date_last_update": "1970-01-01T01:00:00.000+01:00"
+        },
+        {
+            "id": 5,
+            "sensor_id": 2,
+            "engine": "PORTSCAN",
+            "singleton": true,
+            "name": "Portscan",
+            "description": "",
+            "started": true,
+            "operational_mode": "",
+            "date_last_update": "1970-01-01T01:00:00.000+01:00"
+        },
+        {
+            "id": 6,
+            "sensor_id": 2,
+            "engine": "VISUAL_ANALYTICS",
+            "singleton": true,
+            "name": "Visual analytics",
+            "description": "",
+            "started": true,
+            "operational_mode": "",
+            "date_last_update": "2020-12-10T09:15:57.000+01:00"
+        },
+        {
+            "id": 7,
+            "sensor_id": 2,
+            "engine": "FEA",
+            "singleton": true,
+            "name": "Frequent event aggregation",
+            "description": "",
+            "started": true,
+            "operational_mode": "",
+            "date_last_update": "1970-01-01T01:00:00.000+01:00"
+        },
+        {
+            "id": 8,
+            "sensor_id": 2,
+            "engine": "LAN",
+            "singleton": false,
+            "name": "TCP communications",
+            "description": "",
+            "started": true,
+            "operational_mode": "Learn",
+            "date_last_update": "2021-12-22T16:56:22.000+01:00"
+        },
+        {
+            "id": 9,
+            "sensor_id": 2,
+            "engine": "LAN",
+            "singleton": false,
+            "name": "UDP communications",
+            "description": "",
+            "started": true,
+            "operational_mode": "Learn",
+            "date_last_update": "2021-12-22T16:56:23.000+01:00"
+        }
+    ]
+}

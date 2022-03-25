@@ -1,0 +1,55 @@
+{
+    "total_count": 106,
+    "results": [
+        {
+            "application_name": "ShadowServer Scanner",
+            "ja3_hash": "0ad94fcb7d3a2c56679fbd004f6b12cd",
+            "comment": ""
+        },
+        {
+            "application_name": "Potential malware: eitest-hoeflertext-chrome-popup-traffic-4-of-6",
+            "ja3_hash": "098f55e27d8c4b0a590102cbdb3a5f3a",
+            "comment": "Generated from all PCAPs on https://www.malware-traffic-analysis.net"
+        },
+        {
+            "application_name": "Shodan",
+            "ja3_hash": "0add6ceb611a7613f97329af3b6828d9",
+            "comment": ""
+        },
+        {
+            "application_name": "Shodan",
+            "ja3_hash": "0b63812a99e66c82a20d30c3b9ba6e06",
+            "comment": ""
+        },
+        {
+            "application_name": "UMich Scanner",
+            "ja3_hash": "0e580f864235348848418123f96bbaa0",
+            "comment": "Can use: zgrab"
+        },
+        {
+            "application_name": "Tor Browser 5.0.1f",
+            "ja3_hash": "0ed768d6e3bc66af60d31315afd423f2",
+            "comment": ""
+        },
+        {
+            "application_name": "Potential malware: eitest-rig-ek-traffic, traffic-from-portuguese-malspam-attachment and others",
+            "ja3_hash": "1074895078955b2db60423ed2bf8ac23",
+            "comment": "Generated from all PCAPs on https://www.malware-traffic-analysis.net"
+        },
+        {
+            "application_name": "Shodan",
+            "ja3_hash": "109dbd9238634b21363c3d62793c029c",
+            "comment": ""
+        },
+        {
+            "application_name": "w3af 1.6.54",
+            "ja3_hash": "10a686de1c41107df06c21df245e24cd",
+            "comment": ""
+        },
+        {
+            "application_name": "Shodan",
+            "ja3_hash": "11e49581344c117df2c9ceb46e5594c4",
+            "comment": ""
+        }
+    ]
+}
