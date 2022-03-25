@@ -7688,7 +7688,7 @@ class Topology:
 
     @classmethod
     def build_from_string(
-        cls, hostnames: str, username: str, password: str, port: Optional[str] = 443, api_key: Optional[str] = None
+        cls, hostnames: str, username: str, password: str, port: Optional[int] = None, api_key: Optional[str] = None
     ):
         """
         Splits a csv list of hostnames and builds the topology based on it. This allows you to pass a series of PanOS hostnames
