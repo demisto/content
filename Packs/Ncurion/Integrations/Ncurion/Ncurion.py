@@ -1,6 +1,6 @@
 import json
 import traceback
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
 import datetime 
 
 import demistomock as demisto  # noqa: F401
