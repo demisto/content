@@ -3892,7 +3892,7 @@ def panorama_unregister_ip_tag_command(args: dict):
 
 
 @logger
-def panorama_register_user_tag(tag: str, users: List, timeout: Optional[str]):
+def panorama_register_user_tag(tag: str, users: List, timeout: Optional[int]):
     entry: str = ''
     for user in users:
         if timeout:
