@@ -43,4 +43,4 @@ We use docker to run python scripts and integrations in a controlled environment
 Cortex XSOAR Platform support flexible reports written in JSON. All of our standard reports calculating various incident statistics and metrics are stored in this repo.
 
 ---
-Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/).
+Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/)
