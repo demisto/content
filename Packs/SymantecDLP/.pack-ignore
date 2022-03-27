@@ -5,4 +5,4 @@ ignore=IN126
 ignore=RM104
 
 [file:SymantecDLPV2.yml]
-ignore=IN121
+ignore=IN148
