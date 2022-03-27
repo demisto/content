@@ -4457,6 +4457,7 @@
         {
             "playbookID": "Phishing v3 - Get Original Email + Search & Delete - Test",
             "fromversion": "6.2.0",
+            "toversion": "6.4.9",
             "timeout": 7000,
             "integrations": [
                 "EWS Mail Sender",
