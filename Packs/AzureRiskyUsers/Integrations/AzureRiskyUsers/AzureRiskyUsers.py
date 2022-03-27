@@ -27,7 +27,7 @@ class Client:
             auth_id=client_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
             grant_type=DEVICE_CODE,
-            base_url='https://graph.microsoft.com',
+            base_url='https://graph.microsoft.com/v1.0',
             verify=verify,
             proxy=proxy,
             scope='https://graph.microsoft.com/IdentityRiskyUser.Read.All '
