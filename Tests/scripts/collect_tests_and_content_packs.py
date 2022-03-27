@@ -1454,7 +1454,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
             # we are adding to the nightly on marketplacev2 few tests that are supported in both marketplacees
             # see https://github.com/demisto/etc/issues/44350
             tests = set(CONF.get_marketplacev2_tests())
-            packs_to_install = set(CONF.get_packs_of_tested_integrations(tests, ID_SET))
+            packs_to_install = CONF.get_packs_of_tested_integrations(tests, ID_SET)
 
             # collect all packs and tests that are compatible only with marketplacev2
             tests.update(get_test_playbooks_for_marketplacev2(ID_SET))

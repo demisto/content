@@ -114,7 +114,8 @@ def test_should_test_content_pack(mocker, tmp_path, pack_metadata_content, pack_
 
 @pytest.mark.parametrize("pack_metadata_content, pack_name, expected", [
     ({PACK_METADATA_SUPPORT: 'partner'}, 'Partner', (True, '')),
-    ({PACK_METADATA_SUPPORT: 'community'}, 'Community', (False, 'Pack is not supported in this marketplace version')),
+    ({PACK_METADATA_SUPPORT: 'community'}, 'Community', (False, 'This pack with marketplace version [] is not '
+                                                                'supported in the xsoar marketplace version')),
     ({PACK_METADATA_SUPPORT: 'xsoar'}, 'NonSupported', (False, 'Pack is either the "NonSupported" pack or the '
                                                                '"DeprecatedContent" pack.')),
     ({'hidden': True, PACK_METADATA_SUPPORT: 'xsoar'}, 'CortexXDR', (False, 'Pack is Deprecated')),
