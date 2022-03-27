@@ -6,7 +6,6 @@ from CommonServerPython import *  # noqa: F401
 
 import panos.errors
 
-from xml.etree.ElementTree import Element
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
 from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll
 from panos.firewall import Firewall
@@ -7455,7 +7454,13 @@ class URLFilteringProfile(VersionedPanObject):
         )
 
 
-def run_op_command(device: Union[Panorama, Firewall], cmd: str, **kwargs) -> Element:
+def run_op_command(device: Union[Panorama, Firewall], cmd: str, **kwargs):
+    """
+    Run OP command.
+
+    Returns:
+        Element: XML element object.
+    """
     result = device.op(cmd, **kwargs)
     if "status" in result and result.attrib.get("status") != "success":
         raise OpCommandError(f"Operational command {cmd} failed!")
@@ -7463,7 +7468,17 @@ def run_op_command(device: Union[Panorama, Firewall], cmd: str, **kwargs) -> Ele
     return result
 
 
-def find_text_in_element(element: Element, tag: str) -> str:
+def find_text_in_element(element, tag: str) -> str:
+    """
+    Find a text in an XML element.
+
+    Args:
+        element (Element): XML element.
+        tag (str): the XML tag to search for.
+
+    Returns:
+        str: the text of the tag that was searched.
+    """
     result = element.find(tag)
     # This has to be an exact check, as an element that has no text will evaluate to none.
     if result is None:
@@ -7475,7 +7490,14 @@ def find_text_in_element(element: Element, tag: str) -> str:
     return result.text if result.text else ""
 
 
-def get_element_attribute(element: Element, attribute: str) -> str:
+def get_element_attribute(element, attribute: str) -> str:
+    """
+    Find a text in an XML element.
+
+    Args:
+        element (Element): XML element.
+        attribute (str): the attribute of the element.
+    """
     if attribute in element.attrib:
         return element.attrib.get(attribute, "")
 
@@ -7527,7 +7549,7 @@ class Topology:
                 new_firewall_object = Firewall(serial=serial_number)
                 device.add(new_firewall_object)
                 self.add_device_object(new_firewall_object)
-                ha_peer_serial_element: Optional[Element] = device_entry.find("./ha/peer/serial")
+                ha_peer_serial_element = device_entry.find("./ha/peer/serial")
                 ha_peer_serial = None
                 if ha_peer_serial_element is not None and hasattr(ha_peer_serial_element, "text"):
                     ha_peer_serial = ha_peer_serial_element.text
@@ -8505,11 +8527,11 @@ def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, cl
     return class_type(**result_dict)
 
 
-def flatten_xml_to_dict(element: Element, object_dict: dict, class_type: Callable):
+def flatten_xml_to_dict(element, object_dict: dict, class_type: Callable):
     """
     Given an XML element, a dictionary, and a class, flattens the XML into the class.
     This is a recursive function that will resolve child elements.
-    :param element: XML element
+    :param element: XML element object
     :param object_dict: A dictionary to populate with the XML tag text
     :param class_type: The class type that this XML will be converted to - filters the XML tags by it's attributes
     """
@@ -8528,13 +8550,10 @@ def flatten_xml_to_dict(element: Element, object_dict: dict, class_type: Callabl
     return object_dict
 
 
-def dataclass_from_element(
-        device: Union[Panorama, Firewall],
-        class_type: Callable,
-        element: Optional[Element],
-):
+def dataclass_from_element(device: Union[Panorama, Firewall],class_type: Callable, element):
     """
-    Turns an XML `Element` Object into an instance of the provided dataclass. Dataclass paramaters must match
+    Turns an XML `Element` Object into an instance of the provided dataclass. Dataclass parameters must match
+    element: Optional[Element]
     child XML tags exactly.
     :param device: Instance of `Panorama` or `Firewall` object
     :param class_type: The dataclass to convert the XML into
