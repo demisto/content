@@ -9196,7 +9196,7 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
 def get_latest_incident_created_time(incidents, created_time_field, date_format='%Y-%m-%dT%H:%M:%S',
                                      increase_last_run_time=False):
     """
-    Gets the latest incident occurred time
+    Gets the latest incident created time
 
     :type incidents: ``list``
     :param incidents: List of incidents
@@ -9285,10 +9285,10 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field):
     return found_incidents
 
 
-def get_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
-                                created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
+                                   created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
     """
-    Gets an updated LastRun object
+    Creates an updated LastRun object
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
@@ -9383,7 +9383,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
 
     found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field)
 
-    updated_last_run = get_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
+    updated_last_run = create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
                                                    created_time_field, date_format, increase_last_run_time)
 
     if found_incidents:
