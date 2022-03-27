@@ -147,7 +147,7 @@ tasks:
       to:
       subject:
       body:
-        simple: Approve isolation
+        simple: "Approve Package Collection From The Machine:"
       methods: []
       format: ""
       bcc:
