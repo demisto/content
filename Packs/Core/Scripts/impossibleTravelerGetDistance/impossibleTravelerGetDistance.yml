@@ -27,6 +27,6 @@ dockerimage: demisto/geopy:1.0.0.24037
 runas: DBotWeakRole
 fromversion: 6.6.0
 tests:
-- Impossible Traveler XSIAM - Test
+- No tests (auto formatted)
 marketplaces:
 - marketplacev2
