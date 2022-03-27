@@ -6521,7 +6521,7 @@ def test_get_pack_version(mocker, calling_context_mock, pack_name):
     assert get_pack_version(pack_name=pack_name) == '1.0.0'
 
 
-TEST_GET_INDICATOR_WITH_DBOTSCORE_UNKNOWN = [
+TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN = [
     (
         {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12',
          'indicator_type': DBotScoreType.FILE, 'reliability': DBotScoreReliability.A},
@@ -6567,7 +6567,7 @@ TEST_GET_INDICATOR_WITH_DBOTSCORE_UNKNOWN = [
     ),
     (
         {'indicator': 'test@test.com', 'indicator_type': 'test'},
-        {'error_message': 'indicator type is invalid'}
+        {'error_message': 'Indicator type is invalid'}
     ),
     (
         {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CRYPTOCURRENCY},
@@ -6580,10 +6580,10 @@ TEST_GET_INDICATOR_WITH_DBOTSCORE_UNKNOWN = [
 ]
 
 
-@pytest.mark.parametrize('args, expected', TEST_GET_INDICATOR_WITH_DBOTSCORE_UNKNOWN)
-def test_get_indicator_with_dbotscore_unknown(mocker, args, expected):
+@pytest.mark.parametrize('args, expected', TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN)
+def test_create_indicator_result_with_dbotscore_unknown(mocker, args, expected):
 
-    from CommonServerPython import get_indicator_with_dbotscore_unknown
+    from CommonServerPython import create_indicator_result_with_dbotscore_unknown
 
     if expected.get('integration_name'):
         mocker.patch('CommonServerPython.Common.DBotScore',
@@ -6592,9 +6592,9 @@ def test_get_indicator_with_dbotscore_unknown(mocker, args, expected):
                                                    score=0,
                                                    integration_name=expected['integration_name'],
                                                    reliability=args['reliability'],
-                                                   message='No results found'))
+                                                   message='No results found.'))
     try:
-        results = get_indicator_with_dbotscore_unknown(**args)
+        results = create_indicator_result_with_dbotscore_unknown(**args)
     except ValueError as e:
         assert str(e) == expected['error_message']
         return
@@ -6603,7 +6603,7 @@ def test_get_indicator_with_dbotscore_unknown(mocker, args, expected):
     assert isinstance(results.indicator, expected['instance'])
     assert results.indicator.dbot_score.score == 0
     assert results.indicator.dbot_score.reliability == expected['reliability']
-    assert results.indicator.dbot_score.message == 'No results found'
+    assert results.indicator.dbot_score.message == 'No results found.'
 
     if expected.get('integration_name'):
         assert expected['integration_name'] in results.readable_output

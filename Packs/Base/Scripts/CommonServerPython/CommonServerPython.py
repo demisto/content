@@ -9128,8 +9128,8 @@ def get_pack_version(pack_name=''):
     return pack_version
 
 
-def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=None,
-                                         context_prefix=None, address_type=None):
+def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, reliability=None,
+                                                   context_prefix=None, address_type=None):
     '''
     Used for cases where the api response to an indicator is not found,
     returns CommandResults with readable_output generic in this case, and indicator with DBotScore unknown
@@ -9152,9 +9152,10 @@ def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=
     :rtype: ``CommandResults``
     :return: CommandResults
     '''
-    if not DBotScoreType.is_valid_type(indicator_type) and not context_prefix or indicator_type is DBotScoreType.CUSTOM and not context_prefix:
-        raise ValueError('indicator type is invalid')
+    if not context_prefix and (indicator_type is DBotScoreType.CUSTOM or not DBotScoreType.is_valid_type(indicator_type)):
+        raise ValueError('Indicator type is invalid')
 
+    #  There is no justification to support the following two types, because they have a fixed dbotscore.
     if indicator_type in [DBotScoreType.CVE, DBotScoreType.ATTACKPATTERN]:
         msg_error = 'DBotScoreType.{} is unsupported'.format(indicator_type.upper())
         raise ValueError(msg_error)
@@ -9164,7 +9165,7 @@ def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=
                                   if DBotScoreType.is_valid_type(indicator_type) else DBotScoreType.CUSTOM,
                                   score=Common.DBotScore.NONE,
                                   reliability=reliability,
-                                  message='No results found')
+                                  message='No results found.')
 
     integration_name = dbot_score.integration_name or 'Results'
     indicator_ = None  # type: Any
@@ -9181,6 +9182,8 @@ def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=
         elif md5Regex.match(indicator):
             indicator_ = Common.File(dbot_score=dbot_score, md5=indicator)
             indicator_type = 'md5'
+        else:
+            raise DemistoException('This indicator -> {} is incorrect'.format(indicator))
 
     elif indicator_type is DBotScoreType.IP:
         indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)
