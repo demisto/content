@@ -8,7 +8,7 @@
     "messageSource": "DISCOVER",
     "detectionServerId": 21,
     "matchCount": 100,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-15T07:00:11.731",
     "ID": 3808,
     "incidentStatusId": 1
@@ -22,7 +22,7 @@
     "messageSource": "DISCOVER",
     "detectionServerId": 21,
     "matchCount": 53,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-15T07:00:11.715",
     "ID": 3807,
     "incidentStatusId": 1
@@ -36,7 +36,7 @@
     "messageSource": "DISCOVER",
     "detectionServerId": 21,
     "matchCount": 46,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-15T07:00:11.7",
     "ID": 3806,
     "incidentStatusId": 1
@@ -50,7 +50,7 @@
     "messageSource": "DISCOVER",
     "detectionServerId": 21,
     "matchCount": 100,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-15T07:00:11.732",
     "ID": 3805,
     "incidentStatusId": 1
@@ -64,7 +64,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 3,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-15T03:24:01.148",
     "ID": 3804,
     "incidentStatusId": 1
@@ -78,7 +78,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 2,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-15T03:24:01.085",
     "ID": 3803,
     "incidentStatusId": 1
@@ -92,7 +92,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 3,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-15T03:24:01.163",
     "ID": 3802,
     "incidentStatusId": 1
@@ -106,7 +106,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 2,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-15T03:24:01.149",
     "ID": 3801,
     "incidentStatusId": 1
@@ -120,7 +120,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 3,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T21:23:46.429",
     "ID": 3800,
     "incidentStatusId": 1
@@ -134,7 +134,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 2,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T21:23:46.398",
     "ID": 3799,
     "incidentStatusId": 1
@@ -148,7 +148,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 3,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T21:23:46.444",
     "ID": 3798,
     "incidentStatusId": 1
@@ -162,10 +162,11 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 2,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T21:23:46.46",
     "ID": 3797,
     "incidentStatusId": 1
+  },
   },
   {
     "policyVersion": 4,
@@ -176,7 +177,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 3,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T15:23:52.614",
     "ID": 3796,
     "incidentStatusId": 1
@@ -190,7 +191,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 2,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T15:23:52.661",
     "ID": 3795,
     "incidentStatusId": 1
@@ -204,7 +205,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 3,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T15:23:52.676",
     "ID": 3794,
     "incidentStatusId": 1
@@ -218,7 +219,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 2,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T15:23:52.662",
     "ID": 3793,
     "incidentStatusId": 1
@@ -232,7 +233,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 3,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T09:23:58.862",
     "ID": 3792,
     "incidentStatusId": 1
@@ -246,7 +247,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 2,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T09:23:58.846",
     "ID": 3791,
     "incidentStatusId": 1
@@ -260,7 +261,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 3,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T09:23:58.815",
     "ID": 3790,
     "incidentStatusId": 1
@@ -274,7 +275,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 2,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T09:23:58.784",
     "ID": 3789,
     "incidentStatusId": 1
@@ -288,7 +289,7 @@
     "messageSource": "DISCOVER",
     "detectionServerId": 21,
     "matchCount": 100,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T07:00:15.866",
     "ID": 3788,
     "incidentStatusId": 1
@@ -302,7 +303,7 @@
     "messageSource": "DISCOVER",
     "detectionServerId": 21,
     "matchCount": 100,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T07:00:15.881",
     "ID": 3787,
     "incidentStatusId": 1
@@ -316,7 +317,7 @@
     "messageSource": "DISCOVER",
     "detectionServerId": 21,
     "matchCount": 53,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T07:00:15.85",
     "ID": 3786,
     "incidentStatusId": 1
@@ -330,7 +331,7 @@
     "messageSource": "DISCOVER",
     "detectionServerId": 21,
     "matchCount": 46,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T07:00:15.865",
     "ID": 3785,
     "incidentStatusId": 1
@@ -344,7 +345,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 3,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T03:23:55.438",
     "ID": 3784,
     "incidentStatusId": 1
@@ -358,7 +359,7 @@
     "messageSource": "NETWORK",
     "detectionServerId": 1,
     "matchCount": 3,
-    "severityId": 1,
+    "severity": "High",
     "creationDate": "2022-03-14T03:23:55.406",
     "ID": 3783,
     "incidentStatusId": 1

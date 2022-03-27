@@ -522,7 +522,7 @@ def test_get_incident_details_fetch(mocker):
                     headers={"Content-type": "application/json"})
     mocker.patch.object(client, '_http_request', side_effect=DemistoException(mock_response, res=mock_response))
     response = get_incident_details_fetch(client, incident_data)
-    assert response == {'ID': 3620, 'creationDate': '2022-03-06T15:23:53.245', 'policyId': 2, 'severityId': 'High',
+    assert response == {'ID': 3620, 'creationDate': '2022-03-06T15:23:53.245', 'policyId': 2, 'severity': 'High',
                         'incidentStatusId': 1, 'detectionDate': '2022-03-06T15:23:39.197', 'policyVersion': 4,
                         'messageSource': 'NETWORK', 'messageType': 'HTTP', 'matchCount': 3,
                         'errorMessage': 'Notice: Incident contains partial data only'}

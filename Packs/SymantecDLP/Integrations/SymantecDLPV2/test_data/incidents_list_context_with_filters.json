@@ -14,7 +14,7 @@
     "detectionServerId": 1,
     "senderIPAddress": "1.1.1.1",
     "ID": 3616,
-    "severityId": 2,
+    "severity": "Medium",
     "incidentStatusId": 21
   },
   {
@@ -32,7 +32,7 @@
     "detectionServerId": 1,
     "senderIPAddress": "1.1.1.1",
     "ID": 3615,
-    "severityId": 1,
+    "severity": "High",
     "incidentStatusId": 21
   }
 ]
