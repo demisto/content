@@ -410,8 +410,8 @@ def test_isolate_endpoint(requests_mock):
 
     res = isolate_endpoint_command(client, args)
     assert res.readable_output == 'The isolation request has been submitted successfully on Endpoint 1111.\n' \
-                              'To check the endpoint isolation status please run:' \
-                              ' !xdr-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'
+                                  'To check the endpoint isolation status please run:' \
+                                  ' !xdr-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'
 
 
 def test_isolate_endpoint_unconnected_machine(requests_mock, mocker):
