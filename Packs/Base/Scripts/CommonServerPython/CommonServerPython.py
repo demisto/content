@@ -9210,7 +9210,7 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
         indicator_type = address_type
 
     else:
-        indicator_ = Common.CustomIndicator(indicator_type=indicator_type,
+        indicator_ = Common.CustomIndicator( indicator_type=indicator_type,
                                             value=indicator,
                                             dbot_score=dbot_score,
                                             data={},
