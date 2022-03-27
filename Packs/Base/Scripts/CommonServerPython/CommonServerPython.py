@@ -9183,7 +9183,7 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
             indicator_ = Common.File(dbot_score=dbot_score, md5=indicator)
             indicator_type = 'md5'
         else:
-            raise DemistoException('This indicator -> {} is incorrect'.format(indicator))
+            raise ValueError('This indicator -> {} is incorrect'.format(indicator))
 
     elif indicator_type is DBotScoreType.IP:
         indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)

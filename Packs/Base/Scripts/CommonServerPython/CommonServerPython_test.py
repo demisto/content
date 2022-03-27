@@ -6538,6 +6538,11 @@ TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN = [
         {'instance': Common.File, 'indicator_type': 'MD5', 'reliability': 'B - Usually reliable', 'integration_name': 'test'}
     ),
     (
+        {'indicator': 'f4dad67d0f0a8e53d8*****937fc9506e81b76e043294da77ae50ce4e8f0482127e7c12',
+         'indicator_type': DBotScoreType.FILE, 'reliability': DBotScoreReliability.A},
+        {'error_message': 'This indicator -> f4dad67d0f0a8e53d8*****937fc9506e81b76e043294da77ae50ce4e8f0482127e7c12 is incorrect'}
+    ),
+    (
         {'indicator': '8.8.8.8', 'indicator_type': DBotScoreType.IP},
         {'instance': Common.IP, 'indicator_type': 'IP', 'reliability': None}
     ),
