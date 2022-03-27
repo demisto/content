@@ -6408,9 +6408,9 @@ class TestFetchWithLookBack:
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch, look_back=look_back, timezone=time_zone)
 
         query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
-        incident_res = self.get_incidents_request(query)
+        incidents_res = self.get_incidents_request(query)
 
-        incidents = filter_incidents_by_duplicates_and_limit(incident_res=incident_res, last_run=last_run, fetch_limit=fetch_limit_param, id_field='incident_id')
+        incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents_res, last_run=last_run, fetch_limit=fetch_limit_param, id_field='incident_id')
 
         last_run = update_last_run_object(last_run=last_run, incidents=incidents, fetch_limit=fetch_limit_param, start_fetch_time=start_fetch_time,
                                           end_fetch_time=end_fetch_time, look_back=look_back, created_time_field='created', id_field='incident_id')
