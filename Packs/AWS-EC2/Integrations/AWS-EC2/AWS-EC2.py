@@ -1570,7 +1570,9 @@ def revoke_security_group_ingress_command(args, aws_client):
         kwargs.update({'SourceSecurityGroupName': args.get('sourceSecurityGroupName')})
 
     response = client.revoke_security_group_ingress(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
+        if 'UnknownIpPermissions' in response:
+            return_error("Security Group ingress rule not found.")
         demisto.results("The Security Group ingress rule was revoked")
 
 
