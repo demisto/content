@@ -498,6 +498,9 @@
       }
     ],
     "typeId": "Armis Alert",
+    "marketplaces": [
+        "xsoar"
+    ],
     "version": -1
   }
 }

@@ -1328,7 +1328,7 @@ def get_test_playbooks_for_marketplacev2(id_set):
     tests = set()
     for test_obj in id_set.get('TestPlaybooks', []):
         for test_id, test_data in test_obj.items():
-            if test_data[test_id].get('marketplaces', []) == ['marketplacev2']:
+            if test_data.get('marketplaces', []) == ['marketplacev2']:
                 tests.add(test_data.get('name'))
     return tests
 
