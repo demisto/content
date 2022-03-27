@@ -271,10 +271,11 @@ def get_search_args(args: dict):
     custom_fields = incident_info.get('CustomFields')
     message_id = custom_fields.get("reportedemailmessageid")
     user_id = custom_fields.get('reportedemailto')
+    delete_type = custom_fields.get('emaildeletetype', args.get('delete_type'))
     delete_from_brand = args.get('delete_from_brand', incident_info.get('sourceBrand'))
 
     search_args = {
-        'delete-type': args.get('delete_type'),
+        'delete-type': delete_type,
         'using-brand': delete_from_brand,
         'email_subject': custom_fields.get('reportedemailsubject'),
         'message-id': message_id,
