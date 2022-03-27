@@ -155,12 +155,12 @@ script:
     description: Send HTTP Multipart request to upload files to Demisto server
   - name: core-delete-incidents
     arguments:
-      - name: ids
-        required: true
-        description: IDs of the incidents to delete
-        isArray: true
-      description: Delete Demisto incidents
-      execution: true
+    - name: ids
+      required: true
+      description: IDs of the incidents to delete
+      isArray: true
+    description: Delete Demisto incidents
+    execution: true
   runonce: false
 tests:
 - DemistoUploadFileV2 Test
