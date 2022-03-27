@@ -272,7 +272,7 @@ def get_search_args(args: dict):
     message_id = custom_fields.get('reportedemailmessageid')
     user_id = custom_fields.get('reportedemailto')
     delete_type = custom_fields.get('emaildeletetype', args.get('delete_type'))
-    delete_from_brand = args.get('delete_from_brand', incident_info.get('sourceBrand'))
+    delete_from_brand = custom_fields.get('deleteemailfrombrand')
 
     search_args = {
         'delete-type': delete_type,
