@@ -203,6 +203,8 @@ tasks:
         simple: ${inputs.fqdn_or_ip}
       IPs:
         simple: ${inputs.fqdn_or_ip}
+      MachineIDs:
+        simple: ${inputs.machine_ID}
     separatecontext: true
     loop:
       iscommand: false
@@ -251,6 +253,11 @@ inputs:
   required: false
   description: 'Date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, etc.).'
   playbookInputQuery:
+- key: machine_ID
+  value: {}
+  required: false
+  description: Provide the Machine ID/s of the system/s that you would like to retrieve.
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)
