@@ -386,9 +386,9 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                 relationships=relationships
             ))
         else:
-            command_results.append(get_indicator_with_dbotscore_unknown(indicator=ip_,
-                                                                        indicator_type=DBotScoreType.IP,
-                                                                        reliability=client.reliability))
+            command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=ip_,
+                                                                                  indicator_type=DBotScoreType.IP,
+                                                                                  reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query.')]
     return command_results
@@ -443,9 +443,9 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
                 relationships=relationships
             ))
         else:
-            command_results.append(get_indicator_with_dbotscore_unknown(indicator=domain,
-                                                                        indicator_type=DBotScoreType.DOMAIN,
-                                                                        reliability=client.reliability))
+            command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=domain,
+                                                                                  indicator_type=DBotScoreType.DOMAIN,
+                                                                                  reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query')]
 
@@ -518,9 +518,9 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                 relationships=relationships
             ))
         else:
-            command_results.append(get_indicator_with_dbotscore_unknown(indicator=hash_,
-                                                                        indicator_type=DBotScoreType.FILE,
-                                                                        reliability=client.reliability))
+            command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=hash_,
+                                                                                  indicator_type=DBotScoreType.FILE,
+                                                                                  reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query')]
 
@@ -548,9 +548,9 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
         raw_response = client.query(section='url', argument=url)
         if raw_response:
             if raw_response == 404:
-                command_results.append(get_indicator_with_dbotscore_unknown(indicator=url,
-                                                                            indicator_type=DBotScoreType.URL,
-                                                                            reliability=client.reliability))
+                command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=url,
+                                                                                      indicator_type=DBotScoreType.URL,
+                                                                                      reliability=client.reliability))
             else:
 
                 relationships = []

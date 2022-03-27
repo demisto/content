@@ -219,9 +219,9 @@ def domain_command(client: Client, args: Dict[str, str]) -> List[CommandResults]
     for domain in domains:
         report = client.url_report(domain)
         if report == "Not Found":
-            command_results.append(get_indicator_with_dbotscore_unknown(indicator=domain,
-                                                                        indicator_type=DBotScoreType.DOMAIN,
-                                                                        reliability=client.reliability))
+            command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=domain,
+                                                                                  indicator_type=DBotScoreType.DOMAIN,
+                                                                                  reliability=client.reliability))
             continue
 
         dbot_score = Common.DBotScore(indicator=domain,
@@ -263,9 +263,9 @@ def url_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
     for url in urls:
         report = client.url_report(url)
         if report == "Not Found":
-            command_results.append(get_indicator_with_dbotscore_unknown(indicator=url,
-                                                                        indicator_type=DBotScoreType.URL,
-                                                                        reliability=client.reliability))
+            command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=url,
+                                                                                  indicator_type=DBotScoreType.URL,
+                                                                                  reliability=client.reliability))
             continue
 
         dbot_score = Common.DBotScore(indicator=url,
@@ -387,9 +387,9 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
             report = client.file_report(file_hash)
         except Exception as err:
             if 'Error in API call [404] - Not Found' in str(err):
-                command_results.append(get_indicator_with_dbotscore_unknown(indicator=file_hash,
-                                                                            indicator_type=DBotScoreType.FILE,
-                                                                            reliability=client.reliability))
+                command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=file_hash,
+                                                                                      indicator_type=DBotScoreType.FILE,
+                                                                                      reliability=client.reliability))
                 continue
             else:
                 raise ValueError(err)
