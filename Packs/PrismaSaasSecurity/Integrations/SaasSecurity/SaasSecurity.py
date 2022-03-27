@@ -417,37 +417,44 @@ def get_remediation_status_command(client: Client, args: dict) -> CommandResults
         raw_response=raw_res)
 
 
-def fetch_incidents(client: Client, first_fetch_time, fetch_limit_param, fetch_state, fetch_severity, fetch_status,
+def fetch_incidents(client: Client, first_fetch_time, fetch_limit, fetch_state, fetch_severity, fetch_status,
                     fetch_app_ids, mirror_direction=None, integration_instance=''):
     last_run = demisto.getLastRun()
-    demisto.debug(f"[SaaS] last run is: {last_run}")
+    last_fetch = last_run.get('last_run_time')
 
-    fetch_limit = last_run.get('limit') or fetch_limit_param
-    start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run, first_fetch_time, date_format=SAAS_SECURITY_DATE_FORMAT)
-    demisto.debug(f"[SaaS] fetch time is from: {start_fetch_time} - to: {end_fetch_time}")
+    if last_fetch is None:
+        last_fetch = dateparser.parse(first_fetch_time, settings={'TIMEZONE': 'UTC'})
+        last_fetch = last_fetch.strftime(SAAS_SECURITY_DATE_FORMAT)[:-4] + 'Z'  # format ex: 2021-08-23T09:26:25.872Z
 
-    results = client.get_incidents(limit=fetch_limit, from_time=start_fetch_time[:-4] + 'Z', state=fetch_state, severity=fetch_severity,
-                                  status=fetch_status, app_ids=fetch_app_ids).get('resources', [])
-    demisto.debug(f"[SaaS] incidents before filtering: {results}")
+    current_fetch = last_fetch
+    results = client.get_incidents(limit=fetch_limit, from_time=last_fetch, state=fetch_state, severity=fetch_severity,
+                                   status=fetch_status, app_ids=fetch_app_ids).get('resources', [])
 
-    incidents = filter_incidents_by_duplicates_and_limit(results, last_run, fetch_limit_param, 'incident_id')
-    demisto.debug(f"[SaaS] incidents after filtering: {incidents}")
+    last_fetch_datetime = datetime.strptime(last_fetch, SAAS_SECURITY_DATE_FORMAT)
+    incidents = list()
+    for inc in results:
 
-    updated_last_run = update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, 0, created_time_field='created_at', id_field='incident_id', date_format=SAAS_SECURITY_DATE_FORMAT, increase_last_run_time=True)
-    demisto.debug(f"[SaaS] updated last run: {updated_last_run}")
-
-    incidents_result = list()
-    for inc in incidents:
+        # We fetch the incidents by the "updated-at" field,
+        # So we need to filter the incidents created before the last_fetch
+        date_created = inc.get('created_at')
+        if datetime.strptime(date_created, SAAS_SECURITY_DATE_FORMAT) < last_fetch_datetime:
+            continue
 
         inc['mirror_direction'] = mirror_direction
         inc['mirror_instance'] = integration_instance
         inc['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
 
         incident = convert_to_xsoar_incident(inc)
-        incidents_result.append(incident)
+        incidents.append(incident)
 
-    demisto.setLastRun(updated_last_run)
-    demisto.incidents(incidents_result)
+        date_updated = inc.get('updated_at')
+        date_updated_dt = datetime.strptime(date_updated, SAAS_SECURITY_DATE_FORMAT) + timedelta(milliseconds=1)
+
+        if date_updated_dt > datetime.strptime(current_fetch, SAAS_SECURITY_DATE_FORMAT):
+            current_fetch = date_updated_dt.strftime(SAAS_SECURITY_DATE_FORMAT)[:-4] + 'Z'
+
+    demisto.setLastRun({'last_run_time': current_fetch})
+    demisto.incidents(incidents)
 
 
 def get_remote_data_command(client, args):
