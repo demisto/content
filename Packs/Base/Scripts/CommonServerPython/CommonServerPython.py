@@ -9135,7 +9135,7 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
     returns CommandResults with readable_output generic in this case, and indicator with DBotScore unknown
 
     :type indicator: ``str``
-    :param name: The value of the indicator
+    :param indicator: The value of the indicator
 
     :type indicator_type: ``DBotScoreType``
     :param indicator_type: use DBotScoreType class [Unsupport in types CVE and ATTACKPATTERN]
