@@ -1944,6 +1944,7 @@ class JsonTransformer:
     :return: None
     :rtype: ``None``
     """
+
     def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
         """
         Constructor for JsonTransformer
@@ -2074,7 +2075,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :param date_fields: A list of date fields to format the value to human-readable output.
 
         :type json_transform_mapping: ``Dict[str, JsonTransformer]``
-        :param json_transform_mapping: A mapping between a header key to correspoding JsonTransformer
+        :param json_transform_mapping: A mapping between a header key to corresponding JsonTransformer
 
         :type is_auto_json_transform: ``bool``
         :param is_auto_json_transform: Boolean to try to auto transform complex json
@@ -6404,6 +6405,190 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
     })
     if exit:
         sys.exit(0)
+
+
+class CommandRunner:
+    """
+    Class for executing multiple commands and save the results of each command.
+
+    :return: None
+    :rtype: ``None``
+    """
+    class Command:
+        """
+        Data class with the data required to execute a command.
+
+        :return: None
+        :rtype: ``None``
+        """
+        def __init__(self, commands, args_lst, brand=None, instance=None):
+            """
+
+            :param commands: The commands list or a single command
+            :type commands: str + List[str]
+            :param args_lst: The args list or a single args
+            :type args_lst: List[Dict] + Dict
+            :param brand: The brand to use
+            :type brand: str
+            :param instance: The instance to use
+            :type instance: str
+            """
+            if isinstance(commands, str) and isinstance(args_lst, dict):
+                commands = [commands]
+                args_lst = [args_lst]
+            if isinstance(commands, str) and isinstance(args_lst, list):
+                commands = [commands for _ in range(len(args_lst))]
+            self._is_valid(commands, args_lst)
+            self.commands = commands
+            self.args_lst = args_lst
+            if brand:
+                for args in self.args_lst:
+                    args.update({'using-brand': brand})
+            if instance:
+                for args in self.args_lst:
+                    args.update({'using': instance})
+
+        @staticmethod
+        def _is_valid(commands, args_lst):
+            """
+            Error handling of the given arguments
+            :param commands: list of commands
+            :param args_lst: list of args
+            :return:
+            """
+            if not isinstance(commands, list):
+                raise DemistoException('Expected "commands" argument to be a list. received: {}'.format(type(commands)))
+            if not isinstance(args_lst, list):
+                raise DemistoException('Expected "args_lst" argument to be a list. received: {}'.format(type(args_lst)))
+            if len(commands) != len(args_lst):
+                raise DemistoException('"commands" and "args_lst" should be in the same size')
+
+    class Result:
+        """
+        Class for the result of the command.
+
+        :return: None
+        :rtype: ``None``
+        """
+        def __init__(self, command, args, brand, instance, result):
+            """
+            :param command: command that was run.
+            :type command ``str``
+            :param args: args that was run.
+            :type args: ``dict``
+            :param brand: The brand that was used.
+            :type brand: ``str``
+            :param instance: The instance that was used.
+            :type instance: ``str``
+            :param result: The result of the command.
+            :type result: ``object``
+            """
+            self.command = command
+            self.args = args
+            self.brand = brand
+            self.instance = instance
+            self.result = result
+
+    @staticmethod
+    def execute_commands(command, extract_contents=True):
+        """
+        Runs the `demisto.executeCommand()` and gets all the results, including the errors, returned from the command.
+
+        :type command: ``Command``
+        :param command: The commands to run. (required)
+
+        :type extract_contents: ``bool``
+        :param extract_contents: Whether to extract Contents part of the results. Default is True.
+
+        :return: A tuple of two lists: the command results list and command errors list.
+        :rtype: ``Tuple[List[ResultWrapper], List[ResultWrapper]]``
+        """
+        results, errors = [], []
+        for command, args in zip(command.commands, command.args_lst):
+            try:
+                execute_command_results = demisto.executeCommand(command, args)
+                for res in execute_command_results:
+                    brand_name = res.get('Brand', 'Unknown') if isinstance(res, dict) else 'Unknown'
+                    module_name = res.get('ModuleName', 'Unknown') if isinstance(res, dict) else 'Unknown'
+                    if is_error(res):
+                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, get_error(res)))
+                    else:
+                        if extract_contents:
+                            res = res.get('Contents', {})
+                        if res is None:
+                            res = {}
+                        results.append(CommandRunner.Result(command, args, brand_name, module_name, res))
+            except ValueError as e:
+                # We expect this error when the command is not supported.
+                demisto.debug('demisto.executeCommand received an error because the command is not supported:'
+                              ' {e}'.format(e=str(e)))
+        return results, errors
+
+    @staticmethod
+    def run_commands_with_summary(commands):
+        """
+        Given a list of commands, return a list of results (to pass to return_results).
+        In addition, it will create a `CommandResult` of the summary of the commands, which is a `readable_output`.
+
+        :param commands: A list of commands.
+        :type commands: ``List[Command]``
+        :return: list of results
+        """
+        full_results, full_errors = [], []
+        for command in commands:
+            results, errors = CommandRunner.execute_commands(command, extract_contents=False)
+            full_results.extend(results)
+            full_errors.extend(errors)
+
+        summary_md = CommandRunner.get_results_summary(full_results, full_errors)
+        command_results = [res.result for res in full_results]
+        if not command_results:
+            if full_errors:  # no results were given but there are errors
+                errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
+                error_msg = '\n'.join(['Script failed. The following errors were encountered: '] + errors)
+            else:
+                error_msg = 'The commands that run are not supported in this Instance. ' \
+                            'Try to configure the integrations in XSOAR settings.'
+            raise DemistoException(error_msg)
+
+        command_results.append(CommandResults(readable_output=summary_md))
+        return command_results
+
+    @staticmethod
+    def get_results_summary(results, errors):
+        """
+        Get a Human Readable result for all the results of the commands.
+        :param results: list of returned results
+        :param errors: list of returned errors
+        :return: `CommandResults` of HumanReadable that summarizes the results and errors.
+        """
+        results_summary_table = []
+        headers = ['Instance', 'Command', 'Result', 'Comment']
+        for res in results:
+            # don't care about using arg in command
+            res.args.pop('using', None)
+            res.args.pop('using-brand', None)
+            command = {'command': res.command,
+                       'args': res.args}
+            results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=res.brand,
+                                                                                         instance=res.instance),
+                                          'Command': command,
+                                          'Result': 'Success',
+                                          'Comment': None})
+
+        for err in errors:
+            # don't care about using arg in command
+            err.args.pop('using', None)
+            err.args.pop('using-brand', None)
+            command = {'command': err.command,
+                       'args': err.args}
+            results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=err.brand,
+                                                                                         instance=err.instance),
+                                          'Command': command,
+                                          'Result': 'Error',
+                                          'Comment': err.result})
+        summary_md = tableToMarkdown('Results Summary', results_summary_table, headers=headers, is_auto_json_transform=True)
+        return summary_md
 
 
 def execute_command(command, args, extract_contents=True, fail_on_error=True):
