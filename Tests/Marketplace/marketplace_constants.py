@@ -21,6 +21,9 @@ BASE_PACK_DEPENDENCY_DICT = {
 }
 
 
+SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule']
+
+
 class BucketUploadFlow(object):
     """ Bucket Upload Flow constants
 
@@ -103,6 +106,7 @@ class PackTags(object):
     USE_CASE = "Use Case"
     TRANSFORMER = "Transformer"
     FILTER = "Filter"
+    COLLECTION = "Collection"
 
 
 class Metadata(object):

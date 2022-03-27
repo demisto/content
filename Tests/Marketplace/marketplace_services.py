@@ -25,7 +25,7 @@ from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT
+    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -109,6 +109,7 @@ class Pack(object):
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
         self._is_modified = None  # initialized in detect_modified function
+        self._is_siem = False  # initialized in collect_content_items function
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
         self._first_level_dependencies = {}  # initialized in set_pack_dependencies function
@@ -464,6 +465,22 @@ class Pack(object):
         if yaml_type == 'Playbook':
             if yaml_content.get('name').startswith('TIM '):
                 self._is_feed = True
+
+
+    def is_siem_pack(self, yaml_content, yaml_type):
+        """
+        Checks if an pack is a SIEM pack. If so, updates Pack._is_siem
+
+        Args:
+            yaml_content: The yaml content extracted by yaml.safe_load().
+            yaml_type: The type of object to check.
+        """
+        if yaml_type == 'Integration':
+            if yaml_content.get('isFetchEvents', False) is True:
+                self._is_siem = True
+        if yaml_type in SIEM_RULES_OBJECTS:
+            self._is_siem = True
+
 
     @staticmethod
     def _clean_release_notes(release_notes_lines):
@@ -1805,18 +1822,21 @@ class Pack(object):
                         })
 
                     elif current_directory == PackFolders.PARSING_RULES.value:
+                        self.is_siem_pack(content_item, 'ParsingRule')
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                         })
 
                     elif current_directory == PackFolders.MODELING_RULES.value:
+                        self.is_siem_pack(content_item, 'ModelingRule')
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                         })
 
                     elif current_directory == PackFolders.CORRELATION_RULES.value:
+                        self.is_siem_pack(content_item, 'CorrelationRule')
                         folder_collected_items.append({
                             'id': content_item.get('global_rule_id', ''),
                             'name': content_item.get('name', ''),
@@ -1905,6 +1925,7 @@ class Pack(object):
         tags |= {PackTags.USE_CASE} if self._use_cases else set()
         tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
         tags |= {PackTags.FILTER} if self._contains_filter else set()
+        tags |= {PackTags.COLLECTION} if self._is_siem else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
