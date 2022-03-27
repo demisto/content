@@ -9214,7 +9214,7 @@ def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=
                                             context_prefix=context_prefix)
 
     indicator_type = indicator_type.upper()
-    readable_output = tableToMarkdown(name=f'{integration_name}:',
+    readable_output = tableToMarkdown(name='{}:'.format(integration_name),
                                       t={indicator_type: indicator, 'Result': 'Not found'},
                                       headers=[indicator_type, 'Result'])
 
