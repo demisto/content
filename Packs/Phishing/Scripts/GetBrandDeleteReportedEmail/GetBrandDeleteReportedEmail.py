@@ -31,6 +31,13 @@ def get_delete_reported_email_integrations():
 
 def main():
     try:
+        incident_info = demisto.incident()
+        custom_fields = incident_info.get('CustomFields')
+
+        if not custom_fields.get('deleteemailfrombrand'):
+            demisto.executeCommand('setIncident',
+                                   {'deleteemailfrombrand': incident_info.get('sourceBrand')})
+
         return_results({"hidden": False,
                         "options": get_delete_reported_email_integrations()
                         })
