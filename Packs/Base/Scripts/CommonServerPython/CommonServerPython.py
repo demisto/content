@@ -2724,6 +2724,9 @@ class Common(object):
         :type reliability: ``DBotScoreReliability``
         :param reliability: use DBotScoreReliability class
 
+        :type message: ``str``
+        :param message: Used to message on the api response, for example: When return api response is "Not found".
+
         :return: None
         :rtype: ``None``
         """
@@ -2738,7 +2741,7 @@ class Common(object):
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
         def __init__(self, indicator, indicator_type, integration_name='', score=None, malicious_description=None,
-                     reliability=None):
+                     reliability=None, message=None):
 
             if not DBotScoreType.is_valid_type(indicator_type):
                 raise TypeError('indicator_type must be of type DBotScoreType enum')
@@ -2760,6 +2763,7 @@ class Common(object):
             self.score = score
             self.malicious_description = malicious_description
             self.reliability = reliability
+            self.message = message
 
         @staticmethod
         def is_valid_score(score):
@@ -2787,6 +2791,9 @@ class Common(object):
 
             if self.reliability:
                 dbot_context['Reliability'] = self.reliability
+
+            if self.message:
+                dbot_context['Message'] = self.message
 
             ret_value = {
                 Common.DBotScore.get_context_path(): dbot_context
