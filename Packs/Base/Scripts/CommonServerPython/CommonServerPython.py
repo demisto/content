@@ -9164,7 +9164,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     return last_run_time.strftime(date_format), now.strftime(date_format)
 
 
-def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field='id'):
+def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
     """
     Remove duplicate incidents from response and returns the incidents till limit
 
@@ -9254,7 +9254,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     return new_found_incidents_ids
 
 
-def get_found_incident_ids(last_run, incidents, look_back, id_field='id'):
+def get_found_incident_ids(last_run, incidents, look_back, id_field):
     """
     Gets the found incident ids
 
@@ -9343,7 +9343,7 @@ def get_updated_last_run_object(last_run, incidents, fetch_limit, look_back, sta
 
 
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
-                           created_time_field, id_field='id', date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
     """
     Updates the LastRun object
 
