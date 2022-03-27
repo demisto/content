@@ -60,7 +60,7 @@ run-validations:
       else
         # replace slashes ('/') in the branch name, if exist, with underscores ('_')
         UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
-        if ! [[ git clone --depth=1 -q https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_CI_BRANCH ]];
+        if [[ ! git git clone --depth=1 -q https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_CI_BRANCH ]];
         then
             echo >&2 "Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
             exit 1
