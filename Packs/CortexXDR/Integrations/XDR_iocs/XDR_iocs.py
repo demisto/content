@@ -130,6 +130,7 @@ def create_file_sync(file_path, batch_size: int = 200):
     with open(file_path, 'w') as _file:
         for ioc in map(lambda x: demisto_ioc_to_xdr(x), get_iocs_generator(size=batch_size)):
             if ioc:
+                demisto.debug(f'writing {ioc.get("indicator", "empty indicator")} ioc to file.')
                 _file.write(json.dumps(ioc) + '\n')
 
 
@@ -139,6 +140,7 @@ def get_iocs_generator(size=200, query=None) -> Iterable:
     try:
         for iocs in map(lambda x: x.get('iocs', []), IndicatorsSearcher(size=size, query=query)):
             for ioc in iocs:
+                demisto.debug(f'got {ioc.get("value", "empty indicator")} ioc from xsoar.')
                 yield ioc
     except StopIteration:
         pass
