@@ -9155,8 +9155,8 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
     if not context_prefix and (indicator_type is DBotScoreType.CUSTOM or not DBotScoreType.is_valid_type(indicator_type)):
         raise ValueError('Indicator type is invalid')
 
-    #  There is no justification to support the following two types, because they have a fixed dbotscore.
     if indicator_type in [DBotScoreType.CVE, DBotScoreType.ATTACKPATTERN]:
+        #  not supportted, because they have a fixed dbotscore
         msg_error = 'DBotScoreType.{} is unsupported'.format(indicator_type.upper())
         raise ValueError(msg_error)
 
