@@ -35,4 +35,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Get host forensics - Generic](Insert the link to your image here)
+![Get host forensics - Generic](../doc_files/Get_host_forensics_-_Generic.png)
