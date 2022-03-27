@@ -9383,8 +9383,8 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
 
     found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field)
 
-    updated_last_run = create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
-                                                   created_time_field, date_format, increase_last_run_time)
+    updated_last_run = create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time,
+                                                      end_fetch_time, created_time_field, date_format, increase_last_run_time)
 
     if found_incidents:
         updated_last_run.update({'found_incident_ids': found_incidents})
