@@ -134,7 +134,8 @@ class TestUtils(object):
                 "name": name,
                 "file_path": file_path,
                 "marketplaces": [
-                  "xsoar", "marketplacev2"
+                    "xsoar",
+                    "marketplacev2"
                 ]
             }
         }
@@ -388,7 +389,7 @@ class TestChangedTestPlaybook:
 class TestChangedIntegration:
     TEST_ID = 'PagerDuty Test'
     # points at a real file. if that file changes path the test should fail
-    GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty_description.md"
+    GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.py"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET, marketplace_version='marketplacev2')

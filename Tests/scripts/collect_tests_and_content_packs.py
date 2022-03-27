@@ -1149,7 +1149,7 @@ def filter_tests(tests: set, id_set: dict, modified_packs: set, marketplace_vers
     tests_without_non_supported = remove_unsupported_marketplace_tests_version(tests_without_ignored, id_set,
                                                                                marketplace_version)
     tests_without_non_supported_packs = remove_tests_for_non_supported_packs(tests_without_non_supported, id_set,
-                                                                       marketplace_version)
+                                                                             marketplace_version)
 
     if is_nightly:
         # Removing private packs' tests from nightly, since they aren't runnable in nightly
@@ -1236,7 +1236,7 @@ def get_test_list_and_content_packs_to_install(files_string,
 
     # Check if only README file in file string, if so, no need to create the servers.
     documentation_changes_only = is_documentation_changes_only(files_string)
-    create_filter_envs_file(from_version, to_version, documentation_changes_only=documentation_changes_only)
+    # create_filter_envs_file(from_version, to_version, documentation_changes_only=documentation_changes_only)
 
     tests = set([])
     packs_to_install = set([])
@@ -1453,8 +1453,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
         if marketplace_version == 'marketplacev2':
             # we are adding to the nightly on marketplacev2 few tests that are supported in both marketplacees
             # see https://github.com/demisto/etc/issues/44350
-            tests = CONF.get_marketplacev2_tests()
-            packs_to_install = CONF.get_packs_of_tested_integrations(tests, ID_SET)
+            tests = set(CONF.get_marketplacev2_tests())
+            packs_to_install = set(CONF.get_packs_of_tested_integrations(tests, ID_SET))
 
             # collect all packs and tests that are compatible only with marketplacev2
             tests.update(get_test_playbooks_for_marketplacev2(ID_SET))

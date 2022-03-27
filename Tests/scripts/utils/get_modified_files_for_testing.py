@@ -158,7 +158,7 @@ def create_type_to_file(files_string: str) -> Dict[FileType, Set[str]]:
     return types_to_files
 
 
-def filter_modified_files(files_string: str, id_set: dict) -> Dict[FileType, Set[str]]:
+def filter_modified_files(files_string: str, id_set: dict) -> str:
     """filter out the files in the diff list (files_string) that are not only supported in marketplacev2
 
     Returns:
@@ -182,7 +182,7 @@ def filter_modified_files(files_string: str, id_set: dict) -> Dict[FileType, Set
                         file_path = file_path.rstrip('_description.md')
                     file_data = file_path.split('/')
                     obj_repo_name = replace_to_id_set_name(file_data[2])
-                    for obj in id_set.get(obj_repo_name):
+                    for obj in id_set.get(obj_repo_name, []):
                         data = obj[list(obj.keys())[0]]
                         if file_path in data.get('file_path') and data.get('marketplaces') == ['marketplacev2']:
                             v2_files_string += f'{line}\n'
