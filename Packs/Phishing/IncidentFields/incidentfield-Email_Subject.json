@@ -35,7 +35,7 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "fromVersion": "5.0.0",
     "marketplaces": [
         "xsoar"

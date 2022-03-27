@@ -35,7 +35,7 @@
   "threshold": 72,
   "type": "shortText",
   "unmapped": false,
-  "unsearchable": true,
+  "unsearchable": false,
   "useAsKpi": true,
   "validationRegex": "",
   "version": -1,

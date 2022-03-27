@@ -25,7 +25,7 @@
         "Symantec DLP Network Incident"
     ],
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,

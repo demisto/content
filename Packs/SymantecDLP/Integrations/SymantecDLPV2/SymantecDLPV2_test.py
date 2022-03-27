@@ -12,13 +12,16 @@ def util_load_json(path):
 
 SINGLE_INCIDENTS_MOCK_RESPONSE = util_load_json('test_data/fetch_single_incident.json')
 MULTIPLE_INCIDENTS_MOCK_RESPONSE = util_load_json('test_data/fetch_multiple_incident.json')
+MULTIPLE_INCIDENTS_SAME_TIME_MOCK_RESPONSE = util_load_json('test_data/fetch_multiple_incidents_same_time.json')
 FIRST_STATIC_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_static_attributes_first.json')
 FIRST_EDITABLE_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_editable_attributes_first.json')
 SECOND_STATIC_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_static_attributes_second.json')
 SECOND_EDITABLE_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_editable_attributes_second.json')
+THIRD_STATIC_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_static_attributes_third.json')
+THIRD_EDITABLE_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_editable_attributes_third.json')
 
 FIRST_INCIDENT_DETAILS = json.dumps({"ID": 3620, "creationDate": "2022-03-06T15:23:53.245", "policyId": 2,
-                                     "severityId": "High",
+                                     "severity": "High",
                                      "incidentStatusId": 1, "detectionDate": "2022-03-06T15:23:39.197",
                                      "senderIPAddress": "1.1.1.1",
                                      "endpointMachineIpAddress": "1.1.1.1", "policyName": "Network Test policy",
@@ -26,6 +29,7 @@ FIRST_INCIDENT_DETAILS = json.dumps({"ID": 3620, "creationDate": "2022-03-06T15:
                                      "messageSource": "NETWORK", "messageType": "HTTP",
                                      "detectionServerName": "Detection - Network monitor",
                                      "policyGroupName": "policy_group.default.name", "matchCount": 3,
+                                     "preventOrProtectStatusId": 0,
                                      "customAttributeGroup": [
                                          {"name": "custom_attribute_group.default",
                                           "customAttribute": [{"name": "Custom Attribue1", "index": 1},
@@ -37,19 +41,37 @@ FIRST_INCIDENT_DETAILS = json.dumps({"ID": 3620, "creationDate": "2022-03-06T15:
                                                        "recipientUrl": "http://2.2.2.254/latest/api/token"}})
 
 SECOND_INCIDENT_DETAILS = json.dumps(
-    {"ID": 3629, "creationDate": "2022-03-07T07:00:11.648", "policyId": 43, "severityId": "High",
-     "incidentStatusId": 1, "detectionDate": "2022-03-07T07:00:00.268", "policyName": "Illegal Drugs",
+    {"ID": 3629, "creationDate": "2022-03-06T15:23:53.245", "policyId": 43, "severity": "High",
+     "incidentStatusId": 1, "detectionDate": "2022-03-06T15:23:39.197", "policyName": "Illegal Drugs",
      "policyVersion": 1, "messageSource": "DISCOVER", "messageType": "RAW",
      "detectionServerName": "Detection - Discovery", "policyGroupName": "Test Policy group for Endpoint Discover",
-     "matchCount": 100, "customAttributeGroup": [{"name": "custom_attribute_group.default",
-                                                  "customAttribute": [{"name": "Custom Attribue1", "index": 1},
-                                                                      {"name": "cust2", "index": 2},
-                                                                      {"name": "bla", "index": 3}]},
-                                                 {"name": "att group2",
-                                                  "customAttribute": [{"name": "kjv", "index": 4}]}],
+     "matchCount": 100, "preventOrProtectStatusId": 0,
+     "customAttributeGroup": [{"name": "custom_attribute_group.default",
+                               "customAttribute": [{"name": "Custom Attribue1", "index": 1},
+                                                   {"name": "cust2", "index": 2},
+                                                   {"name": "bla", "index": 3}]},
+                              {"name": "att group2",
+                               "customAttribute": [{"name": "kjv", "index": 4}]}],
      "discoverName": "423.txt", "discoverRepositoryLocation": "c:/das/423.txt",
      "fileOwner": "BUILTIN\\Administrators", "fileAccessDate": "2022-01-05T14:10:04.798", "discoverServer": "c:",
-     "discoverTargetName": "Discovery server - File system", "discoverScanStartDate": "2022-03-07T07:00:00"})
+     "discoverTargetName": "Discovery server - File system", "discoverScanStartDate": "2022-03-06T07:00:00"})
+
+THIRD_INCIDENT_DETAILS = json.dumps({"ID": 3630, "creationDate": "2022-03-06T16:21:30.180", "policyId": 2,
+                                     "severity": "High", "incidentStatusId": 1, "detectionDate":
+                                         "2022-03-06T16:21:32.194", "senderIPAddress": "1.1.1.2",
+                                     "endpointMachineIpAddress": "1.1.1.2",
+                                     "policyName": "Network Test policy",
+                                     "policyVersion": 4, "messageSource": "NETWORK", "messageType": "HTTP",
+                                     "detectionServerName": "Detection - Network monitor", "policyGroupName":
+                                         "policy_group.default.name", "matchCount": 3, "preventOrProtectStatusId": 0,
+                                     "customAttributeGroup": [{"name": "custom_attribute_group.default",
+                                                               "customAttribute": [
+                                                                   {"name": "Custom Attribue1", "index": 1},
+                                                                   {"name": "cust2", "index": 2},
+                                                                   {"name": "bla", "index": 3}]}, {"name": "att group2",
+                                                                                                   "customAttribute": [
+                                                                                                       {"name": "kjv",
+                                                                                                        "index": 4}]}]})
 
 
 def test_parse_custom_attribute():
@@ -256,11 +278,10 @@ def test_get_incident_details_command(mocker):
     client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
                     headers={"Content-type": "application/json"})
     args = {'incident_id': '3620', 'custom_attributes': 'all'}
-    static_mock_response = util_load_json('test_data/incident_static_attributes_first.json')
-    editable_mock_response = util_load_json('test_data/incident_editable_attributes_first.json')
 
-    mocker.patch.object(client, 'get_incident_static_attributes_request', return_value=static_mock_response)
-    mocker.patch.object(client, 'get_incident_editable_attributes_request', return_value=editable_mock_response)
+    mocker.patch.object(client, 'get_incident_static_attributes_request', return_value=FIRST_STATIC_ATT_MOCK_RESPONSE)
+    mocker.patch.object(client, 'get_incident_editable_attributes_request',
+                        return_value=FIRST_EDITABLE_ATT_MOCK_RESPONSE)
 
     incidents_response = get_incident_details_command(client, args)
     expected_response = util_load_json('test_data/incident_details_context.json')
@@ -357,25 +378,10 @@ def test_get_list_remediation_status(mocker):
 
 
 @freeze_time("2022-03-07T13:34:14Z")
-def test_fetch_incidents__single(requests_mock):
+def test_fetch_incidents_single(requests_mock):
     """Tests the fetch-incidents function single incident
     """
     from SymantecDLPV2 import Client, fetch_incidents
-    incident_details = json.dumps(
-        {"ID": 3620, "creationDate": "2022-03-06T15:23:53.245", "policyId": 2, "severityId": "High",
-         "incidentStatusId": 1, "detectionDate": "2022-03-06T15:23:39.197", "senderIPAddress": "1.1.1.1",
-         "endpointMachineIpAddress": "1.1.1.1", "policyName": "Network Test policy", "policyVersion": 4,
-         "messageSource": "NETWORK", "messageType": "HTTP",
-         "detectionServerName": "Detection - Network monitor",
-         "policyGroupName": "policy_group.default.name", "matchCount": 3, "customAttributeGroup":
-             [{"name": "custom_attribute_group.default", "customAttribute": [{"name": "Custom Attribue1", "index": 1},
-                                                                             {"name": "cust2", "index": 2},
-                                                                             {"name": "bla", "index": 3}]},
-              {"name": "att group2", "customAttribute": [{"name": "kjv", "index": 4}]}],
-         "messageSubject": "HTTP incident", "networkSenderPort": 59637,
-         "recipientInfo": {"recipientDomain": "2.2.2.254", "recipientPort": 80,
-                           "recipientUrl": "http://2.2.2.254/latest/api/token"}})
-
     # mock responses
     requests_mock.post(
         'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents', json=SINGLE_INCIDENTS_MOCK_RESPONSE)
@@ -391,11 +397,11 @@ def test_fetch_incidents__single(requests_mock):
 
     incidents = fetch_incidents(client, fetch_time='3 days', fetch_limit='1', last_run={})
     assert len(incidents) == 1
-    assert incidents[0].get('rawJSON') == incident_details
+    assert incidents[0].get('rawJSON') == FIRST_INCIDENT_DETAILS
 
 
 @freeze_time("2022-03-07T13:34:14Z")
-def test_fetch_incidents__multiple(requests_mock):
+def test_fetch_incidents_multiple(requests_mock):
     """Tests the fetch-incidents function with multiple incidents
     """
     from SymantecDLPV2 import Client, fetch_incidents
@@ -425,7 +431,7 @@ def test_fetch_incidents__multiple(requests_mock):
     assert incidents[1].get('rawJSON') == SECOND_INCIDENT_DETAILS
 
 
-def test_fetch_incidents__last_run(requests_mock):
+def test_fetch_incidents_last_run(requests_mock):
     """
     Given:
         Fetch incident with last run (not first time fetch)
@@ -462,7 +468,7 @@ def test_fetch_incidents__last_run(requests_mock):
     assert incidents[0].get('rawJSON') == SECOND_INCIDENT_DETAILS
 
 
-def test_fetch_incidents__last_run_no_fetch(requests_mock):
+def test_fetch_incidents_last_run_no_fetch(requests_mock):
     """
     Given:
         Fetch incident with last run (not first time fetch)
@@ -519,4 +525,87 @@ def test_get_incident_details_fetch(mocker):
     assert response == {'ID': 3620, 'creationDate': '2022-03-06T15:23:53.245', 'policyId': 2, 'severityId': 'High',
                         'incidentStatusId': 1, 'detectionDate': '2022-03-06T15:23:39.197', 'policyVersion': 4,
                         'messageSource': 'NETWORK', 'messageType': 'HTTP', 'matchCount': 3,
-                        'description': 'Notice: Incident contains partial data only'}
+                        'errorMessage': 'Notice: Incident contains partial data only'}
+
+
+@freeze_time("2022-03-05T13:34:14Z")
+def test_fetch_incidents_same_time(requests_mock):
+    """Tests the fetch-incidents function where the last run date is equal to the new incidents date
+    """
+    from SymantecDLPV2 import Client, fetch_incidents
+
+    # mock responses
+    requests_mock.post(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents',
+        json=MULTIPLE_INCIDENTS_SAME_TIME_MOCK_RESPONSE)
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3620/staticAttributes',
+        json=FIRST_STATIC_ATT_MOCK_RESPONSE)
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3620/editableAttributes',
+        json=FIRST_EDITABLE_ATT_MOCK_RESPONSE)
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3629/staticAttributes',
+        json=SECOND_STATIC_ATT_MOCK_RESPONSE)
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3629/editableAttributes',
+        json=SECOND_EDITABLE_ATT_MOCK_RESPONSE)
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3630/staticAttributes',
+        json=THIRD_STATIC_ATT_MOCK_RESPONSE)
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3630/editableAttributes',
+        json=THIRD_EDITABLE_ATT_MOCK_RESPONSE)
+
+    last_run = {'last_incident_creation_time': '2022-03-06T15:23:53Z',
+                'last_incident_id': 3619}
+
+    client = Client(base_url="https://SymantecDLPV2.com", auth=("test", "pass"), verify=False, proxy=False,
+                    headers={"Content-type": "application/json"})
+
+    incidents = fetch_incidents(client, fetch_time='1 hour', fetch_limit='1', last_run=last_run)
+    assert len(incidents) == 3
+    assert incidents[0].get('rawJSON') == FIRST_INCIDENT_DETAILS
+    assert incidents[1].get('rawJSON') == SECOND_INCIDENT_DETAILS
+    assert incidents[2].get('rawJSON') == THIRD_INCIDENT_DETAILS
+
+
+@freeze_time("2022-03-05T13:34:14Z")
+def test_fetch_incidents_same_time_skip_incident(requests_mock):
+    """Tests the fetch-incidents function when one of the incident in the list was already fetched.
+    """
+    from SymantecDLPV2 import Client, fetch_incidents
+
+    # mock responses
+    requests_mock.post(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents',
+        json=MULTIPLE_INCIDENTS_SAME_TIME_MOCK_RESPONSE)
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3620/staticAttributes',
+        json=FIRST_STATIC_ATT_MOCK_RESPONSE)
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3620/editableAttributes',
+        json=FIRST_EDITABLE_ATT_MOCK_RESPONSE)
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3629/staticAttributes',
+        json=SECOND_STATIC_ATT_MOCK_RESPONSE)
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3629/editableAttributes',
+        json=SECOND_EDITABLE_ATT_MOCK_RESPONSE)
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3630/staticAttributes',
+        json=THIRD_STATIC_ATT_MOCK_RESPONSE)
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3630/editableAttributes',
+        json=THIRD_EDITABLE_ATT_MOCK_RESPONSE)
+
+    last_run = {'last_incident_creation_time': '2022-03-06T15:23:53Z',
+                'last_incident_id': 3620}
+
+    client = Client(base_url="https://SymantecDLPV2.com", auth=("test", "pass"), verify=False, proxy=False,
+                    headers={"Content-type": "application/json"})
+
+    incidents = fetch_incidents(client, fetch_time='1 hour', fetch_limit='1', last_run=last_run)
+    assert len(incidents) == 2
+    assert incidents[0].get('rawJSON') == SECOND_INCIDENT_DETAILS
+    assert incidents[1].get('rawJSON') == THIRD_INCIDENT_DETAILS

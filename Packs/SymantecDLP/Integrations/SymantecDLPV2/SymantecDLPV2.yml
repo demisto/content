@@ -21,7 +21,8 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- display: Incident type
+- additionalinfo: If not selected, will fetch all incident types.
+  display: Incident type
   name: incidentType
   options:
   - Network
@@ -36,7 +37,8 @@ configuration:
   name: incidentStatusId
   required: false
   type: 16
-- display: Incident Severity
+- additionalinfo: If not selcted, will fetch high and medium incident.
+  display: Incident Severity
   hidden: false
   name: incidentSeverity
   options:
@@ -58,16 +60,16 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: Symantec Data Loss Prevention version 15.7 enables you to discover, monitor and protect
-  your sensitive corporate information.
+description: Symantec Data Loss Prevention version 15.7 enables you to discover, monitor
+  and protect your sensitive corporate information.
 display: Symantec Data Loss Prevention v2
 name: Symantec Data Loss Prevention v2
 script:
   commands:
   - arguments:
     - default: false
-      description: Get incidents with creation date later than specified. Support
-        ISO (e.g 2021-12-28T00:00:00Z) and free text (e.g. '2 days').
+      description: The earliest time from which to get incidents.. Supports ISO (e.g
+        2021-12-28T00:00:00Z) and free text (e.g. '2 days').
       isArray: false
       name: creation_date
       required: false
@@ -112,9 +114,17 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: The page of the incidents list. Default is 1.
+      description: |-
+        Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+        Default is 1.
       isArray: false
       name: page
+      required: false
+      secret: false
+    - default: false
+      description: Number of results per page to display.
+      isArray: false
+      name: page_size
       required: false
       secret: false
     deprecated: false
@@ -151,9 +161,9 @@ script:
     - contextPath: SymantecDLP.Incident.detectionDate
       description: The detection date of the incident.
       type: Date
-    - contextPath: SymantecDLP.Incident.severityId
-      description: The severity ID of the incident.
-      type: Number
+    - contextPath: SymantecDLP.Incident.severity
+      description: The severity of the incident.
+      type: String
     - contextPath: SymantecDLP.Incident.messageTypeId
       description: The ID of the Message Type.
       type: Number
@@ -207,9 +217,9 @@ script:
     - contextPath: SymantecDLP.Incident.detectionDate
       description: The detection date of the incident.
       type: Date
-    - contextPath: SymantecDLP.Incident.severityId
-      description: The severity ID of the incident.
-      type: Number
+    - contextPath: SymantecDLP.Incident.severity
+      description: The severity of the incident.
+      type: String
     - contextPath: SymantecDLP.Incident.messageSource
       description: The localized label that corresponds to the Symantec DLP product
         that generated the incident.
@@ -257,6 +267,13 @@ script:
     - contextPath: SymantecDLP.Incident.dataOwnerName
       description: The name of the data owner.
       type: String
+    - contextPath: SymantecDLP.Incident.preventOrProtectStatusId
+      description: The remediation status ID.
+      type: Number
+    - contextPath: SymantecDLP.Incident.matchCount
+      description: The total number of policy violation matches produced by policies
+        for this incident.
+      type: Number
   - arguments:
     - default: false
       description: Incident ID to update.
@@ -403,7 +420,7 @@ script:
     - contextPath: SymantecDLP.IncidentRemediationStatus.name
       description: The remediation status name.
       type: String
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.4.27798
   feed: false
   isfetch: true
   longRunning: false

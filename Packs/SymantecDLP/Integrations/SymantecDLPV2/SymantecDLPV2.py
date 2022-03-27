@@ -13,7 +13,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-MAX_PAGE_SIZE = 200
+MAX_PAGE_SIZE = 50
 INCIDENT_TYPE_MAPPING = {
     'Network': 'NETWORK',
     'Discover': 'DISCOVER',
@@ -203,6 +203,11 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def check_status_ids_type(status_ids_list: list):
+    if not all(isinstance(status_id, int) for status_id in status_ids_list):
+        raise ValueError("Status IDs must be integers.")
+
+
 def create_filter_dict(filter_type: str, filter_by: str, filter_value: List[Any], operator: str) -> Dict[str, Any]:
     """Creates a dictionary with the filter for the list-incidents request.
 
@@ -256,8 +261,11 @@ def get_readable_output_incidents_list(incidents_list: List[dict]):
 def get_context_incidents_list(incidents_list: List[dict]):
     for incident in incidents_list:
         incident_id = {'ID': incident.get('incidentId')}
+        incident_severity = {"severity": get_severity_name_by_id(arg_to_number(incident.get('severityId')))}
+        incident.pop('severityId')
         incident.pop('incidentId')
         incident.update(incident_id)
+        incident.update(incident_severity)
 
     return incidents_list
 
@@ -286,18 +294,25 @@ def get_readable_output_incident_details(incidents_list: List[dict]):
     return readable_output
 
 
-def pagination(incidents_list: List, limit: int, page: int):
+def get_incidents_of_current_page(limit, page, page_size, incidents_list):
     """
-    :param incidents_list: The incidents_list from the API.
-    :param limit: Maximum number of objects to retrieve.
-    :param page: Page number
-    Returns:
-        Return a list of objects from the response according to the page and limit per page.
+    :param limit: The limit of the incidents.
+    :param page: The page number
+    :param page_size: Maximum number of objects to retrieve per page.
+    :param incidents_list: The incidents list
+
+    :return: List of objects from the response according to the limit, page and page_size.
+
     """
-    limit = MAX_PAGE_SIZE if limit > MAX_PAGE_SIZE else limit
-    start = (page - 1) * limit
-    end = page * limit
-    return incidents_list[start:end]
+    if page is not None and page_size is not None:
+        if page <= 0:
+            raise Exception('Chosen page number must be greater than 0')
+        start = (page - 1) * page_size
+        end = page * page_size
+        return incidents_list[start:end]
+    limit = limit if limit else MAX_PAGE_SIZE
+
+    return incidents_list[0:limit]
 
 
 def parse_custom_attribute(custom_attribute_group_list: list, args: dict) -> list:
@@ -391,7 +406,7 @@ def get_common_incident_details(static_attributes: dict, editable_attributes: di
         'ID': static_attributes.get('incidentId'),
         'creationDate': incident_info_map_static.get('creationDate'),
         'policyId': incident_info_map_static.get('policyId'),
-        'severityId': get_severity_name_by_id(arg_to_number(incident_info_map_editable.get('severityId'))),
+        'severity': get_severity_name_by_id(arg_to_number(incident_info_map_editable.get('severityId'))),
         'incidentStatusId': incident_info_map_editable.get('incidentStatusId'),
         'detectionDate': incident_info_map_static.get('detectionDate'),
         'senderIPAddress': incident_info_map_static.get('senderIPAddress'),
@@ -405,13 +420,13 @@ def get_common_incident_details(static_attributes: dict, editable_attributes: di
         'detectionServerName': incident_info_map_static.get('detectionServerName'),
         'policyGroupName': incident_info_map_static.get('policyGroupName'),
         'matchCount': incident_info_map_static.get('matchCount'),
-        'preventOrProtectStatusId': incident_info_map_static.get('preventOrProtectStatusId'),
+        'preventOrProtectStatusId': incident_info_map_editable.get('preventOrProtectStatusId'),
         'customAttributeGroup': parse_custom_attribute(incident_custom_attribute_groups, args),
     })
     if isfetch:
         incident_additional_details = get_details_for_specific_type(incident_type, incident_info_map_static)
         incident_details.update(incident_additional_details)
-    return {key: val for key, val in incident_details.items() if val}
+    return assign_params(**incident_details)
 
 
 def get_details_unauthorized_incident(incident_data):
@@ -419,14 +434,14 @@ def get_details_unauthorized_incident(incident_data):
         'ID': incident_data.get('incidentId'),
         'creationDate': incident_data.get('creationDate'),
         'policyId': incident_data.get('policyId'),
-        'severityId': get_severity_name_by_id(arg_to_number(incident_data.get('severityId'))),
+        'severity': get_severity_name_by_id(arg_to_number(incident_data.get('severityId'))),
         'incidentStatusId': incident_data.get('incidentStatusId'),
         'detectionDate': incident_data.get('detectionDate'),
         'policyVersion': incident_data.get('policyVersion'),
         'messageSource': incident_data.get('messageSource'),
         'messageType': incident_data.get('messageType'),
         'matchCount': incident_data.get('matchCount'),
-        'description': "Notice: Incident contains partial data only"
+        'errorMessage': "Notice: Incident contains partial data only"
     })
 
     return {key: val for key, val in incident_details.items() if val}
@@ -519,32 +534,22 @@ def create_update_body(incident_id: Optional[int], data_owner_email: str = None,
                        incident_status_id: str = None, remediation_status_name: str = None,
                        remediation_location: str = None,
                        severity: str = None, custom_attributes: List[str] = None):
-    data: Dict[str, Any] = {
-        "incidentIds": [incident_id],
-    }
-    if data_owner_email:
-        data.update({'dataOwnerEmail': data_owner_email})
-    if data_owner_name:
-        data.update({'dataOwnerName': data_owner_name})
-    if note:
-        data.update({'incidentNotes': [{'note': note}]})
-    if incident_status_id:
-        data.update({'incidentStatusId': incident_status_id})
-    if remediation_status_name:
-        data.update({'preventOrProtectStatus': remediation_status_name})
-    if remediation_location:
-        data.update({'remediationLocation': remediation_location})
-    if severity:
-        data.update({'severity': severity})
+    data: Dict[str, Any] = assign_params(**{"incidentIds": [incident_id], 'dataOwnerEmail': data_owner_email,
+                                            'dataOwnerName': data_owner_name,
+                                            'incidentStatusId': incident_status_id,
+                                            'preventOrProtectStatus': remediation_status_name,
+                                            'remediationLocation': remediation_location, 'severity': severity})
     custom_attributes_list = build_custom_attributes_update(custom_attributes)  # type: ignore
     if custom_attributes_list:
-        data.update({'incidentCustomAttributes': custom_attributes_list})
+        data['incidentCustomAttributes'] = custom_attributes_list
+    if note:
+        data['incidentNotes'] = [{'note': note}]
     return data
 
 
 def build_custom_attributes_update(custom_attributes: List[str]):
     """
-    Builds the custom_attributes_list that the user wants to update.
+    Builds the custom_attributes_list that the user wants to update. The input should be {columnIndex}:{newValue}.
     :param custom_attributes: The custom attributes the user wants to update
     :return: A list of custom attributes
     """
@@ -564,6 +569,7 @@ def build_custom_attributes_update(custom_attributes: List[str]):
 def get_incident_details_fetch(client, incident):
     """
     Create incident details dict for each incident pulled from the fetch
+    In case of getting 401 error we will return missing data on the incident.
     """
     incident_details = {}
     try:
@@ -578,31 +584,25 @@ def get_incident_details_fetch(client, incident):
     except DemistoException as e:
         if '401' in str(e):
             incident_details = get_details_unauthorized_incident(incident)
+        else:
+            raise e
     return incident_details
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-    """
-    Performs basic get request to get item samples
-    """
+def test_module(client: Client, params, fetch_time, fetch_limit, incident_type, incident_status_id,
+                incident_severity) -> str:
     message: str = ''
+
     try:
-        client.get_incidents_request()
+        if params.get('isFetch'):
+            fetch_incidents(client, fetch_time=fetch_time, fetch_limit=fetch_limit, last_run={},
+                            incident_types=incident_type, incident_status_id=incident_status_id,
+                            incident_severities=incident_severity, is_test=True)
+        else:
+            client.get_incidents_request()
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Unauthorized' in str(e):
@@ -621,11 +621,12 @@ def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResul
     incident_types_dlp = [INCIDENT_TYPE_MAPPING[incident_type] for incident_type in incident_types]
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 1))
-    if page and page <= 0:
-        page = 1
+    page_size = arg_to_number(args.get('page_size'))
+
     incidents_result = client.get_incidents_request(creation_date, status_ids, severities_dlp, incident_types_dlp,
                                                     limit * page)  # type: ignore
-    incidents_result = pagination(incidents_result['incidents'], limit=limit, page=page)  # type: ignore
+    incidents_result = get_incidents_of_current_page(limit, page, page_size,
+                                                     incidents_list=incidents_result['incidents'])
     list_incidents_hr = get_readable_output_incidents_list(incidents_result)
     context_incidents_list = get_context_incidents_list(incidents_result)
 
@@ -668,13 +669,20 @@ def update_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 def get_incident_details_command(client: Client, args: Dict[str, Any]):
+    """
+    static attributes API docs - https://techdocs.broadcom.com/us/en/symantec-security-software/information-security/
+    data-loss-prevention/15-8/DLP-Enforce-REST-APIs-overview/definitions/staticincidentinfomap.html
+    editable attributes API docs - https://techdocs.broadcom.com/us/en/symantec-security-software/information-security/
+    data-loss-prevention/15-8/DLP-Enforce-REST-APIs-overview/definitions/editableincidentinfomap.html
+    """
     try:
         incident_id = args.get('incident_id', '')
         custom_attributes = args.get('custom_attributes', '')
         custom_data = args.get('custom_data', '')
 
         if custom_attributes in ['specific_attributes', 'custom_attribute_group_name'] and not custom_data:
-            raise DemistoException('Error: custom_data argument must be provided.')
+            raise DemistoException('Error: custom_data argument must be provided if you chose specific_attributes or'
+                                   ' custom_attribute_group_name.')
 
         static_attributes = client.get_incident_static_attributes_request(incident_id)
         editable_attributes = client.get_incident_editable_attributes_request(incident_id)
@@ -766,17 +774,17 @@ def is_incident_already_fetched_in_previous_fetch(last_update_time, incident_cre
     :param incident_id: The current incident id
 
     """
-    if (last_update_time and last_update_time > incident_creation_time) or \
-            (last_incident_id and int(last_incident_id) >= int(incident_id)):
-        return True
-    return False
+    return (last_update_time and last_update_time > incident_creation_time) or \
+           (last_incident_id and int(last_incident_id) >= int(incident_id))
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run: dict, incident_types: List[str] = None,
-                    incident_status_id: List[str] = None, incident_severities: List[str] = None):
+                    incident_status_id: List[str] = None, incident_severities: List[str] = None, is_test=False):
     """
     Performs the fetch incidents functionality, which means that every minute if fetches incidents
     from Symantec DLP and uploads them to Cortex XSOAR server.
+    There are multiple incidents created at the same time, that is why we check the lasst update time and incident ID
+    to make sure we will not fetch an incident that we already fetched.
     :param client: Cortex XSOAR Client
     :param fetch_time: For the first time the integration is enabled with the fetch incidents functionality, the fetch
     time indicates from what time to start fetching existing incidents in Symantec DLP system.
@@ -790,7 +798,6 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
     if last_run and last_run.get('last_incident_creation_time'):
         last_update_time = last_run.get('last_incident_creation_time')
         last_incident_id = last_run.get('last_incident_id', '')
-
     else:
         # In first run
         last_update_time = parse_creation_date(fetch_time)
@@ -801,39 +808,41 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
         incident_severities = [INCIDENT_SEVERITY_MAPPING[severity] for severity in incident_severities]  # type: ignore
     if incident_types:
         incident_types = [INCIDENT_TYPE_MAPPING[incident_type] for incident_type in incident_types]
-    incidents_data_list = client.get_incidents_request(creation_date=last_update_time, status_id=incident_status_id,
-                                                       severity=incident_severities,  # type: ignore
-                                                       incident_type=incident_types, limit=fetch_limit, order_by="ASC")
-    incidents_data_list = incidents_data_list.get('incidents', [])
-    if incidents_data_list:
 
-        for incident_data in incidents_data_list:
-            incident_id = incident_data.get('incidentId')
-            incident_creation_time = (dateparser.parse(incident_data.get('creationDate', ''))).strftime(
-                '%Y-%m-%dT%H:%M:%SZ')
-            if is_incident_already_fetched_in_previous_fetch(last_update_time, incident_creation_time, last_incident_id,
-                                                             incident_id):
-                # Skipping last incident from last cycle if fetched again
-                continue
+    incidents_data_res = client.get_incidents_request(creation_date=last_update_time, status_id=incident_status_id,
+                                                      severity=incident_severities,  # type: ignore
+                                                      incident_type=incident_types, limit=fetch_limit, order_by="ASC")
+    incidents_data_list = incidents_data_res.get('incidents', [])
 
-            incident_details = get_incident_details_fetch(client, incident_data)
-            incident: dict = {
-                'rawJSON': json.dumps(incident_details),
-                'name': f'Symantec DLP Incident ID {incident_id}',
-                'occurred': incident_creation_time
-            }
-            incidents.append(incident)
-            if incident_id == incidents_data_list[-1].get('incidentId'):
-                last_update_time = incident_creation_time
-                last_incident_id = incident_id
+    for incident_data in incidents_data_list:
+        incident_id = incident_data.get('incidentId')
+        incident_creation_time = (dateparser.parse(incident_data.get('creationDate', ''))).strftime(
+            '%Y-%m-%dT%H:%M:%SZ')
+        if is_incident_already_fetched_in_previous_fetch(last_update_time, incident_creation_time, last_incident_id,
+                                                         incident_id):
+            # Skipping last incident from last cycle if fetched again
+            continue
 
-        demisto.setLastRun(
-            {
-                'last_incident_creation_time': last_update_time,
-                'last_incident_id': last_incident_id
-            }
-        )
+        incident_details = get_incident_details_fetch(client, incident_data)
+        incident: dict = {
+            'rawJSON': json.dumps(incident_details),
+            'name': f'Symantec DLP Incident ID {incident_id}',
+            'occurred': incident_creation_time
+        }
+        incidents.append(incident)
+        if incident_id == incidents_data_list[-1].get('incidentId'):
+            last_update_time = incident_creation_time
+            last_incident_id = incident_id
 
+    if is_test:
+        return None
+
+    demisto.setLastRun(
+        {
+            'last_incident_creation_time': last_update_time,
+            'last_incident_id': last_incident_id
+        }
+    )
     return incidents
 
 
@@ -852,9 +861,9 @@ def main() -> None:
         credentials = params.get('credentials', {})
         username = credentials.get('identifier', '')
         password = credentials.get('password', '')
-        incident_type = argToList(params.get('incidentType'), 'Network')
-        incident_status_id = argToList(params.get('incidentStatusId'), '')
-        incident_severity = argToList(params.get('incidentSeverity'), '')
+        incident_type = argToList(params.get('incidentType'), 'Network,Discover,Endpoint')
+        incident_status_id = check_status_ids_type(argToList(params.get('incidentStatusId'), ''))
+        incident_severity = argToList(params.get('incidentSeverity'), 'Medium,High')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
 
@@ -877,7 +886,8 @@ def main() -> None:
         demisto.debug(f'Command being called is {demisto.command()}')
 
         if demisto.command() == 'test-module':
-            result = test_module(client)
+            result = test_module(client, params, fetch_time, fetch_limit, incident_type, incident_status_id,
+                                 incident_severity)
             return_results(result)
         elif demisto.command() == 'fetch-incidents':
             last_run = demisto.getLastRun()

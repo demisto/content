@@ -64,7 +64,7 @@
                     "simple": "incidentStatusId"
                 },
                 "severity": {
-                    "simple": "severityId"
+                    "simple": "severity"
                 }
             }
         },
@@ -135,16 +135,13 @@
                     "simple": "incidentStatusId"
                 },
                 "severity": {
-                    "simple": "severityId"
+                    "simple": "severity"
                 }
             }
         },
         "Symantec DLP Network Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Description": {
-                    "simple": "description"
-                },
                 "Destination IP": {
                     "simple": "recipientInfo.recipientDomain"
                 },
@@ -156,6 +153,9 @@
                 },
                 "Email Subject": {
                     "simple": "messageSubject"
+                },
+                "Error Message": {
+                    "simple": "errorMessage"
                 },
                 "External ID": {
                     "simple": "ID"
@@ -209,7 +209,7 @@
                     "simple": "incidentStatusId"
                 },
                 "severity": {
-                    "simple": "severityId"
+                    "simple": "severity"
                 }
             }
         },
@@ -232,7 +232,7 @@
                     "simple": "incidentStatusId"
                 },
                 "severity": {
-                    "simple": "severityId"
+                    "simple": "severity"
                 }
             }
         }

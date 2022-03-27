@@ -5,24 +5,22 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 70bedcb9-4600-40ef-8b05-632e5c62f1e6
+    taskid: 692d5e58-0c6e-429b-839e-1fd33b395770
     type: start
     task:
-      id: 70bedcb9-4600-40ef-8b05-632e5c62f1e6
+      id: 692d5e58-0c6e-429b-839e-1fd33b395770
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
-      - "2"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
@@ -35,10 +33,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: db52c03a-c3eb-4853-85b2-de9c8ddc4aba
+    taskid: bf48066d-93a1-4906-8672-ca3b04eb7ecc
     type: regular
     task:
-      id: db52c03a-c3eb-4853-85b2-de9c8ddc4aba
+      id: bf48066d-93a1-4906-8672-ca3b04eb7ecc
       version: -1
       name: Get incidents list
       description: Returns a list of incidents.
@@ -56,7 +54,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 195
         }
       }
@@ -69,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 409d8652-cb6e-4dec-8351-8f2aa876c419
+    taskid: f647ee5a-f7e4-4eb2-8edc-fc24b89e01bd
     type: regular
     task:
-      id: 409d8652-cb6e-4dec-8351-8f2aa876c419
+      id: f647ee5a-f7e4-4eb2-8edc-fc24b89e01bd
       version: -1
       name: Get incidents status list
       description: Returns a list of the custom status values defined in the Symantec
@@ -89,7 +87,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 720
         }
       }
     note: false
@@ -101,10 +99,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 6a8832aa-7aee-48c9-83d0-ba56c73e5853
+    taskid: c412bc93-a531-4d4c-812a-87de2527b8ed
     type: regular
     task:
-      id: 6a8832aa-7aee-48c9-83d0-ba56c73e5853
+      id: c412bc93-a531-4d4c-812a-87de2527b8ed
       version: -1
       name: Get remediation status
       description: Returns a list of the remediation status values defined in the
@@ -118,7 +116,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 895
         }
       }
     note: false
@@ -130,10 +128,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 2750772f-2163-456d-8bb2-ba505b2b8abb
+    taskid: 64043fdc-6984-457f-81c8-06e6cb70df83
     type: regular
     task:
-      id: 2750772f-2163-456d-8bb2-ba505b2b8abb
+      id: 64043fdc-6984-457f-81c8-06e6cb70df83
       version: -1
       name: Get incident details
       description: Returns the details of the specified incident.
@@ -159,7 +157,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 370
         }
       }
@@ -172,10 +170,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 01f74aa9-1b87-4823-8adc-9afb0ed3229f
+    taskid: cd266d9d-f311-4667-8da5-28eeb10cacb7
     type: regular
     task:
-      id: 01f74aa9-1b87-4823-8adc-9afb0ed3229f
+      id: cd266d9d-f311-4667-8da5-28eeb10cacb7
       version: -1
       name: Get incident history
       description: Returns the history of the specified incident.
@@ -183,6 +181,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
     scriptarguments:
       incident_id:
         simple: ${SymantecDLP.Incident.ID}
@@ -190,7 +191,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 545
         }
       }
@@ -206,8 +207,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
-        "width": 810,
+        "height": 940,
+        "width": 380,
         "x": 50,
         "y": 50
       }
@@ -216,4 +217,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.0.0
-description: ''
+description: 'Symantec DLP v2 test playbook'
