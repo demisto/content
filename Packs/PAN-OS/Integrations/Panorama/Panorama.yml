@@ -7189,7 +7189,7 @@ script:
       - contextPath: PANOS.TemplateStackOp.name
         description: Template stack name.
         type: String
-  dockerimage: demisto/pan-os-python:1.0.0.27504
+  dockerimage: demisto/pan-os-python:1.0.0.27792
   feed: false
   isfetch: false
   longRunning: false
