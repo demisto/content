@@ -48,7 +48,7 @@ configuration:
   type: 0
 - additionalinfo: The query used to collect indicators to sync from Cortex XSOAR to
     Cortex XDR.
-  defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
+  defaultvalue: reputation:Bad and (type:IP or type:Domain or (type:File (sha256:* or md5:*)))
   display: Sync Query
   hidden: false
   name: query

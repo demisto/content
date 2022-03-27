@@ -32,7 +32,7 @@ demisto_score_to_xdr: Dict[int, str] = {
 
 class Client:
     severity: str = ''
-    query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
+    query: str = 'reputation:Bad and (type:IP or type:Domain or (type:File (sha256:* or md5:*)))'
     tag = 'Cortex XDR'
     tlp_color = None
     error_codes: Dict[int, str] = {
