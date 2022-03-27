@@ -9167,7 +9167,7 @@ def get_indicator_with_dbotscore_unknown(indicator, indicator_type, reliability=
                                   message='No results found')
 
     integration_name = dbot_score.integration_name or 'Results'
-    indicator_ = None
+    indicator_ = None  # type: Any
     if indicator_type is DBotScoreType.FILE:
         if sha1Regex.match(indicator):
             indicator_ = Common.File(dbot_score=dbot_score, sha1=indicator)
