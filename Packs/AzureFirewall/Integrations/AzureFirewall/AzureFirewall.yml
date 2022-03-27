@@ -13,6 +13,27 @@ configuration:
   required: true
   type: 9
   hiddenusername: true
+- displaypassword: Tenant ID.
+  name: tenant_id
+  required: false
+  type: 9
+  hiddenusername: true
+- displaypassword: Client Secret.
+  name: client_secret
+  required: false
+  type: 9
+  hiddenusername: true
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
+  hiddenusername: true
 - display: API Version.
   name: api_version
   required: true
@@ -103,13 +124,12 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: 'Indicates if the command was scheduled. Possible values: "True"
-        or "False".'
+      description: 'Indicates if the command was scheduled. Possible values: "True" or "False".'
       isArray: false
       name: polling
       predefined:
-      - 'True'
-      - 'False'
+        - 'True'
+        - 'False'
       required: false
       secret: false
     - default: false
@@ -181,8 +201,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List collection rules in firewall or in policy. One of the arguments
-      'firewall_name' or 'policy'  must be provided.
+    description: List collection rules in firewall or in policy. One of the arguments 'firewall_name' or
+      'policy'  must be provided.
     execution: false
     name: azure-firewall-rule-collection-list
     outputs:
@@ -235,8 +255,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List rules in firewall or in policy. One of the arguments 'firewall_name'
-      or 'policy'  must be provided.
+    description: List rules in firewall or in policy. One of the arguments 'firewall_name' or
+      'policy'  must be provided.
     execution: false
     name: azure-firewall-rule-list
     outputs:
@@ -518,13 +538,12 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: 'Indicates if the command was scheduled. Possible values: "True"
-        or "False".'
+      description: 'Indicates if the command was scheduled. Possible values: "True" or "False".'
       isArray: false
       name: polling
       predefined:
-      - 'True'
-      - 'False'
+        - 'True'
+        - 'False'
       required: false
       secret: false
     - default: false
@@ -632,8 +651,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Attach policy to firewall. The policy and firewall have to belong
-      to the same tier.
+    description: Attach policy to firewall. The policy and firewall have to belong to the same tier.
     execution: false
     polling: true
     name: azure-firewall-policy-attach
@@ -757,15 +775,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated list of source IP addresses for the created rule.
-        Must be provided when 'source_type' argument is assigned to 'ip_address'.
+      description: Comma-separated list of source IP addresses for the created rule. Must be provided when 'source_type' argument is assigned to 'ip_address'.
       isArray: true
       name: source_ips
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of source IP group IDs for the created rule.
-        Must be provided when 'source_type' argument is assigned to 'ip_group'.
+      description: Comma-separated list of source IP group IDs for the created rule. Must be provided when 'source_type' argument is assigned to 'ip_group'.
       isArray: true
       name: source_ip_group_ids
       required: false
@@ -783,9 +799,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated list of destinations for the created rule. Must
-        be consistent with the provided 'destination_type' argument. Supports IP address,
-        service tag name, IP group ID and FQDN address.
+      description: Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument.
+        Supports IP address, service tag name, IP group ID and FQDN address.
       isArray: true
       name: destinations
       required: true
@@ -812,8 +827,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create network rule collection in firewall or policy. The command
-      will return firewall or policy rule collection resource information.
+    description: Create network rule collection in firewall or policy. The command will return firewall or policy rule collection resource information. One of the arguments 'firewall_name' or
+      'policy'  must be provided.
     execution: false
     polling: true
     name: azure-firewall-network-rule-collection-create
@@ -911,15 +926,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated list of source IP addresses for the created rule.
-        Must be provided when 'source_type' argument is assigned to 'ip_address'.
+      description: Comma-separated list of source IP addresses for the created rule. Must be provided when 'source_type' argument is assigned to 'ip_address'.
       isArray: true
       name: source_ips
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of source IP group IDs for the created rule.
-        Must be provided when 'source_type' argument is assigned to 'ip_group'.
+      description: Comma-separated list of source IP group IDs for the created rule. Must be provided when 'source_type' argument is assigned to 'ip_group'.
       isArray: true
       name: source_ip_group_ids
       required: false
@@ -937,9 +950,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated list of destinations for the created rule. Must
-        be consistent with the provided 'destination_type' argument. Supports IP address,
-        service tag name, IP group ID and FQDN address.
+      description: Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument.
+        Supports IP address, service tag name, IP group ID and FQDN address.
       isArray: true
       name: destinations
       required: true
@@ -966,8 +978,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create network rule in firewall or policy rule collection. One of
-      the arguments 'firewall_name' or 'policy'  must be provided.
+    description: Create network rule in firewall or policy rule collection. One of the arguments
+      'firewall_name' or 'policy'  must be provided.
     execution: false
     polling: true
     name: azure-firewall-network-rule-create
@@ -1025,23 +1037,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of source IP addresses for the created rule.
-        Must be provided when 'source_type' argument is assigned to 'ip_address'.
+      description: Comma-separated list of source IP addresses for the created rule. Must be provided when 'source_type' argument is assigned to 'ip_address'.
       isArray: true
       name: source_ips
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of source IP group IDs for the created rule.
-        Must be provided when 'source_type' argument is assigned to 'ip_group'.
+      description: Comma-separated list of source IP group IDs for the created rule. Must be provided when 'source_type' argument is assigned to 'ip_group'.
       isArray: true
       name: source_ip_group_ids
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Rule destination type. Must be provided when 'destinations' argument
-        is provided.
+      description: Rule destination type. Must be provided when 'destinations' argument is provided.
       isArray: false
       name: destination_type
       predefined:
@@ -1052,9 +1061,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of destinations for the created rule. Must
-        be consistent with the provided 'destination_type' argument. Supports IP address,
-        service tag name, IP group ID and FQDN address.
+      description: Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument.
+        Supports IP address, service tag name, IP group ID and FQDN address.
       isArray: true
       name: destinations
       required: false
@@ -1153,8 +1161,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The priority of the network rule collection resource. Minimum value
-        is 100, maximum value us 65000.
+      description: The priority of the network rule collection resource. Minimum
+        value is 100, maximum value us 65000.
       isArray: false
       name: priority
       required: false
@@ -1185,10 +1193,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update network rule collection in firewall or policy. The command
-      will update the provided arguments. One of the arguments 'firewall_name' or
-      'policy'  must be provided.  The command will return firewall or policy rule
-      collection resource information.
+    description: Update network rule collection in firewall or policy. The command will update the provided arguments. One of the
+      arguments 'firewall_name' or 'policy'  must be provided.  The command will return firewall or policy rule collection resource information.
     execution: false
     polling: true
     name: azure-firewall-network-rule-collection-update
@@ -1443,13 +1449,12 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: 'Indicates if the command was scheduled. Possible values: "True"
-        or "False".'
+      description: 'Indicates if the command was scheduled. Possible values: "True" or "False".'
       isArray: false
       name: polling
       predefined:
-      - 'True'
-      - 'False'
+        - 'True'
+        - 'False'
       required: false
       secret: false
     - default: false
@@ -1493,7 +1498,7 @@ script:
     description: Delete IP group resource.
     execution: false
     name: azure-firewall-ip-group-delete
-  dockerimage: demisto/crypto:1.0.0.27243
+  dockerimage: demisto/crypto:1.0.0.27590
   feed: false
   isfetch: false
   longRunning: false
@@ -1502,6 +1507,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0
+fromversion: 6.2.0
 tests:
 - No tests (auto formatted)

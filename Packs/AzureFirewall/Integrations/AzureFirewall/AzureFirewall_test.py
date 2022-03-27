@@ -73,9 +73,9 @@ def test_azure_firewall_list_command(requests_mock):
     When:
      - azure-firewall-list called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     -Ensure the firewall name expected is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_list_command
 
@@ -102,9 +102,9 @@ def test_azure_firewall_get_command(requests_mock):
     When:
      - azure-firewall-get called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the firewall name searched is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_get_command
 
@@ -134,9 +134,9 @@ def test_azure_firewall_rules_collection_list_command_for_firewall(requests_mock
     When:
      - azure-firewall-rule-collection-list called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the firewall name updated is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_rules_collection_list_command
 
@@ -168,9 +168,11 @@ def test_azure_firewall_rules_collection_list_command_for_policy(requests_mock):
     When:
      - azure-firewall-rule-collection-list called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the rule collection name searched is the same as in the context returned.
+     - Ensure the rule collection key (type) searched is the same as in the context returned.
+     - Ensure the rule type (type) searched is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_rules_collection_list_command, get_policy_rule_collection_name, \
         get_policy_rule_name
@@ -210,9 +212,9 @@ def test_azure_firewall_rules_list_command_for_policy(requests_mock):
     When:
      - azure-firewall-rule-list called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the rule name searched is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_rules_list_command
 
@@ -244,9 +246,9 @@ def test_azure_firewall_rules_list_command_for_firewall(requests_mock):
     When:
      - azure-firewall-rule-list called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the rule name searched is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_rules_list_command
 
@@ -278,9 +280,8 @@ def test_azure_firewall_rules_get_command_for_firewall(requests_mock):
     When:
      - azure-firewall-rule-get called.
     Then:
-     - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the rule name searched is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_rule_get_command
 
@@ -313,9 +314,8 @@ def test_azure_firewall_rule_get_command_for_policy(requests_mock):
     When:
      - azure-firewall-rule-get called.
     Then:
-     - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the rule name searched is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_rule_get_command
 
@@ -347,9 +347,9 @@ def test_azure_firewall_policy_create_command(requests_mock):
     When:
      - azure-firewall-policy-create called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the policy name searched is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_policy_create_command
 
@@ -380,9 +380,9 @@ def test_azure_firewall_policy_update_command(requests_mock):
     When:
      - azure-firewall-policy-update called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the policy name searched is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_policy_update_command
 
@@ -419,9 +419,9 @@ def test_azure_firewall_policy_list_command(requests_mock):
     When:
      - azure-firewall-policy-list called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the policy name searched is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_policy_list_command
 
@@ -448,9 +448,9 @@ def test_azure_firewall_policy_get_command(requests_mock):
     When:
      - azure-firewall-policy-get called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the policy name searched is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_policy_get_command
 
@@ -513,9 +513,9 @@ def test_azure_firewall_policy_attach_command(requests_mock):
     When:
      - azure-firewall-policy-attach called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the firewall name updated is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_policy_attach_command
 
@@ -549,9 +549,9 @@ def test_azure_firewall_policy_remove_command(requests_mock):
     When:
      - azure-firewall-policy-remove called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the firewall name updated is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_policy_remove_command
 
@@ -585,9 +585,9 @@ def test_azure_firewall_ip_group_create_command(requests_mock):
     When:
      - azure-firewall-ip-group-create called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the ip-group name created is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_ip_group_create_command
 
@@ -617,9 +617,9 @@ def test_azure_firewall_ip_group_update_command(requests_mock):
     When:
      - azure-firewall-ip-group-update called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the ip-group name updated is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_ip_group_update_command
 
@@ -656,9 +656,9 @@ def test_azure_firewall_ip_group_list_command(requests_mock):
     When:
      - azure-firewall-ip-group-list called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the ip-group name searched is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_ip_group_list_command
 
@@ -687,9 +687,9 @@ def test_azure_firewall_ip_group_get_command(requests_mock):
     When:
      - azure-firewall-ip-group-get called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the ip-group name searched is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_ip_group_get_command
 
@@ -751,8 +751,8 @@ def test_azure_firewall_network_rule_collection_create_command_for_firewall(requ
     When:
      - azure-firewall-network-rule-collection-create called.
     Then:
-     - Ensure that the output is empty (None).
-     - Ensure readable output message content.
+     - Ensure outputs prefix is correct.
+     - Ensure the firewall name updated is the same as in the context returned.
      """
     from AzureFirewall import azure_firewall_network_rule_collection_create_command
 
@@ -792,8 +792,8 @@ def test_azure_firewall_network_rule_collection_create_command_for_policy(reques
     When:
      - azure-firewall-network-rule-collection-create called.
     Then:
-     - Ensure that the output is empty (None).
-     - Ensure readable output message content.
+     - Ensure outputs prefix is correct.
+     - Ensure the policy name updated is the same as in the context returned.
      """
     from AzureFirewall import azure_firewall_network_rule_collection_create_command
 
@@ -835,8 +835,7 @@ def test_azure_firewall_network_rule_collection_create_command_invalid_arguments
     When:
      - azure-firewall-network-rule-collection-create called.
     Then:
-     - Ensure that the output is empty (None).
-     - Ensure readable output message content.
+     - Ensure that exception is raised.
      """
     from AzureFirewall import azure_firewall_network_rule_collection_create_command
 
@@ -887,8 +886,8 @@ def test_azure_firewall_network_rule_create_command_for_firewall(requests_mock):
     When:
      - azure-firewall-network-rule-create called.
     Then:
-     - Ensure that the output is empty (None).
-     - Ensure readable output message content.
+     - Ensure outputs prefix is correct.
+     - Ensure the firewall name updated is the same as in the context returned.
      """
     from AzureFirewall import azure_firewall_network_rule_create_command
 
@@ -928,8 +927,8 @@ def test_azure_firewall_network_rule_create_command_for_policy(requests_mock):
     When:
      - azure-firewall-network-rule-create called.
     Then:
-     - Ensure that the output is empty (None).
-     - Ensure readable output message content.
+     - Ensure outputs prefix is correct.
+     - Ensure the policy name updated is the same as in the context returned.
      """
     from AzureFirewall import azure_firewall_network_rule_create_command
 
@@ -973,8 +972,8 @@ def test_azure_firewall_network_rule_collection_update_command_for_firewall(requ
     When:
      - azure-firewall-network-rule-collection-update called.
     Then:
-     - Ensure that the output is empty (None).
-     - Ensure readable output message content.
+     - Ensure outputs prefix is correct.
+     - Ensure the firewall name updated is the same as in the context returned.
      """
     from AzureFirewall import azure_firewall_network_rule_collection_update_command
 
@@ -1009,8 +1008,8 @@ def test_azure_firewall_network_rule_collection_update_command_for_policy(reques
     When:
      - azure-firewall-network-rule-collection-update called.
     Then:
-     - Ensure that the output is empty (None).
-     - Ensure readable output message content.
+     - Ensure outputs prefix is correct.
+     - Ensure the policy name updated is the same as in the context returned.
      """
     from AzureFirewall import azure_firewall_network_rule_collection_update_command
 
@@ -1051,8 +1050,8 @@ def test_azure_firewall_network_rule_collection_delete_command_for_firewall(requ
     When:
      - azure-firewall-network-rule-collection-delete called.
     Then:
-     - Ensure that the output is empty (None).
-     - Ensure readable output message content.
+     - Ensure outputs prefix is correct.
+     - Ensure the firewall name updated is the same as in the context returned.
      """
     from AzureFirewall import azure_firewall_network_rule_collection_delete_command
 
@@ -1087,8 +1086,8 @@ def test_azure_firewall_network_rule_collection_delete_command_for_policy(reques
     When:
      - azure-firewall-network-rule-collection-delete called.
     Then:
-     - Ensure that the output is empty (None).
-     - Ensure readable output message content.
+     - Ensure outputs prefix is correct.
+     - Ensure the policy name updated is the same as in the context returned.
      """
     from AzureFirewall import azure_firewall_network_rule_collection_delete_command
 
@@ -1123,8 +1122,9 @@ def test_azure_firewall_network_rule_remove_command_for_firewall(requests_mock):
     When:
      - azure-firewall-network-rule-delete called.
     Then:
-     - Ensure that the output is empty (None).
-     - Ensure readable output message content.
+     - Ensure outputs prefix is correct.
+     - Ensure the firewall name updated is the same as in the context returned.
+     - Ensure that the output is empty (None) for non-exists rules.
      """
     from AzureFirewall import azure_firewall_network_rule_remove_command
 
@@ -1163,8 +1163,9 @@ def test_azure_firewall_network_rule_remove_command_for_policy(requests_mock):
     When:
      - azure-firewall-network-rule-delete called.
     Then:
-     - Ensure that the output is empty (None).
-     - Ensure readable output message content.
+     - Ensure outputs prefix is correct.
+     - Ensure the policy name updated is the same as in the context returned.
+     - Ensure that the output is empty (None) for non-exists rules.
      """
     from AzureFirewall import azure_firewall_network_rule_remove_command
 
@@ -1208,8 +1209,8 @@ def test_azure_firewall_network_rule_update_command_policy(requests_mock):
     When:
      - azure-firewall-network-rule-update called.
     Then:
-     - Ensure that the output is empty (None).
-     - Ensure readable output message content.
+     - Ensure outputs prefix is correct.
+     - Ensure the policy name updated is the same as in the context returned.
      """
     from AzureFirewall import azure_firewall_network_rule_update_command
 
@@ -1254,8 +1255,8 @@ def test_azure_firewall_network_rule_update_command_for_firewall(requests_mock):
     When:
      - azure-firewall-network-rule-update called.
     Then:
-     - Ensure that the output is empty (None).
-     - Ensure readable output message content.
+     - Ensure outputs prefix is correct.
+     - Ensure the firewall name updated is the same as in the context returned.
      """
     from AzureFirewall import azure_firewall_network_rule_update_command
 
@@ -1295,9 +1296,9 @@ def test_azure_firewall_service_tag_list_command(requests_mock):
     When:
      - azure-service-tag-list called.
     Then:
-     - Ensure number of items is correct.
+     - Ensure 1 result is returned.
      - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the service tag name searched is the same as in the context returned.
     """
     from AzureFirewall import azure_firewall_service_tag_list_command
 

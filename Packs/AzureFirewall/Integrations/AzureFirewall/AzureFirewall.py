@@ -11,22 +11,43 @@ class AzureFirewallClient:
                  client_id: str,
                  api_version: str,
                  verify: bool,
-                 proxy: bool):
+                 proxy: bool,
+                 client_secret: str = None,
+                 tenant_id: str = None,
+                 certificate_thumbprint: str = None,
+                 private_key: str = None):
         self.resource_group = resource_group
         self.subscription_id = subscription_id
         self.api_version = api_version
         self.default_params = {"api-version": api_version}
 
+        is_credentials = (client_secret and tenant_id) or (certificate_thumbprint and private_key)
+
+        scope = Scopes.management_azure if is_credentials else 'https://management.azure.com/user_impersonation offline_access user.read'
+        grant_type = CLIENT_CREDENTIALS if is_credentials else DEVICE_CODE
+        token_retrieval_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token' if tenant_id else 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+
+        if not is_credentials:
+            client_secret = None
+            tenant_id = None
+            certificate_thumbprint = None
+            private_key = None
+
         self.ms_client = MicrosoftClient(
             self_deployed=True,
+            tenant_id=tenant_id,
+            token_retrieval_url=token_retrieval_url,
             auth_id=client_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=DEVICE_CODE,
+            enc_key=client_secret,
+            grant_type=grant_type,
             base_url=f'https://management.azure.com/subscriptions/{subscription_id}'
                      f'/resourceGroups/{resource_group}/providers/Microsoft.Network',
+            scope=scope,
             verify=verify,
             proxy=proxy,
-            scope='https://management.azure.com/user_impersonation offline_access user.read')
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key
+        )
 
     def azure_firewall_list_request(self, resource: str, next_link: str = None) -> dict:
         """
@@ -481,6 +502,20 @@ class AzureFirewallClient:
         return response
 
 
+def generate_polling_readable_message(resource_type_name: str, resource_name: str) -> str:
+    """
+    Generate appropriate markdown message for polling commands.
+    Args:
+        resource_type_name (str): The name type of the updated resource. For example: Policy, Firewall, IP-Group, etc.
+        resource_name (str): The name of the updated resource.
+
+    Returns:
+        str: Polling header message.
+
+    """
+    return f'## Polling in progress for {resource_type_name} {resource_name}.'
+
+
 def create_scheduled_command(command_name: str, interval: int, timeout: int, **kwargs):
     """
     Create scheduled command object.
@@ -660,7 +695,10 @@ def azure_firewall_get_command(client: AzureFirewallClient, args: Dict[str, Any]
                                                              timeout=timeout, firewall_names=firewall)
 
                 # result with scheduled_command only - no update to the war room
-                command_results_list.append(CommandResults(scheduled_command=scheduled_command))
+                command_results_list.append(CommandResults(scheduled_command=scheduled_command,
+                                                           readable_output=generate_polling_readable_message(
+                                                               resource_type_name="Firewall",
+                                                               resource_name=firewall)))
 
             else:
                 command_results = generate_firewall_command_output(response,
@@ -1108,7 +1146,9 @@ def azure_firewall_policy_create_command(client: AzureFirewallClient, args: Dict
         scheduled_command = create_scheduled_command(command_name='azure-firewall-policy-get', interval=interval,
                                                      timeout=timeout, policy_names=policy_name)
 
-        return CommandResults(scheduled_command=scheduled_command)
+        return CommandResults(scheduled_command=scheduled_command,
+                              readable_output=generate_polling_readable_message(resource_type_name="Policy",
+                                                                                resource_name=policy_name))
 
     return generate_policy_command_output(response, readable_header=f'Successfully Created Policy "{policy_name}"')
 
@@ -1185,7 +1225,9 @@ def azure_firewall_policy_update_command(client: AzureFirewallClient, args: Dict
         scheduled_command = create_scheduled_command(command_name='azure-firewall-policy-get', interval=interval,
                                                      timeout=timeout, policy_names=policy_name)
 
-        return CommandResults(scheduled_command=scheduled_command)
+        return CommandResults(scheduled_command=scheduled_command,
+                              readable_output=generate_polling_readable_message(resource_type_name="Policy",
+                                                                                resource_name=policy_name))
 
     return generate_policy_command_output(response, readable_header=f'Successfully Updated Policy "{policy_name}"')
 
@@ -1280,7 +1322,10 @@ def azure_firewall_policy_get_command(client: AzureFirewallClient, args: Dict[st
                                                              interval=interval, timeout=timeout, policy_names=policy)
 
                 # result with scheduled_command only - no update to the war room
-                command_results_list.append(CommandResults(scheduled_command=scheduled_command))
+                command_results_list.append(CommandResults(scheduled_command=scheduled_command,
+                                                           readable_output=generate_polling_readable_message(
+                                                               resource_type_name="Policy",
+                                                               resource_name=policy)))
 
             else:
                 command_results_list.append(
@@ -1407,7 +1452,10 @@ def azure_firewall_policy_attach_command(client: AzureFirewallClient, args: Dict
                                                              timeout=timeout, firewall_names=firewall)
 
                 # result with scheduled_command only - no update to the war room
-                command_results_list.append(CommandResults(scheduled_command=scheduled_command))
+                command_results_list.append(CommandResults(scheduled_command=scheduled_command,
+                                                           readable_output=generate_polling_readable_message(
+                                                               resource_type_name="Firewall",
+                                                               resource_name=firewall)))
 
             else:
                 command_results_list.append(generate_firewall_command_output(response,
@@ -1461,7 +1509,10 @@ def azure_firewall_policy_remove_command(client: AzureFirewallClient, args: Dict
                                                              timeout=timeout, firewall_names=firewall)
 
                 # result with scheduled_command only - no update to the war room
-                command_results_list.append(CommandResults(scheduled_command=scheduled_command))
+                command_results_list.append(CommandResults(scheduled_command=scheduled_command,
+                                                           readable_output=generate_polling_readable_message(
+                                                               resource_type_name="Firewall",
+                                                               resource_name=firewall)))
 
             else:
                 command_results_list.append(generate_firewall_command_output(response,
@@ -1519,7 +1570,9 @@ def delete_rule_collection(client: AzureFirewallClient, collection_name: str, ru
             scheduled_command = create_scheduled_command(command_name='azure-firewall-get', interval=interval,
                                                          timeout=timeout, firewall_names=firewall_name)
 
-            return CommandResults(scheduled_command=scheduled_command)
+            return CommandResults(scheduled_command=scheduled_command,
+                                  readable_output=generate_polling_readable_message(resource_type_name="Firewall",
+                                                                                    resource_name=firewall_name))
 
         else:
             return generate_firewall_command_output(response,
@@ -1539,7 +1592,9 @@ def delete_rule_collection(client: AzureFirewallClient, collection_name: str, ru
             scheduled_command = create_scheduled_command(command_name='azure-firewall-policy-get', interval=interval,
                                                          timeout=timeout, policy_names=policy)
 
-            return CommandResults(scheduled_command=scheduled_command)
+            return CommandResults(scheduled_command=scheduled_command,
+                                  readable_output=generate_polling_readable_message(resource_type_name="Policy",
+                                                                                    resource_name=policy))
 
         response = client.azure_firewall_policy_get_request(policy)
 
@@ -1635,7 +1690,10 @@ def remove_rule_from_collection(client: AzureFirewallClient, collection_name: st
             scheduled_command = create_scheduled_command(command_name='azure-firewall-get', interval=interval,
                                                          timeout=timeout, firewall_names=firewall_name)
 
-            command_results_list.append(CommandResults(scheduled_command=scheduled_command))
+            command_results_list.append(CommandResults(scheduled_command=scheduled_command,
+                                                       readable_output=generate_polling_readable_message(
+                                                           resource_type_name="Firewall",
+                                                           resource_name=firewall_name)))
 
         else:
             command_results_list.append(generate_firewall_command_output(response,
@@ -1677,7 +1735,10 @@ def remove_rule_from_collection(client: AzureFirewallClient, collection_name: st
             scheduled_command = create_scheduled_command(command_name='azure-firewall-policy-get', interval=interval,
                                                          timeout=timeout, policy_names=policy)
 
-            command_results_list.append(CommandResults(scheduled_command=scheduled_command))
+            command_results_list.append(CommandResults(scheduled_command=scheduled_command,
+                                                       readable_output=generate_polling_readable_message(
+                                                           resource_type_name="Policy",
+                                                           resource_name=policy)))
 
         else:
             response = client.azure_firewall_policy_get_request(policy)
@@ -1887,7 +1948,9 @@ def azure_firewall_network_rule_collection_create_command(client: AzureFirewallC
             scheduled_command = create_scheduled_command(command_name='azure-firewall-get', interval=interval,
                                                          timeout=timeout, firewall_names=firewall_name)
 
-            return CommandResults(scheduled_command=scheduled_command)
+            return CommandResults(scheduled_command=scheduled_command,
+                                  readable_output=generate_polling_readable_message(resource_type_name="Firewall",
+                                                                                    resource_name=firewall_name))
 
         else:
             return generate_firewall_command_output(response,
@@ -1924,7 +1987,9 @@ def azure_firewall_network_rule_collection_create_command(client: AzureFirewallC
             scheduled_command = create_scheduled_command(command_name='azure-firewall-policy-get', interval=interval,
                                                          timeout=timeout, policy_names=policy)
 
-            return CommandResults(scheduled_command=scheduled_command)
+            return CommandResults(scheduled_command=scheduled_command,
+                                  readable_output=generate_polling_readable_message(resource_type_name="Policy",
+                                                                                    resource_name=policy))
 
         response = client.azure_firewall_policy_get_request(policy)
 
@@ -2016,7 +2081,9 @@ def azure_firewall_network_rule_collection_update_command(client: AzureFirewallC
             scheduled_command = create_scheduled_command(command_name='azure-firewall-get', interval=interval,
                                                          timeout=timeout, firewall_names=firewall_name)
 
-            return CommandResults(scheduled_command=scheduled_command)
+            return CommandResults(scheduled_command=scheduled_command,
+                                  readable_output=generate_polling_readable_message(resource_type_name="Firewall",
+                                                                                    resource_name=firewall_name))
 
         else:
             return generate_firewall_command_output(response,
@@ -2037,7 +2104,9 @@ def azure_firewall_network_rule_collection_update_command(client: AzureFirewallC
             scheduled_command = create_scheduled_command(command_name='azure-firewall-policy-get', interval=interval,
                                                          timeout=timeout, policy_names=policy)
 
-            return CommandResults(scheduled_command=scheduled_command)
+            return CommandResults(scheduled_command=scheduled_command,
+                                  readable_output=generate_polling_readable_message(resource_type_name="Policy",
+                                                                                    resource_name=policy))
 
         response = client.azure_firewall_policy_get_request(policy)
 
@@ -2160,7 +2229,9 @@ def azure_firewall_network_rule_create_command(client: AzureFirewallClient, args
             scheduled_command = create_scheduled_command(command_name='azure-firewall-get', interval=interval,
                                                          timeout=timeout, firewall_names=firewall_name)
 
-            return CommandResults(scheduled_command=scheduled_command)
+            return CommandResults(scheduled_command=scheduled_command,
+                                  readable_output=generate_polling_readable_message(resource_type_name="Firewall",
+                                                                                    resource_name=firewall_name))
 
         else:
             return generate_firewall_command_output(response,
@@ -2180,7 +2251,9 @@ def azure_firewall_network_rule_create_command(client: AzureFirewallClient, args
             scheduled_command = create_scheduled_command(command_name='azure-firewall-policy-get', interval=interval,
                                                          timeout=timeout, policy_names=policy)
 
-            return CommandResults(scheduled_command=scheduled_command)
+            return CommandResults(scheduled_command=scheduled_command,
+                                  readable_output=generate_polling_readable_message(resource_type_name="Policy",
+                                                                                    resource_name=policy))
 
         response = client.azure_firewall_policy_get_request(policy)
 
@@ -2337,7 +2410,9 @@ def azure_firewall_network_rule_update_command(client: AzureFirewallClient, args
             scheduled_command = create_scheduled_command(command_name='azure-firewall-get', interval=interval,
                                                          timeout=timeout, firewall_names=firewall_name)
 
-            return CommandResults(scheduled_command=scheduled_command)
+            return CommandResults(scheduled_command=scheduled_command,
+                                  readable_output=generate_polling_readable_message(resource_type_name="Firewall",
+                                                                                    resource_name=firewall_name))
 
         else:
             return generate_firewall_command_output(response,
@@ -2362,7 +2437,9 @@ def azure_firewall_network_rule_update_command(client: AzureFirewallClient, args
             scheduled_command = create_scheduled_command(command_name='azure-firewall-policy-get', interval=interval,
                                                          timeout=timeout, policy_names=policy)
 
-            return CommandResults(scheduled_command=scheduled_command)
+            return CommandResults(scheduled_command=scheduled_command,
+                                  readable_output=generate_polling_readable_message(resource_type_name="Policy",
+                                                                                    resource_name=policy))
 
         response = client.azure_firewall_policy_get_request(policy)
 
@@ -2528,7 +2605,9 @@ def azure_firewall_ip_group_create_command(client: AzureFirewallClient, args: Di
         scheduled_command = create_scheduled_command(command_name='azure-firewall-ip-group-get', interval=interval,
                                                      timeout=timeout, ip_group_names=ip_group_name)
 
-        return CommandResults(scheduled_command=scheduled_command)
+        return CommandResults(scheduled_command=scheduled_command,
+                              readable_output=generate_polling_readable_message(resource_type_name="IP-Group",
+                                                                                resource_name=ip_group_name))
 
     return generate_ip_group_command_output(response,
                                             readable_header=f'Successfully Created IP Group "{ip_group_name}"')
@@ -2578,7 +2657,9 @@ def azure_firewall_ip_group_update_command(client: AzureFirewallClient, args: Di
         scheduled_command = create_scheduled_command(command_name='azure-firewall-ip-group-get', interval=interval,
                                                      timeout=timeout, ip_group_names=ip_group_name)
 
-        return CommandResults(scheduled_command=scheduled_command)
+        return CommandResults(scheduled_command=scheduled_command,
+                              readable_output=generate_polling_readable_message(resource_type_name="IP-Group",
+                                                                                resource_name=ip_group_name))
 
     return generate_ip_group_command_output(response, readable_header=f'{ip_group_name} IP Group Information:')
 
@@ -2653,7 +2734,10 @@ def azure_firewall_ip_group_get_command(client: AzureFirewallClient, args: Dict[
                                                              ip_group_names=ip_group)
 
                 # result with scheduled_command only - no update to the war room
-                command_results_list.append(CommandResults(scheduled_command=scheduled_command))
+                command_results_list.append(CommandResults(scheduled_command=scheduled_command,
+                                                           readable_output=generate_polling_readable_message(
+                                                               resource_type_name="IP-Group",
+                                                               resource_name=ip_group)))
 
             else:
 
@@ -2776,6 +2860,18 @@ def main() -> None:
     resource_group = params['credentials']['identifier']
     client_id = params['credentials']['password']
 
+    client_secret = dict_safe_get(params, ['client_secret', 'password'])
+    tenant_id = dict_safe_get(params, ['tenant_id', 'password'])
+
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
+
+    if tenant_id:
+        if not client_secret and (
+                (private_key and not certificate_thumbprint) or (certificate_thumbprint and not private_key)):
+            raise DemistoException(
+                'When Tenant ID is provided, either Client Secret or Certificate Thumbprint and Private Key must be provided.')
+
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
@@ -2787,7 +2883,11 @@ def main() -> None:
             client_id=client_id,
             api_version=api_version,
             verify=verify_certificate,
-            proxy=proxy)
+            proxy=proxy,
+            client_secret=client_secret,
+            tenant_id=tenant_id,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key)
 
         commands = {
             'azure-firewall-list': azure_firewall_list_command,

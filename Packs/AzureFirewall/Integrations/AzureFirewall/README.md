@@ -8,14 +8,18 @@ This integration was integrated and tested with version 2021-03-01 of Azure Fire
 2. Search for Azure Firewall.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Resource Group Name. | True |
-    | Client ID. | True |
-    | Subscription ID. | True |
-    | API Version. | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Resource Group Name. |  | True |
+    | Client ID. |  | True |
+    | Subscription ID. |  | True |
+    | Tenant ID. |  | False |
+    | Client Secret. |  | False |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+    | API Version. |  | True |
+    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -932,7 +936,8 @@ Remove policy from firewall. This command will detach between policy and firewal
 
 ### azure-firewall-network-rule-collection-create
 ***
-Create network rule collection in firewall or policy. The command will return firewall or policy rule collection resource information.
+Create network rule collection in firewall or policy. The command will return firewall or policy rule collection resource information. One of the arguments 'firewall_name' or
+      'policy'  must be provided.
 
 
 #### Base Command
