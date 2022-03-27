@@ -1944,6 +1944,7 @@ class JsonTransformer:
     :return: None
     :rtype: ``None``
     """
+
     def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
         """
         Constructor for JsonTransformer
@@ -2074,7 +2075,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :param date_fields: A list of date fields to format the value to human-readable output.
 
         :type json_transform_mapping: ``Dict[str, JsonTransformer]``
-        :param json_transform_mapping: A mapping between a header key to correspoding JsonTransformer
+        :param json_transform_mapping: A mapping between a header key to corresponding JsonTransformer
 
         :type is_auto_json_transform: ``bool``
         :param is_auto_json_transform: Boolean to try to auto transform complex json
@@ -2723,6 +2724,9 @@ class Common(object):
         :type reliability: ``DBotScoreReliability``
         :param reliability: use DBotScoreReliability class
 
+        :type message: ``str``
+        :param message: Used to message on the api response, for example: When return api response is "Not found".
+
         :return: None
         :rtype: ``None``
         """
@@ -2737,7 +2741,7 @@ class Common(object):
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
         def __init__(self, indicator, indicator_type, integration_name='', score=None, malicious_description=None,
-                     reliability=None):
+                     reliability=None, message=None):
 
             if not DBotScoreType.is_valid_type(indicator_type):
                 raise TypeError('indicator_type must be of type DBotScoreType enum')
@@ -2759,6 +2763,7 @@ class Common(object):
             self.score = score
             self.malicious_description = malicious_description
             self.reliability = reliability
+            self.message = message
 
         @staticmethod
         def is_valid_score(score):
@@ -2786,6 +2791,9 @@ class Common(object):
 
             if self.reliability:
                 dbot_context['Reliability'] = self.reliability
+
+            if self.message:
+                dbot_context['Message'] = self.message
 
             ret_value = {
                 Common.DBotScore.get_context_path(): dbot_context
@@ -6399,6 +6407,190 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
         sys.exit(0)
 
 
+class CommandRunner:
+    """
+    Class for executing multiple commands and save the results of each command.
+
+    :return: None
+    :rtype: ``None``
+    """
+    class Command:
+        """
+        Data class with the data required to execute a command.
+
+        :return: None
+        :rtype: ``None``
+        """
+        def __init__(self, commands, args_lst, brand=None, instance=None):
+            """
+
+            :param commands: The commands list or a single command
+            :type commands: str + List[str]
+            :param args_lst: The args list or a single args
+            :type args_lst: List[Dict] + Dict
+            :param brand: The brand to use
+            :type brand: str
+            :param instance: The instance to use
+            :type instance: str
+            """
+            if isinstance(commands, str) and isinstance(args_lst, dict):
+                commands = [commands]
+                args_lst = [args_lst]
+            if isinstance(commands, str) and isinstance(args_lst, list):
+                commands = [commands for _ in range(len(args_lst))]
+            self._is_valid(commands, args_lst)
+            self.commands = commands
+            self.args_lst = args_lst
+            if brand:
+                for args in self.args_lst:
+                    args.update({'using-brand': brand})
+            if instance:
+                for args in self.args_lst:
+                    args.update({'using': instance})
+
+        @staticmethod
+        def _is_valid(commands, args_lst):
+            """
+            Error handling of the given arguments
+            :param commands: list of commands
+            :param args_lst: list of args
+            :return:
+            """
+            if not isinstance(commands, list):
+                raise DemistoException('Expected "commands" argument to be a list. received: {}'.format(type(commands)))
+            if not isinstance(args_lst, list):
+                raise DemistoException('Expected "args_lst" argument to be a list. received: {}'.format(type(args_lst)))
+            if len(commands) != len(args_lst):
+                raise DemistoException('"commands" and "args_lst" should be in the same size')
+
+    class Result:
+        """
+        Class for the result of the command.
+
+        :return: None
+        :rtype: ``None``
+        """
+        def __init__(self, command, args, brand, instance, result):
+            """
+            :param command: command that was run.
+            :type command ``str``
+            :param args: args that was run.
+            :type args: ``dict``
+            :param brand: The brand that was used.
+            :type brand: ``str``
+            :param instance: The instance that was used.
+            :type instance: ``str``
+            :param result: The result of the command.
+            :type result: ``object``
+            """
+            self.command = command
+            self.args = args
+            self.brand = brand
+            self.instance = instance
+            self.result = result
+
+    @staticmethod
+    def execute_commands(command, extract_contents=True):
+        """
+        Runs the `demisto.executeCommand()` and gets all the results, including the errors, returned from the command.
+
+        :type command: ``Command``
+        :param command: The commands to run. (required)
+
+        :type extract_contents: ``bool``
+        :param extract_contents: Whether to extract Contents part of the results. Default is True.
+
+        :return: A tuple of two lists: the command results list and command errors list.
+        :rtype: ``Tuple[List[ResultWrapper], List[ResultWrapper]]``
+        """
+        results, errors = [], []
+        for command, args in zip(command.commands, command.args_lst):
+            try:
+                execute_command_results = demisto.executeCommand(command, args)
+                for res in execute_command_results:
+                    brand_name = res.get('Brand', 'Unknown') if isinstance(res, dict) else 'Unknown'
+                    module_name = res.get('ModuleName', 'Unknown') if isinstance(res, dict) else 'Unknown'
+                    if is_error(res):
+                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, get_error(res)))
+                    else:
+                        if extract_contents:
+                            res = res.get('Contents', {})
+                        if res is None:
+                            res = {}
+                        results.append(CommandRunner.Result(command, args, brand_name, module_name, res))
+            except ValueError as e:
+                # We expect this error when the command is not supported.
+                demisto.debug('demisto.executeCommand received an error because the command is not supported:'
+                              ' {e}'.format(e=str(e)))
+        return results, errors
+
+    @staticmethod
+    def run_commands_with_summary(commands):
+        """
+        Given a list of commands, return a list of results (to pass to return_results).
+        In addition, it will create a `CommandResult` of the summary of the commands, which is a `readable_output`.
+
+        :param commands: A list of commands.
+        :type commands: ``List[Command]``
+        :return: list of results
+        """
+        full_results, full_errors = [], []
+        for command in commands:
+            results, errors = CommandRunner.execute_commands(command, extract_contents=False)
+            full_results.extend(results)
+            full_errors.extend(errors)
+
+        summary_md = CommandRunner.get_results_summary(full_results, full_errors)
+        command_results = [res.result for res in full_results]
+        if not command_results:
+            if full_errors:  # no results were given but there are errors
+                errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
+                error_msg = '\n'.join(['Script failed. The following errors were encountered: '] + errors)
+            else:
+                error_msg = 'The commands that run are not supported in this Instance. ' \
+                            'Try to configure the integrations in XSOAR settings.'
+            raise DemistoException(error_msg)
+
+        command_results.append(CommandResults(readable_output=summary_md))
+        return command_results
+
+    @staticmethod
+    def get_results_summary(results, errors):
+        """
+        Get a Human Readable result for all the results of the commands.
+        :param results: list of returned results
+        :param errors: list of returned errors
+        :return: `CommandResults` of HumanReadable that summarizes the results and errors.
+        """
+        results_summary_table = []
+        headers = ['Instance', 'Command', 'Result', 'Comment']
+        for res in results:
+            # don't care about using arg in command
+            res.args.pop('using', None)
+            res.args.pop('using-brand', None)
+            command = {'command': res.command,
+                       'args': res.args}
+            results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=res.brand,
+                                                                                         instance=res.instance),
+                                          'Command': command,
+                                          'Result': 'Success',
+                                          'Comment': None})
+
+        for err in errors:
+            # don't care about using arg in command
+            err.args.pop('using', None)
+            err.args.pop('using-brand', None)
+            command = {'command': err.command,
+                       'args': err.args}
+            results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=err.brand,
+                                                                                         instance=err.instance),
+                                          'Command': command,
+                                          'Result': 'Error',
+                                          'Comment': err.result})
+        summary_md = tableToMarkdown('Results Summary', results_summary_table, headers=headers, is_auto_json_transform=True)
+        return summary_md
+
+
 def execute_command(command, args, extract_contents=True, fail_on_error=True):
     """
     Runs the `demisto.executeCommand()` function and checks for errors.
@@ -7016,6 +7208,21 @@ except Exception as ex:
     # Should fail silently so that if there is a problem with the logger it will
     # not affect the execution of commands and playbooks
     demisto.info('Failed initializing DebugLogger: {}'.format(ex))
+
+
+def add_sensitive_log_strs(sensitive_str):
+    """
+    Adds the received string to both LOG and DebugLogger. The logger will mask the string each time he encounters it.
+
+    :type sensitive_str: ``str``
+    :param sensitive_str: The string to be replaced.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    if _requests_logger:
+        _requests_logger.int_logger.add_replace_strs(sensitive_str)
+    LOG.add_replace_strs(sensitive_str)
 
 
 def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
@@ -9013,6 +9220,97 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
         return inner
 
     return dec
+
+
+def get_pack_version(pack_name=''):
+    """
+    Get a pack version.
+    The version can be retrieved either by a pack name or by the calling script/integration in which
+    script/integration is part of.
+
+    To get the version of the pack in which the calling script/integration is part of,
+    just call the function without pack_name.
+
+    :type pack_name: ``str``
+    :param pack_name: the pack name as mentioned in the pack metadata file to query its version.
+            use only if querying by a pack name.
+
+    :return: The pack version in which the integration/script is part of / the version of the requested pack name in
+        case provided. in case not found returns empty string.
+    :rtype: ``str``
+    """
+    def _get_packs_by_query(_body_request):
+        packs_body_response = demisto.internalHttpRequest(
+            'POST', uri='/contentpacks/marketplace/search', body=json.dumps(body_request)
+        )
+        return _load_response(_response=packs_body_response.get('body')).get('packs') or []
+
+    def _load_response(_response):
+        try:
+            return json.loads(_response)
+        except json.JSONDecodeError:
+            demisto.debug('Unable to load response {response}'.format(response=_response))
+            return {}
+
+    def _extract_current_pack_version(_packs, _query_type, _entity_name):
+        # in case we have more than 1 pack returned from the search, need to make sure to retrieve the correct pack
+        if query_type == 'automation' or query_type == 'integration':
+            for pack in _packs:
+                for content_entity in (pack.get('contentItems') or {}).get(_query_type) or []:
+                    if (content_entity.get('name') or '') == _entity_name:
+                        return pack.get('currentVersion') or ''
+        else:
+            for pack in _packs:
+                if pack.get('name') == _entity_name:
+                    return pack.get('currentVersion') or ''
+        return ''
+
+    def _extract_integration_display_name(_integration_brand):
+        integrations_body_response = demisto.internalHttpRequest(
+            'POST', uri='/settings/integration/search', body=json.dumps({})
+        )
+        integrations_body_response = _load_response(_response=integrations_body_response.get('body'))
+        integrations = integrations_body_response.get('configurations') or []
+
+        for integration in integrations:
+            integration_display_name = integration.get('display')
+            if integration.get('id') == _integration_brand and integration_display_name:
+                return integration_display_name
+        return ''
+    # query by pack name
+    if pack_name:
+        entity_name = pack_name
+        body_request = {'packsQuery': entity_name}
+        query_type = 'pack'
+    # query by integration name
+    elif demisto.callingContext.get('integration'):  # True means its integration, False means its script/automation.
+        entity_name = (demisto.callingContext.get('context') or {}).get('IntegrationBrand') or ''
+        body_request = {'integrationsQuery': entity_name}
+        query_type = 'integration'
+    # query by script/automation name
+    else:
+        entity_name = (demisto.callingContext.get('context') or {}).get('ScriptName') or ''
+        body_request = {'automationQuery': entity_name}
+        query_type = 'automation'
+
+    pack_version = _extract_current_pack_version(
+        _packs=_get_packs_by_query(_body_request=body_request),
+        _query_type=query_type,
+        _entity_name=entity_name
+    )
+    if not pack_version and query_type == 'integration':
+        # handle the case where the display name of the integration is not the same as the integration brand
+        integration_display = _extract_integration_display_name(_integration_brand=entity_name)
+        if integration_display and integration_display != entity_name:
+            body_request['integrationsQuery'] = integration_display
+
+            return _extract_current_pack_version(
+                _packs=_get_packs_by_query(_body_request=body_request),
+                _query_type=query_type,
+                _entity_name=integration_display
+            )
+        return ''
+    return pack_version
 
 
 ###########################################
