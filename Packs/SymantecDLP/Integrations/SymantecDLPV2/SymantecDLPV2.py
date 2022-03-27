@@ -204,8 +204,9 @@ class Client(BaseClient):
 
 
 def check_status_ids_type(status_ids_list: list):
-    if not all(isinstance(status_id, int) for status_id in status_ids_list):
+    if not all(status_id.isdigit() for status_id in status_ids_list):
         raise ValueError("Status IDs must be integers.")
+    return status_ids_list
 
 
 def create_filter_dict(filter_type: str, filter_by: str, filter_value: List[Any], operator: str) -> Dict[str, Any]:
