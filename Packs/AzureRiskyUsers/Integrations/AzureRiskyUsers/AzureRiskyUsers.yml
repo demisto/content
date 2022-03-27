@@ -1,12 +1,13 @@
 category: Vulnerability Management
 commonfields:
-  id: AzureRiskyUsers
+  id: AzureRiskyUsers - Beta
   version: -1
 configuration:
 - display: Client ID
   name: client_id
   required: true
   type: 9
+  hiddenpassword: true
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -17,8 +18,8 @@ configuration:
   type: 8
 description: Azure Risky Users provides access to all at-risk users and risk detections
   in the Azure AD environment.
-display: Azure Risky Users
-name: AzureRiskyUsers
+display: Azure Risky Users - Beta
+name: AzureRiskyUsers - Beta
 script:
   commands:
   - deprecated: false
