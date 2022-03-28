@@ -2,156 +2,123 @@
     "TASK_0": {
         "inputs": [
             {
-                "key": "Role",
-                "value": {
-                    "simple": "Administrator"
+                "Name": "Role",
+                "Value": {
+                    "Get": "key",
+                    "Where": [
+                        "isEqualString(key, 2)",
+                        "(isEmpty(key.test)<br/>OR hasLength(key.test, 3))"
+                    ],
+                    "Transformers": [
+                        "append(value, item=3)"
+                    ]
                 },
-                "required": true,
-                "description": "The default role to assign the incident to.",
-                "playbookInputQuery": null
+                "Description": "The default role to assign the incident to.",
+                "Mandatory": true
             },
             {
-                "key": "SearchAndDelete",
-                "value": {
-                    "simple": "False"
+                "Name": "SearchAndDelete",
+                "Value": "False",
+                "Description": "Enables the Search and Delete capability.\nFor a malicious email, the \"Search and Delete\" sub-playbook looks for other instances of the email and deletes them pending analyst approval.",
+                "Mandatory": false
+            },
+            {
+                "Name": "BlockIndicators",
+                "Value": "False",
+                "Description": "Enables the Block Indicators capability.\nFor a malicious email, the \"Block Indicators\" sub-playbook blocks all malicious indicators in the relevant integrations.",
+                "Mandatory": false
+            },
+            {
+                "Name": "AuthenticateEmail",
+                "Value": "True",
+                "Description": "Determines whether the authenticity of the email should be verified using SPF, DKIM, and DMARC.",
+                "Mandatory": false
+            },
+            {
+                "Name": "OnCall",
+                "Value": "False",
+                "Description": "Set to True to assign only the user that is currently on shift.",
+                "Mandatory": false
+            },
+            {
+                "Name": "SearchAndDeleteIntegration",
+                "Value": "EWS",
+                "Description": "Determines which product and playbook is used to search and delete the phishing email from user inboxes.\n  - Set this to \"O365\" to use the \"O365 - Security And Compliance - Search And Delete\" playbook.\n  - Set this to \"EWS\" to use the \"Search And Delete Emails - EWS\" playbook.\n  - Set this to \"Gmail\" to use the \"Search And Delete - Gmail\" playbook.",
+                "Mandatory": false
+            },
+            {
+                "Name": "O365DeleteType",
+                "Value": "Soft",
+                "Description": "Sets the method to delete emails in the \"O365 - Security And Compliance - Search And Delete\" playbook. Can be \"Soft\" (recoverable), or \"Hard\" (unrecoverable). Leave empty to decide manually for each email incident.\nThis is only applicable if the SearchAndDeleteIntegration input is set to \"O365\".",
+                "Mandatory": false
+            },
+            {
+                "Name": "O365ExchangeLocation",
+                "Value": {
+                    "Get": "incident",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "No transformers applied"
+                    ]
                 },
-                "required": false,
-                "description": "Enables the Search and Delete capability.\nFor a malicious email, the \"Search and Delete\" sub-playbook looks for other instances of the email and deletes them pending analyst approval.",
-                "playbookInputQuery": null
+                "Description": "The exchange location. Determines from where to search and delete emails using O365 playbooks. Use the value \"All\" to search all mailboxes, or use ${incident.emailto} to search and delete the email only from the recipient's inbox. Note - Searching all mailboxes may take a significant amount of time. - This input is used only when searching and deleting emails in O365 and only applies if the SearchAndDeleteIntegration input is set to O365.",
+                "Mandatory": false
             },
             {
-                "key": "BlockIndicators",
-                "value": {
-                    "simple": "False"
-                },
-                "required": false,
-                "description": "Enables the Block Indicators capability.\nFor a malicious email, the \"Block Indicators\" sub-playbook blocks all malicious indicators in the relevant integrations.",
-                "playbookInputQuery": null
+                "Name": "O365AllowNotFoundSearchLocations",
+                "Value": "False",
+                "Description": "Used only when searching and deleting emails in O365. Determines whether to include mailboxes other than regular user mailboxes in the compliance search.",
+                "Mandatory": false
             },
             {
-                "key": "AuthenticateEmail",
-                "value": {
-                    "simple": "True"
-                },
-                "required": false,
-                "description": "Determines whether the authenticity of the email should be verified using SPF, DKIM, and DMARC.",
-                "playbookInputQuery": null
+                "Name": "O365ExchangeLocationExclusion",
+                "Value": "",
+                "Description": "Used only when searching and deleting emails in O365. A comma-separated list of mailboxes/distribution groups to exclude when you use the value \"All\" for the O365ExchangeLocation input.",
+                "Mandatory": false
             },
             {
-                "key": "OnCall",
-                "value": {
-                    "simple": "False"
-                },
-                "required": false,
-                "description": "Set to True to assign only the user who is currently on shift.",
-                "playbookInputQuery": null
+                "Name": "CheckMicrosoftHeaders",
+                "Value": "True",
+                "Description": "Whether to check Microsoft headers for BCL/PCL/SCL scores and set the \"Severity\" and \"Email Classification\" accordingly.",
+                "Mandatory": false
             },
             {
-                "key": "SearchAndDeleteIntegration",
-                "value": {
-                    "simple": "EWS"
-                },
-                "required": false,
-                "description": "Determines which product and playbook is used to search and delete the phishing email from user inboxes.\n  - Set this to \"O365\" to use the \"O365 - Security And Compliance - Search And Delete\" playbook.\n  - Set this to \"EWS\" to use the \"Search And Delete Emails - EWS\" playbook.\n  - Set this to \"Gmail\" to use the \"Search And Delete - Gmail\" playbook.",
-                "playbookInputQuery": null
+                "Name": "InternalDomains",
+                "Value": "",
+                "Description": "A CSV list of internal domains. The list is used to determine whether an email address is internal or external.",
+                "Mandatory": false
             },
             {
-                "key": "O365DeleteType",
-                "value": {
-                    "simple": "Soft"
-                },
-                "required": false,
-                "description": "Sets the method to delete emails in the \"O365 - Security And Compliance - Search And Delete\" playbook. Can be \"Soft\" (recoverable), or \"Hard\" (unrecoverable). Leave empty to decide manually for each email incident.\nThis is only applicable if the SearchAndDeleteIntegration input is set to \"O365\".",
-                "playbookInputQuery": null
+                "Name": "DetonateURL",
+                "Value": "False",
+                "Description": "Determines whether to use the \"URL Detonation\" playbook. Detonating a URL may take a few minutes.",
+                "Mandatory": false
             },
             {
-                "key": "O365ExchangeLocation",
-                "value": {},
-                "required": false,
-                "description": "The exchange location. Determines from where to search and delete emails using O365 playbooks. Use the value \"All\" to search all mailboxes. If no input provided, it will search and delete the email only from the recipient's mailboxes. Note - Searching all mailboxes may take a significant amount of time. This input is used only when searching and deleting emails in O365 and only applies if the SearchAndDeleteIntegration input is set to O365.",
-                "playbookInputQuery": null
+                "Name": "InternalRange",
+                "Value": "",
+                "Description": "This input is used in the \"Entity Enrichment - Phishing v2\" playbook.\nA list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: \"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). If a list is not provided, uses the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).",
+                "Mandatory": false
             },
             {
-                "key": "O365AllowNotFoundSearchLocations",
-                "value": {
-                    "simple": "False"
-                },
-                "required": false,
-                "description": "Used only when searching and deleting emails in O365. Determines whether to include mailboxes other than regular user mailboxes in the compliance search.",
-                "playbookInputQuery": null
+                "Name": "PhishingModelName",
+                "Value": "phishing_model",
+                "Description": "Optional - the name of a pre-trained phishing model to predict phishing type using machine learning.",
+                "Mandatory": false
             },
             {
-                "key": "O365ExchangeLocationExclusion",
-                "value": {},
-                "required": false,
-                "description": "Used only when searching and deleting emails in O365. A comma-separated list of mailboxes/distribution groups to exclude when you use the value \"All\" for the O365ExchangeLocation input.",
-                "playbookInputQuery": null
+                "Name": "GetOriginalEmail",
+                "Value": "",
+                "Description": "For forwarded emails. When \"True\", retrieves the original email in the thread.\n\nYou must have the necessary permissions in your email service to execute global search.\n\n- For EWS: eDiscovery\n- For Gmail: Google Apps Domain-Wide Delegation of Authority\n- For MSGraph: As described in these links\nhttps://docs.microsoft.com/en-us/graph/api/message-get\nhttps://docs.microsoft.com/en-us/graph/api/user-list-messages",
+                "Mandatory": false
             },
             {
-                "key": "CheckMicrosoftHeaders",
-                "value": {
-                    "simple": "True"
-                },
-                "required": false,
-                "description": "Whether to check Microsoft headers for BCL/PCL/SCL scores and set the \"Severity\" and \"Email Classification\" accordingly.",
-                "playbookInputQuery": null
-            },
-            {
-                "key": "InternalDomains",
-                "value": {},
-                "required": false,
-                "description": "A CSV list of internal domains. The list is used to determine whether an email address is internal or external.",
-                "playbookInputQuery": null
-            },
-            {
-                "key": "DetonateURL",
-                "value": {
-                    "simple": "False"
-                },
-                "required": false,
-                "description": "Determines whether to use the \"URL Detonation\" playbook. Detonating a URL may take a few minutes.",
-                "playbookInputQuery": null
-            },
-            {
-                "key": "InternalRange",
-                "value": {},
-                "required": false,
-                "description": "This input is used in the \"Entity Enrichment - Phishing v2\" playbook.\nA list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: \"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). If a list is not provided, uses the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).",
-                "playbookInputQuery": null
-            },
-            {
-                "key": "PhishingModelName",
-                "value": {
-                    "simple": "phishing_model"
-                },
-                "required": false,
-                "description": "Optional - the name of a pre-trained phishing model to predict the phishing type using machine learning.",
-                "playbookInputQuery": null
-            },
-            {
-                "key": "GetOriginalEmail",
-                "value": {},
-                "required": false,
-                "description": "For forwarded emails. When \"True\", retrieves the original email in the thread.\n\nYou must have the necessary permissions in your email service to execute a global search.\n\n- For EWS: eDiscovery\n- For Gmail: Google Apps Domain-Wide Delegation of Authority\n- For MSGraph: As described in these links\nhttps://docs.microsoft.com/en-us/graph/api/message-get\nhttps://docs.microsoft.com/en-us/graph/api/user-list-messages",
-                "playbookInputQuery": null
-            },
-            {
-                "key": "DBotPredictURLPhishingURLsNumber",
-                "value": {
-                    "simple": "3"
-                },
-                "required": false,
-                "description": "The number of URLs to extract from the email HTML and analyze in the \"DBotPredictURLPhishing\" automation.\nThis automation runs several checks to determine the score of the URLs found in the email, sets a verdict for URLs found as \"Suspicious\" or \"Malicious\", and adds these URLs as indicators. Based on the verdict, the incident severity is set (Medium for \"Suspicious\" and High for \"Malicious\").\nNote:\n- You need to install the \"Phishing URL\" pack to use this automation.\n- False/True positives are possible.\n- This automation may take a few minutes to run.\n- To increase result accuracy, it is recommended to install and enable the \"Whois\" pack (optional).",
-                "playbookInputQuery": null
-            },
-            {
-                "key": "EmailFileToExtract",
-                "value": {
-                    "simple": "Inner file"
-                },
-                "required": false,
-                "description": "Reported emails and emails retrieved during playbook execution can contain multiple nested email files. For example, an EML nested inside another EML file.\nIf multiple level files are detected, this field determines which file represents the phishing email.\n\nFor example:\nUser1 receives an email from Attacker. User1 attaches the email as an EML file and sends the email to User2.\nUser2 also attaches that email as a file, and reports it as phishing. In this case, the phishing email would be the \"inner file\" (as opposed to \"outer file\").\n\nPossible values are: Inner file, Outer file, All files.\nInner file: The file at the deepest level is parsed. If there is only one file, that file is parsed.\nOuter file: The file at the first level is parsed.\nAll files: All files are parsed. Do not use this option in the phishing playbook, as there should only be one phishing email per playbook run.",
-                "playbookInputQuery": null
+                "Name": "DBotPredictURLPhishingURLsNumber",
+                "Value": "3",
+                "Description": "The number of URLs to extract from the email HTML and analyze in the \"DBotPredictURLPhishing\" automation.\nThis automation runs several checks to determine the score of the URLs found in the email, sets a verdict for URLs found as \"Suspicious\" or \"Malicious\", and adds these URLs as indicators. Based on the verdict, the incident severity is set (Medium for \"Suspicious\" and High for \"Malicious\").\nNote:\n- You need to install the \"Phishing URL\" pack to use this automation.\n- False/True positives are possible.\n- This automation may take a few minutes to run.\n- To increase result accuracy, it is recommended to install and enable the \"Whois\" pack (optional).",
+                "Mandatory": false
             }
         ],
         "outputs": []
@@ -252,7 +219,7 @@
         },
         "reputationcalc": 1,
         "separatecontext": false,
-        "view": "{\n  \"position\": {\n    \"x\": -897.5,\n    \"y\": 5180\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": -897.5,\n    \"y\": 5360\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -271,8 +238,7 @@
             "name": "Triage",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -289,15 +255,56 @@
         "isoversize": false,
         "isautoswitchedtoquietmode": false
     },
-    "TASK_13": {
-        "id": "13",
-        "taskid": "9a73f740-17fe-4280-80ff-07dd4e4d6931",
+    "TASK_12": {
+        "id": "12",
+        "taskid": "0773d4ad-fe7a-451a-821e-805434cdc5e6",
         "type": "regular",
         "task": {
-            "id": "9a73f740-17fe-4280-80ff-07dd4e4d6931",
+            "id": "0773d4ad-fe7a-451a-821e-805434cdc5e6",
+            "version": -1,
+            "name": "Store the email address of the reporting user",
+            "description": "Stores the email address of the user that reported the incident.",
+            "scriptName": "Set",
+            "type": "regular",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "85"
+            ]
+        },
+        "scriptarguments": {
+            "key": {
+                "simple": "ReporterAddress"
+            },
+            "value": {
+                "complex": {
+                    "root": "ExtractedIndicators.Email",
+                    "accessor": "[0]"
+                }
+            }
+        },
+        "reputationcalc": 1,
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -497.5,\n    \"y\": -75\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_13": {
+        "id": "13",
+        "taskid": "1f37541b-cd13-4a37-8f9e-169b63825248",
+        "type": "regular",
+        "task": {
+            "id": "1f37541b-cd13-4a37-8f9e-169b63825248",
             "version": -1,
             "name": "Acknowledge incident was received",
-            "description": "Sends an auto-response to the user reporting that the incident was received and is being handled.\n",
+            "description": "Sends an auto-response to the user reporting the incident that the incident was received and is being handled.\n",
             "script": "|||send-mail",
             "type": "regular",
             "iscommand": true,
@@ -310,21 +317,20 @@
         },
         "scriptarguments": {
             "body": {
-                "simple": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.incident.reporteremailaddress; var reporter = val.incident.reporteremailaddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've received your email and are investigating.\nPlease do not touch the email until further notice.\n\nCordially, \n  Your friendly neighborhood security team"
+                "simple": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress; var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've received your email and are investigating.\nPlease do not touch the email until further notice.\n\nCordially, \n  Your friendly neighborhood security team"
             },
             "subject": {
                 "simple": "Re: Phishing Investigation - ${incident.name}"
             },
             "to": {
                 "complex": {
-                    "root": "incident",
-                    "accessor": "reporteremailaddress"
+                    "root": "ReporterAddress"
                 }
             }
         },
         "reputationcalc": 1,
         "separatecontext": false,
-        "view": "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 630\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": 942.5,\n    \"y\": 630\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -389,10 +395,10 @@
     },
     "TASK_16": {
         "id": "16",
-        "taskid": "03bcc09e-17ae-4ae5-86ac-38813c29b582",
+        "taskid": "84262d62-b6b4-48b5-8c98-eac47e0e29cb",
         "type": "regular",
         "task": {
-            "id": "03bcc09e-17ae-4ae5-86ac-38813c29b582",
+            "id": "84262d62-b6b4-48b5-8c98-eac47e0e29cb",
             "version": -1,
             "name": "Update the user that the reported email is safe",
             "description": "Sends an email to the user explaining that the email they reported is safe.",
@@ -408,16 +414,13 @@
         },
         "scriptarguments": {
             "body": {
-                "simple": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.incident.reporteremailaddress; var reporter = val.incident.reporteremailaddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've concluded that the email you forwarded to us is safe. In case you think the verdict is not accurate and the email is suspicious, please contact our SOC team.\nThank you for your alertness and your participation in keeping our organization secure.\n\nCordially,\n  Your security team"
+                "simple": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress; var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've concluded that the email you forwarded to us is safe. In case you think the verdict is not accurate and the email is suspicious, please contact our SOC team.\nThank you for your alertness and your participation in keeping our organization secure.\n\nCordially,\n  Your security team"
             },
             "subject": {
                 "simple": "Re: Phishing Investigation - ${incident.name}"
             },
             "to": {
-                "complex": {
-                    "root": "incident",
-                    "accessor": "reporteremailaddress"
-                }
+                "simple": "${ReporterAddress}"
             }
         },
         "reputationcalc": 1,
@@ -446,8 +449,7 @@
             "name": "Engage with User",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -475,8 +477,7 @@
             "playbookName": "Detonate File - Generic",
             "type": "playbook",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -495,13 +496,13 @@
     },
     "TASK_26": {
         "id": "26",
-        "taskid": "19d93ccc-6334-4947-84c3-67b3636948df",
+        "taskid": "35e48544-2ec5-4698-88e9-071aa386e46e",
         "type": "playbook",
         "task": {
-            "id": "19d93ccc-6334-4947-84c3-67b3636948df",
+            "id": "35e48544-2ec5-4698-88e9-071aa386e46e",
             "version": -1,
             "name": "Process Email - Generic v2",
-            "description": "This playbook adds email details to the relevant context entities and handles original email attachments.\n\nThe v2 playbook enables parsing email artifacts more efficiently, including:\n- Using incident fields and not incident labels.\n- Providing separate paths to \"Phishing Alerts\".\n- Using the new \"Get Original Email - Generic v2\" playbook to retrieve original emails as EML files from the following integrations:\n  * EWS v2\n  * Microsoft Graph Mail integration\n  * Gmail\n  * FireEye EX and FireEye CM\n  * Proofpoint Protection Server\n  * Agari Phishing Defense (EWS v2, MSGraph Mail, Gmail)\n  * Mimecast\n",
+            "description": "This playbook adds email details to the relevant context entities and handles the case where original emails are attached.\n\nThis v2 playbook:\n- Uses incident fields and not incident labels.\n- Provides separate paths to \"Phishing Alerts\".\n- Uses the new **Get Original Email - Generic v2** playbook to retrieve original emails as EML files from the following integrations:\n    * EWS v2\n    * Microsoft Graph Mail integration\n    * Gmail\n    * FireEye EX and FireEye CM\n    * Proofpoint Protection Server\n    * Agari Phishing Defense\n    * Mimecast\n  This helps parse the email artifacts more efficiently.\n",
             "playbookName": "Process Email - Generic v2",
             "type": "playbook",
             "iscommand": false,
@@ -526,11 +527,6 @@
                 "complex": {
                     "root": "incident",
                     "accessor": "emailcc"
-                }
-            },
-            "EmailFileToExtract": {
-                "complex": {
-                    "root": "inputs.EmailFileToExtract"
                 }
             },
             "EmailFormat": {
@@ -579,26 +575,44 @@
                     "root": "inputs.GetOriginalEmail"
                 }
             },
-            "MessageID": {
-                "complex": {
-                    "root": "incident",
-                    "accessor": "emailmessageid"
-                }
-            },
-            "Thread-Topic": {
-                "complex": {
-                    "root": "incident",
-                    "accessor": "emailsubject"
-                }
-            },
             "UserID": {
                 "complex": {
-                    "root": "incident",
-                    "accessor": "reporteremailaddress"
+                    "root": "ReporterAddress"
                 }
             }
         },
         "separatecontext": true,
+        "loop": {
+            "iscommand": false,
+            "scriptArguments": {
+                "UserID": {
+                    "complex": {
+                        "root": "incident",
+                        "accessor": "emaifrom",
+                        "transformers": [
+                            {
+                                "operator": "replaceMatch",
+                                "args": {
+                                    "regex": {
+                                        "value": {
+                                            "simple": "(?i).*<([A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,})>"
+                                        }
+                                    },
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "$1"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "exitCondition": "",
+            "wait": 1,
+            "max": 100
+        },
         "view": "{\n  \"position\": {\n    \"x\": -497.5,\n    \"y\": 440\n  }\n}",
         "note": false,
         "timertriggers": [],
@@ -618,8 +632,7 @@
             "name": "Remediation",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -645,10 +658,10 @@
     },
     "TASK_28": {
         "id": "28",
-        "taskid": "f0a914bc-d536-4578-84f2-d001f9ea3b8f",
+        "taskid": "3437bc3e-7d13-4698-897f-0da0f1093f63",
         "type": "playbook",
         "task": {
-            "id": "f0a914bc-d536-4578-84f2-d001f9ea3b8f",
+            "id": "3437bc3e-7d13-4698-897f-0da0f1093f63",
             "version": -1,
             "name": "Search And Delete Emails - Generic v2",
             "description": "This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations: * EWS * Office 365 * Gmail * Agari Phishing Defense",
@@ -671,13 +684,7 @@
             },
             "From": {
                 "complex": {
-                    "root": "incident",
-                    "accessor": "reportedemailfrom",
-                    "transformers": [
-                        {
-                            "operator": "ExtractEmailTransformer"
-                        }
-                    ]
+                    "root": "PhishingSender"
                 }
             },
             "O365AllowNotFoundExchangeLocations\n": {
@@ -692,45 +699,7 @@
                 "simple": "Search for potential phishing"
             },
             "O365ExchangeLocation": {
-                "complex": {
-                    "root": ".",
-                    "transformers": [
-                        {
-                            "operator": "If-Then-Else",
-                            "args": {
-                                "condition": {
-                                    "value": {
-                                        "simple": "lhs==rhs"
-                                    }
-                                },
-                                "else": {
-                                    "value": {
-                                        "simple": "incident.reportedemailto"
-                                    },
-                                    "iscontext": true
-                                },
-                                "equals": {},
-                                "lhs": {
-                                    "value": {
-                                        "simple": "inputs.O365ExchangeLocation"
-                                    },
-                                    "iscontext": true
-                                },
-                                "options": {},
-                                "rhs": {
-                                    "value": {
-                                        "simple": "All"
-                                    }
-                                },
-                                "then": {
-                                    "value": {
-                                        "simple": "All"
-                                    }
-                                }
-                            }
-                        }
-                    ]
-                }
+                "simple": "All"
             },
             "O365ExchangeLocationExclusion": {
                 "complex": {
@@ -738,15 +707,12 @@
                 }
             },
             "O365KQL": {
-                "simple": "from:${incident.reportedemailfrom} AND subject:${incident.reportedemailsubject}"
+                "simple": "from:${incident.emailfrom} AND subject:${incident.emailsubject}"
             },
             "SearchAndDeleteIntegration": {
                 "complex": {
                     "root": "inputs.SearchAndDeleteIntegration"
                 }
-            },
-            "SearchThisWeek": {
-                "simple": "true"
             },
             "Subject": {
                 "complex": {
@@ -768,7 +734,7 @@
             "wait": 1,
             "max": 100
         },
-        "view": "{\n  \"position\": {\n    \"x\": 352.5,\n    \"y\": 4805\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": 352.5,\n    \"y\": 4945\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -787,11 +753,10 @@
             "name": "Done",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "separatecontext": false,
-        "view": "{\n  \"position\": {\n    \"x\": -897.5,\n    \"y\": 5365\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": -897.5,\n    \"y\": 5545\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -810,8 +775,7 @@
             "name": "Email Is Malicious",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -838,8 +802,7 @@
             "name": "Undetermined",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -906,7 +869,7 @@
             ]
         },
         "separatecontext": false,
-        "view": "{\n  \"position\": {\n    \"x\": -250,\n    \"y\": 4180\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": -277.5,\n    \"y\": 4180\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -961,7 +924,7 @@
                 ]
             }
         ],
-        "view": "{\n  \"position\": {\n    \"x\": 352.5,\n    \"y\": 4180\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": 352.5,\n    \"y\": 4190\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -1031,7 +994,7 @@
                 ]
             }
         ],
-        "view": "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 4180\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": 1000,\n    \"y\": 4190\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -1050,8 +1013,7 @@
             "name": "Start Detection Timer",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -1059,7 +1021,7 @@
             ]
         },
         "separatecontext": false,
-        "view": "{\n  \"position\": {\n    \"x\": -497.5,\n    \"y\": -570\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": -497.5,\n    \"y\": -550\n  }\n}",
         "note": false,
         "timertriggers": [
             {
@@ -1083,8 +1045,7 @@
             "name": "Stop Remediation Timer",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -1092,7 +1053,7 @@
             ]
         },
         "separatecontext": false,
-        "view": "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": 5040\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": 690,\n    \"y\": 5210\n  }\n}",
         "note": false,
         "timertriggers": [
             {
@@ -1116,8 +1077,7 @@
             "name": "Indicator Enrichment",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -1136,13 +1096,13 @@
     },
     "TASK_53": {
         "id": "53",
-        "taskid": "d4949505-803c-409b-8681-f30e6bc9bcbb",
+        "taskid": "163f0f23-d373-4f5d-8da6-a5ad86598576",
         "type": "playbook",
         "task": {
-            "id": "d4949505-803c-409b-8681-f30e6bc9bcbb",
+            "id": "163f0f23-d373-4f5d-8da6-a5ad86598576",
             "version": -1,
             "name": "Email Address Enrichment - Generic v2.1",
-            "description": "Enrich email addresses.\n- Get information from Active Directory for internal addresses.\n- Get the domain-squatting reputation for external addresses.",
+            "description": "This playbook enriches email addresses by:\n- Getting information from Active Directory for internal addresses.\n- Getting the domain-squatting reputation for external addresses.",
             "playbookName": "Email Address Enrichment - Generic v2.1",
             "type": "playbook",
             "iscommand": false,
@@ -1159,8 +1119,7 @@
             },
             "Email": {
                 "complex": {
-                    "root": "incident",
-                    "accessor": "reporteremailaddress",
+                    "root": "ReporterAddress",
                     "transformers": [
                         {
                             "operator": "uniq"
@@ -1186,7 +1145,7 @@
             "wait": 1,
             "max": 0
         },
-        "view": "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 450\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": 942.5,\n    \"y\": 450\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -1235,8 +1194,7 @@
             "name": "Investigation",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -1334,8 +1292,7 @@
             "name": "Email Authenticity Check",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -1510,8 +1467,7 @@
             "playbookName": "Calculate Severity - Generic v2",
             "type": "playbook",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -1530,10 +1486,10 @@
     },
     "TASK_85": {
         "id": "85",
-        "taskid": "8581d7d0-475c-454d-8a14-417bc250825b",
+        "taskid": "9b218556-45e5-42a2-855c-54c5e63e82a6",
         "type": "regular",
         "task": {
-            "id": "8581d7d0-475c-454d-8a14-417bc250825b",
+            "id": "9b218556-45e5-42a2-855c-54c5e63e82a6",
             "version": -1,
             "name": "Save reporter email address in field",
             "description": "Saves the email address of the email reporter in an incident field.",
@@ -1551,19 +1507,13 @@
         "scriptarguments": {
             "reporteremailaddress": {
                 "complex": {
-                    "root": "incident",
-                    "accessor": "emailfrom",
-                    "transformers": [
-                        {
-                            "operator": "ExtractEmailTransformer"
-                        }
-                    ]
+                    "root": "ReporterAddress"
                 }
             }
         },
         "reputationcalc": 1,
         "separatecontext": false,
-        "view": "{\n  \"position\": {\n    \"x\": -497.5,\n    \"y\": 85\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": -497.5,\n    \"y\": 100\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -1656,8 +1606,7 @@
             "name": "Machine Learning",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -2192,7 +2141,7 @@
             "wait": 1,
             "max": 0
         },
-        "view": "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 4765\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": 1000,\n    \"y\": 4945\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -2203,13 +2152,13 @@
     },
     "TASK_92": {
         "id": "92",
-        "taskid": "57931df0-123d-4082-8ef1-4fde3fcbf988",
+        "taskid": "769ef3cd-03f6-4a45-8759-74d100294283",
         "type": "playbook",
         "task": {
-            "id": "57931df0-123d-4082-8ef1-4fde3fcbf988",
+            "id": "769ef3cd-03f6-4a45-8759-74d100294283",
             "version": -1,
             "name": "Entity Enrichment - Phishing v2",
-            "description": "Enrich entities using one or more integrations.",
+            "description": "Enrich entities using one or more integrations",
             "playbookName": "Entity Enrichment - Phishing v2",
             "type": "playbook",
             "iscommand": false,
@@ -2352,7 +2301,44 @@
                 }
             }
         },
-        "separatecontext": true,
+        "separatecontext": false,
+        "loop": {
+            "iscommand": false,
+            "scriptArguments": {
+                "Email": {
+                    "complex": {
+                        "root": "Account.Email.Address",
+                        "filters": [
+                            [
+                                {
+                                    "operator": "isNotEqualString",
+                                    "left": {
+                                        "value": {
+                                            "simple": "Account.Email.Address"
+                                        },
+                                        "iscontext": true
+                                    },
+                                    "right": {
+                                        "value": {
+                                            "simple": "ReporterAddress"
+                                        },
+                                        "iscontext": true
+                                    }
+                                }
+                            ]
+                        ],
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                }
+            },
+            "exitCondition": "",
+            "wait": 1,
+            "max": 0
+        },
         "view": "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 1270\n  }\n}",
         "note": false,
         "timertriggers": [],
@@ -2372,8 +2358,7 @@
             "name": "Block Indicators",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -2381,7 +2366,7 @@
             ]
         },
         "separatecontext": false,
-        "view": "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 4040\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": 1000,\n    \"y\": 4040\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -2400,8 +2385,7 @@
             "name": "Search & Delete Email",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -2428,8 +2412,7 @@
             "name": "Manual Remediation",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -2437,7 +2420,7 @@
             ]
         },
         "separatecontext": false,
-        "view": "{\n  \"position\": {\n    \"x\": -250,\n    \"y\": 4040\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": -277.5,\n    \"y\": 4040\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -2456,8 +2439,7 @@
             "name": "Email Campaign Search",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -2524,8 +2506,7 @@
             "name": "Microsoft's Headers Check",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -2550,7 +2531,6 @@
             "id": "374e403a-75c8-456c-8ebf-e76f33c3d501",
             "version": -1,
             "name": "Check Microsoft's Headers?",
-            "description": "Whether to check Microsoft's proprietary email headers.",
             "type": "condition",
             "iscommand": false,
             "brand": ""
@@ -2625,6 +2605,43 @@
         "isoversize": false,
         "isautoswitchedtoquietmode": false
     },
+    "TASK_134": {
+        "id": "134",
+        "taskid": "57d8a1cb-52c1-42ca-86fd-580c8662b71b",
+        "type": "regular",
+        "task": {
+            "id": "57d8a1cb-52c1-42ca-86fd-580c8662b71b",
+            "version": -1,
+            "name": "Extract the email address of the reporting user",
+            "description": "commands.local.cmd.extract.indicators",
+            "script": "Builtin|||extractIndicators",
+            "type": "regular",
+            "iscommand": true,
+            "brand": "Builtin"
+        },
+        "nexttasks": {
+            "#none#": [
+                "12"
+            ]
+        },
+        "scriptarguments": {
+            "text": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailfrom"
+                }
+            }
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -497.5,\n    \"y\": -235\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
     "TASK_135": {
         "id": "135",
         "taskid": "f87bb538-66f8-4c41-88df-55459d9ab5bc",
@@ -2680,7 +2697,6 @@
             "id": "80e1c4c2-b760-493f-8038-a5e7f9201cb2",
             "version": -1,
             "name": "Detonate URL?",
-            "description": "Whether to detonate URLs in supported sandboxes.",
             "type": "condition",
             "iscommand": false,
             "brand": ""
@@ -2727,6 +2743,84 @@
         "isoversize": false,
         "isautoswitchedtoquietmode": false
     },
+    "TASK_138": {
+        "id": "138",
+        "taskid": "09acaeac-b9a5-4dee-8941-d635cfca3df6",
+        "type": "regular",
+        "task": {
+            "id": "09acaeac-b9a5-4dee-8941-d635cfca3df6",
+            "version": -1,
+            "name": "Extract the original email sender address",
+            "description": "commands.local.cmd.extract.indicators",
+            "script": "Builtin|||extractIndicators",
+            "type": "regular",
+            "iscommand": true,
+            "brand": "Builtin"
+        },
+        "nexttasks": {
+            "#none#": [
+                "139"
+            ]
+        },
+        "scriptarguments": {
+            "text": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailfrom"
+                }
+            }
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 352.5,\n    \"y\": 4570\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_139": {
+        "id": "139",
+        "taskid": "7bce4445-b8ca-4034-810b-bb554f91064f",
+        "type": "regular",
+        "task": {
+            "id": "7bce4445-b8ca-4034-810b-bb554f91064f",
+            "version": -1,
+            "name": "Store the email address of the reporting user",
+            "description": "Stores the email address of the user that reported the incident.",
+            "scriptName": "Set",
+            "type": "regular",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "28"
+            ]
+        },
+        "scriptarguments": {
+            "key": {
+                "simple": "PhishingSender"
+            },
+            "value": {
+                "complex": {
+                    "root": "ExtractedIndicators.Email",
+                    "accessor": "[0]"
+                }
+            }
+        },
+        "reputationcalc": 1,
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 352.5,\n    \"y\": 4760\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
     "TASK_140": {
         "id": "140",
         "taskid": "8e768c46-611a-4178-8768-50cba9c5e4cc",
@@ -2736,7 +2830,7 @@
             "version": -1,
             "name": "Predict Phishing URLs",
             "description": "Predicts phishing URLs using a pre-trained model.",
-            "scriptName": "DBotPredictURLPhishing",
+            "script": "DBotPredictURLPhishing",
             "type": "regular",
             "iscommand": false,
             "brand": ""
@@ -2785,8 +2879,7 @@
             "name": "Predict Phishing Type",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -2813,8 +2906,7 @@
             "name": "Predict Phishing URLs",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -2841,8 +2933,7 @@
             "name": "Incident Created Manually",
             "type": "title",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
             "#none#": [
@@ -2850,7 +2941,7 @@
             ]
         },
         "separatecontext": false,
-        "view": "{\n  \"position\": {\n    \"x\": -70,\n    \"y\": -240\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": 172.5,\n    \"y\": -225\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -2877,7 +2968,7 @@
                 "11"
             ],
             "yes": [
-                "85"
+                "146"
             ]
         },
         "separatecontext": false,
@@ -2902,7 +2993,49 @@
                 ]
             }
         ],
-        "view": "{\n  \"position\": {\n    \"x\": -70,\n    \"y\": -105\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": 172.5,\n    \"y\": -85\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_146": {
+        "id": "146",
+        "taskid": "20fe15ef-3a66-4fb1-8e2f-5475a1438239",
+        "type": "regular",
+        "task": {
+            "id": "20fe15ef-3a66-4fb1-8e2f-5475a1438239",
+            "version": -1,
+            "name": "Store the email address of the reporting user",
+            "description": "Stores the email address of the user that reported the incident.",
+            "scriptName": "Set",
+            "type": "regular",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "18",
+                "11"
+            ]
+        },
+        "scriptarguments": {
+            "key": {
+                "simple": "ReporterAddress"
+            },
+            "value": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "reporteremailaddress"
+                }
+            }
+        },
+        "reputationcalc": 1,
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 400,\n    \"y\": 100\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -2926,7 +3059,7 @@
         },
         "nexttasks": {
             "#default#": [
-                "85"
+                "134"
             ],
             "Manually": [
                 "144"
@@ -2959,7 +3092,7 @@
                 ]
             }
         ],
-        "view": "{\n  \"position\": {\n    \"x\": -497.5,\n    \"y\": -430\n  }\n}",
+        "view": "{\n  \"position\": {\n    \"x\": -497.5,\n    \"y\": -410\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
@@ -2970,10 +3103,10 @@
     },
     "TASK_148": {
         "id": "148",
-        "taskid": "1f203c1a-c68e-47c7-89b6-8097a041c2c3",
+        "taskid": "738f6593-7302-41a7-8740-f6dce8c4dd9e",
         "type": "regular",
         "task": {
-            "id": "1f203c1a-c68e-47c7-89b6-8097a041c2c3",
+            "id": "738f6593-7302-41a7-8740-f6dce8c4dd9e",
             "version": -1,
             "name": "Update the user that the reported email is malicious",
             "description": "Sends an email to the user explaining that the email they reported is malicious.",
@@ -2989,16 +3122,13 @@
         },
         "scriptarguments": {
             "body": {
-                "simple": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.incident.reporteremailaddress; var reporter = val.incident.reporteremailaddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've concluded that the email you forwarded to us is malicious. No further action is required on your part. Good job on detecting and forwarding it to us!\n\nAll the best,\n  Your security team"
+                "simple": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress; var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've concluded that the email you forwarded to us is malicious. No further action is required on your part. Good job on detecting and forwarding it to us!\n\nAll the best,\n  Your security team"
             },
             "subject": {
                 "simple": "Re: Phishing Investigation - ${incident.name}"
             },
             "to": {
-                "complex": {
-                    "root": "incident",
-                    "accessor": "reporteremailaddress"
-                }
+                "simple": "${ReporterAddress}"
             }
         },
         "separatecontext": false,
@@ -3018,10 +3148,10 @@
     },
     "TASK_149": {
         "id": "149",
-        "taskid": "75eca06d-d8a4-45e2-8149-31cd066d0aaa",
+        "taskid": "849aa599-081e-4b5c-80b3-e6098463f7be",
         "type": "condition",
         "task": {
-            "id": "75eca06d-d8a4-45e2-8149-31cd066d0aaa",
+            "id": "849aa599-081e-4b5c-80b3-e6098463f7be",
             "version": -1,
             "name": "Can the user be informed about the verdict?",
             "description": "Checks whether the user can be informed about the verdict of the incident.",
@@ -3055,9 +3185,6 @@
                                     }
                                 },
                                 "iscontext": true
-                            },
-                            "right": {
-                                "value": {}
                             }
                         }
                     ],
@@ -3066,10 +3193,7 @@
                             "operator": "isNotEmpty",
                             "left": {
                                 "value": {
-                                    "complex": {
-                                        "root": "incident",
-                                        "accessor": "reporteremailaddress"
-                                    }
+                                    "simple": "ReporterAddress"
                                 },
                                 "iscontext": true
                             }
@@ -3085,10 +3209,7 @@
                             "operator": "isNotEmpty",
                             "left": {
                                 "value": {
-                                    "complex": {
-                                        "root": "incident",
-                                        "accessor": "reporteremailaddress"
-                                    }
+                                    "simple": "ReporterAddress"
                                 },
                                 "iscontext": true
                             }
@@ -3108,10 +3229,10 @@
     },
     "TASK_150": {
         "id": "150",
-        "taskid": "1e301768-ac4f-43bc-8d2e-a2f0cfc39874",
+        "taskid": "b9f96cd5-1144-4436-8293-2053e587d698",
         "type": "regular",
         "task": {
-            "id": "1e301768-ac4f-43bc-8d2e-a2f0cfc39874",
+            "id": "b9f96cd5-1144-4436-8293-2053e587d698",
             "version": -1,
             "name": "Update the user that the email is a malicious campaign",
             "description": "Sends an email to the user explaining that the email they reported is malicious.",
@@ -3127,16 +3248,13 @@
         },
         "scriptarguments": {
             "body": {
-                "simple": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.incident.reporteremailaddress; var reporter = val.incident.reporteremailaddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've concluded that the email you forwarded to us is part of a bigger phishing campaign that targeted our company. No further action is required on your part. Good job on detecting and forwarding it to us!\n\nAll the best,\n  Your security team"
+                "simple": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress; var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've concluded that the email you forwarded to us is part of a bigger phishing campaign that targeted our company. No further action is required on your part. Good job on detecting and forwarding it to us!\n\nAll the best,\n  Your security team"
             },
             "subject": {
                 "simple": "Re: Phishing Investigation - ${incident.name}"
             },
             "to": {
-                "complex": {
-                    "root": "incident",
-                    "accessor": "reporteremailaddress"
-                }
+                "simple": "${ReporterAddress}"
             }
         },
         "separatecontext": false,
@@ -3156,10 +3274,10 @@
     },
     "TASK_151": {
         "id": "151",
-        "taskid": "364c9853-e2d2-448e-8a67-bfd67632ecc9",
+        "taskid": "029871a7-8d95-409c-80d7-6ccef105a1ba",
         "type": "condition",
         "task": {
-            "id": "364c9853-e2d2-448e-8a67-bfd67632ecc9",
+            "id": "029871a7-8d95-409c-80d7-6ccef105a1ba",
             "version": -1,
             "name": "Can the user be informed about the verdict?",
             "description": "Checks whether the user can be informed about the verdict of the incident.",
@@ -3185,15 +3303,9 @@
                             "operator": "isNotEmpty",
                             "left": {
                                 "value": {
-                                    "complex": {
-                                        "root": "incident",
-                                        "accessor": "reporteremailaddress"
-                                    }
+                                    "simple": "ReporterAddress"
                                 },
                                 "iscontext": true
-                            },
-                            "right": {
-                                "value": {}
                             }
                         }
                     ]
@@ -3211,48 +3323,34 @@
     },
     "TASK_152": {
         "id": "152",
-        "taskid": "eb6d4a67-11c9-4fb1-825e-aeb5ad70dc57",
-        "type": "condition",
+        "taskid": "2df11a6c-171a-4837-8bdf-c2bb88d2174f",
+        "type": "regular",
         "task": {
-            "id": "eb6d4a67-11c9-4fb1-825e-aeb5ad70dc57",
+            "id": "2df11a6c-171a-4837-8bdf-c2bb88d2174f",
             "version": -1,
-            "name": "Check if original email was retrieved",
-            "type": "condition",
+            "name": "Clear previously extracted emails",
+            "description": "Clears the previously extracted reporter email address from the context, so that the phishing sender can be extracted and stored in the same key.",
+            "scriptName": "DeleteContext",
+            "type": "regular",
             "iscommand": false,
-            "brand": "",
-            "description": ""
+            "brand": ""
         },
         "nexttasks": {
-            "#default#": [
-                "43"
-            ],
-            "yes": [
-                "28"
+            "#none#": [
+                "138"
             ]
         },
-        "separatecontext": false,
-        "conditions": [
-            {
-                "label": "yes",
-                "condition": [
-                    [
-                        {
-                            "operator": "isNotEmpty",
-                            "left": {
-                                "value": {
-                                    "complex": {
-                                        "root": "incident",
-                                        "accessor": "reportedemailfrom"
-                                    }
-                                },
-                                "iscontext": true
-                            }
-                        }
-                    ]
-                ]
+        "scriptarguments": {
+            "all": {
+                "simple": "no"
+            },
+            "key": {
+                "simple": "ExtractedIndicators"
             }
-        ],
-        "view": "{\n  \"position\": {\n    \"x\": 352.5,\n    \"y\": 4480\n  }\n}",
+        },
+        "reputationcalc": 1,
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 352.5,\n    \"y\": 4370\n  }\n}",
         "note": false,
         "timertriggers": [],
         "ignoreworker": false,
