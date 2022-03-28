@@ -457,6 +457,7 @@ def test_ztap_get_alert_entries(mocker):
 
     assert entries_json == entry_response
 
+
 def test_user_to_display():
     user = {"name": "User Name", "email": "test@test"}
     assert user_to_display(user) == "User Name (test@test)"
