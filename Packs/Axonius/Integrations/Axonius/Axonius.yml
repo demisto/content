@@ -696,6 +696,46 @@ script:
     - contextPath: Axonius.asset.updates
       description: Number of assets updated
       type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Type of Asset. Device or User
+      isArray: true
+      name: type
+      predefined:
+      - devices
+      - users
+      required: true
+      secret: false
+    deprecated: false
+    description: Get all saved query of a given asset type.
+    execution: false
+    name: axonius-get-savedqueries
+    outputs:
+    - contextPath: Axonius.Devices.saved_queries
+      description: Saved queries
+      type: Unknown
+    - contextPath: Axonius.Users.saved_queries
+      description: Saved queries
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      isArray: true
+      name: type
+      predefined:
+      - devices
+      - users
+      required: true
+      secret: false
+    deprecated: false
+    description: Get all tags of a given asset type.
+    execution: false
+    name: axonius-get-tags
+    outputs:
+    - contextPath: Axonius.tags
+      description: Axonius Tags
+      type: Unknown
   dockerimage: demisto/axonius:1.0.0.23674
   feed: false
   isfetch: false
