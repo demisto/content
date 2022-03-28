@@ -496,33 +496,321 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A custom filter - todo edit this.
+      description: The query by which to filter the device applications. If this argument is set, it overrides the others. For example, appName eq 'someName' or availableVirtualMemoryBytes lt 1073741824.
       isArray: false
       name: filter
       required: false
       secret: false
+    - default: false
+      description: A comma sparated list of all specific values to return. If not set, all possible values will be returned.
+      isArray: true
+      name: return_fields
+      required: false
+      secret: false
+    - default: false
+      description: A comma sparated list of the unique ID associated with this Absolute accounts.
+      isArray: true
+      name: account_uids
+      required: false
+      secret: false
+    - default: false
+      description: A comma sparated list of the system-defined unique identifier of the devices.
+      isArray: true
+      name: device_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma sparated list of the devices names.
+      isArray: true
+      name: device_names
+      required: false
+      secret: false
+    - default: false
+      description: A comma sparated list of the applications namnes.
+      isArray: true
+      name: app_names
+      required: false
+      secret: false
+    - default: false
+      description: A comma sparated list of the name of the software publishers of the application.
+      isArray: true
+      name: app_publishers
+      required: false
+      secret: false
+    - default: false
+      description: A comma sparated list of the user name of the users logged in to the device.
+      isArray: true
+      name: user_names
+      required: false
+      secret: false
+    - default: false
+      description: A comma sparated list of the operating systems that are installed on the device.
+      isArray: true
+      name: os
+      required: false
+      secret: false
+    - default: false
+      description: A comma sparated list of the system-defined unique Electronic Serial Numbers (ESN) assigned to the Absolute agent installed on the device.
+      isArray: true
+      name: esn
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of results to return. The default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The page number of the results to retrieve. Minimum value is 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
     deprecated: false
-    description: Gets a flat list of device records and the corresponding software application data for each device on the account that you have access to or that meets the given filter.
+    description: Gets a list of device records and the corresponding software application data for each device on the account that you have access to or that meets the given filter.
     execution: false
     name: absolute-device-application-list
     outputs:
-    - contextPath: Absolute.DeviceUnenroll.DeviceUid
-      description: The unique GUID identifier of the device.
+    - contextPath: Absolute.DeviceApplication.DeviceAppId
+      description: The unique ID of the application.
       type: String
-    - contextPath: Absolute.DeviceUnenroll.SystemName
-      description: The The name assigned to the device.
+    - contextPath: Absolute.DeviceApplication.DeviceUid
+      description: The system-defined unique identifier of the device.
       type: String
-    - contextPath: Absolute.DeviceUnenroll.Username
-      description: The unique user name of the user who was logged into the device at the time of the agent call.
+    - contextPath: Absolute.DeviceApplication.AccountUid
+      description: The unique ID associated with this Absolute account.
       type: String
-    - contextPath: Absolute.DeviceUnenroll.EligibleStatus
-      description: 'The eligibility status of the device. Possible vales are: 0 for eligible, 1 for inactive or disabled and 2 for stolen.'
+    - contextPath: Absolute.DeviceApplication.AppId
+      description: The identifier of the application.
       type: String
-    - contextPath: Absolute.DeviceUnenroll.Serial
+    - contextPath: Absolute.DeviceApplication.AppName
+      description: TThe name of the application.
+      type: String
+    - contextPath: Absolute.DeviceApplication.AppPublisher
+      description: The name of the software publisher of the application.
+      type: String
+    - contextPath: Absolute.DeviceApplication.AppOriginalPublisher
+      description: The original name of the software publisher of the application.
+      type: String
+    - contextPath: Absolute.DeviceApplication.AppVersion
+      description: The version of the application.
+      type: String
+    - contextPath: Absolute.DeviceApplication.Ens
+      description: The system-defined unique Electronic Serial Number (ESN) assigned to the Absolute agent installed on the device.
+      type: String
+    - contextPath: Absolute.DeviceApplication.DeviceName
+      description: The name of the device.
+      type: String
+    - contextPath: Absolute.DeviceApplication.DeviceSerialNumber
       description: The identification number that is assigned to the device by the device manufacturer.
       type: String
-    - contextPath: Absolute.DeviceUnenroll.ESN
-      description: The unique Electronic SerialNumber (ESN) that is assigned to the agent installed on the device.
+    - contextPath: Absolute.DeviceApplication.UserName
+      description: Includes the device name, and the username of the user logged in to the device at the time of the agent call.
+      type: String
+    - contextPath: Absolute.DeviceApplication.InstallPath
+      description: The location where the application is installed.
+      type: String
+    - contextPath: Absolute.DeviceApplication.InstallDate
+      description: The date (in UNIX Epoch time) that the application was installed.
+      type: Date
+    - contextPath: Absolute.DeviceApplication.FirstDetectUtc
+      description: The date and time (in UNIX Epoch time) when the indicated version of the application was first detected on the device.
+      type: Date
+    - contextPath: Absolute.DeviceApplication.OsName
+      description: The operating system that is installed on the device.
+      type: String
+    - contextPath: Absolute.DeviceApplication.LastScanTimeUtc
+      description: The date and time (in UNIX Epoch time) of the most recent Installed Software (SNG) scan.
+      type: Date
+  - arguments:
+    - default: false
+      description: The query by which to filter all the devices managed by the account. If this argument is set, it overrides the others. For example, agentStatus eq 'A' or lastConnectedUtc lt datetime'2021-01-01T00:00:00Z'.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The status of the Absolute agent on the device.
+      isArray: false
+      name: agent_status
+      predefined:
+      - 'Active'
+      - 'Disabled'
+      - 'Inactive'
+      required: false
+      secret: false
+    - default: false
+      description: Short description of the operating system expressed as a one-line string that includes the version of the operating system.
+      isArray: false
+      name: os_name
+      required: false
+      secret: false
+    - default: false
+      description: The version of the operating system.
+      isArray: false
+      name: os_version
+      required: false
+      secret: false
+    - default: false
+      description: The manufacturer of the device.
+      isArray: false
+      name: manufacturer
+      required: false
+      secret: false
+    - default: false
+      description: The product name from the manufacturer.
+      isArray: false
+      name: model
+      required: false
+      secret: false
+    - default: false
+      description: A comma sparated list of the usernames of the users that were logged in to the device at the time of the most recent agent call. If no user was logged in during the last agent call, last detected username is used.
+      isArray: true
+      name: user_names
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of results to return. The default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The page number of the results to retrieve. Minimum value is 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of device records and their corresponding data that meets the required filter for all devices in your account, based on your authorization token.
+    execution: false
+    name: absolute-device-list
+    outputs:
+    - contextPath: Absolute.Device.Id
+      description: The unique identifier assigned to the device.
+      type: String
+    - contextPath: Absolute.Device.Esn
+      description: The unique ESN (Absolute Identifier) assigned to the agent installed on the device.
+      type: String
+    - contextPath: Absolute.Device.LastConnectedUtc
+      description: The date and time (in UNIX Epoch) when the device last connected to the Absolute Monitoring Center.
+      type: Number
+    - contextPath: Absolute.Device.SystemName
+      description: The name assigned to the device.
+      type: String
+    - contextPath: Absolute.Device.FullSystemName
+      description: The full name assigned to the device consisting of the system name and the domain name.
+      type: String
+    - contextPath: Absolute.Device.AgentStatus
+      description: The status of the Absolute agent on the device.
+      type: String
+    - contextPath: Absolute.Device.osName
+      description: Short description of the operating system expressed as a one-line string that includes the version of the operating system.
+      type: String
+    - contextPath: Absolute.Device.SystemManufacturer
+      description: The manufacturer of the device.
+      type: String
+    - contextPath: Absolute.Device.SystemModel
+      description: The manufacturer of the device.
+      type: String
+    - contextPath: Absolute.Device.SystemType
+      description: The product name from the manufacturer.
+      type: String
+    - contextPath: Absolute.Device.Serial
+      description: The manufacturer-defined unique identifier assigned to the device. May correspond to the serial number of the BIOS, the motherboard, or the chassis, depending on the manufacturer.
+      type: String
+    - contextPath: Absolute.Device.LocalIp
+      description: Last known local IP address of this device.
+      type: String
+    - contextPath: Absolute.Device.PublicIp
+      description: Last known public IP address of this device.
+      type: String
+    - contextPath: Absolute.Device.EncryptionStatus
+      description: The summarized encryption status of the device.
+      type: String
+  - arguments:
+    - default: false
+      description: A comma sparated list of all specific values to return.
+      isArray: true
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: A comma sparated list of the system-defined unique identifier of the devices.
+      isArray: true
+      name: device_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma sparated list of the devices names.
+      isArray: true
+      name: device_names
+      required: false
+      secret: false
+    - default: false
+      description: A comma sparated list of the last known local IP addresses of a device.
+      isArray: true
+      name: local_ips
+      required: false
+      secret: false
+    - default: false
+      description: A comma sparated list of the last known public IP addresses of a device.
+      isArray: true
+      name: public_ips
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of device records and their corresponding data that meets the required fields for all devices in your account.
+    execution: false
+    name: absolute-device-get
+    outputs:
+    - contextPath: Absolute.Device.Id
+      description: The unique identifier assigned to the device.
+      type: String
+    - contextPath: Absolute.Device.Esn
+      description: The unique ESN (Absolute Identifier) assigned to the agent installed on the device.
+      type: String
+    - contextPath: Absolute.Device.LastConnectedUtc
+      description: The date and time (in UNIX Epoch) when the device last connected to the Absolute Monitoring Center.
+      type: Number
+    - contextPath: Absolute.Device.SystemName
+      description: The name assigned to the device.
+      type: String
+    - contextPath: Absolute.Device.FullSystemName
+      description: The full name assigned to the device consisting of the system name and the domain name.
+      type: String
+    - contextPath: Absolute.Device.AgentStatus
+      description: The status of the Absolute agent on the device.
+      type: String
+    - contextPath: Absolute.Device.osName
+      description: Short description of the operating system expressed as a one-line string that includes the version of the operating system.
+      type: String
+    - contextPath: Absolute.Device.SystemManufacturer
+      description: The manufacturer of the device.
+      type: String
+    - contextPath: Absolute.Device.SystemModel
+      description: The manufacturer of the device.
+      type: String
+    - contextPath: Absolute.Device.SystemType
+      description: The product name from the manufacturer.
+      type: String
+    - contextPath: Absolute.Device.Serial
+      description: The manufacturer-defined unique identifier assigned to the device. May correspond to the serial number of the BIOS, the motherboard, or the chassis, depending on the manufacturer.
+      type: String
+    - contextPath: Absolute.Device.LocalIp
+      description: Last known local IP address of this device.
+      type: String
+    - contextPath: Absolute.Device.PublicIp
+      description: Last known public IP address of this device.
+      type: String
+    - contextPath: Absolute.Device.EncryptionStatus
+      description: The summarized encryption status of the device.
       type: String
   isfetch: false
   runonce: false

@@ -1,3 +1,4 @@
+import copy
 import hashlib
 
 import demistomock as demisto
@@ -24,6 +25,11 @@ ABSOLUTE_URL_REGION = {
     'https://api.us.absolute.com': 'usdc',
     'https://api.eu2.absolute.com': 'eudc',
 }
+ABSOLUTE_AGET_STATUS = {
+    'Active': 'A',
+    'Disabled': 'D',
+    'Inactive': 'I',
+}
 INTEGRATION = "Absolute"
 STRING_TO_SIGN_ALGORITHM = "ABS1-HMAC-SHA-256"
 STRING_TO_SIGN_SIGNATURE_VERSION = "abs1"
@@ -31,6 +37,62 @@ DATE_FORMAT = '%Y%m%dT%H%M%SZ'
 DATE_FORMAT_FREEZE_DATE = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 DATE_FORMAT_CREDENTIAL_SCOPE = '%Y%m%d'
 DATE_FORMAT_K_DATE = '<%Y><%m><%d>'
+
+DEVICE_LIST_RETURN_FIELDS = [
+    "id",
+    "esn",
+    "lastConnectedUtc",
+    "systemName",
+    "systemModel",
+    "fullSystemName",
+    "agentStatus",
+    "os.name",
+    "systemManufacturer",
+    "serial",
+    "systemType",
+    "localIp",
+    "publicIp",
+    "espInfo.encryptionStatus",
+]
+
+DEVICE_GET_COMMAND_RETURN_FIELDS = [
+    "id",
+    "esn",
+    "lastConnectedUtc",
+    "systemName",
+    "systemModel",
+    "systemType",
+    "fullSystemName",
+    "agentStatus",
+    "os.name",
+    "os.version",
+    "os.currentBuild",
+    "os.architecture",
+    "os.installDate",
+    "os.productKey",
+    "os.serialNumber",
+    "os.lastBootTime",
+    "os.lastSecureUpdated",
+    "systemManufacturer",
+    "serial",
+    "localIp",
+    "publicIp",
+    "username",
+    "espInfo.encryptionStatus",
+    "bios.id",
+    "bios.serialNumber",
+    "bios.version",
+    "bios.versionDate",
+    "bios.smBiosVersion",
+    "policyGroupUid",
+    "policyGroupName",
+    "policyGroupDateMovedUtc",
+    "freezePolicyUid",
+    "isStolen",
+    "deviceStatus.type",
+    "deviceStatus.reported",
+    "networkSSID"
+]
 
 
 class Client(BaseClient):
@@ -210,7 +272,8 @@ class Client(BaseClient):
         return f'{STRING_TO_SIGN_ALGORITHM} Credential={self._token_id}/{credential_scope}, ' \
                f'SignedHeaders={canonical_headers}, Signature={signing_signature}'
 
-    def api_request_absolute(self, method: str, url_suffix: str, body: str = "", success_status_code: tuple = None):
+    def api_request_absolute(self, method: str, url_suffix: str, body: str = "", success_status_code: tuple = None,
+                             query_string: str = ''):
         """
         Makes an HTTP request to
         Args:
@@ -218,6 +281,7 @@ class Client(BaseClient):
             url_suffix (str): The API endpoint.
             body (str): The body to set.
             success_status_code (int): an HTTP status code of success
+            query_string (str): The query to filter results by.
         """
         demisto.debug(f'current request is: method={method}, url suffix={url_suffix}, body={body}')
         full_url = urljoin(self._base_url, url_suffix)
@@ -225,9 +289,11 @@ class Client(BaseClient):
         if success_status_code is None:
             success_status_code = [200]
 
-        self.prepare_request_for_api(method=method, canonical_uri=url_suffix, query_string='', payload=body)
+        self.prepare_request_for_api(method=method, canonical_uri=url_suffix, query_string=query_string, payload=body)
 
         if method == 'GET':
+            if query_string:
+                url_suffix = f'{url_suffix}?{self.prepare_query_string_for_canonical_request(query_string)}'
             return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers)
 
         elif method == 'DELETE':
@@ -281,7 +347,7 @@ def get_custom_device_field_list_command(args, client) -> CommandResults:
     device_id = args.get('device_id')
     res = client.api_request_absolute('GET', f'/v2/devices/{device_id}/cdf')
     outputs = parse_device_field_list_response(res)
-    human_readable = tableToMarkdown(f'{INTEGRATION}: Custom device field list', outputs,
+    human_readable = tableToMarkdown(f'{INTEGRATION} Custom device field list', outputs,
                                      headers=['DeviceUID', 'ESN'], removeNull=True)
     return CommandResults(outputs=outputs, outputs_prefix="Absolute.CustomDeviceField", outputs_key_field='DeviceUID',
                           readable_output=human_readable, raw_response=res)
@@ -457,7 +523,7 @@ def get_device_freeze_request_command(args, client) -> CommandResults:
     res = client.api_request_absolute('GET', f'/v2/device-freeze/requests/{request_uid}')
     outputs = parse_get_device_freeze_response(res)
 
-    human_readable = tableToMarkdown(f'{INTEGRATION}: Freeze request details for: {request_uid}', outputs,
+    human_readable = tableToMarkdown(f'{INTEGRATION} Freeze request details for: {request_uid}', outputs,
                                      headers=['ID', 'Name', 'AccountUid', 'ActionRequestUid', 'EventHistoryId',
                                               'FreezePolicyUid', 'CreatedUTC', 'ChangedUTC', 'Requester'],
                                      removeNull=True)
@@ -473,7 +539,7 @@ def list_device_freeze_message_command(args, client) -> CommandResults:
         res = client.api_request_absolute('GET', '/v2/device-freeze/messages', success_status_code=(200, 204))
 
     outputs = parse_device_freeze_message_response(res)
-    human_readable = tableToMarkdown(f'{INTEGRATION}: Device freeze message details:', outputs,
+    human_readable = tableToMarkdown(f'{INTEGRATION} Device freeze message details:', outputs,
                                      headers=['ID', 'Name', 'CreatedUTC', 'ChangedUTC', 'ChangedBy', 'CreatedBy'],
                                      removeNull=True)
     return CommandResults(outputs=outputs, outputs_prefix="Absolute.FreezeMessage", outputs_key_field='ID',
@@ -489,7 +555,7 @@ def create_device_freeze_message_command(args, client) -> CommandResults:
     res = client.api_request_absolute('POST', '/v2/device-freeze/messages', body=json.dumps(payload),
                                       success_status_code=(200, 201))
     outputs = {'ID': res.get('id')}
-    human_readable = tableToMarkdown(f'{INTEGRATION}: New freeze message was created:', outputs)
+    human_readable = tableToMarkdown(f'{INTEGRATION} New freeze message was created:', outputs)
     return CommandResults(outputs=outputs, outputs_prefix="Absolute.FreezeMessage", outputs_key_field='ID',
                           readable_output=human_readable, raw_response=res)
 
@@ -500,13 +566,13 @@ def update_device_freeze_message_command(args, client) -> CommandResults:
     message_name = args.get('message_name')
     payload = {"name": message_name, "content": html_message}
     client.api_request_absolute('PUT', f'/v2/device-freeze/messages/{message_id}', body=json.dumps(payload))
-    return CommandResults(readable_output=f'{INTEGRATION}: Freeze message: {message_id} was updated successfully')
+    return CommandResults(readable_output=f'{INTEGRATION} Freeze message: {message_id} was updated successfully')
 
 
 def delete_device_freeze_message_command(args, client) -> CommandResults:
     message_id = args.get('message_id')
     client.api_request_absolute('DELETE', f'/v2/device-freeze/messages/{message_id}', success_status_code=204)
-    return CommandResults(readable_output=f'{INTEGRATION}: Freeze message: {message_id} was deleted successfully')
+    return CommandResults(readable_output=f'{INTEGRATION} Freeze message: {message_id} was deleted successfully')
 
 
 def parse_device_unenroll_response(response):
@@ -528,19 +594,185 @@ def device_unenroll_command(args, client) -> CommandResults:
     payload = [{'deviceUid': device_id} for device_id in device_ids]
     res = client.api_request_absolute('POST', '/v2/device-unenrollment/unenroll', body=json.dumps(payload))
     outputs = parse_device_unenroll_response(res)
-    human_readable = tableToMarkdown(f'{INTEGRATION}: unenroll devices:', outputs, removeNull=True)
+    human_readable = tableToMarkdown(f'{INTEGRATION} unenroll devices:', outputs, removeNull=True)
     return CommandResults(outputs_prefix='Absolute.DeviceUnenroll', outputs=outputs, readable_output=human_readable,
                           raw_response=res)
 
 
-def get_device_application_list_command(args, client) -> CommandResults:
-    device_ids = argToList(args.get('device_ids'))
+def add_list_to_filter_string(field_name, list_of_values, query):
+    if not list_of_values:
+        return query
 
-    res = client.api_request_absolute('GET', '/v2/sw/deviceapplications')
-    outputs = parse_device_unenroll_response(res)
-    human_readable = tableToMarkdown(f'{INTEGRATION}: unenroll devices:', outputs, removeNull=True)
-    return CommandResults(outputs_prefix='Absolute.DeviceUnenroll', outputs=outputs, outputs_key_field='DeviceUid',
-                          readable_output=human_readable, raw_response=res)
+    query_list = []
+    query_list.extend([f"substringof('{value}',{field_name})" for value in list_of_values])
+    new_query = " or ".join(query_list)
+
+    if query:
+        return f'{query} or {new_query}'
+    return new_query
+
+
+def add_value_to_filter_string(field_name, value, query):
+    if not value:
+        return query
+    if query:
+        # if there is already a query, we should add 'or' before appending the new query
+        return f"{query} or {field_name} eq '{value}'"
+
+    return f"{field_name} eq '{value}'"
+
+
+def create_filter_query_from_args(args: dict):
+    custom_filter = args.get('filter')
+    if custom_filter:
+        return f"$filter={custom_filter}"
+    query = ""
+
+    account_uids = remove_duplicates_from_list_arg(args, 'account_uids')
+    query = add_list_to_filter_string("accountUid", account_uids, query)
+
+    device_ids = remove_duplicates_from_list_arg(args, 'device_ids')
+    query = add_list_to_filter_string("deviceUid", device_ids, query)
+
+    device_names = remove_duplicates_from_list_arg(args, 'device_names')
+    query = add_list_to_filter_string("deviceName", device_names, query)
+
+    app_names = remove_duplicates_from_list_arg(args, 'app_names')
+    query = add_list_to_filter_string("appName", app_names, query)
+
+    app_publishers = remove_duplicates_from_list_arg(args, 'app_publishers')
+    query = add_list_to_filter_string("appPublisher", app_publishers, query)
+
+    user_names = remove_duplicates_from_list_arg(args, 'user_names')
+    query = add_list_to_filter_string("userName", user_names, query)
+
+    operating_systems = remove_duplicates_from_list_arg(args, 'os')
+    query = add_list_to_filter_string("osName", operating_systems, query)
+
+    devices_esn = remove_duplicates_from_list_arg(args, 'esn')
+    query = add_list_to_filter_string("esn", devices_esn, query)
+
+    local_ips = remove_duplicates_from_list_arg(args, 'local_ips')
+    query = add_list_to_filter_string("localIp", local_ips, query)
+
+    public_ips = remove_duplicates_from_list_arg(args, 'public_ips')
+    query = add_list_to_filter_string("publicIp", public_ips, query)
+
+    if args.get('agent_status'):
+        agent_status = ABSOLUTE_AGET_STATUS[args.get('agent_status')]
+        query = add_value_to_filter_string("agentStatus", agent_status, query)
+
+    os_name = args.get('os_name')
+    query = add_value_to_filter_string("osName", os_name, query)
+
+    os_version = args.get('os_version')
+    query = add_value_to_filter_string("osVersion", os_version, query)
+
+    manufacturer = args.get('manufacturer')
+    query = add_value_to_filter_string("systemManufacturer", manufacturer, query)
+
+    model = args.get('model')
+    query = add_value_to_filter_string("systemModel", model, query)
+
+    return f"$filter={query}"
+
+
+def parse_return_fields(return_fields: str, query: str):
+    """
+    Returns values only for the fields that meet the specified criteria in the query.
+    All other fields are returned with a null value.
+    """
+    if not return_fields:
+        return query
+
+    if query:
+        return f"{query}&$select={return_fields}"
+    return f"$select={return_fields}"
+
+
+def parse_paging(page: int, limit: int, query: str) -> str:
+    """
+
+    """
+    if query:
+        return f'{query}&$skip={page}&$top={limit}'
+    return f"$skip={page}&$top={limit}"
+
+
+def parse_applications_list_response(response):
+    parsed_response = []
+    for device in response:
+        parsed_device = {}
+        for key, val in device.items():
+            if val:
+                if key == 'os':
+                    parsed_device['osName'] = val.get('name')
+                elif key == 'espInfo':
+                    parsed_device['encryptionStatus'] = val.get('encryptionStatus')
+                else:
+                    parsed_device[key[0].upper() + key[1:]] = val
+        parsed_response.append(parsed_device)
+
+    if len(parsed_response) == 1:
+        return parsed_response[0]
+    return parsed_response
+
+
+def get_device_application_list_command(args, client) -> CommandResults:
+    page = arg_to_number(args.get('page', 0))
+    limit = arg_to_number(args.get('limit', 50))
+
+    query_string = create_filter_query_from_args(args)
+    query_string = parse_return_fields(args.get('return_fields'), query_string)
+    query_string = parse_paging(page, limit, query_string)
+
+    res = client.api_request_absolute('GET', '/v2/sw/deviceapplications', query_string=query_string)
+    if res:
+        outputs = parse_applications_list_response(res)
+        human_readable = tableToMarkdown(f'{INTEGRATION} device applications list:', outputs, removeNull=True)
+        human_readable += f"Above results are with page number: {page} and with size: {limit}."
+        return CommandResults(outputs_prefix='Absolute.DeviceApplication', outputs=outputs, outputs_key_field='Appid',
+                              readable_output=human_readable, raw_response=res)
+    else:
+        return CommandResults(readable_output=f"No applications found in {INTEGRATION} for the given filters: {args}")
+
+
+def device_list_command(args, client) -> CommandResults:
+    page = arg_to_number(args.get('page', 0))
+    limit = arg_to_number(args.get('limit', 50))
+
+    query_string = create_filter_query_from_args(args)
+    query_string = parse_return_fields(",".join(DEVICE_LIST_RETURN_FIELDS), query_string)
+    query_string = parse_paging(page, limit, query_string)
+
+    res = client.api_request_absolute('GET', '/v2/reporting/devices', query_string=query_string)
+    if res:
+        outputs = parse_applications_list_response(copy.deepcopy(res))
+        human_readable = tableToMarkdown(f'{INTEGRATION} devices list:', outputs, removeNull=True)
+        human_readable += f"Above results are with page number: {page} and with size: {limit}."
+        return CommandResults(outputs_prefix='Absolute.Device', outputs=outputs, outputs_key_field="Id",
+                              readable_output=human_readable, raw_response=res)
+    else:
+        return CommandResults(readable_output=f"No devices found in {INTEGRATION} for the given filters: {args}")
+
+
+def get_device_command(args, client) -> CommandResults:
+    query_string = create_filter_query_from_args(args)
+    custom_fields_to_return = remove_duplicates_from_list_arg(args, 'fields')
+    if custom_fields_to_return:
+        custom_fields_to_return.extend(DEVICE_GET_COMMAND_RETURN_FIELDS)
+        query_string = parse_return_fields(",".join(custom_fields_to_return), query_string)
+    else:
+        query_string = parse_return_fields(",".join(DEVICE_GET_COMMAND_RETURN_FIELDS), query_string)
+
+    res = client.api_request_absolute('GET', '/v2/reporting/devices', query_string=query_string)
+    if res:
+        outputs = parse_applications_list_response(copy.deepcopy(res))
+        human_readable = tableToMarkdown(f'{INTEGRATION} devices list:', outputs, removeNull=True)
+        return CommandResults(outputs_prefix='Absolute.Device', outputs=outputs, outputs_key_field="Id",
+                              readable_output=human_readable, raw_response=res)
+    else:
+        return CommandResults(readable_output=f"No devices found in {INTEGRATION} for the given filters: {args}")
 
 
 def validate_absolute_api_url(base_url):
@@ -613,6 +845,12 @@ def main() -> None:
 
         elif demisto.command() == 'absolute-device-application-list':
             return_results(get_device_application_list_command(args=args, client=client))
+
+        elif demisto.command() == 'absolute-device-list':
+            return_results(device_list_command(args=args, client=client))
+
+        elif demisto.command() == 'absolute-device-get':
+            return_results(get_device_command(args=args, client=client))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
