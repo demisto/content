@@ -160,8 +160,6 @@ def remove_single_letter_tld_url(url: str):
          True if the first occurrence of a tld is 0-1 letters.
          False otherwise.
     """
-    # regex = r"([.(?!.)][a-zA-Z0-9]{0,1}[\/])|([.(?!.)][a-zA-Z0-9]{2,}[\/])"
-    # p = re.compile(regex)
     m = FIRST_TLD.search(url)
 
     if not m:
