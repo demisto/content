@@ -248,7 +248,7 @@ tasks:
       id: 58c7dc86-983c-4daa-8595-4292e03f7583
       version: -1
       name: Parse HTTP response JSON
-      description: 'Parse a given JSON string "value" to a representative object. Example: ''{"a": "value"}'' => {"a": "value"}.'
+      description: 'Parse a given JSON string "value" to a representative object. For example: ''{"a": "value"}'' => {"a": "value"}.'
       scriptName: ParseJSON
       type: regular
       iscommand: false
