@@ -1455,10 +1455,12 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
             # see https://github.com/demisto/etc/issues/44350
             tests = set(CONF.get_marketplacev2_tests())
             packs_to_install = CONF.get_packs_of_tested_integrations(tests, ID_SET)
+            packs_to_install.update(get_content_pack_name_of_test(tests, ID_SET))
 
             # collect all packs and tests that are compatible only with marketplacev2
             tests.update(get_test_playbooks_for_marketplacev2(ID_SET))
             packs_to_install.update(get_all_packs_with_artifacts_for_marketplacev2(ID_SET))
+
         else:
             packs_to_install = (set(os.listdir(constants.PACKS_DIR)))
             tests = set(CONF.get_test_playbook_ids())
