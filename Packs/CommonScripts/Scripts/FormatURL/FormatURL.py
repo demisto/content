@@ -1,7 +1,7 @@
-import re
 from html import unescape
 from typing import Tuple
 from urllib.parse import urlparse, parse_qs, ParseResult, unquote
+
 from CommonServerPython import *
 
 ATP_REGEX = re.compile(r'(https://\w*|\w*)\.safelinks\.protection\.outlook\.com/.*\?url=')
