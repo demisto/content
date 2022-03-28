@@ -963,9 +963,6 @@ def delete_user(user_key):
 
 
 def list_labels(user_key):
-    command_args = {
-        'userKey': user_key,
-    }
     service = get_service(
         'gmail',
         'v1',
