@@ -1,8 +1,8 @@
 commonfields:
-  id: RedCanary
+  id: RedCanary -logs
   version: -1
-name: RedCanary
-display: Red Canary
+name: RedCanary -logs
+display: Red Canary -logs
 category: Endpoint
 description: Red Canary collects endpoint data using Carbon Black Response and CrowdStrike
   Falcon.  The collected data is standardized into a common schema which allows teams
