@@ -149,7 +149,7 @@ EXPECTED_LIST_LABELS = {
             "LabelListVisibility": "hide"
         }
     ],
-    "ReadableContentsFormat": 1,
+    "ReadableContentsFormat": 'markdown',
     "HumanReadable": "### Labels for UserID me:\\n|Name|ID|Type|MessageListVisibility|LabelListVisibility|\\n|---|---|---|---|---|\\n| CHAT | CHAT | system | hide | labelHide |\\n| SENT | SENT | system |  |  |\\n",
     "EntryContext": {
         "GmailLabel(val.ID == obj.ID && val.Name == obj.Name && val.UserID == obj.UserID)": [
