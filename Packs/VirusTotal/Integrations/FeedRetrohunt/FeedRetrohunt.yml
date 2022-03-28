@@ -17,7 +17,7 @@ configuration:
   additionalinfo: Limit of indicators to fetch from retrohunt job results.
 - display: Fetch indicators
   name: feed
-  defaultvalue: 'true'
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Indicator Reputation
@@ -30,8 +30,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with
-    this reputation.
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
 - display: Source Reliability
   name: feedReliability
   defaultvalue: F - Reliability cannot be judged
@@ -70,9 +69,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators
-    from this feed. This means that if an indicator from this feed is on the
-    exclusion list, the indicator might still be added to the system.
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - name: feedTags
   display: Tags
   required: false
@@ -87,24 +84,22 @@ configuration:
   - WHITE
   required: false
   type: 15
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to
-    indicators fetched from the feed.
-description: Use this feed integration to fetch VirusTotal Retrohunt
-  matches.
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+description: Use this feed integration to fetch VirusTotal Retrohunt matches.
 display: VirusTotal Retrohunt Feed
 name: VirusTotal Retrohunt Feed
 script:
   commands:
   - arguments:
     - name: limit
-      defaultValue: '40'
+      defaultValue: "40"
       description: The maximum number of results to return.
       isArray: false
       default: false
       required: false
       secret: false
     - name: job_id
-      defaultValue: ''
+      defaultValue: ""
       description: VT Retrohunt job's ID
       isArray: false
       default: false
@@ -115,16 +110,16 @@ script:
     execution: false
     name: vt-retrohunt-get-indicators
   - deprecated: false
-    description: 'This command will reset your fetch history.'
+    description: "This command will reset your fetch history."
     execution: false
     name: vt-retrohunt-reset-fetch-indicators
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.27798
   feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: '-'
+  script: "-"
   subtype: python3
   type: python
 fromversion: 5.5.0
