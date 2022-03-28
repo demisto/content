@@ -65,7 +65,7 @@ Get alerts from Varonis DA
 | Varonis.Alert.NumOfAlertedEvents | Number | Number of events with alerts | 
 | Varonis.Alert.UserName | String | Name of the users triggered alerts | 
 | Varonis.Alert.By.SamAccountName | String | Logon name used to support clients and servers running earlier versions of Windows operating system, such as Windows NT 4.0. In the dashboards \(other than the Alert dashboard\), this is the SAM account name of the user or group | 
-| Varonis.Alert.By.PreivilegedAccountType | String | Privileged account. Options are:<br>- Service accounts<br>- Admin accounts<br>- Executive accounts | 
+| Varonis.Alert.By.PrivilegedAccountType | String | Privileged account. Options are:<br>- Service accounts<br>- Admin accounts<br>- Executive accounts | 
 | Varonis.Alert.By.HasFollowUpIndicators | Boolean | Whether global flags, tags or notes are associated with the user | 
 | Varonis.Alert.On.ContainsFlaggedData | Boolean | Whether the data affected by the alerted events has global flags | 
 | Varonis.Alert.On.ContainsSensitiveData | Boolean | Filters according to whether the resource on which the event was performed is sensitive \(including subfolders\) | 
@@ -90,7 +90,7 @@ Get alerts from Varonis DA
                 "BlacklistLocation": "",
                 "By": {
                     "HasFollowUpIndicators": "",
-                    "PreivilegedAccountType": "",
+                    "PrivilegedAccountType": "",
                     "SamAccountName": ""
                 },
                 "Category": "Privilege Escalation",
@@ -131,7 +131,7 @@ Get alerts from Varonis DA
 >### Results
 >|Alert|Pagination|
 >|---|---|
->| {'ID': '11B7609A-4C0E-4771-A1D0-7EA27882C9B6', 'Name': 'dns aaaaaalert', 'Time': '2022-03-18T12:08:00', 'Severity': 'High', 'Category': 'Privilege Escalation', 'Country': '', 'State': '', 'Status': 'Open', 'CloseReason': '', 'BlacklistLocation': '', 'AbnormalLocation': '', 'NumOfAlertedEvents': '1', 'UserName': '', 'By': {'SamAccountName': '', 'PreivilegedAccountType': '', 'HasFollowUpIndicators': ''}, 'On': {'ContainsFlaggedData': '', 'ContainsSensitiveData': '', 'Platform': 'DNS', 'Asset': '', 'FileServerOrDomain': 'DNS'}, 'Device': {'Name': 'ilhrzrodc01', 'ContainMaliciousExternalIP': 'No', 'IPThreatTypes': ''}} | Page: 1<br/>PageSize: 1 |
+>| {'ID': '11B7609A-4C0E-4771-A1D0-7EA27882C9B6', 'Name': 'dns aaaaaalert', 'Time': '2022-03-18T12:08:00', 'Severity': 'High', 'Category': 'Privilege Escalation', 'Country': '', 'State': '', 'Status': 'Open', 'CloseReason': '', 'BlacklistLocation': '', 'AbnormalLocation': '', 'NumOfAlertedEvents': '1', 'UserName': '', 'By': {'SamAccountName': '', 'PrivilegedAccountType': '', 'HasFollowUpIndicators': ''}, 'On': {'ContainsFlaggedData': '', 'ContainsSensitiveData': '', 'Platform': 'DNS', 'Asset': '', 'FileServerOrDomain': 'DNS'}, 'Device': {'Name': 'ilhrzrodc01', 'ContainMaliciousExternalIP': 'No', 'IPThreatTypes': ''}} | Page: 1<br/>PageSize: 1 |
 
 
 ### varonis-update-alert-status

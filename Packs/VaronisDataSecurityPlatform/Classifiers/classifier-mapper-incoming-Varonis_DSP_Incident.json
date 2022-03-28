@@ -104,7 +104,7 @@
                     }
                 },
                 "Varonis Data Security Platform by Privileged Account Type": {
-                    "simple": "By.PreivilegedAccountType"
+                    "simple": "By.PrivilegedAccountType"
                 },
                 "Varonis Data Security Platform Close Reason": {
                     "simple": "CloseReason"

@@ -74,7 +74,7 @@ ALERT_OUTPUT = [
     'Alert.NumOfAlertedEvents',
     'Alert.UserName',
     'Alert.By.SamAccountName',
-    'Alert.By.PreivilegedAccountType',
+    'Alert.By.PrivilegedAccountType',
     'Alert.By.HasFollowUpIndicators',
     'Alert.On.ContainsFlaggedData',
     'Alert.On.ContainsSensitiveData',
@@ -954,7 +954,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     if outputs:
         outputs = enrich_with_pagination(outputs, page, page_size)
 
-    readable_output = tableToMarkdown(f'Varonis Alerted Events', outputs['Alert'])
+    readable_output = tableToMarkdown('Varonis Alerted Events', outputs['Alert'])
 
     return CommandResults(
         readable_output=readable_output,
@@ -1056,7 +1056,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     if outputs:
         outputs = enrich_with_pagination(outputs, page, page_size)
 
-    readable_output = tableToMarkdown(f'Varonis Alerted Events', outputs['Event'])
+    readable_output = tableToMarkdown('Varonis Alerted Events', outputs['Event'])
 
     return CommandResults(
         readable_output=readable_output,

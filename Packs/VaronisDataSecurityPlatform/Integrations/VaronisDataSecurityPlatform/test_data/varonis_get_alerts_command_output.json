@@ -16,7 +16,7 @@
             "UserName": "",
             "By": {
                 "SamAccountName": "",
-                "PreivilegedAccountType": "",
+                "PrivilegedAccountType": "",
                 "HasFollowUpIndicators": ""
             },
             "On": {
@@ -48,7 +48,7 @@
             "UserName": "",
             "By": {
                 "SamAccountName": "",
-                "PreivilegedAccountType": "",
+                "PrivilegedAccountType": "",
                 "HasFollowUpIndicators": ""
             },
             "On": {

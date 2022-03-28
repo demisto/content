@@ -179,7 +179,7 @@ script:
         Logon name used to support clients and servers running earlier versions of Windows operating system, such as Windows NT 4.0.
         In the dashboards (other than the Alert dashboard), this is the SAM account name of the user or group
       type: String
-    - contextPath: Varonis.Alert.By.PreivilegedAccountType
+    - contextPath: Varonis.Alert.By.PrivilegedAccountType
       description: |-
         Privileged account. Options are:
         - Service accounts
