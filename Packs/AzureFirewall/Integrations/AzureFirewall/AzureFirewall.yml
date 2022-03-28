@@ -27,7 +27,7 @@ configuration:
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
-  type: 4
+  type: 14
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
