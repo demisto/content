@@ -173,37 +173,6 @@ class MyClient(PolarisClient):
 ''' HELPER FUNCTIONS '''
 
 
-def validate_and_convert_to_integer(str_rep: str, error_message: str, min_val: int = None, max_val: int = None) -> int:
-    """
-    Convert a string to integer and subsequently check for it being in a targeted range.
-
-    :type str_rep: ``str``
-    :param str_rep: The string to convert to integer.
-
-    :type error_message: ``str``
-    :param error_message: The error message to display when the string isn't able to be converted to int or
-    it is not in required range
-
-    :type min_val: ``int``
-    :param min_val: The minimum value (inclusive) of the converted integer. On failing to meet requirement ValueError
-    with error_message is raised.
-
-    :type max_val: ``int``
-    :param max_val: The maximum value (inclusive) of the converted integer. On failing to meet requirement ValueError
-    with error_message is raised
-
-    :return: Integer converted from str_rep
-    :rtype: ``int``
-    """
-    try:
-        int_rep = int(str_rep)
-        if (max_val and int_rep > max_val) or (min_val and int_rep < min_val):
-            raise ValueError
-        return int_rep
-    except ValueError:
-        raise ValueError(error_message)
-
-
 def validate_required_arg(param_name, param_value):
     """
     Validate the required param is provided or not.

@@ -315,8 +315,8 @@ There are no input arguments for this command.
 ### Sonar Policy Analyzer Groups
 |ID|Name|Group Type|Analyzers|
 |---|---|---|---|
-| 97c6a54a-acfc-5ab2-a24a-6a7f3a9a1553 | GLBA | GLBA | id: ed30dfa0-334f-55ff-a1b7-03b6bdd7849b, Name: Credit Card, Analyzer Type: CREDIT_CARD<br><br>id: 3e60a612-3e97-5f03-b3a1-cfb7a6a67e8f, Name: US Bank Acct, Analyzer Type: US_BANK_ACCT<br><br>id: 03b3dc9e-81c1-561c-8235-17cf2fc1c729, Name: US ITIN, Analyzer Type: US_ITIN<br><br>id: d5ce3ae5-f530-562a-85b1-4a84264a350a, Name: US SSN, Analyzer Type: US_SSN |
-| 543dd5e0-c72c-50e2-a3d9-1688343f472c | HIPAA | HIPAA | id: 9da675b3-944b-5da3-a2da-ed149d300075, Name: US/UK Passport, Analyzer Type: PASSPORT<br><br>id: 18665533-c28c-5a40-b747-4b6508fecdfa, Name: US NPI, Analyzer Type: US_HEALTHCARE_NPI<br><br>id: 03b3dc9e-81c1-561c-8235-17cf2fc1c729, Name: US ITIN, Analyzer Type: US_ITIN<br><br>id: d5ce3ae5-f530-562a-85b1-4a84264a350a, Name: US SSN, Analyzer Type: US_SSN<br><br>id: 6bcc8e4e-0ec9-5538-b91d-a506dac47ec6, Name: US DEA, Analyzer Type: DEA_NUMBER |
+| 97c6a54a-acfc-5ab2-a24a-6a7f3a9a1553 | GLBA | GLBA | id: ed30dfa0-334f-55ff-a1b7-03b6bdd7849b, Name: Credit Card, Analyzer Type: CREDIT_CARD<br/><br/>id: 3e60a612-3e97-5f03-b3a1-cfb7a6a67e8f, Name: US Bank Acct, Analyzer Type: US_BANK_ACCT<br/><br/>id: 03b3dc9e-81c1-561c-8235-17cf2fc1c729, Name: US ITIN, Analyzer Type: US_ITIN<br/><br/>id: d5ce3ae5-f530-562a-85b1-4a84264a350a, Name: US SSN, Analyzer Type: US_SSN |
+| 543dd5e0-c72c-50e2-a3d9-1688343f472c | HIPAA | HIPAA | id: 9da675b3-944b-5da3-a2da-ed149d300075, Name: US/UK Passport, Analyzer Type: PASSPORT<br/><br/>id: 18665533-c28c-5a40-b747-4b6508fecdfa, Name: US NPI, Analyzer Type: US_HEALTHCARE_NPI<br/><br/>id: 03b3dc9e-81c1-561c-8235-17cf2fc1c729, Name: US ITIN, Analyzer Type: US_ITIN<br/><br/>id: d5ce3ae5-f530-562a-85b1-4a84264a350a, Name: US SSN, Analyzer Type: US_SSN<br/><br/>id: 6bcc8e4e-0ec9-5538-b91d-a506dac47ec6, Name: US DEA, Analyzer Type: DEA_NUMBER |
 | 16bd3864-bad6-513b-b38d-a108e648cf4a |  | PCI_DSS |  |
 | c8c8072a-9454-5e68-9a23-bbcb9824838e | U.S. Financials | US_FINANCE | id: bb9a929b-3f29-5d3f-a768-de74e8ee5a9c, Name: n/a, Analyzer Type: CUSIP_NUMBER |
 
@@ -644,7 +644,7 @@ Search for a Rubrik snapshot of an object based on the provided snapshot ID, exa
 ### VM Object Snapshots
 |Snapshot Details|Snapshot IDs|
 |---|---|
-| Total Snapshots: 2<br>Date Range: From 2020-05-19T22:30:00.000Z to 2020-05-20T22:29:59.999Z | 33060f59-9c99-5c48-8305-8d1edfe402d2,<br>57eac609-9529-5cb5-845a-b7cc78998222 |
+| Total Snapshots: 2<br/>Date Range: From 2020-05-19T22:30:00.000Z to 2020-05-20T22:29:59.999Z | 33060f59-9c99-5c48-8305-8d1edfe402d2,<br/>57eac609-9529-5cb5-845a-b7cc78998222 |
 
 
 
@@ -1199,7 +1199,7 @@ Retrieve the list of available Vsphere Hosts.
 ### GPS VM Hosts
 |VSphere Host ID|Name|Physical Host|
 |---|---|---|
-| f57bfebf-c7c9-5310-a5fd-1f0aeea5ba25 | sjc-40302-sand1-esx02.rubrikdemo.com | {'id': '72480b29-0eaa-57a9-8c5c-45b7e1c2c826', 'name': 'Sandbox-1 SJC Cluster', 'objectType': 'VSphereComputeCluster'},<br>{'id': '3f3a92de-c7f3-57f7-989f-3731db83aeab', 'name': 'Sandbox-1 Datacenter', 'objectType': 'VSphereDatacenter'},<br>{'id': '415859e2-fd22-53ea-8de1-041d99298fe3', 'name': 'sand1-vcsa.rubrikdemo.com', 'objectType': 'VSphereVCenter'} |
+| f57bfebf-c7c9-5310-a5fd-1f0aeea5ba25 | sjc-40302-sand1-esx02.rubrikdemo.com | {'id': '72480b29-0eaa-57a9-8c5c-45b7e1c2c826', 'name': 'Sandbox-1 SJC Cluster', 'objectType': 'VSphereComputeCluster'},<br/>{'id': '3f3a92de-c7f3-57f7-989f-3731db83aeab', 'name': 'Sandbox-1 Datacenter', 'objectType': 'VSphereDatacenter'},<br/>{'id': '415859e2-fd22-53ea-8de1-041d99298fe3', 'name': 'sand1-vcsa.rubrikdemo.com', 'objectType': 'VSphereVCenter'} |
 
 
 
@@ -1590,7 +1590,7 @@ Retrieve the result of an asynchronous request. This command will retrieve the r
 ### GPS Asynchronous Request Result
 |ID|Status|Node ID|Links|
 |---|---|---|---|
-| dummy_id | FAILED | cluster:::RVMHM219S004941 | [self](dummy_link)<br> |
+| dummy_id | FAILED | cluster:::RVMHM219S004941 | [self](dummy_link)<br/> |
 
 
 
