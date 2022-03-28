@@ -27,7 +27,7 @@
 "disabled": false,
 "reputationCalc": 0,
 "onChangeRepAlg": 0,
-"layout": "",
+"layout": "SysAid Layout",
 "detached": false,
 "extractSettings": {
     "mode": "Specific",

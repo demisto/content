@@ -40,6 +40,31 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- additionalinfo: Choose what service record type to fetch - incidents, requests, problems, changes, or all.
+  defaultvalue: all
+  display: Fetch types
+  hidden: false
+  name: fetch_types
+  options:
+  - incident
+  - request
+  - problem
+  - change
+  - all
+  required: false
+  type: 16
+- additionalinfo: Default value is including "open classes".
+    You may add/remove statuses according to your needs.
+    Can be found by running the "sysaid-table-list" command with the "list_id=status" argument.
+  defaultvalue: 1,2,5,6,8,18,19,22,23,24,25,26,27,30,31,32,33
+  display: Included statuses
+  name: included_statuses
+  required: false
+  type: 0
+- display: Include Archived
+  name: include_archived
+  required: false
+  type: 8
 description: SysAid is a robust IT management system that was designed to meet all of your needs as an IT department.
 display: SysAid
 name: SysAid

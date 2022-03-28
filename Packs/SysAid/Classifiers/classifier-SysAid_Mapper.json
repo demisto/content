@@ -33,7 +33,7 @@
 				},
 				"Alert ID": {
 					"complex": {
-						"accessor": "valueCaption",
+						"accessor": "value",
 						"filters": [
 							[
 								{
@@ -848,12 +848,12 @@
 								"args": {
 									"input_values": {
 										"value": {
-											"simple": "Very High"
+											"simple": "Urgent,Very High,Normal"
 										}
 									},
 									"mapped_values": {
 										"value": {
-											"simple": "Critical"
+											"simple": "Critical,Critical,Medium"
 										}
 									}
 								},
@@ -894,7 +894,7 @@
 				},
 				"Alert ID": {
 					"complex": {
-						"accessor": "valueCaption",
+						"accessor": "value",
 						"filters": [
 							[
 								{
@@ -1709,12 +1709,12 @@
 								"args": {
 									"input_values": {
 										"value": {
-											"simple": "Very High"
+											"simple": "Urgent,Very High,Normal"
 										}
 									},
 									"mapped_values": {
 										"value": {
-											"simple": "Critical"
+											"simple": "Critical,Critical,Medium"
 										}
 									}
 								},
@@ -1755,7 +1755,7 @@
 				},
 				"Alert ID": {
 					"complex": {
-						"accessor": "valueCaption",
+						"accessor": "value",
 						"filters": [
 							[
 								{
@@ -2570,12 +2570,12 @@
 								"args": {
 									"input_values": {
 										"value": {
-											"simple": "Very High"
+											"simple": "Urgent,Very High,Normal"
 										}
 									},
 									"mapped_values": {
 										"value": {
-											"simple": "Critical"
+											"simple": "Critical,Critical,Medium"
 										}
 									}
 								},
@@ -2616,7 +2616,7 @@
 				},
 				"Alert ID": {
 					"complex": {
-						"accessor": "valueCaption",
+						"accessor": "value",
 						"filters": [
 							[
 								{
@@ -3431,12 +3431,12 @@
 								"args": {
 									"input_values": {
 										"value": {
-											"simple": "Very High"
+											"simple": "Urgent,Very High,Normal"
 										}
 									},
 									"mapped_values": {
 										"value": {
-											"simple": "Critical"
+											"simple": "Critical,Critical,Medium"
 										}
 									}
 								},

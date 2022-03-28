@@ -19,6 +19,13 @@ SERVICE_RECORD_ARGS = ['agreement', 'assigned_group', 'change_category', 'compan
 
 TEMPLATE_OUTPUTS = ['key', 'value', 'mandatory', 'editable', 'type', 'defaultValue', 'keyCaption']
 
+STATUSES = {'1', '2', '3', '4', '5', '6', '7', '8', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30',
+            '31', '32', '33', '34', '35', '36', '39', '40', 'OPEN_CLASSES'}
+
+MAX_INCIDENTS_TO_FETCH = 500
+
+FETCH_DEFAULT_TIME = '3 days'
+
 ''' CLIENT CLASS '''
 
 
@@ -581,13 +588,152 @@ def service_record_delete_command(client: Client, args: Dict[str, Any]) -> Comma
     return command_results
 
 
-def test_module(client: Client) -> None:
+def fetch_incidents(client: Client, first_fetch: str, limit: Optional[int] = MAX_INCIDENTS_TO_FETCH,
+                    included_statuses: str = None, include_archived: bool = False, fetch_types: str = None):
+    last_fetch = demisto.getLastRun().get('last_fetch')
+    last_id_fetched = demisto.getLastRun().get('last_id_fetched', -1)
+    fetch_start_datetime = calculate_fetch_start_datetime(last_fetch, first_fetch)
+    demisto.debug(f'last fetch was at: {last_fetch}, last id fetched was: {last_id_fetched}, '
+                  f'time to fetch from is: {fetch_start_datetime}.')
+
+    responses = fetch_request(client, fetch_types, include_archived, included_statuses)
+
+    limit = limit or MAX_INCIDENTS_TO_FETCH
+    last_fetch, last_id_fetched, incidents = parse_service_records(responses, limit, fetch_start_datetime, last_id_fetched)
+    demisto.setLastRun({'last_fetch': last_fetch.isoformat(), 'last_id_fetched': last_id_fetched})
+    return incidents
+
+
+def fetch_request(client: Client, fetch_types: str = None, include_archived: bool = False, included_statuses: str = None):
+    fetch_types = 'all' if 'all' in fetch_types else fetch_types
+    filters = {'status': included_statuses} if included_statuses else {}
+
+    response = client.service_record_list_request(type_=fetch_types, archive=int(include_archived), filters=filters)
+
+    responses = [response] if isinstance(response, dict) else response
+    demisto.debug(f'The request returned {len(response)} service records.')
+    return responses
+
+
+def filter_service_records_by_time(service_records: List[Dict[str, Any]], fetch_start_timestamp: datetime) \
+        -> List[Dict[str, Any]]:
+    filtered_service_records = []
+    for service_record in service_records:
+        update_time = get_service_record_update_time(service_record)
+        if update_time and update_time >= fetch_start_timestamp:
+            filtered_service_records.append(service_record)
+
+    return filtered_service_records
+
+
+def filter_service_records_by_id(service_records: List[Dict[str, Any]], fetch_start_timestamp: datetime, last_id_fetched: int):
+    # only for service_records with the same update_time as fetch_start_timestamp
+    return [service_record for service_record in service_records
+            if get_service_record_update_time(service_record) != fetch_start_timestamp
+            or service_record['id'] > last_id_fetched]
+
+
+def reduce_service_records_to_limit(service_records: List[Dict[str, Any]], limit: int, last_fetch: datetime,
+                                    last_id_fetched: int) -> (datetime, int, List[Dict[str, Any]]):
+    incidents_count = min(limit, len(service_records))
+    # limit can't be 0 or less, but there could be no service_records at the wanted time
+    if incidents_count > 0:
+        service_records = service_records[:limit]
+        last_fetched_service_record = service_records[incidents_count - 1]
+        last_fetch = get_service_record_update_time(last_fetched_service_record)
+        last_id_fetched = last_fetched_service_record['id']
+    return last_fetch, last_id_fetched, service_records
+
+
+def parse_service_records(service_records: List[Dict[str, Any]], limit: int,
+                          fetch_start_timestamp: datetime, last_id_fetched: int) -> (datetime, int, List[Dict[str, Any]]):
+    service_records = filter_service_records_by_time(service_records, fetch_start_timestamp)
+    service_records = filter_service_records_by_id(service_records, fetch_start_timestamp, last_id_fetched)
+
+    # sorting service_records by date and then by id
+    service_records.sort(key=lambda service_record: (get_service_record_update_time(service_record), service_record['id']))
+
+    last_fetch, last_id_fetched, service_records = reduce_service_records_to_limit(service_records, limit, fetch_start_timestamp,
+                                                                                   last_id_fetched)
+
+    incidents: List[Dict[str, Any]] = [service_record_to_incident_context(service_record) for service_record in service_records]
+    return last_fetch, last_id_fetched, incidents
+
+
+def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str) -> datetime:
+    first_fetch_datetime = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
+    if last_fetch is None:
+        return first_fetch_datetime
+
+    last_fetch_datetime = dateparser.parse(last_fetch, settings={'TIMEZONE': 'UTC'})
+    return max(last_fetch_datetime, first_fetch_datetime)
+
+
+def get_service_record_update_time(service_record: Dict[str, Any]) -> Optional[datetime]:
+    for i in service_record['info']:
+        if i['key'] == 'update_time':
+            # We are using 'valueCaption' and not 'value' as they hold different values
+            occurred = str(i['valueCaption'])
+            return dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'})
+
+    demisto.debug(f'The service record with ID {service_record["id"]} does not have a modify time (update_time).')
+    return None
+
+
+def service_record_to_incident_context(service_record: Dict[str, Any]):
+    title, type_ = '', ''
+    for i in service_record['info']:
+        if i['key'] == 'sr_type':
+            type_ = str(i['valueCaption'])
+        if i['key'] == 'title':
+            title = i['valueCaption']
+
+    occurred = get_service_record_update_time(service_record)
+
+    if not occurred:
+        demisto.debug(f'The service record {type_} with ID {service_record["id"]} does not have a modify time (update_time) '
+                      f'and therefore can\'t be fetched.')
+        return None
+
+    incident_context = {
+        'name': title,
+        'occurred': occurred.strftime(DATE_FORMAT),
+        'rawJSON': json.dumps(service_record),
+        'type': f'SysAid {type_}'
+    }
+    demisto.debug(f'New service record {type_} is: name: {incident_context["name"]}, occurred: {incident_context["occurred"]}, '
+                  f'type: {incident_context["type"]}.')
+    return incident_context
+
+
+def test_module(client: Client, params: dict) -> None:
     message: str = ''
 
     try:
         if service_record_list_command(client, {'type': 'all'}):
             message = 'ok'
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
+
+        if params['isFetch']:
+            max_fetch = arg_to_number(params.get('max_fetch'))
+            if max_fetch is not None and (max_fetch > MAX_INCIDENTS_TO_FETCH or max_fetch <= 0):
+                raise DemistoException(f'Maximum number of service records to fetch exceeds the limit '
+                                       f'(restricted to {MAX_INCIDENTS_TO_FETCH}), or is below zero.')
+
+            included_statuses = params.get('included_statuses')
+            if set(argToList(included_statuses)) - STATUSES:
+                # todo needed? API lets us send unreal statuses
+                raise DemistoException(f'Statuses {included_statuses - STATUSES} were given and are not legal statuses.'
+                                       f'Statuses can be found by running the "sysaid-table-list" command with the '
+                                       f'"list_id=status" argument.')
+
+            fetch_types = params.get('fetch_types')
+            fetch_types = 'all' if 'all' in fetch_types else fetch_types
+
+            include_archived = argToBoolean(params.get('include_archived', False))
+            filters = {'status': included_statuses} if included_statuses else {}
+
+            client.service_record_list_request(type_=fetch_types, limit=max_fetch, archive=int(include_archived), filters=filters)
+
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
             message = 'Authorization Error: make sure username and password are correctly set'
@@ -629,9 +775,18 @@ def main() -> None:
             'sysaid-service-record-create': service_record_create_command,
             'sysaid-service-record-delete': service_record_delete_command,
         }
+        if command == 'fetch-incidents':
+            first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME)
+            included_statuses = params.get('included_statuses')
+            include_archived = argToBoolean(params.get('include_archived', False))
+            limit = arg_to_number(params.get('max_fetch'))
+            fetch_types = params.get('fetch_types')
 
-        if command == 'test-module':
-            test_module(client)
+            incidents = fetch_incidents(client, first_fetch, limit, included_statuses, include_archived, fetch_types)
+            demisto.incidents(incidents)
+
+        elif command == 'test-module':
+            test_module(client, params)
         elif command in commands:
             return_results(commands[command](client, args))
         else:
