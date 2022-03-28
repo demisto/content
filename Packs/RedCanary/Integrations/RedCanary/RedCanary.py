@@ -340,17 +340,22 @@ def get_unacknowledged_detections(t: datetime, per_page: int = 50) -> Generator[
         dict: A detection from api
     """
     page = 1
+    demisto.debug('This is teh page: {}, This is the sum per page: {}, This is the since {}'.format(page, per_page, t))
     res = list_detections(page=page, per_page=per_page, since=t)
+    demisto.debug('This is the result: {}'.format(res))
     while res:
         for detection in res:
             attributes = detection.get('attributes', {})
             # If 'last_acknowledged_at' or 'last_acknowledged_by' are in attributes,
             # the detection is acknowledged and should not create a new incident.
             if attributes.get('last_acknowledged_at') is None and attributes.get('last_acknowledged_by') is None:
+                demisto.debug('This is the detection: '.format(detection))
                 yield detection
 
         page += 1
+        demisto.debug('This is teh page: {}, This is the per page: {}, This is the since {}'.format(page, per_page, t))
         res = list_detections(page=page, per_page=per_page, since=t)
+        demisto.debug('This is the result: {}'.format(res))
 
 
 @logger
@@ -383,7 +388,7 @@ def list_detections(page, per_page, since=None):
     if isinstance(since, datetime):
         since = datetime.strftime(since, TIME_FORMAT)
     res = http_get('/detections',
-                   data=assign_params(
+                   params=assign_params(
                        page=page,
                        per_page=per_page,
                        since=since
@@ -544,6 +549,7 @@ def execute_playbook(playbook_id, detection_id):
 
 def fetch_incidents(last_run):
     last_incidents_ids = []
+    demisto.debug('This is the last_run (start): '.format(last_run))
 
     if last_run:
         last_fetch = last_run.get('time')
@@ -555,21 +561,26 @@ def fetch_incidents(last_run):
 
     demisto.debug('iterating on detections, looking for more recent than {}'.format(last_fetch))
     incidents = []
-    new_incidents_ids = []
+    # new_incidents_ids = []
     for raw_detection in get_unacknowledged_detections(last_fetch, per_page=2):
+        demisto.debug('This is the raw detection: '.format(raw_detection))
         demisto.debug('found a new detection in RedCanary #{}'.format(raw_detection['id']))
         incident = detection_to_incident(raw_detection)
+        demisto.debug('This is the incident: '.format(incident))
         # the rawJson is a string of dictionary e.g. - ('{"ID":2,"Type":5}')
         incident_id = json.loads(incident.get('rawJSON')).get("ID")
+        demisto.debug('This is the last_incidents_ids: '.format(last_incidents_ids))
         if incident_id not in last_incidents_ids:
             # makes sure that the incident wasn't fetched before
             incidents.append(incident)
-            new_incidents_ids.append(incident_id)
+            last_incidents_ids.append(incident_id)
 
     if incidents:
         last_fetch = max([get_time_obj(incident['occurred']) for incident in incidents])  # noqa:F812
-        last_run = {'time': get_time_str(last_fetch), 'last_event_ids': new_incidents_ids}
+        last_run = {'time': get_time_str(last_fetch), 'last_event_ids': last_incidents_ids}
+        demisto.debug('This is the last_run (middle): '.format(last_run))
 
+    demisto.debug('This is the last_run (end): '.format(last_run))
     return last_run, incidents
 
 
@@ -618,5 +629,5 @@ def main():
         return_error('error has occurred: {}'.format(str(e)))
 
 
-if __name__ in ('__builtin__', 'builtins'):
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
