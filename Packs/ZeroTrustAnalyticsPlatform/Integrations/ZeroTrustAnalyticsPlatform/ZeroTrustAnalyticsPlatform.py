@@ -318,6 +318,7 @@ def get_alert_org_escalation_time(alert):
 def get_alert_last_new_event(alert):
     return dateparser.parse(alert.get("datetime_events_added") or EPOCH)
 
+
 def user_to_display(user):
     user_name = user.get("name")
     user_email = user.get("email")
@@ -329,6 +330,7 @@ def user_to_display(user):
         return user_email
     else:
         return "Unknown"
+
 
 def get_comments_for_alert(
     client: Client,
@@ -509,6 +511,7 @@ def was_alert_first_escalated(
             return escalation_time > since
 
     return False
+
 
 def extract_trigger_kv(trigger_events: list):
     """
