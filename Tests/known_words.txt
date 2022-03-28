@@ -148,3 +148,5 @@ ShowCampaignSenders
 ShowCampaignRecipients
 GetCampaignIncidentsInfo
 IsIncidentPartOfCampaign
+unsearchable
+ChronicleAsset
