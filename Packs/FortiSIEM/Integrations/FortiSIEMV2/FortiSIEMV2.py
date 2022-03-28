@@ -1504,30 +1504,6 @@ def format_update_watchlist_entry_header(entry_id: str, response: Dict[str, Any]
     return f"Successfully Updated Entry: {entry_id}."
 
 
-def filter_irrelevant_incidents(response: Dict[str, Any], last_run: Dict[str, Any]) -> List[dict]:
-    """
-    filter irrelevant incidents, since the API may retrieve an already fetched incidents.
-    Args:
-         last_incident_id:str (str): The ID of the last fetched incident.
-         response (str): API response from FortiSIEM.
-    Returns:
-        List[dict]: Filtered incidents.
-    """
-    incidents = response.get('data')
-    last_incident_id = last_run.get('incident_id')
-    last_incident_index = None
-    for index, incident in enumerate(incidents):
-        if incident['incidentId'] == last_incident_id:
-            last_incident_index = index
-            break
-    if last_incident_index:
-        try:
-            return incidents[last_incident_index + 1:]
-        except IndexError:
-            return []
-    return incidents
-
-
 def fetch_relevant_incidents(client: FortiSIEMClient,
                              status: List[int], time_from: int, time_to: int,
                              last_run: Dict[str, Any], max_fetch: int) -> List[dict]:
