@@ -134,7 +134,7 @@ EVENT_OUTPUT = [
     'Event.ByUser.Name',
     'Event.ByUser.UserType',
     'Event.ByUser.UserAccountType',
-    'Event.ByUser.SAMAccountNamt',
+    'Event.ByUser.SAMAccountName',
     'Event.ByUser.Domain',
     'Event.ByUser.DisabledAccount',
     'Event.ByUser.StaleAccount',

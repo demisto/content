@@ -247,7 +247,7 @@
                 "Varonis Data Security Platform on File Server or Domain": {
                     "simple": "On.FileServerOrDomain"
                 },
-                "Varonis Data Security Platform sAMAccountName": {
+                "sAMAccountName": {
                     "simple": "By.SamAccountName"
                 }
             }

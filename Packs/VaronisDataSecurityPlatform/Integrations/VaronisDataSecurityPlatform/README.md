@@ -240,7 +240,7 @@ In the dashboards \(other than the Alert dashboard\), this is the SAM account na
                     "Domain": "",
                     "LockoutAccounts": "",
                     "Name": "",
-                    "SAMAccountNamt": "",
+                    "SAMAccountName": "",
                     "StaleAccount": "",
                     "UserAccountType": "",
                     "UserType": ""
@@ -288,5 +288,5 @@ In the dashboards \(other than the Alert dashboard\), this is the SAM account na
 >### Results
 >|Event|Pagination|
 >|---|---|
->| {'ID': '22D3EFC0-E758-4BA0-92C4-EB9566C830AD', 'Type': 'Client DNS request', 'UTCTime': '2022-03-17T17:52:14Z', 'Status': 'Success', 'Description': 'The DNS Server has resolved successfully ', 'Country': '', 'State': '', 'Details': {'IsBlacklist': '', 'Operation': 'Request'}, 'ByUser': {'Name': '', 'UserType': '', 'UserAccountType': '', 'SAMAccountNamt': '', 'Domain': '', 'DisabledAccount': '', 'StaleAccount': '', 'LockoutAccounts': ''}, 'SourceIP': '10.10.10.10', 'IsMaliciousIP': '', 'IPReputation': '', 'IPThreatType': '', 'OnObject': {'Name': 'dns.msftncsi.com', 'ObjectType': 'Dns', 'Platform': 'DNS', 'IsSensitive': '', 'FileServerOrDomain': 'DNS', 'IsDisabledAccount': '', 'IsLockOutAccount': '', 'SAMAccountName': '', 'UserAccountType': '', 'DestinationIP': '', 'DestinationDevice': ''}} | Page: 1<br/>PageSize: 1 |
+>| {'ID': '22D3EFC0-E758-4BA0-92C4-EB9566C830AD', 'Type': 'Client DNS request', 'UTCTime': '2022-03-17T17:52:14Z', 'Status': 'Success', 'Description': 'The DNS Server has resolved successfully ', 'Country': '', 'State': '', 'Details': {'IsBlacklist': '', 'Operation': 'Request'}, 'ByUser': {'Name': '', 'UserType': '', 'UserAccountType': '', 'SAMAccountName': '', 'Domain': '', 'DisabledAccount': '', 'StaleAccount': '', 'LockoutAccounts': ''}, 'SourceIP': '10.10.10.10', 'IsMaliciousIP': '', 'IPReputation': '', 'IPThreatType': '', 'OnObject': {'Name': 'dns.msftncsi.com', 'ObjectType': 'Dns', 'Platform': 'DNS', 'IsSensitive': '', 'FileServerOrDomain': 'DNS', 'IsDisabledAccount': '', 'IsLockOutAccount': '', 'SAMAccountName': '', 'UserAccountType': '', 'DestinationIP': '', 'DestinationDevice': ''}} | Page: 1<br/>PageSize: 1 |
 
