@@ -1538,7 +1538,7 @@ def fetch_relevant_incidents(client: FortiSIEMClient,
             if incident.get('incidentId') not in last_fetch_incidents and \
                     len(filtered_incidents) < max_fetch and \
                     incident.get('incidentFirstSeen') >= last_incident_create_time:
-                filtered_incidents.append(copy.deepcopy(incident))
+                filtered_incidents.append(incident)
         if len(incidents) < page_size:  # last page
             break
 
