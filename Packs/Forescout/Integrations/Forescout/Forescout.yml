@@ -37,7 +37,7 @@ configuration:
   required: false
   type: 8
 description: Unified device visibility and control platform for IT and OT Security.
-display: Forescout
+display: Forescout CounterACT
 name: Forescout
 script:
   commands:
