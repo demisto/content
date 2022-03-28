@@ -1,4 +1,5 @@
 import json
+from unittest.mock import Mock, patch
 
 from freezegun import freeze_time
 
@@ -623,3 +624,36 @@ def test_fetch_incidents(last_run, incidents_file, fetch_with_events, expected_o
     assert len(incidents) == expected_incidents_number
     assert updated_last_run == expected_last_run
     assert events_number == expected_events_number
+
+
+@pytest.mark.commands
+@freeze_time(time.ctime(1646240070))
+@patch('FortiSIEMV2.FortiSIEMClient.fetch_incidents_request')
+def test_fetch_incidents_with_pagination(post_mock):
+    """
+    Fetching incidents in pagination use case.
+    Given:
+        - 'fetch-incidents' arguments.
+    Scenarios:
+        - Fetch incidents which retrieved from different pages.
+    Then:
+        - Validate incidents & updated last run obj.
+    """
+    from FortiSIEMV2 import FortiSIEMClient, fetch_incidents
+    client: FortiSIEMClient = mock_client()
+    status_list = ['Active']
+    max_fetch = 5
+    max_events_fetch = 5
+    first_fetch = "3 hours"
+
+    mocked_responses = [
+        load_json_mock_response('fetch_incidents_paging_1.json'),
+        load_json_mock_response('fetch_incidents_paging_2.json')
+    ]
+
+    post_mock.side_effect = mocked_responses
+    incidents, updated_last_run = fetch_incidents(client, max_fetch, first_fetch, status_list, False, max_events_fetch,
+                                                  {})
+    assert len(incidents) == 5
+    assert updated_last_run['create_time'] == 1646237070000
+    assert updated_last_run['last_incidents'] == [9, 10, 11, 12, 13]
