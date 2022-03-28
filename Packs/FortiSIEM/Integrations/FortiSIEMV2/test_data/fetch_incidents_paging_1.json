@@ -197,7 +197,7 @@
         {
             "incidentTitle": "Heavy UDP Port Scan from 192.168.30.113 to 192.168.91.93",
             "eventSeverity": 7,
-            "incidentFirstSeen": 1646098680000,
+            "incidentFirstSeen": 1646233070000,
             "incidentReso": 1,
             "incidentRptIp": "192.168.30.254",
             "incidentLastSeen": 1646731380000,
@@ -221,7 +221,7 @@
         {
             "incidentTitle": "Heavy TCP Port Scan from 192.168.30.113 to 192.168.91.57",
             "eventSeverity": 7,
-            "incidentFirstSeen": 1646105070000,
+            "incidentFirstSeen": 1646234070000,
             "incidentReso": 1,
             "incidentRptIp": "192.168.30.254",
             "incidentLastSeen": 1646750130000,
