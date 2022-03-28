@@ -1,6 +1,5 @@
 import json
-from unittest.mock import Mock, patch
-
+from unittest.mock import patch
 from freezegun import freeze_time
 
 import demistomock as demisto  # noqa: F401
