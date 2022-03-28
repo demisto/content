@@ -5,20 +5,21 @@ import json
 import re
 import os
 import sys
+import time
 import requests
 from pytest import raises, mark
 import pytest
 import warnings
 
 from CommonServerPython import set_to_integration_context_with_retries, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
-    flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
+    flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common
 import CommonServerPython
 
 try:
@@ -4390,6 +4391,316 @@ class TestExecuteCommand:
         assert 'not an error' not in error_text
 
 
+class TestExecuteCommandsMultipleResults:
+
+    @staticmethod
+    def test_sanity(mocker):
+        """
+        Given:
+            - A successful command with a single entry as output.
+        When:
+            - Calling execute_commands.
+        Then:
+            - Assert that only the Contents value is returned.
+        """
+        from CommonServerPython import CommandRunner, EntryType
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=[{'Type': EntryType.NOTE,
+                                                                  'ModuleName': 'module',
+                                                                  'Brand': 'brand',
+                                                                  'Contents': {'hello': 'world'}}])
+        command_executer = CommandRunner.Command(commands='command', args_lst={'arg1': 'value'})
+        results, errors = CommandRunner.execute_commands(command_executer)
+        execute_command_args = demisto_execute_mock.call_args_list[0][0]
+        assert demisto_execute_mock.call_count == 1
+        assert execute_command_args[0] == 'command'
+        assert execute_command_args[1] == {'arg1': 'value'}
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert len(results) == 1
+        assert results[0].brand == 'brand'
+        assert results[0].instance == 'module'
+        assert results[0].result == {'hello': 'world'}
+        assert not errors
+
+    @staticmethod
+    def test_multiple_results(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+        When:
+            - Calling execute_commands.
+        Then:
+            - Assert that the "Contents" values of all entries are returned.
+        """
+        from CommonServerPython import CommandRunner, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            {'Type': EntryType.NOTE, 'Contents': {'entry': '2'}},
+            {'Type': EntryType.NOTE, 'Context': 'Content is `None`', 'Contents': None}
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        command_executer = CommandRunner.Command(commands='command', args_lst={'arg1': 'value'})
+        results, errors = CommandRunner.execute_commands(command_executer)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert not errors
+        assert len(results) == 4
+        assert results[0].result == {'hello': 'world'}
+        assert results[1].result == {}
+        assert results[2].result == {'entry': '2'}
+        assert results[3].result == {}
+
+    @staticmethod
+    def test_raw_results(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+        When:
+            - Calling execute_commands.
+        Then:
+            - Assert that the entire entries are returned.
+        """
+        from CommonServerPython import EntryType, CommandRunner
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            'text',
+            1337,
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        command_executer = CommandRunner.Command(commands='command', args_lst={'arg1': 'value'})
+        results, errors = CommandRunner.execute_commands(command_executer, extract_contents=False)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert not errors
+        assert len(results) == 4
+        assert results[0].result == {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}}
+        assert results[1].result == {'Type': EntryType.NOTE, 'Context': 'no contents here'}
+        assert results[2].result == 'text'
+        assert results[3].result == 1337
+        assert results[2].brand == results[2].instance == results[3].brand == results[3].instance == 'Unknown'
+
+    @staticmethod
+    def test_with_errors(mocker):
+        """
+        Given:
+            - A command that sometimes fails and sometimes not.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the results list and the errors list returned as should've been
+        """
+        from CommonServerPython import CommandRunner, EntryType
+        entries = [
+            {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
+            {'Type': EntryType.NOTE, 'Contents': 'not an error'},
+            {'Type': EntryType.ERROR, 'Contents': 'error number 2'}
+        ]
+
+        def execute_command_mock(command, args):
+            if command == 'unsupported':
+                raise ValueError("Command is not supported")
+            return entries
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   side_effect=execute_command_mock)
+        command_executer = CommandRunner.Command(commands=['command', 'unsupported'],
+                                                 args_lst=[{'arg1': 'value'}, {}])
+
+        results, errors = CommandRunner.execute_commands(command_executer)
+
+        # validate that errors were found and the unsupported is ignored
+        assert demisto_execute_mock.call_count == 2
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert len(results) == 1
+        assert len(errors) == 2
+        assert errors[0].result == 'error number 1'
+        assert errors[1].result == 'error number 2'
+        assert results[0].result == 'not an error'
+
+    @staticmethod
+    def get_result_for_multiple_commands_helper(command, args):
+        from CommonServerPython import EntryType
+        return [{'Type': EntryType.NOTE,
+                 'ModuleName': list(args.keys())[0],
+                 'Brand': command,
+                 'Contents': {'hello': list(args.values())[0]}},
+                ]
+
+    @staticmethod
+    def test_multiple_commands(mocker):
+        """
+        Given:
+            - List of commands and list of args.
+        When:
+            - Calling execute_commands with multiple commands to get multiple results.
+        Then:
+            - Assert that the results list and the errors list returned as should've been
+        """
+        from CommonServerPython import CommandRunner
+        demisto_execute_mock = mocker.patch.object(demisto,
+                                                   'executeCommand',
+                                                   side_effect=TestExecuteCommandsMultipleResults.get_result_for_multiple_commands_helper)
+        command_executer = CommandRunner.Command(commands=['command1', 'command2'],
+                                                 args_lst=[{'arg1': 'value1'},
+                                                                    {'arg2': 'value2'}])
+
+        results, errors = CommandRunner.execute_commands(command_executer)
+        assert demisto_execute_mock.call_count == 2
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert len(results) == 2
+        assert results[0].brand == 'command1'
+        assert results[0].instance == 'arg1'
+        assert results[0].result == {'hello': 'value1'}
+        assert results[1].brand == 'command2'
+        assert results[1].instance == 'arg2'
+        assert results[1].result == {'hello': 'value2'}
+        assert not errors
+
+    @staticmethod
+    def test_invalid_args():
+        """
+        Given:
+            - List of commands and list of args which is invalid
+        When:
+            - Calling execute_commands.
+        Then:
+            - Assert that error is given.
+        """
+        from CommonServerPython import CommandRunner
+        with pytest.raises(DemistoException):
+            CommandRunner.execute_commands(
+                CommandRunner.Command(commands=['command'],
+                                      args_lst=[{'arg': 'val'}, {'arg': 'val'}]))
+        with pytest.raises(DemistoException):
+            CommandRunner.execute_commands(
+                CommandRunner.Command(commands=['command', 'command1'],
+                                      args_lst=[{'arg': 'val'}]))
+
+    @staticmethod
+    def test_using_brand_instance(mocker):
+        """
+        Given:
+            - Provide instance and brand to command wrapper
+        When:
+            - Calling execute_commands
+        Then:
+            - Assert that the `demisto.executeCommand` runned with `using` and `using-brand`.
+        """
+        from CommonServerPython import CommandRunner
+        executer_with_brand = CommandRunner.Command(brand='my brand',
+                                                    instance='my instance',
+                                                    commands='command',
+                                                    args_lst={'arg': 'val'})
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand')
+        CommandRunner.execute_commands(executer_with_brand)
+        assert demisto_execute_mock.called
+        args_for_execute_command = demisto_execute_mock.call_args_list[0][0][1]
+        assert 'using-brand' in args_for_execute_command
+        assert 'using' in args_for_execute_command
+        assert args_for_execute_command['using-brand'] == 'my brand'
+        assert args_for_execute_command['using'] == 'my instance'
+
+
+class TestGetResultsWrapper:
+    NUM_EXECUTE_COMMAND_CALLED = 0
+
+    @staticmethod
+    def execute_command_mock(command_executer, extract_contents):
+        from CommonServerPython import CommandRunner
+        TestGetResultsWrapper.NUM_EXECUTE_COMMAND_CALLED += 1
+        results, errors = [], []
+
+        for command, args in zip(command_executer.commands, command_executer.args_lst):
+            result_wrapper = CommandRunner.Result(command=command,
+                                                  args=args,
+                                                  brand='my-brand{}'.format(TestGetResultsWrapper.NUM_EXECUTE_COMMAND_CALLED),
+                                                  instance='instance',
+                                                  result='Command did not succeeded' if command == 'error-command' else 'Good')
+            if command == 'error-command':
+                errors.append(result_wrapper)
+            elif command != 'unsupported-command':
+                results.append(result_wrapper)
+        return results, errors
+
+    @staticmethod
+    def test_get_wrapper_results(mocker):
+        """
+        Given:
+            - List of CommandWrappers.
+        When:
+            - Calling get_wrapper_results to give generic results
+        Then:
+            - Assert that the "good" results are returned, and the summary includes the errors.
+            - Assert that the unsupported command is ignored.
+        """
+        from CommonServerPython import CommandRunner, CommandResults
+        command_wrappers = [CommandRunner.Command(brand='my-brand1', commands='my-command', args_lst={'arg': 'val'}),
+                            CommandRunner.Command(brand='my-brand2', commands=['command1', 'command2'], args_lst=[{'arg1': 'val1'}, {'arg2': 'val2'}]),
+                            CommandRunner.Command(brand='my-brand3', commands='error-command', args_lst={'bad_arg': 'bad_val'}),
+                            CommandRunner.Command(brand='brand-no-exist', commands='unsupported-command', args_lst={'arg': 'val'})]
+        mocker.patch.object(CommandRunner, 'execute_commands',
+                            side_effect=TestGetResultsWrapper.execute_command_mock)
+        results = CommandRunner.run_commands_with_summary(command_wrappers)
+        assert len(results) == 4  # 1 error (brand3)
+        assert all(res == 'Good' for res in results[:-1])
+        assert isinstance(results[-1], CommandResults)
+        if IS_PY3:
+            md_summary = """### Results Summary
+|Instance|Command|Result|Comment|
+|---|---|---|---|
+| ***my-brand1***: instance | ***command***: my-command<br>**args**:<br>	***arg***: val | Success |  |
+| ***my-brand2***: instance | ***command***: command1<br>**args**:<br>	***arg1***: val1 | Success |  |
+| ***my-brand2***: instance | ***command***: command2<br>**args**:<br>	***arg2***: val2 | Success |  |
+| ***my-brand3***: instance | ***command***: error-command<br>**args**:<br>	***bad_arg***: bad_val | Error | Command did not succeeded |
+"""
+        else:
+            md_summary = u"""### Results Summary
+|Instance|Command|Result|Comment|
+|---|---|---|---|
+| ***my-brand1***: instance | **args**:<br>	***arg***: val<br>***command***: my-command | Success |  |
+| ***my-brand2***: instance | **args**:<br>	***arg1***: val1<br>***command***: command1 | Success |  |
+| ***my-brand2***: instance | **args**:<br>	***arg2***: val2<br>***command***: command2 | Success |  |
+| ***my-brand3***: instance | **args**:<br>	***bad_arg***: bad_val<br>***command***: error-command | Error | Command did not succeeded |
+"""
+        assert results[-1].readable_output == md_summary
+
+    @staticmethod
+    def test_get_wrapper_results_error(mocker):
+        """
+        Given:
+            - List of CommandWrappers, which all of them returns errors or ignored
+        When:
+            - Calling get_wrapper_results to give generic results
+        Then:
+            - Assert that error returned.
+        """
+        from CommonServerPython import CommandRunner
+        command_wrappers = [CommandRunner.Command(brand='my-brand1',
+                                                  commands='error-command',
+                                                  args_lst={'arg': 'val'}),
+                            CommandRunner.Command(brand='my-brand2',
+                                                  commands='error-command',
+                                                  args_lst={'bad_arg': 'bad_val'}),
+                            CommandRunner.Command(brand='brand-no-exist',
+                                                  commands='unsupported-command',
+                                                  args_lst={'arg': 'val'}),
+                            ]
+        mocker.patch.object(CommandRunner, 'execute_commands',
+                            side_effect=TestGetResultsWrapper.execute_command_mock)
+        with pytest.raises(DemistoException) as e:
+            CommandRunner.run_commands_with_summary(command_wrappers)
+            assert 'Command did not succeeded' in e.value
+            assert 'Script failed. The following errors were encountered:' in e.value
+
+
 def test_arg_to_int__valid_numbers():
     """
     Given
@@ -6344,6 +6655,224 @@ class TestSetAndGetLastMirrorRun:
             assert set_last_run.called is False
 
 
+class TestFetchWithLookBack:
+
+    LAST_RUN = {}
+    INCIDENTS = [
+        {
+            'incident_id': 1,
+            'created': (datetime.utcnow() - timedelta(hours=3)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 2,
+            'created': (datetime.utcnow() - timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 3,
+            'created': (datetime.utcnow() - timedelta(minutes=29)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 4,
+            'created': (datetime.utcnow() - timedelta(minutes=19)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 5,
+            'created': (datetime.utcnow() - timedelta(minutes=9)).strftime('%Y-%m-%dT%H:%M:%S')
+        }
+    ]
+
+    NEW_INCIDENTS = [
+        {
+            'incident_id': 6,
+            'created': (datetime.utcnow() - timedelta(minutes=49)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 7,
+            'created': (datetime.utcnow() - timedelta(minutes=25)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 8,
+            'created': (datetime.utcnow() - timedelta(minutes=23)).strftime('%Y-%m-%dT%H:%M:%S')
+        }
+    ]
+    
+    def example_fetch_incidents(self):
+        """
+        An example fetch for testing
+        """
+
+        from CommonServerPython import get_fetch_run_time_range, filter_incidents_by_duplicates_and_limit, \
+            update_last_run_object
+
+        incidents = []
+
+        params = demisto.params()
+        fetch_limit_param = params.get('limit')
+        look_back = int(params.get('look_back', 0))
+        first_fetch = params.get('first_fetch')
+        time_zone = params.get('time_zone', 0)
+
+        last_run = demisto.getLastRun()
+        fetch_limit = last_run.get('limit') or fetch_limit_param
+
+        start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch, look_back=look_back, timezone=time_zone)
+
+        query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
+        incidents_res = self.get_incidents_request(query)
+
+        incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents_res, last_run=last_run, fetch_limit=fetch_limit_param, id_field='incident_id')
+
+        last_run = update_last_run_object(last_run=last_run, incidents=incidents, fetch_limit=fetch_limit_param, start_fetch_time=start_fetch_time,
+                                          end_fetch_time=end_fetch_time, look_back=look_back, created_time_field='created', id_field='incident_id')
+
+        demisto.setLastRun(last_run)
+        return incidents
+
+    @staticmethod
+    def build_query(start_time, end_time, limit, return_incidents_by_limit=True):
+        query = {'from': start_time, 'to': end_time}
+        if return_incidents_by_limit:
+            query['limit'] = limit
+        return query
+
+    def get_incidents_request(self, query):
+        from_time = datetime.strptime(query['from'], '%Y-%m-%dT%H:%M:%S')
+        incidents = [inc for inc in self.INCIDENTS if datetime.strptime(inc['created'], '%Y-%m-%dT%H:%M:%S') > from_time]
+        if query.get('limit') is not None:
+            return incidents[:query['limit']]
+        return incidents
+
+    def set_last_run(self, new_last_run):
+        self.LAST_RUN = new_last_run
+
+    @pytest.mark.parametrize('params, result_phase1, result_phase2, expected_last_run', [
+        ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
+         {'limit': 2, 'time': INCIDENTS[3]['created']}),
+        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [],
+         {'limit': 3, 'time': INCIDENTS[4]['created']}),
+        ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]],
+         {'limit': 2, 'time': INCIDENTS[2]['created']}),
+        ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
+         {'limit': 3, 'time': INCIDENTS[3]['created']}),
+    ])
+    def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
+        """
+        Given:
+        - Connfiguration fetch parameters (incidents limit and first fetch time)
+
+        When:
+        - Running the example fetch incidents
+
+        Then:
+        - Ensure the return incidents and LastRun object as expected
+        """
+        if sys.version_info.major == 2:
+            # skip for python 2 - date
+            assert True
+            return
+
+        self.LAST_RUN = {}
+
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+
+        # Run first fetch
+        incidents_phase1 = self.example_fetch_incidents()
+
+        assert incidents_phase1 == result_phase1
+        assert self.LAST_RUN == expected_last_run
+
+        # Run second fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase2 = self.example_fetch_incidents()
+
+        assert incidents_phase2 == result_phase2
+
+    @pytest.mark.parametrize('params, result_phase1, result_phase2, result_phase3, expected_last_run_phase1, expected_last_run_phase2, new_incidents, index', [
+        (
+            {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS[2], INCIDENTS[3]], [NEW_INCIDENTS[0], INCIDENTS[4]], [],
+            {'found_incident_ids': {3: '', 4: ''}, 'limit': 4}, {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
+            [NEW_INCIDENTS[0]], 2
+        ),
+        (
+            {'limit': 2, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [INCIDENTS[4]],
+            {'found_incident_ids': {3: '', 4: ''}, 'limit': 4}, {'found_incident_ids': {3: '', 4: '', 7: '', 8: ''}, 'limit': 6},
+            [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+        ),
+        (
+            {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15}, [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [NEW_INCIDENTS[0], INCIDENTS[3], INCIDENTS[4]], [],
+            {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6}, {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+            [NEW_INCIDENTS[0]], 2
+        ),
+        (
+            {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [],
+            {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6}, {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+            [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+        ),
+    ])
+    def test_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
+                                  expected_last_run_phase1, expected_last_run_phase2, new_incidents, index):
+        """
+        Given:
+        - Connfiguration fetch parameters (incidents limit, first fetch time and look back)
+
+        When:
+        - Running the example fetch incidents and creating new incidents between fetch calles
+
+        Then:
+        - Ensure the return incidents and LastRun object as expected
+        """
+        if sys.version_info.major == 2:
+            # skip for python 2 - date
+            assert True
+            return
+
+        self.LAST_RUN = {}
+        incidents = self.INCIDENTS[:]
+
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+
+        # Run first fetch
+        incidents_phase1 = self.example_fetch_incidents()
+
+        assert incidents_phase1 == result_phase1
+        assert self.LAST_RUN['limit'] == expected_last_run_phase1['limit']
+        assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase1['found_incident_ids'].keys()
+        for inc in incidents_phase1:
+            assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
+
+        next_run_phase1 = self.LAST_RUN['time']
+        self.INCIDENTS = incidents[:index] + new_incidents + incidents[index:]
+
+        # Run second fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase2 = self.example_fetch_incidents()
+
+        assert incidents_phase2 == result_phase2
+        assert self.LAST_RUN['limit'] == expected_last_run_phase2['limit']
+        assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase2['found_incident_ids'].keys()
+
+        if len(incidents_phase2) >= params.get('limit'):
+            assert next_run_phase1 == self.LAST_RUN['time']
+        else:
+            assert incidents_phase2[-1]['created'] == self.LAST_RUN['time']
+
+        for inc in incidents_phase2:
+            assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
+
+        # Run third fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase3 = self.example_fetch_incidents()
+
+        assert incidents_phase3 == result_phase3
+
+        # Remove new incidents from self.INCIDENTS
+        self.INCIDENTS = incidents
+
+
 class TestTracebackLineNumberAdgustment:
     @staticmethod
     def test_module_line_number_mapping():
@@ -6519,3 +7048,98 @@ def test_get_pack_version(mocker, calling_context_mock, pack_name):
     mocker.patch('demistomock.callingContext', calling_context_mock)
     mocker.patch.object(demisto, 'internalHttpRequest', side_effect=get_pack_version_mock_internal_http_request)
     assert get_pack_version(pack_name=pack_name) == '1.0.0'
+
+
+TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN = [
+    (
+        {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12',
+         'indicator_type': DBotScoreType.FILE, 'reliability': DBotScoreReliability.A},
+        {'instance': Common.File, 'indicator_type': 'SHA256', 'reliability': 'A - Completely reliable'}
+    ),
+    (
+        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': DBotScoreType.FILE,
+        'reliability': DBotScoreReliability.B},
+        {'instance': Common.File, 'indicator_type': 'MD5', 'reliability': 'B - Usually reliable'}
+    ),
+    (
+        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': DBotScoreType.FILE,
+        'reliability': DBotScoreReliability.B},
+        {'instance': Common.File, 'indicator_type': 'MD5', 'reliability': 'B - Usually reliable', 'integration_name': 'test'}
+    ),
+    (
+        {'indicator': 'f4dad67d0f0a8e53d8*****937fc9506e81b76e043294da77ae50ce4e8f0482127e7c12',
+         'indicator_type': DBotScoreType.FILE, 'reliability': DBotScoreReliability.A},
+        {'error_message': 'This indicator -> f4dad67d0f0a8e53d8*****937fc9506e81b76e043294da77ae50ce4e8f0482127e7c12 is incorrect'}
+    ),
+    (
+        {'indicator': '8.8.8.8', 'indicator_type': DBotScoreType.IP},
+        {'instance': Common.IP, 'indicator_type': 'IP', 'reliability': None}
+    ),
+    (
+        {'indicator': 'www.google.com', 'indicator_type': DBotScoreType.URL, 'reliability': DBotScoreReliability.A},
+        {'instance': Common.URL, 'indicator_type': 'URL', 'reliability': 'A - Completely reliable'}
+    ),
+    (
+        {'indicator': 'google.com', 'indicator_type': DBotScoreType.DOMAIN},
+        {'instance': Common.Domain, 'indicator_type': 'DOMAIN', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.ACCOUNT},
+        {'instance': Common.Account, 'indicator_type': 'ACCOUNT', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CRYPTOCURRENCY, 'address_type': 'bitcoin'},
+        {'instance': Common.Cryptocurrency, 'indicator_type': 'BITCOIN', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CERTIFICATE},
+        {'instance': Common.Certificate, 'indicator_type': 'CERTIFICATE', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': 'test', 'context_prefix': 'test'},
+        {'instance': Common.CustomIndicator, 'indicator_type': 'TEST', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': 'test'},
+        {'error_message': 'Indicator type is invalid'}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CRYPTOCURRENCY},
+        {'error_message': 'Missing address_type parameter'}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CVE},
+        {'error_message': 'DBotScoreType.CVE is unsupported'}
+    )
+]
+
+
+@pytest.mark.parametrize('args, expected', TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN)
+def test_create_indicator_result_with_dbotscore_unknown(mocker, args, expected):
+
+    from CommonServerPython import create_indicator_result_with_dbotscore_unknown
+
+    if expected.get('integration_name'):
+        mocker.patch('CommonServerPython.Common.DBotScore',
+                     return_value=Common.DBotScore(indicator=args['indicator'],
+                                                   indicator_type=args['indicator_type'],
+                                                   score=0,
+                                                   integration_name=expected['integration_name'],
+                                                   reliability=args['reliability'],
+                                                   message='No results found.'))
+    try:
+        results = create_indicator_result_with_dbotscore_unknown(**args)
+    except ValueError as e:
+        assert str(e) == expected['error_message']
+        return
+
+    assert expected['indicator_type'] in results.readable_output
+    assert isinstance(results.indicator, expected['instance'])
+    assert results.indicator.dbot_score.score == 0
+    assert results.indicator.dbot_score.reliability == expected['reliability']
+    assert results.indicator.dbot_score.message == 'No results found.'
+
+    if expected.get('integration_name'):
+        assert expected['integration_name'] in results.readable_output
+    else:
+        assert 'Results:' in results.readable_output
