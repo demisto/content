@@ -17,10 +17,10 @@ class Client(BaseClient):
     def correlation_alerts(self, last_fetch_time=None):
         args = demisto.args()
 
-        end_time = datetime.utcnow() + timedelta(hours=int(demisto.params().get("time_zone",3)))
+        end_time = datetime.utcnow() + timedelta(hours=int(demisto.params().get("time_zone_difference",3)))
         interval_time = end_time - timedelta(minutes=int(demisto.params().get('incidentFetchInterval', 360)))
 
-        formatted_start_time = datetime.strptime(last_fetch_time, DATE_FORMAT) + timedelta(hours=int(demisto.params().get("time_zone",3))) if last_fetch_time is not None else None
+        formatted_start_time = datetime.strptime(last_fetch_time, DATE_FORMAT) + timedelta(hours=int(demisto.params().get("time_zone_difference",3))) if last_fetch_time is not None else None
 
         if last_fetch_time is None or formatted_start_time < interval_time:
             formatted_start_time = interval_time
@@ -50,7 +50,7 @@ class Client(BaseClient):
     def correlations(self):
         args = demisto.args()
 
-        limit = str(args.get("limit",100))
+        limit = str(args.get("limit", '100'))
         limit_url = "limit=" + limit
 
         sort_type = str(args.get("sortType","asc"))
@@ -92,12 +92,20 @@ def correlation_alerts_command(client: Client):
 def correlations_command(client: Client):
     result = client.correlations()
 
+    readable_data = []
+    for res in result["Data"]:
 
+        readable_data.append(
+            {"Correlation ID": res.get('CorrelationId', ""), "Correlation Name": res.get('Name', "")})
+    markdown = tableToMarkdown('Messages', readable_data, headers=['Correlation ID', 'Correlation Name'])
+    
     return CommandResults(
         outputs_prefix='Correlations',
         outputs_key_field='',
+        readable_output=markdown,
         outputs=result,
     )
+
 
 
 def test_module(client: Client) -> str:
@@ -181,7 +189,7 @@ def fetch_incidents(client: Client,params):
 
         created_incident = datetime.strptime(time_stamp, DATE_FORMAT)
         last_fetch = datetime.strptime(last_fetch, DATE_FORMAT) if isinstance(last_fetch, str) else last_fetch
-        if created_incident > last_fetch:
+        if created_incident > last_fetch + timedelta(hours=int(demisto.params().get("time_zone_difference",3))):
             last_fetch = created_incident + timedelta(milliseconds=10)
 
     last_fetch = last_fetch.strftime(DATE_FORMAT) if not isinstance(last_fetch,str) else last_fetch

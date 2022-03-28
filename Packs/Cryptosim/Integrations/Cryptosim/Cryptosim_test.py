@@ -75,7 +75,7 @@ def test_fetch_incidents(request_mock, params):
     requests_mock.post("https://test.com/api/service/correlationalerts",
                         json=mock_response)
     max_fetch = 3
-    next_run, incidents = fetch_incidents(test_client, {"max_fetch":max_fetch,"first_fetch":"2022-03-25T00:00:00"})
+    next_run, incidents = fetch_incidents(test_client, {"max_fetch":max_fetch,"first_fetch":"1 hour"})
     assert next_run["lastRun"] == mock_response[0]["lastRun"]
     assert len(incidents) == max_fetch
     assert isinstance(incidents, list)

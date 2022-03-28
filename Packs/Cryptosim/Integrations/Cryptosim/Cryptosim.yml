@@ -30,11 +30,11 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- display: Timezone(as hour)
-  additionalinfo: Define the timezone to get correct logs from db. (default:3) eg. 3, 5, -5)
+- display: Timezone Difference form UTC(as hour e.g 3, -2)
+  additionalinfo: Define the timezone difference from UTC to get correct logs from db. (default:3) eg. 3, 5, -5)
   defaultvalue: '3'
   hidden: false
-  name: time_zone
+  name: time_zone_difference
   required: false
   type: 0
 - display: Incident type
