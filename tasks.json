@@ -7,7 +7,7 @@
                     "Get": "key",
                     "Where": [
                         "isEqualString(key, 2)",
-                        "(isEmpty(key.test)<br/>OR hasLength(key.test, 3))"
+                        "(isEmpty(key.test) OR hasLength(key.test, 3))"
                     ],
                     "Transformers": [
                         "append(value, item=3)"
