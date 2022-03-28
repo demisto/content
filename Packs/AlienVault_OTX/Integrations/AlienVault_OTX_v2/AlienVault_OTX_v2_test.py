@@ -69,7 +69,8 @@ FILE_EC_WITHOUT_ANALYSIS = {
     ' val.SSDeep && val.SSDeep == obj.SSDeep)': [{'SHA1': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'}],
     'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
     ' val.Type == obj.Type)': [{'Indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'Type': 'file',
-                                'Vendor': 'AlienVault OTX v2', 'Score': 0, 'Reliability': 'C - Fairly reliable'}]
+                                'Vendor': '', 'Score': 0, 'Reliability': 'C - Fairly reliable',
+                                'Message':'No results found.'}]
 }
 
 URL_RAW_RESPONSE = {

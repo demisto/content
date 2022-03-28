@@ -483,7 +483,6 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                                                  FeedIndicatorType.indicator_type_by_server_version(
                                                      "STIX Attack Pattern"))
 
-            # shortcut = dict_safe_get(raw_response_analysis, ['analysis', 'info', 'results'], {})
             dbot_score = Common.DBotScore(
                 indicator=hash_, indicator_type=DBotScoreType.FILE, integration_name=INTEGRATION_NAME,
                 score=calculate_dbot_score(client, raw_response_general),
