@@ -12,14 +12,17 @@ from CommonServerUserPython import *
 
 MAX_ROWS: int = 50
 """Maximum number of assets to allow user to fetch."""
-SKIPS: List[str] = ["specific_data.data.image"]
+SKIPS: List[str] = ["specific_data.data.image", "view"]
 """Fields to remove from each asset if found."""
 FIELDS_TIME: List[str] = ["seen", "fetch", "time", "date"]
 """Fields to try and convert to date time if they have these words in them."""
+AXONIUS_ID = "internal_axon_id"
 
 
 def get_int_arg(
-    key: str, required: Optional[bool] = False, default: Optional[int] = None,
+    key: str,
+    required: Optional[bool] = False,
+    default: Optional[int] = None,
 ) -> int:
     """Get a key from a command arg and convert it into an int."""
     args: dict = demisto.args()
@@ -37,7 +40,9 @@ def get_int_arg(
 
 
 def get_csv_arg(
-    key: str, required: Optional[bool] = False, default: Optional[str] = "",
+    key: str,
+    required: Optional[bool] = False,
+    default: Optional[str] = "",
 ) -> List[str]:
     """Get string values from CSV."""
     args: dict = demisto.args()
@@ -87,14 +92,34 @@ def parse_asset(asset: dict) -> dict:
     }
 
 
-def get_saved_queries(api_obj: Union[Users, Devices]) -> CommandResults:  # noqa: F821, F405
+def get_saved_queries(client: Connect) -> CommandResults:  # noqa: F821, F405
     """Get assets with their defined fields returned by a saved query."""
     args: dict = demisto.args()
-    assets = api_obj.saved_query.get()
-    return command_results(assets=assets, api_obj=api_obj)
+    api_obj = client.devices if args["type"] == "devices" else client.users
+    saved_queries = api_obj.saved_query.get()
+    return parse_assets(
+        assets=saved_queries,
+        api_obj=api_obj,
+        outputs_key_field="",
+        extension="saved_queries",
+        exclude_raw=True,
+    )
 
 
-def tag_logic(
+def get_tags(client: Connect) -> CommandResults:  # noqa: F821, F405
+    """Get assets with their defined fields returned by a saved query."""
+    args: dict = demisto.args()
+    api_obj = client.devices if args["type"] == "devices" else client.users
+    tags = api_obj.labels.get()
+    return CommandResults(
+        outputs_prefix=f"Axonius.tags.{args['type']}",
+        readable_output=",".join(tags),
+        outputs=tags,
+        raw_response=tags,
+    )
+
+
+def update_tags(
     client: Connect, method_name: str
 ) -> CommandResults:  # noqa: F821, F405
     args: dict = demisto.args()
@@ -102,15 +127,16 @@ def tag_logic(
     internal_axon_id: str = args["id"]
     api_obj = client.devices if args["type"] == "devices" else client.users
     api_name = api_obj.__class__.__name__
+
     if method_name == "add":
         res = api_obj.labels.add(rows=[internal_axon_id], labels=[tag_name])
     else:
         res = api_obj.labels.remove(rows=[internal_axon_id], labels=[tag_name])
+
     # res is count of rows included in the output, regardless of success.
     readable_output = f"{res} {api_name}(s) updated."
-    demisto.log(str(res))
     return CommandResults(
-        outputs_prefix=f"Axonius.asset.updates",
+        outputs_prefix=f"Axonius.asset.updates.{args['type']}",
         readable_output=readable_output,
         outputs=res,
         raw_response=res,
@@ -123,11 +149,12 @@ def get_by_sq(api_obj: Union[Users, Devices]) -> CommandResults:  # noqa: F821, 
     name: str = args["saved_query_name"]
     max_rows: int = get_int_arg(key="max_results", required=False, default=MAX_ROWS)
     assets = api_obj.get_by_saved_query(name=name, max_rows=max_rows)
-    return command_results(assets=assets, api_obj=api_obj)
+    return parse_assets(assets=assets, api_obj=api_obj)
 
 
 def get_by_value(
-    api_obj: Union[Users, Devices], method_name: str,
+    api_obj: Union[Users, Devices],
+    method_name: str,
 ) -> CommandResults:  # noqa: F821, F405
     """Get assets by a value using a api_obj.get_by_{method_name}."""
     api_name = api_obj.__class__.__name__
@@ -151,16 +178,19 @@ def get_by_value(
 
     method = getattr(api_obj, api_method_name)
     assets = method(value=value, max_rows=max_rows, fields=fields)
-    return command_results(assets=assets, api_obj=api_obj)
+    return parse_assets(assets=assets, api_obj=api_obj)
 
 
-def command_results(
-    assets: List[dict], api_obj: Union[Users, Devices]
+def parse_assets(
+    assets: List[dict],
+    api_obj: Union[Users, Devices],
+    outputs_key_field=AXONIUS_ID,
+    extension="",
+    exclude_raw=False,
 ) -> CommandResults:  # noqa: F821, F405
     """Parse assets into CommandResults."""
     api_name = api_obj.__class__.__name__
     aql = api_obj.LAST_GET.get("filter")
-
     results = [parse_asset(asset=asset) for asset in assets]
 
     readable_output: Optional[str] = None
@@ -172,12 +202,17 @@ def command_results(
     if len(results) == 1:
         outputs = results[0]
 
+    outputs_prefix = f"Axonius.{api_name}"
+    if extension:
+        outputs_prefix += f".{extension}"
+    raw_response = None if exclude_raw else assets
+
     return CommandResults(
-        outputs_prefix=f"Axonius.{api_name}",
-        outputs_key_field="internal_axon_id",
+        outputs_prefix=outputs_prefix,
+        outputs_key_field=outputs_key_field,
         readable_output=readable_output,
         outputs=outputs,
-        raw_response=assets,
+        raw_response=raw_response,
     )  # noqa: F821, F405
 
 
@@ -197,7 +232,11 @@ def main():
 
     try:
         client = Connect(
-            url=url, key=key, secret=secret, certverify=certverify, certwarn=False,
+            url=url,
+            key=key,
+            secret=secret,
+            certverify=certverify,
+            certwarn=False,
         )
 
         if command == "test-module":
@@ -242,27 +281,18 @@ def main():
         elif command == "axonius-get-devices-by-mac-regex":
             results = get_by_value(api_obj=client.devices, method_name="mac_regex")
             return_results(results)
-
-        elif command == "axonius-get-devices-savedquery":
-            results = get_saved_queries(api_obj=client.devices)
+        elif command == "axonius-get-savedqueries":
+            results = get_saved_queries(client=client)
             return_results(results)
-        elif command == "axonius-get-users-savedquery":
-            results = get_saved_queries(api_obj=client.users)
+        elif command == "axonius-get-tags":
+            results = get_tags(client=client)
             return_results(results)
-
         elif command == "axonius-add-tag":
-            results = tag_logic(client=client, method_name="add")
+            results = update_tags(client=client, method_name="add")
             return_results(results)
         elif command == "axonius-remove-tag":
-            results = tag_logic(client=client, method_name="remove")
+            results = update_tags(client=client, method_name="remove")
             return_results(results)
-        elif command == "axonius-tag-user":
-            results = get_by_value(api_obj=client.devices, method_name="add")
-            return_results(results)
-        elif command == "axonius-remove-tag-user":
-            results = get_by_value(api_obj=client.devices, method_name="remove")
-            return_results(results)
-
 
     except Exception as exc:
         demisto.error(traceback.format_exc())
