@@ -1,7 +1,3264 @@
 {
-    "TASK_0": "flowchart TB\nContent[#0 Playbook Triggered]",
-    "TASK_1": "flowchart TB\nContent[#1 Do something]",
-    "TASK_2": "flowchart TB\nContent[#2 Is Output Valid?]",
-    "TASK_3": "flowchart TB\nContent[#3 Done]",
-    "TASK_4": "flowchart TB\nContent[#4 Print Error]"
+    "TASK_0": {
+        "inputs": [
+            {
+                "key": "Role",
+                "value": {
+                    "simple": "Administrator"
+                },
+                "required": true,
+                "description": "The default role to assign the incident to.",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "SearchAndDelete",
+                "value": {
+                    "simple": "False"
+                },
+                "required": false,
+                "description": "Enables the Search and Delete capability.\nFor a malicious email, the \"Search and Delete\" sub-playbook looks for other instances of the email and deletes them pending analyst approval.",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "BlockIndicators",
+                "value": {
+                    "simple": "False"
+                },
+                "required": false,
+                "description": "Enables the Block Indicators capability.\nFor a malicious email, the \"Block Indicators\" sub-playbook blocks all malicious indicators in the relevant integrations.",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "AuthenticateEmail",
+                "value": {
+                    "simple": "True"
+                },
+                "required": false,
+                "description": "Determines whether the authenticity of the email should be verified using SPF, DKIM, and DMARC.",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "OnCall",
+                "value": {
+                    "simple": "False"
+                },
+                "required": false,
+                "description": "Set to True to assign only the user who is currently on shift.",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "SearchAndDeleteIntegration",
+                "value": {
+                    "simple": "EWS"
+                },
+                "required": false,
+                "description": "Determines which product and playbook is used to search and delete the phishing email from user inboxes.\n  - Set this to \"O365\" to use the \"O365 - Security And Compliance - Search And Delete\" playbook.\n  - Set this to \"EWS\" to use the \"Search And Delete Emails - EWS\" playbook.\n  - Set this to \"Gmail\" to use the \"Search And Delete - Gmail\" playbook.",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "O365DeleteType",
+                "value": {
+                    "simple": "Soft"
+                },
+                "required": false,
+                "description": "Sets the method to delete emails in the \"O365 - Security And Compliance - Search And Delete\" playbook. Can be \"Soft\" (recoverable), or \"Hard\" (unrecoverable). Leave empty to decide manually for each email incident.\nThis is only applicable if the SearchAndDeleteIntegration input is set to \"O365\".",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "O365ExchangeLocation",
+                "value": {},
+                "required": false,
+                "description": "The exchange location. Determines from where to search and delete emails using O365 playbooks. Use the value \"All\" to search all mailboxes. If no input provided, it will search and delete the email only from the recipient's mailboxes. Note - Searching all mailboxes may take a significant amount of time. This input is used only when searching and deleting emails in O365 and only applies if the SearchAndDeleteIntegration input is set to O365.",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "O365AllowNotFoundSearchLocations",
+                "value": {
+                    "simple": "False"
+                },
+                "required": false,
+                "description": "Used only when searching and deleting emails in O365. Determines whether to include mailboxes other than regular user mailboxes in the compliance search.",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "O365ExchangeLocationExclusion",
+                "value": {},
+                "required": false,
+                "description": "Used only when searching and deleting emails in O365. A comma-separated list of mailboxes/distribution groups to exclude when you use the value \"All\" for the O365ExchangeLocation input.",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "CheckMicrosoftHeaders",
+                "value": {
+                    "simple": "True"
+                },
+                "required": false,
+                "description": "Whether to check Microsoft headers for BCL/PCL/SCL scores and set the \"Severity\" and \"Email Classification\" accordingly.",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "InternalDomains",
+                "value": {},
+                "required": false,
+                "description": "A CSV list of internal domains. The list is used to determine whether an email address is internal or external.",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "DetonateURL",
+                "value": {
+                    "simple": "False"
+                },
+                "required": false,
+                "description": "Determines whether to use the \"URL Detonation\" playbook. Detonating a URL may take a few minutes.",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "InternalRange",
+                "value": {},
+                "required": false,
+                "description": "This input is used in the \"Entity Enrichment - Phishing v2\" playbook.\nA list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: \"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). If a list is not provided, uses the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "PhishingModelName",
+                "value": {
+                    "simple": "phishing_model"
+                },
+                "required": false,
+                "description": "Optional - the name of a pre-trained phishing model to predict the phishing type using machine learning.",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "GetOriginalEmail",
+                "value": {},
+                "required": false,
+                "description": "For forwarded emails. When \"True\", retrieves the original email in the thread.\n\nYou must have the necessary permissions in your email service to execute a global search.\n\n- For EWS: eDiscovery\n- For Gmail: Google Apps Domain-Wide Delegation of Authority\n- For MSGraph: As described in these links\nhttps://docs.microsoft.com/en-us/graph/api/message-get\nhttps://docs.microsoft.com/en-us/graph/api/user-list-messages",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "DBotPredictURLPhishingURLsNumber",
+                "value": {
+                    "simple": "3"
+                },
+                "required": false,
+                "description": "The number of URLs to extract from the email HTML and analyze in the \"DBotPredictURLPhishing\" automation.\nThis automation runs several checks to determine the score of the URLs found in the email, sets a verdict for URLs found as \"Suspicious\" or \"Malicious\", and adds these URLs as indicators. Based on the verdict, the incident severity is set (Medium for \"Suspicious\" and High for \"Malicious\").\nNote:\n- You need to install the \"Phishing URL\" pack to use this automation.\n- False/True positives are possible.\n- This automation may take a few minutes to run.\n- To increase result accuracy, it is recommended to install and enable the \"Whois\" pack (optional).",
+                "playbookInputQuery": null
+            },
+            {
+                "key": "EmailFileToExtract",
+                "value": {
+                    "simple": "Inner file"
+                },
+                "required": false,
+                "description": "Reported emails and emails retrieved during playbook execution can contain multiple nested email files. For example, an EML nested inside another EML file.\nIf multiple level files are detected, this field determines which file represents the phishing email.\n\nFor example:\nUser1 receives an email from Attacker. User1 attaches the email as an EML file and sends the email to User2.\nUser2 also attaches that email as a file, and reports it as phishing. In this case, the phishing email would be the \"inner file\" (as opposed to \"outer file\").\n\nPossible values are: Inner file, Outer file, All files.\nInner file: The file at the deepest level is parsed. If there is only one file, that file is parsed.\nOuter file: The file at the first level is parsed.\nAll files: All files are parsed. Do not use this option in the phishing playbook, as there should only be one phishing email per playbook run.",
+                "playbookInputQuery": null
+            }
+        ],
+        "outputs": []
+    },
+    "TASK_2": {
+        "id": "2",
+        "taskid": "33c75a16-88d7-444b-8d04-8ab0af2bbe4d",
+        "type": "regular",
+        "task": {
+            "id": "33c75a16-88d7-444b-8d04-8ab0af2bbe4d",
+            "version": -1,
+            "name": "Assign to analyst",
+            "description": "Assigns the incident to an analyst based on the analyst's organizational role.",
+            "scriptName": "AssignAnalystToIncident",
+            "type": "regular",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "15"
+            ]
+        },
+        "scriptarguments": {
+            "onCall": {
+                "complex": {
+                    "root": "inputs.OnCall",
+                    "transformers": [
+                        {
+                            "operator": "toLowerCase"
+                        }
+                    ]
+                }
+            },
+            "roles": {
+                "complex": {
+                    "root": "inputs.Role"
+                }
+            }
+        },
+        "reputationcalc": 1,
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 2560\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_7": {
+        "id": "7",
+        "taskid": "eb780ec7-557a-46ae-869d-582ca2547e62",
+        "type": "regular",
+        "task": {
+            "id": "eb780ec7-557a-46ae-869d-582ca2547e62",
+            "version": -1,
+            "name": "Manually review the incident",
+            "description": "Reviews the incident to determine if the email that the user reported is malicious.",
+            "type": "regular",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "33"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -770,\n    \"y\": 3055\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_8": {
+        "id": "8",
+        "taskid": "ab61f1da-1a47-456b-85b8-ba23a7df2f38",
+        "type": "regular",
+        "task": {
+            "id": "ab61f1da-1a47-456b-85b8-ba23a7df2f38",
+            "version": -1,
+            "name": "Close investigation",
+            "description": "Closes the investigation.",
+            "script": "Builtin|||closeInvestigation",
+            "type": "regular",
+            "iscommand": true,
+            "brand": "Builtin"
+        },
+        "nexttasks": {
+            "#none#": [
+                "29"
+            ]
+        },
+        "reputationcalc": 1,
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -897.5,\n    \"y\": 5180\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_11": {
+        "id": "11",
+        "taskid": "d3bc5192-aeef-474d-8c51-25102d6ed901",
+        "type": "title",
+        "task": {
+            "id": "d3bc5192-aeef-474d-8c51-25102d6ed901",
+            "version": -1,
+            "name": "Triage",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "26"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -497.5,\n    \"y\": 300\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_13": {
+        "id": "13",
+        "taskid": "9a73f740-17fe-4280-80ff-07dd4e4d6931",
+        "type": "regular",
+        "task": {
+            "id": "9a73f740-17fe-4280-80ff-07dd4e4d6931",
+            "version": -1,
+            "name": "Acknowledge incident was received",
+            "description": "Sends an auto-response to the user reporting that the incident was received and is being handled.\n",
+            "script": "|||send-mail",
+            "type": "regular",
+            "iscommand": true,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "56"
+            ]
+        },
+        "scriptarguments": {
+            "body": {
+                "simple": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.incident.reporteremailaddress; var reporter = val.incident.reporteremailaddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've received your email and are investigating.\nPlease do not touch the email until further notice.\n\nCordially, \n  Your friendly neighborhood security team"
+            },
+            "subject": {
+                "simple": "Re: Phishing Investigation - ${incident.name}"
+            },
+            "to": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "reporteremailaddress"
+                }
+            }
+        },
+        "reputationcalc": 1,
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 630\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_15": {
+        "id": "15",
+        "taskid": "4f4a45c7-24f0-47d7-8443-d5b5b6230baf",
+        "type": "condition",
+        "task": {
+            "id": "4f4a45c7-24f0-47d7-8443-d5b5b6230baf",
+            "version": -1,
+            "name": "Is the email malicious?",
+            "description": "Determines if the email is malicious based on the calculated severity.",
+            "type": "condition",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#default#": [
+                "31"
+            ],
+            "Malicious": [
+                "30"
+            ]
+        },
+        "separatecontext": false,
+        "conditions": [
+            {
+                "label": "Malicious",
+                "condition": [
+                    [
+                        {
+                            "operator": "greaterThanOrEqual",
+                            "left": {
+                                "value": {
+                                    "simple": "incident.severity"
+                                },
+                                "iscontext": true
+                            },
+                            "right": {
+                                "value": {
+                                    "simple": "2"
+                                }
+                            }
+                        }
+                    ]
+                ]
+            }
+        ],
+        "view": "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 2735\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_16": {
+        "id": "16",
+        "taskid": "03bcc09e-17ae-4ae5-86ac-38813c29b582",
+        "type": "regular",
+        "task": {
+            "id": "03bcc09e-17ae-4ae5-86ac-38813c29b582",
+            "version": -1,
+            "name": "Update the user that the reported email is safe",
+            "description": "Sends an email to the user explaining that the email they reported is safe.",
+            "script": "|||send-mail",
+            "type": "regular",
+            "iscommand": true,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "8"
+            ]
+        },
+        "scriptarguments": {
+            "body": {
+                "simple": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.incident.reporteremailaddress; var reporter = val.incident.reporteremailaddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've concluded that the email you forwarded to us is safe. In case you think the verdict is not accurate and the email is suspicious, please contact our SOC team.\nThank you for your alertness and your participation in keeping our organization secure.\n\nCordially,\n  Your security team"
+            },
+            "subject": {
+                "simple": "Re: Phishing Investigation - ${incident.name}"
+            },
+            "to": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "reporteremailaddress"
+                }
+            }
+        },
+        "reputationcalc": 1,
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -1230,\n    \"y\": 3610\n  }\n}",
+        "note": false,
+        "timertriggers": [
+            {
+                "fieldname": "detectionsla",
+                "action": "stop"
+            }
+        ],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_18": {
+        "id": "18",
+        "taskid": "22acf235-b57c-4f78-8786-892dda955719",
+        "type": "title",
+        "task": {
+            "id": "22acf235-b57c-4f78-8786-892dda955719",
+            "version": -1,
+            "name": "Engage with User",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "53"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 300\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_22": {
+        "id": "22",
+        "taskid": "4ffd4fc5-c549-406b-8d6d-7f6a613a6c80",
+        "type": "playbook",
+        "task": {
+            "id": "4ffd4fc5-c549-406b-8d6d-7f6a613a6c80",
+            "version": -1,
+            "name": "Detonate File - Generic",
+            "playbookName": "Detonate File - Generic",
+            "type": "playbook",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "52"
+            ]
+        },
+        "separatecontext": true,
+        "view": "{\n  \"position\": {\n    \"x\": 197.5,\n    \"y\": 615\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_26": {
+        "id": "26",
+        "taskid": "19d93ccc-6334-4947-84c3-67b3636948df",
+        "type": "playbook",
+        "task": {
+            "id": "19d93ccc-6334-4947-84c3-67b3636948df",
+            "version": -1,
+            "name": "Process Email - Generic v2",
+            "description": "This playbook adds email details to the relevant context entities and handles original email attachments.\n\nThe v2 playbook enables parsing email artifacts more efficiently, including:\n- Using incident fields and not incident labels.\n- Providing separate paths to \"Phishing Alerts\".\n- Using the new \"Get Original Email - Generic v2\" playbook to retrieve original emails as EML files from the following integrations:\n  * EWS v2\n  * Microsoft Graph Mail integration\n  * Gmail\n  * FireEye EX and FireEye CM\n  * Proofpoint Protection Server\n  * Agari Phishing Defense (EWS v2, MSGraph Mail, Gmail)\n  * Mimecast\n",
+            "playbookName": "Process Email - Generic v2",
+            "type": "playbook",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "55",
+                "22",
+                "88",
+                "137"
+            ]
+        },
+        "scriptarguments": {
+            "Email": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailto"
+                }
+            },
+            "EmailCC": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailcc"
+                }
+            },
+            "EmailFileToExtract": {
+                "complex": {
+                    "root": "inputs.EmailFileToExtract"
+                }
+            },
+            "EmailFormat": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailformat"
+                }
+            },
+            "EmailFrom": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailfrom"
+                }
+            },
+            "EmailHeaders": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "phishingreporteremailheaders"
+                }
+            },
+            "EmailHtml": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailhtml"
+                }
+            },
+            "EmailSubject": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailsubject"
+                }
+            },
+            "EmailText": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailbody"
+                }
+            },
+            "File": {
+                "complex": {
+                    "root": "File"
+                }
+            },
+            "GetOriginalEmail": {
+                "complex": {
+                    "root": "inputs.GetOriginalEmail"
+                }
+            },
+            "MessageID": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailmessageid"
+                }
+            },
+            "Thread-Topic": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailsubject"
+                }
+            },
+            "UserID": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "reporteremailaddress"
+                }
+            }
+        },
+        "separatecontext": true,
+        "view": "{\n  \"position\": {\n    \"x\": -497.5,\n    \"y\": 440\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_27": {
+        "id": "27",
+        "taskid": "4905affa-7530-4f62-869d-d5066f89c54b",
+        "type": "title",
+        "task": {
+            "id": "4905affa-7530-4f62-869d-d5066f89c54b",
+            "version": -1,
+            "name": "Remediation",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "97",
+                "98",
+                "99"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 352.5,\n    \"y\": 3850\n  }\n}",
+        "note": false,
+        "timertriggers": [
+            {
+                "fieldname": "remediationsla",
+                "action": "start"
+            }
+        ],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_28": {
+        "id": "28",
+        "taskid": "f0a914bc-d536-4578-84f2-d001f9ea3b8f",
+        "type": "playbook",
+        "task": {
+            "id": "f0a914bc-d536-4578-84f2-d001f9ea3b8f",
+            "version": -1,
+            "name": "Search And Delete Emails - Generic v2",
+            "description": "This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations: * EWS * Office 365 * Gmail * Agari Phishing Defense",
+            "playbookName": "Search And Delete Emails - Generic v2",
+            "type": "playbook",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "43"
+            ]
+        },
+        "scriptarguments": {
+            "AttachmentName": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "attachmentname"
+                }
+            },
+            "From": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "reportedemailfrom",
+                    "transformers": [
+                        {
+                            "operator": "ExtractEmailTransformer"
+                        }
+                    ]
+                }
+            },
+            "O365AllowNotFoundExchangeLocations\n": {
+                "simple": "false"
+            },
+            "O365DeleteType": {
+                "complex": {
+                    "root": "inputs.O365DeleteType"
+                }
+            },
+            "O365Description": {
+                "simple": "Search for potential phishing"
+            },
+            "O365ExchangeLocation": {
+                "complex": {
+                    "root": ".",
+                    "transformers": [
+                        {
+                            "operator": "If-Then-Else",
+                            "args": {
+                                "condition": {
+                                    "value": {
+                                        "simple": "lhs==rhs"
+                                    }
+                                },
+                                "else": {
+                                    "value": {
+                                        "simple": "incident.reportedemailto"
+                                    },
+                                    "iscontext": true
+                                },
+                                "equals": {},
+                                "lhs": {
+                                    "value": {
+                                        "simple": "inputs.O365ExchangeLocation"
+                                    },
+                                    "iscontext": true
+                                },
+                                "options": {},
+                                "rhs": {
+                                    "value": {
+                                        "simple": "All"
+                                    }
+                                },
+                                "then": {
+                                    "value": {
+                                        "simple": "All"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "O365ExchangeLocationExclusion": {
+                "complex": {
+                    "root": "inputs.O365ExchangeLocationExclusion"
+                }
+            },
+            "O365KQL": {
+                "simple": "from:${incident.reportedemailfrom} AND subject:${incident.reportedemailsubject}"
+            },
+            "SearchAndDeleteIntegration": {
+                "complex": {
+                    "root": "inputs.SearchAndDeleteIntegration"
+                }
+            },
+            "SearchThisWeek": {
+                "simple": "true"
+            },
+            "Subject": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailsubject"
+                }
+            },
+            "To": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailto"
+                }
+            }
+        },
+        "separatecontext": true,
+        "loop": {
+            "iscommand": false,
+            "exitCondition": "",
+            "wait": 1,
+            "max": 100
+        },
+        "view": "{\n  \"position\": {\n    \"x\": 352.5,\n    \"y\": 4805\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_29": {
+        "id": "29",
+        "taskid": "828b23a9-1c88-44ed-85ee-6fdcb892496a",
+        "type": "title",
+        "task": {
+            "id": "828b23a9-1c88-44ed-85ee-6fdcb892496a",
+            "version": -1,
+            "name": "Done",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -897.5,\n    \"y\": 5365\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_30": {
+        "id": "30",
+        "taskid": "2b844949-4f2a-4663-8152-8c11b41c290a",
+        "type": "title",
+        "task": {
+            "id": "2b844949-4f2a-4663-8152-8c11b41c290a",
+            "version": -1,
+            "name": "Email Is Malicious",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "149"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 2910\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_31": {
+        "id": "31",
+        "taskid": "0e005247-eb1b-4512-8674-7717c90104dd",
+        "type": "title",
+        "task": {
+            "id": "0e005247-eb1b-4512-8674-7717c90104dd",
+            "version": -1,
+            "name": "Undetermined",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "7"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -770,\n    \"y\": 2910\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_33": {
+        "id": "33",
+        "taskid": "1f049b2b-ba22-45c2-8330-93acbd3850ef",
+        "type": "condition",
+        "task": {
+            "id": "1f049b2b-ba22-45c2-8330-93acbd3850ef",
+            "version": -1,
+            "name": "Is the email malicious?",
+            "description": "Is the email that the user reported malicious?",
+            "type": "condition",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "No": [
+                "151"
+            ],
+            "yes": [
+                "149"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -770,\n    \"y\": 3220\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_34": {
+        "id": "34",
+        "taskid": "3be84614-c9e3-436c-8d1e-96920a53e250",
+        "type": "regular",
+        "task": {
+            "id": "3be84614-c9e3-436c-8d1e-96920a53e250",
+            "version": -1,
+            "name": "Manually remediate  the incident",
+            "description": "To manually remediate a phishing incident you need to:\n1. Search for and delete similar emails.\n2. Inform the organization about the threat.\n3. Hunt relevant IOCs.\n4. Update proxies and firewalls as necessary.\n5. Block the malicious sender/domain in the mail-gateway. ",
+            "type": "regular",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "43"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -250,\n    \"y\": 4180\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_36": {
+        "id": "36",
+        "taskid": "f0762650-4a77-49d2-8030-64061db72ac0",
+        "type": "condition",
+        "task": {
+            "id": "f0762650-4a77-49d2-8030-64061db72ac0",
+            "version": -1,
+            "name": "Should emails be searched and deleted?",
+            "description": "Checks whether the **SearchAndDelete** playbook input is set to True.",
+            "type": "condition",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#default#": [
+                "43"
+            ],
+            "Yes": [
+                "152"
+            ]
+        },
+        "separatecontext": false,
+        "conditions": [
+            {
+                "label": "Yes",
+                "condition": [
+                    [
+                        {
+                            "operator": "isEqualString",
+                            "left": {
+                                "value": {
+                                    "simple": "inputs.SearchAndDelete"
+                                },
+                                "iscontext": true
+                            },
+                            "right": {
+                                "value": {
+                                    "simple": "True"
+                                }
+                            },
+                            "ignorecase": true
+                        }
+                    ]
+                ]
+            }
+        ],
+        "view": "{\n  \"position\": {\n    \"x\": 352.5,\n    \"y\": 4180\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_37": {
+        "id": "37",
+        "taskid": "e7a7fd40-2e9e-4560-85c9-f67161231e82",
+        "type": "condition",
+        "task": {
+            "id": "e7a7fd40-2e9e-4560-85c9-f67161231e82",
+            "version": -1,
+            "name": "Should indicators be blocked automatically?",
+            "description": "Checks whether the **BlockIndicators** playbook input is set to True.",
+            "type": "condition",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#default#": [
+                "43"
+            ],
+            "yes": [
+                "91"
+            ]
+        },
+        "separatecontext": false,
+        "conditions": [
+            {
+                "label": "yes",
+                "condition": [
+                    [
+                        {
+                            "operator": "isExists",
+                            "left": {
+                                "value": {
+                                    "complex": {
+                                        "root": "inputs.BlockIndicators",
+                                        "filters": [
+                                            [
+                                                {
+                                                    "operator": "isEqualString",
+                                                    "left": {
+                                                        "value": {
+                                                            "simple": "inputs.BlockIndicators"
+                                                        },
+                                                        "iscontext": true
+                                                    },
+                                                    "right": {
+                                                        "value": {
+                                                            "simple": "True"
+                                                        }
+                                                    },
+                                                    "ignorecase": true
+                                                }
+                                            ]
+                                        ]
+                                    }
+                                },
+                                "iscontext": true
+                            }
+                        }
+                    ]
+                ]
+            }
+        ],
+        "view": "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 4180\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_39": {
+        "id": "39",
+        "taskid": "7f572705-6406-4e7f-8eca-be825d5205b8",
+        "type": "title",
+        "task": {
+            "id": "7f572705-6406-4e7f-8eca-be825d5205b8",
+            "version": -1,
+            "name": "Start Detection Timer",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "147"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -497.5,\n    \"y\": -570\n  }\n}",
+        "note": false,
+        "timertriggers": [
+            {
+                "fieldname": "detectionsla",
+                "action": "start"
+            }
+        ],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_43": {
+        "id": "43",
+        "taskid": "7e8e9dd5-d8bf-49b1-8f93-23dc2d35b8eb",
+        "type": "title",
+        "task": {
+            "id": "7e8e9dd5-d8bf-49b1-8f93-23dc2d35b8eb",
+            "version": -1,
+            "name": "Stop Remediation Timer",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "8"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": 5040\n  }\n}",
+        "note": false,
+        "timertriggers": [
+            {
+                "fieldname": "remediationsla",
+                "action": "stop"
+            }
+        ],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_52": {
+        "id": "52",
+        "taskid": "389b4de3-6d86-4e74-897c-3fcf2df5463d",
+        "type": "title",
+        "task": {
+            "id": "389b4de3-6d86-4e74-897c-3fcf2df5463d",
+            "version": -1,
+            "name": "Indicator Enrichment",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "92"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 1130\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_53": {
+        "id": "53",
+        "taskid": "d4949505-803c-409b-8681-f30e6bc9bcbb",
+        "type": "playbook",
+        "task": {
+            "id": "d4949505-803c-409b-8681-f30e6bc9bcbb",
+            "version": -1,
+            "name": "Email Address Enrichment - Generic v2.1",
+            "description": "Enrich email addresses.\n- Get information from Active Directory for internal addresses.\n- Get the domain-squatting reputation for external addresses.",
+            "playbookName": "Email Address Enrichment - Generic v2.1",
+            "type": "playbook",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "13"
+            ]
+        },
+        "scriptarguments": {
+            "Domain": {
+                "simple": " "
+            },
+            "Email": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "reporteremailaddress",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "InternalDomains": {
+                "complex": {
+                    "root": "inputs.InternalDomains",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            }
+        },
+        "separatecontext": true,
+        "loop": {
+            "iscommand": false,
+            "exitCondition": "",
+            "wait": 1,
+            "max": 0
+        },
+        "view": "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 450\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_55": {
+        "id": "55",
+        "taskid": "6b30366b-980c-4529-8823-dd21e6d4dfff",
+        "type": "playbook",
+        "task": {
+            "id": "6b30366b-980c-4529-8823-dd21e6d4dfff",
+            "version": -1,
+            "name": "Extract Indicators From File - Generic v2",
+            "description": "This playbook extracts indicators from a file.\nSupported file types:\n- CSV\n- PDF\n- TXT\n- HTM, HTML\n- DOC, DOCX\n- PPT\n- PPTX\n- RTF\n- XLS\n- XLSX\n- XML",
+            "playbookName": "Extract Indicators From File - Generic v2",
+            "type": "playbook",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "52",
+                "143"
+            ]
+        },
+        "separatecontext": true,
+        "view": "{\n  \"position\": {\n    \"x\": -727.5,\n    \"y\": 615\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_56": {
+        "id": "56",
+        "taskid": "13e831d2-431e-4927-814f-b4fa631f51cf",
+        "type": "title",
+        "task": {
+            "id": "13e831d2-431e-4927-814f-b4fa631f51cf",
+            "version": -1,
+            "name": "Investigation",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "101",
+                "80",
+                "131"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 1480\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_79": {
+        "id": "79",
+        "taskid": "991adce8-f301-48b8-8fce-460c9e0756f6",
+        "type": "condition",
+        "task": {
+            "id": "991adce8-f301-48b8-8fce-460c9e0756f6",
+            "version": -1,
+            "name": "Should the email be authenticated?",
+            "description": "Checks whether the email should be authenticated using DKIM, SPF, and DMARC. This checks if \"AuthenticateEmail\" output is set to \"True\" and if there are headers from an email to authenticate.",
+            "type": "condition",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#default#": [
+                "84"
+            ],
+            "yes": [
+                "82"
+            ]
+        },
+        "separatecontext": false,
+        "conditions": [
+            {
+                "label": "yes",
+                "condition": [
+                    [
+                        {
+                            "operator": "isEqualString",
+                            "left": {
+                                "value": {
+                                    "simple": "inputs.AuthenticateEmail"
+                                },
+                                "iscontext": true
+                            },
+                            "right": {
+                                "value": {
+                                    "simple": "True"
+                                }
+                            },
+                            "ignorecase": true
+                        }
+                    ],
+                    [
+                        {
+                            "operator": "isExists",
+                            "left": {
+                                "value": {
+                                    "complex": {
+                                        "root": "Email",
+                                        "accessor": "HeadersMap"
+                                    }
+                                },
+                                "iscontext": true
+                            }
+                        }
+                    ]
+                ]
+            }
+        ],
+        "view": "{\n  \"position\": {\n    \"x\": 390,\n    \"y\": 1765\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_80": {
+        "id": "80",
+        "taskid": "d4e9aa9c-3bfc-4e4f-8a75-8e8a112f0b93",
+        "type": "title",
+        "task": {
+            "id": "d4e9aa9c-3bfc-4e4f-8a75-8e8a112f0b93",
+            "version": -1,
+            "name": "Email Authenticity Check",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "79"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 390,\n    \"y\": 1620\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_82": {
+        "id": "82",
+        "taskid": "442a2d4c-6537-4098-8a36-76d8783c6c25",
+        "type": "regular",
+        "task": {
+            "id": "442a2d4c-6537-4098-8a36-76d8783c6c25",
+            "version": -1,
+            "name": "Authenticate email",
+            "description": "Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM.",
+            "scriptName": "CheckEmailAuthenticity",
+            "type": "regular",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "83"
+            ]
+        },
+        "scriptarguments": {
+            "headers": {
+                "complex": {
+                    "root": "Email",
+                    "accessor": "Headers",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            }
+        },
+        "reputationcalc": 1,
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 392.5,\n    \"y\": 1950\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_83": {
+        "id": "83",
+        "taskid": "95d0d3be-5770-442e-884c-8f5c6ca4394f",
+        "type": "regular",
+        "task": {
+            "id": "95d0d3be-5770-442e-884c-8f5c6ca4394f",
+            "version": -1,
+            "name": "Save authenticity check result to incident field",
+            "description": "Saves the email authenticity verdict in an incident field.",
+            "script": "Builtin|||setIncident",
+            "type": "regular",
+            "iscommand": true,
+            "brand": "Builtin"
+        },
+        "nexttasks": {
+            "#none#": [
+                "84"
+            ]
+        },
+        "scriptarguments": {
+            "emailauthenticitycheck": {
+                "complex": {
+                    "root": "Email",
+                    "accessor": "AuthenticityCheck",
+                    "transformers": [
+                        {
+                            "operator": "replace",
+                            "args": {
+                                "limit": {},
+                                "replaceWith": {
+                                    "value": {
+                                        "simple": "Undetermined"
+                                    }
+                                },
+                                "toReplace": {
+                                    "value": {
+                                        "simple": "undetermined"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "operator": "replace",
+                            "args": {
+                                "limit": {},
+                                "replaceWith": {
+                                    "value": {
+                                        "simple": "Pass"
+                                    }
+                                },
+                                "toReplace": {
+                                    "value": {
+                                        "simple": "pass"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "operator": "replace",
+                            "args": {
+                                "limit": {},
+                                "replaceWith": {
+                                    "value": {
+                                        "simple": "Fail"
+                                    }
+                                },
+                                "toReplace": {
+                                    "value": {
+                                        "simple": "fail"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "operator": "replace",
+                            "args": {
+                                "limit": {},
+                                "replaceWith": {
+                                    "value": {
+                                        "simple": "Suspicious"
+                                    }
+                                },
+                                "toReplace": {
+                                    "value": {
+                                        "simple": "suspicious"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "reputationcalc": 1,
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 392.5,\n    \"y\": 2145\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_84": {
+        "id": "84",
+        "taskid": "941a16db-d34e-4100-8083-66d74c83e595",
+        "type": "playbook",
+        "task": {
+            "id": "941a16db-d34e-4100-8083-66d74c83e595",
+            "version": -1,
+            "name": "Calculate Severity - Generic v2",
+            "playbookName": "Calculate Severity - Generic v2",
+            "type": "playbook",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "2"
+            ]
+        },
+        "separatecontext": true,
+        "view": "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 2350\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_85": {
+        "id": "85",
+        "taskid": "8581d7d0-475c-454d-8a14-417bc250825b",
+        "type": "regular",
+        "task": {
+            "id": "8581d7d0-475c-454d-8a14-417bc250825b",
+            "version": -1,
+            "name": "Save reporter email address in field",
+            "description": "Saves the email address of the email reporter in an incident field.",
+            "script": "Builtin|||setIncident",
+            "type": "regular",
+            "iscommand": true,
+            "brand": "Builtin"
+        },
+        "nexttasks": {
+            "#none#": [
+                "18",
+                "11"
+            ]
+        },
+        "scriptarguments": {
+            "reporteremailaddress": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailfrom",
+                    "transformers": [
+                        {
+                            "operator": "ExtractEmailTransformer"
+                        }
+                    ]
+                }
+            }
+        },
+        "reputationcalc": 1,
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -497.5,\n    \"y\": 85\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_87": {
+        "id": "87",
+        "taskid": "bd41a165-d0e6-4798-8e02-c0a530b274d9",
+        "type": "regular",
+        "task": {
+            "id": "bd41a165-d0e6-4798-8e02-c0a530b274d9",
+            "version": -1,
+            "name": "Predict phishing type using pre-trained phishing model",
+            "description": "Predicts the specific phishing mail type using a pre-trained machine learning model, and highlights the most important words used in the classification decision.",
+            "scriptName": "DBotPredictPhishingWords",
+            "type": "regular",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "90"
+            ]
+        },
+        "scriptarguments": {
+            "emailBody": {
+                "complex": {
+                    "root": "Email",
+                    "accessor": "Text",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "emailBodyHTML": {
+                "complex": {
+                    "root": "Email",
+                    "accessor": "HTML",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "emailSubject": {
+                "complex": {
+                    "root": "Email",
+                    "accessor": "Subject",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "modelName": {
+                "complex": {
+                    "root": "inputs.PhishingModelName"
+                }
+            },
+            "returnError": {
+                "simple": "false"
+            }
+        },
+        "reputationcalc": 1,
+        "continueonerror": true,
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -1832.5,\n    \"y\": 1005\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_88": {
+        "id": "88",
+        "taskid": "b12d61c1-f30b-49d8-8e25-07a83ffb06d6",
+        "type": "title",
+        "task": {
+            "id": "b12d61c1-f30b-49d8-8e25-07a83ffb06d6",
+            "version": -1,
+            "name": "Machine Learning",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "142",
+                "143"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -1522.5,\n    \"y\": 615\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_89": {
+        "id": "89",
+        "taskid": "d906c498-607e-47c1-87ee-dc15f246665d",
+        "type": "regular",
+        "task": {
+            "id": "d906c498-607e-47c1-87ee-dc15f246665d",
+            "version": -1,
+            "name": "Update incident with predictions",
+            "description": "Updates incident fields with the machine learning phishing model predictions.",
+            "script": "Builtin|||setIncident",
+            "type": "regular",
+            "iscommand": true,
+            "brand": "Builtin"
+        },
+        "nexttasks": {
+            "#none#": [
+                "84"
+            ]
+        },
+        "scriptarguments": {
+            "dbotprediction": {
+                "complex": {
+                    "root": "DBotPredictPhishingWords",
+                    "accessor": "Label",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "dbotpredictionprobability": {
+                "complex": {
+                    "root": "DBotPredictPhishingWords",
+                    "accessor": "Probability",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "dbottextsuggestionhighlighted": {
+                "complex": {
+                    "root": "DBotPredictPhishingWords",
+                    "accessor": "TextTokensHighlighted",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            }
+        },
+        "reputationcalc": 1,
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -1572.5,\n    \"y\": 1465\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_90": {
+        "id": "90",
+        "taskid": "945447ab-cc25-42b8-844c-a0d30c09834e",
+        "type": "condition",
+        "task": {
+            "id": "945447ab-cc25-42b8-844c-a0d30c09834e",
+            "version": -1,
+            "name": "Did the model predict the phishing type?",
+            "description": "Checks whether the model predicted the phishing type.",
+            "type": "condition",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#default#": [
+                "84"
+            ],
+            "yes": [
+                "89"
+            ]
+        },
+        "separatecontext": false,
+        "conditions": [
+            {
+                "label": "yes",
+                "condition": [
+                    [
+                        {
+                            "operator": "isNotEmpty",
+                            "left": {
+                                "value": {
+                                    "complex": {
+                                        "root": "DBotPredictPhishingWords",
+                                        "accessor": "Label"
+                                    }
+                                },
+                                "iscontext": true
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "operator": "isNotEmpty",
+                            "left": {
+                                "value": {
+                                    "complex": {
+                                        "root": "DBotPredictPhishingWords",
+                                        "accessor": "Probability"
+                                    }
+                                },
+                                "iscontext": true
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "operator": "isNotEmpty",
+                            "left": {
+                                "value": {
+                                    "complex": {
+                                        "root": "DBotPredictPhishingWords",
+                                        "accessor": "TextTokensHighlighted"
+                                    }
+                                },
+                                "iscontext": true
+                            }
+                        }
+                    ]
+                ]
+            }
+        ],
+        "view": "{\n  \"position\": {\n    \"x\": -1832.5,\n    \"y\": 1235\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_91": {
+        "id": "91",
+        "taskid": "7cd06dea-8fac-47cc-809b-427c05e21ce1",
+        "type": "playbook",
+        "task": {
+            "id": "7cd06dea-8fac-47cc-809b-427c05e21ce1",
+            "version": -1,
+            "name": "Block Indicators - Generic v2",
+            "description": "This playbook blocks malicious indicators using all enabled integrations, with the following sub-playbooks:\n\n- Block URL - Generic\n- Block Account - Generic\n- Block IP - Generic v2\n- Block File - Generic v2\n\n",
+            "playbookName": "Block Indicators - Generic v2",
+            "type": "playbook",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "43"
+            ]
+        },
+        "scriptarguments": {
+            "AutoCommit": {
+                "simple": "No"
+            },
+            "CustomBlockRule": {
+                "simple": "True"
+            },
+            "EmailToBlock": {
+                "complex": {
+                    "root": "DBotScore",
+                    "filters": [
+                        [
+                            {
+                                "operator": "isEqualString",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Type"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "email"
+                                    }
+                                },
+                                "ignorecase": true
+                            }
+                        ],
+                        [
+                            {
+                                "operator": "greaterThanOrEqual",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Score"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "3"
+                                    }
+                                }
+                            }
+                        ]
+                    ],
+                    "accessor": "Indicator",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "IP": {
+                "complex": {
+                    "root": "DBotScore",
+                    "filters": [
+                        [
+                            {
+                                "operator": "isEqualString",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Type"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "ip"
+                                    }
+                                },
+                                "ignorecase": true
+                            }
+                        ],
+                        [
+                            {
+                                "operator": "greaterThanOrEqual",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Score"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "3"
+                                    }
+                                }
+                            }
+                        ]
+                    ],
+                    "accessor": "Indicator",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "MD5": {
+                "complex": {
+                    "root": "DBotScore",
+                    "filters": [
+                        [
+                            {
+                                "operator": "stringHasLength",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Indicator"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "32"
+                                    }
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                "operator": "greaterThanOrEqual",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Score"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "3"
+                                    }
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                "operator": "isEqualString",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Type"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "file"
+                                    }
+                                },
+                                "ignorecase": true
+                            },
+                            {
+                                "operator": "isEqualString",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Type"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "hash"
+                                    }
+                                },
+                                "ignorecase": true
+                            }
+                        ]
+                    ],
+                    "accessor": "Indicator",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "SHA256": {
+                "complex": {
+                    "root": "DBotScore",
+                    "filters": [
+                        [
+                            {
+                                "operator": "stringHasLength",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Indicator"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "64"
+                                    }
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                "operator": "greaterThanOrEqual",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Score"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "3"
+                                    }
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                "operator": "isEqualString",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Type"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "file"
+                                    }
+                                },
+                                "ignorecase": true
+                            },
+                            {
+                                "operator": "isEqualString",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Type"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "hash"
+                                    }
+                                },
+                                "ignorecase": true
+                            }
+                        ]
+                    ],
+                    "accessor": "Indicator",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "URL": {
+                "complex": {
+                    "root": "DBotScore",
+                    "filters": [
+                        [
+                            {
+                                "operator": "isEqualString",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Type"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "url"
+                                    }
+                                },
+                                "ignorecase": true
+                            }
+                        ],
+                        [
+                            {
+                                "operator": "greaterThanOrEqual",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Score"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "3"
+                                    }
+                                }
+                            }
+                        ]
+                    ],
+                    "accessor": "Indicator",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "Username": {
+                "complex": {
+                    "root": "DBotScore",
+                    "filters": [
+                        [
+                            {
+                                "operator": "isEqualString",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Type"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "username"
+                                    }
+                                },
+                                "ignorecase": true
+                            }
+                        ],
+                        [
+                            {
+                                "operator": "greaterThanOrEqual",
+                                "left": {
+                                    "value": {
+                                        "simple": "DBotScore.Score"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "3"
+                                    }
+                                }
+                            }
+                        ]
+                    ],
+                    "accessor": "Indicator",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            }
+        },
+        "separatecontext": true,
+        "loop": {
+            "iscommand": false,
+            "exitCondition": "",
+            "wait": 1,
+            "max": 0
+        },
+        "view": "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 4765\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_92": {
+        "id": "92",
+        "taskid": "57931df0-123d-4082-8ef1-4fde3fcbf988",
+        "type": "playbook",
+        "task": {
+            "id": "57931df0-123d-4082-8ef1-4fde3fcbf988",
+            "version": -1,
+            "name": "Entity Enrichment - Phishing v2",
+            "description": "Enrich entities using one or more integrations.",
+            "playbookName": "Entity Enrichment - Phishing v2",
+            "type": "playbook",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "56"
+            ]
+        },
+        "scriptarguments": {
+            "Domain": {
+                "complex": {
+                    "root": "Domain",
+                    "accessor": "Name",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "Email": {
+                "complex": {
+                    "root": "Account.Email.Address",
+                    "filters": [
+                        [
+                            {
+                                "operator": "isNotEqualString",
+                                "left": {
+                                    "value": {
+                                        "simple": "Account.Email.Address"
+                                    },
+                                    "iscontext": true
+                                },
+                                "right": {
+                                    "value": {
+                                        "simple": "incident.reporteremailaddress"
+                                    },
+                                    "iscontext": true
+                                }
+                            }
+                        ]
+                    ],
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "Hostname": {
+                "complex": {
+                    "root": "Endpoint",
+                    "accessor": "Hostname",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "IP": {
+                "complex": {
+                    "root": "IP",
+                    "accessor": "Address",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "InternalDomains": {
+                "complex": {
+                    "root": "inputs.InternalDomains"
+                }
+            },
+            "InternalRange": {
+                "complex": {
+                    "root": "inputs.InternalRange"
+                }
+            },
+            "MD5": {
+                "complex": {
+                    "root": "File",
+                    "accessor": "MD5",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "ResolveIP": {
+                "simple": "False"
+            },
+            "SHA1": {
+                "complex": {
+                    "root": "File",
+                    "accessor": "SHA1",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "SHA256": {
+                "complex": {
+                    "root": "File",
+                    "accessor": "SHA256",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "URL": {
+                "complex": {
+                    "root": "URL",
+                    "accessor": "Data",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            },
+            "Username": {
+                "complex": {
+                    "root": "Account",
+                    "accessor": "Username",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            }
+        },
+        "separatecontext": true,
+        "view": "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 1270\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_97": {
+        "id": "97",
+        "taskid": "8990d67e-e453-42cc-8920-031efeaef405",
+        "type": "title",
+        "task": {
+            "id": "8990d67e-e453-42cc-8920-031efeaef405",
+            "version": -1,
+            "name": "Block Indicators",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "37"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 4040\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_98": {
+        "id": "98",
+        "taskid": "da2a3bb1-52b6-42bd-8d39-00572dc998ff",
+        "type": "title",
+        "task": {
+            "id": "da2a3bb1-52b6-42bd-8d39-00572dc998ff",
+            "version": -1,
+            "name": "Search & Delete Email",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "36"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 352.5,\n    \"y\": 4040\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_99": {
+        "id": "99",
+        "taskid": "31f66049-7772-4d2e-858b-a3fa59232296",
+        "type": "title",
+        "task": {
+            "id": "31f66049-7772-4d2e-858b-a3fa59232296",
+            "version": -1,
+            "name": "Manual Remediation",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "34"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -250,\n    \"y\": 4040\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_101": {
+        "id": "101",
+        "taskid": "0c94b64e-114d-4804-83ad-2d8f1b471e85",
+        "type": "title",
+        "task": {
+            "id": "0c94b64e-114d-4804-83ad-2d8f1b471e85",
+            "version": -1,
+            "name": "Email Campaign Search",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "126"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 1620\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_126": {
+        "id": "126",
+        "taskid": "26f3e34a-0db6-4961-854f-78a5b566ae72",
+        "type": "playbook",
+        "task": {
+            "id": "26f3e34a-0db6-4961-854f-78a5b566ae72",
+            "version": -1,
+            "name": "Detect & Manage Phishing Campaigns",
+            "description": "This playbook is used to find, create, and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to:\n1. Find and tie together incidents that are related to the same phishing attack (a phishing campaign).\n2. Search for an existing Phishing Campaign incident or create a new one for the tied phishing incidents.\n3. Link all detected phishing incidents to the Phishing Campaign incident that was found or created previously.\n4. Update the Phishing Campaign incident with the latest data about the campaign, and update all related phishing incidents to indicate that they are part of the campaign.",
+            "playbookName": "Detect & Manage Phishing Campaigns",
+            "type": "playbook",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "84"
+            ]
+        },
+        "scriptarguments": {
+            "AutomaticallyLinkIncidents": {
+                "simple": "True"
+            }
+        },
+        "separatecontext": true,
+        "loop": {
+            "iscommand": false,
+            "exitCondition": "",
+            "wait": 1,
+            "max": 100
+        },
+        "view": "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 1755\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": true,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_131": {
+        "id": "131",
+        "taskid": "15ef4fbb-00ea-4712-8bd5-f271ca9adbe7",
+        "type": "title",
+        "task": {
+            "id": "15ef4fbb-00ea-4712-8bd5-f271ca9adbe7",
+            "version": -1,
+            "name": "Microsoft's Headers Check",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "132"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -907.5,\n    \"y\": 1620\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_132": {
+        "id": "132",
+        "taskid": "374e403a-75c8-456c-8ebf-e76f33c3d501",
+        "type": "condition",
+        "task": {
+            "id": "374e403a-75c8-456c-8ebf-e76f33c3d501",
+            "version": -1,
+            "name": "Check Microsoft's Headers?",
+            "description": "Whether to check Microsoft's proprietary email headers.",
+            "type": "condition",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#default#": [
+                "84"
+            ],
+            "yes": [
+                "133"
+            ]
+        },
+        "separatecontext": false,
+        "conditions": [
+            {
+                "label": "yes",
+                "condition": [
+                    [
+                        {
+                            "operator": "isEqualString",
+                            "left": {
+                                "value": {
+                                    "simple": "inputs.CheckMicrosoftHeaders"
+                                },
+                                "iscontext": true
+                            },
+                            "right": {
+                                "value": {
+                                    "simple": "True"
+                                }
+                            }
+                        }
+                    ]
+                ]
+            }
+        ],
+        "view": "{\n  \"position\": {\n    \"x\": -907.5,\n    \"y\": 1755\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_133": {
+        "id": "133",
+        "taskid": "3851c221-dae8-4730-8740-fbb041c24fa5",
+        "type": "playbook",
+        "task": {
+            "id": "3851c221-dae8-4730-8740-fbb041c24fa5",
+            "version": -1,
+            "name": "Process Microsoft's Anti-Spam Headers",
+            "description": "This playbook stores the SCL, BCL, and PCL scores if they exist to the associated incident fields (Phishing SCL Score, Phishing PCL Score, and Phishing BCL Score).\nIt also does the following:\n1) Sets the email classification to \"spam\" if the SCL score is equal to or greater than 5.\n2) Sets the incident severity according to the playbook inputs (default is: PCL/BCL - Medium, SCL - Low). The severity of the incident is set only when one (or more) of the following occurs:\n  - PCL (Phishing Confidence Level) score between and including 4-8: The message content is likely to be phishing.\n  - [BCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/bulk-complaint-level-values?view=o365-worldwide) (Bulk Complaint Level) score between and including 4-7: The message is from a bulk sender that generates a mixed number of complaints. \n    For a score between and including 8-9: The message is from a bulk sender that generates a high number of complaints.\n  - [SCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide) (Spam Confidence Level) score between and including 5-6: Spam filtering marks the message as spam. \n    For a score of 9: Spam filtering marks the message as high confidence spam. See [anti-spam stamps](https://docs.microsoft.com/en-us/exchange/antispam-and-antimalware/antispam-protection/antispam-stamps?view=exchserver-2019).",
+            "playbookName": "Process Microsoft's Anti-Spam Headers",
+            "type": "playbook",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "84"
+            ]
+        },
+        "separatecontext": true,
+        "view": "{\n  \"position\": {\n    \"x\": -907.5,\n    \"y\": 1950\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_135": {
+        "id": "135",
+        "taskid": "f87bb538-66f8-4c41-88df-55459d9ab5bc",
+        "type": "playbook",
+        "task": {
+            "id": "f87bb538-66f8-4c41-88df-55459d9ab5bc",
+            "version": -1,
+            "name": "Detonate URL - Generic",
+            "description": "This playbook detonates URLs using active integrations that support URL detonation.",
+            "playbookName": "Detonate URL - Generic",
+            "type": "playbook",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "52"
+            ]
+        },
+        "scriptarguments": {
+            "URL": {
+                "complex": {
+                    "root": "URL",
+                    "transformers": [
+                        {
+                            "operator": "uniq"
+                        }
+                    ]
+                }
+            }
+        },
+        "separatecontext": true,
+        "loop": {
+            "iscommand": false,
+            "exitCondition": "",
+            "wait": 1,
+            "max": 0
+        },
+        "view": "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 910\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_137": {
+        "id": "137",
+        "taskid": "80e1c4c2-b760-493f-8038-a5e7f9201cb2",
+        "type": "condition",
+        "task": {
+            "id": "80e1c4c2-b760-493f-8038-a5e7f9201cb2",
+            "version": -1,
+            "name": "Detonate URL?",
+            "description": "Whether to detonate URLs in supported sandboxes.",
+            "type": "condition",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#default#": [
+                "52"
+            ],
+            "yes": [
+                "135"
+            ]
+        },
+        "separatecontext": false,
+        "conditions": [
+            {
+                "label": "yes",
+                "condition": [
+                    [
+                        {
+                            "operator": "isEqualString",
+                            "left": {
+                                "value": {
+                                    "simple": "inputs.DetonateURL"
+                                },
+                                "iscontext": true
+                            },
+                            "right": {
+                                "value": {
+                                    "simple": "True"
+                                }
+                            },
+                            "ignorecase": true
+                        }
+                    ]
+                ]
+            }
+        ],
+        "view": "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 615\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_140": {
+        "id": "140",
+        "taskid": "8e768c46-611a-4178-8768-50cba9c5e4cc",
+        "type": "regular",
+        "task": {
+            "id": "8e768c46-611a-4178-8768-50cba9c5e4cc",
+            "version": -1,
+            "name": "Predict Phishing URLs",
+            "description": "Predicts phishing URLs using a pre-trained model.",
+            "scriptName": "DBotPredictURLPhishing",
+            "type": "regular",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "84"
+            ]
+        },
+        "scriptarguments": {
+            "emailHTML": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "emailhtml"
+                }
+            },
+            "maxNumberOfURL": {
+                "complex": {
+                    "root": "inputs.DBotPredictURLPhishingURLsNumber"
+                }
+            },
+            "urls": {
+                "complex": {
+                    "root": "ExtractedURLsFromFiles"
+                }
+            }
+        },
+        "reputationcalc": 2,
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -1230,\n    \"y\": 1005\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": true,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_142": {
+        "id": "142",
+        "taskid": "31191222-cab2-4a7f-8d17-ea36e1ff3e63",
+        "type": "title",
+        "task": {
+            "id": "31191222-cab2-4a7f-8d17-ea36e1ff3e63",
+            "version": -1,
+            "name": "Predict Phishing Type",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "87"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -1832.5,\n    \"y\": 795\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_143": {
+        "id": "143",
+        "taskid": "75bfc22a-3f9b-470d-8428-6f3a6e75404b",
+        "type": "title",
+        "task": {
+            "id": "75bfc22a-3f9b-470d-8428-6f3a6e75404b",
+            "version": -1,
+            "name": "Predict Phishing URLs",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "140"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -1230,\n    \"y\": 795\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_144": {
+        "id": "144",
+        "taskid": "0170cf97-120f-4f84-8bc6-f9f503b7ff6d",
+        "type": "title",
+        "task": {
+            "id": "0170cf97-120f-4f84-8bc6-f9f503b7ff6d",
+            "version": -1,
+            "name": "Incident Created Manually",
+            "type": "title",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "145"
+            ]
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": -70,\n    \"y\": -240\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_145": {
+        "id": "145",
+        "taskid": "eb43d263-9ede-4c65-8a30-a6e16820e5fa",
+        "type": "condition",
+        "task": {
+            "id": "eb43d263-9ede-4c65-8a30-a6e16820e5fa",
+            "version": -1,
+            "name": "Was the reporter of the phishing email specified?",
+            "description": "Checks whether the email address of the phishing email reporter was specified on incident creation, so that an acknowledgement email can be sent to them.",
+            "type": "condition",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#default#": [
+                "11"
+            ],
+            "yes": [
+                "85"
+            ]
+        },
+        "separatecontext": false,
+        "conditions": [
+            {
+                "label": "yes",
+                "condition": [
+                    [
+                        {
+                            "operator": "isNotEmpty",
+                            "left": {
+                                "value": {
+                                    "complex": {
+                                        "root": "incident",
+                                        "accessor": "reporteremailaddress"
+                                    }
+                                },
+                                "iscontext": true
+                            }
+                        }
+                    ]
+                ]
+            }
+        ],
+        "view": "{\n  \"position\": {\n    \"x\": -70,\n    \"y\": -105\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_147": {
+        "id": "147",
+        "taskid": "d3602e32-d12d-45b9-885b-0afaf411a2d4",
+        "type": "condition",
+        "task": {
+            "id": "d3602e32-d12d-45b9-885b-0afaf411a2d4",
+            "version": -1,
+            "name": "How was the incident created?",
+            "description": "Checks whether the incident came from a mail listener integration, or was created manually by the user.",
+            "type": "condition",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#default#": [
+                "85"
+            ],
+            "Manually": [
+                "144"
+            ]
+        },
+        "separatecontext": false,
+        "conditions": [
+            {
+                "label": "Manually",
+                "condition": [
+                    [
+                        {
+                            "operator": "isEqualString",
+                            "left": {
+                                "value": {
+                                    "complex": {
+                                        "root": "incident",
+                                        "accessor": "sourceBrand"
+                                    }
+                                },
+                                "iscontext": true
+                            },
+                            "right": {
+                                "value": {
+                                    "simple": "Manual"
+                                }
+                            }
+                        }
+                    ]
+                ]
+            }
+        ],
+        "view": "{\n  \"position\": {\n    \"x\": -497.5,\n    \"y\": -430\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_148": {
+        "id": "148",
+        "taskid": "1f203c1a-c68e-47c7-89b6-8097a041c2c3",
+        "type": "regular",
+        "task": {
+            "id": "1f203c1a-c68e-47c7-89b6-8097a041c2c3",
+            "version": -1,
+            "name": "Update the user that the reported email is malicious",
+            "description": "Sends an email to the user explaining that the email they reported is malicious.",
+            "script": "|||send-mail",
+            "type": "regular",
+            "iscommand": true,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "27"
+            ]
+        },
+        "scriptarguments": {
+            "body": {
+                "simple": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.incident.reporteremailaddress; var reporter = val.incident.reporteremailaddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've concluded that the email you forwarded to us is malicious. No further action is required on your part. Good job on detecting and forwarding it to us!\n\nAll the best,\n  Your security team"
+            },
+            "subject": {
+                "simple": "Re: Phishing Investigation - ${incident.name}"
+            },
+            "to": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "reporteremailaddress"
+                }
+            }
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 3620\n  }\n}",
+        "note": false,
+        "timertriggers": [
+            {
+                "fieldname": "detectionsla",
+                "action": "stop"
+            }
+        ],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_149": {
+        "id": "149",
+        "taskid": "75eca06d-d8a4-45e2-8149-31cd066d0aaa",
+        "type": "condition",
+        "task": {
+            "id": "75eca06d-d8a4-45e2-8149-31cd066d0aaa",
+            "version": -1,
+            "name": "Can the user be informed about the verdict?",
+            "description": "Checks whether the user can be informed about the verdict of the incident.",
+            "type": "condition",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#default#": [
+                "27"
+            ],
+            "yes - phishing": [
+                "148"
+            ],
+            "yes - phishing campaign": [
+                "150"
+            ]
+        },
+        "separatecontext": false,
+        "conditions": [
+            {
+                "label": "yes - phishing campaign",
+                "condition": [
+                    [
+                        {
+                            "operator": "isNotEmpty",
+                            "left": {
+                                "value": {
+                                    "complex": {
+                                        "root": "PartOfCampaign"
+                                    }
+                                },
+                                "iscontext": true
+                            },
+                            "right": {
+                                "value": {}
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "operator": "isNotEmpty",
+                            "left": {
+                                "value": {
+                                    "complex": {
+                                        "root": "incident",
+                                        "accessor": "reporteremailaddress"
+                                    }
+                                },
+                                "iscontext": true
+                            }
+                        }
+                    ]
+                ]
+            },
+            {
+                "label": "yes - phishing",
+                "condition": [
+                    [
+                        {
+                            "operator": "isNotEmpty",
+                            "left": {
+                                "value": {
+                                    "complex": {
+                                        "root": "incident",
+                                        "accessor": "reporteremailaddress"
+                                    }
+                                },
+                                "iscontext": true
+                            }
+                        }
+                    ]
+                ]
+            }
+        ],
+        "view": "{\n  \"position\": {\n    \"x\": 352.5,\n    \"y\": 3410\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_150": {
+        "id": "150",
+        "taskid": "1e301768-ac4f-43bc-8d2e-a2f0cfc39874",
+        "type": "regular",
+        "task": {
+            "id": "1e301768-ac4f-43bc-8d2e-a2f0cfc39874",
+            "version": -1,
+            "name": "Update the user that the email is a malicious campaign",
+            "description": "Sends an email to the user explaining that the email they reported is malicious.",
+            "script": "|||send-mail",
+            "type": "regular",
+            "iscommand": true,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#none#": [
+                "27"
+            ]
+        },
+        "scriptarguments": {
+            "body": {
+                "simple": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.incident.reporteremailaddress; var reporter = val.incident.reporteremailaddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've concluded that the email you forwarded to us is part of a bigger phishing campaign that targeted our company. No further action is required on your part. Good job on detecting and forwarding it to us!\n\nAll the best,\n  Your security team"
+            },
+            "subject": {
+                "simple": "Re: Phishing Investigation - ${incident.name}"
+            },
+            "to": {
+                "complex": {
+                    "root": "incident",
+                    "accessor": "reporteremailaddress"
+                }
+            }
+        },
+        "separatecontext": false,
+        "view": "{\n  \"position\": {\n    \"x\": 580,\n    \"y\": 3620\n  }\n}",
+        "note": false,
+        "timertriggers": [
+            {
+                "fieldname": "detectionsla",
+                "action": "stop"
+            }
+        ],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_151": {
+        "id": "151",
+        "taskid": "364c9853-e2d2-448e-8a67-bfd67632ecc9",
+        "type": "condition",
+        "task": {
+            "id": "364c9853-e2d2-448e-8a67-bfd67632ecc9",
+            "version": -1,
+            "name": "Can the user be informed about the verdict?",
+            "description": "Checks whether the user can be informed about the verdict of the incident.",
+            "type": "condition",
+            "iscommand": false,
+            "brand": ""
+        },
+        "nexttasks": {
+            "#default#": [
+                "8"
+            ],
+            "Yes": [
+                "16"
+            ]
+        },
+        "separatecontext": false,
+        "conditions": [
+            {
+                "label": "Yes",
+                "condition": [
+                    [
+                        {
+                            "operator": "isNotEmpty",
+                            "left": {
+                                "value": {
+                                    "complex": {
+                                        "root": "incident",
+                                        "accessor": "reporteremailaddress"
+                                    }
+                                },
+                                "iscontext": true
+                            },
+                            "right": {
+                                "value": {}
+                            }
+                        }
+                    ]
+                ]
+            }
+        ],
+        "view": "{\n  \"position\": {\n    \"x\": -897.5,\n    \"y\": 3410\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    },
+    "TASK_152": {
+        "id": "152",
+        "taskid": "eb6d4a67-11c9-4fb1-825e-aeb5ad70dc57",
+        "type": "condition",
+        "task": {
+            "id": "eb6d4a67-11c9-4fb1-825e-aeb5ad70dc57",
+            "version": -1,
+            "name": "Check if original email was retrieved",
+            "type": "condition",
+            "iscommand": false,
+            "brand": "",
+            "description": ""
+        },
+        "nexttasks": {
+            "#default#": [
+                "43"
+            ],
+            "yes": [
+                "28"
+            ]
+        },
+        "separatecontext": false,
+        "conditions": [
+            {
+                "label": "yes",
+                "condition": [
+                    [
+                        {
+                            "operator": "isNotEmpty",
+                            "left": {
+                                "value": {
+                                    "complex": {
+                                        "root": "incident",
+                                        "accessor": "reportedemailfrom"
+                                    }
+                                },
+                                "iscontext": true
+                            }
+                        }
+                    ]
+                ]
+            }
+        ],
+        "view": "{\n  \"position\": {\n    \"x\": 352.5,\n    \"y\": 4480\n  }\n}",
+        "note": false,
+        "timertriggers": [],
+        "ignoreworker": false,
+        "skipunavailable": false,
+        "quietmode": 0,
+        "isoversize": false,
+        "isautoswitchedtoquietmode": false
+    }
 }
