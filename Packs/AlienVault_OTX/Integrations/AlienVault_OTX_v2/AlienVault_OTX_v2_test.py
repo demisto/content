@@ -70,7 +70,7 @@ FILE_EC_WITHOUT_ANALYSIS = {
     'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
     ' val.Type == obj.Type)': [{'Indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'Type': 'file',
                                 'Vendor': '', 'Score': 0, 'Reliability': 'C - Fairly reliable',
-                                'Message':'No results found.'}]
+                                'Message': 'No results found.'}]
 }
 
 URL_RAW_RESPONSE = {
