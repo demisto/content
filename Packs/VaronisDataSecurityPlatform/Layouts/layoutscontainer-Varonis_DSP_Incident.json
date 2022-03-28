@@ -14,52 +14,16 @@
                 "sections": [
                     {
                         "displayType": "CARD",
-                        "h": 6,
+                        "h": 3,
                         "hideName": false,
-                        "i": "vpdxqzumhf-caseinfoid-a9c37a00-a3ae-11ec-9d09-8f08fc549556",
+                        "i": "vpdxqzumhf-ad458840-ae98-11ec-8bba-8b3a4f6436f6",
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "alertid",
-                                "height": 53,
-                                "id": "6e978c80-a3b0-11ec-9cda-f7920a71352f",
+                                "fieldId": "country",
+                                "height": 22,
+                                "id": "b2b13100-aea0-11ec-8bba-8b3a4f6436f6",
                                 "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "alertname",
-                                "height": 53,
-                                "id": "72f0d480-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "occurred",
-                                "height": 53,
-                                "id": "776e1f40-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "severity",
-                                "height": 53,
-                                "id": "7df56ad0-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "alertcategory",
-                                "height": 53,
-                                "id": "83493f70-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -68,34 +32,7 @@
                                 "fieldId": "state",
                                 "height": 53,
                                 "id": "87351fa0-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "sourcestatus",
-                                "height": 53,
-                                "id": "8d2b00a0-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "varonisdatasecurityplatformclosereason",
-                                "height": 53,
-                                "id": "94999ef0-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "varonisdatasecurityplatformblacklistlocation",
-                                "height": 53,
-                                "id": "9a705f30-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 8,
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -104,125 +41,293 @@
                                 "fieldId": "varonisdatasecurityplatformabnormallocation",
                                 "height": 53,
                                 "id": "9dff2b40-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 9,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "varonisdatasecurityplatformnumberofevents",
+                                "fieldId": "varonisdatasecurityplatformblacklistlocation",
                                 "height": 53,
-                                "id": "a6f26dc0-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 10,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "sourceusername",
-                                "height": 53,
-                                "id": "b07e6dd0-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "samaccountname",
-                                "height": 53,
-                                "id": "ba518900-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "varonisdatasecurityplatformbyprivilegedaccounttype",
-                                "height": 53,
-                                "id": "bead9020-a3b0-11ec-9cda-f7920a71352f",
+                                "id": "9a705f30-a3b0-11ec-9cda-f7920a71352f",
                                 "index": 2,
                                 "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "varonisdatasecurityplatformhasfollowupindicators",
-                                "height": 53,
-                                "id": "c49c1e20-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "varonisdatasecurityplatformcontainssensitivedata",
-                                "height": 53,
-                                "id": "ca7c7b50-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "alertsource",
-                                "height": 53,
-                                "id": "cf971780-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "assetid",
-                                "height": 53,
-                                "id": "ec383180-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "varonisdatasecurityplatformonfileserverordomain",
-                                "height": 53,
-                                "id": "f336f700-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "devicename",
-                                "height": 53,
-                                "id": "f9b716a0-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 8,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "varonisdatasecurityplatformcontainsmaliciousexternalip",
-                                "height": 53,
-                                "id": "ff500a90-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 9,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "threatname",
-                                "height": 22,
-                                "id": "03c39150-a3b1-11ec-9cda-f7920a71352f",
-                                "index": 11,
-                                "sectionItemType": "field",
-                                "startCol": 2
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "vpdxqzumhf-ad458840-ae98-11ec-8bba-8b3a4f6436f6"
                             }
                         ],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Varonis Info",
+                        "name": "Location",
                         "static": false,
-                        "w": 2,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "vpdxqzumhf-cb6971b0-ae98-11ec-8bba-8b3a4f6436f6",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sourceusername",
+                                "height": 53,
+                                "id": "b07e6dd0-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 0,
+                                "listId": "vpdxqzumhf-caseinfoid-a9c37a00-a3ae-11ec-9d09-8f08fc549556",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "samaccountname",
+                                "height": 53,
+                                "id": "ba518900-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 1,
+                                "listId": "vpdxqzumhf-cb6971b0-ae98-11ec-8bba-8b3a4f6436f6",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "varonisdatasecurityplatformbyprivilegedaccounttype",
+                                "height": 53,
+                                "id": "bead9020-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 2,
+                                "listId": "vpdxqzumhf-cb6971b0-ae98-11ec-8bba-8b3a4f6436f6",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "varonisdatasecurityplatformhasfollowupindicators",
+                                "height": 53,
+                                "id": "c49c1e20-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 3,
+                                "listId": "vpdxqzumhf-caseinfoid-a9c37a00-a3ae-11ec-9d09-8f08fc549556",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "User infromation",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "vpdxqzumhf-09e53b90-ae99-11ec-8bba-8b3a4f6436f6",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "assetid",
+                                "height": 53,
+                                "id": "ec383180-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 1,
+                                "listId": "vpdxqzumhf-caseinfoid-a9c37a00-a3ae-11ec-9d09-8f08fc549556",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devicename",
+                                "height": 53,
+                                "id": "f9b716a0-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 1,
+                                "listId": "vpdxqzumhf-caseinfoid-a9c37a00-a3ae-11ec-9d09-8f08fc549556",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Device infromation",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "vpdxqzumhf-652fbf20-ae99-11ec-8bba-8b3a4f6436f6",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatname",
+                                "height": 53,
+                                "id": "03c39150-a3b1-11ec-9cda-f7920a71352f",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "varonisdatasecurityplatformcontainsmaliciousexternalip",
+                                "height": 53,
+                                "id": "ff500a90-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "varonisdatasecurityplatformcontainssensitivedata",
+                                "height": 53,
+                                "id": "ca7c7b50-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 2,
+                                "listId": "vpdxqzumhf-caseinfoid-a9c37a00-a3ae-11ec-9d09-8f08fc549556",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Threat intelligence",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "vpdxqzumhf-9ec40ac0-ae99-11ec-8bba-8b3a4f6436f6",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 53,
+                                "id": "7df56ad0-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 0,
+                                "listId": "vpdxqzumhf-9ec40ac0-ae99-11ec-8bba-8b3a4f6436f6",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "alertname",
+                                "height": 53,
+                                "id": "72f0d480-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 1,
+                                "listId": "vpdxqzumhf-9ec40ac0-ae99-11ec-8bba-8b3a4f6436f6",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 53,
+                                "id": "776e1f40-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 2,
+                                "listId": "vpdxqzumhf-9ec40ac0-ae99-11ec-8bba-8b3a4f6436f6",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "alertid",
+                                "height": 53,
+                                "id": "6e978c80-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sourcestatus",
+                                "height": 53,
+                                "id": "8d2b00a0-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 4,
+                                "listId": "vpdxqzumhf-9ec40ac0-ae99-11ec-8bba-8b3a4f6436f6",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "alertcategory",
+                                "height": 53,
+                                "id": "83493f70-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 5,
+                                "listId": "vpdxqzumhf-9ec40ac0-ae99-11ec-8bba-8b3a4f6436f6",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "varonisdatasecurityplatformclosereason",
+                                "height": 53,
+                                "id": "94999ef0-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 6,
+                                "listId": "vpdxqzumhf-caseinfoid-a9c37a00-a3ae-11ec-9d09-8f08fc549556",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "varonisdatasecurityplatformnumberofevents",
+                                "height": 53,
+                                "id": "a6f26dc0-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 7,
+                                "listId": "vpdxqzumhf-9ec40ac0-ae99-11ec-8bba-8b3a4f6436f6",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "alertsource",
+                                "height": 53,
+                                "id": "cf971780-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "varonisdatasecurityplatformonfileserverordomain",
+                                "height": 53,
+                                "id": "f336f700-a3b0-11ec-9cda-f7920a71352f",
+                                "index": 9,
+                                "listId": "vpdxqzumhf-9ec40ac0-ae99-11ec-8bba-8b3a4f6436f6",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Varonis alerts",
+                        "static": false,
+                        "w": 1,
                         "x": 0,
                         "y": 0
                     }
