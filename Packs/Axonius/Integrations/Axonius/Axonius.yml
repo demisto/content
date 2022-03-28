@@ -642,9 +642,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: Id of device
-      isArray: false
-      name: id
+      description: IDs of assets
+      isArray: true
+      name: ids
       required: true
       secret: false
     - auto: PREDEFINED
@@ -673,10 +673,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: Id to update
-      isArray: false
-      name: id
-      required: false
+      description: IDs of assets
+      isArray: true
+      name: ids
+      required: true
       secret: false
     - auto: PREDEFINED
       default: false
