@@ -5,13 +5,14 @@ import json
 import re
 import os
 import sys
+import time
 import requests
 from pytest import raises, mark
 import pytest
 import warnings
 
 from CommonServerPython import set_to_integration_context_with_retries, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
-    flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
+    flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, batch, FeedIndicatorType, \
@@ -6652,6 +6653,224 @@ class TestSetAndGetLastMirrorRun:
         with raises(DemistoException, match='You cannot use setLastMirrorRun as your version is below 6.6.0'):
             set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
             assert set_last_run.called is False
+
+
+class TestFetchWithLookBack:
+
+    LAST_RUN = {}
+    INCIDENTS = [
+        {
+            'incident_id': 1,
+            'created': (datetime.utcnow() - timedelta(hours=3)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 2,
+            'created': (datetime.utcnow() - timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 3,
+            'created': (datetime.utcnow() - timedelta(minutes=29)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 4,
+            'created': (datetime.utcnow() - timedelta(minutes=19)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 5,
+            'created': (datetime.utcnow() - timedelta(minutes=9)).strftime('%Y-%m-%dT%H:%M:%S')
+        }
+    ]
+
+    NEW_INCIDENTS = [
+        {
+            'incident_id': 6,
+            'created': (datetime.utcnow() - timedelta(minutes=49)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 7,
+            'created': (datetime.utcnow() - timedelta(minutes=25)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 8,
+            'created': (datetime.utcnow() - timedelta(minutes=23)).strftime('%Y-%m-%dT%H:%M:%S')
+        }
+    ]
+    
+    def example_fetch_incidents(self):
+        """
+        An example fetch for testing
+        """
+
+        from CommonServerPython import get_fetch_run_time_range, filter_incidents_by_duplicates_and_limit, \
+            update_last_run_object
+
+        incidents = []
+
+        params = demisto.params()
+        fetch_limit_param = params.get('limit')
+        look_back = int(params.get('look_back', 0))
+        first_fetch = params.get('first_fetch')
+        time_zone = params.get('time_zone', 0)
+
+        last_run = demisto.getLastRun()
+        fetch_limit = last_run.get('limit') or fetch_limit_param
+
+        start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch, look_back=look_back, timezone=time_zone)
+
+        query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
+        incidents_res = self.get_incidents_request(query)
+
+        incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents_res, last_run=last_run, fetch_limit=fetch_limit_param, id_field='incident_id')
+
+        last_run = update_last_run_object(last_run=last_run, incidents=incidents, fetch_limit=fetch_limit_param, start_fetch_time=start_fetch_time,
+                                          end_fetch_time=end_fetch_time, look_back=look_back, created_time_field='created', id_field='incident_id')
+
+        demisto.setLastRun(last_run)
+        return incidents
+
+    @staticmethod
+    def build_query(start_time, end_time, limit, return_incidents_by_limit=True):
+        query = {'from': start_time, 'to': end_time}
+        if return_incidents_by_limit:
+            query['limit'] = limit
+        return query
+
+    def get_incidents_request(self, query):
+        from_time = datetime.strptime(query['from'], '%Y-%m-%dT%H:%M:%S')
+        incidents = [inc for inc in self.INCIDENTS if datetime.strptime(inc['created'], '%Y-%m-%dT%H:%M:%S') > from_time]
+        if query.get('limit') is not None:
+            return incidents[:query['limit']]
+        return incidents
+
+    def set_last_run(self, new_last_run):
+        self.LAST_RUN = new_last_run
+
+    @pytest.mark.parametrize('params, result_phase1, result_phase2, expected_last_run', [
+        ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
+         {'limit': 2, 'time': INCIDENTS[3]['created']}),
+        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [],
+         {'limit': 3, 'time': INCIDENTS[4]['created']}),
+        ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]],
+         {'limit': 2, 'time': INCIDENTS[2]['created']}),
+        ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
+         {'limit': 3, 'time': INCIDENTS[3]['created']}),
+    ])
+    def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
+        """
+        Given:
+        - Connfiguration fetch parameters (incidents limit and first fetch time)
+
+        When:
+        - Running the example fetch incidents
+
+        Then:
+        - Ensure the return incidents and LastRun object as expected
+        """
+        if sys.version_info.major == 2:
+            # skip for python 2 - date
+            assert True
+            return
+
+        self.LAST_RUN = {}
+
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+
+        # Run first fetch
+        incidents_phase1 = self.example_fetch_incidents()
+
+        assert incidents_phase1 == result_phase1
+        assert self.LAST_RUN == expected_last_run
+
+        # Run second fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase2 = self.example_fetch_incidents()
+
+        assert incidents_phase2 == result_phase2
+
+    @pytest.mark.parametrize('params, result_phase1, result_phase2, result_phase3, expected_last_run_phase1, expected_last_run_phase2, new_incidents, index', [
+        (
+            {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS[2], INCIDENTS[3]], [NEW_INCIDENTS[0], INCIDENTS[4]], [],
+            {'found_incident_ids': {3: '', 4: ''}, 'limit': 4}, {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
+            [NEW_INCIDENTS[0]], 2
+        ),
+        (
+            {'limit': 2, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [INCIDENTS[4]],
+            {'found_incident_ids': {3: '', 4: ''}, 'limit': 4}, {'found_incident_ids': {3: '', 4: '', 7: '', 8: ''}, 'limit': 6},
+            [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+        ),
+        (
+            {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15}, [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [NEW_INCIDENTS[0], INCIDENTS[3], INCIDENTS[4]], [],
+            {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6}, {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+            [NEW_INCIDENTS[0]], 2
+        ),
+        (
+            {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [],
+            {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6}, {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+            [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+        ),
+    ])
+    def test_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
+                                  expected_last_run_phase1, expected_last_run_phase2, new_incidents, index):
+        """
+        Given:
+        - Connfiguration fetch parameters (incidents limit, first fetch time and look back)
+
+        When:
+        - Running the example fetch incidents and creating new incidents between fetch calles
+
+        Then:
+        - Ensure the return incidents and LastRun object as expected
+        """
+        if sys.version_info.major == 2:
+            # skip for python 2 - date
+            assert True
+            return
+
+        self.LAST_RUN = {}
+        incidents = self.INCIDENTS[:]
+
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+
+        # Run first fetch
+        incidents_phase1 = self.example_fetch_incidents()
+
+        assert incidents_phase1 == result_phase1
+        assert self.LAST_RUN['limit'] == expected_last_run_phase1['limit']
+        assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase1['found_incident_ids'].keys()
+        for inc in incidents_phase1:
+            assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
+
+        next_run_phase1 = self.LAST_RUN['time']
+        self.INCIDENTS = incidents[:index] + new_incidents + incidents[index:]
+
+        # Run second fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase2 = self.example_fetch_incidents()
+
+        assert incidents_phase2 == result_phase2
+        assert self.LAST_RUN['limit'] == expected_last_run_phase2['limit']
+        assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase2['found_incident_ids'].keys()
+
+        if len(incidents_phase2) >= params.get('limit'):
+            assert next_run_phase1 == self.LAST_RUN['time']
+        else:
+            assert incidents_phase2[-1]['created'] == self.LAST_RUN['time']
+
+        for inc in incidents_phase2:
+            assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
+
+        # Run third fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase3 = self.example_fetch_incidents()
+
+        assert incidents_phase3 == result_phase3
+
+        # Remove new incidents from self.INCIDENTS
+        self.INCIDENTS = incidents
 
 
 class TestTracebackLineNumberAdgustment:
