@@ -933,54 +933,53 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
         if pack.status != PackStatus.SUCCESS.name and pack.status not in SKIPPED_STATUS_CODES:
             # avoid trying to upload dependencies zip for failed packs
             continue
-            # avoid trying to upload dependencies zip for failed packs
-            try:
-                logging.info(f"Collecting dependencies of {pack_name}")
-                pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
-                zip_with_deps_path = os.path.join(pack.path, f"{pack_name}_with_dependencies.zip")
-                upload_path = os.path.join(storage_base_path, pack_name, f"{pack_name}_with_dependencies.zip")
-                Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
-                if not (pack.zip_path and os.path.isfile(pack.zip_path)):
-                    task_status = sign_and_zip_pack(pack, signature_key)
+        try:
+            logging.info(f"Collecting dependencies of {pack_name}")
+            pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
+            zip_with_deps_path = os.path.join(pack.path, f"{pack_name}_with_dependencies.zip")
+            upload_path = os.path.join(storage_base_path, pack_name, f"{pack_name}_with_dependencies.zip")
+            Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
+            if not (pack.zip_path and os.path.isfile(pack.zip_path)):
+                task_status = sign_and_zip_pack(pack, signature_key)
+                if not task_status:
+                    # modify the pack's status to indicate the failure was in the dependencies zip step
+                    pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
+                    logging.warning(f"Skipping dependencies collection for {pack_name}. Failed zipping")
+                    continue
+            shutil.copy(pack.zip_path, os.path.join(pack_with_dep_path, pack_name + ".zip"))
+            for dep_name in pack.all_levels_dependencies:
+                dep_pack = packs_for_current_marketplace_dict.get(dep_name)
+                if not (dep_pack.zip_path and os.path.isfile(dep_pack.zip_path)):
+                    task_status = sign_and_zip_pack(dep_pack, signature_key)
                     if not task_status:
                         # modify the pack's status to indicate the failure was in the dependencies zip step
                         pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
-                        logging.warning(f"Skipping dependencies collection for {pack_name}. Failed zipping")
+                        logging.error(f"Skipping dependency {pack_name}. Failed zipping")
                         continue
-                shutil.copy(pack.zip_path, os.path.join(pack_with_dep_path, pack_name + ".zip"))
-                for dep_name in pack.all_levels_dependencies:
-                    dep_pack = packs_for_current_marketplace_dict.get(dep_name)
-                    if not (dep_pack.zip_path and os.path.isfile(dep_pack.zip_path)):
-                        task_status = sign_and_zip_pack(dep_pack, signature_key)
-                        if not task_status:
-                            # modify the pack's status to indicate the failure was in the dependencies zip step
-                            pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
-                            logging.error(f"Skipping dependency {pack_name}. Failed zipping")
-                            continue
-                    shutil.copy(dep_pack.zip_path, os.path.join(pack_with_dep_path, dep_name + '.zip'))
-                logging.info(f"Zipping {pack_name} with dependencies")
-                Pack.zip_folder_items(
-                    pack_with_dep_path,
-                    pack_with_dep_path,
-                    zip_with_deps_path
-                )
-                shutil.rmtree(pack_with_dep_path)
-                logging.info(f"Uploading {pack_name} with dependencies")
-                task_status, _, _ = pack.upload_to_storage(
-                    zip_pack_path=zip_with_deps_path,
-                    latest_version='',
-                    storage_bucket=storage_bucket,
-                    override_pack=True,
-                    storage_base_path=storage_base_path,
-                    overridden_upload_path=upload_path
-                )
-                logging.info(f"{pack_name} with dependencies was{' not' if not task_status else ''} uploaded successfully")
-                if not task_status:
-                    pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
-                    pack.cleanup()
-            except Exception as e:
-                logging.error(traceback.format_exc())
-                logging.error(f"Failed uploading packs with dependencies: {e}")
+                shutil.copy(dep_pack.zip_path, os.path.join(pack_with_dep_path, dep_name + '.zip'))
+            logging.info(f"Zipping {pack_name} with dependencies")
+            Pack.zip_folder_items(
+                pack_with_dep_path,
+                pack_with_dep_path,
+                zip_with_deps_path
+            )
+            shutil.rmtree(pack_with_dep_path)
+            logging.info(f"Uploading {pack_name} with dependencies")
+            task_status, _, _ = pack.upload_to_storage(
+                zip_pack_path=zip_with_deps_path,
+                latest_version='',
+                storage_bucket=storage_bucket,
+                override_pack=True,
+                storage_base_path=storage_base_path,
+                overridden_upload_path=upload_path
+            )
+            logging.info(f"{pack_name} with dependencies was{' not' if not task_status else ''} uploaded successfully")
+            if not task_status:
+                pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
+                pack.cleanup()
+        except Exception as e:
+            logging.error(traceback.format_exc())
+            logging.error(f"Failed uploading packs with dependencies: {e}")
 
 
 def option_handler():
