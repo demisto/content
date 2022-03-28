@@ -294,7 +294,7 @@ def create_nic_parameters(args, subscription_id):
             err_msg = 'You have chosen to assign a "Static" IP address value to the interface, ' \
                       'so you must enter a value for the "private_ip_address" argument.'
             raise Exception(err_msg)
-        nic['properties']['ipConfigurations']['properties']['privateIPAddress'] = private_ip_address
+        nic['properties']['ipConfigurations'][0]['properties']['privateIPAddress'] = private_ip_address
 
     if network_security_group:
         network_security_group_id = f"/subscriptions/{subscription_id}/resourceGroups/"
