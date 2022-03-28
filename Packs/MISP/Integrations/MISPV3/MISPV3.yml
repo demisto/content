@@ -2855,7 +2855,7 @@ script:
     description: Publish an event.
     execution: false
     name: misp-publish-event
-  dockerimage: demisto/pymisp2:1.0.0.27224
+  dockerimage: demisto/pymisp2:1.0.0.27777
   feed: false
   isfetch: false
   longRunning: false
