@@ -40,7 +40,8 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: Choose what service record type to fetch - incidents, requests, problems, changes, or all.
+- additionalinfo: Choose what service record type to fetch - incidents, requests,
+    problems, changes, or all.
   defaultvalue: all
   display: Fetch types
   hidden: false
@@ -53,9 +54,9 @@ configuration:
   - all
   required: false
   type: 16
-- additionalinfo: Default value is including "open classes".
-    You may add/remove statuses according to your needs.
-    Can be found by running the "sysaid-table-list" command with the "list_id=status" argument.
+- additionalinfo: Default value is including "open classes". You may add/remove statuses
+    according to your needs. Can be found by running the "sysaid-table-list" command
+    with the "list_id=status" argument.
   defaultvalue: 1,2,5,6,8,18,19,22,23,24,25,26,27,30,31,32,33
   display: Included statuses
   name: included_statuses
@@ -65,16 +66,25 @@ configuration:
   name: include_archived
   required: false
   type: 8
-description: SysAid is a robust IT management system that was designed to meet all of your needs as an IT department.
+description: SysAid is a robust IT management system that was designed to meet all
+  of your needs as an IT department.
 display: SysAid
 name: SysAid
 script:
   commands:
   - name: sysaid-table-list
-    description: 'Allows to retrieve all lists (tables) related to a specific entity, or to return a specific list from an entity.'
+    description: 'Allows to retrieve all lists (tables) related to a specific entity,
+      or to return a specific list from an entity.'
     arguments:
     - name: entity
-      description: 'A SysAid entity by which to retrieve the available lists. Defaults to SR. The options are: sr - Service record related lists, asset - Asset related lists, user - User related lists, ci - CI related lists, company - Company related lists, action_item - Action item related lists, project - Service record Sub Tabs lists, task - Task related lists, catalog - Catalog related lists, software - Software related lists, sr_activity - Service Record activity related lists, supplier - Supplier related lists, task_activity - Task activity related lists, user_groups - User Group related lists.'
+      description: 'A SysAid entity by which to retrieve the available lists. Defaults
+        to SR. The options are: sr - Service record related lists, asset - Asset related
+        lists, user - User related lists, ci - CI related lists, company - Company
+        related lists, action_item - Action item related lists, project - Service
+        record Sub Tabs lists, task - Task related lists, catalog - Catalog related
+        lists, software - Software related lists, sr_activity - Service Record activity
+        related lists, supplier - Supplier related lists, task_activity - Task activity
+        related lists, user_groups - User Group related lists.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -94,11 +104,14 @@ script:
       - task_activity
       - user_groups
     - name: entity_id
-      description: "The entity's ID. For example, in SR Form lists, send the SR ID to populate additional filters on the lists. e.g. the responsibility list may be filtered by the admin group of the SR."
+      description: "The entity\'s ID. For example, in SR Form lists, send the SR ID\
+        \ to populate additional filters on the lists. e.g. the responsibility list\
+        \ may be filtered by the admin group of the SR."
       required: false
       isArray: false
     - name: entity_type
-      description: 'Numeric. For example: in sr entity, send the sr_type id, for ci entity, send the ci type id (e.g. for getting the list of CI sub types).'
+      description: 'Numeric. For example: in sr entity, send the sr_type id, for ci
+        entity, send the ci type id (e.g. for getting the list of CI sub types).'
       required: false
       isArray: false
     - name: list_id
@@ -106,7 +119,9 @@ script:
       required: false
       isArray: false
     - name: key
-      description: 'Relevant for users/groups related fields. Defines whether to use the id or the name as the key for each value in the result. Available values are "name" or "id". Defaults to id.'
+      description: 'Relevant for users/groups related fields. Defines whether to use
+        the id or the name as the key for each value in the result. Available values
+        are "name" or "id". Defaults to id.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -114,15 +129,19 @@ script:
       - id
       - name
     - name: offset
-      description: 'Retrieved values count is limited. This parameter specifies the offset (start point) from which to retrieve values (e.g. 25). Defaults to 0. Zero base.'
+      description: 'Retrieved values count is limited. This parameter specifies the
+        offset (start point) from which to retrieve values (e.g. 25). Defaults to
+        0. Zero base.'
       required: false
       isArray: false
     - name: limit
-      description: 'The maximum number of list values to retrieve per request. Defaults to 500 (configurable).'
+      description: 'The maximum number of list values to retrieve per request. Defaults
+        to 500 (configurable).'
       required: false
       isArray: false
     - name: fields
-      description: 'A comma separated list of fields to return. Available fields to return are: id (always returned), caption, and values.'
+      description: 'A comma separated list of fields to return. Available fields to
+        return are: id (always returned), caption, and values.'
       required: false
       isArray: true
     outputs:
@@ -424,7 +443,8 @@ script:
       contextPath: SysAid.ServiceRecord.status
       description: ''
   - name: sysaid-service-record-update
-    description: 'The valid statuses can be retrieved using the "sysaid-table-list" command.'
+    description: 'The valid statuses can be retrieved using the "sysaid-table-list"
+      command.'
     arguments:
     - name: id
       description: 'The service record ID'
@@ -543,7 +563,8 @@ script:
       required: false
       isArray: true
   - name: sysaid-service-record-close
-    description: 'Close a service record. Sets the service record status to the default Close status, as defined in the Help Desk settings.'
+    description: 'Close a service record. Sets the service record status to the default
+      Close status, as defined in the Help Desk settings.'
     arguments:
     - name: id
       description: 'The service record ID'
@@ -571,7 +592,8 @@ script:
       - problem
       - change
     - name: template_id
-      description: 'The service record template ID, according to SR type. Defaults to the first/default template.'
+      description: 'The service record template ID, according to SR type. Defaults
+        to the first/default template.'
       required: false
       isArray: false
     outputs:
@@ -597,8 +619,8 @@ script:
       contextPath: SysAid.ServiceRecordTemplate.keyCaption
       description: ''
   - name: sysaid-service-record-create
-    description: 'Create a new service record and return the newly created service record.
-     The valid statuses can be retrieved using the "sysaid-table-list" command.'
+    description: 'Create a new service record and return the newly created service
+      record. The valid statuses can be retrieved using the "sysaid-table-list" command.'
     arguments:
     - name: fields
       description: 'List of fields to return. Comma separated.'
@@ -615,7 +637,8 @@ script:
       - problem
       - change
     - name: template_id
-      description: 'The service record template ID, according to SR type. Defaults to the first/default template.'
+      description: 'The service record template ID, according to SR type. Defaults
+        to the first/default template.'
       required: false
       isArray: false
     - name: description
@@ -756,7 +779,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.1.27636
+  dockerimage: demisto/python3:3.10.4.27798
 fromversion: 6.0.0
 defaultclassifier: SysAid Classifier
 defaultmapperin: SysAid Mapper
