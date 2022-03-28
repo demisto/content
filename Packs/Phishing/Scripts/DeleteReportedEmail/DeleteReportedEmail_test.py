@@ -1,39 +1,79 @@
-"""Base Script for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-"""
-
 import json
 import io
+from DeleteReportedEmail import *
+import pytest
 
+from CommonServerPython import *
+TEST_DATA = 'Packs/Phishing/Scripts/DeleteReportedEmail/test_data'
+SEARCH_RESPONSE_SUFFIX = '_search_response.json'
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+EXPECTED_DELETION_ARGS_RESULTS = {'gmail': {
+            'user-id': 'user_id',
+            'message-id': 'message_id',
+            'permanent': False,
+            'using-brand': 'brand',
+        },
+    'MSGraph': {
+            'user_id': 'user_id',
+            'message_id': 'message_id',
+            'using-brand': 'brand',
+        },
 
-
-# TODO: REMOVE the following dummy unit test function
-def test_basescript_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseScript import basescript_dummy_command
-
-    args = {
-        'dummy': 'this is a dummy response'
+    'EWSv2': {
+            'item-ids': 'item_id',
+            'delete-type': 'soft',
+            'using-brand': 'brand',
+        },
+    'EWS365': {
+    'item-ids': 'item_id',
+    'delete-type': 'soft',
+    'using-brand': 'brand',
     }
-    response = basescript_dummy_command(args)
+}
 
-    mock_response = util_load_json('test_data/basescript-dummy.json')
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE your unit tests
+@pytest.mark.parametrize('integration_name', ['EWS365', 'EWSv2', 'gmail', 'MSGraph'])
+def test_get_deletion_args(integration_name):
+    """
+    Given:
+    a dict of search args parsed earlier
+    and search results retrieved from the search operation priorly
+    When:
+    Deleting an email
+    Then:
+    return the suitable deletion args
+    """
+    args_func = {'EWS365': DeletionArgs.ews, 'EWSv2': DeletionArgs.ews,
+                                     'gmail': DeletionArgs.gmail, 'MSGraph': DeletionArgs.msgraph}
+
+    search_args = {
+        'delete-type': 'soft',
+        'using-brand': 'brand',
+        'email_subject': 'subject',
+        'message-id': 'message_id',
+        'query': 'query',
+        'target-mailbox': 'user_id',
+        'user_id': 'user_id',
+        'odata': 'odata',
+        }
+    with open(os.path.join(TEST_DATA, f'{integration_name}{SEARCH_RESPONSE_SUFFIX}'), 'r') as file:
+        search_results = json.load(file)
+    assert EXPECTED_DELETION_ARGS_RESULTS[integration_name] == args_func[integration_name](search_results, search_args)
+
+
+
+def test_was_email_already_deleted():
+    pass
+
+def test_was_email_found_security_and_compliance():
+    pass
+
+def test_security_and_compliance_delete_mail():
+    pass
+
+def test_delete_email():
+    pass
+
+def test_search_args():
+    pass
+

@@ -1,0 +1,8 @@
+Email has been successfully moved to trash.
+Email has been successfully deleted.
+if email does not exists\not found = empty list
+if we hard delete then it does not exists. if soft, it keeps finding it and deleting it.
+if you are trying to delete a mail from a mailbox that you are not admin of:
+Reason
+Failed to execute gmail-search. Error details:
+GMAIL: access_denied: Requested client not authorized.

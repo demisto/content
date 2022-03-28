@@ -1,0 +1,17 @@
+[
+  {
+    "action": "soft-deleted",
+    "itemId": "AAMkAGIxMGY0ZThkLWQyZGItNDU0MC04NjQ0LWI3YmNjMDM1YTlmZQBGAAAAAABH2fzqX5dLT4G6BheRUdJcBwA7Xf6pDi2dQ5jEQH0EI5vGAAAAAAEMAAA7Xf6pDi2dQ5jEQH0EI5vGAAG7ip67AAA=",
+    "messageId": "<CAPrqz5_NW2vW3ExFXk9SK_cstBnHfe2oY1aXgSpX7oYq=B1WHw@mail.gmail.com>"
+  }
+]
+
+if the item is not found (searching for a mail that doesnt exsits):
+Failed to execute ews-search-mailbox. Error details:
+The specified object was not found in the store., The process failed to get the correct properties.
+if we are redeleting:
+There is no output results
+
+if the email is not configured:
+Failed to execute ews-search-mailbox. Error details:
+The SMTP address has no mailbox associated with it.
