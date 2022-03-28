@@ -2,43 +2,43 @@ This playbook handles impossible traveler alerts.
 
 An Impossible Traveler event occurs when multiple login attempts are seen for a user from multiple remote countries in a short period of time, which shouldn't be possible. This may indicate the account is compromised.
 
-**Attacker's Goals:**
+**Attacker's Goals**
 
 Gain user-account credentials.
 
-**Investigative Actions:**
+**Investigative Actions**
 
-Investigate the IP addresses and identities involved in the detected activity using:
+Investigate IP addresses and identities involved in the detected activity, by using the following:
 
 * Impossible Traveler - Enrichment playbook
 * CalculateGeoDistance automation
 
 **Response Actions**
 
-The playbook's first response actions are based on the data available within the alert. In that phase, the playbook will execute:
+The playbook's first response actions are based on the data available within the alert. In this phase, the playbook executes the following:
 
-* Manual block indicators if the IP address found malicious
-* Manual disable user
-* Manual clear of the user’s sessions (Okta)
+* Manually blocks indicators if the IP address found is malicious
+* Manually disables the user
+* Manually clears the user’s sessions (Okta)
 
-When the playbook continues, after validating the activity with the user’s manager, another phase of response actions is being executed, which includes:
+When the playbook continues, after validating the activity with the user’s manager, another phase of response actions is executed, which includes:
 
-* Auto block indicators 
+* Automatically blocking indicators 
 
 
-**External Resources:**
+**External Resources**
 
-[Impossible traveler alert](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/impossible-traveler---sso.html)
+See the [Impossible traveler alert single sign on](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/impossible-traveler---sso.html) reference topic.
 
 ## How to use this playbook
 
 ### Create a new playbook trigger
 
-1. Click on the **Incident Response** icon on the left menu ![img.png](img.png)
-2. Under **Automation** click on **Incident Configuration**.
-3. Select **Playbook Triggers** on the left panel.
-4. Click on **New Trigger**.
-5. Choose a trigger name e.g. Impossible Traveler Response.
+1. On the left-hand menu, click the **Incident Response** icon  ![img.png](img.png)
+2. Under **Automation**, click **Incident Configuration**.
+3. On the left-hand panel, select **Playbook Triggers**.
+4. Click **New Trigger**.
+5. Type a trigger name. For Example, Impossible Traveler Response.
 6. Under **Playbook To Run**, select Impossible Traveler.
 7. Add trigger description - optional.
 8. Create a filter for the playbook trigger.
@@ -47,13 +47,13 @@ When the playbook continues, after validating the activity with the user’s man
     3. Fill the value with 'Impossible traveler' and keep the 'contains' condition.
     4. Click **Create**.
 
-**Note**: The playbook triggers are being executed according to its order. Consider changing the trigger position for the execution order as intended. If not, other trigger may override the new trigger.
+**Note**: The playbook triggers are being executed according to its order. Consider changing the trigger position for the execution order, as required. If not, other triggers may override the new trigger.
 
 Click **Save**.
 
 ### Playbook inputs
 
-Before executing the playbook, review the inputs and change the default values, if needed.
+Before executing the playbook, review the inputs and change the default values, if needed. Go to **Incident Response** > **Playbooks** and search for **Impossible Traveler**.
 
 Important playbook inputs you should pay attention to:
 
@@ -66,7 +66,7 @@ Important playbook inputs you should pay attention to:
 
 3. *WhitelistedIPs*: A comma separated list of IP addresses that are allowed to be used across long distances. If your organization is actively using VPN services, we highly recommend whitelisting the known IP addresses to reduce the risk of false positives. 
 
-4. *ContactUserManager*: Considers whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler.
+4. *ContactUserManager*: Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler.
 
 5. *AbuseIPDBThreshold*: Used as a threshold for the minimum score AbuseIPDB gives the IP address to be considered a malicious IP.
 
@@ -74,8 +74,8 @@ Important playbook inputs you should pay attention to:
 
 In this playbook the remediation plan happens in two phases:
 
-1. At an early stage of playbook execution, the Containment Plan sub-playbook blocks the IP (if found malicious) and if Oktav2 is enabled, clears the suspected user active sessions.
-2. At a later stage, if the distance between the checked IP addresses was allowed by the manager (configured in the MaxMilesPerHourAllowed playbook input), the playbook closes the alert, but if the distance isn’t allowed, the manager (if configured) will be asked to approve/disapprove the source country involved in the abnormal activity.
+1. At an early stage of playbook execution, the Containment Plan sub-playbook blocks the IP (if found malicious) and if Okta v2 is enabled, clears the suspected user active sessions.
+2. At a later stage, if the distance between the checked IP addresses was allowed by the manager (configured in the MaxMilesPerHourAllowed playbook input), the playbook closes the alert. If the distance isn’t allowed, the manager (if configured) will be asked to approve/disapprove the source country involved in the abnormal activity.
 
 In the final phase, the IP addresses marked as suspicious will be filtered against the whitelisted IPs provided in the playbook inputs, and the ones that aren’t whitelisted will be blocked.
 
