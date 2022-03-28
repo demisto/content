@@ -124,14 +124,14 @@ def update_tags(
 ) -> CommandResults:  # noqa: F821, F405
     args: dict = demisto.args()
     tag_name: str = args["tag_name"]
-    internal_axon_id: str = args["id"]
+    internal_axon_id_arr: list = args["ids"]
     api_obj = client.devices if args["type"] == "devices" else client.users
     api_name = api_obj.__class__.__name__
 
     if method_name == "add":
-        res = api_obj.labels.add(rows=[internal_axon_id], labels=[tag_name])
+        res = api_obj.labels.add(rows=internal_axon_id_arr, labels=[tag_name])
     else:
-        res = api_obj.labels.remove(rows=[internal_axon_id], labels=[tag_name])
+        res = api_obj.labels.remove(rows=internal_axon_id_arr, labels=[tag_name])
 
     # res is count of rows included in the output, regardless of success.
     readable_output = f"{res} {api_name}(s) updated."
