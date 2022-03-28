@@ -1567,7 +1567,7 @@ Retrieve the result of an asynchronous request. This command will retrieve the r
 | --- | --- | --- |
 | request_id | ID of the request.<br/><br/>Note: Users can get the request ID by executing any of the commands that make a request. Possible commands are mentioned in the command description. | Required | 
 | cluster_id | ID of the cluster on which request was made.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Required | 
-| cluster_ip_address | IP address of the cluster node to access the download link. Only useful for "rubrik-gps-snapshot-files-download" command results.<br/><br/>Note: Users can retrieve the list of the IP addresses by executing the "rubrik-gps-cluster-list" command. | Optional | 
+| cluster_ip_address | IP address of the cluster node to access the download link. Only required to retrieve the results of the command "rubrik-gps-snapshot-files-download".<br/><br/>Note: Users can retrieve the list of the IP addresses by executing the "rubrik-gps-cluster-list" command. | Optional | 
 
 
 #### Context Output

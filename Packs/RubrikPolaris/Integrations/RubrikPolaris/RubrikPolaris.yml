@@ -2645,7 +2645,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "IP address of the cluster node to access the download link. Only useful for \"rubrik-gps-snapshot-files-download\" command results.\n\nNote: Users can retrieve the list of the IP addresses by executing the \"rubrik-gps-cluster-list\" command."
+      description: "IP address of the cluster node to access the download link. Only required to retrieve the results of the command \"rubrik-gps-snapshot-files-download\".\n\nNote: Users can retrieve the list of the IP addresses by executing the \"rubrik-gps-cluster-list\" command."
       isArray: false
       name: cluster_ip_address
       required: false
