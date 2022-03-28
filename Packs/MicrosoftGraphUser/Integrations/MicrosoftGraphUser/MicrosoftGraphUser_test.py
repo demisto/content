@@ -64,7 +64,7 @@ def test_get_user_command_404_response(mocker):
     from requests.models import Response
 
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'base_url', 'verify', 'proxy',
-                           'self_deployed', 'redirect_uri', 'auth_code')
+                           'self_deployed', 'redirect_uri', 'auth_code', True)
     error_404 = Response()
     error_404._content = b'{"error": {"code": "Request_ResourceNotFound", "message": "Resource ' \
                          b'"NotExistingUser does not exist."}}'
@@ -89,7 +89,7 @@ def test_get_user_command_url_saved_chars(mocker):
 
     user_name = "dbot^"
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'http://base_url', 'verify', 'proxy',
-                           'self_deployed', 'redirect_uri', 'auth_code')
+                           'self_deployed', 'redirect_uri', 'auth_code', False)
     http_mock = mocker.patch.object(BaseClient, '_http_request')
     mocker.patch.object(MicrosoftClient, 'get_access_token')
     hr, _, _ = get_user_command(client, {'user': user_name})
