@@ -3506,16 +3506,19 @@ Lists all lables in a Users Gmail.
 
 #### Context Example
 ```
-[
-    {
-        "ID": "INBOX",
-        "LabelListVisibility": "labelHide",
-        "MessageListVisibility:: "hide",
-        "Name": "INBOX",
-        "Type": "system",
-        "UserID": "user@domain.io"
-    }
-]
+{
+"GmailLabel":
+  [
+       {
+            "ID": "INBOX",
+            "LabelListVisibility": "labelHide",
+            "MessageListVisibility:: "hide",
+            "Name": "INBOX",
+            "Type": "system",
+            "UserID": "user@domain.io"
+        }
+    ]
+}
 ```
 
 #### Human Readable Output
