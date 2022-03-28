@@ -350,7 +350,7 @@ class TestFormatURL:
             - Formatting URLs
 
         Then:
-            - Ensure URLs with a single letter tld return true.
+            - Ensure URLs with a {0,1} letter TLD return true.
         """
         from FormatURL import remove_single_letter_tld_url
         assert remove_single_letter_tld_url(non_formatted_url) == expected
