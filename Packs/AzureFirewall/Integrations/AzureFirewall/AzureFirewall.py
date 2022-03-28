@@ -23,9 +23,11 @@ class AzureFirewallClient:
 
         is_credentials = (client_secret and tenant_id) or (certificate_thumbprint and private_key)
 
-        scope = Scopes.management_azure if is_credentials else 'https://management.azure.com/user_impersonation offline_access user.read'
+        scope = Scopes.management_azure if is_credentials else \
+            'https://management.azure.com/user_impersonation offline_access user.read'
         grant_type = CLIENT_CREDENTIALS if is_credentials else DEVICE_CODE
-        token_retrieval_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token' if tenant_id else 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+        token_retrieval_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token' if tenant_id \
+            else 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
 
         if not is_credentials:
             client_secret = None
