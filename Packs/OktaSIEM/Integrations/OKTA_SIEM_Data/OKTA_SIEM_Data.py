@@ -213,8 +213,7 @@ def send_logs_to_xsiam(client, logs):
 
 def save_logs(client, logs):
     formatted_logs = '\n'.join([json.dumps(log) for log in logs])
-    res = send_logs_to_xsiam(client, formatted_logs)
-
+    res = send_events_to_xsiam()
 
 def test_module(client):
     """
@@ -231,17 +230,18 @@ def test_module(client):
     return 'ok'
 
 
-def fetch_logs_command(client):
+def fetch_events_command(client):
     logs, last_run = client.fetch_logs()
     demisto.setLastRun(last_run)
     xsoar_incidents = []
     if logs:
-        save_logs(client, logs)
-        xsoar_incidents.append({
-            "name": f'XSIAM Logs fetch - {len(logs)} events',
-            "occured": datetime.now().isoformat(),
-            "rawJSON": '{}'})
-    demisto.incidents(xsoar_incidents)
+        send_events_to_xsiam(logs, 'a', 'b')
+        # save_logs(client, logs)
+    #     xsoar_incidents.append({
+    #         "name": f'XSIAM Logs fetch - {len(logs)} events',
+    #         "occured": datetime.now().isoformat(),
+    #         "rawJSON": '{}'})
+    # demisto.incidents(xsoar_incidents)
 
 
 def get_logs_command(client, args):
@@ -291,8 +291,8 @@ def main():
         if command == 'test-module':
             return_results(test_module(client))
 
-        elif command == 'fetch-incidents':
-            fetch_logs_command(client)
+        elif command == 'fetch-events':
+            fetch_events_command(client)
 
         elif command == 'okta-get-logs':
             return_results(get_logs_command(client, args))

@@ -8,6 +8,7 @@ from __future__ import print_function
 
 import base64
 import gc
+import gzip
 import json
 import logging
 import os
@@ -9126,6 +9127,58 @@ def get_pack_version(pack_name=''):
             )
         return ''
     return pack_version
+
+
+def send_events_to_xsiam(events: Union[str, list], vendor: str, product: str, data_format=None):
+    """
+    Send the fetched events into the XDR data-collector private api.
+
+    Args:
+        events (str, list): The events to send to send to XSIAM server. The events should be one of the following:
+            1. List of dicts where each dict represents an event.
+            2. String containing the raw events.
+        vendor (str): The vendor corresponding to the integration that originated the events.
+        product (str): The product corresponding to the integration that originated the events.
+        data_format (str): Should only filled in case the 'events' parameter contains a string resenting list of raw
+            events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
+
+    """
+    xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
+    xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
+    xsiam_url = f'https://api-{xsiam_domain}'
+    collector_name = get_integration_name()
+
+    if isinstance(events, list):
+        if isinstance(events[0], dict):
+            events = [json.dumps(event) for event in events]
+            data_format = 'json'
+        data = '\n'.join(events)
+
+    if not data_format:
+        data_format = 'text'
+
+    headers = {
+        'authorization': xsiam_api_token,
+        'format': data_format,
+        'product': product,
+        'vendor': vendor,
+        'content-encoding': 'gzip'
+    }
+    zipped_data = gzip.compress(data.encode('utf-8'))
+    client = BaseClient(base_url=xsiam_url)
+    try:
+        res = client._http_request(method='POST', url_suffix='/logs/v1/xsiam', headers=headers, data=zipped_data)
+        if xsiam_err_msg := argToBoolean(res.get('error')):
+            raise DemistoException(xsiam_err_msg)
+
+    except DemistoException as api_error:
+        header_msg = f'Error sending new events into XSIAM. \n'
+        api_call_info = f'Parameters used:\n' \
+                      f'\tURL: {xsiam_url}\n' \
+                      f'\tHeaders: {json.dumps(headers, indent=8)}\n\n' \
+                      f'Error received:\n\t{api_error}'
+        demisto.error(header_msg + api_call_info)
+        raise DemistoException(header_msg + str(api_error), DemistoException)
 
 
 ###########################################
