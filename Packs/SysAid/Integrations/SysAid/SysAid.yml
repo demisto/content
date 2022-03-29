@@ -365,7 +365,6 @@ script:
       required: false
       isArray: false
       auto: PREDEFINED
-      auto: PREDEFINED
       predefined:
       - '0'
       - '1'
