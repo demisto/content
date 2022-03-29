@@ -351,12 +351,20 @@ def parse_device_field_list_response(response: dict) -> Dict[str, Any]:
     return parsed_data
 
 
+def parse_device_field_list_response_human_readable(outputs):
+    human_readable = {'DeviceUID': outputs.get('DeviceUID'), 'ESN': outputs.get('ESN'), 'CDFValues': []}
+    for cdf_values in outputs.get('CDFValues', []):
+        human_readable['CDFValues'].append(
+            {"FieldName": cdf_values.get('FieldName'), "FieldValue": cdf_values.get('FieldValue')})
+    return human_readable
+
+
 def get_custom_device_field_list_command(args, client) -> CommandResults:
     device_id = args.get('device_id')
     res = client.api_request_absolute('GET', f'/v2/devices/{device_id}/cdf')
     outputs = parse_device_field_list_response(res)
-    human_readable = tableToMarkdown(f'{INTEGRATION} Custom device field list', outputs,
-                                     headers=['DeviceUID', 'ESN'], removeNull=True)
+    human_readable = tableToMarkdown(f'{INTEGRATION} Custom device field list',
+                                     parse_device_field_list_response_human_readable(outputs), removeNull=True)
     return CommandResults(outputs=outputs, outputs_prefix="Absolute.CustomDeviceField", outputs_key_field='DeviceUID',
                           readable_output=human_readable, raw_response=res)
 
@@ -406,7 +414,7 @@ def validate_passcode_type_args(passcode_type, passcode, passcode_length, payloa
     elif passcode_type == "RandomForEach" or passcode_type == "RandomForAl":
         not_valid_passcode_length = not passcode_length or passcode_length > 8 or passcode_length < 4
         if not_valid_passcode_length:
-            raise_error_on_missing_args('hen setting passcode_type to be RandomForEach or RandomForAl, '
+            raise_error_on_missing_args('when setting passcode_type to be RandomForEach or RandomForAl, '
                                         f'you must specify the passcode_length arg to be between 4 to 8.')
         payload["passcodeDefinition"].update({"length": passcode_length})
 
@@ -456,7 +464,8 @@ def device_freeze_request_command(args, client) -> CommandResults:
     payload = validate_passcode_type_args(passcode_type, passcode, passcode_length, payload)
 
     res = client.api_request_absolute('POST', '/v2/device-freeze/requests', body=json.dumps(payload),
-                                      success_status_code=201)
+                                      success_status_code=[201])
+
     outputs = parse_freeze_device_response(res)
     human_readable = tableToMarkdown(f"{INTEGRATION} device freeze requests results", outputs, removeNull=True)
     # todo add errors to yml after Meital's approve
@@ -474,7 +483,8 @@ def remove_device_freeze_request_command(args, client) -> CommandResults:
     payload = {"deviceUids": device_ids, "unfreeze": "true", "removeScheduled": remove_scheduled,
                "removeOffline": remove_offline}
 
-    client.api_request_absolute('PUT', '/v2/device-freeze/requests', body=json.dumps(payload), success_status_code=204)
+    client.api_request_absolute('PUT', '/v2/device-freeze/requests', body=json.dumps(payload),
+                                success_status_code=[204])
     return CommandResults(readable_output=f"Successfully removed freeze request for devices: {device_ids}.")
 
 
@@ -579,7 +589,7 @@ def update_device_freeze_message_command(args, client) -> CommandResults:
 
 def delete_device_freeze_message_command(args, client) -> CommandResults:
     message_id = args.get('message_id')
-    client.api_request_absolute('DELETE', f'/v2/device-freeze/messages/{message_id}', success_status_code=204)
+    client.api_request_absolute('DELETE', f'/v2/device-freeze/messages/{message_id}', success_status_code=[204])
     return CommandResults(readable_output=f'{INTEGRATION} Freeze message: {message_id} was deleted successfully')
 
 
@@ -786,6 +796,11 @@ def device_list_command(args, client) -> CommandResults:
 
 
 def get_device_command(args, client) -> CommandResults:
+    if not ('device_ids' in args or 'device_names' in args or 'local_ips' in args or 'public_ips' in args):
+        raise DemistoException(
+            f"{INTEGRATION} at least one of the commands args (device_ids, device_names, local_ips, public_ips) "
+            f"must be provided.")
+
     query_string = create_filter_query_from_args(args)
     custom_fields_to_return = remove_duplicates_from_list_arg(args, 'fields')
     if custom_fields_to_return:
