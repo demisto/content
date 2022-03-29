@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: Netskope
 display: Netskope
+deprecated: true
 category: Network Security
 description: Cloud access security broker that enables to find, understand, and secure
   cloud apps.
