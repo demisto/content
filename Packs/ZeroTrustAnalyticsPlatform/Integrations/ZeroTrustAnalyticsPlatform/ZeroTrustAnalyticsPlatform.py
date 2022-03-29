@@ -363,13 +363,14 @@ def comments_to_notes(client: Client, comments: List):
     def to_note(comment):
         occurred = comment["datetime_created"]
         oid = comment["id"]
-        user_display = user_to_display(comment["user"])
+        user_display = user_to_display(comment.get("user"))
+        comment_text = comment.get("comment")
         footer = f"\n\nSent by {user_display} via ZTAP"
         return {
             "Type": EntryType.NOTE,
             "ContentsFormat": EntryFormat.JSON,
             "Contents": comment,
-            "HumanReadable": comment["comment"] + footer,
+            "HumanReadable": f"{comment_text}{footer}",
             "ReadableContentsFormat": EntryFormat.TEXT,
             "Note": True,
             "Tags": [],
@@ -406,7 +407,7 @@ def get_notes_for_alert(
     comments = get_comments_for_alert(client, alert_id, last_update)
     entries.extend(comments_to_notes(client, comments))
 
-    entries = sorted(entries, key=lambda x: x["sort"] if "sort" in x else "")
+    entries = sorted(entries, key=lambda x: x.get("sort", ""))
 
     # Remove sort field from entries now that they are sorted correctly
     for entry in entries:
@@ -525,7 +526,7 @@ def extract_trigger_kv(trigger_events: list):
             break
     flattened = {}
     if trigger_event:
-        for field in trigger_event["fields"]:
+        for field in trigger_event.get("fields", []):
             key = field["key"]
             value = field["value"]
             flattened[key] = value

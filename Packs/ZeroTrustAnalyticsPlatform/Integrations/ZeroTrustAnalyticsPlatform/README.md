@@ -29,17 +29,6 @@ This integration was integrated and tested with version 2021-06-25 of ZeroTrustA
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-### Custom Classifier
-If using a custom classifier the following fields are required for bidirectional sync
-
-| **Input Field** | **Output Field** |
-| --- | --- |
-| xsoar\_mirror\_id | dbotMirrorId |
-| xsoar\_mirror\_direction | dbotMirrorDirection |
-| xsoar\_mirror\_instance | dbotMirrorInstance |
-| xsoar\_mirror\_last\_sync | dbotMirrorLastSync |
-| xsoar\_mirror\_tags | dbotMirrorTags |
-
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
