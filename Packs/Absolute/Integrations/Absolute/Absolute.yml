@@ -776,6 +776,9 @@ script:
     - contextPath: Absolute.Device.Esn
       description: The unique ESN (Absolute Identifier) assigned to the agent installed on the device.
       type: String
+    - contextPath: Absolute.Device.Domain
+      description: The name of the Windows domain to which this device belongs.
+      type: String
     - contextPath: Absolute.Device.LastConnectedUtc
       description: The date and time (in UNIX Epoch) when the device last connected to the Absolute Monitoring Center.
       type: Number
@@ -788,8 +791,44 @@ script:
     - contextPath: Absolute.Device.AgentStatus
       description: The status of the Absolute agent on the device.
       type: String
-    - contextPath: Absolute.Device.osName
+    - contextPath: Absolute.Device.Os.name
       description: Short description of the operating system expressed as a one-line string that includes the version of the operating system.
+      type: String
+    - contextPath: Absolute.Device.Os.version
+      description: The version of the operating system.
+      type: String
+    - contextPath: Absolute.Device.Os.currentBuild
+      description: The current build number of the operating system.
+      type: String
+    - contextPath: Absolute.Device.Os.architecture
+      description: The architecture of the operating system.
+      type: String
+    - contextPath: Absolute.Device.Os.installDate
+      description: The date and time (in UNIX Epoch) when the operating system was installed.
+      type: Number
+    - contextPath: Absolute.Device.Os.productKey
+      description: The product key of the operating system.
+      type: String
+    - contextPath: Absolute.Device.Os.serialNumber
+      description: The serial identification number of the operating system.
+      type: String
+    - contextPath: Absolute.Device.Os.lastBootTime
+      description: The date and time (in UNIX Epoch) when the operating system was last restarted.
+      type: Number
+    - contextPath: Absolute.Device.Bios.id
+      description: The unique identifier of this BIOS given by the manufacturer.
+      type: String
+    - contextPath: Absolute.Device.Bios.serialNumber
+      description: The serial number assigned to the BIOS.
+      type: String
+    - contextPath: Absolute.Device.Bios.smBiosVersion
+      description: The major version number of the BIOS.
+      type: String
+    - contextPath: Absolute.Device.Bios.version
+      description: The version of the BIOS, as reported by SMBIOS.
+      type: String
+    - contextPath: Absolute.Device.Bios.versionDate
+      description: A substring of The manufacturer of the BIOS + The version of the BIOS version, as reported by SMBIOS + The release date of the Window BIOS.
       type: String
     - contextPath: Absolute.Device.SystemManufacturer
       description: The manufacturer of the device.
@@ -811,6 +850,27 @@ script:
       type: String
     - contextPath: Absolute.Device.EncryptionStatus
       description: The summarized encryption status of the device.
+      type: String
+    - contextPath: Absolute.Device.Username
+      description: The unique username of the user that was logged in to the device at the time of the most recent agent call.
+      type: String
+    - contextPath: Absolute.Device.PolicyGroupUid
+      description: The unique identifier of the policy group that the device belongs to.
+      type: String
+    - contextPath: Absolute.Device.PolicyGroupName
+      description: The name of the policy group to that the device belongs to.
+      type: String
+    - contextPath: Absolute.Device.IsStolen
+      description: Indicates whether this device was reported as stolen.
+      type: String
+    - contextPath: Absolute.Device.DeviceStatus.type
+      description: The status of the device. Possible values are STOLEN or MISSING.
+      type: String
+    - contextPath: Absolute.Device.DeviceStatus.reported
+      description: The data and time (in UNIX Epoch) the device was reported missing or stolen.
+      type: Number
+    - contextPath: Absolute.Device.NetworkAdapters.networkSSID
+      description: The Service Set Identifier (SSID) of the connected Wi-Fi adapter.
       type: String
   isfetch: false
   runonce: false

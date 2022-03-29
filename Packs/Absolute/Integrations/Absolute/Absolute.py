@@ -58,6 +58,7 @@ DEVICE_LIST_RETURN_FIELDS = [
 DEVICE_GET_COMMAND_RETURN_FIELDS = [
     "id",
     "esn",
+    "domain",
     "lastConnectedUtc",
     "systemName",
     "systemModel",
@@ -72,7 +73,6 @@ DEVICE_GET_COMMAND_RETURN_FIELDS = [
     "os.productKey",
     "os.serialNumber",
     "os.lastBootTime",
-    "os.lastSecureUpdated",
     "systemManufacturer",
     "serial",
     "localIp",
@@ -86,12 +86,10 @@ DEVICE_GET_COMMAND_RETURN_FIELDS = [
     "bios.smBiosVersion",
     "policyGroupUid",
     "policyGroupName",
-    "policyGroupDateMovedUtc",
-    "freezePolicyUid",
     "isStolen",
     "deviceStatus.type",
     "deviceStatus.reported",
-    "networkSSID"
+    "networkAdapters.networkSSID"
 ]
 
 
@@ -699,13 +697,13 @@ def parse_paging(page: int, limit: int, query: str) -> str:
     return f"$skip={page}&$top={limit}"
 
 
-def parse_applications_list_response(response):
+def parse_device_list_response(response, keep_os_in_list=True):
     parsed_response = []
     for device in response:
         parsed_device = {}
         for key, val in device.items():
             if val:
-                if key == 'os':
+                if key == 'os' and not keep_os_in_list:
                     parsed_device['osName'] = val.get('name')
                 elif key == 'espInfo':
                     parsed_device['encryptionStatus'] = val.get('encryptionStatus')
@@ -728,7 +726,7 @@ def get_device_application_list_command(args, client) -> CommandResults:
 
     res = client.api_request_absolute('GET', '/v2/sw/deviceapplications', query_string=query_string)
     if res:
-        outputs = parse_applications_list_response(res)
+        outputs = parse_device_list_response(res)
         human_readable = tableToMarkdown(f'{INTEGRATION} device applications list:', outputs, removeNull=True)
         human_readable += f"Above results are with page number: {page} and with size: {limit}."
         return CommandResults(outputs_prefix='Absolute.DeviceApplication', outputs=outputs, outputs_key_field='Appid',
@@ -747,7 +745,7 @@ def device_list_command(args, client) -> CommandResults:
 
     res = client.api_request_absolute('GET', '/v2/reporting/devices', query_string=query_string)
     if res:
-        outputs = parse_applications_list_response(copy.deepcopy(res))
+        outputs = parse_device_list_response(copy.deepcopy(res), keep_os_in_list=False)
         human_readable = tableToMarkdown(f'{INTEGRATION} devices list:', outputs, removeNull=True)
         human_readable += f"Above results are with page number: {page} and with size: {limit}."
         return CommandResults(outputs_prefix='Absolute.Device', outputs=outputs, outputs_key_field="Id",
@@ -767,7 +765,7 @@ def get_device_command(args, client) -> CommandResults:
 
     res = client.api_request_absolute('GET', '/v2/reporting/devices', query_string=query_string)
     if res:
-        outputs = parse_applications_list_response(copy.deepcopy(res))
+        outputs = parse_device_list_response(copy.deepcopy(res))
         human_readable = tableToMarkdown(f'{INTEGRATION} devices list:', outputs, removeNull=True)
         return CommandResults(outputs_prefix='Absolute.Device', outputs=outputs, outputs_key_field="Id",
                               readable_output=human_readable, raw_response=res)
