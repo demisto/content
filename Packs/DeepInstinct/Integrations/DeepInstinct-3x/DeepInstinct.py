@@ -228,6 +228,9 @@ def fetch_incidents():
 
 
 def test_module():
+    """
+    Test Module
+    """
     http_request('GET', "/health_check")
     demisto.results("ok")
 
@@ -317,142 +320,70 @@ def upload_logs():
 
 def main():
     # Commands
-    if demisto.command() == 'test-module':
-        """
-         test module
-        """
-        test_module()
-
     if demisto.command() == 'deepinstinct-get-device':
-        """
-        Get device by id
-        """
         get_specific_device()
 
     if demisto.command() == 'deepinstinct-get-events':
-        """
-        Get events
-        """
         get_events()
 
     if demisto.command() == 'deepinstinct-get-suspicious-events':
-        """
-        Get events
-        """
         get_suspicious_events()
 
     if demisto.command() == 'deepinstinct-get-all-groups':
-        """
-        Get all groups
-        """
         get_all_groups()
 
     if demisto.command() == 'deepinstinct-get-all-policies':
-        """
-        Get all policies
-        """
         get_all_policies()
 
     if demisto.command() == 'deepinstinct-add-hash-to-deny-list':
-        """
-        Add hash to deny-list
-        """
         add_hash_to_denylist()
 
     if demisto.command() == 'deepinstinct-add-hash-to-allow-list':
-        """
-        Add hash to allow-list
-        """
         add_hash_to_allowlist()
 
     if demisto.command() == 'deepinstinct-remove-hash-from-deny-list':
-        """
-        Remove hash from deny-list
-        """
         remove_hash_from_denylist()
 
     if demisto.command() == 'deepinstinct-remove-hash-from-allow-list':
-        """
-        Remove hash from allow-list
-        """
         remove_hash_from_allowlist()
 
     if demisto.command() == 'deepinstinct-add-devices-to-group':
-        """
-        Add devices to groups
-        """
         add_devices_to_group()
 
     if demisto.command() == 'deepinstinct-remove-devices-from-group':
-        """
-        Remove devices from group
-        """
         remove_devices_from_group()
 
     if demisto.command() == 'deepinstinct-delete-files-remotely':
-        """
-        Delete files remotely by event ids
-        """
         delete_files_remotely()
 
     if demisto.command() == 'deepinstinct-terminate-processes':
-        """
-        Terminate processes by event ids
-        """
         terminate_remote_processes()
 
     if demisto.command() == 'deepinstinct-close-events':
-        """
-        Close events by event ids
-        """
         close_events()
 
     if demisto.command() == 'fetch-incidents':
-        """
-        fetch events
-        """
         fetch_incidents()
 
     if demisto.command() == 'deepinstinct-isolate-from-network':
-        """
-        Isolate Device(s) from Network
-        """
         isolate_from_network()
 
     if demisto.command() == 'deepinstinct-release-from-isolation':
-        """
-        Remove Device(s) from Isolation
-        """
         release_from_isolation()
 
     if demisto.command() == 'deepinstinct-remote-file-upload':
-        """
-        Request Remote File Upload by Event ID
-        """
         remote_file_upload()
 
     if demisto.command() == 'deepinstinct-disable-device':
-        """
-        Disable D-client at next Check-In
-        """
         disable_device()
 
     if demisto.command() == 'deepinstinct-enable-device':
-        """
-        Enable D-client at next Check-In
-        """
         enable_device()
 
     if demisto.command() == 'deepinstinct-remove-device':
-        """
-        Uninstall D-Client on device at next Check-In
-        """
         remove_device()
 
     if demisto.command() == 'deepinstinct-upload-logs':
-        """
-        Upload D-Client logs from device at next Check-In
-        """
         upload_logs()
 
 
