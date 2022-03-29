@@ -7419,6 +7419,38 @@ script:
         type: String
       - contextPath: PANOS.JobStatus.progress
         type: String
+  - arguments:
+      - default: false
+        description: software version to upgrade to, ex. 9.1.2
+        isArray: false
+        name: version
+        required: true
+        secret: false
+      - default: false
+        defaultValue: null
+        description: String to filter to only install to sepecific devices or serial
+          numbers
+        isArray: false
+        name: device_filter_string
+        required: false
+        secret: false
+      - default: false
+        defaultValue: false
+        description: If provided, runs the download synchronously - make sure 'execution-timeout'
+          is increased.
+        isArray: false
+        name: sync
+        required: false
+        secret: false
+    deprecated: false
+    description: Download The provided software version onto the device.
+    name: pan-os-platform-download-software
+    outputs:
+      - contextPath: PANOS.DownloadStatus.Summary.hostid
+        type: String
+      - contextPath: PANOS.DownloadStatus.Summary.started
+        description: Whether download process has started.
+        type: String
   deprecated: false
   description: Get all the jobs from the devices in the environment, or a single job when ID is specified.
   dockerimage: demisto/pan-os-python:1.0.0.27793

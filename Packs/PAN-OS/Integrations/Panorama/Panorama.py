@@ -9335,6 +9335,24 @@ def get_jobs(topology: Topology, device_filter_string: str = None, status: str =
     )
     return result
 
+def download_software(topology: Topology, version: str,
+                      device_filter_string: str = None, sync: bool = False) -> DownloadSoftwareCommandResult:
+    """
+    Download The provided software version onto the device.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only install to sepecific devices or serial numbers
+    :param version: software version to upgrade to, ex. 9.1.2
+    :param sync: If provided, runs the download synchronously - make sure 'execution-timeout' is increased.
+    """
+    if sync == "false":
+        sync = False
+
+    result: DownloadSoftwareCommandResult = UniversalCommand.download_software(topology, version,
+                                                                               device_filter_str=device_filter_string,
+                                                                               sync=sync)
+
+    return result
+
 def get_topology() -> Topology:
     """
     Builds and returns the Topology instance
@@ -9868,7 +9886,15 @@ def main():
             return_results(
                 dataclasses_to_command_results(
                     get_jobs(topology, **demisto.args()),
-                    empty_result_message="No HA information available"
+                    empty_result_message="No jobs returned"
+                )
+            )
+        elif demisto.command() == 'pan-os-platform-download-software':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_jobs(topology, **demisto.args()),
+                    empty_result_message="Software download not started"
                 )
             )
         else:
