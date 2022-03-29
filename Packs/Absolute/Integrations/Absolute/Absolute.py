@@ -92,6 +92,17 @@ DEVICE_GET_COMMAND_RETURN_FIELDS = [
     "networkAdapters.networkSSID"
 ]
 
+DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS = [
+    "geoData.location.coordinates",
+    "geoData.geoAddress.city",
+    "geoData.geoAddress.state",
+    "geoData.geoAddress.countryCode",
+    "geoData.geoAddress.country",
+    "geoData.locationTechnology",
+    "geoData.accuracy",
+    "geoData.lastUpdate",
+]
+
 
 class Client(BaseClient):
     def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, headers: dict, proxy: bool,
@@ -716,6 +727,27 @@ def parse_device_list_response(response, keep_os_in_list=True):
     return parsed_response
 
 
+def parse_geo_location_outputs(response):
+    parsed_response = []
+    for device in response:
+        parsed_device = {}
+        geo_data = device.get('geoData', {}).get('location', {})
+        parsed_device['Coordinates'] = geo_data.get('point', {}).get('coordinates')
+        parsed_device['LocationTechnology'] = geo_data.get('locationTechnology')
+        parsed_device['Accuracy'] = geo_data.get('accuracy')
+        parsed_device['LastUpdate'] = geo_data.get('lastUpdate')
+        parsed_device['City'] = geo_data.get('geoAddress', {}).get('city')
+        parsed_device['State'] = geo_data.get('geoAddress', {}).get('state')
+        parsed_device['CountryCode'] = geo_data.get('geoAddress', {}).get('countryCode')
+        parsed_device['Country'] = geo_data.get('geoAddress', {}).get('country')
+
+        parsed_response.append(parsed_device)
+
+    if len(parsed_response) == 1:
+        return parsed_response[0]
+    return parsed_response
+
+
 def get_device_application_list_command(args, client) -> CommandResults:
     page = arg_to_number(args.get('page', 0))
     limit = arg_to_number(args.get('limit', 50))
@@ -771,6 +803,21 @@ def get_device_command(args, client) -> CommandResults:
                               readable_output=human_readable, raw_response=res)
     else:
         return CommandResults(readable_output=f"No devices found in {INTEGRATION} for the given filters: {args}")
+
+
+def get_device_location_command(args, client) -> CommandResults:
+    query_string = create_filter_query_from_args(args)
+    query_string = parse_return_fields(",".join(DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS), query_string)
+
+    res = client.api_request_absolute('GET', '/v2/reporting/devices', query_string=query_string)
+    if res:
+        outputs = parse_geo_location_outputs(copy.deepcopy(res))
+        human_readable = tableToMarkdown(f'{INTEGRATION} devices location:', outputs, removeNull=True)
+        return CommandResults(outputs_prefix='Absolute.LocationReport', outputs=outputs,
+                              readable_output=human_readable, raw_response=res)
+    else:
+        return CommandResults(
+            readable_output=f"No device locations found in {INTEGRATION} for the given filters: {args}")
 
 
 def validate_absolute_api_url(base_url):
@@ -849,6 +896,12 @@ def main() -> None:
 
         elif demisto.command() == 'absolute-device-get':
             return_results(get_device_command(args=args, client=client))
+
+        elif demisto.command() == 'absolute-device-location-get':
+            return_results(get_device_location_command(args=args, client=client))
+
+        else:
+            raise NotImplementedError(f'{demisto.command()} is not an existing {INTEGRATION} command.')
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

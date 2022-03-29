@@ -872,6 +872,42 @@ script:
     - contextPath: Absolute.Device.NetworkAdapters.networkSSID
       description: The Service Set Identifier (SSID) of the connected Wi-Fi adapter.
       type: String
+  - arguments:
+    - default: false
+      description: A comma sparated list of the system-defined unique identifier of the devices.
+      isArray: true
+      name: device_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a list of devices geo locations records and their corresponding data that meets the required devices ids.
+    execution: false
+    name: absolute-device-location-get
+    outputs:
+    - contextPath: Absolute.LocationReport.Coordinates
+      description: An array containing a comma separated list, the first number is the estimated latitude and the second number is the estimated longitude (in degrees) where the device is located.
+      type: Unknown
+    - contextPath: Absolute.LocationReport.City
+      description: The city where the device is located.
+      type: String
+    - contextPath: Absolute.LocationReport.State
+      description: The state or province where the device is located.
+      type: String
+    - contextPath: Absolute.LocationReport.CountryCode
+      description: The country code for the country where the device is located.
+      type: String
+    - contextPath: Absolute.LocationReport.Country
+      description: The country where the device is located.
+      type: String
+    - contextPath: Absolute.LocationReport.LocationTechnology
+      description: The technology used to get the location.
+      type: String
+    - contextPath: Absolute.LocationReport.Accuracy
+      description: The estimated accuracy (in meters) of the technology used to locate the device.
+      type: Number
+    - contextPath: Absolute.LocationReport.LastUpdate
+      description: The date and time (in UNIX Epoch) when the device last changed its location.
+      type: Number
   isfetch: false
   runonce: false
   script: '-'
