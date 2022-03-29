@@ -50,8 +50,24 @@
             "description": "Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)\n"
         },
         "timers": [],
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+            {
+                "Name": "desc",
+                "Value": {
+                    "Get": "lists",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "toUpperCase(value)"
+                    ]
+                }
+            },
+            {
+                "Name": "entryIDs",
+                "Value": "a"
+            }
+        ]
     },
     "TASK_4": {
         "details": {},
