@@ -185,6 +185,9 @@ class Advisory:
     affects_version_affected: str
     affects_version_value: str
     description: str
+    cvss_score: int
+    cvss_severity: str
+    cvss_vector_string: str
 
     _output_prefix = OUTPUT_PREFIX + "Advisory"
     _title = "Palo Alto Networks Security Advisories"
@@ -230,13 +233,19 @@ def flatten_advisory_dict(advisory_dict: dict) -> Optional[Advisory]:
         cve_title=advisory_dict.get("CVE_data_meta").get("TITLE"),
         cve_date_public=advisory_dict.get("CVE_data_meta").get("DATE_PUBLIC"),
         description=advisory_dict.get("description").get("description_data")[0].get("value"),
+        cvss_score=advisory_dict.get("impact").get("cvss").get("baseScore"),
+        cvss_severity=advisory_dict.get("impact").get("cvss").get("baseSeverity"),
+        cvss_vector_string=advisory_dict.get("impact").get("cvss").get("vectorString"),
+
         **affects_dict
     )
 
+
 @COMMANDS.command("test-module")
 def test_module(client: Client):
+    """Test the connectivity to the advisory API by checking for products"""
     request_result = client.get_products()
-    if request_result.get("success") == True:
+    if request_result.get("success"):
         return "ok"
 
 
@@ -267,6 +276,7 @@ def get_advisories(client: Client, product: str, sort: str = "-date", severity: 
 
 
 def main():
+    """Main entrypoint for script"""
     demisto_params = DemistoParameters(**demisto.params())
     client = Client(
         base_url=demisto_params.url
