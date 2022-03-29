@@ -817,6 +817,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     demisto.debug(f'{INTEGRATION_NAME} - Got total of {len(alerts)} alerts from CB server.')
     for alert in alerts:
         incident_created_time = dateparser.parse(alert.get('created_time'))
+        assert incident_created_time is not None
         incident_created_time_ms = incident_created_time.timestamp()
 
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
