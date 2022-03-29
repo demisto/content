@@ -60,8 +60,8 @@ run-validations:
       else
         # replace slashes ('/') in the branch name, if exist, with underscores ('_')
         UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
-        if ! [[ git clone --depth=1 -q https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_CI_BRANCH ]];
-        then
+        wget --no-check-certificate --quiet --method GET --timeout=0 --header 'PRIVATE-TOKEN: ${CI_JOB_TOKEN}' 'https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH'
+        if [ "$?" == "0" ]; then
             echo >&2 "Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
             exit 1
         fi

@@ -109,6 +109,8 @@ fieldSearchValue
 Classifiers
 SentinelOne
 URLs
+unisolate
+MSDE
 CrowdStrike
 FAQ
 hashes
