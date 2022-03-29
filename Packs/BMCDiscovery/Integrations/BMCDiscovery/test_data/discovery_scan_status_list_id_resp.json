@@ -1,0 +1,23 @@
+{
+    "blocked": false,
+    "consolidating": false,
+    "done": 14335,
+    "finished": false,
+    "inferred": "https://10.61.6.16/api/v1.3/discovery/runs/f5ac176243062b2b14c1a75a6e446973636f7665727952756e/inferred",
+    "key": "09d6b03a8609f12a19380a3d06100827",
+    "label": "Sample_run_16",
+    "pre_scanning": 256,
+    "results": "https://10.61.6.16/api/v1.3/discovery/runs/f5ac176243062b2b14c1a75a6e446973636f7665727952756e/results",
+    "scan_kind": "IP",
+    "scan_level": "Full Discovery",
+    "scan_type": "Snapshot",
+    "scanning": 0,
+    "scope": "",
+    "starttime": "2022-03-14T21:16:30.803013+00:00",
+    "total": 65534,
+    "uri": "https://10.61.6.16/api/v1.3/discovery/runs/f5ac176243062b2b14c1a75a6e446973636f7665727952756e",
+    "user": "system",
+    "uuid": "f5ac176243062b2b14c1a75a6e446973636f7665727952756e",
+    "valid_ranges": "192.168.0.0/16",
+    "waiting": 0
+  }
