@@ -2,7 +2,7 @@
   "vendor": "okta",
   "product": "on_prem",
 	"rules": [
-		"my-rule"
+		"_parsing_rule_id"
 	],
   "samples": [
     {
