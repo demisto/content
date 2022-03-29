@@ -7330,16 +7330,16 @@ script:
         type: String
       - contextPath: PANOS.SoftwareVersions.Summary.downloaded
         description: True if the software version is present on the system
-        type: String
+        type: Boolean
       - contextPath: PANOS.SoftwareVersions.Summary.current
         description: True if this is the currently installed software on the system
-        type: String
+        type: Boolean
       - contextPath: PANOS.SoftwareVersions.Summary.latest
         description: True if this is the most recently released software for this platform
-        type: String
+        type: Boolean
       - contextPath: PANOS.SoftwareVersions.Summary.uploaded
         description: True if the software version has been uploaded to the system
-        type: String
+        type: Boolean
   - arguments:
       - default: false
         description: String to filter to only show specific hostnames or serial numbers.
@@ -7355,7 +7355,7 @@ script:
         type: String
       - contextPath: PANOS.HAState.active
         description: Whether this is the active firewall in a pair or not. True if standalone as well
-        type: String
+        type: Boolean
       - contextPath: PANOS.HAState.status
         description: String HA status
         type: String

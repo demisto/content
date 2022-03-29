@@ -9893,7 +9893,7 @@ def main():
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
-                    get_jobs(topology, **demisto.args()),
+                    download_software(topology, **demisto.args()),
                     empty_result_message="Software download not started"
                 )
             )
