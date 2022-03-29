@@ -546,6 +546,7 @@ def upload_zipped_packs(client: demisto_client,
     header_params = {
         'Content-Type': 'multipart/form-data'
     }
+    # todo: check if need this
     # auth_settings = ['api_key', 'csrf_token', 'x-xdr-auth-id']
     file_path = os.path.abspath(pack_path)
     files = {'file': file_path}
