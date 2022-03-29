@@ -17,6 +17,7 @@ olefile = "==0.44"
 requests = "==2.18.4"
 urllib3 = "==1.22"
 PyYAML = "==3.12"
+MarkupSafe = "==2.0.1"
 
 [requires]
 python_version = "2.7"
