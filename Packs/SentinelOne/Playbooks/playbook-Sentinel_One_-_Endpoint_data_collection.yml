@@ -1,123 +1,268 @@
-id: Sentinel One - Endpoint data collection
-version: -1
-name: Sentinel One - Endpoint data collection
-fromversion: "5.0.0"
-description: |-
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: |+
   # Collect endpoint information based on SentinelOne commands.
 
   Input:
   * Hostname (Default: ${Endpoint.Hostname})
-starttaskid: "0"
+  * Password (Used for protecting zip file that file is stored in)
+  * Path (Full path of the file)
+  * Timeout - how long to poll for the file to appear in the activity feed. For example, if a host is offline
+
+  Notes:
+  The SentinelOne API for downloading files is aynchronous. At the time this was written there is no way to correlate a request for a file to the file entry that shows up in the activities feed. So, if two requests were submitted simultaneously to download two different files from the same host, there is no way to determine which file entry in the activity entry corresponds to which request.  So this playbook *assumes* that the most recent file upload from a given agent ID that occurs *after* we submit a file fetch request is our request. It uses locks to ensure that this is the case *if* the only source of file upload request is this XSOAR playbook. If analysts on XSOAR, other playbooks, or other systems are also submitting file fetches, this logic will fail.
+
+  If a file does not exist on an endpoint, the fetch-files API will still return success, and a zip file of the upload will still be uploaded to SentinelOne. However, the zip contents will be empty, except for a metadata.json file
+
+id: Sentinel One - Endpoint data collection
+inputs:
+- description: The Hostname of the device to run on
+  key: Hostname
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${Endpoint.Hostname}
+- description: Full path of file to upload from the agent
+  key: Path
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Password to use for protecting the resulting zip file. Modify this
+    if you also want to access the files from the SentinelOne web UI and have password
+    you use for that access
+  key: Password
+  playbookInputQuery:
+  required: false
+  value:
+    simple: PossiblyInfected)(*&7890
+- description: Timeout in minutes of max time spent waiting for file to upload
+  key: Timeout
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '10'
+name: Sentinel One - Endpoint data collection
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 27fc5e2d-5e47-4d5b-81ef-889cfeb1676e
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 1c76049e-d779-45fb-81b9-dc2c090f2690
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 1c76049e-d779-45fb-81b9-dc2c090f2690
+    timertriggers: []
     type: start
-    task:
-      id: 27fc5e2d-5e47-4d5b-81ef-889cfeb1676e
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": -120
+          "y": 50
         }
       }
-    note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: a127bd66-2910-4a57-86b2-e0c36065263c
-    type: regular
-    task:
-      id: a127bd66-2910-4a57-86b2-e0c36065263c
-      version: -1
-      name: Get  Host Agent info
-      script: SentinelOne|||so-agents-query
-      type: regular
-      iscommand: true
-      brand: SentinelOne
-      description: ""
+  '1':
+    id: '1'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
+    quietmode: 0
     scriptarguments:
-      agent_version__in: {}
-      computer_name__like:
+      computer_name:
         simple: ${inputs.Hostname}
-      core_count__gte: {}
-      core_count__lte: {}
-      cpu_count__gte: {}
-      cpu_count__lte: {}
-      created_at__gt: {}
-      created_at__lt: {}
-      domain__in: {}
-      encrypted_applications: {}
-      group_id: {}
-      group_id__in: {}
-      id__in: {}
-      id__nin: {}
-      include_decommissioned: {}
-      infected: {}
-      is_active: {}
-      is_decommissioned: {}
-      is_pending_uninstall: {}
-      is_uninstalled: {}
-      is_up_to_date: {}
-      last_active_date__gt: {}
-      last_active_date__lt: {}
-      limit: {}
-      machine_type__in: {}
-      network_status: {}
-      os_type: {}
-      os_type__in: {}
-      policy_id__in: {}
-      query: {}
-      registerd_at__gt: {}
-      registered_at__lt: {}
-      skip: {}
-      total_memory__gte: {}
-      total_memory__lte: {}
+      limit:
+        simple: '1'
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns all agents that match the specified criteria.
+      id: 0c5be938-c1ca-4bb8-89f4-ea022132d761
+      iscommand: true
+      name: Get  Host Agent info
+      script: '|||sentinelone-list-agents'
+      type: regular
+      version: -1
+    taskid: 0c5be938-c1ca-4bb8-89f4-ea022132d761
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 195
+          "x": 377.5,
+          "y": 545
         }
       }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 8a5366c2-6ab4-4eeb-8515-edde825d2f0d
-    type: condition
-    task:
-      id: 8a5366c2-6ab4-4eeb-8515-edde825d2f0d
-      version: -1
-      name: Did we get the Agent info?
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
+  '2':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: SentinelOne.Agents.ID
+          operator: isNotEmpty
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              simple: SentinelOne.Agents.IsActive
+          operator: isTrue
+      label: yes
+    id: '2'
+    ignoreworker: false
     nexttasks:
-      "no":
-      - "3"
-      "yes":
-      - "5"
+      no:
+      - '3'
+      yes:
+      - '5'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 1812a991-a18c-42b6-8714-75a30a6d2454
+      iscommand: false
+      name: Did we get the Agent info & Agent is Online?
+      type: condition
+      version: -1
+    taskid: 1812a991-a18c-42b6-8714-75a30a6d2454
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 720
+        }
+      }
+  '3':
+    id: '3'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
     scriptarguments:
       value:
-        simple: ${SentinelOne.Agents.Id}
+        simple: No Agent was found or Agent is not online for ${inputs.Hostname}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 62f93138-85b2-49e9-8952-43ee93d0f7ed
+      iscommand: false
+      name: No Agent was found
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 62f93138-85b2-49e9-8952-43ee93d0f7ed
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+  '4':
+    id: '4'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 76121753-126c-4542-898c-7b7d563a25b6
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 76121753-126c-4542-898c-7b7d563a25b6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3110
+        }
+      }
+  '5':
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 57dd867b-c857-41b3-88ff-c413c056a614
+      iscommand: false
+      name: Determine Start Timestamp for Querying Fetch Results
+      type: title
+      version: -1
+      description: ''
+    taskid: 57dd867b-c857-41b3-88ff-c413c056a614
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 895
+        }
+      }
+  '7':
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '1'
+    note: false
+    quietmode: 2
+    scriptarguments:
+      value:
+        simple: ${modules(val.brand.indexOf("SentinelOne v2")>=0)}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Using >= in brand query since we currently have a modified version/name
+      id: 4c4f4297-bddd-41b2-8cd0-8ed69de9506a
+      iscommand: false
+      name: Is SentinelOne v2 enabled?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 4c4f4297-bddd-41b2-8cd0-8ed69de9506a
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -125,162 +270,521 @@ tasks:
           "y": 370
         }
       }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 88cf0630-08b2-4ec8-8dff-a49dc81a9f8c
-    type: regular
-    task:
-      id: 88cf0630-08b2-4ec8-8dff-a49dc81a9f8c
-      version: -1
-      name: No Agent was found
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-      description: ""
+  '8':
+    continueonerror: true
+    id: '8'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
-    scriptarguments:
-      value:
-        simple: No Agent was found
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 51,
-          "y": 545
-        }
-      }
+      - '21'
     note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 85bc7a45-7439-417a-84a8-51eebf2753b3
-    type: title
-    task:
-      id: 85bc7a45-7439-417a-84a8-51eebf2753b3
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 865
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 9300a326-4267-4ade-8870-24310ab4445c
-    type: title
-    task:
-      id: 9300a326-4267-4ade-8870-24310ab4445c
-      version: -1
-      name: Collect info
-      type: title
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: cdb41868-c1b9-471c-8abd-da5ca3cac6e6
-    type: regular
-    task:
-      id: cdb41868-c1b9-471c-8abd-da5ca3cac6e6
-      version: -1
-      name: Get Processes
-      description: Get agent proccesses
-      script: SentinelOne|||so-get-agent-processes
-      type: regular
-      iscommand: true
-      brand: SentinelOne
-    nexttasks:
-      '#none#':
-      - "4"
+    quietmode: 0
     scriptarguments:
       agent_id:
-        simple: ${SentinelOne.Agents.Id}
+        simple: ${SentinelOne.Agents.ID}
+      file_path:
+        simple: ${inputs.Path}
+      password:
+        simple: ${inputs.Password}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Invokes a fetch files command against an agent endpoint
+      id: 04d1cdd3-2196-42d6-8d9b-2452c1f4f097
+      iscommand: true
+      name: Submit Fetch File Request
+      script: '|||sentinelone-fetch-file'
+      type: regular
+      version: -1
+    taskid: 04d1cdd3-2196-42d6-8d9b-2452c1f4f097
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 690
+          "x": 705,
+          "y": 2060
         }
       }
+  '10':
+    id: '10'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '17'
     note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: d5db1794-ef8a-400b-8001-7f8f196f602e
-    type: condition
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: d5db1794-ef8a-400b-8001-7f8f196f602e
-      version: -1
-      name: Is SentinelOne enabled?
-      scriptName: Exists
-      type: condition
+      brand: ''
+      id: f2885b08-e775-453f-89de-75bedd4f72a2
       iscommand: false
-      brand: ""
-      description: ""
+      name: Fetch File
+      type: title
+      version: -1
+      description: ''
+    taskid: f2885b08-e775-453f-89de-75bedd4f72a2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1740
+        }
+      }
+  '12':
+    id: '12'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit:
+        simple: '1'
+      sort_by:
+        simple: createdAt
+      sort_order:
+        simple: desc
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns a list of activities.
+      id: 77e7aa35-b7db-4456-8a71-8cbdadf4758b
+      iscommand: true
+      name: Get Latest Activity to Get Timestamp on SentinelOne
+      script: '|||sentinelone-get-activities'
+      type: regular
+      version: -1
+    taskid: 77e7aa35-b7db-4456-8a71-8cbdadf4758b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1040
+        }
+      }
+  '13':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: SentinelOne.Activity.CreatedAt
+          operator: isNotEmpty
+      label: yes
+    id: '13'
+    ignoreworker: false
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "1"
-    scriptarguments:
-      value:
-        simple: ${modules(val.brand=="SentinelOne")}
+      - '14'
+      yes:
+      - '15'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 1ac5e348-ba95-46df-8de1-17dfce785262
+      iscommand: false
+      name: Activity Found?
+      type: condition
+      version: -1
+    taskid: 1ac5e348-ba95-46df-8de1-17dfce785262
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1215
+        }
+      }
+  '14':
+    id: '14'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: This Playbook assumes that there is at least one activity entry already
+          in SentinelOne.  Please perform an operation in your console to begin filling
+          the Activity feed and then restart this playbook.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints an error entry with a given message
+      id: 05ce9faf-2497-4d27-864d-e1fd71c822f3
+      iscommand: false
+      name: 'Error: Unexpected Condition'
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 05ce9faf-2497-4d27-864d-e1fd71c822f3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1390
+        }
+      }
+  '15':
+    id: '15'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '24'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: StartTimestamp
+      value:
+        simple: ${SentinelOne.Activity.CreatedAt}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 8850c03f-85e5-4512-8b90-2bc055ce7c1f
+      iscommand: false
+      name: Set StartTimestamp for Query
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 8850c03f-85e5-4512-8b90-2bc055ce7c1f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1390
+        }
+      }
+  '16':
+    id: '16'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: yes
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      id: 93026461-32c4-48f8-86c7-ca7d55864648
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 93026461-32c4-48f8-86c7-ca7d55864648
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 20
+          "y": 195
         }
       }
+  '17':
+    id: '17'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '8'
     note: false
+    quietmode: 0
+    scriptarguments:
+      name:
+        simple: SentinelOne-${inputs.Hostname}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Get a lock. If the lock is already in use - will wait until it
+        is released or until timeout is reached
+      id: 68a8f957-2565-4880-8190-349a003a8156
+      iscommand: true
+      name: Get Synchronization Lock
+      script: '|||demisto-lock-get'
+      type: regular
+      version: -1
+    taskid: 68a8f957-2565-4880-8190-349a003a8156
     timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1885
+        }
+      }
+  '18':
+    id: '18'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '26'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      name:
+        simple: SentinelOne-${inputs.Hostname}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Release a lock
+      id: 119ecda6-cc2c-4ca0-8bc5-a5498510deeb
+      iscommand: true
+      name: Release Synchronization Lock
+      script: '|||demisto-lock-release'
+      type: regular
+      version: -1
+    taskid: 119ecda6-cc2c-4ca0-8bc5-a5498510deeb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 2585
+        }
+      }
+  '21':
+    id: '21'
+    ignoreworker: false
+    nexttasks:
+      no:
+      - '25'
+      yes:
+      - '18'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: 7ddaf067-591e-4407-868f-9d742df632de
+      iscommand: false
+      name: Error?
+      scriptName: isError
+      type: condition
+      version: -1
+    taskid: 7ddaf067-591e-4407-868f-9d742df632de
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 2235
+        }
+      }
+  '24':
+    id: '24'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: SentinelOne.Activity
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      id: 254b5ba7-26c8-441f-8e9c-6c3156e43e5b
+      iscommand: false
+      name: Delete SentinelOne.Activity
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 254b5ba7-26c8-441f-8e9c-6c3156e43e5b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1565
+        }
+      }
+  '25':
+    id: '25'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '18'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      StartTimestamp:
+        simple: ${StartTimestamp}
+      Timeout:
+        simple: '10'
+      agent_id:
+        simple: ${SentinelOne.Agents.ID}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: a184979c-04e7-425c-88bf-c164314c1524
+      iscommand: false
+      name: 9d832d8d-5c79-406b-82cb-7b7c4b1f12c8
+      playbookId: 9d832d8d-5c79-406b-82cb-7b7c4b1f12c8
+      type: playbook
+      version: -1
+      description: ''
+    taskid: a184979c-04e7-425c-88bf-c164314c1524
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 2410
+        }
+      }
+  '26':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: SentinelOne.Activity
+          operator: isNotEmpty
+      label: yes
+    id: '26'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '27'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 8ee4218a-08fe-4232-89dd-de822e9380d4
+      iscommand: false
+      name: Upload to SentinelOne Console Succeeded?
+      type: condition
+      version: -1
+    taskid: 8ee4218a-08fe-4232-89dd-de822e9380d4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 2760
+        }
+      }
+  '27':
+    id: '27'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      activity_id:
+        simple: ${SentinelOne.Activity.ID}
+      agent_id:
+        simple: ${SentinelOne.Agents.ID}
+      password:
+        simple: ${inputs.Password}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Download a file fetched using sentinelone-fetch-file to submit
+        the request and sentinelone-get-activities to get the download path
+      id: 09cf683a-1dcd-4fa9-8bc9-3b2b8fb8eb8e
+      iscommand: true
+      name: Download File from SentinelOne Console
+      script: '|||sentinelone-download-fetched-file'
+      tags:
+      - sentinelone-file-download
+      type: regular
+      version: -1
+    taskid: 09cf683a-1dcd-4fa9-8bc9-3b2b8fb8eb8e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 2935
+        }
+      }
+version: -1
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "21_25_no": 0.89
+    },
     "paper": {
       "dimensions": {
-        "height": 1050,
-        "width": 809,
-        "x": 51,
-        "y": -120
+        "height": 3125,
+        "width": 1250,
+        "x": 50,
+        "y": 50
       }
     }
   }
-inputs:
-- key: Hostname
-  value:
-    simple: ${Endpoint.Hostname}
-  required: false
-  description: The Hostname of the device to run on
-outputs: []
 tests:
-- No test
+- SentinelOne V2.1 - Test
+- SentinelOne V2.0 - Test
+fromversion: 5.5.0

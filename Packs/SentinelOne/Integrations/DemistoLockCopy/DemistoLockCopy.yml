@@ -1,0 +1,63 @@
+category: Utilities
+commonfields:
+  id: Demisto Lock_copy
+  version: -1
+configuration:
+- defaultvalue: "600"
+  display: Default timeout (seconds) for wait on locks to be released
+  name: timeout
+  required: true
+  type: 0
+- additionalinfo: Whether to sync the integration cache with the database (Available
+    from Cortex XSOAR 6.2.0).
+  defaultvalue: "false"
+  display: Sync integration cache
+  name: sync
+  required: false
+  type: 8
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 969774c0-e5d7-44d4-85b3-f557a8bd0147
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Locking mechanism that prevents concurrent execution of different tasks
+display: Demisto Lock_copy
+name: Demisto Lock_copy
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: Name of lock. When omitted, name is set to Default
+      name: name
+    - description: Additional information to provide for the lock instance
+      name: info
+    - defaultValue: "600"
+      description: Timeout (seconds) for wait on lock to be freed
+      name: timeout
+    description: Get a lock. If the lock is already in use - will wait until it is
+      released or until timeout is reached
+    name: demisto-lock-get
+  - arguments:
+    - default: true
+      description: Name of lock to release. When omitted, name is set to Default
+      name: name
+    description: Release a lock
+    name: demisto-lock-release
+  - arguments:
+    - default: true
+      description: Specific lock to show info for. If not specified, shows info for
+        all locks
+      name: name
+    description: Show information on locks
+    name: demisto-lock-info
+  - arguments: []
+    description: Release all locks
+    name: demisto-lock-release-all
+  runonce: false
+  script: ''
+  type: javascript
+sourcemoduleid: Demisto Lock
