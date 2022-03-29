@@ -34,7 +34,7 @@ See the [Impossible traveler alert single sign on](https://docs.paloaltonetworks
 
 ### Create a new playbook trigger
 
-1. On the left-hand menu, click the **Incident Response** icon  ![img.png](img.png)
+1. On the left-hand menu, click the **Incident Response** icon.
 2. Under **Automation**, click **Incident Configuration**.
 3. On the left-hand panel, select **Playbook Triggers**.
 4. Click **New Trigger**.
