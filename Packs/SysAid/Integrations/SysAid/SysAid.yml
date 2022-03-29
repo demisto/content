@@ -104,9 +104,9 @@ script:
       - task_activity
       - user_groups
     - name: entity_id
-      description: "The entity\'s ID. For example, in SR Form lists, send the SR ID\
-        \ to populate additional filters on the lists. e.g. the responsibility list\
-        \ may be filtered by the admin group of the SR."
+      description: "The entity's ID. For example, in SR Form lists, send the SR ID
+        to populate additional filters on the lists. e.g. the responsibility list
+        may be filtered by the admin group of the SR."
       required: false
       isArray: false
     - name: entity_type

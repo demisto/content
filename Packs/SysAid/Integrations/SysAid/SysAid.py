@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import requests
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -605,7 +605,7 @@ def fetch_incidents(client: Client, first_fetch: str, limit: Optional[int] = MAX
 
 
 def fetch_request(client: Client, fetch_types: str = None, include_archived: bool = False, included_statuses: str = None):
-    fetch_types = 'all' if 'all' in fetch_types else fetch_types
+    fetch_types = 'all' if not fetch_types or 'all' in fetch_types else fetch_types
     filters = {'status': included_statuses} if included_statuses else {}
 
     response = client.service_record_list_request(type_=fetch_types, archive=int(include_archived), filters=filters)
@@ -634,19 +634,19 @@ def filter_service_records_by_id(service_records: List[Dict[str, Any]], fetch_st
 
 
 def reduce_service_records_to_limit(service_records: List[Dict[str, Any]], limit: int, last_fetch: datetime,
-                                    last_id_fetched: int) -> (datetime, int, List[Dict[str, Any]]):
+                                    last_id_fetched: int) -> Tuple[datetime, int, List[Dict[str, Any]]]:
     incidents_count = min(limit, len(service_records))
     # limit can't be 0 or less, but there could be no service_records at the wanted time
     if incidents_count > 0:
         service_records = service_records[:limit]
         last_fetched_service_record = service_records[incidents_count - 1]
-        last_fetch = get_service_record_update_time(last_fetched_service_record)
+        last_fetch = get_service_record_update_time(last_fetched_service_record)  # type: ignore
         last_id_fetched = last_fetched_service_record['id']
     return last_fetch, last_id_fetched, service_records
 
 
-def parse_service_records(service_records: List[Dict[str, Any]], limit: int,
-                          fetch_start_timestamp: datetime, last_id_fetched: int) -> (datetime, int, List[Dict[str, Any]]):
+def parse_service_records(service_records: List[Dict[str, Any]], limit: int, fetch_start_timestamp: datetime,
+                          last_id_fetched: int) -> Tuple[datetime, int, List[Dict[str, Any]]]:
     service_records = filter_service_records_by_time(service_records, fetch_start_timestamp)
     service_records = filter_service_records_by_id(service_records, fetch_start_timestamp, last_id_fetched)
 
@@ -720,14 +720,15 @@ def test_module(client: Client, params: dict) -> None:
                                        f'(restricted to {MAX_INCIDENTS_TO_FETCH}), or is below zero.')
 
             included_statuses = params.get('included_statuses')
-            if set(argToList(included_statuses)) - STATUSES:
+            statuses_set = set(argToList(included_statuses))
+            if statuses_set - STATUSES:
                 # todo needed? API lets us send unreal statuses
-                raise DemistoException(f'Statuses {included_statuses - STATUSES} were given and are not legal statuses.'
+                raise DemistoException(f'Statuses {statuses_set - STATUSES} were given and are not legal statuses.'
                                        f'Statuses can be found by running the "sysaid-table-list" command with the '
                                        f'"list_id=status" argument.')
 
             fetch_types = params.get('fetch_types')
-            fetch_types = 'all' if 'all' in fetch_types else fetch_types
+            fetch_types = 'all' if not fetch_types or 'all' in fetch_types else fetch_types
 
             include_archived = argToBoolean(params.get('include_archived', False))
             filters = {'status': included_statuses} if included_statuses else {}
