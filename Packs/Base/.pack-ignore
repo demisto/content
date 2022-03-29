@@ -51,3 +51,4 @@ CreateIndicatorRelationship
 CommonServerPython
 CommonServer
 mergeVersionedIntegrationContext
+YMLMetadataCollector
