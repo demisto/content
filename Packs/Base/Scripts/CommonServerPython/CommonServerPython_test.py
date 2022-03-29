@@ -5,20 +5,21 @@ import json
 import re
 import os
 import sys
+import time
 import requests
 from pytest import raises, mark
 import pytest
 import warnings
 
 from CommonServerPython import set_to_integration_context_with_retries, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
-    flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
+    flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common
 import CommonServerPython
 
 try:
@@ -6654,6 +6655,224 @@ class TestSetAndGetLastMirrorRun:
             assert set_last_run.called is False
 
 
+class TestFetchWithLookBack:
+
+    LAST_RUN = {}
+    INCIDENTS = [
+        {
+            'incident_id': 1,
+            'created': (datetime.utcnow() - timedelta(hours=3)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 2,
+            'created': (datetime.utcnow() - timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 3,
+            'created': (datetime.utcnow() - timedelta(minutes=29)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 4,
+            'created': (datetime.utcnow() - timedelta(minutes=19)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 5,
+            'created': (datetime.utcnow() - timedelta(minutes=9)).strftime('%Y-%m-%dT%H:%M:%S')
+        }
+    ]
+
+    NEW_INCIDENTS = [
+        {
+            'incident_id': 6,
+            'created': (datetime.utcnow() - timedelta(minutes=49)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 7,
+            'created': (datetime.utcnow() - timedelta(minutes=25)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 8,
+            'created': (datetime.utcnow() - timedelta(minutes=23)).strftime('%Y-%m-%dT%H:%M:%S')
+        }
+    ]
+    
+    def example_fetch_incidents(self):
+        """
+        An example fetch for testing
+        """
+
+        from CommonServerPython import get_fetch_run_time_range, filter_incidents_by_duplicates_and_limit, \
+            update_last_run_object
+
+        incidents = []
+
+        params = demisto.params()
+        fetch_limit_param = params.get('limit')
+        look_back = int(params.get('look_back', 0))
+        first_fetch = params.get('first_fetch')
+        time_zone = params.get('time_zone', 0)
+
+        last_run = demisto.getLastRun()
+        fetch_limit = last_run.get('limit') or fetch_limit_param
+
+        start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch, look_back=look_back, timezone=time_zone)
+
+        query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
+        incidents_res = self.get_incidents_request(query)
+
+        incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents_res, last_run=last_run, fetch_limit=fetch_limit_param, id_field='incident_id')
+
+        last_run = update_last_run_object(last_run=last_run, incidents=incidents, fetch_limit=fetch_limit_param, start_fetch_time=start_fetch_time,
+                                          end_fetch_time=end_fetch_time, look_back=look_back, created_time_field='created', id_field='incident_id')
+
+        demisto.setLastRun(last_run)
+        return incidents
+
+    @staticmethod
+    def build_query(start_time, end_time, limit, return_incidents_by_limit=True):
+        query = {'from': start_time, 'to': end_time}
+        if return_incidents_by_limit:
+            query['limit'] = limit
+        return query
+
+    def get_incidents_request(self, query):
+        from_time = datetime.strptime(query['from'], '%Y-%m-%dT%H:%M:%S')
+        incidents = [inc for inc in self.INCIDENTS if datetime.strptime(inc['created'], '%Y-%m-%dT%H:%M:%S') > from_time]
+        if query.get('limit') is not None:
+            return incidents[:query['limit']]
+        return incidents
+
+    def set_last_run(self, new_last_run):
+        self.LAST_RUN = new_last_run
+
+    @pytest.mark.parametrize('params, result_phase1, result_phase2, expected_last_run', [
+        ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
+         {'limit': 2, 'time': INCIDENTS[3]['created']}),
+        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [],
+         {'limit': 3, 'time': INCIDENTS[4]['created']}),
+        ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]],
+         {'limit': 2, 'time': INCIDENTS[2]['created']}),
+        ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
+         {'limit': 3, 'time': INCIDENTS[3]['created']}),
+    ])
+    def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
+        """
+        Given:
+        - Connfiguration fetch parameters (incidents limit and first fetch time)
+
+        When:
+        - Running the example fetch incidents
+
+        Then:
+        - Ensure the return incidents and LastRun object as expected
+        """
+        if sys.version_info.major == 2:
+            # skip for python 2 - date
+            assert True
+            return
+
+        self.LAST_RUN = {}
+
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+
+        # Run first fetch
+        incidents_phase1 = self.example_fetch_incidents()
+
+        assert incidents_phase1 == result_phase1
+        assert self.LAST_RUN == expected_last_run
+
+        # Run second fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase2 = self.example_fetch_incidents()
+
+        assert incidents_phase2 == result_phase2
+
+    @pytest.mark.parametrize('params, result_phase1, result_phase2, result_phase3, expected_last_run_phase1, expected_last_run_phase2, new_incidents, index', [
+        (
+            {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS[2], INCIDENTS[3]], [NEW_INCIDENTS[0], INCIDENTS[4]], [],
+            {'found_incident_ids': {3: '', 4: ''}, 'limit': 4}, {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
+            [NEW_INCIDENTS[0]], 2
+        ),
+        (
+            {'limit': 2, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [INCIDENTS[4]],
+            {'found_incident_ids': {3: '', 4: ''}, 'limit': 4}, {'found_incident_ids': {3: '', 4: '', 7: '', 8: ''}, 'limit': 6},
+            [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+        ),
+        (
+            {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15}, [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [NEW_INCIDENTS[0], INCIDENTS[3], INCIDENTS[4]], [],
+            {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6}, {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+            [NEW_INCIDENTS[0]], 2
+        ),
+        (
+            {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [],
+            {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6}, {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+            [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+        ),
+    ])
+    def test_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
+                                  expected_last_run_phase1, expected_last_run_phase2, new_incidents, index):
+        """
+        Given:
+        - Connfiguration fetch parameters (incidents limit, first fetch time and look back)
+
+        When:
+        - Running the example fetch incidents and creating new incidents between fetch calles
+
+        Then:
+        - Ensure the return incidents and LastRun object as expected
+        """
+        if sys.version_info.major == 2:
+            # skip for python 2 - date
+            assert True
+            return
+
+        self.LAST_RUN = {}
+        incidents = self.INCIDENTS[:]
+
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+
+        # Run first fetch
+        incidents_phase1 = self.example_fetch_incidents()
+
+        assert incidents_phase1 == result_phase1
+        assert self.LAST_RUN['limit'] == expected_last_run_phase1['limit']
+        assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase1['found_incident_ids'].keys()
+        for inc in incidents_phase1:
+            assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
+
+        next_run_phase1 = self.LAST_RUN['time']
+        self.INCIDENTS = incidents[:index] + new_incidents + incidents[index:]
+
+        # Run second fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase2 = self.example_fetch_incidents()
+
+        assert incidents_phase2 == result_phase2
+        assert self.LAST_RUN['limit'] == expected_last_run_phase2['limit']
+        assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase2['found_incident_ids'].keys()
+
+        if len(incidents_phase2) >= params.get('limit'):
+            assert next_run_phase1 == self.LAST_RUN['time']
+        else:
+            assert incidents_phase2[-1]['created'] == self.LAST_RUN['time']
+
+        for inc in incidents_phase2:
+            assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
+
+        # Run third fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase3 = self.example_fetch_incidents()
+
+        assert incidents_phase3 == result_phase3
+
+        # Remove new incidents from self.INCIDENTS
+        self.INCIDENTS = incidents
+
+
 class TestTracebackLineNumberAdgustment:
     @staticmethod
     def test_module_line_number_mapping():
@@ -6829,3 +7048,98 @@ def test_get_pack_version(mocker, calling_context_mock, pack_name):
     mocker.patch('demistomock.callingContext', calling_context_mock)
     mocker.patch.object(demisto, 'internalHttpRequest', side_effect=get_pack_version_mock_internal_http_request)
     assert get_pack_version(pack_name=pack_name) == '1.0.0'
+
+
+TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN = [
+    (
+        {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12',
+         'indicator_type': DBotScoreType.FILE, 'reliability': DBotScoreReliability.A},
+        {'instance': Common.File, 'indicator_type': 'SHA256', 'reliability': 'A - Completely reliable'}
+    ),
+    (
+        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': DBotScoreType.FILE,
+        'reliability': DBotScoreReliability.B},
+        {'instance': Common.File, 'indicator_type': 'MD5', 'reliability': 'B - Usually reliable'}
+    ),
+    (
+        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': DBotScoreType.FILE,
+        'reliability': DBotScoreReliability.B},
+        {'instance': Common.File, 'indicator_type': 'MD5', 'reliability': 'B - Usually reliable', 'integration_name': 'test'}
+    ),
+    (
+        {'indicator': 'f4dad67d0f0a8e53d8*****937fc9506e81b76e043294da77ae50ce4e8f0482127e7c12',
+         'indicator_type': DBotScoreType.FILE, 'reliability': DBotScoreReliability.A},
+        {'error_message': 'This indicator -> f4dad67d0f0a8e53d8*****937fc9506e81b76e043294da77ae50ce4e8f0482127e7c12 is incorrect'}
+    ),
+    (
+        {'indicator': '8.8.8.8', 'indicator_type': DBotScoreType.IP},
+        {'instance': Common.IP, 'indicator_type': 'IP', 'reliability': None}
+    ),
+    (
+        {'indicator': 'www.google.com', 'indicator_type': DBotScoreType.URL, 'reliability': DBotScoreReliability.A},
+        {'instance': Common.URL, 'indicator_type': 'URL', 'reliability': 'A - Completely reliable'}
+    ),
+    (
+        {'indicator': 'google.com', 'indicator_type': DBotScoreType.DOMAIN},
+        {'instance': Common.Domain, 'indicator_type': 'DOMAIN', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.ACCOUNT},
+        {'instance': Common.Account, 'indicator_type': 'ACCOUNT', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CRYPTOCURRENCY, 'address_type': 'bitcoin'},
+        {'instance': Common.Cryptocurrency, 'indicator_type': 'BITCOIN', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CERTIFICATE},
+        {'instance': Common.Certificate, 'indicator_type': 'CERTIFICATE', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': 'test', 'context_prefix': 'test'},
+        {'instance': Common.CustomIndicator, 'indicator_type': 'TEST', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': 'test'},
+        {'error_message': 'Indicator type is invalid'}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CRYPTOCURRENCY},
+        {'error_message': 'Missing address_type parameter'}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CVE},
+        {'error_message': 'DBotScoreType.CVE is unsupported'}
+    )
+]
+
+
+@pytest.mark.parametrize('args, expected', TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN)
+def test_create_indicator_result_with_dbotscore_unknown(mocker, args, expected):
+
+    from CommonServerPython import create_indicator_result_with_dbotscore_unknown
+
+    if expected.get('integration_name'):
+        mocker.patch('CommonServerPython.Common.DBotScore',
+                     return_value=Common.DBotScore(indicator=args['indicator'],
+                                                   indicator_type=args['indicator_type'],
+                                                   score=0,
+                                                   integration_name=expected['integration_name'],
+                                                   reliability=args['reliability'],
+                                                   message='No results found.'))
+    try:
+        results = create_indicator_result_with_dbotscore_unknown(**args)
+    except ValueError as e:
+        assert str(e) == expected['error_message']
+        return
+
+    assert expected['indicator_type'] in results.readable_output
+    assert isinstance(results.indicator, expected['instance'])
+    assert results.indicator.dbot_score.score == 0
+    assert results.indicator.dbot_score.reliability == expected['reliability']
+    assert results.indicator.dbot_score.message == 'No results found.'
+
+    if expected.get('integration_name'):
+        assert expected['integration_name'] in results.readable_output
+    else:
+        assert 'Results:' in results.readable_output
