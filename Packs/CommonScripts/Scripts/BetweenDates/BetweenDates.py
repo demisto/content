@@ -8,7 +8,7 @@ def is_between_dates(value, begin_date, end_date):
     start_time = dateparser.parse(begin_date)
     end_time = dateparser.parse(end_date)
 
-    return start_time <= input_time <= end_time
+    return start_time <= input_time <= end_time  # type: ignore
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
