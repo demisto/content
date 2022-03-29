@@ -1,0 +1,342 @@
+id: a31dc98b-dc42-4ac1-8a9b-342df7522cb3
+version: 41
+vcShouldKeepItemLegacyProdMachine: false
+name: ACTI Incident Enrichment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a87b5873-01bd-44bc-8f94-955d7359c2f1
+    type: start
+    task:
+      id: a87b5873-01bd-44bc-8f94-955d7359c2f1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 90ce0228-1b31-4ff4-89f4-0895316417c9
+    type: title
+    task:
+      id: 90ce0228-1b31-4ff4-89f4-0895316417c9
+      version: -1
+      name: Enrich Indicator using ACTI integrations
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f8570361-12ea-4791-8898-73d185e82b2f
+    type: regular
+    task:
+      id: f8570361-12ea-4791-8898-73d185e82b2f
+      version: -1
+      name: Extracting indicators from incident
+      description: Extract all indicators according to server indicators configuration
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      text:
+        simple: ${incident}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b5bf504b-c41c-47f6-89ea-a8aafb74ea47
+    type: title
+    task:
+      id: b5bf504b-c41c-47f6-89ea-a8aafb74ea47
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 820d4867-5543-45ab-80ce-c0589975c921
+    type: playbook
+    task:
+      id: 820d4867-5543-45ab-80ce-c0589975c921
+      version: -1
+      name: ACTI Reports Enrichment
+      playbookName: ACTI IA/IR Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Domain:
+        simple: ${Domain}
+      IP:
+        simple: ${IP}
+      URL:
+        simple: ${URL}
+      ia_uuid:
+        complex:
+          root: ${intelligence_alerts}
+          transformers:
+          - operator: uniq
+      ir_uuid:
+        complex:
+          root: ${intelligence_reports}
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d9eedf7d-5fa0-4124-8d69-1ad16435f6fe
+    type: regular
+    task:
+      id: d9eedf7d-5fa0-4124-8d69-1ad16435f6fe
+      version: -1
+      name: CreateIndicatorRelationship
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      create_indicator:
+        simple: "true"
+      entity_a:
+        simple: ${ExtractedIndicators}
+      entity_a_type:
+        simple: IP
+      entity_b:
+        simple: ${ExtractedIndicators}
+      entity_b_query:
+        simple: ${intelligence_report}
+      entity_b_type:
+        simple: Report
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 0904a666-1d14-4f68-852c-033fcb552c48
+    type: playbook
+    task:
+      id: 0904a666-1d14-4f68-852c-033fcb552c48
+      version: -1
+      name: Create Relationships
+      playbookName: Create Relationships
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Domain:
+        complex:
+          root: ${Domain
+          accessor: Name}
+          transformers:
+          - operator: uniq
+      IA:
+        complex:
+          root: ${intelligence_alerts}
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: ${IP
+          accessor: Address}
+          transformers:
+          - operator: uniq
+      IR:
+        complex:
+          root: ${intelligence_reports}
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: ${URL
+          accessor: Data}
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 59eb5179-c3da-4ef1-8907-584db3e1b3a4
+    type: playbook
+    task:
+      id: 59eb5179-c3da-4ef1-8907-584db3e1b3a4
+      version: -1
+      name: ACTI Indicator Enrichment
+      playbookName: ACTI Indicator Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      Domain_Pre_Enrich:
+        simple: ${ExtractedIndicators.Domain}
+      IP_Pre_Enrich:
+        simple: ${ExtractedIndicators.IP}
+      URL_Pre_Enrich:
+        simple: ${ExtractedIndicators.URL}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1130,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

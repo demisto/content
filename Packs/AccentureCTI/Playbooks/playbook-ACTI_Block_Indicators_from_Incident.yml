@@ -1,0 +1,214 @@
+id: be8b9ed9-0016-49e7-8be0-497a6afbcc68
+version: 9
+vcShouldKeepItemLegacyProdMachine: false
+name: ACTI Block Indicators from Incident
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 77eeae08-77f6-4c1e-8396-d36dc50ec504
+    type: start
+    task:
+      id: 77eeae08-77f6-4c1e-8396-d36dc50ec504
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1bb8d642-60cb-469b-8f38-408e571d4763
+    type: regular
+    task:
+      id: 1bb8d642-60cb-469b-8f38-408e571d4763
+      version: -1
+      name: Extract Indicators from Incident
+      description: Extract all indicators according to server indicators configuration
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      text:
+        simple: ${incident}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 41100fc5-c396-41f6-8c93-ac4041e2e3b9
+    type: playbook
+    task:
+      id: 41100fc5-c396-41f6-8c93-ac4041e2e3b9
+      version: -1
+      name: ACTI Block Indicators with severity greater than equal to 5
+      description: Block Indicators with indicators with severity with 5 or more
+      playbookName: ACTI Block Indicators | severity >= 5
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Domain:
+        complex:
+          root: ${DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ${DBotScore.Type}
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: ${DBotScore.Score}
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator}
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: ${DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ${DBotScore.Type}
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: ${DBotScore.Score}
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator}
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: ${DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ${DBotScore.Type}
+                iscontext: true
+              right:
+                value:
+                  simple: url
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: ${DBotScore.Score}
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator}
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 9c95a73e-b82b-436f-8721-d90dc162c4de
+    type: title
+    task:
+      id: 9c95a73e-b82b-436f-8721-d90dc162c4de
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

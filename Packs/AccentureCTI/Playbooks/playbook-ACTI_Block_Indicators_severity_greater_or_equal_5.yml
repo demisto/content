@@ -1,0 +1,440 @@
+id: abc440b6-9182-406a-8625-a851ce58025f
+version: 23
+vcShouldKeepItemLegacyProdMachine: false
+name: ACTI Block Indicators | severity >= 5
+description: Block Indicators with indicators with severity with 5 or more
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: be1ddbb4-be2f-4564-88fe-1db6182bee73
+    type: start
+    task:
+      id: be1ddbb4-be2f-4564-88fe-1db6182bee73
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+      - "10"
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a942d96b-1cd5-46eb-8b8a-28374ee55457
+    type: title
+    task:
+      id: a942d96b-1cd5-46eb-8b8a-28374ee55457
+      version: -1
+      name: Block Indicators
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "6"
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 3e325450-e5a6-4d22-8852-00bcc0e70ad6
+    type: playbook
+    task:
+      id: 3e325450-e5a6-4d22-8852-00bcc0e70ad6
+      version: -1
+      name: Block IP - Generic v2
+      description: |-
+        This playbook blocks malicious IPs using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Check Point Firewall
+        * Palo Alto Networks Minemeld
+        * Palo Alto Networks PAN-OS
+        * Zscaler
+        * FortiGate
+      playbookName: Block IP - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        simple: ${inputs.IP}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: eaa72b02-2d48-41fa-8e75-284e1db8ad2c
+    type: playbook
+    task:
+      id: eaa72b02-2d48-41fa-8e75-284e1db8ad2c
+      version: -1
+      name: Block URL - Generic
+      description: |-
+        This playbook blocks malicious URLs using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Palo Alto Networks Minemeld
+        * Palo Alto Networks PAN-OS
+        * Zscaler
+      playbookName: Block URL - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      URL:
+        simple: ${inputs.URL}
+      URLListName:
+        simple: Demisto Remediation - URL EDL
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 0b726b4d-90b6-43b1-8ed1-68b19f7a5adf
+    type: playbook
+    task:
+      id: 0b726b4d-90b6-43b1-8ed1-68b19f7a5adf
+      version: -1
+      name: Block Domain - Generic
+      description: |-
+        This playbook blocks malicious Domains using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Zscaler
+        * Symantec Messaging Gateway
+        * FireEye EX
+        * Trend Micro Apex One
+        * Proofpoint Threat Response
+      playbookName: Block Domain - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Domain:
+        simple: ${inputs.Domain}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 94bc982d-a846-4838-89e6-ed9bc5cf8377
+    type: title
+    task:
+      id: 94bc982d-a846-4838-89e6-ed9bc5cf8377
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: dca242c8-fbd2-4844-8a73-41e354a4924e
+    type: regular
+    task:
+      id: dca242c8-fbd2-4844-8a73-41e354a4924e
+      version: -1
+      name: Enrich IP using ACTI Indicator Query Integration
+      description: Checks the reputation of the given IP address.
+      script: ACTI Indicator Query|||ip
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip:
+        simple: ${ExtractedIndicators.IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: aff4154b-c482-4ec9-86e7-ff9218e42240
+    type: regular
+    task:
+      id: aff4154b-c482-4ec9-86e7-ff9218e42240
+      version: -1
+      name: Enrich URL using ACTI Indicator Query Integration
+      description: Checks the reputation of the given URL.
+      script: ACTI Indicator Query|||url
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      url:
+        simple: ${ExtractedIndicators.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 403ea113-9089-44be-8672-3c3f2e183247
+    type: regular
+    task:
+      id: 403ea113-9089-44be-8672-3c3f2e183247
+      version: -1
+      name: Enrich Domain using ACTI Indicator Query Integration
+      description: Checks the reputation of the given domain.
+      script: ACTI Indicator Query|||domain
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        simple: ${ExtractedIndicators.Domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    complex:
+      root: ${DBotScore
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Type}
+            iscontext: true
+          right:
+            value:
+              simple: ip
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      accessor: Indicator}
+      transformers:
+      - operator: uniq
+  required: false
+  description: Considers IP(s) which have severity 5 or more
+  playbookInputQuery: null
+- key: URL
+  value:
+    complex:
+      root: ${DBotScore
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Type}
+            iscontext: true
+          right:
+            value:
+              simple: url
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      accessor: Indicator}
+      transformers:
+      - operator: uniq
+  required: false
+  description: Considers URL(s) which have severity 5 or more
+  playbookInputQuery: null
+- key: Domain
+  value:
+    complex:
+      root: ${DBotScore
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Type}
+            iscontext: true
+          right:
+            value:
+              simple: domain
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      accessor: Indicator}
+      transformers:
+      - operator: uniq
+  required: false
+  description: Considers Domain(s) which have severity 5 or more
+  playbookInputQuery: null
+outputs: []
