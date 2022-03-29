@@ -21,6 +21,10 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Long running instance
+  name: longRunning
+  type: 8
+  required: false
 - display: Environment
   name: env
   type: 15
@@ -47,9 +51,9 @@ configuration:
     the option to request an exemption
 - display: Slack Bot Message
   name: dlp_slack_message
-  defaultvalue: 'Hi $user!🔔\n\n*We need your feedback* \nYour upload of *$file_name*
+  defaultvalue: 'Hi $user, \n\n*We need your feedback* \nYour upload of *$file_name*
     on *$app_name* was blocked due to company policy. This file contains sensitive
-    information which violates *$data_profile_name* policy. \n\n $snippets'
+    information which violates *$data_profile_name* policy. \n\n $snippets\n\n'
   type: 12
   required: false
   additionalinfo: The Slack message to send to the user to ask for feedback
@@ -100,6 +104,8 @@ script:
       - CONFIRMED_FALSE_POSITIVE
       - EXCEPTION_REQUESTED
       - EXCEPTION_GRANTED
+      - EXCEPTION_NOT_REQUESTED
+      - OPERATIONAL_ERROR
       description: The user feedback
     - name: user_id
       required: true
@@ -140,20 +146,22 @@ script:
     - name: data_profile_name
       required: true
       description: The data profile name associated with the incident
+    - name: snippets
+      required: false
+      description: The snippets of the violation
     - name: app_name
       required: true
       description: The name of the application that performed the upload
-    - name: snippets
-      description: The snippets of the violation
     outputs:
     - contextPath: DLP.slack_message
       description: The Slack bot message
       type: string
     description: Get the Slack bot message to send to the user for gathering feedback
   - name: pan-dlp-reset-last-run
+    arguments: []
     description: Resets the fetch incidents last run value, which resets the fetch
-        to its initial fetch state.
-  dockerimage: demisto/python3:3.10.1.27636
+      to its initial fetch state.
+  dockerimage: demisto/python3:3.10.4.27798
   isFetchSamples: true
   longRunning: true
   runonce: false

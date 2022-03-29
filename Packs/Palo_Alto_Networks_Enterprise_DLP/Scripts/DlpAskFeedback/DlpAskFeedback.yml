@@ -21,12 +21,14 @@ args:
 - name: task
   description: A manual task that this task can close
 - name: user_display_name
+  required: true
   description: The name of the user used for greeting in the Slack message
 - name: user_id
   required: true
   description: The user Id to identify the recipient on Slack
 - name: snippets
-  description: The snippets of the violationscripttarget
+  description: The snippets of the violation
+
 - name: include_violation_detail
   required: true
   auto: PREDEFINED
@@ -44,14 +46,15 @@ args:
   description: What kind of question to ask the user, about the file content or about
     exemption
   defaultValue: ABOUT_FILE
+scripttarget: 0
 subtype: python3
 dependson:
   must:
-  - SlackV2|||send-notification
+  - SlackV3|||send-notification
   should:
-  - SlackV2|||send-notification
+  - SlackV3|||send-notification
 runonce: false
-dockerimage: demisto/python3:3.10.1.27636
+dockerimage: demisto/python3:3.10.4.27798
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

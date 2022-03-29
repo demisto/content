@@ -355,7 +355,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+      - "55"
       "yes":
       - "42"
     separatecontext: false
@@ -1180,6 +1180,47 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: eca03f18-59e5-45c8-8a1e-309fc2ccd804
+    type: regular
+    task:
+      id: eca03f18-59e5-45c8-8a1e-309fc2ccd804
+      version: -1
+      name: 'Set feedback status to "Operational Error" '
+      description: Update a DLP incident with user feedback
+      script: '|||pan-dlp-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      feedback:
+        simple: OPERATIONAL_ERROR
+      incident_id:
+        simple: ${incident.dlpincidentid}
+      region:
+        simple: ${incident.dlpincidentregion}
+      user_id:
+        simple: ${incident.sourceusername}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1190,8 +1231,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 4060,
-        "width": 1892.5,
-        "x": 50,
+        "width": 2382.5,
+        "x": -440,
         "y": 50
       }
     }
