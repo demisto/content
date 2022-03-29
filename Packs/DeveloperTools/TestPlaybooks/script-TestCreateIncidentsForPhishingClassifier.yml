@@ -7,7 +7,7 @@ script: >+
 
   NUMBER_OF_INCIDENTS = int(demisto.args()['numberOfIncidents'])
 
-  words_tag1 = ["closed", "church", "squeamish", "friction", "moaning", "gratis", "angle", "smash", "kiss", "desk", "icky", "aunt"]
+  words_tag1 = ["closed", "church", "squeamish", "moaning", "gratis", "angle", "smash", "kiss", "desk", "icky", "aunt"]
 
   words_tag2 = ["ntidy","boy","substance","faulty","friction","waves","type","boat","argument","metal","legal","marked"]
 

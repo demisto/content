@@ -123,19 +123,6 @@ format_funcs: List[Callable[[bytes], Optional[SyslogMessageExtract]]] = [parse_r
                                                                          parse_rfc_6587_format]
 
 
-def test_module() -> str:
-    """
-    Tests API connectivity and authentication'
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    Returns:
-        (str): 'ok' if test passed, anything else will fail the test.
-    """
-    return 'ok'
-
-
 def fetch_samples() -> None:
     """
     Retrieves samples from context.
@@ -143,11 +130,12 @@ def fetch_samples() -> None:
     demisto.incidents(get_integration_context().get('samples'))
 
 
-def create_incident_from_syslog_message(extracted_message: SyslogMessageExtract) -> dict:
+def create_incident_from_syslog_message(extracted_message: SyslogMessageExtract, incident_type: Optional[str]) -> dict:
     """
     Creates incident from the extracted Syslog message.
     Args:
         extracted_message (SyslogMessageExtract): Syslog message extraction details.
+        incident_type (Optional[str]): The incident type
 
     Returns:
         (dict): Incident.
@@ -156,6 +144,7 @@ def create_incident_from_syslog_message(extracted_message: SyslogMessageExtract)
         'name': f'Syslog from [{extracted_message.host_name}][{extracted_message.timestamp}]',
         'rawJSON': json.dumps(vars(extracted_message)),
         'occurred': extracted_message.occurred,
+        'type': incident_type,
         'details': '\n'.join([f'{k}: {v}' for k, v in vars(extracted_message).items() if v])
     }
 
@@ -211,6 +200,7 @@ def perform_long_running_loop(socket_data: bytes):
     Returns:
         (None): Creates incident in Cortex XSOAR platform.
     """
+    incident_type: Optional[str] = demisto.params().get('incident_type', '')
     extracted_message: Optional[SyslogMessageExtract] = None
     for format_func in format_funcs:
         extracted_message = format_func(socket_data)
@@ -220,7 +210,7 @@ def perform_long_running_loop(socket_data: bytes):
         raise DemistoException(f'Could not parse the following message: {socket_data.decode("utf-8")}')
 
     if log_message_passes_filter(extracted_message, MESSAGE_REGEX):
-        incident: dict = create_incident_from_syslog_message(extracted_message)
+        incident: dict = create_incident_from_syslog_message(extracted_message, incident_type)
         update_integration_context_samples(incident)
         demisto.createIncidents([incident])
 

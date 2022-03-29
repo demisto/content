@@ -32,27 +32,33 @@
     "Aliases": [
         {
             "cliName": "countryname",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Country Name"
         },
         {
             "cliName": "companycountry",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Company Country"
         },
         {
             "cliName": "countrywherethebreachtookplace",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Country where the breach took place"
         },
         {
             "cliName": "googlecloudsccfindingsourcepropertiesdstcountry",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "GoogleCloudSCC Finding SourceProperties DstCountry"
         },
         {
             "cliName": "googlecloudsccfindingsourcepropertieslastcountry",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "GoogleCloudSCC Finding SourceProperties LastCountry"
         },
         {
             "cliName": "previouscountry",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Previous Country"
         }
     ]
 }

@@ -28,23 +28,27 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "project",
+    "x2_fields": "project",
     "Aliases": [
         {
-          "cliName": "googlecloudsccfindingsourcepropertiesprojectid",
-          "type": "shortText"
+            "cliName": "googlecloudsccfindingsourcepropertiesprojectid",
+            "type": "shortText",
+            "name": "GoogleCloudSCC Finding SourceProperties ProjectId"
         },
         {
-          "cliName": "googlecloudsccresourceprojectdisplayname",
-          "type": "shortText"
+            "cliName": "googlecloudsccresourceprojectdisplayname",
+            "type": "shortText",
+            "name": "GoogleCloudSCC Resource Project DisplayName"
         },
         {
-          "cliName": "googlecloudsccresourceprojectname",
-          "type": "shortText"
+            "cliName": "googlecloudsccresourceprojectname",
+            "type": "shortText",
+            "name": "GoogleCloudSCC Resource ProjectName"
         },
         {
-          "cliName": "prismacloudcomputeproject",
-          "type": "shortText"
+            "cliName": "prismacloudcomputeproject",
+            "type": "shortText",
+            "name": "Prisma Cloud Compute Project"
         }
     ]
 }

@@ -28,15 +28,17 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "agent_file_md5",
+    "x2_fields": "action_file_md5",
     "Aliases": [
         {
-        "cliName": "gibinjectmd5",
-        "type": "shortText"
+            "cliName": "gibinjectmd5",
+            "type": "shortText",
+            "name": "GIB Inject MD5"
         },
         {
-        "cliName": "md5",
-        "type": "shortText"
+            "cliName": "md5",
+            "type": "shortText",
+            "name": "MD5"
         }
     ]
 }

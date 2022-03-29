@@ -31,12 +31,14 @@
     "x2_fields": "causality_actor_process_image_name",
     "Aliases": [
         {
-          "cliName": "parentprocess",
-          "type": "multiSelect"
+            "cliName": "parentprocess",
+            "type": "multiSelect",
+            "name": "Parent Process"
         },
         {
             "cliName": "digitalguardianparentprocessname",
-            "type": "shortText"  
+            "type": "shortText",
+            "name": "Digital Guardian Parent Process Name"
         }
     ]
 }

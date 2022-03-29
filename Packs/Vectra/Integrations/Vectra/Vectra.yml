@@ -1,0 +1,530 @@
+commonfields:
+  id: Vectra
+  version: -1
+name: Vectra
+display: Vectra
+category: Network Security
+description: Automated attacker behavior analytics
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: vec-detections
+    deprecated: true
+    arguments:
+    - name: detection_id
+      description: Filter by detection ID
+    - name: fields
+      description: Filters objects listed
+    - name: page
+      description: Page number. Possible values are a positive integer or last
+    - name: page_size
+      description: Page size. Possible values are a positive integer or all
+    - name: ordering
+      description: Orders records by last timestamp, threat score and certainty score.
+        The default out sorts threat and certainty score in ascending order. Scores
+        can sorted in descending order by prepending the query with “minus” symbol
+    - name: min_id
+      description: '>= the id provided'
+    - name: max_id
+      description: <= the id provided
+    - name: state
+      description: 'filter by state: active, inactive, ignored, ignored for all'
+    - name: type_vname
+      description: filter by the detection type (verbose name)
+    - name: category
+      description: filter by the detection category
+    - name: src_ip
+      description: filter by source (ip address)
+    - name: t_score
+      description: filter by threat score
+    - name: t_score_gte
+      description: filter by threat score >= the score provided
+    - name: c_score
+      description: filter by certainty score
+    - name: c_score_gte
+      description: filter by certainty score >= the score provided
+    - name: last_timestamp
+      description: filter by last timestamp
+    - name: host_id
+      description: filter by id of the host object a detection is attributed to
+    - name: tags
+      description: filter by a tag or a comma-separated list of tags
+    - name: destination
+      description: filter by destination in the detection detail set
+    - name: proto
+      description: filter by the protocol in the detection detail set
+    - name: dst_port
+      description: filter by the destination port in the detection detail set
+    - name: inbound_ip
+      description: filter by the inbound_ip in the relayed comm set
+    - name: inbound_proto
+      description: filter by the inbound_proto in the relayed comm set
+    - name: inbound_port
+      description: filter by the inbound_port in the relayed comm set
+    - name: inbound_dns
+      description: filter by the inbound_dns in the relayed comm set
+    - name: outbound_ip
+      description: filter by the outbound_ip in the relayed comm set
+    - name: outbound_proto
+      description: filter by the outbound_proto in the relayed comm set
+    - name: outbound_port
+      description: filter by the outbound_port in the relayed comm set
+    - name: outbound_dns
+      description: filter by the outbound_dns in the relayed_comm_set
+    - name: dns_ip
+      description: filter by the dns_ip in the dns_set
+    - name: dns_request
+      description: filter by the dns_request in the dns_set
+    - name: resp_code
+      description: filter by the resp_code in the dns_set
+    - name: resp
+      description: filter by the resp in the dns_set
+    outputs:
+    - contextPath: Vectra.Detections.DetectionId
+      description: The learned hostname
+    - contextPath: Vectra.Detections.TypeVName
+      description: Vectra detection id
+    - contextPath: Vectra.Detections.Category
+      description: The detection category
+    - contextPath: Vectra.Detections.SrcIP
+      description: The detection source IP
+    - contextPath: Vectra.Detections.State
+      description: The detection state
+    - contextPath: Vectra.Detections.TScore
+      description: The detection tscore
+    - contextPath: Vectra.Detections.CScore
+      description: The detection cscore
+    - contextPath: Vectra.Detections.TargetsKeyAsset
+      description: Is detection targets key asset
+    - contextPath: Vectra.Detections.Tags
+      description: The detection tags
+    - contextPath: Vectra.Detections.FirstTimestamp
+      description: The detection first time stamp
+    - contextPath: Vectra.Detections.LastTimestamp
+      description: The detection last time stamp
+    - contextPath: Vectra.Detections.HostID
+      description: The detection host id
+    description: Detection objects contain all the information related to security
+      events detected on the network
+  - name: vectra-detections
+    arguments:
+    - name: detection_id
+      description: Filter by detection ID
+    - name: fields
+      description: Filters objects listed
+    - name: page
+      description: Page number. Possible values are a positive integer or last
+    - name: page_size
+      description: Page size. Possible values are a positive integer or all
+    - name: ordering
+      description: Orders records by last timestamp, threat score and certainty score.
+        The default out sorts threat and certainty score in ascending order. Scores
+        can sorted in descending order by prepending the query with “minus” symbol
+    - name: min_id
+      description: '>= the id provided'
+    - name: max_id
+      description: <= the id provided
+    - name: state
+      description: 'filter by state: active, inactive, ignored, ignored for all'
+    - name: type_vname
+      description: filter by the detection type (verbose name)
+    - name: category
+      description: filter by the detection category
+    - name: src_ip
+      description: filter by source (ip address)
+    - name: t_score
+      description: filter by threat score
+    - name: t_score_gte
+      description: filter by threat score >= the score provided
+    - name: c_score
+      description: filter by certainty score
+    - name: c_score_gte
+      description: filter by certainty score >= the score provided
+    - name: last_timestamp
+      description: filter by last timestamp
+    - name: host_id
+      description: filter by id of the host object a detection is attributed to
+    - name: tags
+      description: filter by a tag or a comma-separated list of tags
+    - name: destination
+      description: filter by destination in the detection detail set
+    - name: proto
+      description: filter by the protocol in the detection detail set
+    - name: dst_port
+      description: filter by the destination port in the detection detail set
+    - name: inbound_ip
+      description: filter by the inbound_ip in the relayed comm set
+    - name: inbound_proto
+      description: filter by the inbound_proto in the relayed comm set
+    - name: inbound_port
+      description: filter by the inbound_port in the relayed comm set
+    - name: inbound_dns
+      description: filter by the inbound_dns in the relayed comm set
+    - name: outbound_ip
+      description: filter by the outbound_ip in the relayed comm set
+    - name: outbound_proto
+      description: filter by the outbound_proto in the relayed comm set
+    - name: outbound_port
+      description: filter by the outbound_port in the relayed comm set
+    - name: outbound_dns
+      description: filter by the outbound_dns in the relayed_comm_set
+    - name: dns_ip
+      description: filter by the dns_ip in the dns_set
+    - name: dns_request
+      description: filter by the dns_request in the dns_set
+    - name: resp_code
+      description: filter by the resp_code in the dns_set
+    - name: resp
+      description: filter by the resp in the dns_set
+    outputs:
+    - contextPath: Vectra.Detections.DetectionId
+      description: The learned hostname
+    - contextPath: Vectra.Detections.TypeVName
+      description: Vectra detection id
+    - contextPath: Vectra.Detections.Category
+      description: The detection category
+    - contextPath: Vectra.Detections.SrcIP
+      description: The detection source IP
+    - contextPath: Vectra.Detections.State
+      description: The detection state
+    - contextPath: Vectra.Detections.TScore
+      description: The detection tscore
+    - contextPath: Vectra.Detections.CScore
+      description: The detection cscore
+    - contextPath: Vectra.Detections.TargetsKeyAsset
+      description: Is detection targets key asset
+    - contextPath: Vectra.Detections.Tags
+      description: The detection tags
+    - contextPath: Vectra.Detections.FirstTimestamp
+      description: The detection first time stamp
+    - contextPath: Vectra.Detections.LastTimestamp
+      description: The detection last time stamp
+    - contextPath: Vectra.Detections.HostID
+      description: The detection host id
+    description: Detection objects contain all the information related to security
+      events detected on the network
+  - name: vec-hosts
+    deprecated: true
+    arguments:
+    - name: host_id
+      description: Filter by host ID
+    - name: fields
+      description: Filters objects listed
+    - name: page
+      description: Page number. Possible values are a positive integer or last
+    - name: page_size
+      description: Page size. Possible values are a positive integer or all
+    - name: ordering
+      description: Orders records by last timestamp, threat score and certainty score.
+        The default out sorts threat and certainty score in ascending order. Scores
+        can sorted in descending order by prepending the query with “minus” symbol
+    - name: name
+      description: filter by name
+    - name: state
+      description: 'filter by state: active, inactive, suspended, ignored, ignored4all'
+    - name: last_source
+      description: filter by last_source (ip address)
+    - name: t_score
+      description: filter by threat score
+    - name: t_score_gte
+      description: filter by threat score >= the score provided
+    - name: c_score
+      description: filter by certainty score
+    - name: c_score_gte
+      description: filter by certainty score >= the score provided
+    - name: last_detection_timestamp
+      description: filter by last_detection_timestamp
+    - name: tags
+      description: filter by a tag or a comma-separated list of tags (returns hosts
+        that contain any of the tags specified), e.g.tags=baz | tags=foo,bar"
+    - name: key_assest
+      description: 'filter by key asset: True, False'
+    - name: mac_address
+      description: filter by mac address
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The learned hostname
+    - contextPath: Endpoint.VectraID
+      description: Vectra object id
+    - contextPath: Endpoint.State
+      description: The state of this record
+    - contextPath: Endpoint.IP
+      description: Last source IP associated with this host
+    - contextPath: Endpoint.LastDetection
+      description: Last detection activity from this host
+    - contextPath: Endpoint.Detection.ID
+      description: List of Detections for Host
+    - contextPath: Endpoint.TScore
+      description: The current threat score correlated to this host
+    - contextPath: Endpoint.CScore
+      description: The current certainty score correlated to this host
+    description: Host information includes data that correlates the host data to detected
+      security events
+  - name: vectra-hosts
+    arguments:
+    - name: host_id
+      description: Filter by host ID
+    - name: fields
+      description: Filters objects listed
+    - name: page
+      description: Page number. Possible values are a positive integer or last
+    - name: page_size
+      description: Page size. Possible values are a positive integer or all
+    - name: ordering
+      description: Orders records by last timestamp, threat score and certainty score.
+        The default out sorts threat and certainty score in ascending order. Scores
+        can sorted in descending order by prepending the query with “minus” symbol
+    - name: name
+      description: filter by name
+    - name: state
+      description: 'filter by state: active, inactive, suspended, ignored, ignored4all'
+    - name: last_source
+      description: filter by last_source (ip address)
+    - name: t_score
+      description: filter by threat score
+    - name: t_score_gte
+      description: filter by threat score >= the score provided
+    - name: c_score
+      description: filter by certainty score
+    - name: c_score_gte
+      description: filter by certainty score >= the score provided
+    - name: last_detection_timestamp
+      description: filter by last_detection_timestamp
+    - name: tags
+      description: filter by a tag or a comma-separated list of tags (returns hosts
+        that contain any of the tags specified), e.g.tags=baz | tags=foo,bar"
+    - name: key_assest
+      description: 'filter by key asset: True, False'
+    - name: mac_address
+      description: filter by mac address
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The learned hostname
+    - contextPath: Endpoint.VectraID
+      description: Vectra object id
+    - contextPath: Endpoint.State
+      description: The state of this record
+    - contextPath: Endpoint.IP
+      description: Last source IP associated with this host
+    - contextPath: Endpoint.LastDetection
+      description: Last detection activity from this host
+    - contextPath: Endpoint.Detection.ID
+      description: List of Detections for Host
+    - contextPath: Endpoint.TScore
+      description: The current threat score correlated to this host
+    - contextPath: Endpoint.CScore
+      description: The current certainty score correlated to this host
+    description: Host information includes data that correlates the host data to detected
+      security events
+  - name: vec-settings
+    deprecated: true
+    arguments: []
+    description: The settings information includes S-series sensor and X-series configurations
+      input by the administrator
+  - name: vectra-settings
+    arguments: []
+    description: he settings information includes S-series sensor and X-series configurations
+      input by the administrator
+  - name: vec-health
+    deprecated: true
+    arguments:
+    - name: path
+      description: the path to query
+    description: The health configuration can be used to retrieve system health statistics
+      such as subnet counts, traffic bandwidth, headend and sensor information
+  - name: vectra-health
+    arguments:
+    - name: path
+      description: the path to query
+    description: The health configuration can be used to retrieve system health statistics
+      such as subnet counts, traffic bandwidth, headend and sensor information
+  - name: vec-triage
+    deprecated: true
+    arguments: []
+    outputs:
+    - contextPath: Vectra.Rule.ID
+      description: The record id
+    - contextPath: Vectra.Rule.SmartCategory
+      description: Custom Triage label used to recategorize specified detections
+    - contextPath: Vectra.Rule.Description
+      description: Name of Triage filter
+    - contextPath: Vectra.Rule.Type
+      description: Original detection type
+    - contextPath: Vectra.Rule.Category
+      description: Original detection category
+    - contextPath: Vectra.Rule.Created
+      description: The timestamp when this Triage filter was created
+    - contextPath: Vectra.Rule.LastUpdate
+      description: The timestamp when this Triage filter was triggered
+    - contextPath: Vectra.Rule.Host.ID
+      description: Host(s) that this Triage filter applies to
+    - contextPath: Vectra.Rule.IP
+      description: Host IP
+    - contextPath: Vectra.Rule.Priority
+      description: Used in ordering execution of Triage filters
+    - contextPath: Vectra.Rule.Remote.IP
+      description: Destination IP where this Triage filter will be applied to
+    - contextPath: Vectra.Rule.Remote.Protocol
+      description: Destination protocol where this Triage filter will be applied to
+    - contextPath: Vectra.Rule.Remote.Port
+      description: Destination port where this Triage filter will be applied to
+    - contextPath: Vectra.Rule.Remote.DNS
+      description: Destination FQDN where this Triage filter will apply to
+    - contextPath: Vectra.Rule.Remote.Kerberos.Account
+      description: Kerberos Account
+    - contextPath: Vectra.Rule.Remote.Kerberos.Service
+      description: Kerberos Service
+    description: The rules branch can be used to retrieve a listing of configured
+      Triage rules
+  - name: vectra-triage
+    arguments: []
+    outputs:
+    - contextPath: Vectra.Rule.ID
+      description: The record id
+    - contextPath: Vectra.Rule.SmartCategory
+      description: Custom Triage label used to recategorize specified detections
+    - contextPath: Vectra.Rule.Description
+      description: Name of Triage filter
+    - contextPath: Vectra.Rule.Type
+      description: Original detection type
+    - contextPath: Vectra.Rule.Category
+      description: Original detection category
+    - contextPath: Vectra.Rule.Created
+      description: The timestamp when this Triage filter was created
+    - contextPath: Vectra.Rule.LastUpdate
+      description: The timestamp when this Triage filter was triggered
+    - contextPath: Vectra.Rule.Host.ID
+      description: Host(s) that this Triage filter applies to
+    - contextPath: Vectra.Rule.IP
+      description: Host IP
+    - contextPath: Vectra.Rule.Priority
+      description: Used in ordering execution of Triage filters
+    - contextPath: Vectra.Rule.Remote.IP
+      description: Destination IP where this Triage filter will be applied to
+    - contextPath: Vectra.Rule.Remote.Protocol
+      description: Destination protocol where this Triage filter will be applied to
+    - contextPath: Vectra.Rule.Remote.Port
+      description: Destination port where this Triage filter will be applied to
+    - contextPath: Vectra.Rule.Remote.DNS
+      description: Destination FQDN where this Triage filter will apply to
+    - contextPath: Vectra.Rule.Remote.Kerberos.Account
+      description: Kerberos Account
+    - contextPath: Vectra.Rule.Remote.Kerberos.Service
+      description: Kerberos Service
+    description: The rules branch can be used to retrieve a listing of configured
+      Triage rules
+  - name: vec-sensors
+    deprecated: true
+    arguments: []
+    outputs:
+    - contextPath: Vectra.Sensor.ID
+      description: Object ID
+    - contextPath: Vectra.Sensor.Alias
+      description: User configured alias assigned tothe sensor
+    - contextPath: Vectra.Sensor.Location
+      description: User configured location assigned to the sensor
+    - contextPath: Vectra.Sensor.SerialNumber
+      description: Serial number of the sensor
+    - contextPath: Vectra.Sensor.LUID
+      description: Local Unique Identifier assigned to the sensor
+    - contextPath: Vectra.Sensor.Status
+      description: Pairing status of the sensor
+    - contextPath: Vectra.Sensor.CurrentVersion
+      description: OS version currently running on the sensor
+    - contextPath: Vectra.Sensor.OriginalVersion
+      description: OS version originally installed on the sensor
+    - contextPath: Vectra.Sensor.IP
+      description: IP address of the sensor
+    - contextPath: Vectra.Sensor.URI
+      description: The URI of the brain the sensor is paired
+    - contextPath: Vectra.Sensor.LastSeen
+      description: Timestamp of the last connection by the sensor to the brain
+    description: The sensors branch can retrieve a listing of sensors that collect
+      and feed data to the X-series
+  - name: vectra-sensors
+    arguments: []
+    outputs:
+    - contextPath: Vectra.Sensor.ID
+      description: Object ID
+    - contextPath: Vectra.Sensor.Alias
+      description: User configured alias assigned tothe sensor
+    - contextPath: Vectra.Sensor.Location
+      description: User configured location assigned to the sensor
+    - contextPath: Vectra.Sensor.SerialNumber
+      description: Serial number of the sensor
+    - contextPath: Vectra.Sensor.LUID
+      description: Local Unique Identifier assigned to the sensor
+    - contextPath: Vectra.Sensor.Status
+      description: Pairing status of the sensor
+    - contextPath: Vectra.Sensor.CurrentVersion
+      description: OS version currently running on the sensor
+    - contextPath: Vectra.Sensor.OriginalVersion
+      description: OS version originally installed on the sensor
+    - contextPath: Vectra.Sensor.IP
+      description: IP address of the sensor
+    - contextPath: Vectra.Sensor.URI
+      description: The URI of the brain the sensor is paired
+    - contextPath: VectraSensor.LastSeen
+      description: Timestamp of the last connection by the sensor to the brain
+    description: The sensors branch can retrieve a listing of sensors that collect
+      and feed data to the X-series
+  - name: vec-get-host-by-id
+    deprecated: true
+    arguments:
+    - name: host_id
+      required: true
+      default: true
+      description: The id of the required host
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The learned hostname
+    - contextPath: Endpoint.VectraID
+      description: Vectra object id
+    - contextPath: Endpoint.State
+      description: The state of this record
+    - contextPath: Endpoint.IP
+      description: Last source IP associated with this host
+    - contextPath: Endpoint.Vectra.LastDetection
+      description: Last detection activity from this host
+    - contextPath: Endpoint.Vectra.DetectionID
+      description: List of Detections for Host
+    - contextPath: Endpoint.Vectra.TScore
+      description: The current threat score correlated to this host
+    - contextPath: Endpoint.Vectra.CScore
+      description: The current certainty score correlated to this host
+    description: Get host by id
+  - name: vec-get-detetctions-by-id
+    deprecated: true
+    arguments:
+    - name: detection_id
+      description: The id of the required detection
+    description: Get detections by host id
+  isfetch: true
+tests:
+- No test
+fromversion: 5.0.0

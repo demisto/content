@@ -5,7 +5,7 @@ IT service management. Cortex XSOAR interfaces with ServiceNow to help streamlin
 - Query ServiceNow data with the ServiceNow query syntax.
 - Manage Security Incident Response (SIR) tickets with Cortex XSOAR, update tickets and enrich them with data.
 
-Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html) page.
+Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/sandiego-platform-user-interface/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html?cshalt=yes) page.
 
 This integration was integrated and tested with the Orlando version of ServiceNow.
 
@@ -986,6 +986,7 @@ Queries the specified table in ServiceNow.
 
 #### Command Example
 ```!servicenow-query-table table_name=alm_asset fields=asset_tag,sys_updated_by,display_name query=display_nameCONTAINSMacBook limit=4```
+```!servicenow-query-table table_name=sys_journal_field query=element_id=<SYS_ID>^ORDERBYsys_created_on limit=10 fields=value,name,element,sys_created_by,sys_created_on```
 
 #### Context Example
 ```

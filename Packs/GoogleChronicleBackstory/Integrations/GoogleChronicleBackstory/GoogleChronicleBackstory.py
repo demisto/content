@@ -102,6 +102,7 @@ SEVERITY_MAP = {
     'medium': 2,
     'high': 3
 }
+DEFAULT_LIST_BASIS = "CREATED_TIME"
 
 ''' CLIENT CLASS '''
 
@@ -1643,7 +1644,7 @@ def convert_events_to_actionable_incidents(events: list) -> list:
 
 
 def fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_process, detection_to_pull,
-                     pending_rule_or_version_id: list, alert_state, simple_backoff_rules):
+                     pending_rule_or_version_id: list, alert_state, simple_backoff_rules, fetch_detection_by_list_basis):
     """
     Fetch detections in given time slot. This method calls the get_max_fetch_detections method.
     If detections are more than max_fetch then it partition it into 2 part, from which
@@ -1657,7 +1658,7 @@ def fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_p
     # get detections using API call.
     detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules = get_max_fetch_detections(
         client_obj, start_time, end_time, max_fetch, detection_to_process, detection_to_pull,
-        pending_rule_or_version_id, alert_state, simple_backoff_rules)
+        pending_rule_or_version_id, alert_state, simple_backoff_rules, fetch_detection_by_list_basis)
 
     if len(detection_to_process) > max_fetch:
         events, detection_to_process = detection_to_process[:max_fetch], detection_to_process[max_fetch:]
@@ -1669,7 +1670,7 @@ def fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_p
 
 
 def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detection_incidents, detection_to_pull,
-                             pending_rule_or_version_id, alert_state, simple_backoff_rules):
+                             pending_rule_or_version_id, alert_state, simple_backoff_rules, fetch_detection_by_list_basis):
     """
     Get list of detection using detection_to_pull and pending_rule_or_version_id. If the API responds
     with 429, 500 error then it will retry it for 60 times(each attempt take one minute). If it responds
@@ -1694,7 +1695,7 @@ def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detect
 
         try:
             _, raw_resp = get_detections(client_obj, rule_id, max_fetch, start_time, end_time, next_page_token,
-                                         alert_state)
+                                         alert_state, list_basis=fetch_detection_by_list_basis)
         except ValueError as e:
             if str(e).endswith('Reattempt will be initiated.'):
                 attempts = simple_backoff_rules.get('attempts', 0)
@@ -1910,6 +1911,9 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
     pending_rule_or_version_id_with_alert_state: Dict[str, Any] = {}
     detection_identifiers: List = []
     rule_first_fetched_time = None
+    listBasis = params.get('fetch_detection_by_list_basis', DEFAULT_LIST_BASIS)
+    if not listBasis:
+        listBasis = DEFAULT_LIST_BASIS
 
     last_run = demisto.getLastRun()
     incidents = []
@@ -1952,7 +1956,8 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
     events, detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules \
         = fetch_detections(client_obj, delayed_start_time, end_time, int(max_fetch), detection_to_process,
                            detection_to_pull, pending_rule_or_version_id_with_alert_state.get('rule_id', ''),
-                           pending_rule_or_version_id_with_alert_state.get('alert_state', ''), simple_backoff_rules)
+                           pending_rule_or_version_id_with_alert_state.get('alert_state', ''), simple_backoff_rules,
+                           listBasis)
 
     # The batch processing is in progress i.e. detections for pending rules are yet to be fetched
     # so updating the end_time to the start time when considered for current batch

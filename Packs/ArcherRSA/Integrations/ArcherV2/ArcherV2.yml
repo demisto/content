@@ -65,6 +65,13 @@ configuration:
   name: fields_to_fetch
   required: false
   type: 0
+- defaultvalue: '400'
+  display: Timeout
+  additionalinfo: Request timeout value, in seconds. Default is 400.
+  hidden: false
+  name: timeout
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -582,7 +589,7 @@ script:
     description: Prints the Archer's integration cache.
     execution: false
     name: archer-print-cache
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true
   longRunning: false

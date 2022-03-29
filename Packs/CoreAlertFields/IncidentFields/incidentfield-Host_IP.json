@@ -31,44 +31,54 @@
     "x2_fields": "agent_ip_addresses",
     "Aliases": [
         {
-        "cliName": "digitalguardiansourceaddress",
-        "type": "shortText"
+            "cliName": "digitalguardiansourceaddress",
+            "type": "shortText",
+            "name": "Digital Guardian Source Address"
         },
         {
-        "cliName": "digitalguardiansourceip",
-        "type": "shortText"
+            "cliName": "digitalguardiansourceip",
+            "type": "shortText",
+            "name": "Digital Guardian Source IP"
         },
         {
-        "cliName": "irondefensesrcip",
-        "type": "shortText"
+            "cliName": "irondefensesrcip",
+            "type": "shortText",
+            "name": "IronDefense Src IP"
         },
         {
-         "cliName": "detectedips",
-         "type": "shortText"
+            "cliName": "detectedips",
+            "type": "shortText",
+            "name": "Detected IPs"
         },
         {
-         "cliName": "entityipaddress",
-         "type": "shortText"
+            "cliName": "entityipaddress",
+            "type": "shortText",
+            "name": "Entity IP Address"
         },
         {
-         "cliName": "expanseip",
-         "type": "shortText"
+            "cliName": "expanseip",
+            "type": "shortText",
+            "name": "Expanse IP"
         },
         {
-         "cliName": "f5silverlinebackendserverip",
-         "type": "shortText"
+            "cliName": "f5silverlinebackendserverip",
+            "type": "shortText",
+            "name": "F5 Silverline Backend Server IP"
         },
         {
             "cliName": "shadowitip",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Shadow IT IP"
         },
         {
             "cliName": "sourceip",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Source IP"
         },
         {
             "cliName": "sourceips",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Source IPs"
         }
     ]
 }

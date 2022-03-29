@@ -6,4 +6,4 @@ Read more about it [here](https://us-cert.cisa.gov/ais).
 Provides cyber threat indicators from the Cybersecurity and Infrastructure Security Agency’s (CISA’s) free Automated Indicator Sharing (AIS).
 
 
-This pack includes the [DHS Feed](https://xsoar.pan.dev/docs/reference/integrations/DHS-feed) integration.
+This pack includes the [DHS Feed](https://xsoar.pan.dev/docs/reference/integrations/DHS_feed) integration.
