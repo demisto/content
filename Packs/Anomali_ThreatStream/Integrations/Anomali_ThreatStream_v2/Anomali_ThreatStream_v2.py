@@ -14,7 +14,6 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 VENDOR_NAME = 'ThreatStream'
-NO_INDICATORS_FOUND_MSG = 'No intelligence has been found for {searchable_value}'
 HEADERS = {
     'Content-Type': 'application/json'
 }

@@ -276,11 +276,6 @@ def url_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
 
         indicator_ = Common.URL(url=url, dbot_score=dbot_score)
 
-        # if dbot_score['Score'] == 3:
-        # outputs['Malicious'] = {'Vendor': 'XFE'}
-        # context[outputPaths['url']].append(outputs)
-        # context[DBOT_SCORE_KEY].append(dbot_score)
-
         table = {'Score': report['score'],
                  'Categories': '\n'.join(report['cats'].keys())}
 
