@@ -640,7 +640,7 @@ def add_value_to_filter_string(field_name, value, query):
     return f"{field_name} eq '{value}'"
 
 
-def create_filter_query_from_args(args: dict):
+def create_filter_query_from_args(args: dict, change_device_name_to_system=False):
     custom_filter = args.get('filter')
     if custom_filter:
         return f"$filter={custom_filter}"
@@ -653,7 +653,10 @@ def create_filter_query_from_args(args: dict):
     query = add_list_to_filter_string("deviceUid", device_ids, query)
 
     device_names = remove_duplicates_from_list_arg(args, 'device_names')
-    query = add_list_to_filter_string("deviceName", device_names, query)
+    if device_names and change_device_name_to_system:
+        query = add_list_to_filter_string("systemName", device_names, query)
+    else:
+        query = add_list_to_filter_string("deviceName", device_names, query)
 
     app_names = remove_duplicates_from_list_arg(args, 'app_names')
     query = add_list_to_filter_string("appName", app_names, query)
@@ -780,7 +783,7 @@ def device_list_command(args, client) -> CommandResults:
     page = arg_to_number(args.get('page', 0))
     limit = arg_to_number(args.get('limit', 50))
 
-    query_string = create_filter_query_from_args(args)
+    query_string = create_filter_query_from_args(args, change_device_name_to_system=True)
     query_string = parse_return_fields(",".join(DEVICE_LIST_RETURN_FIELDS), query_string)
     query_string = parse_paging(page, limit, query_string)
 
@@ -801,7 +804,7 @@ def get_device_command(args, client) -> CommandResults:
             f"{INTEGRATION} at least one of the commands args (device_ids, device_names, local_ips, public_ips) "
             f"must be provided.")
 
-    query_string = create_filter_query_from_args(args)
+    query_string = create_filter_query_from_args(args, change_device_name_to_system=True)
     custom_fields_to_return = remove_duplicates_from_list_arg(args, 'fields')
     if custom_fields_to_return:
         custom_fields_to_return.extend(DEVICE_GET_COMMAND_RETURN_FIELDS)

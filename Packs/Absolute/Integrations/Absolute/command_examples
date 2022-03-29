@@ -13,5 +13,5 @@
 
 !absolute-device-application-list device_ids=e93f2464-2766-4a6b-8f00-66c8fb13e23a filter="appName eq 'Notepad++' or appName eq 'Settings'"
 !absolute-device-list os_name="Microsoft Windows Server 2019 Datacenter"
-!absolute-device-get local_ips="10.128.0.30,10.128.0.36"
+!absolute-device-get device_names="ABSOLUTE-ASSET-"
 !absolute-device-location-get device_ids=e93f2464-2766-4a6b-8f00-66c8fb13e23a
