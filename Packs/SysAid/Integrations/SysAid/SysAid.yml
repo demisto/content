@@ -78,7 +78,7 @@ script:
     arguments:
     - name: entity
       description: 'A SysAid entity by which to retrieve the available lists. Defaults
-        to SR. The options are: sr - Service record related lists, asset - Asset related
+        to service record. The options are: sr - Service record related lists, asset - Asset related
         lists, user - User related lists, ci - CI related lists, company - Company
         related lists, action_item - Action item related lists, project - Service
         record Sub Tabs lists, task - Task related lists, catalog - Catalog related
@@ -104,9 +104,9 @@ script:
       - task_activity
       - user_groups
     - name: entity_id
-      description: "The entity's ID. For example, in SR Form lists, send the SR ID
+      description: "The entity's ID. For example, in service record Form lists, send the service record ID
         to populate additional filters on the lists. e.g. the responsibility list
-        may be filtered by the admin group of the SR."
+        may be filtered by the admin group of the service record."
       required: false
       isArray: false
     - name: entity_type
@@ -147,18 +147,18 @@ script:
     outputs:
     - type: String
       contextPath: SysAid.List.id
-      description: ''
+      description: 'The ID of the list.'
     - type: String
       contextPath: SysAid.List.caption
-      description: ''
+      description: 'The caption of the list.'
     - type: String
       contextPath: SysAid.List.values
-      description: ''
+      description: 'The values of the list.'
   - name: sysaid-asset-list
     description: 'List all assets or get a specific asset by ID.'
     arguments:
     - name: asset_id
-      description: ''
+      description: 'The ID of the asset to return.'
       required: false
       isArray: false
     - name: fields
@@ -166,28 +166,28 @@ script:
       required: false
       isArray: true
     - name: offset
-      description: ''
+      description: 'Specifies the offset (start point) from which to retrieve values. Defaults to 0. Zero based.'
       required: false
       isArray: false
     - name: limit
-      description: ''
+      description: 'The maximum number of assets to retrieve per request. Defaults to 500 (configurable).'
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: SysAid.Asset.id
-      description: ''
+      description: 'The ID of the asset.'
     - type: String
       contextPath: SysAid.Asset.name
-      description: ''
+      description: 'The name of the asset.'
     - type: String
       contextPath: SysAid.Asset.info
-      description: ''
+      description: 'The info of the asset.'
   - name: sysaid-asset-search
     description: 'Get information about a specific asset.'
     arguments:
     - name: query
-      description: ''
+      description: 'The search criteria.'
       required: true
       isArray: false
     - name: fields
@@ -195,60 +195,60 @@ script:
       required: false
       isArray: true
     - name: limit
-      description: ''
+      description: 'The maximum number of assets to retrieve per request. Defaults to 500 (configurable).'
       required: false
       isArray: false
     - name: offset
-      description: ''
+      description: 'Specifies the offset (start point) from which to retrieve values. Defaults to 0. Zero based.'
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: SysAid.Asset.id
-      description: ''
+      description: 'The ID of the asset.'
     - type: String
       contextPath: SysAid.Asset.name
-      description: ''
+      description: 'The name of the asset.'
     - type: String
       contextPath: SysAid.Asset.info
-      description: ''
+      description: 'The info of the asset.'
   - name: sysaid-filter-list
-    description: 'List all assets'
+    description: 'List all filters'
     arguments:
     - name: fields
       description: 'List of fields to return. Comma separated.'
       required: false
       isArray: true
     - name: offset
-      description: ''
+      description: 'Specifies the offset (start point) from which to retrieve values. Defaults to 0. Zero based.'
       required: false
       isArray: false
     - name: limit
-      description: ''
+      description: 'The maximum number of filters to retrieve per request. Defaults to 500 (configurable).'
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: SysAid.Filter.id
-      description: ''
+      description: 'The ID of the filter.'
     - type: String
       contextPath: SysAid.Filter.type
-      description: ''
+      description: 'The type of the filter.'
     - type: String
       contextPath: SysAid.Filter.caption
-      description: ''
+      description: 'The caption of the filter.'
     - type: String
       contextPath: SysAid.Filter.values
-      description: ''
+      description: 'The values of the filter.'
   - name: sysaid-user-list
-    description: ''
+    description: 'Get list of users in SysAid'
     arguments:
     - name: fields
       description: 'List of fields to return. Comma separated.'
       required: false
       isArray: true
     - name: type
-      description: 'Defaults to all user type if not specified.'
+      description: 'The users type to retrieve. Defaults to all user type if not specified.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -257,37 +257,37 @@ script:
       - user
       - manager
     - name: offset
-      description: ''
+      description: 'Specifies the offset (start point) from which to retrieve values. Defaults to 0. Zero based.'
       required: false
       isArray: false
     - name: limit
-      description: ''
+      description: 'The maximum number of users to retrieve per request. Defaults to 500 (configurable).'
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: SysAid.User.id
-      description: ''
+      description: 'The ID of the user.'
     - type: String
       contextPath: SysAid.User.name
-      description: ''
+      description: 'The name of the user.'
     - type: Boolean
       contextPath: SysAid.User.isAdmin
-      description: ''
+      description: 'Whether the SysAid user is an admin or not.'
     - type: Boolean
       contextPath: SysAid.User.isSysAidAdmin
-      description: ''
+      description: 'Whether the SysAid user is a SysAid admin or not.'
     - type: Boolean
       contextPath: SysAid.User.isManager
-      description: ''
+      description: 'Whether the SysAid user is a manager or not.'
     - type: Boolean
       contextPath: SysAid.User.isGuest
-      description: ''
+      description: 'Whether the SysAid user is a guest or not.'
   - name: sysaid-user-search
     description: 'Get information about a specific asset'
     arguments:
     - name: query
-      description: ''
+      description: 'The search criteria'
       required: true
       isArray: false
     - name: fields
@@ -295,7 +295,7 @@ script:
       required: false
       isArray: true
     - name: type
-      description: 'Defaults to all user type if not specified.'
+      description: 'The users type to retrieve. Defaults to all user type if not specified.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -304,37 +304,37 @@ script:
       - user
       - manager
     - name: offset
-      description: ''
+      description: 'Specifies the offset (start point) from which to retrieve values. Defaults to 0. Zero based.'
       required: false
       isArray: false
     - name: limit
-      description: ''
+      description: 'The maximum number of users to retrieve per request. Defaults to 500 (configurable).'
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: SysAid.User.id
-      description: ''
+      description: 'The ID of the user.'
     - type: String
       contextPath: SysAid.User.name
-      description: ''
+      description: 'The name of the user.'
     - type: Boolean
       contextPath: SysAid.User.isAdmin
-      description: ''
+      description: 'Whether the SysAid user is an admin or not.'
     - type: Boolean
       contextPath: SysAid.User.isSysAidAdmin
-      description: ''
+      description: 'Whether the SysAid user is a SysAid admin or not.'
     - type: Boolean
       contextPath: SysAid.User.isManager
-      description: ''
+      description: 'Whether the SysAid user is a manager or not.'
     - type: Boolean
       contextPath: SysAid.User.isGuest
-      description: ''
+      description: 'Whether the SysAid user is a guest or not.'
   - name: sysaid-service-record-list
     description: 'List all service requests'
     arguments:
     - name: type
-      description: ''
+      description: 'The requested service record type.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -349,48 +349,49 @@ script:
       required: false
       isArray: true
     - name: offset
-      description: ''
+      description: 'Specifies the offset (start point) from which to retrieve values. Defaults to 0. Zero based.'
       required: false
       isArray: false
     - name: limit
-      description: ''
+      description: 'The maximum number of service records to retrieve per request. Defaults to 500 (configurable).'
       required: false
       isArray: false
     - name: ids
-      description: 'The list of SR IDs to return, comma separated'
+      description: 'The list of service records IDs to return, comma separated'
       required: false
       isArray: true
     - name: archive
-      description: 'Whether to return archived SRs. Value can be 1 or 0'
+      description: 'Whether to return archived service records. Value can be 1 or 0'
       required: false
       isArray: false
+      auto: PREDEFINED
       auto: PREDEFINED
       predefined:
       - '0'
       - '1'
     - name: custom_fields_keys
-      description: ''
+      description: 'Comma separated list of filters ids.'
       required: false
       isArray: true
     - name: custom_fields_values
-      description: ''
+      description: 'Comma separated list of filters values, each corresponding to the filter key at the same place.'
       required: false
       isArray: true
     outputs:
     - type: String
       contextPath: SysAid.ServiceRecord.id
-      description: ''
+      description: 'The ID of the service record.'
     - type: String
       contextPath: SysAid.ServiceRecord.title
-      description: ''
+      description: 'The title of the service record.'
     - type: String
       contextPath: SysAid.ServiceRecord.status
-      description: ''
+      description: 'The status of the service record.'
   - name: sysaid-service-record-search
-    description: 'Search by a query among all SRs'
+    description: 'Search by a query among all service records'
     arguments:
     - name: type
-      description: ''
+      description: 'The requested service record type.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -405,19 +406,19 @@ script:
       required: false
       isArray: true
     - name: offset
-      description: ''
+      description: 'Specifies the offset (start point) from which to retrieve values. Defaults to 0. Zero based.'
       required: false
       isArray: false
     - name: limit
-      description: ''
+      description: 'The maximum number of service records to retrieve per request. Defaults to 500 (configurable).'
       required: false
       isArray: false
     - name: query
-      description: ''
+      description: 'The search criteria.'
       required: true
       isArray: false
     - name: archive
-      description: 'Whether to return archived SRs. Value can be 1 or 0'
+      description: 'Whether to return archived service records. Value can be 1 or 0'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -425,141 +426,140 @@ script:
       - '0'
       - '1'
     - name: custom_fields_keys
-      description: ''
+      description: 'Comma separated list of filters ids.'
       required: false
       isArray: true
     - name: custom_fields_values
-      description: ''
+      description: 'Comma separated list of filters values, each corresponding to the filter key at the same place.'
       required: false
       isArray: true
     outputs:
     - type: String
       contextPath: SysAid.ServiceRecord.id
-      description: ''
+      description: 'The ID of the service record.'
     - type: String
       contextPath: SysAid.ServiceRecord.title
-      description: ''
+      description: 'The title of the service record.'
     - type: String
       contextPath: SysAid.ServiceRecord.status
-      description: ''
+      description: 'The status of the service record.'
   - name: sysaid-service-record-update
-    description: 'The valid statuses can be retrieved using the "sysaid-table-list"
-      command.'
+    description: 'The valid statuses can be retrieved using the "sysaid-table-list" command.'
     arguments:
     - name: id
       description: 'The service record ID'
       required: true
       isArray: false
     - name: impact
-      description: ''
+      description: 'The new impact of the service record.'
       required: false
       isArray: false
     - name: priority
-      description: ''
+      description: 'The new priority of the service record.'
       required: false
       isArray: false
     - name: status
-      description: ''
+      description: 'The new status of the service record.'
       required: false
       isArray: false
     - name: description
-      description: ''
+      description: 'The new description of the service record.'
       required: false
       isArray: false
     - name: solution
-      description: ''
+      description: 'The new solution of the service record.'
       required: false
       isArray: false
     - name: problem_type
-      description: ''
+      description: 'The new problem type of the service record.'
       required: false
       isArray: false
     - name: problem_sub_type
-      description: ''
+      description: 'The new problem sub type of the service record.'
       required: false
       isArray: false
     - name: third_level_category
-      description: ''
+      description: 'The new third level category of the service record.'
       required: false
       isArray: false
     - name: sr_type
-      description: ''
+      description: 'The new service record type of the service record.'
       required: false
       isArray: false
     - name: sub_type
-      description: ''
+      description: 'The new sub type of the service record.'
       required: false
       isArray: false
     - name: agreement
-      description: ''
+      description: 'The new agreement of the service record.'
       required: false
       isArray: false
     - name: title
-      description: ''
+      description: 'The new title of the service record.'
       required: false
       isArray: false
     - name: followup_user
-      description: ''
+      description: 'The new followup user of the service record.'
       required: false
       isArray: false
     - name: followup_text
-      description: ''
+      description: 'The new followup text of the service record.'
       required: false
       isArray: false
     - name: cust_notes
-      description: ''
+      description: 'The new cust notes of the service record.'
       required: false
       isArray: false
     - name: email_account
-      description: ''
+      description: 'The new email account of the service record.'
       required: false
       isArray: false
     - name: responsibility
-      description: ''
+      description: 'The new responsibility of the service record.'
       required: false
       isArray: false
     - name: urgency
-      description: ''
+      description: 'The new urgency of the service record.'
       required: false
       isArray: false
     - name: company
-      description: ''
+      description: 'The new company of the service record.'
       required: false
       isArray: false
     - name: department
-      description: ''
+      description: 'The new department of the service record.'
       required: false
       isArray: false
     - name: computer_id
-      description: ''
+      description: 'The new computer id of the service record.'
       required: false
       isArray: false
     - name: due_date
-      description: ''
+      description: 'The new due date of the service record.'
       required: false
       isArray: false
     - name: escalation
-      description: ''
+      description: 'The new escalation of the service record.'
       required: false
       isArray: false
     - name: change_category
-      description: ''
+      description: 'The new change category of the service record.'
       required: false
       isArray: false
     - name: assigned_group
-      description: ''
+      description: 'The new assigned group of the service record.'
       required: false
       isArray: false
     - name: location
-      description: ''
+      description: 'The new location of the service record.'
       required: false
       isArray: false
     - name: custom_fields_keys
-      description: ''
+      description: 'Comma separated list of filters ids.'
       required: false
       isArray: true
     - name: custom_fields_values
-      description: ''
+      description: 'Comma separated list of filters values, each corresponding to the filter key at the same place.'
       required: false
       isArray: true
   - name: sysaid-service-record-close
@@ -571,7 +571,7 @@ script:
       required: true
       isArray: false
     - name: solution
-      description: ''
+      description: 'The solution for closing the service record.'
       required: false
       isArray: false
   - name: sysaid-service-record-template-get
@@ -582,7 +582,7 @@ script:
       required: false
       isArray: true
     - name: type
-      description: ''
+      description: 'The requested service record type.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -592,32 +592,32 @@ script:
       - problem
       - change
     - name: template_id
-      description: 'The service record template ID, according to SR type. Defaults
+      description: 'The service record template ID, according to service record type. Defaults
         to the first/default template.'
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: SysAid.ServiceRecordTemplate.key
-      description: ''
+      description: 'The key of the service record template entry.'
     - type: String
       contextPath: SysAid.ServiceRecordTemplate.value
-      description: ''
+      description: 'The value of the service record template entry.'
     - type: String
       contextPath: SysAid.ServiceRecordTemplate.mandatory
-      description: ''
+      description: 'Whether the template entry is mandatory or not.'
     - type: Boolean
       contextPath: SysAid.ServiceRecordTemplate.editable
-      description: ''
+      description: 'Whether the template entry is editable or not.'
     - type: Boolean
       contextPath: SysAid.ServiceRecordTemplate.type
-      description: ''
+      description: 'The type of the service record template entry.'
     - type: String
       contextPath: SysAid.ServiceRecordTemplate.defaultValue
-      description: ''
+      description: 'The default value of the service record template entry.'
     - type: String
       contextPath: SysAid.ServiceRecordTemplate.keyCaption
-      description: ''
+      description: 'The key caption of the service record template entry.'
   - name: sysaid-service-record-create
     description: 'Create a new service record and return the newly created service
       record. The valid statuses can be retrieved using the "sysaid-table-list" command.'
@@ -627,7 +627,7 @@ script:
       required: false
       isArray: true
     - name: type
-      description: ''
+      description: 'The requested service record type.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -637,132 +637,132 @@ script:
       - problem
       - change
     - name: template_id
-      description: 'The service record template ID, according to SR type. Defaults
+      description: 'The service record template ID, according to service record type. Defaults
         to the first/default template.'
       required: false
       isArray: false
     - name: description
-      description: ''
+      description: 'The new description of the service record.'
       required: true
       isArray: false
     - name: title
-      description: ''
+      description: 'The new title of the service record.'
       required: true
       isArray: false
     - name: impact
-      description: ''
+      description: 'The new impact of the service record.'
       required: false
       isArray: false
     - name: priority
-      description: ''
+      description: 'The new priority of the service record.'
       required: false
       isArray: false
     - name: status
-      description: ''
+      description: 'The new status of the service record.'
       required: false
       isArray: false
     - name: solution
-      description: ''
+      description: 'The new solution of the service record.'
       required: false
       isArray: false
     - name: problem_type
-      description: ''
+      description: 'The new problem type of the service record.'
       required: false
       isArray: false
     - name: problem_sub_type
-      description: ''
+      description: 'The new problem sub type of the service record.'
       required: false
       isArray: false
     - name: third_level_category
-      description: ''
+      description: 'The new third level category of the service record.'
       required: false
       isArray: false
     - name: sr_type
-      description: ''
+      description: 'The new service record type of the service record.'
       required: false
       isArray: false
     - name: sub_type
-      description: ''
+      description: 'The new sub type of the service record.'
       required: false
       isArray: false
     - name: agreement
-      description: ''
+      description: 'The new agreement of the service record.'
       required: false
       isArray: false
     - name: followup_user
-      description: ''
+      description: 'The new followup user of the service record.'
       required: false
       isArray: false
     - name: followup_text
-      description: ''
+      description: 'The new followup text of the service record.'
       required: false
       isArray: false
     - name: cust_notes
-      description: ''
+      description: 'The new cust notes of the service record.'
       required: false
       isArray: false
     - name: email_account
-      description: ''
+      description: 'The new email account of the service record.'
       required: false
       isArray: false
     - name: responsibility
-      description: ''
+      description: 'The new responsibility of the service record.'
       required: false
       isArray: false
     - name: urgency
-      description: ''
+      description: 'The new urgency of the service record.'
       required: false
       isArray: false
     - name: company
-      description: ''
+      description: 'The new company of the service record.'
       required: false
       isArray: false
     - name: department
-      description: ''
+      description: 'The new department of the service record.'
       required: false
       isArray: false
     - name: computer_id
-      description: ''
+      description: 'The new computer id of the service record.'
       required: false
       isArray: false
     - name: due_date
-      description: ''
+      description: 'The new due date of the service record.'
       required: false
       isArray: false
     - name: escalation
-      description: ''
+      description: 'The new escalation of the service record.'
       required: false
       isArray: false
     - name: change_category
-      description: ''
+      description: 'The new change category of the service record.'
       required: false
       isArray: false
     - name: assigned_group
-      description: ''
+      description: 'The new assigned group of the service record.'
       required: false
       isArray: false
     - name: location
-      description: ''
+      description: 'The new location of the service record.'
       required: false
       isArray: false
     - name: custom_fields_keys
-      description: ''
+      description: 'Comma separated list of filters ids.'
       required: false
       isArray: true
     - name: custom_fields_values
-      description: ''
+      description: 'Comma separated list of filters values, each corresponding to the filter key at the same place.'
       required: false
       isArray: true
     outputs:
     - type: String
       contextPath: SysAid.ServiceRecord.id
-      description: ''
+      description: 'The ID of the service record.'
     - type: String
       contextPath: SysAid.ServiceRecord.title
-      description: ''
+      description: 'The title of the service record.'
     - type: String
       contextPath: SysAid.ServiceRecord.status
-      description: ''
+      description: 'The status of the service record.'
   - name: sysaid-service-record-delete
     description: 'Delete one or more service records.'
     arguments:
@@ -771,7 +771,7 @@ script:
       required: true
       isArray: true
     - name: solution
-      description: ''
+      description: 'The solution for deleting the service record.'
       required: false
       isArray: false
   isfetch: true
