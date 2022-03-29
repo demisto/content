@@ -18,7 +18,6 @@ import time
 import traceback
 import types
 import urllib
-import enum
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -27,7 +26,6 @@ from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
 from inspect import currentframe
-from dataclasses import dataclass
 
 import demistomock as demisto
 import warnings
@@ -38,9 +36,9 @@ def __line__():
     return cf.f_back.f_lineno
 
 
-# 43 - The line offset from the beggining of the file.
+# 41 - The line offset from the beggining of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 41, 'end': float('inf')},
 }
 
 
@@ -9680,56 +9678,60 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
 
 
 # YML metadata collector mocked classes.
-@dataclass
 class OutputArgument:
-    name: str
-    output_type: Any = dict
-    description: Optional[str] = None
-    prefix: Optional[str] = None
+    def __init__(self,
+                 name,
+                 output_type=dict,
+                 description=None,
+                 prefix=None):
+        pass
 
-@dataclass
+
 class InputArgument:
-    name: Optional[str] = None
-    description: Optional[str] = None
-    required: bool = False
-    default: Any = None
-    is_array: bool = False
-    secret: bool = False
-    execution: bool = False
-    options: Optional[list] = None
-    input_type: Optional[enum.EnumMeta] = None
+    def __init__(self,
+                 name=None,
+                 description=None,
+                 required=False,
+                 default=None,
+                 is_array=False,
+                 secret=False,
+                 execution=False,
+                 options=None,
+                 input_type=None):
+        pass
 
-@dataclass
+
 class ConfKey:
-    name: str
-    display: Optional[str] = None
-    default_value: Any = None
-    key_type: Any = 0 # Expects ParameterType
-    required: bool = False
-    additional_info: Optional[str] = None
-    options: Optional[list] = None
-    input_type: Optional[enum.EnumMeta] = None
+    def __init__(self,
+                 name,
+                 display=None,
+                 default_value=None,
+                 key_type=0,  # Expects ParameterType
+                 required=False,
+                 additional_info=None,
+                 options=None,
+                 input_type=None):
+        pass
 
 
 class YMLMetadataCollector:
-    def __init__(self, integration_name: str, docker_image: str = "demisto/python3:latest",
-                 description: Optional[str] = None, category: str = "Utilities", conf: Optional[List[ConfKey]] = None,
-                 is_feed: bool = False, is_fetch: bool = False, is_runonce: bool = False,
-                 detailed_description: Optional[str] = None, image: Optional[str] = None, display: Optional[str] = None,
-                 tests: list = ["No tests"], fromversion: str = "6.0.0",
-                 long_running: bool = False, long_running_port: bool = False, integration_type: str = "python",
-                 integration_subtype: str = "python3", deprecated: Optional[bool] = None, system: Optional[bool] = None,
-                 timeout: Optional[str] = None, default_classifier: Optional[str] = None,
-                 default_mapper_in: Optional[str] = None,
-                 integration_name_x2: Optional[str] = None, default_enabled_x2: Optional[bool] = None,
-                 default_enabled: Optional[bool] = None, verbose: bool = False):
+    def __init__(self, integration_name, docker_image="demisto/python3:latest",
+                 description=None, category="Utilities", conf=None,
+                 is_feed=False, is_fetch=False, is_runonce=False,
+                 detailed_description=None, image=None, display=None,
+                 tests=["No tests"], fromversion="6.0.0",
+                 long_running=False, long_running_port=False, integration_type="python",
+                 integration_subtype="python3", deprecated=None, systemd=None,
+                 timeout=None, default_classifier=None,
+                 default_mapper_in=None, integration_name_x2=None, default_enabled_x2=None,
+                 default_enabled=None, verbose=False):
         pass
 
-    def command(self, command_name: str, outputs_prefix: Optional[str] = None,
-                outputs_list: Optional[list] = None, inputs_list: Optional[list] = None,
-                execution: Optional[bool] = None, file_output: bool = False,
-                multiple_output_prefixes: bool = False, deprecated: bool = False, restore: bool = False,
-                description: Optional[str] = None) -> Callable:
+    def command(self, command_name, outputs_prefix=None,
+                outputs_list=None, inputs_list=None,
+                execution=None, file_output=False,
+                multiple_output_prefixes=False, deprecated=False, restore=False,
+                description=None):
         def command_wrapper(func):
             def get_out_info(*args, **kwargs):
                 if restore:
