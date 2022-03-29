@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Panorama
+  id: Panorama_dev_platform
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -65,8 +65,8 @@ configuration:
   additionalinfo: Use the "API Key (Recommended)" parameter instead.
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
-display: Palo Alto Networks PAN-OS
-name: Panorama
+display: Palo Alto Networks PAN-OS - Platform DEV
+name: Panorama_dev_platform
 script:
   commands:
   - arguments:
@@ -7197,8 +7197,7 @@ script:
         required: false
         secret: false
     deprecated: false
-    description: Gets global counter information from all the PAN-OS firewalls in
-      the topology
+    description: Gets global counter information from all the PAN-OS firewalls in the topology
     name: pan-os-platform-get-global-counters
     outputs:
       - contextPath: PANOS.ShowCounters.Summary.hostid
@@ -7249,8 +7248,7 @@ script:
         required: false
         secret: false
     deprecated: false
-    description: Retrieves all BGP peer information from the PAN-OS firewalls in the
-      topology.
+    description: Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
     name: pan-os-platform-get-bgp-peers
     outputs:
       - contextPath: PANOS.ShowBGPPeers.Summary.hostid
@@ -7350,15 +7348,13 @@ script:
         required: false
         secret: false
     deprecated: false
-    description: Get the HA state and assocaited details from the given device and
-      any other details.
+    description: Get the HA state and assocaited details from the given device and any other details.
     name: pan-os-platform-get-ha-state
     outputs:
       - contextPath: PANOS.HAState.hostid
         type: String
       - contextPath: PANOS.HAState.active
-        description: Whether this is the active firewall in a pair or not. True if standalone
-          as well
+        description: Whether this is the active firewall in a pair or not. True if standalone as well
         type: String
       - contextPath: PANOS.HAState.status
         description: String HA status
@@ -7367,66 +7363,64 @@ script:
         description: HA Peer
         type: String
   - arguments:
-      - default: false
-        description: String to filter to only show specific hostnames or serial numbers.
-        isArray: false
-        name: device_filter_string
-        required: false
-        secret: false
-      - default: false
-        description: Filter returned jobs by status
-        isArray: false
-        name: status
-        required: false
-        secret: false
-      - default: false
-        description: Filter returned jobs by type
-        isArray: false
-        name: job_type
-        required: false
-        secret: false
-      - default: false
-        description: Filter by ID
-        isArray: false
-        name: id
-        required: false
-        secret: false
-      deprecated: false
-      description: Get all the jobs from the devices in the environment, or a single
-        job when ID is specified.
-      name: pan-os-platform-get-jobs
-      outputs:
-        - contextPath: PANOS.JobStatus.hostid
-          type: String
-        - contextPath: PANOS.JobStatus.id
-          description: ID of job
-          type: String
-        - contextPath: PANOS.JobStatus.type
-          description: Job type
-          type: String
-        - contextPath: PANOS.JobStatus.tfin
-          description: Time finished
-          type: String
-        - contextPath: PANOS.JobStatus.status
-          description: Status of job
-          type: String
-        - contextPath: PANOS.JobStatus.result
-          type: String
-        - contextPath: PANOS.JobStatus.user
-          type: String
-        - contextPath: PANOS.JobStatus.tenq
-          type: String
-        - contextPath: PANOS.JobStatus.stoppable
-          type: String
-        - contextPath: PANOS.JobStatus.description
-          type: String
-        - contextPath: PANOS.JobStatus.positionInQ
-          type: String
-        - contextPath: PANOS.JobStatus.progress
-          type: String
+    - default: false
+      description: String to filter to only show specific hostnames or serial numbers.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    - default: false
+      description: Filter returned jobs by status
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: Filter returned jobs by type
+      isArray: false
+      name: job_type
+      required: false
+      secret: false
+    - default: false
+      description: Filter by ID
+      isArray: false
+      name: id
+      required: false
+      secret: false
     deprecated: false
-    description: Get all the jobs from the devices in the environment, or a single
-      job when ID is specified.
+    description: Get all the jobs from the devices in the environment, or a single job when ID is specified.
+    name: pan-os-platform-get-jobs
+    outputs:
+      - contextPath: PANOS.JobStatus.hostid
+        type: String
+      - contextPath: PANOS.JobStatus.id
+        description: ID of job
+        type: String
+      - contextPath: PANOS.JobStatus.type
+        description: Job type
+        type: String
+      - contextPath: PANOS.JobStatus.tfin
+        description: Time finished
+        type: String
+      - contextPath: PANOS.JobStatus.status
+        description: Status of job
+        type: String
+      - contextPath: PANOS.JobStatus.result
+        type: String
+      - contextPath: PANOS.JobStatus.user
+        type: String
+      - contextPath: PANOS.JobStatus.tenq
+        type: String
+      - contextPath: PANOS.JobStatus.stoppable
+        type: String
+      - contextPath: PANOS.JobStatus.description
+        type: String
+      - contextPath: PANOS.JobStatus.positionInQ
+        type: String
+      - contextPath: PANOS.JobStatus.progress
+        type: String
+  deprecated: false
+  description: Get all the jobs from the devices in the environment, or a single job when ID is specified.
   dockerimage: demisto/pan-os-python:1.0.0.27793
   feed: false
   isfetch: false
