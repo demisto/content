@@ -1,6 +1,5 @@
 id: BMC Discovery - Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: BMC Discovery - Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -79,8 +79,7 @@ tasks:
       id: f6bb024b-5b69-4114-8ff3-09b75ea0f77c
       version: -1
       name: bmc-discovery-search for "calbro" host
-      description: Search for a node by hostname or IP address. If not found, repeat
-        the search with a different node kind.
+      description: Search for a node by hostname or IP address. If not found, repeat the search with a different node kind.
       script: '|||bmc-discovery-search'
       type: regular
       iscommand: true
@@ -116,8 +115,7 @@ tasks:
       id: 03bdb5c7-dda3-4eb2-8703-57244f1ac4e5
       version: -1
       name: The host is found
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -194,8 +192,7 @@ tasks:
       id: 1c223bab-7223-457d-8d42-e9e05881aa7a
       version: -1
       name: No hosts found
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -343,6 +340,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -372,3 +370,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.0.0
+description: Sample playbook for BMC Discovery Integration commands
