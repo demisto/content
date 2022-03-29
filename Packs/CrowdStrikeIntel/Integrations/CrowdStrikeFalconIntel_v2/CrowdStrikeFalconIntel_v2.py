@@ -244,9 +244,9 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
             ))
 
     else:
-        results.append(create_indicator_result_with_dbotscore_unknown(indicator=DBotScoreType.FILE
-                                                                      if indicator_type == 'hash' else indicator_type,
-                                                                      indicator_type=indicator_type))
+        results.append(create_indicator_result_with_dbotscore_unknown(indicator=indicator_value,
+                                                                      indicator_type=DBotScoreType.FILE
+                                                                      if indicator_type == 'hash' else indicator_type))
 
     return results
 
