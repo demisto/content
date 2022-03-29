@@ -27,7 +27,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+description: "Absolute is an adaptive endpoint security solution that delivers device security, data security and asset management of endpoints."
 display: Absolute
 name: Absolute
 script:
