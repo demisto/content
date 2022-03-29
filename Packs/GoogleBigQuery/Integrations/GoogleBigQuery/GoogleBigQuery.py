@@ -5,11 +5,12 @@ from CommonServerPython import *  # noqa: F401
 
 import json
 import os
-from datetime import date, datetime
 
 import requests
 from dateparser import parse
 from google.cloud import bigquery
+from datetime import date, datetime, timedelta
+import hashlib
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -21,7 +22,7 @@ TEST_QUERY = ('SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013` '
               'WHERE state = "TX" '
               'LIMIT 10')
 
-FETCH_QUERY = demisto.params()['querytoRun']
+FETCH_QUERY = demisto.params().get('querytoRun', '')
 
 
 ''' HELPER FUNCTIONS '''
@@ -236,17 +237,150 @@ def get_remote_data_command(args):
         )
 
 
+def get_incident_id(row):
+    additional_fields = row['additional_fields']
+    generated = row.get('generatedTime') or row.get('generated_time') or row.get('GeneratedTime')
+    event_id = row.get('event_id') or row.get('EventId') or row.get('eventId')
+    agent_id = row.get('agent_id') or row.get('AgentId') or row.get('agentId')
+    instance_id = row.get('instance_id') or row.get('InstanceId') or row.get('instanceId')
+    data = [additional_fields, generated, event_id, agent_id]
+    row_data_string = ''
+    for data_field in data:
+        row_data_string += f'{data_field}_'
+    row_id = hashlib.md5(row_data_string.encode('utf-8')).hexdigest()
+    return row_id
+
+
+def get_last_run_date():
+    last_date = demisto.getLastRun().get('last_date')
+    # last_date = None
+    demisto.debug('[BigQuery Debug] last_date is: {}'.format(last_date))
+
+    if last_date is None:
+        time_24_hours_ago = datetime.now() - timedelta(hours=24)
+
+        time_24_hours_ago = time_24_hours_ago.strftime('%Y-%m-%d %H:%M:%S.%f')
+        last_date = time_24_hours_ago
+        demisto.debug('[BigQuery Debug] FIRST RUN - last_date is: {}'.format(last_date))
+
+    return last_date
+
+
+def build_fetch_query(last_date):
+    fixed_query = demisto.params()["fetch_query"]
+
+    if "WHERE" in fixed_query:
+        fixed_query += " AND"
+    else:
+        fixed_query += " WHERE"
+
+    fetch_query = "{} `{}` > \"{}\"".format(fixed_query, demisto.params()["fetch_field"], last_date)
+    return fetch_query
+
+
+def row_to_incident(row):
+    incident = {}
+    raw = {underscoreToCamelCase(k): convert_to_string_if_datetime(v) for k, v in row.items()}
+    incident["rawJSON"] = json.dumps(raw)
+    incident["name"] = raw[demisto.params()["fetch_name"]]
+    # incident["occurred"] = get_row_date_string(row)
+    return incident
+
+
+def get_incident_time(incident):
+    incident_row = json.loads(incident["rawJSON"])
+    # return_error(str(incident_row))
+    return get_row_date_string(incident_row)
+
+
+def get_row_date_string(row):
+    # try creation_time (fetch_field param) and CreationTime. Can be either
+    row_date_field = demisto.params().get("fetch_field", "creation_time")
+    row_date = row.get(row_date_field)
+    if row_date is None:
+        demisto.debug("[BigQuery Debug] missing creation_time, trying CreationTime: {}".format(row))
+        row_date_str = row.get("CreationTime")
+        if row_date_str is not None:
+            row_date = datetime.strptime(row_date_str, '%Y-%m-%d %H:%M:%S')
+            row_date_str = row_date.strftime('%Y-%m-%d %H:%M:%S.%f')
+    else:
+        row_date_str = row_date.strftime('%Y-%m-%d %H:%M:%S.%f')
+    if row_date_str is None:
+        demisto.debug("[BigQuery Debug] missing creation time completely: {}".format(row))
+        return_error("[BigQuery Debug] missing creation time completely: {}".format(row))
+    return row_date_str
+
+
+def get_max_incident_time(new_incidents):
+    def incident_to_timestamp(incident):
+        incident_time = get_incident_time(incident)
+        return datetime.strptime(incident_time, '%Y-%m-%d %H:%M:%S.%f')
+
+    incident_with_latest_timestamp = max(new_incidents, key=lambda inc: incident_to_timestamp(inc))
+    return get_incident_time(incident_with_latest_timestamp)
+
+
+def remove_outdated_incident_ids(found_incidents_ids, latest_incident_time_str):
+    new_found_ids = {}
+    latest_incident_time = datetime.strptime(latest_incident_time_str, '%Y-%m-%d %H:%M:%S.%f')
+
+    for incident_id, date_str in found_incidents_ids.items():
+        incident_time = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S.%f')
+        if incident_time >= latest_incident_time:
+            new_found_ids[incident_id] = date_str
+
+    return new_found_ids
+
+
 def fetch_incidents():
-    identifierKey = demisto.params()['identifierKey']
-    last_run = demisto.getLastRun()
-    createdKey = demisto.params()['createdKey']
-    first_fetch_time = demisto.params().get('firstFetchTime', '3 days').strip()
-    demisto.debug(f'last_run: {last_run}' if last_run else 'last_run is empty')
-    lastCreatedTime = last_run.get("lastFetch", parse(f'{first_fetch_time} UTC').isoformat().split("+")[0]).split(".")[0]
-    newFetchTime = datetime.now().isoformat().split(".")[0]
-    query = query_command({'query': FETCH_QUERY + f" AND {createdKey} > '{lastCreatedTime}'", 'incident': True})
-    nextrun = {'lastFetch': newFetchTime}
-    return nextrun, query, lastCreatedTime
+    latest_incident_time_str = get_last_run_date()
+    fetch_query = build_fetch_query(latest_incident_time_str)
+    demisto.debug("[BigQuery Debug] fetch query with date is: {}".format(fetch_query))
+    if "0001-01-01 00:00:00.000000" in fetch_query:
+        demisto.debug("[BigQuery Debug] DANGER! fetch query with date is: {}".format(fetch_query))
+        return_error("fetch query is fetching all-time. aborting")
+
+    bigquery_rows = list(query_command(fetch_query))
+
+    demisto.debug("[BigQuery Debug] number of results is: {}".format(len(bigquery_rows)))
+    if len(bigquery_rows) > 0:
+        demisto.debug("[BigQuery Debug] first row is: {}".format(bigquery_rows[0]))
+        demisto.debug("[BigQuery Debug] last row is: {}".format(bigquery_rows[-1]))
+
+    # incident = {} was here
+    new_incidents = []
+    found_incidents_ids = demisto.getLastRun().get('found_ids', {})
+
+    for i in range(len(bigquery_rows) - 1, - 1, -1):
+        if len(new_incidents) == 50:
+            break
+        row = bigquery_rows[i]
+        row_incident_id = get_incident_id(row)
+        row_date = get_row_date_string(row)
+        if row_incident_id in found_incidents_ids:
+            continue
+
+        found_incidents_ids[row_incident_id] = row_date
+        demisto.debug("[BigQuery Debug] cur row: {}".format(row))
+        incident = row_to_incident(row)
+        new_incidents.append(incident)
+
+    demisto.debug(
+        "[BigQuery Debug] new_incidents is: {}\nbigquery_rows is: {}".format(new_incidents, len(bigquery_rows)))
+
+    if 0 < len(new_incidents) < 50:
+        demisto.debug("[BigQuery Debug] Less than 50 incidents")
+        latest_incident_time_str = get_max_incident_time(new_incidents)
+        found_incidents_ids = remove_outdated_incident_ids(found_incidents_ids, latest_incident_time_str)
+
+    next_run = {
+        "last_date": latest_incident_time_str,
+        "found_ids": found_incidents_ids
+    }
+    demisto.debug("[BigQuery Debug] next run is: {}".format(next_run))
+    demisto.setLastRun(next_run)
+
+    demisto.incidents(new_incidents)
 
 
 def test_module():
@@ -277,12 +411,7 @@ try:
     elif demisto.command() == 'get-modified-remote-data':
         return_results(get_modified_remote_data_command(demisto.args()))
     elif demisto.command() == 'fetch-incidents':
-        # Set and define the fetch incidents command to run after activated via integration settings.
-        next_run, incidents, lastFetchTime = fetch_incidents()
-        if len(incidents) == 0:
-            next_run = {'lastFetch': lastFetchTime}
-        demisto.setLastRun(next_run)
-        demisto.incidents(incidents)
+        fetch_incidents()
 
 
 except Exception as e:
