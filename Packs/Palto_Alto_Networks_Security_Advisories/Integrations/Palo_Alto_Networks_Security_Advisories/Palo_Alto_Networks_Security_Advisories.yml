@@ -86,6 +86,12 @@ script:
     - contextPath: PANSecurityAdvisory.Advisory.description
       description: Human readable description of Advisory
       type: Unknown
+    - contextPath: PANSecurityAdvisory.Advisory.cvss_score
+      type: Unknown
+    - contextPath: PANSecurityAdvisory.Advisory.cvss_severity
+      type: Unknown
+    - contextPath: PANSecurityAdvisory.Advisory.cvss_vector_string
+      type: Unknown
   dockerimage: demisto/python3:3.10.1.25933
   feed: false
   fetch: false

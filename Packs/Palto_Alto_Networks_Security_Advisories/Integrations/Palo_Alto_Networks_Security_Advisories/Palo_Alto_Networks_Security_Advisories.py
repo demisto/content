@@ -64,23 +64,6 @@ class CommandRegister:
 
         return _decorator
 
-    def file_command(self, command_name: str):
-        """
-        Register a file command. file commands always return FileResults.
-
-        :param command_name: The XSOAR integration command
-        """
-
-        def _decorator(func):
-            self.file_commands[command_name] = func
-
-            def _wrapper(topology, demisto_args=None):
-                return func(topology, demisto_args)
-
-            return _wrapper
-
-        return _decorator
-
     def run_command_result_command(self, client: Client, command_name: str, func: Callable,
                                    demisto_args: dict) -> CommandResults:
         """
