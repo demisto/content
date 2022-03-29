@@ -1,7 +1,28 @@
 {
     "TASK_0": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+            {
+                "Name": "ssss",
+                "Value": {
+                    "Get": "lists",
+                    "Where": [
+                        "isEqualString(lists, s)"
+                    ],
+                    "Transformers": [
+                        "toUpperCase(value)"
+                    ]
+                },
+                "Description": "ssss",
+                "Mandatory": true
+            }
+        ],
+        "outputs": [
+            {
+                "contextPath": "Account.Type",
+                "description": "Type of the Account entity",
+                "type": "string"
+            }
+        ]
     },
     "TASK_1": {
         "details": {
