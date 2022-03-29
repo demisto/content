@@ -1,14 +1,14 @@
 flake8==4.0.1
 bandit==1.7.2
 demisto-py>=3.1.1
-git+https://github.com/demisto/demisto-sdk.git@c7c5121f92ce29001f1eb9517f2d1ee50ecab478#egg=demisto-sdk
+git+https://github.com/demisto/demisto-sdk.git@80daa5b43f68859cf654cbf1e613f3f374655d7b#egg=demisto-sdk
 pytest==7.0.1
 pytest-mock==3.7.0
 requests-mock==1.9.3
 ruamel.yaml<0.17
 pipenv==2020.11.15
 autopep8==1.6.0
-mypy==0.940
+mypy==0.942
 networkx==2.6.3
 gitpython==3.1.11
 beautifulsoup4==4.9.3
