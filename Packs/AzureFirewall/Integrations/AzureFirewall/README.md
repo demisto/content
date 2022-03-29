@@ -15,7 +15,7 @@ This integration was integrated and tested with version 2021-03-01 of Azure Fire
     | Subscription ID. |  | True |
     | Tenant ID. |  | False |
     | Client Secret. |  | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | API Version. |  | True |
     | Use system proxy settings |  | False |
@@ -164,6 +164,7 @@ List azure firewalls in resource group or subscription.
 >### Firewall List:
 > Current page size: 1
 > Showing page 1 out others that may exist.
+>
 >|Name|Id|Location|Subnet|Threat Intel Mode|Private Ip Address|Provisioning State|
 >|---|---|---|---|---|---|---|
 >| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 189.160.40.11 | Succeeded |
@@ -338,6 +339,7 @@ List collection rules in firewall or in policy. One of the arguments 'firewall_n
 >### xsoar-policy Rule Collections List:
 > Current page size: 1
 > Showing page 1 out others that may exist.
+> 
 >|Name|Action|Priority|
 >|---|---|---|
 >| playbook-collection | Deny | 201 |
@@ -370,7 +372,7 @@ List rules in firewall or in policy. One of the arguments 'firewall_name' or 'po
 | AzureFirewall.Rule.name | String | Rule name. | 
 
 #### Command example
-```!azure-firewall-rule-list policy=xsoar-policy collection_name=playbook-collection limit=1 page=1```
+```!azure-firewall-rule-list policy=xsoar-policy collection_name=playbook-collection rule_type=network_rule limit=1 page=1```
 #### Context Example
 ```json
 {
@@ -404,9 +406,10 @@ List rules in firewall or in policy. One of the arguments 'firewall_name' or 'po
 
 #### Human Readable Output
 
->### Policy xsoar-policy None Rules List:
+>### Policy xsoar-policy network_rule Rules List:
 > Current page size: 1
 > Showing page 1 out others that may exist.
+> 
 >|Name|
 >|---|
 >| playbook-rule |
@@ -761,6 +764,7 @@ List policy in resource group or subscription.
 >### Policy List:
 > Current page size: 1
 > Showing page 1 out others that may exist.
+> 
 >|Name|Id|Tier|Location|Firewalls|Base Policy|Child Policies|Provisioning State|
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Succeeded |
@@ -1409,6 +1413,7 @@ There is no context output for this command.
 >### Service Tag List:
 > Current page size: 1
 > Showing page 3 out others that may exist.
+> 
 >|Name|Id|
 >|---|---|
 >| ApiManagement.AustraliaCentral | ApiManagement.AustraliaCentral |
@@ -1590,6 +1595,7 @@ List IP groups in resource group or subscription.
 >### IP Group List:
 > Current page size: 1
 > Showing page 1 out others that may exist.
+> 
 >|Name|Id|Ip Addresses|Firewalls|Firewall Policies|Provisioning State|
 >|---|---|---|---|---|---|
 >| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 189.160.40.11 |  |  | Succeeded |
@@ -1680,89 +1686,3 @@ There is no context output for this command.
 #### Human Readable Output
 
 >IP Group xsoar-ip-group deleted successfully.
-
-### azure-firewall-delete-all
-***
-Delete all resources
-
-
-#### Base Command
-
-`azure-firewall-delete-all`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | The unique name of the IP configuration to remove from firewall. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-### azure-firewall-policy-update
-***
-Update policy resource. The command will update the provided arguments.
-
-
-#### Base Command
-
-`azure-firewall-policy-update`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| policy_name | The name of the azure policy to update. | Required | 
-| threat_intelligence_mode | The operation mode for Threat Intelligence. Possible values are: Alert, Deny, Turned-off. | Optional | 
-| ips | Comma-separated list of IP addresses for the threat intelligence whitelist. | Optional | 
-| domains | Comma-separated list of fully qualified domain name for the threat intelligence whitelist. For example : *.microsoft.com,email.college.edu . | Optional | 
-| base_policy_id | The ID of the parent firewall policy from which rules are inherited. | Optional | 
-| enable_proxy | Enable DNS Proxy on Firewalls attached to the Firewall Policy. Possible values are: True, False. | Optional | 
-| dns_servers | Comma-separated list of custom DNS Servers. | Optional | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureFirewall.Policy.id | String | Policy resource ID. | 
-| AzureFirewall.Policy.name | String | Policy resource name. | 
-
-#### Command example
-```!azure-firewall-policy-update policy_name=xsoar-policy threat_intelligence_mode=Deny interval=10 timeout=600```
-#### Context Example
-```json
-{
-    "AzureFirewall": {
-        "Policy": {
-            "etag": "15f105aa-3059-4e9b-97e9-3b85a839ecf3",
-            "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy",
-            "location": "eastus",
-            "name": "xsoar-policy",
-            "properties": {
-                "childPolicies": [],
-                "dnsSettings": {
-                    "servers": []
-                },
-                "firewalls": [],
-                "provisioningState": "Updating",
-                "ruleCollectionGroups": [],
-                "sku": {
-                    "tier": "Standard"
-                },
-                "threatIntelMode": "Deny"
-            },
-            "type": "Microsoft.Network/FirewallPolicies"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Successfully Updated Policy "xsoar-policy"
->|Name|Id|Tier|Location|Firewalls|Base Policy|Child Policies|Provisioning State|
->|---|---|---|---|---|---|---|---|
->| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Updating |
-

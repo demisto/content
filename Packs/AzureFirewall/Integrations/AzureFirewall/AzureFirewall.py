@@ -2859,8 +2859,8 @@ def main() -> None:
     api_version = params.get('api_version')
 
     subscription_id = params['subscription_id']['password']
-    resource_group = params['credentials']['identifier']
-    client_id = params['credentials']['password']
+    resource_group = params['resource_group']
+    client_id = params['client_id']
 
     client_secret = dict_safe_get(params, ['client_secret', 'password'])
     tenant_id = dict_safe_get(params, ['tenant_id', 'password'])

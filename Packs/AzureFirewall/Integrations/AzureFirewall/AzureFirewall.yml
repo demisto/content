@@ -4,10 +4,14 @@ commonfields:
   version: -1
 configuration:
 - display: Resource Group Name.
-  displaypassword: Client ID.
-  name: credentials
+  name: resource_group
   required: true
-  type: 9
+  type: 14
+- display: Client ID.
+  defaultvalue: 'f5b37a76-f937-4c57-a9b5-31dab1c7e236'
+  name: client_id
+  required: true
+  type: 14
 - displaypassword: Subscription ID.
   name: subscription_id
   required: true
