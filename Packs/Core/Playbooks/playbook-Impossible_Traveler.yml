@@ -625,7 +625,7 @@ tasks:
       id: f7228f6e-5f4f-470e-83f6-5c6d60d54074
       version: -1
       name: Get all Impossible Traveler IP Addresses
-      description: 'Will create an array object in context from given string input '
+      description: 'Creates an array object in context from any given string input. '
       scriptName: CreateArray
       type: regular
       iscommand: false
@@ -668,7 +668,7 @@ tasks:
       id: 39d974a3-1258-4d12-8e37-9b52df92bb95
       version: -1
       name: Calculate geographical distance between logins
-      description: Compute the distance between two sets of coordinates, in miles.
+      description: Computes the distance between two sets of coordinates, in miles.
       tags:
       - geodistance
       scriptName: impossibleTravelerGetDistance
@@ -781,8 +781,8 @@ tasks:
         readonly: false
       title: Impossible Traveler Alert Validation
       description: |-
-        The user ${alert.username} signed in from several countries in a one-hour timeframe which is considered an impossible traveler activity.
-        Please select the unapproved countries for the employee to sign in from
+        The user ${alert.username} signed in from several countries in a one-hour timeframe, which is considered an impossible traveler activity.
+        Select the unapproved countries for the employee to sign in from.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -843,14 +843,14 @@ tasks:
       name: Containment Plan
       description: |-
         This playbook handles all the containment actions available with Cortex XSIAM.
-        The playbook allows to contain the incident with one of the following tasks:
+        The playbook enables you to contain the incident by using one of the following tasks:
         * Isolate endpoint
         * Disable account
         * Quarantine file
         * Block indicators
         * Clear user session (currently, the playbook supports only Okta)
 
-        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
+        The playbook inputs allow you to manipulate the execution flow. Review the inputs description.
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -943,15 +943,15 @@ tasks:
       version: -1
       name: Containment Plan
       description: |-
-        This playbook handles all the containment actions available with XSIAM.
-        The playbook allows to contain the incident with one of the following tasks:
+        This playbook handles all the containment actions available with Cortex XSIAM.
+        The playbook enables you to contain the incident by using one of the following tasks:
         * Isolate endpoint
         * Disable account
         * Quarantine file
         * Block indicators
         * Clear user session (currently, the playbook supports only Okta)
 
-        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
+        The playbook inputs allow you to manipulate the execution flow. Review the inputs description.
       playbookName: Containment Plan
       type: playbook
       iscommand: false
