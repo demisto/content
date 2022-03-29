@@ -1,6 +1,7 @@
 import json
 import io
 from datetime import datetime
+from freezegun import freeze_time
 
 import pytest
 from pytest import raises
@@ -31,6 +32,21 @@ host:api.absolute.com
 content-type:application/json
 x-abs-date:20170926T172213Z
 4c4cba4fe89f96921d32cf91d4bd4415f524050ffe82c840446e7110a622a025"""
+
+EXPECTED_SIGNING_STRING_PUT = """ABS1-HMAC-SHA-256
+20170926T172213Z
+20170926/cadc/abs1
+c23103585b2b6d617f4a88afa1e76731cf6215ef329fdd0024030ca21a4933b4"""
+
+EXPECTED_SIGNING_STRING_POST = """ABS1-HMAC-SHA-256
+20170926T172213Z
+20170926/cadc/abs1
+ed080b5e0df239b4f747d510a388eefe3b4876730e6f09a9e3d953f36983aec3"""
+
+EXPECTED_SIGNING_STRING_GET = """ABS1-HMAC-SHA-256
+20170926T172213Z
+20170926/cadc/abs1
+1b42a7b1f96d459efdbeceba5ee624d92caeb3ab3ca196268be55bc89c61cd93"""
 
 
 def util_load_json(path):
@@ -70,3 +86,13 @@ def test_create_canonical_request(method, canonical_uri, query_string, payload, 
                                                     query_string=query_string,
                                                     payload=payload)
     assert canonical_res == expected_canonical_request
+
+
+@pytest.mark.parametrize('canonical_req, expected_signing_string',
+                         [(EXPECTED_CANONICAL_GET_REQ_NO_PAYLOAD_NO_QUERY, EXPECTED_SIGNING_STRING_GET),
+                          (EXPECTED_CANONICAL_PUT_REQ_NO_PAYLOAD_WITH_QUERY, EXPECTED_SIGNING_STRING_PUT),
+                          (EXPECTED_CANONICAL_POST_REQ_WITH_PAYLOAD_WITH_QUERY, EXPECTED_SIGNING_STRING_POST)])
+@freeze_time("2017-09-26 17:22:13 UTC")
+def test_create_signing_string(canonical_req, expected_signing_string):
+    client = create_client()
+    assert client.create_signing_string(canonical_req) == expected_signing_string
