@@ -7,7 +7,6 @@
 This pack has 2 sub-pack/integration namely:
 - ACTI Indicator Query
 - ACTI Vulnerability Query
-- ACTI Threat Intelligence Report
 _____
 
 
