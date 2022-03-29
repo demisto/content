@@ -9311,6 +9311,30 @@ def get_ha_state(topology: Topology, device_filter_string: str = None) -> list[S
     return result
 
 
+def get_jobs(topology: Topology, device_filter_string: str = None, status: str = None, job_type: str = None,
+             id: int = None) -> list[ShowJobsAllResultData]:
+    """
+    Get all the jobs from the devices in the environment, or a single job when ID is specified.
+
+    Jobs are sorted by the most recent queued and are returned in a way that's consumable by Generic Polling.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param status: Filter returned jobs by status
+    :param job_type: Filter returned jobs by type
+    :param id: Filter by ID
+    """
+    if id:
+        id = int(id)
+
+    result: list[ShowJobsAllResultData] = UniversalCommand.show_jobs(
+        topology,
+        device_filter_string,
+        job_type=job_type,
+        status=status,
+        id=id
+    )
+    return result
+
 def get_topology() -> Topology:
     """
     Builds and returns the Topology instance
@@ -9823,14 +9847,6 @@ def main():
                     empty_result_message="No BGP Peers found."
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-device-connectivity':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_device_connectivity(topology, **demisto.args()),
-                    empty_result_message="No Devices Found"
-                )
-            )
         elif demisto.command() == 'pan-os-platform-get-available-software':
             topology = get_topology()
             return_results(
@@ -9844,6 +9860,14 @@ def main():
             return_results(
                 dataclasses_to_command_results(
                     get_ha_state(topology, **demisto.args()),
+                    empty_result_message="No HA information available"
+                )
+            )
+        elif demisto.command() == 'pan-os-platform-get-jobs':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_jobs(topology, **demisto.args()),
                     empty_result_message="No HA information available"
                 )
             )
