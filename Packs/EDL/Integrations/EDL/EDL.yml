@@ -190,6 +190,21 @@ configuration:
   name: use_legacy_query
   required: false
   type: 8
+- additionalinfo: 'Large CIDR is considered a CIDR smaller than 8.'
+  defaultvalue: 'true'
+  display: 'Auto Block Large CIDRs'
+  hidden: false
+  name: auto_block_large_cidrs
+  required: true
+  type: 8
+- additionalinfo: 'Should block top level domains'
+  defaultvalue: 'false'
+  display: 'Auto Block top level domains'
+  hidden: false
+  name: auto_block_tld
+  required: true
+  type: 8
+
 description: Use the Generic Export Indicators Service integration to provide an endpoint
   with a list of indicators as a service for the system indicators.
 display: Generic Export Indicators Service
