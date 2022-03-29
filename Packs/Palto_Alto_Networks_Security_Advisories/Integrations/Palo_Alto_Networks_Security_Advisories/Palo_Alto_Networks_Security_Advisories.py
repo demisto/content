@@ -1,9 +1,11 @@
-import demistomock as demisto1
+import demistomock as demisto
 from CommonServerPython import *
 
 from typing import Callable, List, Dict
 from dataclasses import dataclass
 import enum
+
+OUTPUT_PREFIX = "PANSecurityAdvisory."
 
 
 class Client(BaseClient):
@@ -88,6 +90,7 @@ class CommandRegister:
         result = func(client, **demisto_args)
         if command_name == "test-module":
             return_results(result)
+            return
 
         if not result:
             command_result = CommandResults(
@@ -158,11 +161,33 @@ class DemistoParameters:
 
 @dataclass
 class Advisory:
+    """
+    :param data_type: The type of advisory this is
+    :param data_format: The format of the advisory, such as MITRE
+    :param cve_id: The ID of the CVE described by this advisory
+    :param cve_date_public: The date this CVE was released
+    :param cve_title: The name of this CVE
+    :param affects_product_name: The name of the product this affects, such as PAN-OS
+    :param affects_vendor_name: The Vendor of the product, in this case Palo Alto Networks
+    :param affects_version_name: The string name of the major version affected
+    :param affects_version_affected: The operator for affected version, such as > < ! >= etc.
+    :param affects_version_value: The more specific version affected for to compare against with affects_version_value operator
+    :param description: Human readable description of Advisory
+    """
     data_type: str
     data_format: str
     cve_id: str
     cve_date_public: str
     cve_title: str
+    affects_vendor_name: str
+    affects_product_name: str
+    affects_version_name: str
+    affects_version_affected: str
+    affects_version_value: str
+    description: str
+
+    _output_prefix = OUTPUT_PREFIX + "Advisory"
+    _title = "Palo Alto Networks Security Advisories"
 
 
 class SeverityEnum(enum.Enum):
@@ -183,20 +208,41 @@ def locals_to_dict(locals_data: dict) -> dict:
     return result_dict
 
 
-def flatten_advisory_dict(advisory_dict) -> Advisory:
+def flatten_advisory_dict(advisory_dict: dict) -> Optional[Advisory]:
     """Given a dictionary advisory, return an `Advisory` object"""
+    affects_dict = {}
+
+    for vendor_data_dict in advisory_dict.get("affects").get("vendor").get("vendor_data"):
+        affects_dict["affects_vendor_name"] = vendor_data_dict.get("vendor_name")
+        products = vendor_data_dict.get("product").get("product_data")
+        for product in products:
+            affects_dict["affects_product_name"] = product.get("product_name")
+            versions = product.get("version").get("version_data")
+            for version in versions:
+                affects_dict["affects_version_name"] = version.get("version_name")
+                affects_dict["affects_version_affected"] = version.get("version_affected")
+                affects_dict["affects_version_value"] = version.get("version_value")
+
     return Advisory(
         data_type=advisory_dict.get("data_type"),
         data_format=advisory_dict.get("data_format"),
         cve_id=advisory_dict.get("CVE_data_meta").get("ID"),
         cve_title=advisory_dict.get("CVE_data_meta").get("TITLE"),
         cve_date_public=advisory_dict.get("CVE_data_meta").get("DATE_PUBLIC"),
+        description=advisory_dict.get("description").get("description_data")[0].get("value"),
+        **affects_dict
     )
+
+@COMMANDS.command("test-module")
+def test_module(client: Client):
+    request_result = client.get_products()
+    if request_result.get("success") == True:
+        return "ok"
 
 
 @COMMANDS.command("pan-advisories-get-advisories")
 def get_advisories(client: Client, product: str, sort: str = "-date", severity: SeverityEnum = None, q: str = "") \
-        -> List[Advisory]:
+        -> list[Advisory]:
     """
     Gets all the advisories for the given product.
     :param client: HTTP Client !no-auto-argument
@@ -206,9 +252,14 @@ def get_advisories(client: Client, product: str, sort: str = "-date", severity: 
     :param q: Text search query
     """
     params_dict = locals_to_dict(locals())
+    if params_dict.get("q"):
+        # oh, what fun
+        params_dict["q"] = f"\"{params_dict.get('q')}\""
+
     advisory_data = client.get_advisories(product, params_dict).get("data")
 
     advisory_object_list: List[Advisory] = []
+    advisory_dict: dict
     for advisory_dict in advisory_data:
         advisory_object_list.append(flatten_advisory_dict(advisory_dict))
 
@@ -220,4 +271,8 @@ def main():
     client = Client(
         base_url=demisto_params.url
     )
-    return COMMANDS.run_command(client, demisto.command(), demisto.args())
+    return_results(COMMANDS.run_command(client, demisto.command(), demisto.args()))
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

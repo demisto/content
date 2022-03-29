@@ -1,0 +1,95 @@
+category: Authentication
+commonfields:
+  id: Palo_Alto_Networks_Security_Advisories
+  version: -1
+configuration:
+- defaultvalue: https://security.paloaltonetworks.com/api/v1
+  display: Default URL for PAN-OS advisories website
+  name: url
+  type: 0
+description: null
+display: Palo Alto Networks Security Advisories
+name: Palo_Alto_Networks_Security_Advisories
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Product name to search for advisories
+      isArray: false
+      name: product
+      required: true
+      secret: false
+    - default: false
+      defaultValue: -date
+      description: Sort returned advisories by this value, can be date, cvss, etc.
+        Leading hyphpen (-) indicates reverse search.
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: null
+      description: Filter advisories to this severity level only.
+      isArray: false
+      name: severity
+      predefined:
+      - HIGH
+      - CRITICAL
+      - MEDIUM
+      - LOW
+      - NONE
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: Text search query
+      isArray: false
+      name: q
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets all the advisories for the given product.
+    name: pan-advisories-get-advisories
+    outputs:
+    - contextPath: PANSecurityAdvisory.Advisory.data_type
+      description: The type of advisory this is
+      type: Unknown
+    - contextPath: PANSecurityAdvisory.Advisory.data_format
+      description: The format of the advisory, such as MITRE
+      type: Unknown
+    - contextPath: PANSecurityAdvisory.Advisory.cve_id
+      description: The ID of the CVE described by this advisory
+      type: Unknown
+    - contextPath: PANSecurityAdvisory.Advisory.cve_date_public
+      description: The date this CVE was released
+      type: Unknown
+    - contextPath: PANSecurityAdvisory.Advisory.cve_title
+      description: The name of this CVE
+      type: Unknown
+    - contextPath: PANSecurityAdvisory.Advisory.affects_vendor_name
+      description: The Vendor of the product, in this case Palo Alto Networks
+      type: Unknown
+    - contextPath: PANSecurityAdvisory.Advisory.affects_product_name
+      description: The name of the product this affects, such as PAN-OS
+      type: Unknown
+    - contextPath: PANSecurityAdvisory.Advisory.affects_version_name
+      description: The string name of the major version affected
+      type: Unknown
+    - contextPath: PANSecurityAdvisory.Advisory.affects_version_affected
+      description: The operator for affected version, such as > < ! >= etc.
+      type: Unknown
+    - contextPath: PANSecurityAdvisory.Advisory.affects_version_value
+      description: The more specific version affected for to compare against with
+        affects_version_value operator
+      type: Unknown
+    - contextPath: PANSecurityAdvisory.Advisory.description
+      description: Human readable description of Advisory
+      type: Unknown
+  dockerimage: demisto/python3:3.10.1.25933
+  feed: false
+  fetch: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
