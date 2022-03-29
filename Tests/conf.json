@@ -4441,6 +4441,66 @@
             "pid_threshold": 80
         },
         {
+            "playbookID": "Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test",
+            "fromversion": "6.2.0",
+            "timeout": 7000,
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "CreateIncidents"
+            ],
+            "instance_names": [
+                "ews_mail_sender_srtest02",
+                "Create Test Incidents - Phishing Mock"
+            ],
+            "external_playbook_config": {
+                "playbookID": "Phishing - Generic v3",
+                "input_parameters":{
+                    "InternalDomains": {
+                        "simple": "demistodev.onmicrosoft.com"
+                    }
+                }
+            },
+            "instance_configuration":{
+                "classifier_id":"EWS v2",
+                "incoming_mapper_id":"EWS v2-mapper"
+            },
+            "memory_threshold": 160,
+            "pid_threshold": 80
+        },
+        {
+            "playbookID": "Phishing v3 - Get Original Email + Search & Delete - Test",
+            "fromversion": "6.2.0",
+            "toversion": "6.4.9",
+            "timeout": 7000,
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "EWSO365",
+                "Rasterize",
+                "SecurityAndCompliance",
+                "VirusTotal (API v3)"
+            ],
+            "instance_names": [
+                "ews_mail_sender_srtest02",
+                "virus_total_v3",
+                "ewso365_sec_eng_team"
+            ],
+            "external_playbook_config": 
+            {
+                "playbookID": "Phishing - Generic v3",
+                "input_parameters":
+                {
+                    "SearchAndDelete": {"simple": "True"},
+                    "GetOriginalEmail": {"simple": "True"},
+                    "SearchAndDeleteIntegration": {"simple": "O365"},
+                    "O365DeleteType": {"simple": "Soft"}
+                }
+            },
+            "memory_threshold": 160,
+            "pid_threshold": 80
+        },
+        {
             "playbookID": "PCAP Search test",
             "fromversion": "5.0.0"
         },
