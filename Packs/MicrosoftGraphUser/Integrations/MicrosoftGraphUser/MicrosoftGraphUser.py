@@ -521,7 +521,7 @@ def main():
                                               app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
                                               self_deployed=self_deployed, redirect_uri=redirect_uri,
                                               auth_code=auth_code, handle_error=handle_error,
-                                              auth_code=auth_code, certificate_thumbprint=certificate_thumbprint,
+                                              certificate_thumbprint=certificate_thumbprint,
                                               private_key=private_key)
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
         return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
