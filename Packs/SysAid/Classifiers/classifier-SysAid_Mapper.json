@@ -601,7 +601,7 @@
                         "transformers": []
                     }
                 },
-                "SysAid Due date": {
+                "SysAid Due Date": {
                     "complex": {
                         "accessor": "valueCaption",
                         "filters": [
@@ -1462,7 +1462,7 @@
                         "transformers": []
                     }
                 },
-                "SysAid Due date": {
+                "SysAid Due Date": {
                     "complex": {
                         "accessor": "valueCaption",
                         "filters": [
@@ -2323,7 +2323,7 @@
                         "transformers": []
                     }
                 },
-                "SysAid Due date": {
+                "SysAid Due Date": {
                     "complex": {
                         "accessor": "valueCaption",
                         "filters": [
@@ -3184,7 +3184,7 @@
                         "transformers": []
                     }
                 },
-                "SysAid Due date": {
+                "SysAid Due Date": {
                     "complex": {
                         "accessor": "valueCaption",
                         "filters": [
