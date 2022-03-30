@@ -1,8 +1,7 @@
 import json
 import traceback
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Tuple
 import datetime 
-
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
@@ -14,7 +13,6 @@ apiVersion = "v1"
 
 INTEGRATION_NAME = 'NCURITY - Ncurion'
 INTEGRATION_CONTEXT_NAME = 'Ncurion'
-
 
 def login(base_url, username, password):
     api_url = base_url + '/napi/api/v1/apikey'
@@ -35,7 +33,6 @@ def login(base_url, username, password):
     }
     return access_token, refresh_token, headers1
 
-
 def loglist(base_url, access_token, refresh_token, headers1):
     base_url1 = base_url + '/logapi/api/v2/logmgr/0'
     verify_certificate = not demisto.params().get('insecure', False)
@@ -43,7 +40,6 @@ def loglist(base_url, access_token, refresh_token, headers1):
     data = loglist.text
     log_list = json.loads(data)
     return log_list
-
 
 def raw_response_to_context_rules(items: Union[Dict, List]) -> Union[Dict, List]:
     if isinstance(items, list):
@@ -77,9 +73,7 @@ def get_log_list(base_url, username, password):
     )
     return_results(results)
 
-
-def fetch_incidents(base_url, username, password, last_run: Dict[str, int], first_fetch_time: Optional[int]) -> Tuple[Dict[str, int], List[dict]]:
-    
+def fetch_incidents(base_url, username, password, last_run: Dict[str, int], first_fetch_time: Optional[int]) -> Tuple[Dict[str, int], List[dict]]: 
     access_token, refresh_token, headers1 = login(base_url, username, password)
     log_list = loglist(base_url, access_token, refresh_token, headers1)
     log_server_id = [e["id"] for e in log_list if e["is_connected"] == True]
@@ -93,14 +87,12 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int], firs
             params1 = {"start": f"None", "end": f"{now_time}", "size": max_fetch}
         else:
             params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
-        
+
     if len(log_server_id) == 0:
         return 'ok'
     else:
-
         #incidents: List[Dict[str, Any]] = []
         incidents = []
-        
         verify_certificate = not demisto.params().get('insecure', False)
         for i in log_server_id:
             base_url_log = base_url + f'/logapi/api/v1/logserver/search/alert/search/{i}'
@@ -113,8 +105,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int], firs
                     'rawJSON': json.dumps(hit)
                 }
                 incidents.append(incident)
-    next_run = {'last_fetch': f'{now_time}'}
-
+    next_run = {'last_fetch': now_time }
     logout = json.dumps({
         "access_token": access_token,
         "refresh_token": refresh_token
@@ -124,7 +115,6 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int], firs
     next_run = {'last_fetch': now_time}
     return next_run, incidents
 
-
 def api_log_out(base_url, access_token, refresh_token, headers1):
     logout = json.dumps({
         "access_token": access_token,
@@ -133,7 +123,6 @@ def api_log_out(base_url, access_token, refresh_token, headers1):
     remove_url = base_url + '/napi/api/v1/apikey/remove'
     verify_certificate = not demisto.params().get('insecure', False)
     requests.request("POST", remove_url, headers=headers1, data=logout, verify=verify_certificate)
-
 
 def main():
     params = demisto.params()
