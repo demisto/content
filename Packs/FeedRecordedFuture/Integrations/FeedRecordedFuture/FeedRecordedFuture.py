@@ -75,8 +75,8 @@ class Client(BaseClient):
         self.api_token = self.headers['X-RFToken'] = api_token
         self.services = services
         self.indicator_type = indicator_type
-        self.threshold = int(threshold)
-        self.risk_score_threshold = int(risk_score_threshold)
+        self.threshold = int(threshold) if threshold else threshold
+        self.risk_score_threshold = int(risk_score_threshold) if risk_score_threshold else risk_score_threshold
         self.tags = tags
         self.tlp_color = tlp_color
         super().__init__(self.BASE_URL, proxy=proxy, verify=not insecure)
@@ -157,7 +157,8 @@ class Client(BaseClient):
                              " requests made to Recorded Future. ")
             else:
                 return_error(
-                    '{} - exception in request: {} {}'.format(self.SOURCE_NAME, response.status_code, response.content))
+                    '{} - exception in request: {} {}'
+                    .format(self.SOURCE_NAME, response.status_code, response.content))  # type: ignore
 
         if service == 'connectApi':
             response_content = gzip.decompress(response.content)
