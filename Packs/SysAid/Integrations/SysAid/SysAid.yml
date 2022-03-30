@@ -24,7 +24,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: '50'
+- additionalinfo: Maximum is limited to 200.
+  defaultvalue: '50'
   display: Maximum number of incidents to fetch
   hidden: false
   name: max_fetch
@@ -129,17 +130,6 @@ script:
       predefined:
       - id
       - name
-    - name: offset
-      description: 'Retrieved values count is limited. This parameter specifies the
-        offset (start point) from which to retrieve values (e.g. 25). Defaults to
-        0. Zero base.'
-      required: false
-      isArray: false
-    - name: limit
-      description: 'The maximum number of list values to retrieve per request. Defaults
-        to 500 (configurable).'
-      required: false
-      isArray: false
     - name: fields
       description: 'A comma separated list of fields to return. Available fields to
         return are: id (always returned), caption, and values.'
@@ -166,12 +156,12 @@ script:
       description: 'List of fields to return. Comma separated.'
       required: false
       isArray: true
-    - name: offset
-      description: 'Specifies the offset (start point) from which to retrieve values. Defaults to 0. Zero based.'
+    - name: page_number
+      description: 'Index of the page of results to retrieve. Default is 1.'
       required: false
       isArray: false
-    - name: limit
-      description: 'The maximum number of assets to retrieve per request. Defaults to 500 (configurable).'
+    - name: page_size
+      description: 'The number of assets to return on a page. Default is 100.'
       required: false
       isArray: false
     outputs:
@@ -195,12 +185,12 @@ script:
       description: 'List of fields to return. Comma separated.'
       required: false
       isArray: true
-    - name: limit
-      description: 'The maximum number of assets to retrieve per request. Defaults to 500 (configurable).'
+    - name: page_size
+      description: 'The number of assets to return on a page. Default is 100.'
       required: false
       isArray: false
-    - name: offset
-      description: 'Specifies the offset (start point) from which to retrieve values. Defaults to 0. Zero based.'
+    - name: page_number
+      description: 'Index of the page of results to retrieve. Default is 1.'
       required: false
       isArray: false
     outputs:
@@ -220,14 +210,6 @@ script:
       description: 'List of fields to return. Comma separated.'
       required: false
       isArray: true
-    - name: offset
-      description: 'Specifies the offset (start point) from which to retrieve values. Defaults to 0. Zero based.'
-      required: false
-      isArray: false
-    - name: limit
-      description: 'The maximum number of filters to retrieve per request. Defaults to 500 (configurable).'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: SysAid.Filter.id
@@ -257,12 +239,12 @@ script:
       - admin
       - user
       - manager
-    - name: offset
-      description: 'Specifies the offset (start point) from which to retrieve values. Defaults to 0. Zero based.'
+    - name: page_number
+      description: 'Index of the page of results to retrieve. Default is 1.'
       required: false
       isArray: false
-    - name: limit
-      description: 'The maximum number of users to retrieve per request. Defaults to 500 (configurable).'
+    - name: page_size
+      description: 'The number of users to return on a page. Default is 100.'
       required: false
       isArray: false
     outputs:
@@ -304,12 +286,12 @@ script:
       - admin
       - user
       - manager
-    - name: offset
-      description: 'Specifies the offset (start point) from which to retrieve values. Defaults to 0. Zero based.'
+    - name: page_number
+      description: 'Index of the page of results to retrieve. Default is 1.'
       required: false
       isArray: false
-    - name: limit
-      description: 'The maximum number of users to retrieve per request. Defaults to 500 (configurable).'
+    - name: page_size
+      description: 'The number of users to return on a page. Default is 100.'
       required: false
       isArray: false
     outputs:
@@ -349,12 +331,12 @@ script:
       description: 'List of fields to return. Comma separated.'
       required: false
       isArray: true
-    - name: offset
-      description: 'Specifies the offset (start point) from which to retrieve values. Defaults to 0. Zero based.'
+    - name: page_number
+      description: 'Index of the page of results to retrieve. Default is 1.'
       required: false
       isArray: false
-    - name: limit
-      description: 'The maximum number of service records to retrieve per request. Defaults to 500 (configurable).'
+    - name: page_size
+      description: 'The number of service records to return on a page. Default is 100.'
       required: false
       isArray: false
     - name: ids
@@ -405,12 +387,12 @@ script:
       description: 'List of fields to return. Comma separated.'
       required: false
       isArray: true
-    - name: offset
-      description: 'Specifies the offset (start point) from which to retrieve values. Defaults to 0. Zero based.'
+    - name: page_number
+      description: 'Index of the page of results to retrieve. Default is 1.'
       required: false
       isArray: false
-    - name: limit
-      description: 'The maximum number of service records to retrieve per request. Defaults to 500 (configurable).'
+    - name: page_size
+      description: 'The number of service records to return on a page. Default is 100.'
       required: false
       isArray: false
     - name: query

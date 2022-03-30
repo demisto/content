@@ -22,7 +22,7 @@ TEMPLATE_OUTPUTS = ['key', 'value', 'mandatory', 'editable', 'type', 'defaultVal
 STATUSES = {'1', '2', '3', '4', '5', '6', '7', '8', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30',
             '31', '32', '33', '34', '35', '36', '39', '40', 'OPEN_CLASSES'}
 
-MAX_INCIDENTS_TO_FETCH = 500
+MAX_INCIDENTS_TO_FETCH = 200
 
 FETCH_DEFAULT_TIME = '3 days'
 
@@ -41,17 +41,16 @@ class Client(BaseClient):
 
         return response.cookies
 
-    def table_list_request(self, entity: str = None, fields: List[str] = None, offset: int = None, limit: int = None):
-        params = assign_params(entity=entity, fields=fields, offset=offset, limit=limit)
+    def table_list_request(self, entity: str = None, fields: List[str] = None):
+        params = assign_params(entity=entity, fields=fields)
 
         response = self._http_request('GET', 'list', params=params, cookies=self._cookies)
 
         return response
 
     def table_list_with_id_request(self, list_id: str, entity: str = None, entity_id: str = None, entity_type: int = None,
-                                   fields: List[str] = None, offset: int = None, limit: int = None, key: str = None):
-        params = assign_params(entity=entity, fields=fields, offset=offset, limit=limit,
-                               entityId=entity_id, entityType=entity_type, key=key)
+                                   fields: List[str] = None, key: str = None):
+        params = assign_params(entity=entity, fields=fields, entityId=entity_id, entityType=entity_type, key=key)
 
         response = self._http_request('GET', f'list/{list_id}', params=params, cookies=self._cookies)
 
@@ -78,8 +77,8 @@ class Client(BaseClient):
 
         return response
 
-    def filter_list_request(self, fields: List[str] = None, offset: int = None, limit: int = None):
-        params = assign_params(fields=fields, offset=offset, limit=limit)
+    def filter_list_request(self, fields: List[str] = None):
+        params = assign_params(fields=fields)
 
         response = self._http_request('GET', 'filters', params=params, cookies=self._cookies)
 
@@ -277,6 +276,18 @@ def template_readable_response(responses: Union[dict, List[dict], str]) -> Union
     return readable_response
 
 
+def calculate_offset(page_size: int, page_number: int) -> int:
+    # page numbering starts at 1, offset (the start point from which to retrieve values, zero based) starts at 0
+    return page_size * (page_number - 1)
+
+
+def paging_heading(page_size: str = None, page_number: str = None):
+    if page_number or page_size:
+        return 'Showing' + (f' {page_size}' if page_size else '') + ' results' + \
+               (f' from page {page_number}' if page_number else '') + ':\n'
+    return ''
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -286,14 +297,12 @@ def table_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     entity_type = arg_to_number(args.get('entity_type'))
     key = args.get('key')
     list_id = args.get('list_id')
-    offset = arg_to_number(args.get('offset'))
-    limit = arg_to_number(args.get('limit'))
     fields = argToList(args.get('fields'))
 
     if list_id:
-        response = client.table_list_with_id_request(list_id, entity, entity_id, entity_type, fields, offset, limit, key)
+        response = client.table_list_with_id_request(list_id, entity, entity_id, entity_type, fields, key)
     else:
-        response = client.table_list_request(entity, fields, offset, limit)
+        response = client.table_list_request(entity, fields)
     headers = ['id', 'caption', 'values']
     command_results = CommandResults(
         outputs_prefix='SysAid.List',
@@ -313,8 +322,10 @@ def table_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     asset_id = args.get('asset_id')
     fields = argToList(args.get('fields'))
-    offset = arg_to_number(args.get('offset'))
-    limit = arg_to_number(args.get('limit'))
+
+    limit = arg_to_number(args.get('page_size', '100'))
+    page_number = arg_to_number(args.get('page_number', '1'))
+    offset = calculate_offset(limit, page_number)
 
     if asset_id:
         response = client.asset_list_with_id_request(asset_id, fields)
@@ -327,11 +338,12 @@ def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Asset {asset_id + " " if asset_id else ""}Results:',
-                                        readable_response,
-                                        headers=headers,
-                                        removeNull=True,
-                                        headerTransform=pascalToSpace)
+        readable_output=paging_heading(limit, page_number) + tableToMarkdown(
+            f'Asset {asset_id + " " if asset_id else ""}Results:',
+            readable_response,
+            headers=headers,
+            removeNull=True,
+            headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -340,8 +352,10 @@ def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get('query')
     fields = argToList(args.get('fields'))
-    offset = arg_to_number(args.get('offset'))
-    limit = arg_to_number(args.get('limit'))
+
+    limit = arg_to_number(args.get('page_size', '100'))
+    page_number = arg_to_number(args.get('page_number', '1'))
+    offset = calculate_offset(limit, page_number)
 
     response = client.asset_search_request(str(query), fields, limit, offset)
     headers = ['id', 'name', 'info']
@@ -351,11 +365,11 @@ def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Asset Results:',
-                                        readable_response,
-                                        headers=headers,
-                                        removeNull=True,
-                                        headerTransform=pascalToSpace)
+        readable_output=paging_heading(limit, page_number) + tableToMarkdown('Asset Results:',
+                                                                             readable_response,
+                                                                             headers=headers,
+                                                                             removeNull=True,
+                                                                             headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -363,10 +377,8 @@ def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
 def filter_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     fields = argToList(args.get('fields'))
-    offset = arg_to_number(args.get('offset'))
-    limit = arg_to_number(args.get('limit'))
 
-    response = client.filter_list_request(fields, offset, limit)
+    response = client.filter_list_request(fields)
     headers = ['id', 'caption', 'type', 'values']
     readable_response = filter_list_readable_response(response)
     command_results = CommandResults(
@@ -387,8 +399,10 @@ def filter_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     fields = argToList(args.get('fields'))
     type_ = args.get('type')
-    offset = arg_to_number(args.get('offset'))
-    limit = arg_to_number(args.get('limit'))
+
+    limit = arg_to_number(args.get('page_size', '100'))
+    page_number = arg_to_number(args.get('page_number', '1'))
+    offset = calculate_offset(limit, page_number)
 
     response = client.user_list_request(fields, type_, offset, limit)
     headers = ['id', 'name', 'isAdmin', 'isManager', 'isSysAidAdmin', 'isGuest']
@@ -397,10 +411,10 @@ def user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Filter Results:',
-                                        response,
-                                        headers=headers,
-                                        removeNull=True)
+        readable_output=paging_heading(limit, page_number) + tableToMarkdown('Filter Results:',
+                                                                             response,
+                                                                             headers=headers,
+                                                                             removeNull=True)
     )
 
     return command_results
@@ -410,8 +424,10 @@ def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get('query')
     fields = argToList(args.get('fields'))
     type_ = args.get('type')
-    offset = arg_to_number(args.get('offset'))
-    limit = arg_to_number(args.get('limit'))
+
+    limit = arg_to_number(args.get('page_size', '100'))
+    page_number = arg_to_number(args.get('page_number', '1'))
+    offset = calculate_offset(limit, page_number)
 
     response = client.user_search_request(str(query), fields, type_, offset, limit)
     headers = ['id', 'name', 'isAdmin', 'isManager', 'isSysAidAdmin', 'isGuest']
@@ -420,10 +436,10 @@ def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('User Results:',
-                                        response,
-                                        headers=headers,
-                                        removeNull=True)
+        readable_output=paging_heading(limit, page_number) + tableToMarkdown('User Results:',
+                                                                             response,
+                                                                             headers=headers,
+                                                                             removeNull=True)
     )
 
     return command_results
@@ -432,10 +448,13 @@ def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def service_record_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type')
     fields = argToList(args.get('fields'))
-    offset = arg_to_number(args.get('offset'))
-    limit = arg_to_number(args.get('limit'))
     ids = argToList(args.get('ids'))
     archive = arg_to_number(args.get('archive'))
+
+    limit = arg_to_number(args.get('page_size', '100'))
+    page_number = arg_to_number(args.get('page_number', '1'))
+    offset = calculate_offset(limit, page_number)
+
     custom_fields_keys = argToList(args.get('custom_fields_keys'))
     custom_fields_values = argToList(args.get('custom_fields_values'))
     filters = extract_filters(custom_fields_keys, custom_fields_values)
@@ -448,11 +467,11 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Service Record Results:',
-                                        readable_response,
-                                        headers=headers,
-                                        removeNull=True,
-                                        headerTransform=pascalToSpace)
+        readable_output=paging_heading(limit, page_number) + tableToMarkdown('Service Record Results:',
+                                                                             readable_response,
+                                                                             headers=headers,
+                                                                             removeNull=True,
+                                                                             headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -462,9 +481,12 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
     query = args.get('query')
     type_ = args.get('type')
     fields = argToList(args.get('fields'))
-    offset = arg_to_number(args.get('offset'))
-    limit = arg_to_number(args.get('limit'))
     archive = arg_to_number(args.get('archive'))
+
+    limit = arg_to_number(args.get('page_size', '100'))
+    page_number = arg_to_number(args.get('page_number', '1'))
+    offset = calculate_offset(limit, page_number)
+
     custom_fields_keys = argToList(args.get('custom_fields_keys'))
     custom_fields_values = argToList(args.get('custom_fields_values'))
     filters = extract_filters(custom_fields_keys, custom_fields_values)
@@ -477,11 +499,11 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Service Record Results:',
-                                        readable_response,
-                                        headers=headers,
-                                        removeNull=True,
-                                        headerTransform=pascalToSpace)
+        readable_output=paging_heading(limit, page_number) + tableToMarkdown('Service Record Results:',
+                                                                             readable_response,
+                                                                             headers=headers,
+                                                                             removeNull=True,
+                                                                             headerTransform=pascalToSpace)
     )
 
     return command_results
