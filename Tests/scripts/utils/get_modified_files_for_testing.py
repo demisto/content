@@ -189,7 +189,7 @@ def filter_modified_files_for_specific_marketplace_version(files_string: str, id
                     for test_obj in id_set.get(obj_repo_name, []):
                         for data in test_obj.values():
                             if file_path in data.get('file_path') and \
-                                    data.get('marketplaces') == ['marketplace_version']:
+                                    data.get('marketplaces') == [marketplace_version]:
                                 out_files_string += f'{line}\n'
                                 break
     return out_files_string

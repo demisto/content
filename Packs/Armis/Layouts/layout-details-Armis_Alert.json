@@ -5,9 +5,6 @@
   "version": -1,
   "fromVersion": "5.0.0",
   "toVersion": "5.9.9",
-  "marketplaces": [
-    "marketplacev2"
-  ],
   "layout": {
     "TypeName": "",
     "id": "Armis Alert",

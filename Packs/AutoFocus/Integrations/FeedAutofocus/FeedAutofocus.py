@@ -54,6 +54,7 @@ def datetime_to_epoch(dt_to_convert):
 
 class Client(BaseClient):
     """Client for AutoFocus Feed - gets indicator lists from the Custom and Daily threat feeds
+
     Attributes:
         api_key(str): The API key for AutoFocus.
         insecure(bool): Use SSH on http request.
