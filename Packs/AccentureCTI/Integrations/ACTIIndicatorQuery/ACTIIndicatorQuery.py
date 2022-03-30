@@ -1,5 +1,7 @@
 from typing import Union
 from CommonServerPython import *
+import json
+import os
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -19,9 +21,13 @@ ENDPOINTS = {
 class Client(BaseClient):
     def __init__(self, input_url: str, api_key: str, verify_certificate: bool, proxy: bool, endpoint="/rest/threatindicator/v0"):
         base_url = urljoin(input_url, endpoint)
+        PACK_VERSION = "2.0.0"
+        DEMISTO_VERSION = demisto.demistoVersion()
+        DEMISTO_VERSION = f'{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]}'
         headers = {
             "Content-Type": "application/json",
-            'auth-token': api_key
+            'auth-token': api_key,
+            "User-Agent": f"AccentureCTI Pack/{PACK_VERSION} Palo Alto XSOAR/{DEMISTO_VERSION}"
         }
         super(Client, self).__init__(base_url=base_url,
                                      verify=verify_certificate,
