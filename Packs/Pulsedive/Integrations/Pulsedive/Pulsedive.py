@@ -355,7 +355,7 @@ def scan_value_command(client: Client, args: Dict[str, Any], api_key) -> List[Co
                 outputs=value_data
             ))
         except DemistoException:
-            return_error(f'Failed to execute {demisto.command()} command. Error: Problem submitting the data for scanning')
+            raise DemistoException(f'Failed to execute {demisto.command()} command. Error: Problem submitting the data for scanning')
 
     return command_results
 
