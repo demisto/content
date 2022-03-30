@@ -3,6 +3,7 @@ import traceback
 from typing import Dict, List, Optional, Union, Tuple
 import demistomock as demisto  # noqa: F401
 import requests
+from datetime import datetime
 from CommonServerPython import *  # noqa: F401
 
 requests.packages.urllib3.disable_warnings()
@@ -29,7 +30,6 @@ def login(base_url, username, password):
         'Content-Type': 'application/json'
     }
     return access_token, refresh_token, headers1
-
 def loglist(base_url, access_token, refresh_token, headers1):
     base_url1 = base_url + '/logapi/api/v2/logmgr/0'
     verify_certificate = not demisto.params().get('insecure', False)
@@ -37,7 +37,6 @@ def loglist(base_url, access_token, refresh_token, headers1):
     data = loglist.text
     log_list = json.loads(data)
     return log_list
-
 def raw_response_to_context_rules(items: Union[Dict, List]) -> Union[Dict, List]:
     if isinstance(items, list):
         return [raw_response_to_context_rules(item) for item in items]
@@ -53,7 +52,6 @@ def raw_response_to_context_rules(items: Union[Dict, List]) -> Union[Dict, List]
         'Created_at': items.get('created_at'),
         'Updated_at': items.get('updated_at')
     }
-
 def get_log_list(base_url, username, password):
     access_token, refresh_token, headers1 = login(base_url, username, password)
     logserver_url = base_url + '/logapi/api/v2/logmgr/0'
@@ -69,7 +67,6 @@ def get_log_list(base_url, username, password):
         outputs=context_entry
     )
     return_results(results)
-
 def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
                     first_fetch_time: Optional[int]) -> Tuple[Dict[str, datetime], List[dict]]:
     access_token, refresh_token, headers1 = login(base_url, username, password)
@@ -107,9 +104,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
     })
     remove_url = base_url + '/napi/api/v1/apikey/remove'
     requests.request("POST", remove_url, headers=headers1, data=logout, verify=verify_certificate)
-    
     return next_run, incidents
-
 def api_log_out(base_url, access_token, refresh_token, headers1):
     logout = json.dumps({
         "access_token": access_token,
@@ -118,7 +113,6 @@ def api_log_out(base_url, access_token, refresh_token, headers1):
     remove_url = base_url + '/napi/api/v1/apikey/remove'
     verify_certificate = not demisto.params().get('insecure', False)
     requests.request("POST", remove_url, headers=headers1, data=logout, verify=verify_certificate)
-
 def main():
     params = demisto.params()
     base_url = params.get('base_url')
@@ -131,7 +125,6 @@ def main():
     )
     first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
     assert isinstance(first_fetch_timestamp, int)
-
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
@@ -160,6 +153,5 @@ def main():
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
-
 if  __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
