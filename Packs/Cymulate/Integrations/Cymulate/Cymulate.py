@@ -249,6 +249,7 @@ def fetch_incidents(client, module_type, last_run, first_fetch_time, only_penatr
                 incident['Attack_ID'] = item['Id']
 
                 if not only_penatrated or incident['Status'] == 'Penetrated':
+                    assert incident_created_time is not None
                     incident_data = {
                         'name': item['Name'],
                         'occurred': incident_created_time.strftime(DATE_FORMAT),
