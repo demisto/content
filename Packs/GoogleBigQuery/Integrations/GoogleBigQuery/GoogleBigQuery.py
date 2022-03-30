@@ -7,7 +7,6 @@ import json
 import os
 
 import requests
-from dateparser import parse
 from google.cloud import bigquery
 from datetime import date, datetime, timedelta
 import hashlib
@@ -204,9 +203,11 @@ def get_modified_remote_data_command(args):
     identifierKey = demisto.params()['identifierKey']
     syncTable = demisto.params()['sync_table']
     lastmodifiedKey = demisto.params()['lastmodifiedKey']
-    demisto.debug(f'Google BigQuery : * START * Performing get-modified-remote-data command. Last update is: {last_update}')
+    demisto.debug(f'Google BigQuery : * START * Performing get-modified-remote-data command. '
+                  f'Last update is: {last_update}')
     qres = query_command(
-        {'query': f"SELECT DISTINCT {identifierKey} FROM `{syncTable}` WHERE TIMESTAMP({lastmodifiedKey}) > TIMESTAMP({last_update_bq})", 'incident': False})
+        {'query': f"SELECT DISTINCT {identifierKey} FROM `{syncTable}` WHERE TIMESTAMP({lastmodifiedKey}) > "
+                  f"TIMESTAMP({last_update_bq})", 'incident': False})
     for item in qres:
         modified_records_ids.append(item[f'{identifierKey}'])
     demisto.debug(
@@ -242,7 +243,6 @@ def get_incident_id(row):
     generated = row.get('generatedTime') or row.get('generated_time') or row.get('GeneratedTime')
     event_id = row.get('event_id') or row.get('EventId') or row.get('eventId')
     agent_id = row.get('agent_id') or row.get('AgentId') or row.get('agentId')
-    instance_id = row.get('instance_id') or row.get('InstanceId') or row.get('instanceId')
     data = [additional_fields, generated, event_id, agent_id]
     row_data_string = ''
     for data_field in data:
@@ -391,7 +391,7 @@ def test_module():
     try:
         bigquery_client = start_and_return_bigquery_client(demisto.params()['google_service_creds'])
         query_job = bigquery_client.query(f'{FETCH_QUERY} LIMIT 1')
-        query_results = query_job.result()
+        query_job.result()
         demisto.results('ok')
     except Exception as ex:
         return_error("Authentication error: credentials JSON provided is invalid.\n Exception recieved:"
