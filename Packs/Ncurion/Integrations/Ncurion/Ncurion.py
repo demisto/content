@@ -86,7 +86,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
         else:
             params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
     if len(log_server_id) == 0:
-        return 'ok'
+        return('ok')
     else:
         incidents = []
         verify_certificate = not demisto.params().get('insecure', False)
