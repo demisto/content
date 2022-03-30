@@ -1,4 +1,8 @@
 version: 2.1
+orbs:
+  python: circleci/python@2.0.3
+  orb-tools: circleci/orb-tools@10.0
+
 commands:
   set-instance-role-env-variable:
     description: "Sets INSTANCE_ROLE env variable into $BASH_ENV file"
@@ -117,6 +121,9 @@ references:
       fingerprints:
         - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
         - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
+  validate_helpers_scripts: &validate_helpers_scripts
+    run:
+      command: "./Tests/scripts/linters_runner.sh"
 
   prepare_environment: &prepare_environment
     run:
@@ -189,7 +196,6 @@ references:
       no_output_timeout: 5h
       command: |
         demisto-sdk secrets --post-commit --ignore-entropy
-
   validate_files_and_yaml: &validate_files_and_yaml
     run:
       name: Validate Files and Yaml
@@ -201,9 +207,7 @@ references:
           exit 0
         fi
 
-        ./Tests/scripts/linters_runner.sh
         ./Tests/scripts/validate.sh
-
   run_unit_testing_and_lint: &run_unit_testing_and_lint
     run:
       name: Run Unit Testing and Lint
@@ -311,6 +315,7 @@ references:
     - Run Validations:
         requires:
           - Setup Environment
+    - Run Validations on Infrastructure Scripts
 
 
 jobs:
@@ -331,6 +336,19 @@ jobs:
       - *add_ssh_keys
       - *persist_to_workspace
 
+  Run Validations on Infrastructure Scripts:
+      docker:
+        - image: "cimg/python:3.10.2"
+      steps:
+        - checkout
+        - python/install-packages:
+            pkg-manager: "pip"
+            pip-dependency-file: "dev-requirements-py3.txt"
+            cache-version: v3
+        - *validate_helpers_scripts
+        - *infrastructure_testing
+
+
   Run Unit Testing And Lint:
     <<: *container_config
     resource_class: medium
@@ -341,7 +359,6 @@ jobs:
       - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
-      - *infrastructure_testing
       - *run_unit_testing_and_lint
       - *generate_coverage_reports
       - store_test_results:
@@ -396,7 +413,6 @@ jobs:
       - *store_artifacts
 
 
-
 workflows:
   version: 2
   commit:
@@ -412,6 +428,7 @@ workflows:
       - Run Validations:
           requires:
             - Setup Environment
+      - Run Validations on Infrastructure Scripts 
 
   nightly:
     triggers:
