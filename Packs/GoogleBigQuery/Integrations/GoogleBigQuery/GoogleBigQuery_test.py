@@ -3,6 +3,7 @@ from CommonServerPython import *
 
 
 def test_convert_to_string_if_datetime():
+    from datetime import date
     test_conversion_for_none = convert_to_string_if_datetime(None)
     assert test_conversion_for_none is None
 
@@ -11,7 +12,7 @@ def test_convert_to_string_if_datetime():
     test_conversion_for_empty_string = convert_to_string_if_datetime("")
     assert test_conversion_for_empty_string == ""
 
-    today = datetime.date.today()
+    today = date.today()
     convert_to_string_if_datetime(today)
     test_conversion_for_empty_string = convert_to_string_if_datetime("")
     assert test_conversion_for_empty_string == ""
