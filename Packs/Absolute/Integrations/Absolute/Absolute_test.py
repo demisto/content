@@ -134,6 +134,19 @@ FREEZE_REQ_EXPECTED_OUTPUT = [{'AccountUid': 'e7a9fb73-44b0-4f5d-990b-39ff884425
                                              'updatedUTC': 1548294707085}]}]
 
 
+def create_client(base_url: str = 'https://api.absolute.com', token_id: str = 'token',
+                  secret_key: str = 'secret', verify: bool = False, proxy: bool = False):
+    x_abs_date = datetime.strptime('20170926T172213Z', DATE_FORMAT).strftime(DATE_FORMAT)
+    headers = {"host": base_url.split('https://')[-1], "content-type": "application/json", "x-abs-date": x_abs_date}
+    return Client(proxy=proxy, verify=verify, base_url=base_url, token_id=token_id,
+                  secret_key=secret_key, headers=headers, x_abs_date=x_abs_date)
+
+
+@pytest.fixture
+def absolute_client():
+    return create_client()
+
+
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
@@ -144,14 +157,6 @@ def test_invalid_absolute_api_url(url):
     from Absolute import validate_absolute_api_url
     with raises(DemistoException):
         validate_absolute_api_url(url)
-
-
-def create_client(base_url: str = 'https://api.absolute.com', token_id: str = 'token',
-                  secret_key: str = 'secret', verify: bool = False, proxy: bool = False):
-    x_abs_date = datetime.strptime('20170926T172213Z', DATE_FORMAT).strftime(DATE_FORMAT)
-    headers = {"host": base_url.split('https://')[-1], "content-type": "application/json", "x-abs-date": x_abs_date}
-    return Client(proxy=proxy, verify=verify, base_url=base_url, token_id=token_id,
-                  secret_key=secret_key, headers=headers, x_abs_date=x_abs_date)
 
 
 @pytest.mark.parametrize('method, canonical_uri ,query_string, payload, expected_canonical_request',
@@ -207,12 +212,11 @@ def test_add_authorization_header(signature, expected_authorization_header):
     assert client.add_authorization_header(signature) == expected_authorization_header
 
 
-def test_get_custom_device_field_list_command(mocker):
+def test_get_custom_device_field_list_command(mocker, absolute_client):
     from Absolute import get_custom_device_field_list_command
-    client = create_client()
     response = util_load_json('test_data/custom_device_field_list_response.json')
-    mocker.patch.object(client, 'api_request_absolute', return_value=response)
-    command_result = get_custom_device_field_list_command(client=client,
+    mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
+    command_result = get_custom_device_field_list_command(client=absolute_client,
                                                           args={'device_id': '02b9daa4-8e60-4640-8b15-76d41ecf6a94'})
     assert command_result.outputs == {'DeviceUID': response.get('deviceUid'), 'ESN': response.get('esn'),
                                       'CDFValues': [{'CDFUID': 'njazpLrEQwqeFDqk4yQCfg', 'FieldName': 'Asset Number',
@@ -282,21 +286,19 @@ def test_prepare_payload_to_freeze_request_valid_args(args, expected_payload):
     assert prepare_payload_to_freeze_request(args) == expected_payload
 
 
-def test_get_device_freeze_request_command(mocker):
+def test_get_device_freeze_request_command(mocker, absolute_client):
     from Absolute import get_device_freeze_request_command
-    client = create_client()
     response = util_load_json('test_data/custom_get_device_freeze_request_response.json')
-    mocker.patch.object(client, 'api_request_absolute', return_value=response)
-    command_results = get_device_freeze_request_command(args={'request_uid': '1'}, client=client)
+    mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
+    command_results = get_device_freeze_request_command(args={'request_uid': '1'}, client=absolute_client)
     assert command_results.outputs == FREEZE_REQ_EXPECTED_OUTPUT
 
 
-def test_list_device_freeze_message_command(mocker):
+def test_list_device_freeze_message_command(mocker, absolute_client):
     from Absolute import list_device_freeze_message_command
-    client = create_client()
     response = util_load_json('test_data/device_freeze_message_list_response.json')
-    mocker.patch.object(client, 'api_request_absolute', return_value=response)
-    command_results = list_device_freeze_message_command(args={'message_id': "1"}, client=client)
+    mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
+    command_results = list_device_freeze_message_command(args={'message_id': "1"}, client=absolute_client)
     assert command_results.outputs == [{'ChangedBy': 'example2@test.com',
                                         'ChangedUTC': '2020-12-14T09:14:52.148+00:00',
                                         'Content': '<html><body>This device has been frozen by '
@@ -307,12 +309,11 @@ def test_list_device_freeze_message_command(mocker):
                                         'Name': 'On-demand Freeze message'}]
 
 
-def test_device_unenroll_command(mocker):
+def test_device_unenroll_command(mocker, absolute_client):
     from Absolute import device_unenroll_command
-    client = create_client()
     response = util_load_json('test_data/unenroll_device_response.json')
-    mocker.patch.object(client, 'api_request_absolute', return_value=response)
-    outputs = device_unenroll_command(args={'device_ids': "1,2"}, client=client).outputs
+    mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
+    outputs = device_unenroll_command(args={'device_ids': "1,2"}, client=absolute_client).outputs
     assert outputs == [{'DeviceUid': '1',
                         'ESN': '2BU2PJD28VAA1UYL0008',
                         'EligibleStatus': 0,
@@ -325,3 +326,77 @@ def test_device_unenroll_command(mocker):
                         'Serial': 'CNF43051BN',
                         'SystemName': 'user2',
                         'Username': 'example2@test.com'}]
+
+
+def test_list_device_freeze_message_command_no_id(mocker, absolute_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - list_device_freeze_message command is executed with no message id
+
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Absolute import list_device_freeze_message_command
+    http_request = mocker.patch.object(absolute_client, '_http_request', return_value=[])
+    list_device_freeze_message_command(client=absolute_client, args={})
+    assert http_request.call_args.kwargs['method'] == 'GET'
+    assert http_request.call_args.kwargs['url_suffix'] == '/v2/device-freeze/messages'
+
+
+def test_delete_device_freeze_message_command(mocker, absolute_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - delete_device_freeze_message_command command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Absolute import delete_device_freeze_message_command
+    message_id = '1'
+    http_request = mocker.patch.object(absolute_client, '_http_request', return_value=[])
+    delete_device_freeze_message_command(client=absolute_client, args={'message_id': message_id})
+    assert http_request.call_args.kwargs['method'] == 'DELETE'
+    assert http_request.call_args.kwargs['url_suffix'] == f'/v2/device-freeze/messages/{message_id}'
+
+
+def test_update_device_freeze_message_command(mocker, absolute_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - update_device_freeze_message_command command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Absolute import update_device_freeze_message_command
+    message_id = '1'
+    http_request = mocker.patch.object(absolute_client, 'api_request_absolute', return_value=[])
+    args = {'message_id': message_id, 'html_message': 'text', 'message_name': 'name'}
+    update_device_freeze_message_command(client=absolute_client, args=args)
+    assert http_request.call_args.args == ('PUT', f'/v2/device-freeze/messages/{message_id}')
+
+
+def test_create_device_freeze_message_command(mocker, absolute_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - create_device_freeze_message_command command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Absolute import create_device_freeze_message_command
+    http_request = mocker.patch.object(absolute_client, 'api_request_absolute', return_value={})
+    args = {'html_message': 'text', 'message_name': 'name'}
+    create_device_freeze_message_command(client=absolute_client, args=args)
+    assert http_request.call_args.args == ('POST', '/v2/device-freeze/messages')

@@ -334,7 +334,7 @@ def validate_absolute_api_url(base_url):
     return ABSOLUTE_URL_TO_API_URL[base_url]
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  # pragma: no cover
     """Tests API connectivity to Absolute """
     try:
         client.api_request_absolute('GET', '/v2/device-freeze/messages', success_status_code=(200, 204))
@@ -853,7 +853,7 @@ def get_device_location_command(args, client) -> CommandResults:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     try:
         base_url = validate_absolute_api_url(params.get('url'))
