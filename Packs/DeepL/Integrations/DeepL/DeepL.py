@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+register_module_line('DeepL', 'start', __line__())
+
 
 def test_module(client) -> str:
     result = client._http_request('GET', '/usage')
@@ -15,10 +17,10 @@ def run_command(client, data: Dict[str, str], endpoint: str, file=None, resp_typ
     return response
 
 
-def create_output(results: Dict[str, str], endpoint: str):
+def create_output(results: Dict[str, str], endpoint: str, keyfield=''):
     output = CommandResults(
         outputs_prefix=f'DeepL.{endpoint}',
-        outputs_key_field='',
+        outputs_key_field=keyfield,
         outputs=results
     )
     return output
@@ -68,7 +70,7 @@ def main():
             data = {'document_key': args.get('document_key')}
             document_id = args.get('document_id')
             results = run_command(client, data, f'/document/{document_id}')
-            return_results(create_output(results, 'DocumentStatus'))
+            return_results(create_output(results, 'DocumentStatus', 'document_id'))
         elif demisto.command() == 'deepl-get-document':
             data = {'document_key': args.get('document_key')}
             document_id = args.get('document_id')
@@ -83,3 +85,6 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+
+register_module_line('DeepL', 'end', __line__())
