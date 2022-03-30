@@ -1573,9 +1573,6 @@ def main():
     if build.is_nightly:
         # XSOAR Nightly: install all existing packs and upload all test playbooks that currently in master.
         build.install_nightly_pack()
-        # todo: delete
-        # if build.__class__ == XSIAMBuild:
-        #     sys.exit(0)
     else:
         # Install only modified packs.
         pack_ids = get_non_added_packs_ids(build)
