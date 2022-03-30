@@ -109,7 +109,9 @@ def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y
 
     if isinstance(domain_date, str):
         # if str parse the value
-        return dateparser.parse(domain_date).strftime(date_format)
+        if _date := dateparser.parse(domain_date).strftime(date_format):
+            return _date
+        return None
     elif isinstance(domain_date, list) and len(domain_date) > 0 and isinstance(domain_date[0], str):
         # if list with at least one element, parse the first element
         return dateparser.parse(domain_date[0]).strftime(date_format)
@@ -384,7 +386,9 @@ def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[C
                         screenshot_file['Type'] = entryTypes['image']
                         demisto.results(screenshot_file)
                     except DemistoException:
-                        return_error(f'Failed to execute {demisto.command()} command. Error: Problem getting the screenshot')
+                        raise DemistoException(
+                            f'Failed to execute {demisto.command()} command. Error: Problem getting the screenshot'
+                        )
                 reputation = qid_data['data']['risk']
                 score = convert_to_xsoar_severity(reputation)
                 if qid_data['data']['type'] == 'url':
@@ -475,7 +479,9 @@ def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[C
                     outputs=qid_data
                 ))
         except DemistoException:
-            return_error(f'Failed to execute {demisto.command()} command. Error: Problem with processing the scan results')
+            return_error(
+                f'Failed to execute {demisto.command()} command. Error: Problem with processing the scan results'
+            )
 
     return command_results
 
