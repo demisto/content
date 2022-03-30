@@ -206,6 +206,7 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
         formatted_url = remove_brackets_from_end_of_url(formatted_url)
         if remove_single_letter_tld_url(formatted_url):
             return
+
         return [formatted_url, additional_redirect_url] if additional_redirect_url else [formatted_url]
 
     formatted_urls_groups = [format_single_url(url_) for url_ in non_formatted_urls]
