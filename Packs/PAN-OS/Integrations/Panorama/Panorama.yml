@@ -7317,8 +7317,8 @@ script:
     outputs:
       - contextPath: PANOS.SoftwareVersions.Summary.hostid
         type: String
-`        description: Host ID
-`      - contextPath: PANOS.SoftwareVersions.Summary.version
+        description: Host ID
+      - contextPath: PANOS.SoftwareVersions.Summary.version
         description: software version in Major.Minor.Maint format
         type: String
       - contextPath: PANOS.SoftwareVersions.Summary.filename
