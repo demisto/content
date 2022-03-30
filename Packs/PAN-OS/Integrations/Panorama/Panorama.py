@@ -9289,6 +9289,7 @@ def get_device_connectivity(topology: Topology, hostid: str) -> GetDeviceConnect
         )
         return GetDeviceConnectivityCommandResult(summary_data=[result])
 
+
 def get_available_software(topology: Topology,
                            device_filter_string: str = None) -> SoftwareVersionCommandResult:
     """
@@ -9303,7 +9304,7 @@ def get_available_software(topology: Topology,
 
 def get_ha_state(topology: Topology, device_filter_string: str = None) -> list[ShowHAState]:
     """
-    Get the HA state and assocaited details from the given device and any other details.
+    Get the HA state and associated details from the given device and any other details.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
@@ -9335,6 +9336,7 @@ def get_jobs(topology: Topology, device_filter_string: str = None, status: str =
     )
     return result
 
+
 def download_software(topology: Topology, version: str,
                       device_filter_string: str = None, sync: bool = False) -> DownloadSoftwareCommandResult:
     """
@@ -9352,6 +9354,7 @@ def download_software(topology: Topology, version: str,
                                                                                sync=sync)
 
     return result
+
 
 def get_topology() -> Topology:
     """
