@@ -593,18 +593,6 @@ def getAllSupportedCommands():
 
 def results(results):
     """Outputs entries to the war-room
-    For example:
-    ```
-        results = {
-            'Type' : EntryType.NOTE,
-            'Contents': data,
-            'ContentsFormat' : EntryFormat.JSON,
-            'HumanReadable': md,
-            'ReadableContentsFormat' : EntryFormat.MARKDOWN,
-            'EntryContext' : context,
-            'Tags' : ['tag1', 'tag2']
-        }
-    ```
 
     Args:
       results (Union[list, dict]): The entry object or array of entry objects to output
@@ -612,6 +600,18 @@ def results(results):
     Returns:
       None: No data returned
 
+    result argument for example:
+    ```
+    results = {
+        "Type" : EntryType.NOTE,
+        "Contents": data,
+        "ContentsFormat" : EntryFormat.JSON,
+        "HumanReadable": md,
+        "ReadableContentsFormat" : EntryFormat.MARKDOWN,
+        "EntryContext" : context,
+        "Tags" : ["tag1", "tag2"]
+    }
+    ```
     """
     if isinstance(results, dict) and results.get("contents"):
         results = results.get("contents")
