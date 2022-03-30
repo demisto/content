@@ -495,31 +495,31 @@ script:
     description: Fetches all containment states across known hosts.
     outputs:
     - contextPath: FireEyeHX.Hosts._id
-      description: " "
+      description: FireEye HX Agent ID.
       type: String
     - contextPath: FireEyeHX.Hosts.last_sysinfo
-      description: " "
+      description: The last sis info.
       type: String
     - contextPath: FireEyeHX.Hosts.requested_by_actor
-      description: " "
+      description: Requested by actor.
       type: String
     - contextPath: FireEyeHX.Hosts.requested_on
-      description: " "
+      description: Requested on.
       type: String
     - contextPath: FireEyeHX.Hosts.contained_by_actor
-      description: " "
+      description: Contained by actor.
       type: String
     - contextPath: FireEyeHX.Hosts.contained_on
-      description: " "
+      description: Contained on.
       type: String
     - contextPath: FireEyeHX.Hosts.queued
-      description: " "
+      description: Is it in queued
       type: Boolean
     - contextPath: FireEyeHX.Hosts.excluded
-      description: " "
+      description: Is it in excluded
       type: Boolean
     - contextPath: FireEyeHX.Hosts.missing_software
-      description: " "
+      description: Is it missing software
       type: Boolean
     - contextPath: FireEyeHX.Hosts.reported_clone
       description: " "
@@ -617,7 +617,7 @@ script:
       description: The Host Set information.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats
-      description: ""
+      description: The stats information
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.hosts
       description: The number of hosts running this operation.
@@ -632,10 +632,10 @@ script:
       description: The issues encountered for searches.
       type: Unknown
     - contextPath: FireEyeHX.Search.settings.query_terms.terms
-      description: ""
+      description: The terms for the operation.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.hosts.settings.query_terms.exhaustive_terms
-      description: ""
+      description: The exhaustive terms for the operation
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.search_type
       description: The type of search.
@@ -697,7 +697,7 @@ script:
       description: The Host Set information.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats
-      description: ""
+      description: The stats information
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.hosts
       description: The number of hosts running this operation.
@@ -712,10 +712,10 @@ script:
       description: The issues encountered for searches.
       type: Unknown
     - contextPath: FireEyeHX.Search.settings.query_terms.terms
-      description: ""
+      description: The terms for the operation.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.hosts.settings.query_terms.exhaustive_terms
-      description: ""
+      description: The exhaustive terms for the operation
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.search_type
       description: The type of search.
