@@ -522,16 +522,16 @@ script:
       description: Is it missing software
       type: Boolean
     - contextPath: FireEyeHX.Hosts.reported_clone
-      description: " "
+      description: Is there reported clone
       type: Boolean
     - contextPath: FireEyeHX.Hosts.state
-      description: " "
+      description: The state
       type: String
     - contextPath: FireEyeHX.Hosts.state_update_time
-      description: " "
+      description: The state update time
       type: String
     - contextPath: FireEyeHX.Hosts.url
-      description: " "
+      description: The URL 
       type: String
   - arguments:
     - description: "Specifies which record to start with in the response. Default\
