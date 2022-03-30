@@ -95,4 +95,5 @@
 	"fileHashesPriority": null,
 	"expiration": 0,
 	"layout": "ACTI Intelligence Alert"
+	"description": "An Intelligence Alert is a report of relevant, timely, and actionable analysis that the iDefense analyst staff has authored."
 }
