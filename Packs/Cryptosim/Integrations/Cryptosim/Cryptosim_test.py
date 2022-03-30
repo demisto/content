@@ -1,5 +1,7 @@
 import base64
 import json
+
+from pyrsistent import inc
 import Cryptosim
 from Cryptosim import Client, correlation_alerts_command, correlations_command, fetch_incidents
 
@@ -77,5 +79,33 @@ def test_fetch_incidents(request_mock, params):
     max_fetch = 3
     next_run, incidents = fetch_incidents(test_client, {"max_fetch":max_fetch,"first_fetch":"1 hour"})
     assert next_run["lastRun"] == mock_response[0]["lastRun"]
-    assert len(incidents) == max_fetch
+    assert len(incidents) <= max_fetch
     assert isinstance(incidents, list)
+    if len(incidents)>0:
+        assert isinstance(incidents[0], dict)
+        assert incidents[0]['type'] == 'Crpyotsim Correlation Alerts'
+
+def test_fetct_incident_max(request_mock, params):
+    mock_response = ({"lastRun": "2022-03-25T14:13:20"},
+                     [{
+                         'name': "test_name",
+                         'occurred': "2022-03-28T14:30:20:00",
+                         'rawJSON': json.dumps({"NAME": "test1", "id": "123"}),
+                         "severity": 2,
+                         'type': 'Crpyotsim CorrelationAlert'
+                     },
+                     {
+                         'name': "test_name12",
+                         'occurred': "2022-03-30T14:13:20:00",
+                         'rawJSON': json.dumps({"NAME": "test2", "id": "987"}),
+                         "severity": 2,
+                         'type': 'Crpyotsim CorrelationAlert'
+                     }
+                     ])
+
+
+    requests_mock.post("https://test.com/api/service/correlationalerts",
+                        json=mock_response)
+    max_fetch = 1
+    next_run, incidents = fetch_incidents(test_client, {"max_fetch":max_fetch,"first_fetch":"3 days"})
+    assert len(incidents) <= max_fetch
