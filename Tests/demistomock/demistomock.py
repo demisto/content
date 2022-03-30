@@ -600,16 +600,16 @@ def results(results):
     Returns:
       None: No data returned
 
-    result argument for example:
+    #### result argument for example:
     ```
     results = {
-        "Type" : EntryType.NOTE,
-        "Contents": data,
-        "ContentsFormat" : EntryFormat.JSON,
-        "HumanReadable": md,
-        "ReadableContentsFormat" : EntryFormat.MARKDOWN,
-        "EntryContext" : context,
-        "Tags" : ["tag1", "tag2"]
+        \"Type\" : EntryType.NOTE,
+        \"Contents\": data,
+        \"ContentsFormat\" : EntryFormat.JSON,
+        \"HumanReadable\": md,
+        \"ReadableContentsFormat\" : EntryFormat.MARKDOWN,
+        \"EntryContext\" : context,
+        \"Tags"\ : [\"tag1\", \"tag2\"]
     }
     ```
     """
