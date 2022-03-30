@@ -14,8 +14,8 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 * associateIndicatorsToIncident
-* ds-search
 * createNewIndicator
+* ds-search
 
 ## Playbook Inputs
 ---

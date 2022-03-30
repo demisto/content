@@ -13,9 +13,9 @@ This playbook does not use any sub-playbooks.
 * AddEvidence
 
 ### Commands
+* createNewIndicator
 * ds-search
 * associateIndicatorsToIncident
-* createNewIndicator
 
 ## Playbook Inputs
 ---

@@ -4,11 +4,11 @@ Enrich indicators by providing intelligence and more associated indicators based
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* Digital Shadows - IP_IoC Assessment & Enrichment
+* Digital Shadows - SHA1_IoC Assessment & Enrichment
 * Digital Shadows - CVE_IoC Assessment & Enrichment
 * Digital Shadows - MD5_IoC Assessment & Enrichment
-* Digital Shadows - IP_IoC Assessment & Enrichment
 * Digital Shadows - Domain_IoC Assessment & Enrichment
-* Digital Shadows - SHA1_IoC Assessment & Enrichment
 * Digital Shadows - SHA256_IoC Assessment & Enrichment
 * Digital Shadows - URL_IoC Assessment & Enrichment
 
