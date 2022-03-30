@@ -1,10 +1,10 @@
 {
-    "id": "incident_dlpincidentregion",
+    "id": "incident_pandlpincidentregion",
     "version": -1,
     "modified": "2022-02-15T22:24:15.346354218Z",
     "name": "PAN DLP Incident Region",
     "ownerOnly": false,
-    "cliName": "dlpincidentregion",
+    "cliName": "pandlpincidentregion",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

@@ -345,8 +345,11 @@ def parse_incident_details(compressed_details: str):
     return details_obj
 
 
-def fetch_incidents(client: Client, start_time: int, end_time: int, regions: str):
-    print_debug_msg(f'Start fetching incidents between {start_time} and {end_time}.')
+def fetch_incidents(client: Client, regions: str, start_time: int = None, end_time: int = None):
+    if start_time and end_time:
+        print_debug_msg(f'Start fetching incidents between {start_time} and {end_time}.')
+    else:
+        print_debug_msg(f'Start fetching most recent incidents')
 
     notification_map = client.get_dlp_incidents(start_time, end_time, regions)
     incidents = []
@@ -360,6 +363,11 @@ def fetch_incidents(client: Client, start_time: int, end_time: int, regions: str
             incident_creation_time = dateparser.parse(raw_incident['createdAt'])
             parsed_details = parse_incident_details(raw_incident['incidentDetails'])
             raw_incident['incidentDetails'] = parsed_details
+            if not raw_incident['userId']:
+                for header in parsed_details['headers']:
+                    if header['attribute_name'] == 'username':
+                        raw_incident['userId'] = header['attribute_value']
+
             event_dump = json.dumps(raw_incident)
             incident = {
                 'name': f'Palo Alto Networks DLP Incident {raw_incident["incidentId"]}',
@@ -412,22 +420,20 @@ def long_running_execution_command(params: Dict):
             integration_context = demisto.getIntegrationContext()
             last_fetch_time = integration_context.get(LAST_FETCH_TIME)
             now = math.floor(datetime.now().timestamp())
-            last_fetch_time = now - 30 if not last_fetch_time else last_fetch_time
-            end_time = now
+            # last_fetch_time = now - 30 if not last_fetch_time else last_fetch_time
+            # end_time = now
             access_token = integration_context.get(ACCESS_TOKEN)
             access_token = params.get('access_token') if not access_token else access_token
             client = Client(url, refresh_token, access_token, params.get('insecure'), params.get('proxy'))
             incidents = fetch_incidents(
                 client=client,
-                start_time=last_fetch_time,
-                end_time=end_time,
                 regions=regions
             )
             print_debug_msg(f"Received {len(incidents)} incidents")
             if not is_reset_triggered():
                 demisto.createIncidents(incidents)
                 new_ctx = {
-                    LAST_FETCH_TIME: end_time,
+                    # LAST_FETCH_TIME: end_time,
                     ACCESS_TOKEN: client.access_token,
                     'samples': incidents
                 }
@@ -491,7 +497,7 @@ def fetch_incidents_command() -> List[Dict]:
     return ctx.get('samples', [])
 
 
-def reset_last_run_command() -> str:
+def reset_last_run_command():
     """
     Puts the reset flag inside integration context.
     Returns:
@@ -500,7 +506,11 @@ def reset_last_run_command() -> str:
     ctx = get_integration_context()
     ctx[RESET_KEY] = 'true'
     set_to_integration_context_with_retries(ctx)
-    return 'fetch-incidents was reset successfully.'
+    results = CommandResults(
+        outputs_prefix='DLP.resetLastRun',
+        readable_output= 'fetch-incidents was reset successfully.'
+    )
+    demisto.results(results.to_context())
 
 
 def main():
@@ -535,7 +545,7 @@ def main():
         elif demisto.command() == 'pan-dlp-slack-message':
             slack_bot_message(args, params)
         elif demisto.command() == 'pan-dlp-reset-last-run':
-            return_results(reset_last_run_command())
+            reset_last_run_command()
         elif demisto.command() == "test-module":
             test(client)
 

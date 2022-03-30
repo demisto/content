@@ -1,9 +1,9 @@
 {
-   "id": "incident_dlpaction",
+   "id": "incident_pandlpaction",
    "version": -1,
    "modified": "2022-03-14T18:26:43.51366112Z",
    "name": "PAN DLP Action",
-   "cliName": "dlpaction",
+   "cliName": "pandlpaction",
    "ownerOnly": false,
    "type": "shortText",
    "closeForm": false,
