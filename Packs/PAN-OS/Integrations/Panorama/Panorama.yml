@@ -7202,6 +7202,7 @@ script:
     outputs:
       - contextPath: PANOS.ShowCounters.Summary.hostid
         type: String
+        description: Host ID
       - contextPath: PANOS.ShowCounters.Summary.name
         description: Human readable counter name
         type: String
@@ -7216,6 +7217,7 @@ script:
         type: String
       - contextPath: PANOS.ShowCounters.Result.hostid
         type: String
+        description: Host ID
       - contextPath: PANOS.ShowCounters.Result.category
         description: The counter category
         type: String
@@ -7253,6 +7255,7 @@ script:
     outputs:
       - contextPath: PANOS.ShowBGPPeers.Summary.hostid
         type: String
+        description: Host ID
       - contextPath: PANOS.ShowBGPPeers.Summary.peer
         description: Name of BGP peer
         type: String
@@ -7264,6 +7267,7 @@ script:
         type: String
       - contextPath: PANOS.ShowBGPPeers.Result.hostid
         type: String
+        description: Host ID
       - contextPath: PANOS.ShowBGPPeers.Result.peer
         description: Name of BGP peer
         type: String
@@ -7313,7 +7317,8 @@ script:
     outputs:
       - contextPath: PANOS.SoftwareVersions.Summary.hostid
         type: String
-      - contextPath: PANOS.SoftwareVersions.Summary.version
+`        description: Host ID
+`      - contextPath: PANOS.SoftwareVersions.Summary.version
         description: software version in Major.Minor.Maint format
         type: String
       - contextPath: PANOS.SoftwareVersions.Summary.filename
@@ -7353,6 +7358,7 @@ script:
     outputs:
       - contextPath: PANOS.HAState.hostid
         type: String
+        description: Host ID
       - contextPath: PANOS.HAState.active
         description: Whether this is the active firewall in a pair or not. True if standalone as well
         type: Boolean
@@ -7393,6 +7399,7 @@ script:
     outputs:
       - contextPath: PANOS.JobStatus.hostid
         type: String
+        description: Host ID
       - contextPath: PANOS.JobStatus.id
         description: ID of job
         type: String
@@ -7407,18 +7414,25 @@ script:
         type: String
       - contextPath: PANOS.JobStatus.result
         type: String
+        description: The result of the job
       - contextPath: PANOS.JobStatus.user
         type: String
+        description: Which user initiated the job
       - contextPath: PANOS.JobStatus.tenq
         type: String
+        description: The time the job was enqueued into the system
       - contextPath: PANOS.JobStatus.stoppable
         type: String
+        description: Whether the job can be stopped after it has started
       - contextPath: PANOS.JobStatus.description
         type: String
+        description: The job description
       - contextPath: PANOS.JobStatus.positionInQ
         type: String
+        description: The position of the job in the current job queue
       - contextPath: PANOS.JobStatus.progress
         type: String
+        description: The numerical progress of the job
   - arguments:
       - default: false
         description: software version to upgrade to, ex. 9.1.2
@@ -7448,6 +7462,7 @@ script:
     outputs:
       - contextPath: PANOS.DownloadStatus.Summary.hostid
         type: String
+        description: Host ID
       - contextPath: PANOS.DownloadStatus.Summary.started
         description: Whether download process has started.
         type: String
