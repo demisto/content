@@ -1,7 +1,6 @@
 import json
 import traceback
 from typing import Dict, List, Optional, Union, Tuple
-import datetime 
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
@@ -72,7 +71,7 @@ def get_log_list(base_url, username, password):
     return_results(results)
 
 def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int]) -> Tuple[Dict[str, int], List[dict]]:
+                    first_fetch_time: Optional[int]) -> Tuple[Dict[str, datetime], List[dict]]:
     access_token, refresh_token, headers1 = login(base_url, username, password)
     log_list = loglist(base_url, access_token, refresh_token, headers1)
     log_server_id = [e["id"] for e in log_list if e["is_connected"] == True]
@@ -86,7 +85,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
         else:
             params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
     if len(log_server_id) == 0:
-        return('ok')
+        next_run = {'last_fetch': now_time}
     else:
         incidents = []
         verify_certificate = not demisto.params().get('insecure', False)
@@ -101,13 +100,14 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
                     'rawJSON': json.dumps(hit)
                 }
                 incidents.append(incident)
+        next_run = {'last_fetch': now_time}
     logout = json.dumps({
         "access_token": access_token,
         "refresh_token": refresh_token
     })
     remove_url = base_url + '/napi/api/v1/apikey/remove'
     requests.request("POST", remove_url, headers=headers1, data=logout, verify=verify_certificate)
-    next_run = {'last_fetch': now_time}
+    
     return next_run, incidents
 
 def api_log_out(base_url, access_token, refresh_token, headers1):
