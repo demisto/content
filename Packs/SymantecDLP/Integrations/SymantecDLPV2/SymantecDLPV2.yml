@@ -30,14 +30,14 @@ configuration:
   - Endpoint
   required: false
   type: 16
-- additionalinfo: The status ID of the incidents. In order to get status IDs, you
-    should run the command `symantec-dlp-list-incident-status`
+- additionalinfo: The status ID of the incidents. To get status IDs, 
+    run the `symantec-dlp-list-incident-status` command.
   display: Incident Status ID
   hidden: false
   name: incidentStatusId
   required: false
   type: 16
-- additionalinfo: If not selcted, will fetch high and medium incident.
+- additionalinfo: If not selected, will fetch high and medium incidents.
   display: Incident Severity
   hidden: false
   name: incidentSeverity
@@ -68,15 +68,15 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The earliest time from which to get incidents.. Supports ISO (e.g
+      description: The earliest time from which to get incidents. Supports ISO (e.g
         2021-12-28T00:00:00Z) and free text (e.g. '2 days').
       isArray: false
       name: creation_date
       required: false
       secret: false
     - default: false
-      description: The status ID of the incidents. In order to get status IDs, you
-        should run the command `symantec-dlp-list-incident-status`
+      description: The status ID of the incidents. To get status IDs, 
+        run the `symantec-dlp-list-incident-status` command.
       isArray: true
       name: status_id
       required: false
@@ -96,7 +96,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The incidents type. Can be: "Network", "Endpoint" and "Discover".'
+      description: 'The incident type. Can be: "Network", "Endpoint" and "Discover".'
       isArray: true
       name: incident_type
       predefined:
@@ -115,14 +115,14 @@ script:
     - default: false
       defaultValue: '1'
       description: |-
-        Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+        The page number you would like to view. Each page contains page_size values. Must be used along with page_size.
         Default is 1.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Number of results per page to display.
+      description: The number of results per page to display.
       isArray: false
       name: page_size
       required: false
@@ -172,7 +172,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Incident ID to get details of.
+      description: Incident ID for which to retrieve details.
       isArray: false
       name: incident_id
       required: true
@@ -180,12 +180,12 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: none
-      description: "This argument can get the following values:\nall - If all custom\
-        \ attributes are needed \nnone - If none of the custom attributes are needed\n\
-        specific attributes - A list of custom attributes names, seperated by comma.\
-        \ For example: ca1,ca2,ca3\ncustom attribute group name - A list of custom\
-        \ attributes group names, seperated by comma. For example: cag1, cag2, cag3.\n\
-        This value will retrive all custom attributes in the mentioned group. The\
+      description: "This argument can get the following values:\nall - All custom\
+        \ attributes are needed \nnone - None of the custom attributes are needed\n\
+        specific attributes - A comma separated list of custom attributes names.\
+        \ For example: ca1,ca2,ca3\ncustom attribute group name - A comma separated list of custom\
+        \ attributes group names. For example: cag1, cag2, cag3.\n\
+        This value retrieves all custom attributes in the mentioned group. The\
         \ value \"none\" is default."
       isArray: false
       name: custom_attributes
@@ -197,14 +197,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A list of custom attributes names / custom attribute group names.
-        List should be comma seperated. For example: item1,item2,item3'
+      description: 'A comma separated list of custom attributes names or custom attribute group names.
+        For example: item1,item2,item3'
       isArray: true
       name: custom_data
       required: false
       secret: false
     deprecated: false
-    description: Returns the details of the specified incident.
+    description: Returns details of the specified incident.
     execution: false
     name: symantec-dlp-get-incident-details
     outputs:
@@ -232,7 +232,7 @@ script:
       description: The status ID of the incident.
       type: Number
     - contextPath: SymantecDLP.Incident.senderIPAddress
-      description: The sender IP address.
+      description: The IP address of the sender.
       type: String
     - contextPath: SymantecDLP.Incident.policyName
       description: The name of the policy.
@@ -244,13 +244,13 @@ script:
       description: The IP address of the endpoint machine.
       type: String
     - contextPath: SymantecDLP.Incident.CustomAttribute.Name
-      description: The custom attribute name.
+      description: The name of the custom attribute.
       type: String
     - contextPath: SymantecDLP.Incident.CustomAttribute.Value
-      description: The custom attribute value.
+      description: The value of the custom attribute.
       type: String
     - contextPath: SymantecDLP.Incident.CustomAttribute.Index
-      description: The custom attribute index.
+      description: The index of the custom attribute.
       type: Number
     - contextPath: SymantecDLP.Incident.policyVersion
       description: The version of the policy.
@@ -259,7 +259,7 @@ script:
       description: The name of the detection server that created the incident.
       type: String
     - contextPath: SymantecDLP.Incident.policyGroupName
-      description: The policy group name.
+      description: The name of the policy group.
       type: String
     - contextPath: SymantecDLP.Incident.dataOwnerEmail
       description: The email of the data owner.
@@ -276,7 +276,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Incident ID to update.
+      description: The incident ID to update.
       isArray: false
       name: incident_id
       required: true
@@ -300,7 +300,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The status ID to update to. Run `symantec-dlp-list-incident-status`
+      description: The status ID for which to update. Run the `symantec-dlp-list-incident-status` command
         to get the status ID.
       isArray: false
       name: incident_status_id
@@ -334,10 +334,10 @@ script:
       secret: false
     - default: false
       description: |-
-        The custom attributes to update. In order to get the custom attributes details, run `symantec-dlp-get-incident-details` command with `custom_attributes=all`
+        The custom attributes to update. To get the custom attributes details, run the `symantec-dlp-get-incident-details` command with the `custom_attributes=all` command.
         Format:
         {columnIndex}:{newValue}
-        E.g: 1:update, 4:att
+        For example, 1:update, 4:att
       isArray: false
       name: custom_attributes
       required: false
@@ -381,7 +381,7 @@ script:
       description: The date of the incident history.
       type: String
     - contextPath: SymantecDLP.IncidentHistory.dlpUserName
-      description: The user name.
+      description: The name of the user.
       type: String
     - contextPath: SymantecDLP.IncidentHistory.incidentHistoryAction
       description: The action of the incident history.
@@ -390,13 +390,13 @@ script:
       description: The incident history detail.
       type: String
     - contextPath: SymantecDLP.IncidentHistory.policyGroupId
-      description: The policy group ID.
+      description: The ID of the policy group.
       type: Number
     - contextPath: SymantecDLP.IncidentHistory.detectionServerName
       description: The name of the detection server that created the incident.
       type: String
     - contextPath: SymantecDLP.IncidentHistory.incidentHistoryId
-      description: The incident history ID.
+      description: The ID of the incident history.
       type: Number
     - contextPath: SymantecDLP.IncidentHistory.messageSource
       description: The localized label that corresponds to the Symantec DLP product
@@ -406,7 +406,7 @@ script:
       description: The date of the message.
       type: String
     - contextPath: SymantecDLP.IncidentHistory.ID
-      description: The ID of the incident
+      description: The ID of the incident.
       type: Number
   - deprecated: false
     description: Returns a list of the remediation status values defined in the Symantec
@@ -415,10 +415,10 @@ script:
     name: symantec-dlp-list-remediation-status
     outputs:
     - contextPath: SymantecDLP.IncidentRemediationStatus.id
-      description: The remediation status ID.
+      description: The ID of the remediation status.
       type: Number
     - contextPath: SymantecDLP.IncidentRemediationStatus.name
-      description: The remediation status name.
+      description: The name of the remediation status.
       type: String
   dockerimage: demisto/python3:3.10.4.27798
   feed: false
