@@ -98,9 +98,7 @@ class UserMappingObject:
 
     def _get_record(self, col, value_to_search):
         """ Gets the records with the value found in the relevant column. """
-        store = self.service.kvstore[self.table_name]
-        table_data = get_store_data(self.service)
-        return filter(lambda x: x.get(col) == value_to_search, table_data.next())
+        return self.service.kvstore[self.table_name].data.query(**{"query": json.dumps({col: value_to_search})})
 
     def get_xsoar_user_by_splunk(self, splunk_user):
 
@@ -129,7 +127,7 @@ class UserMappingObject:
             demisto.error(
                 "Could not find splunk user matching xsoar's {0}. Consider adding it to the {1} lookup.".format(
                     xsoar_user, self.table_name))
-            return ''
+            return 'unassigned'
 
         # assuming username is unique, so only one record is returned.
         splunk_user = record[0].get(self.splunk_user_column_name)
@@ -138,7 +136,7 @@ class UserMappingObject:
             demisto.error(
                 "Splunk user matching Xsoar's {0} is empty. Fix the record in {1} lookup.".format(
                     splunk_user, self.table_name))
-            return ''
+            return 'unassigned'
 
         return splunk_user
 
@@ -525,9 +523,6 @@ class Notable:
             incident["severity"] = severity_to_level(notable_data['urgency'])
         if demisto.get(notable_data, 'rule_description'):
             incident["details"] = notable_data["rule_description"]
-        if demisto.get(notable_data, 'reviewer'):
-            incident["notablereviewer"] = mapper.get_xsoar_user_by_splunk(
-                notable_data["reviewer"]) if mapper.should_map else notable_data["reviewer"]
         if demisto.get(notable_data, "owner"):
             incident["owner"] = mapper.get_xsoar_user_by_splunk(
                 notable_data["owner"]) if mapper.should_map else notable_data["owner"]
@@ -1212,7 +1207,7 @@ def get_last_update_in_splunk_time(last_update):
     return (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
 
 
-def get_remote_data_command(service, args, close_incident):
+def get_remote_data_command(service, args, close_incident, mapper):
     """ get-remote-data command: Returns an updated notable and error entry (if needed)
 
     Args:
@@ -1240,6 +1235,8 @@ def get_remote_data_command(service, args, close_incident):
 
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
+        updated_notable["owner"] = mapper.get_xsoar_user_by_splunk(
+                updated_notable["owner"]) if mapper.should_map else updated_notable["owner"]
     delta = {field: updated_notable.get(field) for field in INCOMING_MIRRORED_FIELDS if updated_notable.get(field)}
 
     if delta:
@@ -1288,7 +1285,7 @@ def get_modified_remote_data_command(service, args):
     return_results(GetModifiedRemoteDataResponse(modified_incident_ids=modified_notable_ids))
 
 
-def update_remote_system_command(args, params, service, auth_token):
+def update_remote_system_command(args, params, service, auth_token, mapper):
     """ Pushes changes in XSOAR incident into the corresponding notable event in Splunk Server.
 
     Args:
@@ -1312,6 +1309,9 @@ def update_remote_system_command(args, params, service, auth_token):
         for field in delta:
             if field in OUTGOING_MIRRORED_FIELDS:
                 changed_data[field] = delta[field]
+
+        changed_data['owner'] = mapper.get_splunk_user_by_xsoar(
+                delta["owner"]) if mapper.should_map else delta["owner"]
 
         # Close notable if relevant
         if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_notable'):
@@ -2549,7 +2549,6 @@ def extract_indicator(indicator_path, _dict_objects):
 
 def get_store_data(service):
     args = demisto.args()
-    stores = args['kv_store_collection_name'].split(',')
 
     for store in stores:
         store = service.kvstore[store]
@@ -2674,11 +2673,11 @@ def main():
         else:
             get_mapping_fields_command(service)
     elif command == 'get-remote-data':
-        get_remote_data_command(service, demisto.args(), params.get('close_incident'))
+        get_remote_data_command(service, demisto.args(), params.get('close_incident'), mapper=mapper)
     elif command == 'get-modified-remote-data':
         get_modified_remote_data_command(service, demisto.args())
     elif command == 'update-remote-system':
-        update_remote_system_command(demisto.args(), params, service, auth_token)
+        update_remote_system_command(demisto.args(), params, service, auth_token, mapper=mapper)
     else:
         raise NotImplementedError('Command not implemented: {}'.format(command))
 
