@@ -9245,27 +9245,24 @@ def get_template_stacks(
     """
     return PanoramaCommand.get_template_stacks(topology, device_filter_string)
 
-def get_global_counters(topology: Topology,
-                        device_filter_string: str = None) -> ShowCounterGlobalCommmandResult:
+
+def get_global_counters(topology: Topology, device_filter_string: str = None) -> ShowCounterGlobalCommmandResult:
     """
     Gets global counter information from all the PAN-OS firewalls in the topology
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: ShowCounterGlobalCommmandResult = FirewallCommand.get_counter_global(topology,
-                                                                                 device_filter_string)
+    result: ShowCounterGlobalCommmandResult = FirewallCommand.get_counter_global(topology, device_filter_string)
     return result
 
 
-def get_bgp_peers(topology: Topology,
-                  device_filter_string: str = None) -> ShowRoutingProtocolBGPCommandResult:
+def get_bgp_peers(topology: Topology, device_filter_string: str = None) -> ShowRoutingProtocolBGPCommandResult:
     """
     Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: ShowRoutingProtocolBGPCommandResult = FirewallCommand.get_bgp_peers(topology,
-                                                                                device_filter_string)
+    result: ShowRoutingProtocolBGPCommandResult = FirewallCommand.get_bgp_peers(topology, device_filter_string)
     return result
 
 
@@ -9290,30 +9287,28 @@ def get_device_connectivity(topology: Topology, hostid: str) -> GetDeviceConnect
         return GetDeviceConnectivityCommandResult(summary_data=[result])
 
 
-def get_available_software(topology: Topology,
-                           device_filter_string: str = None) -> SoftwareVersionCommandResult:
+def get_available_software(topology: Topology, device_filter_string: str = None) -> SoftwareVersionCommandResult:
     """
     Check the devices for software that is available to be installed.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: SoftwareVersionCommandResult = UniversalCommand.get_available_software(topology,
-                                                                                   device_filter_string)
+    result: SoftwareVersionCommandResult = UniversalCommand.get_available_software(topology, device_filter_string)
     return result
 
 
-def get_ha_state(topology: Topology, device_filter_string: str = None) -> list[ShowHAState]:
+def get_ha_state(topology: Topology, device_filter_string: str = None) -> List[ShowHAState]:
     """
     Get the HA state and associated details from the given device and any other details.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: list[ShowHAState] = FirewallCommand.get_ha_status(topology, device_filter_string)
+    result: List[ShowHAState] = FirewallCommand.get_ha_status(topology, device_filter_string)
     return result
 
 
 def get_jobs(topology: Topology, device_filter_string: str = None, status: str = None, job_type: str = None,
-             id: int = None) -> list[ShowJobsAllResultData]:
+             id: int = None) -> List[ShowJobsAllResultData]:
     """
     Get all the jobs from the devices in the environment, or a single job when ID is specified.
 
@@ -9327,7 +9322,7 @@ def get_jobs(topology: Topology, device_filter_string: str = None, status: str =
     if id:
         id = int(id)
 
-    result: list[ShowJobsAllResultData] = UniversalCommand.show_jobs(
+    result: List[ShowJobsAllResultData] = UniversalCommand.show_jobs(
         topology,
         device_filter_string,
         job_type=job_type,
