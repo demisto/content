@@ -54,7 +54,8 @@ configuration:
   - all
   required: false
   type: 16
-- additionalinfo: Default value is including "open classes". You may add/remove statuses
+- additionalinfo: A comma separated list of statuses to return.
+    Default value is including "open classes". You may add/remove statuses
     according to your needs. Can be found by running the "sysaid-table-list" command
     with the "list_id=status" argument.
   defaultvalue: 1,2,5,6,8,18,19,22,23,24,25,26,27,30,31,32,33

@@ -224,10 +224,10 @@ def service_record_readable_response(responses: Union[dict, List[dict], str]) ->
 
         if 'info' in response:
             for info in response['info']:
-                if info['key'] in ['title', 'status']:
-                    response_entry[info['key']] = info['value']
+                if info['key'] in ['title', 'status', 'update_time', 'sr_type']:
+                    response_entry[info['keyCaption']] = str(info['valueCaption'])
 
-            if len(response_entry) == 3:
+            if len(response_entry) == 5:
                 readable_response.append(response_entry)
 
     return readable_response
@@ -441,7 +441,7 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
     filters = extract_filters(custom_fields_keys, custom_fields_values)
 
     response = client.service_record_list_request(str(type_), fields, offset, limit, ids, archive, filters)
-    headers = ['id', 'title', 'status']
+    headers = ['id', 'Title', 'Status', 'Modify time', 'Service Record Type']
     readable_response = service_record_readable_response(response)
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecord',
@@ -470,7 +470,7 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
     filters = extract_filters(custom_fields_keys, custom_fields_values)
 
     response = client.service_record_search_request(str(type_), str(query), fields, offset, limit, archive, filters)
-    headers = ['id', 'title', 'status']
+    headers = ['id', 'Title', 'Status', 'Modify time', 'Service Record Type']
     readable_response = service_record_readable_response(response)
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecord',
@@ -552,7 +552,7 @@ def service_record_create_command(client: Client, args: Dict[str, Any]) -> Comma
     info = set_service_record_info(args)
 
     response = client.service_record_create_request(str(type_), info, fields, template_id)
-    headers = ['id', 'title', 'status']
+    headers = ['id', 'Title', 'Status', 'Modify time', 'Service Record Type']
     readable_response = service_record_readable_response(response)
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecord',
@@ -723,7 +723,7 @@ def test_module(client: Client, params: dict) -> None:
             statuses_set = set(argToList(included_statuses))
             if statuses_set - STATUSES:
                 # todo needed? API lets us send unreal statuses
-                raise DemistoException(f'Statuses {statuses_set - STATUSES} were given and are not legal statuses.'
+                raise DemistoException(f'Statuses {statuses_set - STATUSES} were given and are not legal statuses. '
                                        f'Statuses can be found by running the "sysaid-table-list" command with the '
                                        f'"list_id=status" argument.')
 
