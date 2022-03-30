@@ -1075,21 +1075,21 @@ def main() -> None:
     :return:
     :rtype:
     """
-
-    username = demisto.params().get('credentials', {}).get('identifier')
-    password = demisto.params().get('credentials', {}).get('password')
+    params = demisto.params()
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/DatAdvantage')
+    base_url = urljoin(params['url'], '/DatAdvantage')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not params.get('insecure', False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
 
@@ -1101,6 +1101,7 @@ def main() -> None:
         )
 
         client.varonis_authenticate(username, password)
+        args = demisto.args()
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -1108,12 +1109,12 @@ def main() -> None:
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            alert_status = demisto.params().get('status', None)
-            threat_model = demisto.params().get('threat_model', None)
-            severity = demisto.params().get('severity', None)
+            alert_status = params.get('status', None)
+            threat_model = params.get('threat_model', None)
+            severity = params.get('severity', None)
 
             max_results = arg_to_number(
-                arg=demisto.params().get('max_fetch'),
+                arg=params.get('max_fetch'),
                 arg_name='max_fetch',
                 required=False
             )
@@ -1121,7 +1122,7 @@ def main() -> None:
                 max_results = MAX_INCIDENTS_TO_FETCH
 
             first_fetch_time = arg_to_datetime(
-                arg=demisto.params().get('first_fetch', '2 weeks'),
+                arg=params.get('first_fetch', '2 weeks'),
                 arg_name='First fetch time',
                 required=True
             )
@@ -1136,16 +1137,16 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif demisto.command() == 'varonis-get-alerts':
-            return_results(varonis_get_alerts_command(client, demisto.args()))
+            return_results(varonis_get_alerts_command(client, args))
 
         elif demisto.command() == 'varonis-update-alert-status':
-            return_results(varonis_update_alert_status_command(client, demisto.args()))
+            return_results(varonis_update_alert_status_command(client, args))
 
         elif demisto.command() == 'varonis-close-alert':
-            return_results(varonis_close_alert_command(client, demisto.args()))
+            return_results(varonis_close_alert_command(client, args))
 
         elif demisto.command() == 'varonis-get-alerted-events':
-            return_results(varonis_get_alerted_events_command(client, demisto.args()))
+            return_results(varonis_get_alerted_events_command(client, args))
 
     # Log exceptions and return errors
     except Exception as e:
