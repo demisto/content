@@ -337,7 +337,7 @@ outputs:
     - contextPath: csfalconx.resource.verdict
       description: Analysis verdict.
       type: String
-    - contextPath: csfalconx.resource.created_timpestamp
+    - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.environment_id
