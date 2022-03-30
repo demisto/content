@@ -109,12 +109,12 @@ def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y
 
     if isinstance(domain_date, str):
         # if str parse the value
-        if _date := dateparser.parse(domain_date).strftime(date_format):
+        if _date := dateparser.parse(domain_date).strftime(date_format):  # type: ignore[union-attr]
             return _date
         return None
     elif isinstance(domain_date, list) and len(domain_date) > 0 and isinstance(domain_date[0], str):
         # if list with at least one element, parse the first element
-        return dateparser.parse(domain_date[0]).strftime(date_format)
+        return dateparser.parse(domain_date[0]).strftime(date_format)  # type: ignore[union-attr]
     # in any other case return nothing
     return None
 
@@ -357,7 +357,9 @@ def scan_value_command(client: Client, args: Dict[str, Any], api_key) -> List[Co
                 outputs=value_data
             ))
         except DemistoException:
-            raise DemistoException(f'Failed to execute {demisto.command()} command. Error: Problem submitting the data for scanning')
+            raise DemistoException(
+                f'Failed to execute {demisto.command()} command. Error: Problem submitting the data for scanning'
+            )
 
     return command_results
 
