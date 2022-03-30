@@ -29,8 +29,7 @@ configuration:
   name: feed
   required: false
   type: 8
--- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -413,6 +412,17 @@ script:
     description: Retrieve the Result
     name: pulsedive-scan-result
     outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
     - contextPath: Pulsedive.ScanResult
       description: Complete data returned from the scan. 
       type: Unknown
@@ -435,13 +445,16 @@ script:
       description: IP address.
       type: String
     - contextPath: IP.Geo.Country
-      description: The country of the IP.
+      description: The country in which the IP address is located.
       type: String
     - contextPath: IP.Port
-      description: Open ports of the IP.
+      description: Ports that are associated with the IP.
       type: String
     - contextPath: IP.ASN
-      description: The autonomous system name for the IP address.
+      description: The autonomous system name for the IP address, for example: 'AS8948'.
+      type: String
+    - contextPath: URL.DATA
+      description: The URL.
       type: String
   dockerimage: demisto/python3:3.10.4.27798
   runonce: false
