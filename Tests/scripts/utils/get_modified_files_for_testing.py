@@ -182,6 +182,8 @@ def filter_modified_files_for_specific_marketplace_version(files_string: str, id
                 if (file_status in ("m", "a") or file_status.startswith("r")) and file_path.startswith("Packs/"):
                     if file_path.endswith('.py'):
                         file_path = file_path.rstrip('py')
+                    elif file_path.endswith('xif'):
+                        file_path = file_path.rstrip('xif')
                     elif file_path.endswith('_description.md'):
                         file_path = file_path.rstrip('_description.md')
                     file_data = file_path.split('/')
