@@ -51,12 +51,16 @@ configuration:
     the option to request an exemption
 - display: Slack Bot Message
   name: dlp_slack_message
-  defaultvalue: 'Hi $user, \n\n*We need your feedback* \nYour upload of *$file_name*
+  defaultvalue: 'Hi $user🔔, \n\n*We need your feedback* \nYour upload of *$file_name*
     on *$app_name* was blocked due to company policy. This file contains sensitive
     information which violates *$data_profile_name* policy. \n\n $snippets\n\n'
   type: 12
   required: false
   additionalinfo: The Slack message to send to the user to ask for feedback
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
 description: Palo Alto Networks Enterprise DLP discovers and protects company data
   across every data channel and repository. Integrated Enterprise DLP enables data
   protection and compliance everywhere without complexity.
@@ -162,6 +166,7 @@ script:
     description: Resets the fetch incidents last run value, which resets the fetch
       to its initial fetch state.
   dockerimage: demisto/python3:3.10.4.27798
+  isfetch: false
   isFetchSamples: true
   longRunning: true
   runonce: false
