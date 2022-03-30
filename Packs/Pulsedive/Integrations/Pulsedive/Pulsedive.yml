@@ -29,6 +29,57 @@ configuration:
   name: feed
   required: false
   type: 8
+-- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: indicatorType
+  display: ''
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  display: ''
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
 description: Enrich and analyze any domain, URL, or IP. Pivot to search on data points
   and linked indicators to investigate risky properties.
 display: Pulsedive
@@ -345,12 +396,53 @@ script:
       - passiv
     description: Scan an indicator (IP/URL/Domain)
     name: pulsedive-scan
+    outputs:
+    - contextPath: Pulsedive.Scan.qid
+      description: QID of the scan.
+      type: Number
+    - contextPath: Pulsedive.Scan.value
+      description: The value which was scanned.
+      type: string
+    - contextPath: Pulsedive.Scan.success
+      description: The success message.
+      type: string
   - arguments:
     - description: QID recieved from scan command
       name: qid
       required: true
     description: Retrieve the Result
     name: pulsedive-scan-result
+    outputs:
+    - contextPath: Pulsedive.ScanResult
+      description: Complete data returned from the scan. 
+      type: Unknown
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.DomainStatus
+      description: The status of the domain.
+      type: String
+    - contextPath: Domain.NameServers
+      description: Name servers of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.NameServers
+      description: A CSV string of name servers, for example 'ns1.bla.com, ns2.bla.com'.
+      type: String
+    - contextPath: Pulsedive.Scan.success
+      description: The success message.
+      type: string
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country of the IP.
+      type: String
+    - contextPath: IP.Port
+      description: Open ports of the IP.
+      type: String
+    - contextPath: IP.ASN
+      description: The autonomous system name for the IP address.
+      type: String
   dockerimage: demisto/python3:3.10.4.27798
   runonce: false
   script: ''
