@@ -3,8 +3,8 @@ import traceback
 from typing import Dict, List, Optional, Union, Tuple
 import demistomock as demisto  # noqa: F401
 import requests
-from datetime import datetime
 from CommonServerPython import *  # noqa: F401
+import datetime
 
 requests.packages.urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -71,7 +71,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
                     first_fetch_time: Optional[int]) -> Tuple[Dict[str, datetime], List[dict]]:
     access_token, refresh_token, headers1 = login(base_url, username, password)
     log_list = loglist(base_url, access_token, refresh_token, headers1)
-    log_server_id = [e["id"] for e in log_list if e["is_connected"] == True]
+    log_server_id = [e["id"] for e in log_list if e["is_connected"] is True]
     last_fetch = last_run.get('last_fetch', None)
     max_fetch = demisto.params().get('max_fetch')
     now_time = datetime.datetime.utcnow()
@@ -79,7 +79,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
         last_fetch = first_fetch_time
         if (first_fetch_time is None):
             params1 = {"start": f"None", "end": f"{now_time}", "size": max_fetch}
-        else :
+        else:
             params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
     if len(log_server_id) == 0:
         next_run = {'last_fetch': now_time}
@@ -144,7 +144,7 @@ def main():
             next_run, incidents = fetch_incidents(
                 base_url, username, password,
                 last_run=demisto.getLastRun(),
-                first_fetch_time = first_fetch_timestamp
+                first_fetch_time=first_fetch_timestamp
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
