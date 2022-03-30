@@ -466,7 +466,6 @@ class Pack(object):
             if yaml_content.get('name').startswith('TIM '):
                 self._is_feed = True
 
-
     def is_siem_pack(self, yaml_content, yaml_type):
         """
         Checks if an pack is a SIEM pack. If so, updates Pack._is_siem
@@ -480,7 +479,6 @@ class Pack(object):
                 self._is_siem = True
         if yaml_type in SIEM_RULES_OBJECTS:
             self._is_siem = True
-
 
     @staticmethod
     def _clean_release_notes(release_notes_lines):
