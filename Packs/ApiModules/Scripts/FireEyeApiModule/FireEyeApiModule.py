@@ -310,6 +310,7 @@ def to_fe_datetime_converter(time_given: str = 'now') -> str:
         The time given in FireEye format.
     """
     date_obj = dateparser.parse(time_given)
+    assert date_obj is not None, f'failed parsing {time_given}'
     fe_time = date_obj.strftime(FE_DATE_FORMAT)
     fe_time += f'.{date_obj.strftime("%f")[:3]}'
     if not date_obj.tzinfo:
