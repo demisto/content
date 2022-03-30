@@ -8322,9 +8322,9 @@ class ShowJobsAllResultData(ResultData):
     user: str
     tenq: str
     stoppable: str
-    description: str
     positionInQ: int
     progress: int
+    description: str = ""
 
     _output_prefix = OUTPUT_PREFIX + "JobStatus"
     _title = "PAN-OS Job Status"

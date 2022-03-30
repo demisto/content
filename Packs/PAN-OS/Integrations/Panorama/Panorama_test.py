@@ -1061,6 +1061,9 @@ def mock_software_object():
         def check(self):
             pass
 
+        def download(self, *args, **kwargs):
+            pass
+
     return MockSoftwareObject()
 
 
@@ -1113,6 +1116,9 @@ def mock_topology(mock_panorama, mock_firewall):
     topology.ha_active_devices = {
         MOCK_PANORAMA_SERIAL: mock_panorama,
         MOCK_FIREWALL_1_SERIAL: mock_firewall
+    }
+    topology.ha_pair_serials = {
+        MOCK_FIREWALL_1_SERIAL: MOCK_FIREWALL_2_SERIAL,
     }
     return topology
 
@@ -1317,6 +1323,7 @@ class TestPanoramaCommand:
 class TestUniversalCommand:
     """Test all the commands relevant to both Panorama and Firewall devices"""
     SHOW_SYSTEM_INFO_XML = "test_data/show_system_info.xml"
+    SHOW_JOB_XML = "test_data/show_jobs_all.xml"
 
     @patch("Panorama.run_op_command")
     def test_get_system_info(self, patched_run_op_command, mock_topology):
@@ -1348,6 +1355,34 @@ class TestUniversalCommand:
             for value in result_dataclass.__dict__.values():
                 assert value
 
+    @patch("Panorama.run_op_command")
+    def test_get_jobs(self, patched_run_op_command, mock_topology):
+        """Given the output XML for show jobs all assert it is parsed into the dataclasses correctly."""
+        from Panorama import UniversalCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_JOB_XML)
+
+        result = UniversalCommand.show_jobs(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result:
+            for key, value in result_dataclass.__dict__.items():
+                # Nullable Values
+                if key not in ["description", "user"]:
+                    assert value
+
+    def test_download_software(self, mock_topology):
+        """
+        Test the download software function returns the correct data.
+        The pan-os-python download software actually doesn't return any output itself unless it errors, so we just check our
+        dataclass is set correctly within the function and retuned.
+        """
+        from Panorama import UniversalCommand
+
+        result = UniversalCommand.download_software(mock_topology, "9.1.0")
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
 
 class TestFirewallCommand:
     """Test all the commands relevant only to Firewall instances"""
@@ -1357,6 +1392,7 @@ class TestFirewallCommand:
     SHOW_ROUTING_ROUTE_XML = "test_data/show_routing_route.xml"
     SHOW_GLOBAL_COUNTERS_XML = "test_data/show_counter_global.xml"
     SHOW_BGP_PEERS_XML = "test_data/show_routing_protocol_bgp_peer.xml"
+    SHOW_HA_STATE_XML = "test_data/show_ha_state_enabled.xml"
 
     @patch("Panorama.run_op_command")
     def test_get_arp_table(self, patched_run_op_command, mock_topology):
@@ -1438,6 +1474,19 @@ class TestFirewallCommand:
 
         # Check all attributes of summary data have values
         for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                # Attribute may be int 0
+                assert value is not None
+
+    @patch("Panorama.run_op_command")
+    def test_get_ha_status(self, patched_run_op_command, mock_topology):
+        """Given the XML output for a HA firewall, ensure the dataclasses are parsed correctly"""
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_HA_STATE_XML)
+        result = FirewallCommand.get_ha_status(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result:
+            print(result_dataclass)
             for value in result_dataclass.__dict__.values():
                 # Attribute may be int 0
                 assert value is not None
