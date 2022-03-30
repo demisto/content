@@ -52,7 +52,7 @@ script:
       name: bind_variables_values
     description: Running a DB2 query command
     name: db2-query
-  dockerimage: ibm_db2:latest
+  dockerimage: demisto/ibm-db2:1.0.0.27972
   runonce: false
   script: ''
   subtype: python3
