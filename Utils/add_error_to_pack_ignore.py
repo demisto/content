@@ -7,7 +7,7 @@ def add_descriptions(file_path, error_type):
     
     with open(file_path, 'r') as f:
         error_log = f.read()
-    
+
     infected_files_ls = extract_errors_list(error_log, error_type)
 
 
@@ -17,7 +17,7 @@ def add_descriptions(file_path, error_type):
         with open(infected_file_path, 'r') as f:
             infected_file_text = f.read()
 
-        file_name = f'[file:{infected_file.get("file_path")}]'
+        file_name = f'[file:{infected_file.get("file_name")}]'
         
         if file_name in infected_file_text:
             updated_infected_file_text = add_error_to_existing_ignore_list(file_name, error_type, infected_file_path)
@@ -31,7 +31,7 @@ def add_descriptions(file_path, error_type):
 def add_error_to_none_existing_ignore_list(file_name, error_type, txt):
     ignored_file = f'{file_name}\nignore={error_type}\n'
     if txt:
-        txt += "\n" + ignored_file
+        txt += "\n\n" + ignored_file
     else:
         txt = ignored_file
     return txt
@@ -42,16 +42,16 @@ def add_error_to_existing_ignore_list(file_name, error_type, infected_file_path)
     myfile = open(infected_file_path, "r")
     for line in myfile:
         txt += line
-        if txt.endswith(file_name):
-            txt += myfile.readline() + f',{error_type}' + myfile.readline()
-            break
+        if txt.endswith(f'{file_name}\n'):
+            txt += myfile.readline()
+            txt = txt[:-1] + f',{error_type}' + "\n"
     myfile.close()
     return txt
 
 
 def extract_errors_list(errors_log, error_type):
     errors_ls=[]
-    infected_paths = re.findall(fr'\nPacks\/(.+)\s-\s\[{error_type}]\n', errors_log)
+    infected_paths = re.findall(fr'\nPacks\/(.+)\s-\s\[{error_type}]\\', errors_log)
     for path in infected_paths:
         file_path = Path(path)
         parts = file_path.parts
