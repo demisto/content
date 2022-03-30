@@ -3,22 +3,22 @@ import sys
 from pathlib import Path
 import re
 
+
 def add_descriptions(file_path, error_type):
-    
+
     with open(file_path, 'r') as f:
         error_log = f.read()
 
     infected_files_ls = extract_errors_list(error_log, error_type)
 
-
     for infected_file in infected_files_ls:
-        infected_file_path = f'Packs/{infected_file.get("pack_name")}/.pack-ignore'    
-        
+        infected_file_path = f'Packs/{infected_file.get("pack_name")}/.pack-ignore'
+
         with open(infected_file_path, 'r') as f:
             infected_file_text = f.read()
 
         file_name = f'[file:{infected_file.get("file_name")}]'
-        
+
         if file_name in infected_file_text:
             updated_infected_file_text = add_error_to_existing_ignore_list(file_name, error_type, infected_file_path)
         else:
@@ -50,13 +50,14 @@ def add_error_to_existing_ignore_list(file_name, error_type, infected_file_path)
 
 
 def extract_errors_list(errors_log, error_type):
-    errors_ls=[]
+    errors_ls = []
     infected_paths = re.findall(fr'\nPacks\/(.+)\s-\s\[{error_type}]\\', errors_log)
     for path in infected_paths:
         file_path = Path(path)
         parts = file_path.parts
-        errors_ls.append({'pack_name':parts[0], 'file_name':parts[-1]})
+        errors_ls.append({'pack_name': parts[0], 'file_name': parts[-1]})
     return errors_ls
+
 
 def main(argv):
     if len(argv) < 2:
