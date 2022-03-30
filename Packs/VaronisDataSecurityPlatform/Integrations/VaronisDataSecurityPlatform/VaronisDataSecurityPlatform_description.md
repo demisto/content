@@ -1,7 +1,4 @@
-## BaseIntegration Help
+The Varonis Data Security Platform integration allows you to retrieve Varonis DatAlert alerts, create incident and pull activities related to the alerts for conducting investigations.
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+### Authentication
+In order to use the Varonis DSP package, you can provide / create a user with "Web UI User" role that will be used as integration user.
