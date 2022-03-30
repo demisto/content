@@ -71,6 +71,7 @@ def enrich_malware_items(parent, childrens):
 
     """
     modified_childrens = []
+    modified_parent = None
     all_tags = set()
     for children in childrens:
         pattern = children.get("pattern")
@@ -119,21 +120,22 @@ def enrich_malware_items(parent, childrens):
             }
             modified_childrens.append(indicator)
 
-    additional_fields = {
-        "STIX Is Malware Family": parent["is_family"],
-        "tags": list(all_tags), "stixid": parent["id"],
-        'STIX Malware Types': parent["malwareTypes"],
-        'malware_types': parent["malwareTypes"]
-    }
-    modified_parent = {
-        'value': parent["name"],
-        'occurred': datetime.strptime(parent["created"],
-                                      '%Y-%m-%dT%H:%M:%S.%f%z').strftime(
-            "%m/%d/%Y, %H:%M:%S"),
-        'type': "STIX Malware",
-        'rawJSON': dict(parent),
-        'fields': additional_fields,
-    }
+    if parent:
+        additional_fields = {
+            "STIX Is Malware Family": parent["is_family"],
+            "tags": list(all_tags), "stixid": parent["id"],
+            'STIX Malware Types': parent["malwareTypes"],
+            'malware_types': parent["malwareTypes"]
+        }
+        modified_parent = {
+            'value': parent["name"],
+            'occurred': datetime.strptime(parent["created"],
+                                          '%Y-%m-%dT%H:%M:%S.%f%z').strftime(
+                "%m/%d/%Y, %H:%M:%S"),
+            'type': "STIX Malware",
+            'rawJSON': dict(parent),
+            'fields': additional_fields,
+        }
 
     return modified_parent, modified_childrens
 
@@ -419,6 +421,7 @@ def fetch_indicators_command(client: Client):
         list of indicators(list)
     """
     client.fetch_luminar_indicators()
+    return True
 
 
 def main() -> None:

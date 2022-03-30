@@ -1,0 +1,15 @@
+{
+    "type": "bundle",
+    "id": "bundle--5c26a2cc-904b-4154-914c-e9c483639e9e",
+    "objects": [
+        {
+            "type": "user-account",
+            "spec_version": "2.1",
+            "id": "user-account--bd17839f-6b12-4735-96f5-426e60b725c6",
+            "credential": "91331-16831950097502",
+            "account_login": "dillionjas@7-eleven.com",
+            "display_name": "dillionjas@7-eleven.com"
+        }
+
+    ]
+}
