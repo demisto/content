@@ -31,7 +31,18 @@ MINUTES_60 = 60 * 60
 SECONDS_30 = 30
 FETCH_TABLE_HR_NAME = {
     "firewall.threat": "Cortex Firewall Threat",
-    "firewall.file_data": "Cortex Firewall File Data"
+    "firewall.file_data": "Cortex Firewall File Data",
+    "firewall.auth": "Cortex Firewall Authentication",
+    "firewall.decryption": "Cortex Firewall Decryption",
+    "firewall.extpcap": "Cortex Firewall Extpcap",
+    "firewall.globalprotect": "Cortex Firewall GlobalProtect",
+    "firewall.hipmatch": "Cortex Firewall HIP Match",
+    "firewall.iptag": "Cortex Firewall IPtag",
+    "firewall.traffic": "Cortex Firewall Traffic",
+    "firewall.url": "Cortex Firewall URL",
+    "firewall.userid": "Cortex Firewall UserID",
+    "log.system": "Cortex Common System",
+    "log.config": "Cortex Common Config"
 }
 BAD_REQUEST_REGEX = r'^Error in API call \[400\].*'
 
@@ -854,7 +865,8 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
         SQL query that matches the arguments
     """
     query = f'SELECT {fetch_fields} FROM `{fetch_table}` '  # guardrails-disable-line
-    query += f'WHERE time_generated Between TIMESTAMP("{fetch_timestamp}") ' \
+    time_filter = 'event_time' if 'log' in fetch_table else 'time_generated'
+    query += f'WHERE {time_filter} Between TIMESTAMP("{fetch_timestamp}") ' \
              f'AND CURRENT_TIMESTAMP'
     if fetch_subtype and 'all' not in fetch_subtype:
         sub_types = [f'sub_type.value = "{sub_type}"' for sub_type in fetch_subtype]
@@ -862,12 +874,13 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
     if fetch_severity and 'all' not in fetch_severity:
         severities = [f'vendor_severity.value = "{severity}"' for severity in fetch_severity]
         query += f' AND ({" OR ".join(severities)})'
-    query += f' ORDER BY time_generated ASC LIMIT {fetch_limit}'
+    query += f' ORDER BY {time_filter} ASC LIMIT {fetch_limit}'
     return query
 
 
 def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
-    time_generated = log.get('time_generated', 0)
+    time_filter = 'event_time' if 'log' in fetch_table else 'time_generated'
+    time_generated = log.get(time_filter, 0)
     occurred = human_readable_time_from_epoch_time(time_generated, utc_time=True)
     incident = {
         'name': FETCH_TABLE_HR_NAME[fetch_table],
@@ -1110,8 +1123,8 @@ def fetch_incidents(client: Client,
         return {'lastRun': str(last_fetched_event_timestamp)}, []
 
     incidents = [convert_log_to_incident(record, fetch_table) for record in records]
-    max_fetched_event_timestamp = max(records, key=lambda record: record.get('time_generated', 0)).get('time_generated',
-                                                                                                       0)
+    time_filter = 'event_time' if 'log' in fetch_table else 'time_generated'
+    max_fetched_event_timestamp = max(records, key=lambda record: record.get(time_filter, 0)).get(time_filter, 0)
 
     next_run = {'lastRun': epoch_to_timestamp_and_add_milli(max_fetched_event_timestamp)}
     return next_run, incidents

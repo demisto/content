@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Cortex Data Lake
+  id: Cortex Data Lake_issue_39740
   version: -1
 configuration:
 - display: Token
@@ -33,6 +33,17 @@ configuration:
   options:
   - firewall.threat
   - firewall.file_data
+  - firewall.auth
+  - firewall.decryption
+  - firewall.extpcap
+  - firewall.globalprotect
+  - firewall.hipmatch
+  - firewall.iptag
+  - firewall.traffic
+  - firewall.url
+  - firewall.userid
+  - log.system
+  - log.config
   required: false
   type: 15
 - display: Severity of events to fetch (Firewall)
@@ -115,8 +126,8 @@ description: Palo Alto Networks Cortex Data Lake provides cloud-based, centraliz
   log storage and aggregation for your organization on premise, virtual (private cloud
   and public cloud) firewalls, for Prisma Access, and for cloud-delivered services
   such as Cortex XDR.
-display: Cortex Data Lake
-name: Cortex Data Lake
+display: Cortex Data Lake_issue_39740
+name: Cortex Data Lake_issue_39740
 script:
   commands:
   - arguments:
@@ -2584,11 +2595,11 @@ script:
       description: Identifies the origin of the data (the system that produced the
         data.
       type: String
-  - name: cdl-reset-authentication-timeout
-    deprecated: false
+  - deprecated: false
     description: Use this command in case your authentication calls fail due to internal
       call-limit, the command will reset the limit cache.
     execution: false
+    name: cdl-reset-authentication-timeout
   dockerimage: demisto/python_pancloud_v2:1.0.0.23674
   feed: false
   isfetch: true
