@@ -10,10 +10,8 @@ requests.packages.urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 apiVersion = "v1"
 '''GLOBALS/PARAMS'''
-
 INTEGRATION_NAME = 'NCURITY - Ncurion'
 INTEGRATION_CONTEXT_NAME = 'Ncurion'
-
 def login(base_url, username, password):
     api_url = base_url + '/napi/api/v1/apikey'
     payload = json.dumps({
@@ -73,25 +71,23 @@ def get_log_list(base_url, username, password):
     )
     return_results(results)
 
-def fetch_incidents(base_url, username, password, last_run: Dict[str, int], first_fetch_time: Optional[int]) -> Tuple[Dict[str, int], List[dict]]: 
+def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
+                    first_fetch_time: Optional[int]) -> Tuple[Dict[str, int], List[dict]]:
     access_token, refresh_token, headers1 = login(base_url, username, password)
     log_list = loglist(base_url, access_token, refresh_token, headers1)
     log_server_id = [e["id"] for e in log_list if e["is_connected"] == True]
     last_fetch = last_run.get('last_fetch', None)
-    max_fetch = demisto.params().get('max_fetch')    
+    max_fetch = demisto.params().get('max_fetch')
     now_time = datetime.datetime.utcnow()
-    
     if (last_fetch is None):
         last_fetch = first_fetch_time
         if (first_fetch_time is None):
             params1 = {"start": f"None", "end": f"{now_time}", "size": max_fetch}
         else:
             params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
-
     if len(log_server_id) == 0:
         return 'ok'
     else:
-        #incidents: List[Dict[str, Any]] = []
         incidents = []
         verify_certificate = not demisto.params().get('insecure', False)
         for i in log_server_id:
@@ -105,7 +101,6 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int], firs
                     'rawJSON': json.dumps(hit)
                 }
                 incidents.append(incident)
-    next_run = {'last_fetch': now_time }
     logout = json.dumps({
         "access_token": access_token,
         "refresh_token": refresh_token
@@ -129,7 +124,6 @@ def main():
     base_url = params.get('base_url')
     username = params.get('username')
     password = params.get('password')
-    
     first_fetch_time = arg_to_datetime(
         arg=demisto.params().get('first_fetch', '3 days'),
         arg_name='First fetch time',
@@ -137,7 +131,7 @@ def main():
     )
     first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
     assert isinstance(first_fetch_timestamp, int)
-    
+
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
@@ -166,7 +160,6 @@ def main():
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
