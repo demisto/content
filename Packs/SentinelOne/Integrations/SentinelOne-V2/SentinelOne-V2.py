@@ -93,7 +93,7 @@ class Client(BaseClient):
             }
         }
         response = self._http_request(method='DELETE', url_suffix='restrictions', json_data=body)
-        return response.get('data')
+        return response.get('data') or {}
 
     def add_hash_to_blocklist_request(self, value, os_type, description='', source='') -> dict:
         """
