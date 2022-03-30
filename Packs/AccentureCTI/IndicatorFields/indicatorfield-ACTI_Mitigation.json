@@ -18,6 +18,7 @@
     "group": 2,
     "hidden": false,
     "openEnded": false,
+    "description":"Recommendations based on incident summary and analysis.",
     "associatedToAll": false,
     "associatedTypes": [
         "ACTI Intelligence Alert",
