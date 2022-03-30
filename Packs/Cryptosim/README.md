@@ -1,3 +1,4 @@
+# CRYPTTECH CRYPTOSIM
 CRYPTOSIM meets the SIEM needs of corporations by its unique correlation engine works in memory, capable of hierarchical correlation, supports different correlation techniques, query structure that allows all kinds of data analytics, detects AI based algorithms behavioral anomalies and threat patterns that are not in rule sets.
 
 

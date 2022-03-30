@@ -1,8 +1,6 @@
 import base64
 import json
 
-from pyrsistent import inc
-import Cryptosim
 from Cryptosim import Client, correlation_alerts_command, correlations_command, fetch_incidents
 
 
@@ -23,7 +21,7 @@ test_client = Client(
 )
 
 
-def test_correlations_command(request_mock):
+def test_correlations_command(requests_mock):
     mock_response = {'StatusCode': 200,
                      'Data': [
                          {'Name': "Correlation1", 'CorrelationId': 1},
@@ -41,7 +39,7 @@ def test_correlations_command(request_mock):
     assert results.outputs_prefix == 'Correlations'
 
 
-def test_correlation_alerts_command(request_mock):
+def test_correlation_alerts_command(requests_mock):
     mock_response = {'StatusCode': 200,
                      'Data': [
                          {'CorrelationAlert': {"NAME": "name1", "changedKey1": "changedVal1"},
@@ -63,7 +61,7 @@ def test_correlation_alerts_command(request_mock):
     assert results.outputs_prefix == 'CorrelationAlerts'
 
 
-def test_fetch_incidents(request_mock, params):
+def test_fetch_incidents(requests_mock, params):
     mock_response = ({"lastRun": "2022-03-25T14:13:20"},
                      [{
                          'name': "test_name",
@@ -85,7 +83,7 @@ def test_fetch_incidents(request_mock, params):
         assert isinstance(incidents[0], dict)
         assert incidents[0]['type'] == 'Crpyotsim Correlation Alerts'
 
-def test_fetct_incident_max(request_mock, params):
+def test_fetct_incident_max(requests_mock, params):
     mock_response = ({"lastRun": "2022-03-25T14:13:20"},
                      [{
                          'name': "test_name",

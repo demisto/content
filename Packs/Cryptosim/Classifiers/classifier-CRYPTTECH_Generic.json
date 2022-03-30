@@ -12,12 +12,6 @@
                 "App message": {
                     "simple": "MESSAGE"
                 },
-                "Category ID": {
-                    "simple": "catid"
-                },
-                "Correlation ID": {
-                    "simple": "CORRELATIONID"
-                },
                 "Destination IP": {
                     "simple": "DST_IP"
                 },
@@ -27,20 +21,8 @@
                 "Device Name": {
                     "simple": "dvcname"
                 },
-                "Event Start Date": {
-                    "simple": "EVENTSTARTDATE"
-                },
                 "File Name": {
                     "simple": "fname"
-                },
-                "Log Date": {
-                    "simple": "date1"
-                },
-                "Log Type": {
-                    "simple": "type"
-                },
-                "Plugin ID": {
-                    "simple": "plgid"
                 },
                 "Protocol": {
                     "simple": "proto"
@@ -62,6 +44,24 @@
                 },
                 "Sub Category": {
                     "simple": "cat"
+                },
+                "CRYPTOSIM Category ID": {
+                    "simple": "catid"
+                },
+                "CRYPTOSIM Correlation ID": {
+                    "simple": "CORRELATIONID"
+                },
+                "CRYPTOSIM Event Start Date": {
+                    "simple": "EVENTSTARTDATE"
+                },
+                "CRYPTOSIM Log Date": {
+                    "simple": "date1"
+                },
+                "CRYPTOSIM Log Type": {
+                    "simple": "type"
+                },
+                "CRYPTOSIM Plugin ID": {
+                    "simple": "plgid"
                 }
             }
         },
