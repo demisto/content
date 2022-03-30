@@ -289,3 +289,19 @@ def test_get_device_freeze_request_command(mocker):
     mocker.patch.object(client, 'api_request_absolute', return_value=response)
     command_results = get_device_freeze_request_command(args={'request_uid': '1'}, client=client)
     assert command_results.outputs == FREEZE_REQ_EXPECTED_OUTPUT
+
+
+def test_list_device_freeze_message_command(mocker):
+    from Absolute import list_device_freeze_message_command
+    client = create_client()
+    response = util_load_json('test_data/device_freeze_message_list_response.json')
+    mocker.patch.object(client, 'api_request_absolute', return_value=response)
+    command_results = list_device_freeze_message_command(args={'message_id': "1"}, client=client)
+    assert command_results.outputs == [{'ChangedBy': 'example2@test.com',
+                                        'ChangedUTC': '2020-12-14T09:14:52.148+00:00',
+                                        'Content': '<html><body>This device has been frozen by '
+                                                   'company.</body></html>',
+                                        'CreatedBy': 'example1@test.com',
+                                        'CreatedUTC': '2020-11-26T22:29:17.687+00:00',
+                                        'ID': '1',
+                                        'Name': 'On-demand Freeze message'}]
