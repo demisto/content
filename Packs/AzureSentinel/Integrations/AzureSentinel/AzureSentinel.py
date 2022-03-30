@@ -906,7 +906,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
             latest_created_time = dateparser.parse(last_fetch_time_str)
         else:
             latest_created_time = dateparser.parse(last_fetch_time)
-        assert latest_created_time is not None
+        assert latest_created_time, f'Got empty latest_created_time. {last_fetch_time_str=} {last_fetch_time=}'
         latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
         command_args = {
             'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
