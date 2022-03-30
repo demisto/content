@@ -1,5 +1,5 @@
 comment: |
-  populates the value of the Salesforce status field and display it in a layout widget.
+  Populates the value of the Salesforce status field and displays it in a layout widget.
 commonfields:
   id: cf716566-1b24-4b70-8ee7-5a9d51ef98db
   version: -1
