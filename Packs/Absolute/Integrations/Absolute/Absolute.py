@@ -283,13 +283,16 @@ class Client(BaseClient):
     def api_request_absolute(self, method: str, url_suffix: str, body: str = "", success_status_code: tuple = None,
                              query_string: str = ''):
         """
-        Makes an HTTP request to
+        Makes an HTTP request to the Absolute API.
         Args:
-            method (str): HTTP request method (GET/POST/DELETE).
+            method (str): HTTP request method (GET/PUT/POST/DELETE).
             url_suffix (str): The API endpoint.
             body (str): The body to set.
-            success_status_code (int): an HTTP status code of success
+            success_status_code (int): an HTTP status code of success.
             query_string (str): The query to filter results by.
+
+        Note: As on the put and post requests we should pass a body from type str, we couldn't use the _http_request
+              function in CSP (as it does not receive body from type str).
         """
         demisto.debug(f'current request is: method={method}, url suffix={url_suffix}, body={body}')
         full_url = urljoin(self._base_url, url_suffix)
@@ -322,6 +325,14 @@ class Client(BaseClient):
 
 def sign(key, msg):
     return hmac.new(key, msg.encode('utf-8'), hashlib.sha256).digest()
+
+
+def validate_absolute_api_url(base_url):
+    if base_url not in ABSOLUTE_URL_TO_API_URL.keys():
+        raise_error_on_missing_args(
+            f"The Absolute server url {base_url} in not a valid url. "
+            f"Possible options: {list(ABSOLUTE_URL_TO_API_URL.keys())}")
+    return ABSOLUTE_URL_TO_API_URL[base_url]
 
 
 def test_module(client: Client) -> str:
@@ -835,14 +846,6 @@ def get_device_location_command(args, client) -> CommandResults:
     else:
         return CommandResults(
             readable_output=f"No device locations found in {INTEGRATION} for the given filters: {args}")
-
-
-def validate_absolute_api_url(base_url):
-    if base_url not in ABSOLUTE_URL_TO_API_URL.keys():
-        raise_error_on_missing_args(
-            f"The Absolute server url {base_url} in not a valid url. "
-            f"Possible options: {list(ABSOLUTE_URL_TO_API_URL.keys())}")
-    return ABSOLUTE_URL_TO_API_URL[base_url]
 
 
 ''' MAIN FUNCTION '''

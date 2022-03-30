@@ -48,6 +48,22 @@ EXPECTED_SIGNING_STRING_GET = """ABS1-HMAC-SHA-256
 20170926/cadc/abs1
 1b42a7b1f96d459efdbeceba5ee624d92caeb3ab3ca196268be55bc89c61cd93"""
 
+GET_REQUEST_SIGNATURE = "ab87d64d18610852565a2821625dfef1f19403673afe2f7f511ef185269d2334"
+PUT_REQUEST_SIGNATURE = "1d025c22f7fea8d14eb8416e863a12bf17daaa637c59ee98ed19a89509e69132"
+POST_REQUEST_SIGNATURE = "2355cede6fe99bf852ec7e4bc7dc450445fac9458814ef81d1a1b0906aac750b"
+
+SIGNING_KEY = b'\xe5_\xf5\x90o+\xa2\xe4\x00\xa4\x89\xd2\x1d\xa32B^\x19\xb7\xbdyy^:1\xd0\xdd\\\x87N\x02M'
+
+GET_REQUEST_AUTH_HEADER = "ABS1-HMAC-SHA-256 Credential=token/20220330/cadc/abs1, " \
+                          "SignedHeaders=host;content-type;x-abs-date, " \
+                          "Signature=ab87d64d18610852565a2821625dfef1f19403673afe2f7f511ef185269d2334"
+PUT_REQUEST_AUTH_HEADER = "ABS1-HMAC-SHA-256 Credential=token/20220330/cadc/abs1, " \
+                          "SignedHeaders=host;content-type;x-abs-date, " \
+                          "Signature=1d025c22f7fea8d14eb8416e863a12bf17daaa637c59ee98ed19a89509e69132"
+POST_REQUEST_AUTH_HEADER = "ABS1-HMAC-SHA-256 Credential=token/20220330/cadc/abs1, " \
+                           "SignedHeaders=host;content-type;x-abs-date, " \
+                           "Signature=2355cede6fe99bf852ec7e4bc7dc450445fac9458814ef81d1a1b0906aac750b"
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -96,3 +112,27 @@ def test_create_canonical_request(method, canonical_uri, query_string, payload, 
 def test_create_signing_string(canonical_req, expected_signing_string):
     client = create_client()
     assert client.create_signing_string(canonical_req) == expected_signing_string
+
+
+@freeze_time("2017-09-26 17:22:13 UTC")
+def test_create_signing_key():
+    client = create_client()
+    assert client.create_signing_key() == SIGNING_KEY
+
+
+@pytest.mark.parametrize('signing_string, expected_signature',
+                         [(EXPECTED_SIGNING_STRING_GET, GET_REQUEST_SIGNATURE),
+                          (EXPECTED_SIGNING_STRING_PUT, PUT_REQUEST_SIGNATURE),
+                          (EXPECTED_SIGNING_STRING_POST, POST_REQUEST_SIGNATURE)])
+def test_create_signature(signing_string, expected_signature):
+    client = create_client()
+    assert client.create_signature(signing_string, SIGNING_KEY) == expected_signature
+
+
+@pytest.mark.parametrize('signature, expected_authorization_header',
+                         [(GET_REQUEST_SIGNATURE, GET_REQUEST_AUTH_HEADER),
+                          (PUT_REQUEST_SIGNATURE, PUT_REQUEST_AUTH_HEADER),
+                          (POST_REQUEST_SIGNATURE, POST_REQUEST_AUTH_HEADER)])
+def test_add_authorization_header(signature, expected_authorization_header):
+    client = create_client()
+    assert client.add_authorization_header(signature) == expected_authorization_header
