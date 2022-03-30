@@ -43,7 +43,7 @@ MIRROR_DIRECTION = {
     'Outgoing': 'Out',
     'Incoming And Outgoing': 'Both'
 }
-OUTGOING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency']
+OUTGOING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'reviewer']
 INCOMING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'status_label', 'reviewer']
 
 # =========== Enrichment Mechanism Globals ===========
@@ -86,6 +86,61 @@ OCCURRED = 'occurred'
 INDEX_TIME = 'index_time'
 TIME_IS_MISSING = 'time_is_missing'
 
+# =========== Enrich User Mechanism ============
+class UserMappingObject:
+    def __init__(self, service, should_map_user,table_name='splunk_xsoar_users', xsoar_user_column_name='xsoar_user',
+                 splunk_user_column_name='splunk_user'):
+        self.service = service
+        self.should_map = should_map_user
+        self.table_name = table_name
+        self.xsoar_user_column_name = xsoar_user_column_name
+        self.splunk_user_column_name = splunk_user_column_name
+
+    def _get_record(self, col, value_to_search):
+        """ Gets the records with the value found in the relevant column. """
+        store = self.service.kvstore[self.table_name]
+        table_data = get_store_data(self.service)
+        return filter(lambda x: x.get(col) == value_to_search, table_data.next())
+
+    def get_xsoar_user_by_splunk(self, splunk_user):
+
+        record = self._get_record(self.splunk_user_column_name, splunk_user)
+
+        if not record:
+            demisto.error("Could not find xsoar user matching splunk's {0}. Consider adding it to the {1} lookup.".format(splunk_user, self.table_name))
+            return ''
+
+        # assuming username is unique, so only one record is returned.
+        xsoar_user = record[0].get(self.xsoar_user_column_name)
+
+        if not xsoar_user:
+            demisto.error(
+                "Xsoar user matching splunk's {0} is empty. Fix the record in {1} lookup.".format(
+                    splunk_user, self.table_name))
+            return ''
+
+        return xsoar_user
+
+    def get_splunk_user_by_xsoar(self, xsoar_user):
+
+        record = self._get_record(self.xsoar_user_column_name, xsoar_user)
+
+        if not record:
+            demisto.error(
+                "Could not find splunk user matching xsoar's {0}. Consider adding it to the {1} lookup.".format(
+                    xsoar_user, self.table_name))
+            return ''
+
+        # assuming username is unique, so only one record is returned.
+        splunk_user = record[0].get(self.splunk_user_column_name)
+
+        if not splunk_user:
+            demisto.error(
+                "Splunk user matching Xsoar's {0} is empty. Fix the record in {1} lookup.".format(
+                    splunk_user, self.table_name))
+            return ''
+
+        return splunk_user
 
 # =========== Regular Fetch Mechanism ===========
 def splunk_time_to_datetime(incident_ocurred_time):
@@ -242,7 +297,7 @@ def build_fetch_query(dem_params):
     return fetch_query
 
 
-def fetch_notables(service, cache_object=None, enrich_notables=False):
+def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
     last_run_data = demisto.getLastRun()
     if not last_run_data:
         extensive_log('[SplunkPy] SplunkPy first run')
@@ -272,7 +327,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     for item in reader:
         extensive_log('[SplunkPy] Incident data before parsing to notable: {}'.format(item))
         notable_incident = Notable(data=item)
-        inc = notable_incident.to_incident()
+        inc = notable_incident.to_incident(mapper)
         extensive_log('[SplunkPy] Incident data after parsing to notable: {}'.format(inc))
         incident_id = create_incident_custom_id(inc)
 
@@ -336,7 +391,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     demisto.setLastRun(last_run_data)
 
 
-def fetch_incidents(service):
+def fetch_incidents(service, mapper):
     if ENABLED_ENRICHMENTS:
         integration_context = get_integration_context()
         if not demisto.getLastRun() and integration_context:
@@ -345,9 +400,9 @@ def fetch_incidents(service):
             # in the last run object to avoid entering this case
             fetch_incidents_for_mapping(integration_context)
         else:
-            run_enrichment_mechanism(service, integration_context)
+            run_enrichment_mechanism(service, integration_context, mapper)
     else:
-        fetch_notables(service=service, enrich_notables=False)
+        fetch_notables(service=service, enrich_notables=False, mapper=mapper)
 
 
 # =========== Regular Fetch Mechanism ===========
@@ -456,7 +511,7 @@ class Notable:
                 return None
 
     @staticmethod
-    def create_incident(notable_data, occurred):
+    def create_incident(notable_data, occurred, mapper):
         incident = {}  # type: Dict[str,Any]
         rule_title, rule_name = '', ''
 
@@ -471,9 +526,14 @@ class Notable:
         if demisto.get(notable_data, 'rule_description'):
             incident["details"] = notable_data["rule_description"]
         if demisto.get(notable_data, 'reviewer'):
-            incident["notablereviewer"] = notable_data["reviewer"]
+            incident["notablereviewer"] = mapper.get_xsoar_user_by_splunk(
+                notable_data["reviewer"]) if mapper.should_map else notable_data["reviewer"]
+        if demisto.get(notable_data, "owner"):
+            incident["owner"] = mapper.get_xsoar_user_by_splunk(
+                notable_data["owner"]) if mapper.should_map else notable_data["owner"]
 
         incident["occurred"] = occurred
+
         notable_data = parse_notable(notable_data)
         notable_data.update({
             'mirror_instance': demisto.integrationInstance(),
@@ -495,7 +555,7 @@ class Notable:
 
         return incident
 
-    def to_incident(self):
+    def to_incident(self, mapper):
         """ Gathers all data from all notable's enrichments and return an incident """
         self.incident_created = True
 
@@ -503,7 +563,7 @@ class Notable:
             self.data[e.type] = e.data
             self.data[ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[e.type]] = e.status == Enrichment.SUCCESSFUL
 
-        return self.create_incident(self.data, self.occurred)
+        return self.create_incident(self.data, self.occurred, mapper=mapper)
 
     def submitted(self):
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
@@ -1052,7 +1112,7 @@ def submit_notable(service, notable, num_enrichment_events):
     return notable.submitted()
 
 
-def run_enrichment_mechanism(service, integration_context):
+def run_enrichment_mechanism(service, integration_context, mapper):
     """ Execute the enriching fetch mechanism
     1. We first handle submitted notables that have not been handled in the last fetch run
     2. If we finished handling and submitting all fetched notables, we fetch new notables
@@ -1071,7 +1131,7 @@ def run_enrichment_mechanism(service, integration_context):
     try:
         handle_submitted_notables(service, incidents, cache_object)
         if cache_object.done_submitting() and cache_object.done_handling():
-            fetch_notables(service=service, cache_object=cache_object, enrich_notables=True)
+            fetch_notables(service=service, cache_object=cache_object, enrich_notables=True, mapper=mapper)
         submit_notables(service, incidents, cache_object)
 
     except Exception as e:
@@ -2523,15 +2583,15 @@ def main():
         splunk_parse_raw_command()
         sys.exit(0)
     service = None
-    proxy = demisto.params().get('proxy')
-    use_requests_handler = demisto.params().get('use_requests_handler')
+    proxy = params.get('proxy')
+    use_requests_handler = params.get('use_requests_handler')
 
     connection_args = get_connection_args()
 
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
     auth_token = None
-    username = demisto.params()['authentication']['identifier']
-    password = demisto.params()['authentication']['password']
+    username = params['authentication']['identifier']
+    password = params['authentication']['password']
     if username == '_token':
         connection_args['splunkToken'] = password
         auth_token = password
@@ -2558,6 +2618,9 @@ def main():
     if service is None:
         demisto.error("Could not connect to SplunkPy")
 
+    mapper = UserMappingObject(service, params.get('userMapping'), params.get('user_map_lookup_name'),
+                               params.get('xsoar_user_field'), params.get('splunk_user_field'))
+
     # The command command holds the command sent from the user.
     if command == 'test-module':
         test_module(service)
@@ -2573,7 +2636,7 @@ def main():
     elif command == 'splunk-get-indexes':
         splunk_get_indexes_command(service)
     elif command == 'fetch-incidents':
-        fetch_incidents(service)
+        fetch_incidents(service, mapper)
     elif command == 'splunk-submit-event':
         splunk_submit_event_command(service)
     elif command == 'splunk-notable-event-edit':
@@ -2611,11 +2674,11 @@ def main():
         else:
             get_mapping_fields_command(service)
     elif command == 'get-remote-data':
-        get_remote_data_command(service, demisto.args(), demisto.params().get('close_incident'))
+        get_remote_data_command(service, demisto.args(), params.get('close_incident'))
     elif command == 'get-modified-remote-data':
         get_modified_remote_data_command(service, demisto.args())
     elif command == 'update-remote-system':
-        update_remote_system_command(demisto.args(), demisto.params(), service, auth_token)
+        update_remote_system_command(demisto.args(), params, service, auth_token)
     else:
         raise NotImplementedError('Command not implemented: {}'.format(command))
 
