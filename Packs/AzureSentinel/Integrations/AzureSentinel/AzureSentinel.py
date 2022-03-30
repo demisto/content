@@ -926,7 +926,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
 
     return process_incidents(raw_incidents, last_fetch_ids, min_severity,
-                             latest_created_time, last_incident_number)  # type: ignore
+                             latest_created_time, last_incident_number)  # type: ignore[attr-defined]
 
 
 def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime,

@@ -9250,7 +9250,7 @@ def get_pack_version(pack_name=''):
     def _load_response(_response):
         try:
             return json.loads(_response)
-        except json.JSONDecodeError:  # type: ignore
+        except json.JSONDecodeError:  # type: ignore[attr-defined]
             demisto.debug('Unable to load response {response}'.format(response=_response))
             return {}
 
