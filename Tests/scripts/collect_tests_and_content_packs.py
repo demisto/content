@@ -19,7 +19,8 @@ from Tests.scripts.utils import collect_helpers
 from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
 from Tests.scripts.utils.content_packs_util import should_test_content_pack, should_install_content_pack, \
     is_pack_xsoar_supported
-from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing, filter_modified_files
+from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing, \
+    filter_modified_files_for_specific_marketplace_version
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from demisto_sdk.commands.common import constants
@@ -1210,7 +1211,7 @@ def get_test_list_and_content_packs_to_install(files_string,
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
     if marketplace_version == 'marketplacev2':
-        files_string = filter_modified_files(files_string, id_set)
+        files_string = filter_modified_files_for_specific_marketplace_version(files_string, id_set, marketplace_version)
         logging.debug(f'Files string after filter: {files_string}')
 
     modified_files_instance = get_modified_files_for_testing(files_string)
@@ -1311,7 +1312,15 @@ def get_test_list_and_content_packs_to_install(files_string,
     return tests, packs_to_install
 
 
-def get_all_packs_with_artifacts_for_marketplacev2(id_set):
+def get_all_packs_with_artifacts_for_specific_marketplace(id_set: dict, marketplace_version: str):
+    """Get all packs that have content artifacts in specific marketplace version:
+        Args:
+            id_set (dict): The id set object
+            marketplace_version (str): The marketplace version were the tests will run
+
+        Return:
+             set: set of packs
+        """
     packs_to_install = set()
     for artifacts in id_set.values():
         # Ignore the Packs list in the ID set
@@ -1319,16 +1328,24 @@ def get_all_packs_with_artifacts_for_marketplacev2(id_set):
             break
         for artifact_dict in artifacts:
             for artifact_details in artifact_dict.values():
-                if artifact_details.get('marketplaces', []) == ['marketplacev2']:
+                if artifact_details.get('marketplaces', []) == [marketplace_version]:
                     packs_to_install.add(artifact_details.get('pack'))
     return packs_to_install
 
 
-def get_test_playbooks_for_marketplacev2(id_set):
+def get_test_playbooks_for_specific_marketplace(id_set: dict, marketplace_version: str):
+    """Get all test playbooks for specific marketplace version:
+        Args:
+            id_set (dict): The id set object
+            marketplace_version (str): The marketplace version were the tests will run
+
+        Return:
+             set: set test playbooks name
+        """
     tests = set()
     for test_obj in id_set.get('TestPlaybooks', []):
         for test_id, test_data in test_obj.items():
-            if test_data.get('marketplaces', []) == ['marketplacev2']:
+            if test_data.get('marketplaces', []) == [marketplace_version]:
                 tests.add(test_data.get('name'))
     return tests
 
@@ -1458,8 +1475,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
             packs_to_install.update(get_content_pack_name_of_test(tests, ID_SET))
 
             # collect all packs and tests that are compatible only with marketplacev2
-            tests.update(get_test_playbooks_for_marketplacev2(ID_SET))
-            packs_to_install.update(get_all_packs_with_artifacts_for_marketplacev2(ID_SET))
+            tests.update(get_test_playbooks_for_specific_marketplace(ID_SET, marketplace_version))
+            packs_to_install.update(get_all_packs_with_artifacts_for_specific_marketplace(ID_SET, marketplace_version))
 
         else:
             packs_to_install = (set(os.listdir(constants.PACKS_DIR)))

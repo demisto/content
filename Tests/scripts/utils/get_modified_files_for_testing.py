@@ -158,13 +158,17 @@ def create_type_to_file(files_string: str) -> Dict[FileType, Set[str]]:
     return types_to_files
 
 
-def filter_modified_files(files_string: str, id_set: dict) -> str:
-    """filter out the files in the diff list (files_string) that are not only supported in marketplacev2
-
+def filter_modified_files_for_specific_marketplace_version(files_string: str, id_set: dict,
+                                                           marketplace_version: str) -> str:
+    """filter out the files in the diff list (files_string) that are not only supported in specific marketplace version
+    Args:
+        files_string (str): The modified files.
+        id_set (dict): The id set object.
+        marketplace_version (str): The marketplace version.
     Returns:
-        string list of diff files that are supported only in marketplacev2
+        string list of diff files that are supported only in marketplace_version
     """
-    v2_files_string = ''
+    out_files_string = ''
     for line in files_string.split("\n"):
         if line:
             file_status, file_path = line.split(maxsplit=1)
@@ -182,12 +186,13 @@ def filter_modified_files(files_string: str, id_set: dict) -> str:
                         file_path = file_path.rstrip('_description.md')
                     file_data = file_path.split('/')
                     obj_repo_name = replace_to_id_set_name(file_data[2])
-                    for obj in id_set.get(obj_repo_name, []):
-                        data = obj[list(obj.keys())[0]]
-                        if file_path in data.get('file_path') and data.get('marketplaces') == ['marketplacev2']:
-                            v2_files_string += f'{line}\n'
-                            break
-    return v2_files_string
+                    for test_obj in id_set.get(obj_repo_name, []):
+                        for data in test_obj.values():
+                            if file_path in data.get('file_path') and \
+                                    data.get('marketplaces') == ['marketplace_version']:
+                                out_files_string += f'{line}\n'
+                                break
+    return out_files_string
 
 
 def replace_to_id_set_name(name: str):
