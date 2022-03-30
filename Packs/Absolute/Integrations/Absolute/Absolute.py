@@ -34,7 +34,6 @@ INTEGRATION = "Absolute"
 STRING_TO_SIGN_ALGORITHM = "ABS1-HMAC-SHA-256"
 STRING_TO_SIGN_SIGNATURE_VERSION = "abs1"
 DATE_FORMAT = '%Y%m%dT%H%M%SZ'
-DATE_FORMAT_FREEZE_DATE = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 DATE_FORMAT_CREDENTIAL_SCOPE = '%Y%m%d'
 
 DEVICE_LIST_RETURN_FIELDS = [
@@ -398,8 +397,8 @@ def validate_device_freeze_type_offline(offline_time_seconds):
         # must be between 1200 seconds (20 minutes) and 172800000 seconds (2000 days)
         offline_time_seconds_valid = 1200 <= offline_time_seconds <= 172800000
         if not offline_time_seconds_valid:
-            raise_error_on_missing_args('the offline_time_seconds arg is not valid. Must be between 1200 seconds '
-                                        f'(20 minutes) and 172800000 seconds (2000 days)')
+            raise_error_on_missing_args("the offline_time_seconds arg is not valid. Must be between 1200 seconds"
+                                        " (20 minutes) and 172800000 seconds (2000 days).")
     return offline_time_seconds
 
 
@@ -410,9 +409,9 @@ def raise_error_on_missing_args(msg):
 
 def validate_device_freeze_type_scheduled(scheduled_freeze_date):
     if not scheduled_freeze_date:
-        raise_error_on_missing_args('when setting device_freeze_type to be Scheduled, you must specify the scheduled_'
+        raise_error_on_missing_args('When setting device_freeze_type to be Scheduled, you must specify the scheduled_'
                                     f'freeze_date arg.')
-    return datetime.utcnow().strftime(DATE_FORMAT_FREEZE_DATE)
+    return scheduled_freeze_date
 
 
 def validate_passcode_type_args(passcode_type, passcode, passcode_length, payload):
@@ -448,6 +447,18 @@ def parse_freeze_device_response(response: dict):
 
 
 def device_freeze_request_command(args, client) -> CommandResults:
+    payload = prepare_payload_to_freeze_request(args)
+    res = client.api_request_absolute('POST', '/v2/device-freeze/requests', body=json.dumps(payload),
+                                      success_status_code=[201])
+
+    outputs = parse_freeze_device_response(res)
+    human_readable = tableToMarkdown(f"{INTEGRATION} device freeze requests results", outputs, removeNull=True)
+    # todo add errors to yml after Meital's approve
+    return CommandResults(readable_output=human_readable, outputs=outputs, outputs_prefix="Absolute.FreezeRequest",
+                          outputs_key_field="RequestUID", raw_response=res)
+
+
+def prepare_payload_to_freeze_request(args):
     request_name = args.get('request_name')
     html_message = args.get('html_message')
     message_name = args.get('message_name')
@@ -469,19 +480,10 @@ def device_freeze_request_command(args, client) -> CommandResults:
     elif device_freeze_type == "Offline":
         offline_time_seconds = validate_device_freeze_type_offline(offline_time_seconds)
         payload["freezeDefinition"].update({"offlineTimeSeconds": offline_time_seconds})
-
     passcode = args.get('passcode')
     passcode_length = arg_to_number(args.get('passcode_length'), required=False)
     payload = validate_passcode_type_args(passcode_type, passcode, passcode_length, payload)
-
-    res = client.api_request_absolute('POST', '/v2/device-freeze/requests', body=json.dumps(payload),
-                                      success_status_code=[201])
-
-    outputs = parse_freeze_device_response(res)
-    human_readable = tableToMarkdown(f"{INTEGRATION} device freeze requests results", outputs, removeNull=True)
-    # todo add errors to yml after Meital's approve
-    return CommandResults(readable_output=human_readable, outputs=outputs, outputs_prefix="Absolute.FreezeRequest",
-                          outputs_key_field="RequestUID", raw_response=res)
+    return payload
 
 
 def remove_device_freeze_request_command(args, client) -> CommandResults:

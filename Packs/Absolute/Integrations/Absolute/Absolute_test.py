@@ -1,5 +1,6 @@
 import json
 import io
+import re
 from datetime import datetime
 from freezegun import freeze_time
 
@@ -7,7 +8,7 @@ import pytest
 from pytest import raises
 
 from CommonServerPython import DemistoException
-from Absolute import Client, DATE_FORMAT
+from Absolute import Client, DATE_FORMAT, INTEGRATION
 
 EXPECTED_CANONICAL_GET_REQ_NO_PAYLOAD_NO_QUERY = """GET
 /v2/reporting/devices
@@ -63,6 +64,74 @@ PUT_REQUEST_AUTH_HEADER = "ABS1-HMAC-SHA-256 Credential=token/20220330/cadc/abs1
 POST_REQUEST_AUTH_HEADER = "ABS1-HMAC-SHA-256 Credential=token/20220330/cadc/abs1, " \
                            "SignedHeaders=host;content-type;x-abs-date, " \
                            "Signature=2355cede6fe99bf852ec7e4bc7dc450445fac9458814ef81d1a1b0906aac750b"
+
+FREEZE_REQ_EXPECTED_OUTPUT = [{'AccountUid': 'e7a9fb73-44b0-4f5d-990b-39ff884425eb',
+                               'ActionRequestUid': 'e416f97e-dc43-4ed0-88c3-b33ea66c660f',
+                               'ChangedBy': None,
+                               'ChangedUTC': '2021-11-03T07:33:55.966+00:00',
+                               'Configuration': {'action': 'DFZ',
+                                                 'conditions': [{}],
+                                                 'configurationUid': 'c132d6aa-03b5-483d-89ab-77f45f7346cc',
+                                                 'disableFileSharing': True,
+                                                 'disableRemoteLogin': True,
+                                                 'forceReboot': False,
+                                                 'freezeId': 'DeviceFreeze-0864',
+                                                 'freezeMessage': 'This device has been frozen by a Company',
+                                                 'html': None,
+                                                 'htmlClear': 'some html',
+                                                 'issuedUTC': '2021-11-03T07:33:55.966+00:00',
+                                                 'messageName': 'On-demand Freeze message',
+                                                 'passcodeClear': '12345678',
+                                                 'passcodeHashed': '+AG=',
+                                                 'passcodeLength': 8,
+                                                 'passcodeOption': 'RandomForEach',
+                                                 'passcodeSalt': 'P0efY',
+                                                 'preLoginEnabled': True,
+                                                 'serviceControlList': None,
+                                                 'type': 'OnDemand'},
+                               'Content': None,
+                               'CreatedBy': None,
+                               'CreatedUTC': '2021-11-03T07:33:56.004+00:00',
+                               'DeviceUid': '56be8d1f-2eb8-4e9b-bbd6-1aab032abcde',
+                               'Downloaded': False,
+                               'EventHistoryId': 'DeviceFreeze-0864',
+                               'FreezePolicyUid': None,
+                               'ID': '1',
+                               'IsCurrent': True,
+                               'Name': 'On-demand Freeze request',
+                               'NotificationEmails': ['example1@test.com', 'example2@test.com'],
+                               'PolicyConfigurationVersion': 0,
+                               'PolicyGroupUid': None,
+                               'Requester': 'example@test.com',
+                               'RequesterUid': '1abc2de3-fa45-67b8-9cde-0f12a34bc567',
+                               'Statuses': [{'ackClientTS': 1548265912126,
+                                             'ackClientUTC': 1548294712126,
+                                             'actionUid': None,
+                                             'eventType': None,
+                                             'instruction': '',
+                                             'message': None,
+                                             'messageKey': None,
+                                             'messageParams': None,
+                                             'scheduledFreezeDateUTC': 0,
+                                             'status': 'Launching',
+                                             'statusUid': '5336db35-ae66-435e-a29d-41ef2f10a86c',
+                                             'triggerActionUid': None,
+                                             'updatedBy': 'example@test.com',
+                                             'updatedUTC': '2021-11-03T07:33:55.966+00:00'},
+                                            {'ackClientTS': 0,
+                                             'ackClientUTC': 0,
+                                             'actionUid': None,
+                                             'eventType': None,
+                                             'instruction': None,
+                                             'message': None,
+                                             'messageKey': None,
+                                             'messageParams': None,
+                                             'scheduledFreezeDateUTC': 0,
+                                             'status': 'FreezeRequested',
+                                             'statusUid': None,
+                                             'triggerActionUid': None,
+                                             'updatedBy': 'example@test.com',
+                                             'updatedUTC': 1548294707085}]}]
 
 
 def util_load_json(path):
@@ -152,3 +221,71 @@ def test_get_custom_device_field_list_command(mocker):
                                                     {'CDFUID': '7PwIrjEXTAqvpb5WdV2w', 'FieldName': 'Assigned Username',
                                                      'FieldKey': 3, 'CategoryCode': 'ESNCOLUMN',
                                                      'FieldValue': '', 'Type': 'Text'}]}
+
+
+@pytest.mark.parametrize('args, expected_error',
+                         [({'device_freeze_type': 'Scheduled'},
+                           "When setting device_freeze_type to be Scheduled, you must specify the"
+                           " scheduled_freeze_date arg."),  # type is Scheduled and 'scheduled_freeze_date' is missing
+                          ({'device_freeze_type': 'Offline', 'offline_time_seconds': '1'},
+                           "the offline_time_seconds arg is not valid. Must be between 1200 seconds "
+                           "(20 minutes) and 172800000 seconds (2000 days)."),
+                          # type is Offline and 'offline_time_seconds' is not valid
+                          ({'passcode_type': 'UserDefined'},
+                           "when setting passcode_type to be UserDefined, you must specify the passcode arg."),
+                          # passcode_type is UserDefined and 'passcode' is missing
+                          ({'passcode_type': 'RandomForEach'},
+                           "when setting passcode_type to be RandomForEach or RandomForAl, "
+                           "you must specify the passcode_length arg to be between 4 to 8."),
+                          # passcode_type is RandomForEach and 'passcode_length' is missing
+                          ({'passcode_type': 'RandomForAl', 'passcode_length': '1'},
+                           "when setting passcode_type to be RandomForEach or RandomForAl, "
+                           "you must specify the passcode_length arg to be between 4 to 8."),
+                          # passcode_type is RandomForAl and 'passcode_length' is not valid number
+                          ])
+def test_prepare_payload_to_freeze_request_with_invalid_args(args, expected_error):
+    from Absolute import prepare_payload_to_freeze_request
+    with raises(DemistoException, match=re.escape(f'{INTEGRATION} error: {expected_error}')):
+        prepare_payload_to_freeze_request(args)
+
+
+@pytest.mark.parametrize('args, expected_payload',
+                         [
+                             # Scheduled
+                             ({'request_name': 'name', 'html_message': 'test', 'message_name': 'name',
+                               'device_ids': ["1", "2"], 'scheduled_freeze_date': '2017-09-26T17:22:13Z',
+                               'device_freeze_type': 'Scheduled', 'passcode_type': 'UserDefined', 'passcode': '5'},
+                              {'deviceUids': ['1', '2'],
+                               'freezeDefinition': {'deviceFreezeType': 'Scheduled',
+                                                    'scheduledFreezeDate': '2017-09-26T17:22:13Z'},
+                               'message': 'test',
+                               'messageName': 'name',
+                               'name': 'name',
+                               'notificationEmails': [],
+                               'passcodeDefinition': {'option': 'UserDefined', 'passcode': '5'}}),
+                             # Offline
+                             ({'request_name': 'name', 'html_message': 'test', 'message_name': 'name',
+                               'device_ids': ["1", "2"], 'offline_time_seconds': '1201',
+                               'device_freeze_type': 'Offline', 'passcode_type': 'RandomForEach',
+                               'passcode_length': '5'},
+                              {'deviceUids': ['1', '2'],
+                               'freezeDefinition': {'deviceFreezeType': 'Offline',
+                                                    'offlineTimeSeconds': 1201},
+                               'message': 'test',
+                               'messageName': 'name',
+                               'name': 'name',
+                               'notificationEmails': [],
+                               'passcodeDefinition': {'option': 'RandomForEach', 'length': 5}})
+                         ])
+def test_prepare_payload_to_freeze_request_valid_args(args, expected_payload):
+    from Absolute import prepare_payload_to_freeze_request
+    assert prepare_payload_to_freeze_request(args) == expected_payload
+
+
+def test_get_device_freeze_request_command(mocker):
+    from Absolute import get_device_freeze_request_command
+    client = create_client()
+    response = util_load_json('test_data/custom_get_device_freeze_request_response.json')
+    mocker.patch.object(client, 'api_request_absolute', return_value=response)
+    command_results = get_device_freeze_request_command(args={'request_uid': '1'}, client=client)
+    assert command_results.outputs == FREEZE_REQ_EXPECTED_OUTPUT
