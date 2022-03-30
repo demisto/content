@@ -82,7 +82,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
         last_fetch = first_fetch_time
         if (first_fetch_time is None):
             params1 = {"start": f"None", "end": f"{now_time}", "size": max_fetch}
-        else:
+        else :
             params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
     if len(log_server_id) == 0:
         next_run = {'last_fetch': now_time}
@@ -161,5 +161,5 @@ def main():
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if  __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
