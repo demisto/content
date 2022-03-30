@@ -24,7 +24,7 @@
                 "Device Name": {
                     "simple": "Device.Name"
                 },
-                "Source Status": {
+                "Varonis Data Security Platform Alert Status": {
                     "simple": "Status"
                 },
                 "Source Username": {
