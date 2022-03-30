@@ -136,3 +136,19 @@ def test_create_signature(signing_string, expected_signature):
 def test_add_authorization_header(signature, expected_authorization_header):
     client = create_client()
     assert client.add_authorization_header(signature) == expected_authorization_header
+
+
+def test_get_custom_device_field_list_command(mocker):
+    from Absolute import get_custom_device_field_list_command
+    client = create_client()
+    response = util_load_json('test_data/custom_device_field_list_response.json')
+    mocker.patch.object(client, 'api_request_absolute', return_value=response)
+    command_result = get_custom_device_field_list_command(client=client,
+                                                          args={'device_id': '02b9daa4-8e60-4640-8b15-76d41ecf6a94'})
+    assert command_result.outputs == {'DeviceUID': response.get('deviceUid'), 'ESN': response.get('esn'),
+                                      'CDFValues': [{'CDFUID': 'njazpLrEQwqeFDqk4yQCfg', 'FieldName': 'Asset Number',
+                                                     'FieldKey': 1, 'CategoryCode': 'ESNCOLUMN',
+                                                     'FieldValue': 'No Asset Tag', 'Type': 'Text'},
+                                                    {'CDFUID': '7PwIrjEXTAqvpb5WdV2w', 'FieldName': 'Assigned Username',
+                                                     'FieldKey': 3, 'CategoryCode': 'ESNCOLUMN',
+                                                     'FieldValue': '', 'Type': 'Text'}]}
