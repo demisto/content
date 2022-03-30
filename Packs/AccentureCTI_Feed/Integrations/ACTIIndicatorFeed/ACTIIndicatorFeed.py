@@ -135,7 +135,7 @@ def main():
     indicators_type: list = argToList(params.get('indicator_type', []))
     params['feed_name_to_config'] = create_fetch_configuration(indicators_type, filters, params)
 
-    PACK_VERSION = "2.0.0"
+    PACK_VERSION = get_pack_version()
     DEMISTO_VERSION = demisto.demistoVersion()
     DEMISTO_VERSION = f'{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]}'
     params['headers'] = {"Content-Type": "application/json",
