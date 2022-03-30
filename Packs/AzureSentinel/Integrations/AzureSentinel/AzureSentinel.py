@@ -916,6 +916,8 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
     else:
         demisto.debug("handle via id")
         latest_created_time = dateparser.parse(last_fetch_time)
+        assert latest_created_time is not None, f"dateparser.parse(last_fetch_time):" \
+                                                f" {dateparser.parse(last_fetch_time)} couldnt be parsed"
         command_args = {
             'filter': f'properties/incidentNumber gt {last_incident_number}',
             'orderby': 'properties/incidentNumber asc',
@@ -962,6 +964,8 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
             current_fetch_ids.append(incident.get('ID'))
 
             # Update last run to the latest fetch time
+            assert incident_created_time is not None, f"incident.get('CreatedTimeUTC') : " \
+                                                      f"{incident.get('CreatedTimeUTC')} couldnt be parsed"
             if incident_created_time > latest_created_time:
                 latest_created_time = incident_created_time
             if incident.get('IncidentNumber') > last_incident_number:
