@@ -305,3 +305,23 @@ def test_list_device_freeze_message_command(mocker):
                                         'CreatedUTC': '2020-11-26T22:29:17.687+00:00',
                                         'ID': '1',
                                         'Name': 'On-demand Freeze message'}]
+
+
+def test_device_unenroll_command(mocker):
+    from Absolute import device_unenroll_command
+    client = create_client()
+    response = util_load_json('test_data/unenroll_device_response.json')
+    mocker.patch.object(client, 'api_request_absolute', return_value=response)
+    outputs = device_unenroll_command(args={'device_ids': "1,2"}, client=client).outputs
+    assert outputs == [{'DeviceUid': '1',
+                        'ESN': '2BU2PJD28VAA1UYL0008',
+                        'EligibleStatus': 0,
+                        'Serial': 'CNF83051BN',
+                        'SystemName': 'user1',
+                        'Username': 'example@test.com'},
+                       {'DeviceUid': '2',
+                        'ESN': '2BU2PJ545L0008',
+                        'EligibleStatus': 1,
+                        'Serial': 'CNF43051BN',
+                        'SystemName': 'user2',
+                        'Username': 'example2@test.com'}]
