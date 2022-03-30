@@ -37,7 +37,7 @@ configuration:
   required: false
   type: 8
 description: Unified device visibility and control platform for IT and OT Security.
-display: Forescout
+display: Forescout CounterACT
 name: Forescout
 script:
   commands:
@@ -483,7 +483,7 @@ script:
     description: Update Forescout lists.
     execution: false
     name: forescout-update-lists
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.27798
   isfetch: false
   runonce: false
   script: '-'
