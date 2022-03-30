@@ -1237,16 +1237,7 @@ view: |-
       }
     }
   }
-inputs:
-- key: UsernameOrEmail
-  value:
-    complex:
-      root: incident
-      accessor: sourceusername
-  required: true
-  description: The username or the email address of the user whose file upload triggered
-    the incident
-  playbookInputQuery: null
+inputs: []
 outputs: []
 tests:
   - No test

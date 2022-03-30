@@ -44,11 +44,11 @@
 					"complex": null,
 					"simple": "tenantId"
 				},
-				"PAN DLP report ID": {
+				"PAN DLP Report ID": {
 					"complex": null,
 					"simple": "reportId"
 				},
-				"Pan DLP Data Profile Name": {
+				"PAN DLP Data Profile Name": {
 					"complex": null,
 					"simple": "dataProfileName"
 				},
