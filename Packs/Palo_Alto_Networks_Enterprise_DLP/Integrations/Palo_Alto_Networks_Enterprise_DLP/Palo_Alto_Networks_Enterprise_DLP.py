@@ -158,7 +158,7 @@ class Client(BaseClient):
 
         return self._get_dlp_api_call(url)
 
-    def get_dlp_incidents(self,  regions: str, start_time: int = None, end_time: int = None) -> dict:
+    def get_dlp_incidents(self, regions: str, start_time: int = None, end_time: int = None) -> dict:
         url = INCIDENTS_URL
         params = {}
         if regions:

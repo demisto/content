@@ -77,11 +77,11 @@ def main():
     if include_violation_detail == 'True':
         res = demisto.executeCommand('pan-dlp-slack-message',
                                      {
-                                          'user': user_display_name,
-                                          'file_name': file_name,
-                                          'data_profile_name': data_profile_name,
-                                          'app_name': app_name,
-                                          'snippets': snippets
+                                         'user': user_display_name,
+                                         'file_name': file_name,
+                                         'data_profile_name': data_profile_name,
+                                         'app_name': app_name,
+                                         'snippets': snippets
                                      })
         if isError(res[0]):
             demisto.results(res)
@@ -97,12 +97,9 @@ def main():
         message += 'Please confirm if this file contains sensitive information:'
 
     lifetime = '1 day'
-    try:
-        expiry = datetime.strftime(dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'}),
-                                   DATE_FORMAT)  # type: ignore
-    except Exception:
-        expiry = datetime.strftime(dateparser.parse('in 1 day', settings={'TIMEZONE': 'UTC'}),
-                                   DATE_FORMAT)  # type: ignore
+    expiry_date = dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'})
+    if expiry_date:
+        expiry = datetime.strftime(expiry_date, DATE_FORMAT)
 
     entitlement_string = entitlement + '@' + demisto.investigation()['id']
     if demisto.get(demisto.args(), 'task'):
