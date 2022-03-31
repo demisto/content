@@ -7,5 +7,5 @@ ignore=IN145,IN124,IN139
 [file:README.md]
 ignore=RM104
 
-[file:Packs/Core/Scripts/impossibleTravelerGetDistance/impossibleTravelerGetDistance.yml]
+[file:impossibleTravelerGetDistance.yml]
 ignore=CJ105
