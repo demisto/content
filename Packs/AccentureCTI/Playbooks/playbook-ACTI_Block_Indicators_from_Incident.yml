@@ -2,7 +2,7 @@ id: be8b9ed9-0016-49e7-8be0-497a6afbcc68
 version: 9
 vcShouldKeepItemLegacyProdMachine: false
 name: ACTI Block Indicators from an Incident
-description: This playbook helps to extract indicators from incident and block.
+description: This playbook extracts indicators from an incident and block them.
 starttaskid: "0"
 tasks:
   "0":
