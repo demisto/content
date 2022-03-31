@@ -461,7 +461,7 @@ class TestHelperFunctions:
 
         assert result == expected_result
 
-    @pytest.mark.parametrize('yaml_context, yaml_type, is_actually_feed',
+    @pytest.mark.parametrize('yaml_context, yaml_type, is_actually_feed, is_actually_siem',
                              [
                                  # Check is_feed by Integration
                                  ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
