@@ -55,13 +55,13 @@ POST_REQUEST_SIGNATURE = "2355cede6fe99bf852ec7e4bc7dc450445fac9458814ef81d1a1b0
 
 SIGNING_KEY = b'\xe5_\xf5\x90o+\xa2\xe4\x00\xa4\x89\xd2\x1d\xa32B^\x19\xb7\xbdyy^:1\xd0\xdd\\\x87N\x02M'
 
-GET_REQUEST_AUTH_HEADER = "ABS1-HMAC-SHA-256 Credential=token/20220330/cadc/abs1, " \
+GET_REQUEST_AUTH_HEADER = "ABS1-HMAC-SHA-256 Credential=token/20170926/cadc/abs1, " \
                           "SignedHeaders=host;content-type;x-abs-date, " \
                           "Signature=ab87d64d18610852565a2821625dfef1f19403673afe2f7f511ef185269d2334"
-PUT_REQUEST_AUTH_HEADER = "ABS1-HMAC-SHA-256 Credential=token/20220330/cadc/abs1, " \
+PUT_REQUEST_AUTH_HEADER = "ABS1-HMAC-SHA-256 Credential=token/20170926/cadc/abs1, " \
                           "SignedHeaders=host;content-type;x-abs-date, " \
                           "Signature=1d025c22f7fea8d14eb8416e863a12bf17daaa637c59ee98ed19a89509e69132"
-POST_REQUEST_AUTH_HEADER = "ABS1-HMAC-SHA-256 Credential=token/20220330/cadc/abs1, " \
+POST_REQUEST_AUTH_HEADER = "ABS1-HMAC-SHA-256 Credential=token/20170926/cadc/abs1, " \
                            "SignedHeaders=host;content-type;x-abs-date, " \
                            "Signature=2355cede6fe99bf852ec7e4bc7dc450445fac9458814ef81d1a1b0906aac750b"
 
@@ -207,6 +207,7 @@ def test_create_signature(signing_string, expected_signature):
                          [(GET_REQUEST_SIGNATURE, GET_REQUEST_AUTH_HEADER),
                           (PUT_REQUEST_SIGNATURE, PUT_REQUEST_AUTH_HEADER),
                           (POST_REQUEST_SIGNATURE, POST_REQUEST_AUTH_HEADER)])
+@freeze_time("2017-09-26 17:22:13 UTC")
 def test_add_authorization_header(signature, expected_authorization_header):
     client = create_client()
     assert client.add_authorization_header(signature) == expected_authorization_header
@@ -421,7 +422,7 @@ def test_add_list_to_filter_string(field_name, list_of_values, query, expected_q
                              ("accountUid", 1, "", "accountUid eq '1'"),
                              ("accountUid", 1, "deviceUID eq '1'", "deviceUID eq '1' or accountUid eq '1'"),
                          ])
-def test_add_list_to_filter_string(field_name, value, query, expected_query):
+def test_add_value_to_filter_string(field_name, value, query, expected_query):
     from Absolute import add_value_to_filter_string
     assert add_value_to_filter_string(field_name, value, query) == expected_query
 
@@ -472,3 +473,26 @@ def test_parse_return_fields(return_fields, query, expected_query):
 def test_parse_paging(page, limit, query, expected_query):
     from Absolute import parse_paging
     assert parse_paging(page, limit, query) == expected_query
+
+
+def test_get_device_location_command(mocker, absolute_client):
+    from Absolute import get_device_location_command
+    response = util_load_json('test_data/device_location_get.json')
+    mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
+    outputs = get_device_location_command(args={'device_ids': "1,2"}, client=absolute_client).outputs
+    assert outputs == [{'Accuracy': 10,
+                        'City': 'TLV',
+                        'Coordinates': [-123.13202, 49.288162],
+                        'Country': 'Israel',
+                        'CountryCode': 'IL',
+                        'LastUpdate': 1605747972853,
+                        'LocationTechnology': 'gps',
+                        'State': 'Israel'},
+                       {'Accuracy': 15,
+                        'City': 'Jerusalem',
+                        'Coordinates': [-124.1, 59.2],
+                        'Country': 'Israel',
+                        'CountryCode': 'IL',
+                        'LastUpdate': 1605747972853,
+                        'LocationTechnology': 'gps',
+                        'State': 'Israel'}]

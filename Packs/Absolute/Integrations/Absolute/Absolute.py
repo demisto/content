@@ -4,7 +4,7 @@ import hashlib
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from urllib.parse import urlparse
+import urllib.parse
 import requests
 import traceback
 from typing import Dict, Any
@@ -279,7 +279,7 @@ class Client(BaseClient):
         return f'{STRING_TO_SIGN_ALGORITHM} Credential={self._token_id}/{credential_scope}, ' \
                f'SignedHeaders={canonical_headers}, Signature={signing_signature}'
 
-    def api_request_absolute(self, method: str, url_suffix: str, body: str = "", success_status_code: tuple = None,
+    def api_request_absolute(self, method: str, url_suffix: str, body: str = "", success_status_code=None,
                              query_string: str = ''):
         """
         Makes an HTTP request to the Absolute API.
@@ -350,7 +350,7 @@ def test_module(client: Client) -> str:
 def parse_device_field_list_response(response: dict) -> Dict[str, Any]:
     parsed_data = {'DeviceUID': response.get('deviceUid'), 'ESN': response.get('esn'), 'CDFValues': []}
     for cdf_item in response.get('cdfValues', []):
-        parsed_data['CDFValues'].append({
+        parsed_data['CDFValues'].append({   # type: ignore
             'CDFUID': cdf_item.get('cdfUid'),
             'FieldKey': cdf_item.get('fieldKey'),
             'FieldName': cdf_item.get('fieldName'),
@@ -410,7 +410,7 @@ def raise_error_on_missing_args(msg):
 def validate_device_freeze_type_scheduled(scheduled_freeze_date):
     if not scheduled_freeze_date:
         raise_error_on_missing_args('When setting device_freeze_type to be Scheduled, you must specify the scheduled_'
-                                    f'freeze_date arg.')
+                                    'freeze_date arg.')
     return scheduled_freeze_date
 
 
@@ -425,7 +425,7 @@ def validate_passcode_type_args(passcode_type, passcode, passcode_length, payloa
         not_valid_passcode_length = not passcode_length or passcode_length > 8 or passcode_length < 4
         if not_valid_passcode_length:
             raise_error_on_missing_args('when setting passcode_type to be RandomForEach or RandomForAl, '
-                                        f'you must specify the passcode_length arg to be between 4 to 8.')
+                                        'you must specify the passcode_length arg to be between 4 to 8.')
         payload["passcodeDefinition"].update({"length": passcode_length})
 
     return payload
@@ -501,7 +501,7 @@ def remove_device_freeze_request_command(args, client) -> CommandResults:
     return CommandResults(readable_output=f"Successfully removed freeze request for devices: {device_ids}.")
 
 
-def parse_get_device_freeze_response(response: []):
+def parse_get_device_freeze_response(response: List):
     parsed_data = []
     for freeze_request in response:
         parsed_data.append({
@@ -694,7 +694,7 @@ def create_filter_query_from_args(args: dict, change_device_name_to_system=False
     query = add_list_to_filter_string("publicIp", public_ips, query)
 
     if args.get('agent_status'):
-        agent_status = ABSOLUTE_AGET_STATUS[args.get('agent_status')]
+        agent_status = ABSOLUTE_AGET_STATUS[args.get('agent_status')]  # type: ignore
         query = add_value_to_filter_string("agentStatus", agent_status, query)
 
     os_name = args.get('os_name')
@@ -780,7 +780,7 @@ def get_device_application_list_command(args, client) -> CommandResults:
 
     query_string = create_filter_query_from_args(args)
     query_string = parse_return_fields(args.get('return_fields'), query_string)
-    query_string = parse_paging(page, limit, query_string)
+    query_string = parse_paging(page, limit, query_string)  # type: ignore
 
     res = client.api_request_absolute('GET', '/v2/sw/deviceapplications', query_string=query_string)
     if res:
@@ -799,7 +799,7 @@ def device_list_command(args, client) -> CommandResults:
 
     query_string = create_filter_query_from_args(args, change_device_name_to_system=True)
     query_string = parse_return_fields(",".join(DEVICE_LIST_RETURN_FIELDS), query_string)
-    query_string = parse_paging(page, limit, query_string)
+    query_string = parse_paging(page, limit, query_string)  # type: ignore
 
     res = client.api_request_absolute('GET', '/v2/reporting/devices', query_string=query_string)
     if res:
