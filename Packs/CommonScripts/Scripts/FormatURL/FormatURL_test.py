@@ -130,6 +130,7 @@ SINGLE_LETTER_TLD = [
     ('hello./.com/', True),
 ]
 
+
 class TestFormatURL:
     @pytest.mark.parametrize('non_formatted_url, expected', NOT_FORMAT_TO_FORMAT)
     def test_replace_protocol(self, non_formatted_url: str, expected: str):
