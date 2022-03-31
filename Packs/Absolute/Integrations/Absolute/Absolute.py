@@ -863,8 +863,8 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     try:
         base_url = validate_absolute_api_url(params.get('url'))
-        token_id = params.get('token')
-        secret_key = params.get('secret_key', {}).get('password')
+        token_id = params.get('credentials').get('identifier')
+        secret_key = params.get('credentials').get('password')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
 
