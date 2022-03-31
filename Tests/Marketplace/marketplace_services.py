@@ -451,10 +451,10 @@ class Pack(object):
 
     def add_pack_type_tags(self, yaml_content, yaml_type):
         """
-        Checks if an integration is a feed integration. If so, updates Pack._is_feed
+        Checks if an pack objects is siem or feed object. If so, updates Pack._is_feed or Pack._is_siem
         Args:
             yaml_content: The yaml content extracted by yaml.safe_load().
-            yaml_type: The type of object to check. Should be 'Playbook' or 'Integration'.
+            yaml_type: The type of object to check.
 
         Returns:
             Doesn't return
