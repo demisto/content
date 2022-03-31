@@ -26,7 +26,7 @@ def get_delete_reported_email_integrations():
         List of enabled integrations suitable for DeleteReportedEmail script.
 
     """
-    return [instance['name'] for instance in get_enabled_instances() if instance['brand'] in EMAIL_INTEGRATIONS]
+    return [instance['brand'] for instance in get_enabled_instances() if instance['brand'] in EMAIL_INTEGRATIONS]
 
 
 def main():

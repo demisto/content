@@ -4,7 +4,7 @@ from DeleteReportedEmail import *
 import pytest
 
 from CommonServerPython import *
-TEST_DATA = 'Packs/Phishing/Scripts/DeleteReportedEmail/test_data'
+TEST_DATA = 'test_data'
 SEARCH_RESPONSE_SUFFIX = '_search_response.json'
 
 EXPECTED_DELETION_ARGS_RESULTS = {'gmail': {
@@ -31,6 +31,7 @@ EXPECTED_DELETION_ARGS_RESULTS = {'gmail': {
     }
 }
 
+MISSING_EMAIL_ERROR_MSG = 'Email was not found in mailbox. It is possible that the email was already deleted manually.'
 
 @pytest.mark.parametrize('integration_name', ['EWS365', 'EWSv2', 'gmail', 'MSGraph'])
 def test_get_deletion_args(integration_name):
@@ -55,15 +56,29 @@ def test_get_deletion_args(integration_name):
         'target-mailbox': 'user_id',
         'user_id': 'user_id',
         'odata': 'odata',
+        'user-id': 'user_id'
         }
     with open(os.path.join(TEST_DATA, f'{integration_name}{SEARCH_RESPONSE_SUFFIX}'), 'r') as file:
         search_results = json.load(file)
     assert EXPECTED_DELETION_ARGS_RESULTS[integration_name] == args_func[integration_name](search_results, search_args)
 
+@pytest.mark.parametrize('delete_email_context, result', [([],
+                                                           ('Skipped', MISSING_EMAIL_ERROR_MSG)),
+                                                          ([{'message_id': 'message-id', 'result': 'Success'}], '')])
+def test_was_email_already_deleted(mocker, delete_email_context, result):
+    """
 
-
-def test_was_email_already_deleted():
-    pass
+    Given:
+        An email that was not found in the mailbox
+    When:
+        When deleting an email and checking if it may have been already deleted
+    Then:
+        Return 'Success' if the email was already deleted priorly, and 'Skipped' otherwise, and the error msg
+    """
+    delete_email_from_context_was_not_deleted = []
+    delete_email_from_context_was_deleted = [{'message_id': 'message-id', 'result': 'Success'}]
+    mocker.patch.object(demisto, 'get', return_value=INCIDENT_IDS)
+    mocker.patch.object(demisto, 'executeCommand', return_value=incident_created)
 
 def test_was_email_found_security_and_compliance():
     pass

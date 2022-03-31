@@ -149,7 +149,7 @@ def was_email_already_deleted(search_args: dict, e: Exception):
     if not isinstance(delete_email_from_context, list):
         delete_email_from_context = [delete_email_from_context]
     for item in delete_email_from_context:
-        message_id = item.get('messge_id')
+        message_id = item.get('message_id')
         if message_id == search_args.get('message_id') and item.get('result') == 'Success':
             return 'Success', ''
     return 'Skipped', str(e)
@@ -172,13 +172,14 @@ def was_email_found_security_and_compliance(search_results: dict):
     return False
 
 
-def security_and_compliance_delete_mail(args: dict, user_id: str, email_subject: str, using_brand: str,
+def security_and_compliance_delete_mail(args: dict, to_user_id:str, from_user_id: str, email_subject: str, using_brand: str,
                                         delete_type: str):
     """
     Search and delete the email using the Security & Compliance integration, preformed by the genric polling flow.
     Args:
         args: script args
-        user_id: user id of email of interest
+        from_user_id: source user id of email of interest
+        to_user_id: destination user id of email
         email_subject: subject of email of interest
         using_brand: the brand used for this operation
         delete_type: the delete type, soft or hard.
@@ -187,13 +188,14 @@ def security_and_compliance_delete_mail(args: dict, user_id: str, email_subject:
 
     """
     check_demisto_version()
-    query = f'from:{user_id} AND subject:{email_subject}'
+    query = f'from:{from_user_id} AND subject:{email_subject}'
     search_name = args.get('search_name', '')
 
     if not search_name:
         # first time entering this function, creating the search
         search_name = f'search_for_delete_{seconds}'
-        execute_command('o365-sc-new-search', {'kql': query, 'search_name': search_name, 'using-brand': using_brand})
+        execute_command('o365-sc-new-search', {'kql': query, 'search_name': search_name, 'using-brand': using_brand,
+                                               'exchange_location': to_user_id})
         execute_command('o365-sc-start-search', {'search_name': search_name, 'using-brand': using_brand})
         args['search_name'] = search_name
 
@@ -285,7 +287,7 @@ def get_search_args(args: dict):
         'EWSO365': {'target-mailbox': user_id},
         'EWS v2': {'target-mailbox': user_id},
         'MicrosoftGraphMail': {'user_id': user_id, 'odata': f'"$filter=internetMessageId eq \'{message_id}\'"'},
-        'SecurityAndCompliance': {'user_id': user_id},
+        'SecurityAndCompliance': {'to_user_id': user_id, 'from_user_id': custom_fields.get('reportedemailfrom')},
     }
 
     search_args.update(additional_args.get(delete_from_brand, {}))
@@ -303,7 +305,7 @@ def main():
                 f'Can not delete email using the chosen brand. The possible brands are: {EMAIL_INTEGRATIONS}')
 
         if delete_from_brand == 'SecurityAndCompliance':
-            security_and_compliance_args = {k.replace('-', '_'): v for k, v in search_args.items() if k != 'message-id'}
+            security_and_compliance_args = {k.replace('-', '_'): v for k, v in search_args.items() if k != 'message-id'} # TODO: fix to kebab case
             result, scheduled_command = security_and_compliance_delete_mail(args, **security_and_compliance_args)
 
         else:

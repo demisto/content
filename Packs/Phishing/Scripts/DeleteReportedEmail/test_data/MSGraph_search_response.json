@@ -26,7 +26,7 @@
                     }
                 },
                 "hasAttachments": false,
-                "id": "id",
+                "id": "message_id",
                 "importance": "normal",
                 "inferenceClassification": "focused",
                 "internetMessageId": "message_id",
