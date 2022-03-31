@@ -43,7 +43,7 @@
                     },
                     {
                         "displayType": "CARD",
-                        "h": 3,
+                        "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "swtuqptgvs-1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-5a552190-97ee-11e9-b8bd-0b00be54d2d3",
@@ -184,7 +184,7 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 4,
                         "hideName": false,
                         "i": "swtuqptgvs-1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-067d4900-98b4-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
@@ -194,9 +194,9 @@
                         "moved": false,
                         "name": "Incident Files",
                         "static": false,
-                        "w": 2,
+                        "w": 3,
                         "x": 0,
-                        "y": 11,
+                        "y": 12,
                         "query": {
                             "categories": [
                                 "attachments"
@@ -399,7 +399,7 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 2,
                         "hideName": false,
                         "i": "swtuqptgvs-68df82f0-a902-11ec-8585-0dac7af6e9b0",
                         "items": [
@@ -1067,6 +1067,6 @@
     },
     "system": false,
     "version": -1,
-    "fromVersion": "6.1.0",
+    "fromVersion": "6.0.0",
     "description": ""
 }
