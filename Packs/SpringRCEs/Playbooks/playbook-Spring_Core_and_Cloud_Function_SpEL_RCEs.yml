@@ -1042,6 +1042,10 @@ tasks:
       description: |-
         Use the scan_spring.py tool provided by JFrog to locate vulnerable applications for Spring Core RCE.
         The tool is available for direct download via XSOAR.
+
+        Additional inforamtion on how to use this tool can be found in the link below:
+
+        [JFrog_Spring_Tools](https://github.com/jfrog/jfrog-spring-tools/blob/main/scan_spring.py)
       type: regular
       iscommand: false
       brand: ""
