@@ -52,7 +52,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 410
+          "y": 400
         }
       }
     note: false
@@ -112,7 +112,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1115
+          "y": 1070
         }
       }
     note: false
@@ -165,52 +165,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 745
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: d9eedf7d-5fa0-4124-8d69-1ad16435f6fe
-    type: regular
-    task:
-      id: d9eedf7d-5fa0-4124-8d69-1ad16435f6fe
-      version: -1
-      name: CreateIndicatorRelationship
-      description: This automation creates a relationship between indicator objects.
-      scriptName: CreateIndicatorRelationship
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      create_indicator:
-        simple: "true"
-      entity_a:
-        simple: ${ExtractedIndicators}
-      entity_a_type:
-        simple: IP
-      entity_b:
-        simple: ${ExtractedIndicators}
-      entity_b_query:
-        simple: ${intelligence_report}
-      entity_b_type:
-        simple: Report
-      relationship:
-        simple: related-to
-      reverse_relationship:
-        simple: attachment-of
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 50
+          "y": 720
         }
       }
     note: false
@@ -275,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 940
+          "y": 895
         }
       }
     note: false
@@ -317,7 +272,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 570
+          "y": 545
         }
       }
     note: false
@@ -332,10 +287,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1130,
-        "width": 1670,
+        "height": 1070,
+        "width": 380,
         "x": 50,
-        "y": 50
+        "y": 65
       }
     }
   }

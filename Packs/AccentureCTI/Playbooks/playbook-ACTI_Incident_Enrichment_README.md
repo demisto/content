@@ -1,4 +1,4 @@
-This playbook enriches Incidents.
+This playbook automatically queries Accenture's IntelGraph API to pull context for IOC and intelligence reports into XSOAR incidents.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -12,7 +12,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
-* CreateIndicatorRelationship
+This playbook does not use any scripts.
 
 ### Commands
 * extractIndicators
