@@ -209,6 +209,22 @@ class MsGraphClient:
         )
 
 
+def suprress_errors_with_404_code(func):
+    def wrapper(client: MsGraphClient, args: Dict):
+        try:
+            func(client, args)
+        except NotFoundError as e:
+            if client.handle_error:
+                if (user := args.get("user", '___')) in str(e):
+                    human_readable = f'#### User -> {user} does not exist'
+                    return human_readable, None, None
+                elif (manager := args.get('manager', '___')) in str(e):
+                    human_readable = f'#### Manager -> {manager} does not exist'
+                    return human_readable, None, None
+            raise
+    return wrapper
+
+
 def test_function(client, _):
     """
        Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -227,48 +243,27 @@ def test_function(client, _):
     return response, None, None
 
 
+@suprress_errors_with_404_code
 def disable_user_account_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
-
-    try:
-        client.disable_user_account_session(user)
-    except NotFoundError:
-        if client.handle_error:
-            human_readable = f'#### User -> {user} does not exist'
-            return human_readable, None, None
-        raise
-
+    client.disable_user_account_session(user)
     human_readable = f'user: "{user}" account has been disabled successfully.'
     return human_readable, None, None
 
 
+@suprress_errors_with_404_code
 def unblock_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
-
-    try:
-        client.unblock_user(user)
-    except NotFoundError:
-        if client.handle_error:
-            human_readable = f'#### User -> {user} does not exist'
-            return human_readable, None, None
-        raise
-
+    client.unblock_user(user)
     human_readable = f'"{user}" unblocked. It might take several minutes for the changes to take affect across all ' \
                      f'applications. '
     return human_readable, None, None
 
 
+@suprress_errors_with_404_code
 def delete_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
-
-    try:
-        client.delete_user(user)
-    except NotFoundError:
-        if client.handle_error:
-            human_readable = f'#### User -> {user} does not exist'
-            return human_readable, None, None
-        raise
-
+    client.delete_user(user)
     human_readable = f'user: "{user}" was deleted successfully.'
     return human_readable, None, None
 
@@ -305,35 +300,23 @@ def create_user_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, user_data
 
 
+@suprress_errors_with_404_code
 def update_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     updated_fields = args.get('updated_fields')
 
-    try:
-        client.update_user(user, updated_fields)
-    except NotFoundError:
-        if client.handle_error:
-            human_readable = f'#### User -> {user} does not exist'
-            return human_readable, None, None
-        raise
-
+    client.update_user(user, updated_fields)
     return get_user_command(client, args)
 
 
+@suprress_errors_with_404_code
 def change_password_user_command(client: MsGraphClient, args: Dict):
     user = str(args.get('user'))
     password = str(args.get('password'))
     force_change_password_next_sign_in = args.get('force_change_password_next_sign_in', 'true') == 'true'
     force_change_password_with_mfa = args.get('force_change_password_with_mfa', False) == 'true'
 
-    try:
-        client.password_change_user(user, password, force_change_password_next_sign_in, force_change_password_with_mfa)
-    except NotFoundError:
-        if client.handle_error:
-            human_readable = f'#### User -> {user} does not exist'
-            return human_readable, None, None
-        raise
-
+    client.password_change_user(user, password, force_change_password_next_sign_in, force_change_password_with_mfa)
     human_readable = f'User {user} password was changed successfully.'
     return human_readable, {}, {}
 
@@ -393,16 +376,11 @@ def list_users_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, users_data
 
 
+@suprress_errors_with_404_code
 def get_direct_reports_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
 
-    try:
-        raw_reports = client.get_direct_reports(user)
-    except NotFoundError:
-        if client.handle_error:
-            human_readable = f'#### User -> {user} does not exist'
-            return human_readable, None, None
-        raise
+    raw_reports = client.get_direct_reports(user)
 
     reports_readable, reports = parse_outputs(raw_reports)
     human_readable = tableToMarkdown(name=f"{user} - direct reports", t=reports_readable, removeNull=True)
@@ -416,17 +394,10 @@ def get_direct_reports_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, raw_reports
 
 
+@suprress_errors_with_404_code
 def get_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
-
-    try:
-        manager_data = client.get_manager(user)
-    except NotFoundError:
-        if client.handle_error:
-            human_readable = f'#### User -> {user} does not exist'
-            return human_readable, None, None
-        raise
-
+    manager_data = client.get_manager(user)
     manager_readable, manager_outputs = parse_outputs(manager_data)
     human_readable = tableToMarkdown(name=f"{user} - manager", t=manager_readable, removeNull=True)
     outputs = {
@@ -438,37 +409,20 @@ def get_manager_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, manager_data
 
 
+@suprress_errors_with_404_code
 def assign_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
-    manager = args.get('manager', 'None')
-
-    try:
-        client.assign_manager(user, manager)
-    except NotFoundError as e:
-        if client.handle_error:
-            if manager in str(e):
-                human_readable = f'#### Manager -> {manager} does not exist'
-            else:
-                human_readable = f'#### User -> {user} does not exist'
-            return human_readable, None, None
-        raise
-
+    manager = args.get('manager')
+    client.assign_manager(user, manager)
     human_readable = f'A manager was assigned to user "{user}". It might take several minutes for the changes ' \
                      'to take affect across all applications.'
     return human_readable, None, None
 
 
+@suprress_errors_with_404_code
 def revoke_user_session_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
-
-    try:
-        client.revoke_user_session(user)
-    except NotFoundError:
-        if client.handle_error:
-            human_readable = f'#### User -> {user} does not exist'
-            return human_readable, None, None
-        raise
-
+    client.revoke_user_session(user)
     human_readable = f'User: "{user}" sessions have been revoked successfully.'
     return human_readable, None, None
 

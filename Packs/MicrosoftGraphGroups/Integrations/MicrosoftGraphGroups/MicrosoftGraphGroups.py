@@ -194,6 +194,18 @@ class MsGraphClient:
             url_suffix=f'groups/{group_id}/members/{user_id}/$ref', resp_type="text")
 
 
+def suprress_errors_with_404_code(func):
+    def wrapper(client: MsGraphClient, args: Dict):
+        try:
+            func(client, args)
+        except NotFoundError:
+            if client.handle_error:
+                human_readable = f'#### Group id -> {args.get("group_id")} does not exist'
+                return human_readable, None, None
+            raise
+    return wrapper
+
+
 def test_function_command(client: MsGraphClient, args: Dict):
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
@@ -242,6 +254,7 @@ def list_groups_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, D
     return human_readable, entry_context, groups
 
 
+@suprress_errors_with_404_code
 def get_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Get a group by group id and return outputs in Demisto's format.
 
@@ -253,13 +266,7 @@ def get_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dic
         Outputs.
     """
     group_id = str(args.get('group_id'))
-    try:
-        group = client.get_group(group_id)
-    except NotFoundError:
-        if client.handle_error:
-            human_readable = f'#### Group id -> {group_id} does not exist'
-            return human_readable, NO_OUTPUTS, NO_OUTPUTS
-        raise
+    group = client.get_group(group_id)
 
     group_readable, group_outputs = parse_outputs(group)
     human_readable = tableToMarkdown(name="Groups:", t=group_readable,
@@ -301,6 +308,7 @@ def create_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
     return human_readable, entry_context, group
 
 
+@suprress_errors_with_404_code
 def delete_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Delete a group by group id and return outputs in Demisto's format
 
@@ -312,13 +320,7 @@ def delete_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
         Outputs.
     """
     group_id = str(args.get('group_id'))
-    try:
-        client.delete_group(group_id)
-    except NotFoundError:
-        if client.handle_error:
-            human_readable = f'#### Group id -> {group_id} does not exist'
-            return human_readable, NO_OUTPUTS, NO_OUTPUTS
-        raise
+    client.delete_group(group_id)
 
     # get the group data from the context
     group_data = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}(val.ID === "{group_id}")')
@@ -333,6 +335,7 @@ def delete_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
     return human_readable, entry_context, NO_OUTPUTS
 
 
+@suprress_errors_with_404_code
 def list_members_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """List a group members by group id. return outputs in Demisto's format.
 
@@ -347,14 +350,7 @@ def list_members_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
     next_link = args.get('next_link')
     top = args.get('top')
     filter_ = args.get('filter')
-
-    try:
-        members = client.list_members(group_id, next_link, top, filter_)
-    except NotFoundError:
-        if client.handle_error:
-            human_readable = f'#### Group id -> {group_id} does not exist'
-            return human_readable, NO_OUTPUTS, NO_OUTPUTS
-        raise
+    members = client.list_members(group_id, next_link, top, filter_)
 
     if not members['value']:
         human_readable = f'The group {group_id} has no members.'
@@ -389,6 +385,7 @@ def list_members_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
     return human_readable, entry_context, members
 
 
+@suprress_errors_with_404_code
 def add_member_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Add a member to a group by group id and user id. return outputs in Demisto's format.
 
@@ -403,18 +400,13 @@ def add_member_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Di
     user_id = str(args.get('user_id'))
     required_properties = {
         "@odata.id": f'https://graph.microsoft.com/v1.0/users/{user_id}'}
-    try:
-        client.add_member(group_id, required_properties)
-    except NotFoundError:
-        if client.handle_error:
-            human_readable = f'#### Group id -> {group_id} does not exist'
-            return human_readable, NO_OUTPUTS, NO_OUTPUTS
-        raise
+    client.add_member(group_id, required_properties)
 
     human_readable = f'User {user_id} was added to the Group {group_id} successfully.'
     return human_readable, NO_OUTPUTS, NO_OUTPUTS
 
 
+@suprress_errors_with_404_code
 def remove_member_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Remove a member from a group by group id and user id. return outputs in Demisto's format.
 
@@ -427,14 +419,7 @@ def remove_member_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict,
     """
     group_id = str(args.get('group_id'))
     user_id = str(args.get('user_id'))
-
-    try:
-        client.remove_member(group_id, user_id)
-    except NotFoundError:
-        if client.handle_error:
-            human_readable = f'#### Group id -> {group_id} does not exist'
-            return human_readable, NO_OUTPUTS, NO_OUTPUTS
-        raise
+    client.remove_member(group_id, user_id)
 
     human_readable = f'User {user_id} was removed from the Group "{group_id}" successfully.'
     return human_readable, NO_OUTPUTS, NO_OUTPUTS
