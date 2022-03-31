@@ -183,6 +183,18 @@ script:
     - contextPath: Absolute.FreezeRequest.SucceededDeviceUIDs
       description: An array of the unique devices identifiers that succeeded in creating a Freeze request.
       type: Unknown
+    - contextPath: Absolute.FreezeRequest.FailedDeviceUIDs
+      description: An array of the unique devices identifiers that failed in creating a Freeze request.
+      type: Unknown
+    - contextPath: Absolute.FreezeRequest.Errors.detail.deviceUids
+      description: An array of the unique identifiers of devices for the Freeze request error.
+      type: Unknown
+    - contextPath: Absolute.FreezeRequest.Errors.message
+      description: The reason for the Freeze failure.
+      type: String
+    - contextPath: Absolute.FreezeRequest.Errors.messageKey
+      description: The reference key for the error message.
+      type: String
   - arguments:
     - default: false
       description: A comma sparated list of the unique identifiers of devices included in the request. The Recommendation is using up to 10,000 devices per request.

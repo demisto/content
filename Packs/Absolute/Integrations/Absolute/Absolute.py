@@ -441,11 +441,10 @@ def parse_freeze_device_response(response: dict):
         human_readable_errors = []
         for error in errors:
             human_readable_errors.append({
-                'FailedDeviceUIDs': error.get('detail', []).get('deviceUids'),
-                'Message': error.get('message', ''),
-                'MessageKey': error.get('messageKey', ''),
+                ','.join(error.get('detail', []).get('deviceUids')): error.get('message', '')
             })
-        outputs['Errors'] = human_readable_errors
+        outputs['FailedDeviceUIDs'] = human_readable_errors
+        outputs['Errors'] = errors
     return outputs
 
 
@@ -453,10 +452,10 @@ def device_freeze_request_command(args, client) -> CommandResults:
     payload = prepare_payload_to_freeze_request(args)
     res = client.api_request_absolute('POST', '/v2/device-freeze/requests', body=json.dumps(payload),
                                       success_status_code=[201])
-
     outputs = parse_freeze_device_response(res)
-    human_readable = tableToMarkdown(f"{INTEGRATION} device freeze requests results", outputs, removeNull=True)
-    # todo add errors to yml after Meital's approve
+    human_readable = tableToMarkdown(f"{INTEGRATION} device freeze requests results", outputs,
+                                     headers=['RequestUID', 'SucceededDeviceUIDs', 'FailedDeviceUIDs'],
+                                     removeNull=True)
     return CommandResults(readable_output=human_readable, outputs=outputs, outputs_prefix="Absolute.FreezeRequest",
                           outputs_key_field="RequestUID", raw_response=res)
 
@@ -590,7 +589,8 @@ def create_device_freeze_message_command(args, client) -> CommandResults:
     res = client.api_request_absolute('POST', '/v2/device-freeze/messages', body=json.dumps(payload),
                                       success_status_code=(200, 201))
     human_readable = f"{INTEGRATION} New freeze message was created with ID: {res.get('id')}"
-    return CommandResults(outputs={'ID': res.get('id')}, outputs_prefix="Absolute.FreezeMessage", outputs_key_field='ID',
+    return CommandResults(outputs={'ID': res.get('id')}, outputs_prefix="Absolute.FreezeMessage",
+                          outputs_key_field='ID',
                           readable_output=human_readable, raw_response=res)
 
 
