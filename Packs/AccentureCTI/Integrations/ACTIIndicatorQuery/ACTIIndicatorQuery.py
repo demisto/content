@@ -449,9 +449,6 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
     threat_types = Res.get('threat_types', '')
     threattypes = ''
     uuid = Res.get('uuid', '')
-    if threat_types:
-        for threat_type in threat_types:
-            threattypes = threattypes + '\n- ' + threat_type
     context = {
         'created_on': Res.get('created_on', 'NA'),
         'display_text': Res.get('display_text', 'NA'),
@@ -460,7 +457,7 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
         'last_modified': Res.get('last_modified', 'NA'),
         'last_published': Res.get('last_published', 'NA'),
         'links': Res.get('links', 'NA'),
-        'threat_types': threattypes,
+        'threat_types': threat_types,
         'title': Res.get('title', 'NA'),
         'type': Res.get('type', 'NA'),
         'uuid': uuid,
