@@ -70,3 +70,4 @@ ignore=SC106
 [known_words]
 UnzipFile
 ZipStrings
+TLD
