@@ -9304,7 +9304,7 @@ def get_jobs(topology: Topology, device_filter_string: Optional[str] = None, sta
 
 
 def download_software(topology: Topology, version: str,
-                      device_filter_string: str = None, sync: bool = False) -> DownloadSoftwareCommandResult:
+                      device_filter_string: Optional[str] = None, sync: Optional[bool] = False) -> DownloadSoftwareCommandResult:
     """
     Download The provided software version onto the device.
     :param topology: `Topology` instance !no-auto-argument
