@@ -96,7 +96,9 @@ def send_request(path, method='get', body=None, params=None, headers=None):
     url = '{}/{}'.format(SERVER_URL, path)
 
     headers = headers if headers is not None else get_headers()
+    demisto.debug('This is the headers: {}'.format(headers))
     res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=VERIFY_SSL)
+    demisto.debug('This is the result {}'.format(res))
     if res.status_code < 200 or res.status_code >= 300:
         try:
             error_body = res.json()
