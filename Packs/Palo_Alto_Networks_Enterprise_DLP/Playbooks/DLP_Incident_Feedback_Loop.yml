@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 7fd3cee1-a2a3-478a-8b90-f7299b09201d
+    taskid: f26ecd92-0b32-4dcd-80c4-2f9244b6b0c9
     type: regular
     task:
-      id: 7fd3cee1-a2a3-478a-8b90-f7299b09201d
+      id: f26ecd92-0b32-4dcd-80c4-2f9244b6b0c9
       version: -1
       name: Set feedback to "true positive"
       description: commands.local.cmd.set.incident
@@ -52,7 +52,7 @@ tasks:
       '#none#':
       - "29"
     scriptarguments:
-      dlpincidentfeedback:
+      pandlpincidentfeedback:
         simple: CONFIRMED_SENSITIVE
     separatecontext: false
     view: |-
@@ -156,10 +156,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 9668fc30-b491-4593-8e15-b83183ecf40f
+    taskid: 5711d3b0-043d-4431-8cc2-ec6a31160b4b
     type: regular
     task:
-      id: 9668fc30-b491-4593-8e15-b83183ecf40f
+      id: 5711d3b0-043d-4431-8cc2-ec6a31160b4b
       version: -1
       name: Set feedback to "False Positive"
       description: commands.local.cmd.set.incident
@@ -171,7 +171,7 @@ tasks:
       '#none#':
       - "29"
     scriptarguments:
-      dlpincidentfeedback:
+      pandlpincidentfeedback:
         simple: CONFIRMED_FALSE_POSITIVE
     continueonerror: true
     separatecontext: false
@@ -269,10 +269,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 16ed8716-3138-4089-8064-51235ae7a86d
+    taskid: d085d949-faad-4841-8d84-76483f2e8a9d
     type: regular
     task:
-      id: 16ed8716-3138-4089-8064-51235ae7a86d
+      id: d085d949-faad-4841-8d84-76483f2e8a9d
       version: -1
       name: 'send-mail '
       description: Send an email
@@ -285,9 +285,9 @@ tasks:
       - "11"
     scriptarguments:
       body:
-        simple: XSOAR playbook failed to save "False Positive" feedback for user ${Slack.User.Name}
-          ${incident.sourceusername} for DLP Incident ${incident.dlpincidentid}, Tenant
-          ID ${incident.dlptenantid}
+        simple: XSOAR playbook failed to save ${incident.pandlpincidentfeedback} feedback for user ${Slack.User.Name}
+          ${incident.sourceusername} for DLP Incident ${incident.pandlpincidentid},
+          Tenant ID ${incident.pandlptenantid}
       subject:
         simple: XSOAR Playbook Error
       to:
@@ -383,10 +383,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 6c54ed88-fc17-474f-8ce4-9cdb46b9ebb5
+    taskid: c7133657-d2d1-4ca2-8de2-d5d42512e897
     type: regular
     task:
-      id: 6c54ed88-fc17-474f-8ce4-9cdb46b9ebb5
+      id: c7133657-d2d1-4ca2-8de2-d5d42512e897
       version: -1
       name: 'Set feedback status to "Pending" '
       description: Update a DLP incident with user feedback
@@ -401,9 +401,9 @@ tasks:
       feedback:
         simple: PENDING_RESPONSE
       incident_id:
-        simple: ${incident.dlpincidentid}
+        simple: ${incident.pandlpincidentid}
       region:
-        simple: ${incident.dlpincidentregion}
+        simple: ${incident.pandlpincidentregion}
       user_id:
         simple: ${incident.sourceusername}
     continueonerror: true
@@ -424,10 +424,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: c78ebad5-296f-43f7-8a6b-b4f0b0abf6af
+    taskid: 91c65d7a-1adf-469d-86cc-1501feea0063
     type: regular
     task:
-      id: c78ebad5-296f-43f7-8a6b-b4f0b0abf6af
+      id: 91c65d7a-1adf-469d-86cc-1501feea0063
       version: -1
       name: Save feedback to DLP
       description: Update a DLP incident with user feedback
@@ -440,11 +440,11 @@ tasks:
       - "21"
     scriptarguments:
       feedback:
-        simple: ${incident.dlpincidentfeedback}
+        simple: ${incident.pandlpincidentfeedback}
       incident_id:
-        simple: ${incident.dlpincidentid}
+        simple: ${incident.pandlpincidentid}
       region:
-        simple: ${incident.dlpincidentregion}
+        simple: ${incident.pandlpincidentregion}
       user_id:
         simple: ${incident.sourceusername}
     continueonerror: true
@@ -465,10 +465,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 8bfe4df1-44c9-4bd1-86fd-2badba59cfb7
+    taskid: aa218cf8-ac59-402e-8b29-a887c9e96d4a
     type: regular
     task:
-      id: 8bfe4df1-44c9-4bd1-86fd-2badba59cfb7
+      id: aa218cf8-ac59-402e-8b29-a887c9e96d4a
       version: -1
       name: Ask user if file contains sensitive info
       description: ""
@@ -483,7 +483,7 @@ tasks:
       app_name:
         simple: ${incident.app}
       data_profile_name:
-        simple: ${incident.dlpdataprofilename}
+        simple: ${incident.pandlpdataprofilename}
       file_name:
         simple: ${incident.filename}
       include_violation_detail:
@@ -517,10 +517,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: f79fa204-61dd-4797-8a0c-9691e0c75e05
+    taskid: b02603f1-197a-4efc-8a2b-c4a217597e0a
     type: regular
     task:
-      id: f79fa204-61dd-4797-8a0c-9691e0c75e05
+      id: b02603f1-197a-4efc-8a2b-c4a217597e0a
       version: -1
       name: Call API to save status
       description: Update a DLP incident with user feedback
@@ -533,15 +533,15 @@ tasks:
       - "36"
     scriptarguments:
       dlp_channel:
-        simple: ${incident.dlpchannel}
+        simple: ${incident.pandlpchannel}
       feedback:
-        simple: ${incident.dlpincidentfeedback}
+        simple: ${incident.pandlpincidentfeedback}
       incident_id:
-        simple: ${incident.dlpincidentid}
+        simple: ${incident.pandlpincidentid}
       region:
-        simple: ${incident.dlpincidentregion}
+        simple: ${incident.pandlpincidentregion}
       report_id:
-        simple: ${incident.dlpreportid}
+        simple: ${incident.pandlpreportid}
       user_id:
         simple: ${Slack.User.Email}
     continueonerror: true
@@ -600,10 +600,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: cbee782e-d6eb-4f39-827e-c48649310e8b
+    taskid: f706b7cc-a555-430e-8ea6-5c9d902463a3
     type: regular
     task:
-      id: cbee782e-d6eb-4f39-827e-c48649310e8b
+      id: f706b7cc-a555-430e-8ea6-5c9d902463a3
       version: -1
       name: Get eligibility for exemption
       description: Determines if exemption can be granted on incidents from a certain
@@ -617,7 +617,7 @@ tasks:
       - "38"
     scriptarguments:
       data_profile:
-        simple: ${incident.dlpdataprofilename}
+        simple: ${incident.pandlpdataprofilename}
     separatecontext: false
     view: |-
       {
@@ -746,10 +746,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 4d41fa4c-3719-4c36-8869-4032ffadbc90
+    taskid: 1589cb4c-5d61-4f91-8b17-41a42fca7ce1
     type: regular
     task:
-      id: 4d41fa4c-3719-4c36-8869-4032ffadbc90
+      id: 1589cb4c-5d61-4f91-8b17-41a42fca7ce1
       version: -1
       name: Set feedback to "Exception Granted"
       description: commands.local.cmd.set.incident
@@ -761,7 +761,7 @@ tasks:
       '#none#':
       - "35"
     scriptarguments:
-      dlpincidentfeedback:
+      pandlpincidentfeedback:
         simple: EXCEPTION_GRANTED
     continueonerror: true
     separatecontext: false
@@ -781,10 +781,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: bbde08e3-3532-486d-8ce1-3cb3d03042da
+    taskid: ed388d79-a44a-41b5-8617-e86b36ac93e4
     type: condition
     task:
-      id: bbde08e3-3532-486d-8ce1-3cb3d03042da
+      id: ed388d79-a44a-41b5-8617-e86b36ac93e4
       version: -1
       name: Is there a previous notification?
       description: ""
@@ -803,12 +803,12 @@ tasks:
       - - operator: isEmpty
           left:
             value:
-              simple: incident.dlppreviousfeedback
+              simple: incident.pandlppreviousfeedback
             iscontext: true
         - operator: isEqualString
           left:
             value:
-              simple: incident.dlppreviousfeedback
+              simple: incident.pandlppreviousfeedback
             iscontext: true
           right:
             value:
@@ -817,7 +817,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 895
+          "y": 900
         }
       }
     note: false
@@ -829,10 +829,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 47dc6baa-6ec8-402a-8ba3-608dec70a255
+    taskid: 51528a40-5913-46f8-8f68-75d29aa5dbf7
     type: condition
     task:
-      id: 47dc6baa-6ec8-402a-8ba3-608dec70a255
+      id: 51528a40-5913-46f8-8f68-75d29aa5dbf7
       version: -1
       name: Did user ask for exemption?
       description: ""
@@ -851,7 +851,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.dlppreviousfeedback
+              simple: incident.pandlppreviousfeedback
             iscontext: true
           right:
             value:
@@ -859,7 +859,7 @@ tasks:
         - operator: isEqualString
           left:
             value:
-              simple: incident.dlppreviousfeedback
+              simple: incident.pandlppreviousfeedback
             iscontext: true
           right:
             value:
@@ -867,7 +867,7 @@ tasks:
         - operator: isEqualString
           left:
             value:
-              simple: incident.dlppreviousfeedback
+              simple: incident.pandlppreviousfeedback
             iscontext: true
           right:
             value:
@@ -888,10 +888,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 1abdf3d1-ea04-433f-8523-496c7d56e5db
+    taskid: db49b638-6265-4d87-8088-5179472ed48c
     type: regular
     task:
-      id: 1abdf3d1-ea04-433f-8523-496c7d56e5db
+      id: db49b638-6265-4d87-8088-5179472ed48c
       version: -1
       name: 'Set feedback status to "Pending" '
       description: Update a DLP incident with user feedback
@@ -906,9 +906,9 @@ tasks:
       feedback:
         simple: PENDING_RESPONSE
       incident_id:
-        simple: ${incident.dlpincidentid}
+        simple: ${incident.pandlpincidentid}
       region:
-        simple: ${incident.dlpincidentregion}
+        simple: ${incident.pandlpincidentregion}
       user_id:
         simple: ${incident.sourceusername}
     continueonerror: true
@@ -929,10 +929,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: d25dcecb-b43e-4da8-8866-ccd9a8f69e3b
+    taskid: 0e2efe95-5eba-4e68-81d2-319fc7297384
     type: regular
     task:
-      id: d25dcecb-b43e-4da8-8866-ccd9a8f69e3b
+      id: 0e2efe95-5eba-4e68-81d2-319fc7297384
       version: -1
       name: Set feedback to "Exception not requested"
       description: commands.local.cmd.set.incident
@@ -944,7 +944,7 @@ tasks:
       '#none#':
       - "35"
     scriptarguments:
-      dlpincidentfeedback:
+      pandlpincidentfeedback:
         simple: EXCEPTION_NOT_REQUESTED
     continueonerror: true
     separatecontext: false
@@ -964,10 +964,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: f57c4d17-aff8-496d-8a78-78ce0c610304
+    taskid: c71b27d0-900e-4532-8ae2-ed16d9b3593c
     type: condition
     task:
-      id: f57c4d17-aff8-496d-8a78-78ce0c610304
+      id: c71b27d0-900e-4532-8ae2-ed16d9b3593c
       version: -1
       name: Is the status "Exception Granted"?
       description: ""
@@ -986,7 +986,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.dlpincidentfeedback
+              simple: incident.pandlpincidentfeedback
             iscontext: true
           right:
             value:
@@ -1007,10 +1007,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: c728a199-aaf9-44a0-89a3-7182d1a3f37d
+    taskid: 3c064aef-67b0-4385-8126-2cf0638a3562
     type: regular
     task:
-      id: c728a199-aaf9-44a0-89a3-7182d1a3f37d
+      id: 3c064aef-67b0-4385-8126-2cf0638a3562
       version: -1
       name: Ask user if exemption needed
       description: ""
@@ -1025,7 +1025,7 @@ tasks:
       app_name:
         simple: ${incident.app}
       data_profile_name:
-        simple: ${incident.dlpdataprofilename}
+        simple: ${incident.pandlpdataprofilename}
       file_name:
         simple: ${incident.filename}
       include_violation_detail:
@@ -1139,10 +1139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 8832319c-4862-486c-8587-c4f55d7f9882
+    taskid: fb0b43cb-1d3d-4b0e-89e9-da7042f8e75c
     type: condition
     task:
-      id: 8832319c-4862-486c-8587-c4f55d7f9882
+      id: fb0b43cb-1d3d-4b0e-89e9-da7042f8e75c
       version: -1
       name: Is action "block"?
       description: ""
@@ -1161,7 +1161,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.dlpaction
+              simple: incident.pandlpaction
             iscontext: true
           right:
             value:
@@ -1182,10 +1182,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: eca03f18-59e5-45c8-8a1e-309fc2ccd804
+    taskid: 60ecaf0e-e904-4cbb-86a8-a3f488b77559
     type: regular
     task:
-      id: eca03f18-59e5-45c8-8a1e-309fc2ccd804
+      id: 60ecaf0e-e904-4cbb-86a8-a3f488b77559
       version: -1
       name: 'Set feedback status to "Operational Error" '
       description: Update a DLP incident with user feedback
@@ -1200,9 +1200,9 @@ tasks:
       feedback:
         simple: OPERATIONAL_ERROR
       incident_id:
-        simple: ${incident.dlpincidentid}
+        simple: ${incident.pandlpincidentid}
       region:
-        simple: ${incident.dlpincidentregion}
+        simple: ${incident.pandlpincidentregion}
       user_id:
         simple: ${incident.sourceusername}
     continueonerror: true

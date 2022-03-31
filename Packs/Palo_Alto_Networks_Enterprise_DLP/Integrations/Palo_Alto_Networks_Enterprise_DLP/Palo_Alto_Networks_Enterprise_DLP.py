@@ -6,8 +6,6 @@ import urllib3
 import urllib.parse
 from typing import Dict
 from enum import Enum
-from datetime import datetime
-import math
 from string import Template
 import bz2
 import base64
@@ -28,6 +26,7 @@ LAST_FETCH_TIME = 'last_fetch_time'
 DEFAULT_FIRST_FETCH = '60 minutes'
 ACCESS_TOKEN = 'access_token'
 RESET_KEY = 'reset'
+
 
 class FeedbackStatus(Enum):
     PENDING_RESPONSE = 'PENDING_RESPONSE'
@@ -159,7 +158,7 @@ class Client(BaseClient):
 
         return self._get_dlp_api_call(url)
 
-    def get_dlp_incidents(self, start_time: int, end_time: int, regions: str) -> dict:
+    def get_dlp_incidents(self,  regions: str, start_time: int = None, end_time: int = None) -> dict:
         url = INCIDENTS_URL
         params = {}
         if regions:
@@ -325,7 +324,7 @@ def update_incident(client: Client, incident_id: str, feedback: str, user_id: st
     }
     if feedback_enum == FeedbackStatus.EXCEPTION_GRANTED:
         minutes = result_json['expiration_duration_in_minutes']
-        output['duration'] = minutes/60
+        output['duration'] = minutes / 60
         result = CommandResults(
             outputs_prefix="Exemption",
             outputs_key_field='duration',
@@ -349,9 +348,9 @@ def fetch_incidents(client: Client, regions: str, start_time: int = None, end_ti
     if start_time and end_time:
         print_debug_msg(f'Start fetching incidents between {start_time} and {end_time}.')
     else:
-        print_debug_msg(f'Start fetching most recent incidents')
+        print_debug_msg('Start fetching most recent incidents')
 
-    notification_map = client.get_dlp_incidents(start_time, end_time, regions)
+    notification_map = client.get_dlp_incidents(regions=regions, start_time=start_time, end_time=end_time)
     incidents = []
     for region in notification_map:
         notifications = notification_map[region]
@@ -372,12 +371,13 @@ def fetch_incidents(client: Client, regions: str, start_time: int = None, end_ti
             incident = {
                 'name': f'Palo Alto Networks DLP Incident {raw_incident["incidentId"]}',
                 'type': 'Data Loss Prevention',
-                'occurred': incident_creation_time.isoformat(),  # must be string of a format ISO8601
+                'occurred': incident_creation_time.isoformat(),  # type: ignore
                 'rawJSON': event_dump,
                 'details': event_dump
             }
             incidents.append(incident)
     return incidents
+
 
 def is_reset_triggered():
     """
@@ -418,8 +418,8 @@ def long_running_execution_command(params: Dict):
     while True:
         try:
             integration_context = demisto.getIntegrationContext()
-            last_fetch_time = integration_context.get(LAST_FETCH_TIME)
-            now = math.floor(datetime.now().timestamp())
+            # last_fetch_time = integration_context.get(LAST_FETCH_TIME)
+            # now = math.floor(datetime.now().timestamp())
             # last_fetch_time = now - 30 if not last_fetch_time else last_fetch_time
             # end_time = now
             access_token = integration_context.get(ACCESS_TOKEN)
@@ -469,11 +469,11 @@ def slack_bot_message(args: dict, params: dict):
     message_template = params.get('dlp_slack_message', '')
     template = Template(message_template)
     message = template.substitute(
-                                  user=args.get('user'),
-                                  file_name=args.get('file_name'),
-                                  data_profile_name=args.get('data_profile_name'),
-                                  app_name=args.get('app_name'),
-                                  snippets=args.get('snippets', ""))
+        user=args.get('user'),
+        file_name=args.get('file_name'),
+        data_profile_name=args.get('data_profile_name'),
+        app_name=args.get('app_name'),
+        snippets=args.get('snippets', ""))
     result = {
         'message': message
     }
@@ -508,7 +508,7 @@ def reset_last_run_command():
     set_to_integration_context_with_retries(ctx)
     results = CommandResults(
         outputs_prefix='DLP.resetLastRun',
-        readable_output= 'fetch-incidents was reset successfully.'
+        readable_output='fetch-incidents was reset successfully.'
     )
     demisto.results(results.to_context())
 
