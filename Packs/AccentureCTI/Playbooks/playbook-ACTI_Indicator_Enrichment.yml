@@ -2,6 +2,7 @@ id: 78684a66-c5d5-459c-8302-f6b1e0eb20b2
 version: 32
 vcShouldKeepItemLegacyProdMachine: false
 name: ACTI Indicator Enrichment
+description: This playbook enriches indicators.
 starttaskid: "0"
 tasks:
   "0":

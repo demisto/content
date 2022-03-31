@@ -2,6 +2,7 @@ id: a31dc98b-dc42-4ac1-8a9b-342df7522cb3
 version: 41
 vcShouldKeepItemLegacyProdMachine: false
 name: ACTI Incident Enrichment
+description: This playbook enriches Incidents.
 starttaskid: "0"
 tasks:
   "0":

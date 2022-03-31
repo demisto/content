@@ -2,6 +2,7 @@ id: 36f12448-299e-4484-8d51-e72a08e9436d
 version: 19
 vcShouldKeepItemLegacyProdMachine: false
 name: ACTI IA/IR Enrichment
+description: This playbook enriches Intelligence Alerts & Intelligence Reports.
 starttaskid: "0"
 tasks:
   "0":
