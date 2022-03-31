@@ -400,3 +400,75 @@ def test_create_device_freeze_message_command(mocker, absolute_client):
     args = {'html_message': 'text', 'message_name': 'name'}
     create_device_freeze_message_command(client=absolute_client, args=args)
     assert http_request.call_args.args == ('POST', '/v2/device-freeze/messages')
+
+
+@pytest.mark.parametrize('field_name, list_of_values, query, expected_query',
+                         [
+                             ("id", [], "query", "query"),
+                             ("accountUid", ["1", "2"], "",
+                              "substringof('1',accountUid) or substringof('2',accountUid)"),
+                             ("accountUid", ["1", "2"], "deviceUID eq '1'",
+                              "deviceUID eq '1' or substringof('1',accountUid) or substringof('2',accountUid)"),
+                         ])
+def test_add_list_to_filter_string(field_name, list_of_values, query, expected_query):
+    from Absolute import add_list_to_filter_string
+    assert add_list_to_filter_string(field_name, list_of_values, query) == expected_query
+
+
+@pytest.mark.parametrize('field_name, value, query, expected_query',
+                         [
+                             ("id", "", "query", "query"),
+                             ("accountUid", 1, "", "accountUid eq '1'"),
+                             ("accountUid", 1, "deviceUID eq '1'", "deviceUID eq '1' or accountUid eq '1'"),
+                         ])
+def test_add_list_to_filter_string(field_name, value, query, expected_query):
+    from Absolute import add_value_to_filter_string
+    assert add_value_to_filter_string(field_name, value, query) == expected_query
+
+
+@pytest.mark.parametrize('args, change_device_name_to_system, expected_filter',
+                         [
+                             ({'filter': "accountUid eq '1'"}, False, "$filter=accountUid eq '1'"),
+                             ({'filter': "accountUid eq '1'", 'account_uids': '1'}, False, "$filter=accountUid eq '1'"),
+                             ({'account_uids': '1,2'}, False,
+                              "$filter=substringof('1',accountUid) or substringof('2',accountUid)"),
+                             ({'account_uids': '1,2', 'device_names': "name1, name2"}, False,
+                              "$filter=substringof('1',accountUid) or substringof('2',accountUid) or "
+                              "substringof('name1',deviceName) or substringof('name2',deviceName)"),
+                             ({'account_uids': '1,2', 'device_names': "name1, name2"}, True,
+                              "$filter=substringof('1',accountUid) or substringof('2',accountUid) or "
+                              "substringof('name1',systemName) or substringof('name2',systemName)"),
+                             ({'agent_status': 'Active', 'device_names': "name1, name2"}, True,
+                              "$filter=substringof('name1',systemName) or substringof('name2',systemName) "
+                              "or agentStatus eq 'A'"),
+                         ])
+def test_create_filter_query_from_args(args, change_device_name_to_system, expected_filter):
+    from Absolute import create_filter_query_from_args
+    assert create_filter_query_from_args(args, change_device_name_to_system) == expected_filter
+
+
+@pytest.mark.parametrize('return_fields, query, expected_query',
+                         [
+                             ("", "", ""),
+                             ("", "$filter=accountUid eq '1'", "$filter=accountUid eq '1'"),
+                             ("accountUid", "$filter=accountUid eq '1'", "$filter=accountUid eq"
+                                                                         " '1'&$select=accountUid"),
+                             ("deviceUid", "$filter=accountUid eq '1'", "$filter=accountUid eq '1'&$select=deviceUid"),
+                             ("deviceUid,accountUid", "$filter=accountUid eq '1'",
+                              "$filter=accountUid eq '1'&$select=deviceUid,accountUid"),
+                             ("deviceUid,accountUid", "", "$select=deviceUid,accountUid"),
+                         ])
+def test_parse_return_fields(return_fields, query, expected_query):
+    from Absolute import parse_return_fields
+    assert parse_return_fields(return_fields, query) == expected_query
+
+
+@pytest.mark.parametrize('page, limit, query, expected_query',
+                         [
+                             (0, 50, "", "$skip=0&$top=50"),
+                             (0, 50, "$filter=accountUid eq '1'&$select=deviceUid",
+                              "$filter=accountUid eq '1'&$select=deviceUid&$skip=0&$top=50"),
+                         ])
+def test_parse_paging(page, limit, query, expected_query):
+    from Absolute import parse_paging
+    assert parse_paging(page, limit, query) == expected_query

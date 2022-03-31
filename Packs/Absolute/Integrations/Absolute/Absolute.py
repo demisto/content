@@ -334,7 +334,7 @@ def validate_absolute_api_url(base_url):
     return ABSOLUTE_URL_TO_API_URL[base_url]
 
 
-def test_module(client: Client) -> str:  # pragma: no cover
+def test_module(client: Client) -> str:
     """Tests API connectivity to Absolute """
     try:
         client.api_request_absolute('GET', '/v2/device-freeze/messages', success_status_code=(200, 204))
@@ -635,6 +635,7 @@ def add_list_to_filter_string(field_name, list_of_values, query):
         return query
 
     query_list = []
+    list_of_values.sort()
     query_list.extend([f"substringof('{value}',{field_name})" for value in list_of_values])
     new_query = " or ".join(query_list)
 
@@ -726,7 +727,7 @@ def parse_return_fields(return_fields: str, query: str):
 
 def parse_paging(page: int, limit: int, query: str) -> str:
     """
-
+    Add pagination query format to the existing query
     """
     if query:
         return f'{query}&$skip={page}&$top={limit}'
@@ -932,5 +933,5 @@ def main() -> None:  # pragma: no cover
 
 ''' ENTRY POINT '''
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
