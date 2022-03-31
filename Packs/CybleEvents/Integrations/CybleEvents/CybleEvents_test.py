@@ -1,5 +1,7 @@
+from CommonServerUserPython import *
 from datetime import datetime
 import json
+import demistomock as demisto
 
 
 def load_json_file(filename):
@@ -88,7 +90,6 @@ def test_cyble_vision_fetch_iocs(requests_mock):
         verify=False
     )
 
-
     args = {
         'token': 'some_random_token',
         'max_fetch': 1,
@@ -98,7 +99,7 @@ def test_cyble_vision_fetch_iocs(requests_mock):
         'limit': '10'
     }
 
-    response = cyble_fetch_iocs(client=client, method='POST', args=args)
+    response = cyble_fetch_iocs(client=client, method='POST', args=args).outputs
 
     assert isinstance(response, dict)
 
@@ -149,7 +150,7 @@ def test_cyble_vision_fetch_events(requests_mock):
         'order_by': 'Ascending'
     }
 
-    response = cyble_fetch_events(client=client, method='POST', args=args)
+    response = cyble_fetch_events(client=client, method='POST', args=args).outputs
 
     assert isinstance(response, list)
     assert isinstance(response[0], dict)
@@ -194,7 +195,7 @@ def test_cyble_vision_fetch_detail(requests_mock):
         'event_id': 'some_event_id'
     }
 
-    response = fetch_alert_details(client=client, args=args)
+    response = fetch_alert_details(client=client, args=args).outputs
 
     assert isinstance(response, list)
     assert isinstance(response[0], dict)
