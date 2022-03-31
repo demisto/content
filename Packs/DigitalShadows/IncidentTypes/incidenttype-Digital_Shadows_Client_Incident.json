@@ -1,0 +1,26 @@
+{
+    "autorun": true,
+    "color": "#5c5c8b",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Digital Shadows Client Incident",
+    "locked": false,
+    "name": "Digital Shadows Client Incident",
+    "onChangeRepAlg": 0,
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "5.5.0"
+}

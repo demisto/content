@@ -63,5 +63,10 @@
     },
     "displayedImages": [
         "CommonScripts"
+    ],
+    "itemPrefix": [
+        "DS",
+        "Digital Shadows",
+        "SearchLight"
     ]
 }
