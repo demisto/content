@@ -116,12 +116,7 @@ class MsGraphClient:
         Returns:
             Response from API.
         """
-        try:
-            group = self.ms_client.http_request(method='GET', url_suffix=f'groups/{group_id}')
-        except NotFoundError:
-            if self.handle_error:
-                return {'Not found': True}
-            raise
+        group = self.ms_client.http_request(method='GET', url_suffix=f'groups/{group_id}')
         return group
 
     def create_group(self, properties: Dict[str, Optional[Any]]) -> Dict:
@@ -258,11 +253,13 @@ def get_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dic
         Outputs.
     """
     group_id = str(args.get('group_id'))
-    group = client.get_group(group_id)
-
-    if group.get('Not found'):
-        human_readable = f'#### Group id -> {group_id} does not exist'
-        return human_readable, NO_OUTPUTS, NO_OUTPUTS
+    try:
+        group = client.get_group(group_id)
+    except NotFoundError:
+        if client.handle_error:
+            human_readable = f'#### Group id -> {group_id} does not exist'
+            return human_readable, NO_OUTPUTS, NO_OUTPUTS
+        raise
 
     group_readable, group_outputs = parse_outputs(group)
     human_readable = tableToMarkdown(name="Groups:", t=group_readable,
