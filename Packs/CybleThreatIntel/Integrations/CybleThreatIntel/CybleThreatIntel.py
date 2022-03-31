@@ -26,7 +26,7 @@ class Client(BaseClient):
         :return:
         """
 
-        taxii_data = None
+        taxii_data = {}
         params = {
             'token': args['token'],
             'page': int(args['page'] if 'page' in args.keys() else 1),
@@ -43,6 +43,7 @@ class Client(BaseClient):
             if 'count' in resp.keys():
                 taxii_data = resp
             else:
+                taxii_data = {"error": "Failed to fetch feed!!"}
                 demisto.error("Error trying to Fetch Taxii's {}".format(resp))
         except Exception as e:
             demisto.error("[{}] exception seen for response [{}]".format(e, resp))
@@ -57,16 +58,17 @@ def get_test_response(client, method, params):
     :param params: Parameters for requests
     :return: Test Response Success or Failure
     """
-
+    ret_val = 'fail'
     payload = params
     taxii_url = r'/taxii/stix-data/v21/get'
-    result = client.get_taxii(method, taxii_url, payload)
-
-    if result is not None:
-        return 'ok'
+    if params.get('token'):
+        result = client.get_taxii(method, taxii_url, payload)
+        if result:
+            ret_val = 'ok'
     else:
         demisto.error("Failed to connect")
-        return 'fail'
+
+    return ret_val
 
 
 def cyble_fetch_taxii(client, method, args):
@@ -89,11 +91,18 @@ def cyble_fetch_taxii(client, method, args):
     }
 
     taxii_url = r'/taxii/stix-data/v21/get'
-    result = client.get_taxii(method, taxii_url, params)
+    if args.get('token'):
+        result = client.get_taxii(method, taxii_url, params)
+    else:
+        result = {"error": "Invalid Token!!"}
 
-    if result is not None:
-        return result
-    return "Failed to Fetch Taxiis !!"
+    command_results = CommandResults(
+        outputs_prefix='CybleIntel.Threat',
+        outputs_key_field='details',
+        outputs=result
+    )
+
+    return command_results
 
 
 def main():
@@ -117,34 +126,17 @@ def main():
 
         args = demisto.args()
         args['token'] = token
+        if 'start_date' not in args.keys():
+            args['start_date'] = datetime.today().strftime('%Y-%m-%d')
+        if 'end_date' not in args.keys():
+            args['end_date'] = datetime.today().strftime('%Y-%m-%d')
 
         if demisto.command() == 'test-module':
-            if 'start_date' not in args.keys():
-                args['start_date'] = datetime.today().strftime('%Y-%m-%d')
-            if 'end_date' not in args.keys():
-                args['end_date'] = datetime.today().strftime('%Y-%m-%d')
-            if args['token'] is not None:
-                resp = get_test_response(client, 'POST', args)
-                # request was succesful
-                return_results(resp)
+            return_results(get_test_response(client, 'POST', args))
 
         elif demisto.command() == 'cyble-vision-fetch-taxii':
             # fetch events using taxii service
-
-            if 'start_date' not in args.keys():
-                args['start_date'] = datetime.today().strftime('%Y-%m-%d')
-            if 'end_date' not in args.keys():
-                args['end_date'] = datetime.today().strftime('%Y-%m-%d')
-
-            if args['token'] is not None:
-                command_results = CommandResults(
-                    outputs_prefix='CybleIntel.Threat',
-                    outputs_key_field='details',
-                    outputs=cyble_fetch_taxii(client, "POST", args)
-                )
-                return_results(command_results)
-            else:
-                demisto.error("Error fetching Threat Indicators.")
+            return_results(cyble_fetch_taxii(client, "POST", args))
 
     # Log exceptions
     except Exception as e:
