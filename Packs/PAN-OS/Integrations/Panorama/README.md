@@ -177,6 +177,13 @@ After you successfully execute a command, a DBot message appears in the War Room
 99. [Shows the user ID interface configuration.](#pan-os-show-user-id-interfaces-config)
 100. [Shows the zones configuration.](#pan-os-show-zones-config)
 101. [Retrieves list of user-ID agents configured in the system.](#pan-os-list-configured-user-id-agents)
+102. [Gets global counter information from all the PAN-OS firewalls in the topology.](#pan-os-platform-get-global-counters)
+103. [Retrieves all BGP peer information from the PAN-OS firewalls in the topology.](#pan-os-platform-get-bgp-peers)
+104. [Check the devices for software that is available to be installed.](#pan-os-platform-get-available-software)
+105. [Get the HA state and associated details from the given device and any other details.](#pan-os-platform-get-ha-state)
+106. [Get all the jobs from the devices in the environment, or a single job when ID is specified.](#pan-os-platform-get-jobs)
+107. [Download The provided software version onto the device.](#pan-os-platform-download-software)
+
 
 
 ### panorama
@@ -957,7 +964,7 @@ Creates a service.
 | --- | --- | --- |
 | Panorama.Services.Name | string | Service name. | 
 | Panorama.Services.Protocol | string | Service protocol. | 
-| Panorama.Services.Descritpion | string | Service description. | 
+| Panorama.Services.Description | string | Service description. | 
 | Panorama.Services.DestinationPort | string | Service destination port. | 
 | Panorama.Services.SourcePort | string | Service source port. | 
 | Panorama.Services.DeviceGroup | string | Device group for the service \(Panorama instances\). | 
@@ -1083,7 +1090,7 @@ Returns a list of service groups.
 >|Name|Services|
 >|---|---|
 >| demisto_default_service_groups | service-http,<br/>service-https |
->| demisto_test_pb_service_group | serice_tcp_test_pb |
+>| demisto_test_pb_service_group | service_tcp_test_pb |
 
 
 ### pan-os-get-service-group
@@ -5222,12 +5229,13 @@ Gets the operational information of the template stacks in the topology.
 >|connected|hostid|hostname|last_commit_all_state_tpl|name|serial|
 >|---|---|---|---|---|---|
 >| yes | 1.1.1.1 | vm-lab-fw1 | commit succeeded with warnings | LAB-STACK | 0111112222333444 |
->| no | 1.1.1.1 | vm-lab-fw02 | commit succeeded with warnings | LAB-STACK | 0111112222333455 |Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
+>| no | 1.1.1.1 | vm-lab-fw02 | commit succeeded with warnings | LAB-STACK | 0111112222333455 |
+Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
 This integration was integrated and tested with version xx of Panorama_dev_platform
 
 ### pan-os-platform-get-global-counters
 ***
-Gets global counter information from all the PAN-OS firewalls in the topology
+Gets global counter information from all the PAN-OS firewalls in the topology.
 
 
 #### Base Command
@@ -5237,27 +5245,27 @@ Gets global counter information from all the PAN-OS firewalls in the topology
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.ShowCounters.Summary.hostid | String | Host ID | 
-| PANOS.ShowCounters.Summary.name | String | Human readable counter name | 
-| PANOS.ShowCounters.Summary.value | Number | Current counter value | 
-| PANOS.ShowCounters.Summary.rate | Number | Packets per second rate | 
-| PANOS.ShowCounters.Summary.desc | String | Human readable counter description | 
-| PANOS.ShowCounters.Result.hostid | String | Host ID | 
-| PANOS.ShowCounters.Result.category | String | The counter category | 
-| PANOS.ShowCounters.Result.name | String | Human readable counter name | 
-| PANOS.ShowCounters.Result.value | Number | Current counter value | 
-| PANOS.ShowCounters.Result.rate | Number | Packets per second rate | 
-| PANOS.ShowCounters.Result.aspect | String | PANOS Aspect | 
-| PANOS.ShowCounters.Result.desc | String | Human readable counter description | 
-| PANOS.ShowCounters.Result.id | String | Counter ID | 
-| PANOS.ShowCounters.Result.severity | String | Counter severity | 
+| PANOS.ShowCounters.Summary.hostid | String | Host ID. | 
+| PANOS.ShowCounters.Summary.name | String | Human readable counter name. | 
+| PANOS.ShowCounters.Summary.value | Number | Current counter value. | 
+| PANOS.ShowCounters.Summary.rate | Number | Packets per second rate. | 
+| PANOS.ShowCounters.Summary.desc | String | Human readable counter description. | 
+| PANOS.ShowCounters.Result.hostid | String | Host ID. | 
+| PANOS.ShowCounters.Result.category | String | The counter category. | 
+| PANOS.ShowCounters.Result.name | String | Human readable counter name. | 
+| PANOS.ShowCounters.Result.value | Number | Current counter value. | 
+| PANOS.ShowCounters.Result.rate | Number | Packets per second rate. | 
+| PANOS.ShowCounters.Result.aspect | String | PAN-OS aspect. | 
+| PANOS.ShowCounters.Result.desc | String | Human readable counter description. | 
+| PANOS.ShowCounters.Result.id | String | Counter ID. | 
+| PANOS.ShowCounters.Result.severity | String | Counter severity. | 
 
 #### Command example
 ```!pan-os-platform-get-global-counters```
@@ -5409,30 +5417,30 @@ Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.ShowBGPPeers.Summary.hostid | String | Host ID | 
-| PANOS.ShowBGPPeers.Summary.peer | String | Name of BGP peer | 
-| PANOS.ShowBGPPeers.Summary.status | String | Peer connection status | 
-| PANOS.ShowBGPPeers.Summary.incoming_accepted | String | Total accepted routes from peer | 
-| PANOS.ShowBGPPeers.Result.hostid | String | Host ID | 
-| PANOS.ShowBGPPeers.Result.peer | String | Name of BGP peer | 
-| PANOS.ShowBGPPeers.Result.vr | String | Virtual router peer resides in | 
-| PANOS.ShowBGPPeers.Result.remote_as | String | Remote AS \(Autonomous System\) of Peer | 
-| PANOS.ShowBGPPeers.Result.status | String | Peer connection status | 
-| PANOS.ShowBGPPeers.Result.peer_address | String | IP address and port of peer | 
-| PANOS.ShowBGPPeers.Result.local_address | String | Local router address and port | 
-| PANOS.ShowBGPPeers.Result.incoming_total | String | Total incoming routes from peer | 
-| PANOS.ShowBGPPeers.Result.incoming_accepted | String | Total accepted routes from peer | 
-| PANOS.ShowBGPPeers.Result.incoming_rejected | String | Total rejected routes from peer | 
-| PANOS.ShowBGPPeers.Result.policy_rejected | String | Total routes rejected by peer by policy | 
-| PANOS.ShowBGPPeers.Result.outgoing_total | String | Total routes advertised to peer | 
-| PANOS.ShowBGPPeers.Result.outgoing_advertised | String | Count of advertised routes to peer | 
+| PANOS.ShowBGPPeers.Summary.hostid | String | Host ID. | 
+| PANOS.ShowBGPPeers.Summary.peer | String | Name of the BGP peer. | 
+| PANOS.ShowBGPPeers.Summary.status | String | Peer connection status. | 
+| PANOS.ShowBGPPeers.Summary.incoming_accepted | String | Total accepted routes from the peer. | 
+| PANOS.ShowBGPPeers.Result.hostid | String | Host ID. | 
+| PANOS.ShowBGPPeers.Result.peer | String | Name of the BGP peer. | 
+| PANOS.ShowBGPPeers.Result.vr | String | Virtual router in which the peer resides. | 
+| PANOS.ShowBGPPeers.Result.remote_as | String | Remote AS \(Autonomous System\) of the peers | 
+| PANOS.ShowBGPPeers.Result.status | String | Peer connection statuss | 
+| PANOS.ShowBGPPeers.Result.peer_address | String | IP address and port of the peers | 
+| PANOS.ShowBGPPeers.Result.local_address | String | Local router address and port of the peer. | 
+| PANOS.ShowBGPPeers.Result.incoming_total | String | Total incoming routes from the peer. | 
+| PANOS.ShowBGPPeers.Result.incoming_accepted | String | Total accepted routes from the peer. | 
+| PANOS.ShowBGPPeers.Result.incoming_rejected | String | Total rejected routes from the peer. | 
+| PANOS.ShowBGPPeers.Result.policy_rejected | String | Total routes rejected by the peer by policy. | 
+| PANOS.ShowBGPPeers.Result.outgoing_total | String | Total routes advertised to the peer. | 
+| PANOS.ShowBGPPeers.Result.outgoing_advertised | String | Number of advertised routes to the peer. | 
 
 #### Command example
 ```!pan-os-platform-get-bgp-peers```
@@ -5491,23 +5499,23 @@ Check the devices for software that is available to be installed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.SoftwareVersions.Summary.hostid | String | Host ID | 
-| PANOS.SoftwareVersions.Summary.version | String | software version in Major.Minor.Maint format | 
-| PANOS.SoftwareVersions.Summary.filename | String | Software version filename | 
-| PANOS.SoftwareVersions.Summary.size | String | Size of software in MB | 
-| PANOS.SoftwareVersions.Summary.size_kb | String | Size of software in KB | 
-| PANOS.SoftwareVersions.Summary.release_notes | String | Link to version release notes on PAN knowledge base | 
-| PANOS.SoftwareVersions.Summary.downloaded | Boolean | True if the software version is present on the system | 
-| PANOS.SoftwareVersions.Summary.current | Boolean | True if this is the currently installed software on the system | 
-| PANOS.SoftwareVersions.Summary.latest | Boolean | True if this is the most recently released software for this platform | 
-| PANOS.SoftwareVersions.Summary.uploaded | Boolean | True if the software version has been uploaded to the system | 
+| PANOS.SoftwareVersions.Summary.hostid | String | Host ID. | 
+| PANOS.SoftwareVersions.Summary.version | String | The software version in Major.Minor.Maint format. | 
+| PANOS.SoftwareVersions.Summary.filename | String | Software version filename. | 
+| PANOS.SoftwareVersions.Summary.size | String | Size of the software in MB. | 
+| PANOS.SoftwareVersions.Summary.size_kb | String | Size of the software in KB. | 
+| PANOS.SoftwareVersions.Summary.release_notes | String | Link to version release notes on PAN knowledge base. | 
+| PANOS.SoftwareVersions.Summary.downloaded | Boolean | True if the software version is present on the system. | 
+| PANOS.SoftwareVersions.Summary.current | Boolean | True if this is the currently installed software on the system. | 
+| PANOS.SoftwareVersions.Summary.latest | Boolean | True if this is the most recently released software for this platform. | 
+| PANOS.SoftwareVersions.Summary.uploaded | Boolean | True if the software version has been uploaded to the system. | 
 
 #### Command example
 ```!pan-os-platform-get-available-software```
@@ -5752,7 +5760,7 @@ Check the devices for software that is available to be installed.
 >| false | false | PanOS_vm-6.0.2 | 11111111111111 | false | https:<span>//</span>proditpdownloads.paloaltonetworks.com/software/PAN-OS-6.0.2-RN.pdf?__token__=exp=1649219972~acl=/software/PAN-OS-6.0.2-RN.pdf*~hmac=c9809577d6747d50b51a94eade3cde60d6d6c5de51f3ca0b41c8f4787334bfd9 | 188 | 192898 | false | 6.0.2 |
 >| false | false | PanOS_vm-6.0.1 | 11111111111111 | false | https:<span>//</span>proditpdownloads.paloaltonetworks.com/software/PAN-OS-6.0.1-RN_revC.pdf?__token__=exp=1649219972~acl=/software/PAN-OS-6.0.1-RN_revC.pdf*~hmac=531b4390cf012e8929d0e8ae2df494d0fa010b761fd34c9b1811cc8e0656be50 | 179 | 183445 | false | 6.0.1 |
 >| false | false | PanOS_vm-6.0.0 | 11111111111111 | false | https:<span>//</span>proditpdownloads.paloaltonetworks.com/software/PAN-OS-6.0.0-RN-revD.pdf?__token__=exp=1649219972~acl=/software/PAN-OS-6.0.0-RN-revD.pdf*~hmac=526de9d525e5fd461f54afd4be874b09fc6309187198c412f52950e7a439a2ce | 382 | 391443 | false | 6.0.0 |
->| false | false | Panorama_pc-10.2.0 | 192.168.1.145 | true | https:<span>//</span>www.paloaltonetworks.com/documentation/10-2/pan-os/pan-os-release-notes | 845 | 866281 | false | 10.2.0 |
+ass
 >| false | false | Panorama_pc-10.1.5 | 192.168.1.145 | false | https:<span>//</span>www.paloaltonetworks.com/documentation/10-1/pan-os/pan-os-release-notes | 376 | 385780 | false | 10.1.5 |
 >| false | false | Panorama_pc-10.1.4 | 192.168.1.145 | false | https:<span>//</span>www.paloaltonetworks.com/documentation/10-1/pan-os/pan-os-release-notes | 372 | 381036 | false | 10.1.4 |
 >| false | false | Panorama_pc-10.1.4-h4 | 192.168.1.145 | false | https:<span>//</span>www.paloaltonetworks.com/documentation/10-1/pan-os/pan-os-release-notes | 372 | 381951 | false | 10.1.4-h4 |
@@ -6028,7 +6036,7 @@ Check the devices for software that is available to be installed.
 
 ### pan-os-platform-get-ha-state
 ***
-Get the HA state and assocaited details from the given device and any other details.
+Get the HA state and associated details from the given device and any other details.
 
 
 #### Base Command
@@ -6038,17 +6046,17 @@ Get the HA state and assocaited details from the given device and any other deta
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.HAState.hostid | String | Host ID | 
-| PANOS.HAState.active | Boolean | Whether this is the active firewall in a pair or not. True if standalone as well | 
-| PANOS.HAState.status | String | String HA status | 
-| PANOS.HAState.peer | String | HA Peer | 
+| PANOS.HAState.hostid | String | Host ID. | 
+| PANOS.HAState.active | Boolean | Whether this is the active firewall in a pair. True if standalone as well. | 
+| PANOS.HAState.status | String | String HA status. | 
+| PANOS.HAState.peer | String | HA peer. | 
 
 #### Command example
 ```!pan-os-platform-get-ha-state```
@@ -6095,9 +6103,9 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
-| status | Filter returned jobs by status. | Optional | 
-| job_type | Filter returned jobs by type. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| status | Filter to return jobs by status. | Optional | 
+| job_type | Filter to return jobs by type. | Optional | 
 | id | Filter by ID. | Optional | 
 
 
@@ -6105,18 +6113,18 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.JobStatus.hostid | String | Host ID | 
-| PANOS.JobStatus.id | String | ID of job | 
-| PANOS.JobStatus.type | String | Job type | 
-| PANOS.JobStatus.tfin | String | Time finished | 
-| PANOS.JobStatus.status | String | Status of job | 
-| PANOS.JobStatus.result | String | The result of the job | 
-| PANOS.JobStatus.user | String | Which user initiated the job | 
-| PANOS.JobStatus.tenq | String | The time the job was enqueued into the system | 
-| PANOS.JobStatus.stoppable | String | Whether the job can be stopped after it has started | 
-| PANOS.JobStatus.description | String | The job description | 
-| PANOS.JobStatus.positionInQ | String | The position of the job in the current job queue | 
-| PANOS.JobStatus.progress | String | The numerical progress of the job | 
+| PANOS.JobStatus.hostid | String | Host ID. | 
+| PANOS.JobStatus.id | String | ID of job. | 
+| PANOS.JobStatus.type | String | Job type. | 
+| PANOS.JobStatus.tfin | String | Time finished. | 
+| PANOS.JobStatus.status | String | Status of the job. | 
+| PANOS.JobStatus.result | String | The result of the job. | 
+| PANOS.JobStatus.user | String | The user who initiated the job. | 
+| PANOS.JobStatus.tenq | String | The time the job was enqueued into the system. | 
+| PANOS.JobStatus.stoppable | String | Whether the job can be stopped after it started. | 
+| PANOS.JobStatus.description | String | The job description. | 
+| PANOS.JobStatus.positionInQ | String | The position of the job in the current job queue. | 
+| PANOS.JobStatus.progress | String | The numerical progress of the job. | 
 
 #### Command example
 ```!pan-os-platform-get-jobs```
@@ -6195,7 +6203,7 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 
 ### pan-os-platform-download-software
 ***
-Download The provided software version onto the device.
+Download the provided software version onto the device.
 
 
 #### Base Command
@@ -6205,17 +6213,17 @@ Download The provided software version onto the device.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| version | software version to upgrade to, ex. 9.1.2. | Required | 
-| device_filter_string | String to filter to only install to sepecific devices or serial numbers. | Optional | 
-| sync | If provided, runs the download synchronously - make sure 'execution-timeout' is increased. | Optional | 
+| version | The software version to upgrade to, for example, 9.1.2. | Required | 
+| device_filter_string | String by which to filter the results to only install to sepecific devices or serial numbers. | Optional | 
+| sync | If provided, runs the download synchronously. Make sure 'execution-timeout' is increased. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.DownloadStatus.Summary.hostid | String | Host ID | 
-| PANOS.DownloadStatus.Summary.started | String | Whether download process has started. | 
+| PANOS.DownloadStatus.Summary.hostid | String | Host ID. | 
+| PANOS.DownloadStatus.Summary.started | String | Whether the download process started. | 
 
 #### Command example
 ```!pan-os-platform-download-software version=9.1.0```
