@@ -348,9 +348,9 @@ def test_module(client: Client) -> str:
 
 
 def parse_device_field_list_response(response: dict) -> Dict[str, Any]:
-    parsed_data = {'DeviceUID': response.get('deviceUid'), 'ESN': response.get('esn'), 'CDFValues': []}
+    parsed_data = {'DeviceUID': response.get('deviceUid'), 'ESN': response.get('esn'), 'CDFValues': []}  # type: ignore
     for cdf_item in response.get('cdfValues', []):
-        parsed_data['CDFValues'].append({   # type: ignore
+        parsed_data['CDFValues'].append({  # type: ignore
             'CDFUID': cdf_item.get('cdfUid'),
             'FieldKey': cdf_item.get('fieldKey'),
             'FieldName': cdf_item.get('fieldName'),
