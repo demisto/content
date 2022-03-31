@@ -887,6 +887,9 @@ script:
     - contextPath: Absolute.LocationReport.Coordinates
       description: An array containing a comma separated list, the first number is the estimated latitude and the second number is the estimated longitude (in degrees) where the device is located.
       type: Unknown
+    - contextPath: Absolute.LocationReport.ID
+      description: The system-defined unique identifier of the device.
+      type: String
     - contextPath: Absolute.LocationReport.City
       description: The city where the device is located.
       type: String

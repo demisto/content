@@ -766,6 +766,7 @@ def parse_geo_location_outputs(response):
         parsed_device['State'] = geo_data.get('geoAddress', {}).get('state')
         parsed_device['CountryCode'] = geo_data.get('geoAddress', {}).get('countryCode')
         parsed_device['Country'] = geo_data.get('geoAddress', {}).get('country')
+        parsed_device['ID'] = device.get('id')
 
         parsed_response.append(parsed_device)
 
