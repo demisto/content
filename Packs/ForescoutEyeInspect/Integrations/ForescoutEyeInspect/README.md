@@ -59,50 +59,13 @@ Retrieves information about the hosts in the eyeInspect CC database.
 | ForescoutEyeInspect.Host.nested_address | String | In case of a nested device host, the nested address of the host. |
 | ForescoutEyeInspect.Host.vlan | String | The vlan ID of the host. |
 | ForescoutEyeInspect.Host.mac_addresses | String | The MAC addresses associated to the host. |
-| ForescoutEyeInspect.Host.mac_vendors | String | The vendor names associated to the MAC addresses. |
 | ForescoutEyeInspect.Host.sensor_ids | String | The unique IDs of the sensors that have "seen" this host. |
-| ForescoutEyeInspect.Host.broadcast_ip | Boolean | Whether the Host's IP/MAC address is a broadcast address. |
-| ForescoutEyeInspect.Host.multicast_ip | Boolean | Whether the Host's IP/MAC address is a multicast address. |
-| ForescoutEyeInspect.Host.public_ip | Boolean | Whether the Host's IP address is a public address. |
-| ForescoutEyeInspect.Host.learnt_host | Boolean | Whether the Host has automatically learnt by eyeInspect. |
 | ForescoutEyeInspect.Host.main_name | String | The main name of the Host. |
-| ForescoutEyeInspect.Host.main_name_edited | Boolean | Whether the Host's main name was edited by the user. |
-| ForescoutEyeInspect.Host.all_names | String | All names associated to the host. |
 | ForescoutEyeInspect.Host.description | String | Description of the host. |
-| ForescoutEyeInspect.Host.main_role | String | Main role of the host. |
-| ForescoutEyeInspect.Host.main_role_edited | Boolean | Whether the main role was edited by the user. |
-| ForescoutEyeInspect.Host.all_roles | String | All roles associated to the host. |
-| ForescoutEyeInspect.Host.main_vendor_model | String | The main vendor and model of the host. |
-| ForescoutEyeInspect.Host.main_vendor_model_edited | Boolean | Whether the main_vendor_model was edited by the user. |
-| ForescoutEyeInspect.Host.all_vendors_models | String | All vendors models associated to the host. |
 | ForescoutEyeInspect.Host.os_version | String | The OS version of the host. |
-| ForescoutEyeInspect.Host.os_version_source | String | The source of information for the Operating System. |
-| ForescoutEyeInspect.Host.os_version_edited | Boolean | Whether the Operating System version was edited by the user. |
-| ForescoutEyeInspect.Host.client_protos | String | The application-level protocols for communications in which the Host is a client \(i. |
-| ForescoutEyeInspect.Host.server_protos | String | The application-level protocols for communications in which the Host is a server \(i. |
-| ForescoutEyeInspect.Host.open_ports | String | The open TCP and UDP ports of the Host. |
-| ForescoutEyeInspect.Host.software | String | The application software installed on the Host. |
-| ForescoutEyeInspect.Host.software_source | String | The source of information for the installed software. |
-| ForescoutEyeInspect.Host.patches | String | The software patches installed on the Host. |
 | ForescoutEyeInspect.Host.first_seen | String | The ISO-formatted timestamp of when the Host was first seen. |
 | ForescoutEyeInspect.Host.last_seen | String | The ISO-formatted timestamp of when the Host was last seen. |
-| ForescoutEyeInspect.Host.labels | String | A set of key-value pairs \(separated by =\) strings containing additional properties of the host. |
-| ForescoutEyeInspect.Host.purdue_level | String | The purdue level on which the Host is to be placed. |
-| ForescoutEyeInspect.Host.purdue_level_edited | Boolean | Whether the purdue level was edited by the user. |
-| ForescoutEyeInspect.Host.criticality | Number | A measure of how important is the Host, based on its role. |
-| ForescoutEyeInspect.Host.criticality_edited | Boolean | Whether the criticality was edited by the user. |
-| ForescoutEyeInspect.Host.cves | String | A list of all the known vulnerabilities that match the host properties \(a combination of CVE ID and matching confidence\). |
-| ForescoutEyeInspect.Host.firmware_version | String | The firmware version of the Host. |
-| ForescoutEyeInspect.Host.firmware_version_edited | Boolean | Whether the firmware_version was edited by the user. |
-| ForescoutEyeInspect.Host.hardware_version | String | The hardware version of the Host \(for embedded devices\). |
-| ForescoutEyeInspect.Host.hardware_version_source | String | The source of information for the hardware version. |
-| ForescoutEyeInspect.Host.hardware_version_edited | Boolean | Whether the hardware_version was edited by the user. |
-| ForescoutEyeInspect.Host.serial_number | String | The serial number of the Host \(for embedded devices\). |
-| ForescoutEyeInspect.Host.serial_number_edited | Boolean | Whether the serial_number was edited by the user. |
-| ForescoutEyeInspect.Host.project | String | The automation engineering project information of the Host \(for PLCs\). |
-| ForescoutEyeInspect.Host.project_edited | Boolean | Whether the project information of the Host was edited by the user. |
-| ForescoutEyeInspect.Host.operational_risk | Number | The operational risk score of the Host. |
-| ForescoutEyeInspect.Host.security_risk | Number | The security risk score of the Host. |
+| ForescoutEyeInspect.Host.open_ports | String | The open TCP and UDP ports of the Host. |
 
 #### Command example
 ```!forescout-ei-host-list page=1 limit=1```
@@ -354,15 +317,8 @@ Retrieves information about the alerts inside eyeInspect CC.
 | ForescoutEyeInspect.Alert.dst_ip | String | The IP address of the host receiving the connection reported in the Alert. |
 | ForescoutEyeInspect.Alert.src_port | Number | The source TCP or UDP port used in the connection reported in the Alert. |
 | ForescoutEyeInspect.Alert.dst_port | Number | The destination TCP or UDP port used in the connection reported in the Alert. |
-| ForescoutEyeInspect.Alert.hotstart | Boolean | Whether the network stream reported in the Alert was not observed by the Sensor from the beginning. |
-| ForescoutEyeInspect.Alert.direction_certain | Boolean | Whether the Sensor is certain about the direction of the network stream reported in the Alert. |
 | ForescoutEyeInspect.Alert.severity | Number | The severity level of the Alert. |
 | ForescoutEyeInspect.Alert.status | String | The status of the Alert. |
-| ForescoutEyeInspect.Alert.labels | String | An application oriented user defined set of tokens with context information about the Alert, space separated. |
-| ForescoutEyeInspect.Alert.fea_state | String | The Frequent Event Aggregation state of the alert. |
-| ForescoutEyeInspect.Alert.fea_alert_count | Number | For aggregated Alerts, the number of aggregated alerts in the reported time frame. |
-| ForescoutEyeInspect.Alert.fea_start | String | For aggregated Alerts, the timestamp in ISO format of when the Alert entered the aggregation state. |
-| ForescoutEyeInspect.Alert.fea_duration_sec | Number | For aggregated Alerts, the duration of the alert aggregation in seconds. |
 
 #### Command example
 ```!forescout-ei-alert-list page=1 limit=1```
