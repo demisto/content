@@ -1040,7 +1040,7 @@ tasks:
       version: -1
       name: Scan your applications
       description: |-
-        Use the scan_spring.py tool provided by JFrog to locate vulnerable applications.
+        Use the scan_spring.py tool provided by JFrog to locate vulnerable applications for Spring Core RCE.
         The tool is available for direct download via XSOAR.
       type: regular
       iscommand: false
@@ -1070,7 +1070,7 @@ tasks:
     task:
       id: 0fbce8b7-9248-4497-8af8-a365f7642436
       version: -1
-      name: Spring Scanner
+      name: Spring Core RCE Scanner
       type: title
       iscommand: false
       brand: ""

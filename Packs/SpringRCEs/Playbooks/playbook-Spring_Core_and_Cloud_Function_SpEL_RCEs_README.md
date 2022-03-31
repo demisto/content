@@ -19,10 +19,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Block IP - Generic v3
-* Panorama Query Logs
 * Rapid Breach Response - Set Incident Info
-* Search Endpoint by CVE - Generic
 * CVE Enrichment - Generic v2
+* Panorama Query Logs
+* Search Endpoint by CVE - Generic
 
 ### Integrations
 This playbook does not use any integrations.
@@ -31,8 +31,8 @@ This playbook does not use any integrations.
 * http
 
 ### Commands
-* closeInvestigation
 * createNewIndicator
+* closeInvestigation
 
 ## Playbook Inputs
 ---
