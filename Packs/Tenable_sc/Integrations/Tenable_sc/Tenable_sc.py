@@ -981,7 +981,7 @@ def list_plugins(name, plugin_type, cve):
 def get_vulnearbilites(scan_results_id):
     query = {
         'scanID': scan_results_id,
-        'tool': 'vulndetails',
+        'tool': 'vulnipdetail',
         'type': 'vuln',
     }
 
