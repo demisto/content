@@ -770,7 +770,8 @@ class XSIAMBuild(Build):
     def set_marketplace_url(servers, branch_name, ci_build_number):
         logging.info('Copying custom build bucket to xsiam_instance_bucket.')
         # todo: from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/marketplacev2/content'
-        from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/2625991/marketplacev2/content'
+        # from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/2625991/marketplacev2/content'
+        from_bucket = 'marketplace-ci-build/content/builds/upload_mpv2/2677954/xsoar/content'
         output_file = f'{ARTIFACTS_FOLDER_MPV2}/Copy_custom_bucket_to_xsiam_machine.log'
         for server in servers:
             to_bucket = f'{MARKETPLACE_XSIAM_BUCKETS}/{server.name}'
