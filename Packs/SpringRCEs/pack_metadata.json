@@ -20,10 +20,12 @@
         "0-day",
         "zero day",
         "CVE-2022-22963",
+        "CVE-2022-22965",
         "Spring",
         "Spring4Shell",
         "CVE",
         "22963",
+        "22965",
         "RCE",
         "Spring Core",
         "Spring Cloud Function"
