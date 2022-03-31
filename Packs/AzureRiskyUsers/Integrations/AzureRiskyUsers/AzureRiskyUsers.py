@@ -352,7 +352,7 @@ def main():
     """
     params = demisto.params()
     args = demisto.args()
-    client_id = params.get('client_id').get('identifier', '')
+    client_id = params.get('client_id').get('password', '')
 
     verify_certificate = not params.get('insecure', False)
 
