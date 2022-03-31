@@ -790,7 +790,7 @@ script:
     - description: The unique ID assigned by the Cybereason platform for the Malop
       name: malop
       required: true
-    - description: Machine name to be quarantine
+    - description: Machine name whose files needs to be quarantined
       name: machine
       required: true
     - description: The complete Cybereason user name string for the user performing the request
@@ -802,7 +802,7 @@ script:
     - description: The unique ID assigned by the Cybereason platform for the Malop
       name: malop
       required: true
-    - description: Machine name to block a file
+    - description: Machine name whose files needs to be blocked
       name: machine
       required: true
     - description: The complete Cybereason user name string for the user performing the request
