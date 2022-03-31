@@ -6,12 +6,18 @@
     "default": false,
     "detached": false,
     "disabled": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    },
     "hours": 0,
     "hoursR": 0,
     "id": "Digital Shadows Intelligence Incident",
+    "layout": "Digital Shadows Intelligence Incident Layout",
     "locked": false,
     "name": "Digital Shadows Intelligence Incident",
     "onChangeRepAlg": 0,
+    "playbookId": "Digital Shadows - IoC Assessment & Enrichment",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

@@ -59,10 +59,25 @@
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "Phishing": {
+            "mandatory": true,
+            "display_name": "Phishing"
         }
     },
     "displayedImages": [
-        "CommonScripts"
+        "CommonScripts",
+        "CoreAlertFields",
+        "CommonTypes",
+        "Phishing"
     ],
     "itemPrefix": [
         "DS",
