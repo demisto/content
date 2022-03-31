@@ -37,6 +37,7 @@ class Client(BaseClient):
     def _get_cookies(self) -> requests.cookies.RequestsCookieJar:
         data = {'user_name': self._auth[0], 'password': self._auth[1]}
 
+        # authentication errors are raised here
         response = self._http_request('POST', 'login', json_data=data, resp_type='response')
 
         return response.cookies
@@ -731,37 +732,30 @@ def service_record_to_incident_context(service_record: Dict[str, Any]):
 def test_module(client: Client, params: dict) -> None:
     message: str = ''
 
-    try:
-        if service_record_list_command(client, {'type': 'all'}):
-            message = 'ok'
+    if service_record_list_command(client, {'type': 'all'}):
+        message = 'ok'
 
-        if params['isFetch']:
-            max_fetch = arg_to_number(params.get('max_fetch'))
-            if max_fetch is not None and (max_fetch > MAX_INCIDENTS_TO_FETCH or max_fetch <= 0):
-                raise DemistoException(f'Maximum number of service records to fetch exceeds the limit '
-                                       f'(restricted to {MAX_INCIDENTS_TO_FETCH}), or is below zero.')
+    if params['isFetch']:
+        max_fetch = arg_to_number(params.get('max_fetch'))
+        if max_fetch is not None and (max_fetch > MAX_INCIDENTS_TO_FETCH or max_fetch <= 0):
+            raise DemistoException(f'Maximum number of service records to fetch exceeds the limit '
+                                   f'(restricted to {MAX_INCIDENTS_TO_FETCH}), or is below zero.')
 
-            included_statuses = params.get('included_statuses')
-            statuses_set = set(argToList(included_statuses))
-            if statuses_set - STATUSES:
-                # todo needed? API lets us send unreal statuses
-                raise DemistoException(f'Statuses {statuses_set - STATUSES} were given and are not legal statuses. '
-                                       f'Statuses can be found by running the "sysaid-table-list" command with the '
-                                       f'"list_id=status" argument.')
+        included_statuses = params.get('included_statuses')
+        statuses_set = set(argToList(included_statuses))
+        if statuses_set - STATUSES:
+            raise DemistoException(f'Statuses {statuses_set - STATUSES} were given and are not legal statuses. '
+                                   f'Statuses can be found by running the "sysaid-table-list" command with the '
+                                   f'"list_id=status" argument.')
 
-            fetch_types = params.get('fetch_types')
-            fetch_types = 'all' if not fetch_types or 'all' in fetch_types else fetch_types
+        fetch_types = params.get('fetch_types')
+        fetch_types = 'all' if not fetch_types or 'all' in fetch_types else fetch_types
 
-            include_archived = argToBoolean(params.get('include_archived', False))
-            filters = {'status': included_statuses} if included_statuses else {}
+        include_archived = argToBoolean(params.get('include_archived', False))
+        filters = {'status': included_statuses} if included_statuses else {}
 
-            client.service_record_list_request(type_=fetch_types, limit=max_fetch, archive=int(include_archived), filters=filters)
+        client.service_record_list_request(type_=fetch_types, limit=max_fetch, archive=int(include_archived), filters=filters)
 
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure username and password are correctly set'
-        else:
-            raise e
     return return_results(message)
 
 
