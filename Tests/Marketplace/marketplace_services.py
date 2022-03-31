@@ -449,7 +449,7 @@ class Pack(object):
             pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count
         )
 
-    def is_feed_pack(self, yaml_content, yaml_type):
+    def add_pack_type_tags(self, yaml_content, yaml_type):
         """
         Checks if an integration is a feed integration. If so, updates Pack._is_feed
         Args:
@@ -462,22 +462,11 @@ class Pack(object):
         if yaml_type == 'Integration':
             if yaml_content.get('script', {}).get('feed', False) is True:
                 self._is_feed = True
+            if yaml_content.get('isFetchEvents', False) is True:
+                self._is_siem = True
         if yaml_type == 'Playbook':
             if yaml_content.get('name').startswith('TIM '):
                 self._is_feed = True
-
-
-    def is_siem_pack(self, yaml_content, yaml_type):
-        """
-        Checks if an pack is a SIEM pack. If so, updates Pack._is_siem
-
-        Args:
-            yaml_content: The yaml content extracted by yaml.safe_load().
-            yaml_type: The type of object to check.
-        """
-        if yaml_type == 'Integration':
-            if yaml_content.get('isFetchEvents', False) is True:
-                self._is_siem = True
         if yaml_type in SIEM_RULES_OBJECTS:
             self._is_siem = True
 
@@ -1678,7 +1667,7 @@ class Pack(object):
                             self._contains_filter = True
 
                     elif current_directory == PackFolders.PLAYBOOKS.value:
-                        self.is_feed_pack(content_item, 'Playbook')
+                        self.add_pack_type_tags(content_item, 'Playbook')
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
@@ -1687,7 +1676,7 @@ class Pack(object):
 
                     elif current_directory == PackFolders.INTEGRATIONS.value:
                         integration_commands = content_item.get('script', {}).get('commands', [])
-                        self.is_feed_pack(content_item, 'Integration')
+                        self.add_pack_type_tags(content_item, 'Integration')
                         folder_collected_items.append({
                             'id': content_item.get('commonfields', {}).get('id', ''),
                             'name': content_item.get('display', ''),
@@ -1822,21 +1811,21 @@ class Pack(object):
                         })
 
                     elif current_directory == PackFolders.PARSING_RULES.value:
-                        self.is_siem_pack(content_item, 'ParsingRule')
+                        self.add_pack_type_tags(content_item, 'ParsingRule')
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                         })
 
                     elif current_directory == PackFolders.MODELING_RULES.value:
-                        self.is_siem_pack(content_item, 'ModelingRule')
+                        self.add_pack_type_tags(content_item, 'ModelingRule')
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                         })
 
                     elif current_directory == PackFolders.CORRELATION_RULES.value:
-                        self.is_siem_pack(content_item, 'CorrelationRule')
+                        self.add_pack_type_tags(content_item, 'CorrelationRule')
                         folder_collected_items.append({
                             'id': content_item.get('global_rule_id', ''),
                             'name': content_item.get('name', ''),
