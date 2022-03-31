@@ -13,6 +13,9 @@ urllib3.disable_warnings()
 # Disable info logging from the api
 logging.getLogger().setLevel(logging.ERROR)
 
+# test
+
+
 XSOAR_TYPES_TO_OPENCTI = {
     'account': "User-Account",
     'domain': "Domain-Name",

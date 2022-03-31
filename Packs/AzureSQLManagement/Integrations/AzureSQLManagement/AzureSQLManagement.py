@@ -15,6 +15,8 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '2019-06-01-preview'
 ''' CLIENT CLASS '''
 
+# some changes
+
 
 class Client:
     """Client class to interact with the service API
