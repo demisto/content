@@ -168,7 +168,7 @@ class Pack(object):
         bool: whether the pack is a siem pack
         """
         return self._is_siem
-    
+
     @is_siem.setter
     def is_siem(self, is_siem):
         """ setter of is_siem
