@@ -156,6 +156,13 @@ class Pack(object):
         """
         return self._is_feed
 
+    @property
+    def is_siem(self):
+        """
+        bool: whether the pack is a siem pack
+        """
+        return self._is_siem
+
     @is_feed.setter
     def is_feed(self, is_feed):
         """ setter of is_feed
