@@ -100,6 +100,14 @@ configuration:
   name: fetch_fields
   required: false
   type: 12
+- additionalinfo: 'Filter the fetched incidents according to the given query. Query
+    example: "source_ip.value LIKE `192.168.1.*` AND dst = `192.168.1.12`" Note: if
+    provided, the `Severity` and `Subtype` arguments will be ignored.'
+  display: Fetch Filter
+  hidden: false
+  name: filter_query
+  required: false
+  type: 12
 - display: Incident type
   name: incidentType
   required: false

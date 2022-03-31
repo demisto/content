@@ -850,7 +850,8 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
                                   fetch_table: str,
                                   fetch_subtype: list,
                                   fetch_fields: str,
-                                  fetch_limit: str) -> str:
+                                  fetch_limit: str,
+                                  fetch_filter: str = '') -> str:
     """
     Prepares the SQL query for fetch incidents command
     Args:
@@ -868,12 +869,15 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
     time_filter = 'event_time' if 'log' in fetch_table else 'time_generated'
     query += f'WHERE {time_filter} Between TIMESTAMP("{fetch_timestamp}") ' \
              f'AND CURRENT_TIMESTAMP'
-    if fetch_subtype and 'all' not in fetch_subtype:
-        sub_types = [f'sub_type.value = "{sub_type}"' for sub_type in fetch_subtype]
-        query += f' AND ({" OR ".join(sub_types)})'
-    if fetch_severity and 'all' not in fetch_severity:
-        severities = [f'vendor_severity.value = "{severity}"' for severity in fetch_severity]
-        query += f' AND ({" OR ".join(severities)})'
+    if fetch_filter:
+        query += f' AND {fetch_filter}'
+    else:
+        if fetch_subtype and 'all' not in fetch_subtype:
+            sub_types = [f'sub_type.value = "{sub_type}"' for sub_type in fetch_subtype]
+            query += f' AND ({" OR ".join(sub_types)})'
+        if fetch_severity and 'all' not in fetch_severity:
+            severities = [f'vendor_severity.value = "{severity}"' for severity in fetch_severity]
+            query += f' AND ({" OR ".join(severities)})'
     query += f' ORDER BY {time_filter} ASC LIMIT {fetch_limit}'
     return query
 
@@ -1107,7 +1111,8 @@ def fetch_incidents(client: Client,
                     fetch_subtype: list,
                     fetch_fields: str,
                     fetch_limit: str,
-                    last_run: dict) -> Tuple[Dict[str, str], list]:
+                    last_run: dict,
+                    fetch_filter: str = '') -> Tuple[Dict[str, str], list]:
     last_fetched_event_timestamp = last_run.get('lastRun')
 
     if last_fetched_event_timestamp:
@@ -1116,7 +1121,7 @@ def fetch_incidents(client: Client,
         last_fetched_event_timestamp, _ = parse_date_range(first_fetch_timestamp)
         last_fetched_event_timestamp = last_fetched_event_timestamp.replace(microsecond=0)
     query = prepare_fetch_incidents_query(last_fetched_event_timestamp, fetch_severity, fetch_table,
-                                          fetch_subtype, fetch_fields, fetch_limit)
+                                          fetch_subtype, fetch_fields, fetch_limit, fetch_filter)
     demisto.debug('Query being fetched: {}'.format(query))
     records, _ = client.query_loggings(query)
     if not records:
@@ -1187,6 +1192,7 @@ def main():
             fetch_subtype = params.get('firewall_subtype')
             fetch_limit = params.get('limit')
             last_run = demisto.getLastRun()
+            fetch_filter = params.get('filter_query', '')
             next_run, incidents = fetch_incidents(client,
                                                   first_fetch_timestamp,
                                                   fetch_severity,
@@ -1194,7 +1200,8 @@ def main():
                                                   fetch_subtype,
                                                   fetch_fields,
                                                   fetch_limit,
-                                                  last_run)
+                                                  last_run,
+                                                  fetch_filter)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
     except Exception as e:
