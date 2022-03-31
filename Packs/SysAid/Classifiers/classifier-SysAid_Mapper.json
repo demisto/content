@@ -636,6 +636,31 @@
                         ]
                     }
                 },
+                "SysAid Notes": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "notes"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
                 "SysAid Parent ID": {
                     "complex": {
                         "accessor": "valueCaption",
@@ -1497,6 +1522,31 @@
                         ]
                     }
                 },
+                "SysAid Notes": {
+    "complex": {
+        "accessor": "value",
+        "filters": [
+            [
+                {
+                    "left": {
+                        "isContext": true,
+                        "value": {
+                            "simple": "info.key"
+                        }
+                    },
+                    "operator": "isEqualString",
+                    "right": {
+                        "value": {
+                            "simple": "notes"
+                        }
+                    }
+                }
+            ]
+        ],
+        "root": "info",
+        "transformers": []
+    }
+},
                 "SysAid Parent ID": {
                     "complex": {
                         "accessor": "valueCaption",
@@ -2358,6 +2408,31 @@
                         ]
                     }
                 },
+                "SysAid Notes": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "notes"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
                 "SysAid Parent ID": {
                     "complex": {
                         "accessor": "valueCaption",
@@ -3217,6 +3292,31 @@
                                 "operator": "DateStringToISOFormat"
                             }
                         ]
+                    }
+                },
+                "SysAid Notes": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "notes"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
                     }
                 },
                 "SysAid Parent ID": {

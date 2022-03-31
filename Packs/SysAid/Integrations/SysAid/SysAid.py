@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import requests
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, Callable
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -162,7 +162,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def asset_list_readable_response(responses: Union[dict, List[dict], str], remove_if_null: str) \
+def create_readable_response(responses: Union[dict, List[dict], str], handle_one_response: Callable, remove_if_null: str = None) \
         -> Union[str, List[Dict[str, str]]]:
     readable_response = []
 
@@ -173,64 +173,53 @@ def asset_list_readable_response(responses: Union[dict, List[dict], str], remove
         return responses
 
     for response in responses:
-        new_info = []
-        response_entry = {key: response[key] for key in ['id', 'name'] if key in response}
+        if remove_if_null:
+            response_entry = handle_one_response(response, remove_if_null)
+        else:
+            response_entry = handle_one_response(response)
 
-        if 'info' in response:
-            for info in response['info']:
-                if info['keyCaption'] in ['Model', 'Description'] and info[remove_if_null]:
-                    new_info.append(f'{info["keyCaption"]}: {info["valueCaption"]}')
-
-            response_entry['info'] = new_info
-        readable_response.append(response_entry)
+        if response_entry:
+            readable_response.append(response_entry)
 
     return readable_response
 
 
-def filter_list_readable_response(responses: Union[dict, List[dict], str]) -> Union[str, List[Dict[str, str]]]:
-    readable_response = []
+def asset_list_handler(response, remove_if_null):
+    new_info = []
+    response_entry = {key: response[key] for key in ['id', 'name'] if key in response}
+    if 'info' in response:
+        for info in response['info']:
+            if info['keyCaption'] in ['Model', 'Description'] and info[remove_if_null]:
+                new_info.append(f'{info["keyCaption"]}: {info["valueCaption"]}')
 
-    if isinstance(responses, dict):
-        responses = [responses]
-
-    if isinstance(responses, str):
-        return responses
-
-    for response in responses:
-        new_info = []
-        response_entry = {key: response[key] for key in ['id', 'type', 'caption'] if key in response}
-
-        if 'values' in response:
-            for info in response['values']:
-                new_info.append(f'{info["id"]}: {info["caption"]}')
-
-            response_entry['values'] = new_info
-        readable_response.append(response_entry)
-
-    return readable_response
+        response_entry['info'] = new_info
+    return response_entry
 
 
-def service_record_readable_response(responses: Union[dict, List[dict], str]) -> Union[str, List[Dict[str, str]]]:
-    readable_response = []
+def filter_list_handler(response):
+    new_info = []
+    response_entry = {key: response[key] for key in ['id', 'type', 'caption'] if key in response}
+    if 'values' in response:
+        for info in response['values']:
+            new_info.append(f'{info["id"]}: {info["caption"]}')
 
-    if isinstance(responses, dict):
-        responses = [responses]
+        response_entry['values'] = new_info
+    return response_entry
 
-    if isinstance(responses, str):
-        return responses
 
-    for response in responses:
-        response_entry = {'id': response['id']}
+def service_record_handler(response):
+    response_entry = {'id': response['id']}
+    if 'info' in response:
+        for info in response['info']:
+            if info['key'] in ['title', 'notes']:
+                response_entry[info['key']] = info['value']
+            if info['key'] in ['status', 'update_time', 'sr_type']:
+                response_entry[info['keyCaption']] = info['valueCaption']
 
-        if 'info' in response:
-            for info in response['info']:
-                if info['key'] in ['title', 'status', 'update_time', 'sr_type']:
-                    response_entry[info['keyCaption']] = str(info['valueCaption'])
+        if len(response_entry) in [5, 6]:
+            return response_entry
 
-            if len(response_entry) == 5:
-                readable_response.append(response_entry)
-
-    return readable_response
+    return None
 
 
 def extract_filters(custom_fields_keys: List[str], custom_fields_values: List[str]) -> Dict[str, Any]:
@@ -333,7 +322,7 @@ def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     else:
         response = client.asset_list_request(fields, offset, limit)
     headers = ['id', 'name', 'info']
-    readable_response = asset_list_readable_response(response, 'valueCaption')
+    readable_response = create_readable_response(response, asset_list_handler, 'valueCaption')
     command_results = CommandResults(
         outputs_prefix='SysAid.Asset',
         outputs_key_field='id',
@@ -360,7 +349,7 @@ def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
     response = client.asset_search_request(str(query), fields, limit, offset)
     headers = ['id', 'name', 'info']
-    readable_response = asset_list_readable_response(response, 'value')
+    readable_response = create_readable_response(response, asset_list_handler, 'value')
     command_results = CommandResults(
         outputs_prefix='SysAid.Asset',
         outputs_key_field='id',
@@ -381,7 +370,7 @@ def filter_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.filter_list_request(fields)
     headers = ['id', 'caption', 'type', 'values']
-    readable_response = filter_list_readable_response(response)
+    readable_response = create_readable_response(response, filter_list_handler)
     command_results = CommandResults(
         outputs_prefix='SysAid.Filter',
         outputs_key_field='id',
@@ -461,8 +450,8 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
     filters = extract_filters(custom_fields_keys, custom_fields_values)
 
     response = client.service_record_list_request(str(type_), fields, offset, limit, ids, archive, filters)
-    headers = ['id', 'Title', 'Status', 'Modify time', 'Service Record Type']
-    readable_response = service_record_readable_response(response)
+    headers = ['id', 'title', 'Status', 'Modify time', 'Service Record Type', 'notes']
+    readable_response = create_readable_response(response, service_record_handler)
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecord',
         outputs_key_field='id',
@@ -493,8 +482,8 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
     filters = extract_filters(custom_fields_keys, custom_fields_values)
 
     response = client.service_record_search_request(str(type_), str(query), fields, offset, limit, archive, filters)
-    headers = ['id', 'Title', 'Status', 'Modify time', 'Service Record Type']
-    readable_response = service_record_readable_response(response)
+    headers = ['id', 'title', 'Status', 'Modify time', 'Service Record Type', 'notes']
+    readable_response = create_readable_response(response, service_record_handler)
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecord',
         outputs_key_field='id',
@@ -575,8 +564,8 @@ def service_record_create_command(client: Client, args: Dict[str, Any]) -> Comma
     info = set_service_record_info(args)
 
     response = client.service_record_create_request(str(type_), info, fields, template_id)
-    headers = ['id', 'Title', 'Status', 'Modify time', 'Service Record Type']
-    readable_response = service_record_readable_response(response)
+    headers = ['id', 'title', 'Status', 'Modify time', 'Service Record Type', 'notes']
+    readable_response = create_readable_response(response, service_record_handler)
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecord',
         outputs_key_field='id',

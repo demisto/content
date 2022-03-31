@@ -369,6 +369,15 @@ script:
     - type: String
       contextPath: SysAid.ServiceRecord.status
       description: 'The status of the service record.'
+    - type: Date
+      contextPath: SysAid.ServiceRecord.update_time
+      description: 'The modify time of the service record.'
+    - type: String
+      contextPath: SysAid.ServiceRecord.sr_type
+      description: 'The type of the service record.'
+    - type: String
+      contextPath: SysAid.ServiceRecord.notes
+      description: 'The notes of the service record.'
   - name: sysaid-service-record-search
     description: 'Search by a query among all service records'
     arguments:
@@ -425,6 +434,15 @@ script:
     - type: String
       contextPath: SysAid.ServiceRecord.status
       description: 'The status of the service record.'
+    - type: Date
+      contextPath: SysAid.ServiceRecord.update_time
+      description: 'The modify time of the service record.'
+    - type: String
+      contextPath: SysAid.ServiceRecord.sr_type
+      description: 'The type of the service record.'
+    - type: String
+      contextPath: SysAid.ServiceRecord.notes
+      description: 'The notes of the service record.'
   - name: sysaid-service-record-update
     description: 'The valid statuses can be retrieved using the "sysaid-table-list" command.'
     arguments:
@@ -745,6 +763,15 @@ script:
     - type: String
       contextPath: SysAid.ServiceRecord.status
       description: 'The status of the service record.'
+    - type: Date
+      contextPath: SysAid.ServiceRecord.update_time
+      description: 'The modify time of the service record.'
+    - type: String
+      contextPath: SysAid.ServiceRecord.sr_type
+      description: 'The type of the service record.'
+    - type: String
+      contextPath: SysAid.ServiceRecord.notes
+      description: 'The notes of the service record.'
   - name: sysaid-service-record-delete
     description: 'Delete one or more service records.'
     arguments:
