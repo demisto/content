@@ -1,7 +1,7 @@
 id: a31dc98b-dc42-4ac1-8a9b-342df7522cb3
 version: 41
 vcShouldKeepItemLegacyProdMachine: false
-name: ACTI Incident Enrichment
+name: This playbook automatically queries Accenture IntelGraph API to pull context for IOC and associated intelligence reports into XSOAR incidents.
 description: This playbook enriches Incidents.
 starttaskid: "0"
 tasks:
