@@ -7,7 +7,6 @@ configuration:
   name: client_id
   required: true
   type: 9
-  defaultValue: ec854987-95fa-4c8f-8056-768dd0f409ac
   hiddenusername: true
   displaypassword: Client ID
 - display: Use system proxy settings
