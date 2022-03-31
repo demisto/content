@@ -8,14 +8,29 @@ description: |
 
   Later, it was discovered that these are two separate vulnerabilities, one in Spring Core and the other in Spring Cloud Function:
 
-  * RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell.
-  * RCE in "Spring Cloud Function", aka CVE-2022-22963.
+  **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell.**
+  **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL".**
 
-  Spring Cloud Function unaffected versions:
+  **Spring Core vulnerability requirements:**
+
+  * JDK 9 or higher
+  * Apache Tomcat as the Servlet container
+  * Packaged as WAR
+  * spring-webmvc or spring-webflux dependency
+  * Spring Framework versions 5.3.0 to 5.3.17, 5.2.0 to 5.2.19, and older versions
+
+  **Spring Cloud Function unaffected versions:**
 
   * 3.1.7
   * 3.2.3
 
+  **Note:** You can execute this playbook using the Incidents view by creating a new incident or by using a dedicated job to schedule the playbook execution.
+
+  **Additional resources:**
+
+  [Spring Framework RCE](https://spring.io/blog/2022/03/31/spring-framework-rce-early-announcement)
+  [CVE-2022-22963: Remote code execution in Spring Cloud Function by malicious Spring Expression
+  ](https://tanzu.vmware.com/security/cve-2022-22963)
 starttaskid: "0"
 tasks:
   "0":
@@ -447,7 +462,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 110,
+          "x": 790,
           "y": 1630
         }
       }
@@ -473,11 +488,12 @@ tasks:
     nexttasks:
       '#none#':
       - "13"
+      - "30"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 570,
+          "x": 110,
           "y": 1630
         }
       }
@@ -511,8 +527,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 1750
+          "x": -120,
+          "y": 1770
         }
       }
     note: false
@@ -541,8 +557,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 110,
-          "y": 1750
+          "x": 790,
+          "y": 1770
         }
       }
     note: false
@@ -587,7 +603,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 2070
+          "y": 2080
         }
       }
     note: false
@@ -614,7 +630,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 2450
+          "y": 2460
         }
       }
     note: false
@@ -644,7 +660,7 @@ tasks:
       {
         "position": {
           "x": -340,
-          "y": 2280
+          "y": 2290
         }
       }
     note: false
@@ -678,7 +694,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 2280
+          "y": 2290
         }
       }
     note: false
@@ -708,7 +724,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 1930
+          "y": 1940
         }
       }
     note: false
@@ -1056,8 +1072,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -350,
-          "y": 1750
+          "x": -570,
+          "y": 1770
         }
       }
     note: false
@@ -1086,8 +1102,44 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -350,
+          "x": -570,
           "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: d4f544b5-40c6-4338-8634-a12e1615dc3c
+    type: regular
+    task:
+      id: d4f544b5-40c6-4338-8634-a12e1615dc3c
+      version: -1
+      name: Install Spring Framework and Boot unaffected versions
+      description: |-
+        For CVE-2022-22965, please patch with one of the following versions:
+
+        [Spring Framework 5.3.18](https://github.com/spring-projects/spring-framework/releases/tag/v5.3.18)
+        [Spring Framework 5.2.20](https://github.com/spring-projects/spring-framework/releases/tag/v5.2.20.RELEASE)
+
+        [Spring Boot 2.6.6](https://github.com/spring-projects/spring-boot/releases/tag/v2.6.6) and [Spring Boot 2.5.12](https://github.com/spring-projects/spring-boot/releases/tag/v2.5.12) that depend on Spring Framework 5.3.18 have also been released.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1770
         }
       }
     note: false
@@ -1107,9 +1159,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2695,
-        "width": 1300,
-        "x": -350,
+        "height": 2705,
+        "width": 1740,
+        "x": -570,
         "y": -180
       }
     }
@@ -1117,7 +1169,7 @@ view: |-
 inputs:
 - key: RelatedCVEs
   value:
-    simple: CVE-2022-22963​
+    simple: CVE-2022-22963,CVE-2022-22965
   required: false
   description: The vulnerability assigned CVE.
   playbookInputQuery:
@@ -1130,13 +1182,29 @@ inputs:
 
       Later, it was discovered that these are two separate vulnerabilities, one in Spring Core and the other in Spring Cloud Function:
 
-      * RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell.
-      * RCE in "Spring Cloud Function", aka CVE-2022-22963.
+      **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell.**
+      **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL".**
 
-      Spring Cloud Function unaffected versions:
+      **Spring Core vulnerability requirements:**
+
+      * JDK 9 or higher
+      * Apache Tomcat as the Servlet container
+      * Packaged as WAR
+      * spring-webmvc or spring-webflux dependency
+      * Spring Framework versions 5.3.0 to 5.3.17, 5.2.0 to 5.2.19, and older versions
+
+      **Spring Cloud Function unaffected versions:**
 
       * 3.1.7
       * 3.2.3
+
+      **Note:** You can execute this playbook using the Incidents view by creating a new incident or by using a dedicated job to schedule the playbook execution.
+
+      **Additional resources:**
+
+      [Spring Framework RCE](https://spring.io/blog/2022/03/31/spring-framework-rce-early-announcement)
+      [CVE-2022-22963: Remote code execution in Spring Cloud Function by malicious Spring Expression
+      ](https://tanzu.vmware.com/security/cve-2022-22963)
   required: false
   description: The playbook description. Will be used in the Rapid Breach Response - Set Incident Info sub-playbook.
   playbookInputQuery:
