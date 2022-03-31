@@ -547,7 +547,7 @@ def upload_zipped_packs(client: demisto_client,
         'Content-Type': 'multipart/form-data'
     }
     # todo: check if need this
-    # auth_settings = ['api_key', 'csrf_token', 'x-xdr-auth-id']
+    auth_settings = ['api_key', 'csrf_token', 'x-xdr-auth-id']
     file_path = os.path.abspath(pack_path)
     files = {'file': file_path}
 
@@ -557,7 +557,7 @@ def upload_zipped_packs(client: demisto_client,
     try:
         response_data, status_code, _ = client.api_client.call_api(resource_path='/contentpacks/installed/upload',
                                                                    method='POST',
-                                                                   # auth_settings=auth_settings,
+                                                                   auth_settings=auth_settings,
                                                                    header_params=header_params, files=files)
 
         if 200 <= status_code < 300:
