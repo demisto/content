@@ -2,6 +2,7 @@ id: 5a524514-cb58-46c6-892a-521a7794a58d
 version: 38
 vcShouldKeepItemLegacyProdMachine: false
 name: ACTI Create Relationships
+description: Helps in creating relationships between indicators and reports.
 starttaskid: "0"
 tasks:
   "0":
