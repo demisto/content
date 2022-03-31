@@ -12,6 +12,7 @@ Spring Cloud Function unaffected versions:
 * 3.1.7
 * 3.2.3
 
+Note: you can run the playbook using the Incidents view by creating a new incident or using a dedicated job to schedule the playbook execution.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
