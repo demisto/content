@@ -1,0 +1,9 @@
+!automox-devices-list limit=1
+!automox-command-run command=GetOS device_id=1375363
+!automox-groups-list limit=1
+!automox-organization-users-list limit=1
+!automox-organizations-list limit=1
+!automox-policies-list limit=1
+!automox-vulnerability-sync-batches-list limit=1
+!automox-vulnerability-sync-file-upload entry_id="1075@1a203850-514b-4ba5-848e-f944bd9ab460"
+!automox-vulnerability-sync-tasks-list limit=1

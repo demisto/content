@@ -1,8 +1,9 @@
-## BaseIntegration Help
+# Automox Help
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+## Configuring your Automox XSOAR Instance
+In order for the XSOAR Automox Integration to authenticate with the Automox API, you'll need to get an API key from the Automox console. Here's how:
+* Navigate to the [Automox console](https://console.automox.com/) and log in.
+* Once you're logged in, navigate to the "Keys" page under "Settings".
+* Here you can add a new key for XSOAR (recommended), or use an existing one.
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
-
+For more information about managing keys, please read our [support article](https://support.automox.com/help/managing-keys) about it (with pictures!)

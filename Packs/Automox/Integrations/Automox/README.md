@@ -9,7 +9,7 @@ This integration was integrated and tested as of 2022-03-21 with the Automox API
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Organization ID | A comma-separated list of organization ids. When specified, data pulled from Automox will only belong to these organizations; otherwise, the default permissions for this API key will be used. | False |
+    | Organization ID | A comma-separated list of organization ids. When specified, data pulled from Automox will only belong to this organization; otherwise, the default permissions for this API key will be used. | False |
     | API Key | The API Key to use for connection | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -20,7 +20,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### automox-devices-list
 ***
-List all devices in an Automox instance based on group and organization permissions.
+List all devices in Automox based on group and organization permissions.
 
 
 #### Base Command
@@ -100,15 +100,105 @@ List all devices in an Automox instance based on group and organization permissi
 
 #### Command Example
 ```
-!automox-devices-list
+!automox-devices-list limit=1
+```
+
+#### Context Example
+```json
+{
+    "Automox": {
+        "Devices": {
+            "agent_version": "string",
+            "commands": [
+                {
+                    "command_type_name": "InstallUpdate",
+                    "args": "KB12345 KB67890",
+                    "exec_time": "2017-06-29T16:39:50.951Z"
+                }
+            ],
+            "compliant": true,
+            "connected": true,
+            "create_time": "2019-08-24T14:15:22Z",
+            "custom_name": "string",
+            "deleted": true,
+            "display_name": "string",
+            "exception": true,
+            "id": 0,
+            "ip_addrs": [
+                "string"
+            ],
+            "ip_addrs_private": [
+                "string"
+            ],
+            "is_compatible": true,
+            "is_delayed_by_notification": true,
+            "is_delayed_by_user": true,
+            "last_disconnect_time": "2019-08-24T14:15:22Z",
+            "last_logged_in_user": "string",
+            "last_process_time": "string",
+            "last_refresh_time": "string",
+            "last_scan_failed": true,
+            "last_update_time": "string",
+            "name": "string",
+            "needs_attention": true,
+            "needs_reboot": true,
+            "next_patch_time": "string",
+            "notification_count": 0,
+            "organization_id": 0,
+            "os_family": "string",
+            "os_name": "string",
+            "os_version": "string",
+            "patch_deferral_count": 0,
+            "patches": 0,
+            "pending": true,
+            "pending_patches": 0,
+            "policy_status": [
+                {
+                    "id": 0,
+                    "organization_id": 0,
+                    "policy_id": 0,
+                    "server_id": 0,
+                    "policy_name": "string",
+                    "policy_type_name": "patch",
+                    "status": 0,
+                    "result": "string",
+                    "create_time": "string"
+                }
+            ],
+            "reboot_is_delayed_by_notification": true,
+            "reboot_is_delayed_by_user": true,
+            "reboot_notification_count": 0,
+            "refresh_interval": 0,
+            "serial_number": "string",
+            "server_group_id": 0,
+            "status": {
+                "device_status": "string",
+                "agent_status": "string",
+                "policy_status": "string",
+                "policy_statuses": [
+                    {
+                        "id": 0,
+                        "compliant": true
+                    }
+                ]
+            },
+            "tags": [
+                "string"
+            ],
+            "timezone": "string",
+            "total_count": 0,
+            "uptime": 0,
+            "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f"
+        }
+    }
+}
 ```
 
 #### Human Readable Output
-##### Devices
-
-| agent_version | commands                                                                                           | compliant | connected | create_time          | custom_name | deleted | display_name | id  | ip_addrs | ip_addrs_private | is_compatible | is_delayed_by_notification | is_delayed_by_user | last_disconnect_time | last_logged_in_user | last_process_time | last_refresh_time | last_scan_failed | last_update_time | name   | needs_attention | needs_reboot | next_patch_time | notification_count | organization_id | os_family | os_name | os_version | patch_deferral_count | patches | pending | pending_patches | policy_status.0.create_time | policy_status.0.id | policy_status.0.organization_id | policy_status.0.policy_id | policy_status.0.policy_name | policy_status.0.policy_type_name | policy_status.0.result | policy_status.0.server_id | policy_status.0.status | reboot_is_delayed_by_notification | reboot_is_delayed_by_user | reboot_notification_count | refresh_interval | serial_number | server_group_id | status                                                                                                                          | tags   | timezone | uptime | uuid                                 |
-| ------------- | -------------------------------------------------------------------------------------------------- | --------- | --------- | -------------------- | ----------- | ------- | ------------ | --- | -------- | ---------------- | ------------- | -------------------------- | ------------------ | -------------------- | ------------------- | ----------------- | ----------------- | ---------------- | ---------------- | ------ | --------------- | ------------ | --------------- | ------------------ | --------------- | --------- | ------- | ---------- | -------------------- | ------- | ------- | --------------- | --------------------------- | ------------------ | ------------------------------- | ------------------------- | --------------------------- | -------------------------------- | ---------------------- | ------------------------- | ---------------------- | --------------------------------- | ------------------------- | ------------------------- | ---------------- | ------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- | ------ | ------------------------------------ |
-| string        | args: KB12345 KB67890,<br>command_type_name: InstallUpdate,<br>exec_time: 2017-06-29T16:39:50.951Z | true      | true      | 2019-08-24T14:15:22Z | string      | true    | string       | 0   | 1.1.1.1  | 1.1.1.1          | true          | true                       | true               | 2019-08-24T14:15:22Z | string              | string            | string            | true             | string           | string | true            | true         | string          | 0                  | 0               | string    | string  | string     | 0                    | 0       | true    | 0               | string                      | 0                  | 0                               | 0                         | string                      | patch                            | string                 | 0                         | 0                      | true                              | true                      | 0                         | 0                | string        | 0               | {"agent_status": "string","device_status": "string","policy_status": "string","policy_statuses": [{"compliant": true,"id": 0}]} | string | string   | 0      | 095be615-a8ad-4c33-8e9c-c7612fbf6c9f |
+>### Devices
+>| agent_version | commands                                                                                                | compliant | connected | create_time          | custom_name | deleted | display_name | exception | id  | ip_addrs | ip_addrs_private | is_compatible | is_delayed_by_notification | is_delayed_by_user | last_disconnect_time | last_logged_in_user | last_process_time | last_refresh_time | last_scan_failed | last_update_time | name   | needs_attention | needs_reboot | next_patch_time | notification_count | organization_id | os_family | os_name | os_version | patch_deferral_count | patches | pending | pending_patches | policy_status                                                                                                                                                           | reboot_is_delayed_by_notification | reboot_is_delayed_by_user | reboot_notification_count | refresh_interval | serial_number | server_group_id | status                                                                                                                          | tags   | timezone | total_count | uptime | uuid                                 |
+>| ------------- | ------------------------------------------------------------------------------------------------------- | --------- | --------- | -------------------- | ----------- | ------- | ------------ | --------- | --- | -------- | ---------------- | ------------- | -------------------------- | ------------------ | -------------------- | ------------------- | ----------------- | ----------------- | ---------------- | ---------------- | ------ | --------------- | ------------ | --------------- | ------------------ | --------------- | --------- | ------- | ---------- | -------------------- | ------- | ------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | ------------------------- | ------------------------- | ---------------- | ------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- | ----------- | ------ | ------------------------------------ |
+>| string        | command_type_name: InstallUpdate<br>args: KB12345 KB67890<br>exec_time: 2017-06-29T16:39:50.951Z | true      | true      | 2019-08-24T14:15:22Z | string      | true    | string       | true      | 0   | 1.1.1.1  | 1.1.1.1          | true          | true                       | true               | 2019-08-24T14:15:22Z | string              | string            | string            | true             | string           | string | true            | true         | string          | 0                  | 0               | string    | string  | string     | 0                    | 0       | true    | 0               | id: 0<br>organization_id: 0<br>policy_id: 0<br>server_id: 0<br>policy_name: string<br>policy_type_name: patch<br>status: 0<br>result: string<br>create_time: string | true                              | true                      | 0                         | 0                | string        | 0               | {"device_status": "string","agent_status": "string","policy_status": "string","policy_statuses": [{"id": 0,"compliant": true}]} | string | string   | 0           | 0      | 095be615-a8ad-4c33-8e9c-c7612fbf6c9f |
 
 ### automox-organizations-list
 ***
@@ -138,16 +228,30 @@ List all Automox organizations based on user permissions.
 | Automox.Organizations.device_limit | Number | The organization device limit |
 | Automox.Organizations.device_count | Number | The organization device count |
 
-#### Command Example
-```
-!automox-organizations-list
+#### Command example
+```!automox-organizations-list limit=1```
+#### Context Example
+```json
+{
+    "Automox": {
+        "Organizations": {
+            "create_time": "2019-08-27T21:59:19+0000",
+            "device_count": 26,
+            "device_limit": null,
+            "id": 9237,
+            "name": "string",
+            "parent_id": 65,
+            "server_limit": 0
+        }
+    }
+}
 ```
 
 #### Human Readable Output
-##### Organizations
-| create_time          | device_count | device_limit | id  | name   | parent_id | server_limit |
-| -------------------- | ------------ | ------------ | --- | ------ | --------- | ------------ |
-| 2019-08-24T14:15:22Z | 0            | 0            | 0   | string | 0         | 0            |
+>### Organizations
+>| create_time              | device_count | device_limit | id   | name   | parent_id | server_limit |
+>| ------------------------ | ------------ | ------------ | ---- | ------ | --------- | ------------ |
+>| 2019-08-27T21:59:19+0000 | 26           |              | 9237 | string | 65        | 0            |
 ### automox-organization-users-list
 ***
 List all Automox users within an organization.
@@ -180,16 +284,44 @@ List all Automox users within an organization.
 | Automox.Users.rbac_roles.name | String | The RBAC role name |
 | Automox.Users.rbac_roles.organization_id | Number | Identifier of organization |
 
-#### Command Example
-```
-!automox-organization-users-list
+#### Command example
+```!automox-organization-users-list limit=1```
+#### Context Example
+```json
+{
+    "Automox": {
+        "Users": {
+            "email": "string",
+            "firstname": "string",
+            "id": 1,
+            "lastname": "string",
+            "orgs": [
+                {
+                    "id": 1,
+                    "name": "string"
+                }
+            ],
+            "rbac_roles": [
+                {
+                    "id": 0,
+                    "name": "string",
+                    "organization_id": 1
+                }
+            ],
+            "saml_enabled": true,
+            "tags": [
+                "string"
+            ]
+        }
+    }
+}
 ```
 
 #### Human Readable Output
 ##### Organization Users
 | id  | firstname | lastname | email  | orgs                         | tags   | saml_enabled | rbac_roles                                        |
 | --- | --------- | -------- | ------ | ---------------------------- | ------ | ------------ | ------------------------------------------------- |
-| 0   | string    | string   | string | [{"id": 0,"name": "string"}] | string | true         | [{"id": 0,"name": "string","organization_id": 0}] |
+| 0   | string    | string   | string | id: 0<br>name: string | string | true         | id: 0<br>name: string<br>organization_id: 0 |
 ### automox-vulnerability-sync-batch-action
 ***
 Perform an action on an Automox Vulnerability Sync batch.
@@ -272,14 +404,46 @@ Get details about a Vulnerability Sync batch.
 
 #### Command Example
 ```
-!automox-vulnerability-sync-batch-get
+!automox-vulnerability-sync-batch-get batch_id=1
+```
+
+#### Context Example
+```json
+{
+    "Automox": {
+        "Batch": {
+            "created_by": {
+                "id": 0,
+                "firstname": "string",
+                "lastname": "string",
+                "email": "string"
+            },
+            "cve_count": 0,
+            "id": 1,
+            "impacted_device_count": 0,
+            "issue_count": 0,
+            "organization_id": 1,
+            "source": "string",
+            "status": "processing",
+            "task_count": 0,
+            "unknown_host_count": 0,
+            "updated_by": {
+                "id": 0,
+                "firstname": "string",
+                "lastname": "string",
+                "email": "string"
+            },
+            "uploaded_at": "2019-08-24T14:15:22Z"
+        }
+    }
+}
 ```
 
 #### Human Readable Output
-##### Batch
-| id  | organization_id | status     | source | created_by                                                      | updated_by                                                      | uploaded_at          | task_count | unknown_host_count | impacted_device_count | issue_count | cve_count |
-| --- | --------------- | ---------- | ------ | --------------------------------------------------------------- | --------------------------------------------------------------- | -------------------- | ---------- | ------------------ | --------------------- | ----------- | --------- |
-| 0   | 0               | processing | string | id: 0<br>firstname: string<br>lastname: string<br>email: string | id: 0<br>firstname: string<br>lastname: string<br>email: string | 2019-08-24T14:15:22Z | 0          | 0                  | 0                     | 0           | 0         |
+>### Batch
+>| created_by                                                          | cve_count | id  | impacted_device_count | issue_count | organization_id | source | status     | task_count | unknown_host_count | updated_by                                                          | uploaded_at          |
+>| ------------------------------------------------------------------- | --------- | --- | --------------------- | ----------- | --------------- | ------ | ---------- | ---------- | ------------------ | ------------------------------------------------------------------- | -------------------- |
+>| id: 0<br>firstname: string<br>lastname: string<br>email: string<br> | 0         | 1   | 0                     | 0           | 1               | string | processing | 0          | 0                  | id: 0<br>firstname: string<br>lastname: string<br>email: string<br> | 2019-08-24T14:15:22Z |
 
 ### automox-vulnerability-sync-batches-list
 ***
@@ -320,16 +484,45 @@ Get a list of Vulnerability Sync batches.
 | Automox.VulnSyncBatches.impacted_device_count | Number | Number of devices that are impacted by batch |
 | Automox.VulnSyncBatches.issue_count | Number | Number of issues identified with batch |
 | Automox.VulnSyncBatches.cve_count | Number | Number of CVEs that are impacted by batch |
-#### Command Example
-```
-!automox-vulnerability-sync-batches-list
+#### Command example
+```!automox-vulnerability-sync-batches-list limit=1```
+#### Context Example
+```json
+{
+    "Automox": {
+        "VulnSyncBatches": {
+            "created_by": {
+                "id": 0,
+                "firstname": "string",
+                "lastname": "string",
+                "email": "string"
+            },
+            "cve_count": 0,
+            "id": 1,
+            "impacted_device_count": 0,
+            "issue_count": 0,
+            "organization_id": 1,
+            "source": "string",
+            "status": "processing",
+            "task_count": 0,
+            "unknown_host_count": 0,
+            "updated_by": {
+                "id": 0,
+                "firstname": "string",
+                "lastname": "string",
+                "email": "string"
+            },
+            "uploaded_at": "2019-08-24T14:15:22Z"
+        }
+    }
+}
 ```
 
 #### Human Readable Output
-##### Batches
-| id  | organization_id | status     | source | created_by                                                      | updated_by                                                      | uploaded_at          | task_count | unknown_host_count | impacted_device_count | issue_count | cve_count |
-| --- | --------------- | ---------- | ------ | --------------------------------------------------------------- | --------------------------------------------------------------- | -------------------- | ---------- | ------------------ | --------------------- | ----------- | --------- |
-| 0   | 0               | processing | string | id: 0<br>firstname: string<br>lastname: string<br>email: string | id: 0<br>firstname: string<br>lastname: string<br>email: string | 2019-08-24T14:15:22Z | 0          | 0                  | 0                     | 0           | 0         |
+>### Batches
+>| created_by                                                          | cve_count | id  | impacted_device_count | issue_count | organization_id | source | status     | task_count | unknown_host_count | updated_by                                                          | uploaded_at          |
+>| ------------------------------------------------------------------- | --------- | --- | --------------------- | ----------- | --------------- | ------ | ---------- | ---------- | ------------------ | ------------------------------------------------------------------- | -------------------- |
+>| id: 0<br>firstname: string<br>lastname: string<br>email: string<br> | 0         | 1   | 0                     | 0           | 1               | string | processing | 0          | 0                  | id: 0<br>firstname: string<br>lastname: string<br>email: string<br> | 2019-08-24T14:15:22Z |
 
 ### automox-vulnerability-sync-tasks-list
 ***
@@ -379,16 +572,58 @@ Get a list of Automox tasks.
 | Automox.VulnSyncTasks.updated_at | Date | Datetime the task was last updated at |
 | Automox.VulnSyncTasks.completed_at | Date | Datetime the task was completed |
 
-#### Command Example
-```
-!automox-vulnerability-sync-tasks-list
+#### Command example
+```!automox-vulnerability-sync-tasks-list limit=1```
+#### Context Example
+```json
+{
+    "Automox": {
+        "VulnSyncTasks": {
+            "completed_at": "2022-03-30 20:00:03",
+            "created_at": "2022-03-29T19:46:12+0000",
+            "created_by_user": {
+                "email": "string",
+                "firstname": "string",
+                "id": 19017,
+                "lastname": "string"
+            },
+            "cves": [],
+            "id": 1221,
+            "last_updated_by_user": {
+                "email": "string",
+                "firstname": "string",
+                "id": 19017,
+                "lastname": "string"
+            },
+            "notes": "",
+            "organization_id": 9237,
+            "payload": {
+                "package_versions": [
+                    {
+                        "display_name": "2020-05 Cumulative Update for Windows 10 Version 1809 for x64-based Systems (KB4551853)",
+                        "id": "223683225",
+                        "name": "3f646594-9a4f-4b7a-bb7b-1932a5b490a6",
+                        "requires_reboot": false,
+                        "version": "1"
+                    },
+                ],
+                "patch_id": "CVE-2018-0886",
+                "severity": "critical"
+            },
+            "source": "Automox",
+            "status": "executed",
+            "task_type": "patch-now",
+            "updated_at": "2022-03-30T20:00:03+0000"
+        }
+    }
+}
 ```
 
 #### Human Readable Output
-##### Tasks
-| id  | organization_id | task_type | payload                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | source  | notes | status            | created_by_user                                                           | last_updated_by_user                                                      | created_at               | updated_at               | completed_at | cves |
-| --- | --------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ----- | ----------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------ | ------------------------ | ------------ | ---- |
-| 69  | 10586           | patch-now | {"patch_id": "CVE-2020-16937","severity": "critical","package_versions": [{"id": "226977092","name": "bcdd12d9-e56a-46be-88f6-8a97a9f9ad18","version": "200","display_name": "2020-10 Cumulative Update for .NET Framework 3.5 and 4.8 for Windows 10 Version 1903 for x64 (KB4578974)","requires_reboot": false},{"id": "226977252","name": "bcdd12d9-e56a-46be-88f6-8a97a9f9ad18","version": "200","display_name": "2020-10 Cumulative Update for .NET Framework 3.5 and 4.8 for Windows 10 Version 1903 for x64 (KB4578974)","requires_reboot": false}]} | Automox |       | awaiting_approval | id: 12381<br>email: user@example.com<br>firstname: user<br>lastname: user | id: 12381<br>email: user@example.com<br>firstname: user<br>lastname: user | 2021-09-10T13:51:40+0000 | 2021-09-10T13:51:40+0000 |              |      |
+>### Tasks
+>|completed_at|created_at|created_by_user|cves|id|last_updated_by_user|notes|organization_id|payload|source|status|task_type|updated_at|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 2022-03-30 20:00:03 | 2022-03-29T19:46:12+0000 | id: 19017<br/>email: string<br/>firstname: string<br/>lastname: string |  | 1221 | id: 19017<br/>email: string<br/>firstname: string<br/>lastname: string |  | 9237 | patch_id: CVE-2018-0886<br/>severity: critical<br/>package_versions: {'id': '223683225', 'name': '3f646594-9a4f-4b7a-bb7b-1932a5b490a6', 'version': '1', 'display_name': '2020-05 Cumulative Update for Windows 10 Version 1809 for x64-based Systems (KB4551853)', 'requires_reboot': False} | Automox | executed | patch-now | 2022-03-30T20:00:03+0000 |
 ### automox-vulnerability-sync-file-upload
 ***
 Upload a vulnerability report to Automox Vulnerability Sync.
@@ -413,16 +648,24 @@ Upload a vulnerability report to Automox Vulnerability Sync.
 | --- | --- | --- |
 | Automox.VulnUpload.batch_id | Number | Identifier of batch |
 
-#### Command Example
-```
-!automox-vulnerability-sync-file-upload
+#### Command example
+```!automox-vulnerability-sync-file-upload entry_id="1075@1a203850-514b-4ba5-848e-f944bd9ab460"```
+#### Context Example
+```json
+{
+    "Automox": {
+        "VulnUpload": {
+            "batch_id": 1241
+        }
+    }
+}
 ```
 
 #### Human Readable Output
-##### Upload
+### Upload
 | batch_id |
 | -------- |
-| 0        |
+| 1241     |
 ### automox-policies-list
 ***
 Retrieve a list of Automox policies belonging to an organization.
@@ -450,16 +693,34 @@ Retrieve a list of Automox policies belonging to an organization.
 | Automox.Policies.policy_type_name | String | Policy type name |
 | Automox.Policies.server_groups | Number | List of identifiers for device groups assigned to the policy |
 
-#### Command Example
-```
-!automox-policies-list
+#### Command example
+```!automox-policies-list limit=1```
+#### Context Example
+```json
+{
+    "Automox": {
+        "Policies": {
+            "create_time": "2021-03-03T21:29:09+0000",
+            "id": 112411,
+            "name": "string",
+            "notes": "",
+            "organization_id": 9237,
+            "policy_type_name": "patch",
+            "server_count": 1,
+            "server_groups": [
+                85579,
+                86754
+            ]
+        }
+    }
+}
 ```
 
 #### Human Readable Output
-##### Policies
-| id  | organization_id | name   | policy_type_name | notes | server_count | server_groups | create_time |
-| --- | --------------- | ------ | ---------------- | ----- | ------------ | ------------- | ----------- |
-| 0   | 0               | string | patch            |       | 0            | 0             | string      |
+>### Policies
+>| create_time              | id     | name             | notes | organization_id | policy_type_name | server_count | server_groups
+>| ------------------------ | ------ | ---------------- | ----- | --------------- | ---------------- | ------------ | ---------------
+>| 2021-03-03T21:29:09+0000 | 112411 | string |       | 9237            | patch            | 1            | 85579,<br>86754
 ### automox-command-run
 ***
 Run a command on a device in Automox
@@ -479,7 +740,11 @@ Run a command on a device in Automox
 
 #### Context Output
 There is no context output for this command.
+#### Command example
+```!automox-command-run command=GetOS device_id=1375363```
+#### Human Readable Output
 
+>Command: GetOS successfully sent to Automox device ID: 1375363
 ### automox-device-delete
 ***
 Delete a device from Automox
@@ -525,7 +790,7 @@ Update a device's information in Automox
 There is no context output for this command.
 ### automox-groups-list
 ***
-List all groups in an Automox instance based on organization permissions.
+List all groups in Automox based on organization permissions.
 
 
 #### Base Command
@@ -555,9 +820,33 @@ List all groups in an Automox instance based on organization permissions.
 | Automox.Groups.server_count | Number | Number of devices assigned to group |
 | Automox.Groups.policies | Number | List of policies assigned to group |
 
-#### Command Example
-```
-!automox-groups-list
+#### Command example
+```!automox-groups-list limit=1```
+#### Context Example
+```json
+{
+    "Automox": {
+        "Groups": {
+            "enable_os_auto_update": true,
+            "id": 1,
+            "name": "string",
+            "notes": "string",
+            "organization_id": 1,
+            "parent_server_group_id": 0,
+            "policies": [
+                163746,
+                167809,
+                172118,
+                172076,
+                156951,
+                147303
+            ],
+            "refresh_interval": 360,
+            "server_count": 5,
+            "ui_color": "#059F1D"
+        }
+    }
+}
 ```
 
 #### Human Readable Output

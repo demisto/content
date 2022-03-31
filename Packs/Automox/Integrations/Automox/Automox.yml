@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - display: Organization ID
-  additionalinfo: A comma-separated list of organization ids. When specified, data pulled from Automox will only belong to these organizations; otherwise, the default permissions for this API key will be used.
+  additionalinfo: When specified, data pulled from Automox will only belong to this organization; otherwise, the default permissions for this API key will be used.
   name: org_id
   required: false
   type: 0
@@ -22,13 +22,13 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+description: 'Administrate your IT organization from XSOAR with comprehensive commands for the Automox platform.'
 display: Automox
 name: Automox
 script:
   commands:
   - name: automox-devices-list
-    description: 'List all devices in an Automox instance based on group and organization permissions.'
+    description: 'List all devices in Automox based on group and organization permissions.'
     arguments:
     - name: org_id
       description: 'Organization ID'
@@ -858,7 +858,7 @@ script:
     deprecated: false
     execution: false
   - name: automox-groups-list
-    description: "List all groups in an Automox instance based on organization permissions."
+    description: "List all groups in Automox based on organization permissions."
     arguments:
     - name: org_id
       description: 'Organization identifier'
@@ -1072,7 +1072,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.1.27636
+  dockerimage: demisto/python3:3.10.4.27798
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
