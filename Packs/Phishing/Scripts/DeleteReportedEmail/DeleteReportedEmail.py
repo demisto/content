@@ -94,11 +94,11 @@ class DeletionArgs:
             The args needed for the deletion operation
 
         """
-        delete_type = f'{search_args["delete-type"]}'
         item_id = search_result[0].get('itemId')
         return {
             'item-ids': item_id,
-            'delete-type': delete_type,
+            'delete-type': search_args['delete-type'],
+            'target-mailbox': search_args['target-mailbox'],
             'using-brand': search_args['using-brand'],
         }
 
