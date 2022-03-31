@@ -1,6 +1,5 @@
 id: playbook-Netskope_Test
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: playbook-Netskope_Test
 starttaskid: "0"
 tasks:
@@ -14,9 +13,10 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "#none#":
-        - "1"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -44,7 +44,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "2"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -75,7 +75,7 @@ tasks:
       brand: Netskope
     nexttasks:
       "#none#":
-        - "3"
+      - "3"
     scriptarguments:
       end_time: {}
       event_type:
@@ -116,81 +116,81 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "4"
+      - "4"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Event.event_id
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Event.timestamp
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Event.type
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Event.access_method
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Event.traffic_type
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Event.count
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Event.app
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Event.appcategory
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Event.url
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Event.object
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Event.object_id
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Event.activity
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Event.device
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Event.category
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.event_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.access_method
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.traffic_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.app
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.appcategory
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.object
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.object_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.activity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.device
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.category
+            iscontext: true
     view: |-
       {
         "position": {
@@ -217,7 +217,7 @@ tasks:
       brand: Netskope
     nexttasks:
       "#none#":
-        - "5"
+      - "5"
     scriptarguments:
       acked: {}
       alert_type: {}
@@ -258,101 +258,101 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "6"
+      - "6"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.alert_id
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.timestamp
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.type
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.access_method
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.traffic_type
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.action
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.count
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.alert_name
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.alert_type
-                iscontext: true
-          - - operator: isExists
-              left:
-                value:
-                  simple: Netskope.Alert.acked
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.policy
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.app
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.appcategory
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.dlp_file
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.dlp_profile
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.dlp_rule
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.category
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Alert.cci
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.alert_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.access_method
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.traffic_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.alert_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.alert_type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Netskope.Alert.acked
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.policy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.app
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.appcategory
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.dlp_file
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.dlp_profile
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.dlp_rule
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.cci
+            iscontext: true
     view: |-
       {
         "position": {
@@ -379,7 +379,7 @@ tasks:
       brand: Netskope
     nexttasks:
       "#none#":
-        - "7"
+      - "7"
     scriptarguments:
       end_time: {}
       limit:
@@ -412,46 +412,46 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "8"
+      - "8"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Quarantine.quarantine_profile_id
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Quarantine.quarantine_profile_name
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Quarantine.file_id
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Quarantine.original_file_name
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Quarantine.policy
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Quarantine.quarantined_file_name
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Quarantine.user_id
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Quarantine.quarantine_profile_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Quarantine.quarantine_profile_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Quarantine.file_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Quarantine.original_file_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Quarantine.policy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Quarantine.quarantined_file_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Quarantine.user_id
+            iscontext: true
     view: |-
       {
         "position": {
@@ -478,7 +478,7 @@ tasks:
       brand: Netskope
     nexttasks:
       "#none#":
-        - "9"
+      - "9"
     scriptarguments:
       file_id:
         simple: ${Netskope.Quarantine.file_id}
@@ -510,41 +510,41 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "15"
+      - "15"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: File.Size
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: File.Name
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: File.EntryID
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: File.Type
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: File.Extension
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
     view: |-
       {
         "position": {
@@ -571,7 +571,7 @@ tasks:
       brand: Netskope
     nexttasks:
       "#none#":
-        - "16"
+      - "16"
     scriptarguments:
       limit:
         simple: "1"
@@ -603,46 +603,46 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "17"
+      - "17"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Client.client_id
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Client.client_version
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Client.device_id
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Client.host_info
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Client.last_event
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Client.user_added_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.Client.users
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Client.client_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Client.client_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Client.device_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Client.host_info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Client.last_event
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Client.user_added_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Client.users
+            iscontext: true
     view: |-
       {
         "position": {
@@ -669,7 +669,7 @@ tasks:
       brand: Netskope
     nexttasks:
       "#none#":
-        - "18"
+      - "18"
     scriptarguments:
       hostname:
         simple: ${Netskope.Client.host_info.hostname}
@@ -702,41 +702,41 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "21"
+      - "21"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.User.user_id
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.User.device_classification_status
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.User.last_event
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.User.user_source
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Netskope.User.userkey
-                iscontext: true
-          - - operator: isExists
-              left:
-                value:
-                  simple: Netskope.User.username
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.User.user_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.User.device_classification_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.User.last_event
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.User.user_source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.User.userkey
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Netskope.User.username
+            iscontext: true
     view: |-
       {
         "position": {
@@ -760,6 +760,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -787,3 +788,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.2.0
+description: Test playbook for Netskope integration (API V1)

@@ -1,9 +1,5 @@
 {
-    "close": null,
-    "description": "",
-    "details": null,
     "detailsV2": {
-        "TypeName": "",
         "tabs": [
             {
                 "hidden": true,
@@ -431,23 +427,11 @@
             }
         ]
     },
-    "edit": null,
-    "fromServerVersion": "",
     "group": "incident",
-    "id": "3f5a4005-cb2e-45f6-8bd5-e7ba5c259c34",
-    "indicatorsDetails": null,
-    "indicatorsQuickView": null,
-    "itemVersion": "",
-    "locked": false,
-    "mobile": null,
+    "id": "NetSkope -  User Analytics Layout",
     "name": "NetSkope -  User Analytics Layout",
-    "packID": "",
-    "propagationLabels": [
-        "all"
-    ],
-    "quickView": null,
-    "sortValues": null,
     "system": false,
-    "toServerVersion": "",
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": ""
 }

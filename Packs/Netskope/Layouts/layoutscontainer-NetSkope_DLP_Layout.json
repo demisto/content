@@ -1,9 +1,5 @@
 {
-    "close": null,
-    "description": "",
-    "details": null,
     "detailsV2": {
-        "TypeName": "",
         "tabs": [
             {
                 "hidden": true,
@@ -449,23 +445,11 @@
             }
         ]
     },
-    "edit": null,
-    "fromServerVersion": "",
     "group": "incident",
-    "id": "38ed6a52-dddf-40ef-8dbc-a49fcfa9ee9a",
-    "indicatorsDetails": null,
-    "indicatorsQuickView": null,
-    "itemVersion": "",
-    "locked": false,
-    "mobile": null,
+    "id": "NetSkope -  DLP Layout",
     "name": "NetSkope -  DLP Layout",
-    "packID": "",
-    "propagationLabels": [
-        "all"
-    ],
-    "quickView": null,
-    "sortValues": null,
     "system": false,
-    "toServerVersion": "",
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": ""
 }
