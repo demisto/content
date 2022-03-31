@@ -429,10 +429,10 @@ script:
     - contextPath: HCloud.HcloudVolumeInfo.hcloud_volume_info
       description: The volume infos as list
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.23806
+  dockerimage: demisto/ansible-runner:1.0.0.24037
   runonce: false
   script: ''
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- Test-AnsibleHCloud

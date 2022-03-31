@@ -260,6 +260,7 @@ def search_ticket_command():
 
     if tickets:
         output = []
+        raw_output = []
         for ticket_id in tickets:
             raw_ticket = get_ticket(ticket_id)
             ticket = {
@@ -274,6 +275,8 @@ def search_ticket_command():
                 'Type': raw_ticket['Type']
             }
             output.append(ticket)
+            raw_output.append(raw_ticket)
+
         ec = {
             'OTRS.Ticket(val.ID===obj.ID)': output
         }
@@ -282,7 +285,7 @@ def search_ticket_command():
 
         demisto.results({
             'Type': entryTypes['note'],
-            'Contents': raw_ticket,
+            'Contents': raw_output,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, output, headers),

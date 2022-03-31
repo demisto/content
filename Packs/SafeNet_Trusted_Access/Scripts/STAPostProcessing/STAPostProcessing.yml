@@ -3,7 +3,7 @@ comment: Post processing script to remove the user from the Unusual Activity Gro
 commonfields:
   id: STA-PostProcessing
   version: -1
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
 name: STA-PostProcessing
 runas: DBotWeakRole

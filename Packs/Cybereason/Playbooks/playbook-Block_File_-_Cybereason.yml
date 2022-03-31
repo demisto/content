@@ -1,8 +1,10 @@
 id: Block File - Cybereason
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Block File - Cybereason
-fromversion: 5.0.0
-description: This playbook accepts an MD5 hash and blocks the file using the Cybereason integration.
+description: This playbook accepts an MD5 hash and blocks the file using the Cybereason
+  integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -13,9 +15,9 @@ tasks:
       id: 5e4385e3-76c2-48e2-80a4-c3798cdae027
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -30,6 +32,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 9cf85355-9028-4a01-8304-3a371020c9b3
@@ -88,6 +92,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: 0f02e921-eb9a-47bd-8d9c-93759602036f
@@ -96,7 +102,9 @@ tasks:
       id: 0f02e921-eb9a-47bd-8d9c-93759602036f
       version: -1
       name: Is there an MD5 to block?
-      description: Checks if there is a value for the MD5 input field. This task does not verify that the value is actually an MD5 hash, just that a value exists in the MD5 field.
+      description: Checks if there is a value for the MD5 input field. This task does
+        not verify that the value is actually an MD5 hash, just that a value exists
+        in the MD5 field.
       type: condition
       iscommand: false
       brand: ""
@@ -125,6 +133,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: 2c14bf01-7fd9-45f8-8554-86d0c1332d81
@@ -133,10 +143,10 @@ tasks:
       id: 2c14bf01-7fd9-45f8-8554-86d0c1332d81
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -148,6 +158,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
     taskid: 907db366-4c70-4890-8184-071b0fbc5508
@@ -179,6 +191,9 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -212,12 +227,14 @@ inputs:
       - operator: uniq
   required: false
   description: The MD5 hash of the file to block.
+  playbookInputQuery:
 outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.Time
-  description: Last block time
+  description: Last block time.
 - contextPath: CbResponse.BlockedHashes.LastBlock.Hostname
-  description: Last block hostname
+  description: Last block hostname.
 - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
-  description: Last block sensor ID
+  description: Last block sensor ID.
 tests:
-- No Test
+- No tests (auto formatted)
+fromversion: 5.0.0

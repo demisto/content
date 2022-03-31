@@ -1,0 +1,95 @@
+[
+  {
+    "ID": "143",
+    "OwnerOrganization.ID": "7",
+    "OrganizationID": "1",
+    "Date": "2020-12-09",
+    "ThreatLevelID": "3",
+    "Info": "Recent Qakbot",
+    "Published": false,
+    "UUID": "5fd0c599-ab6c-4ba1-a69a-df9ec0a8ab16",
+    "Analysis": "2",
+    "AttributeCount": "17",
+    "Timestamp": "1624278910",
+    "Distribution": "1",
+    "ProposalEmailLock": false,
+    "Locked": false,
+    "PublishTimestamp": "1623745862",
+    "SharingGroupID": "0",
+    "DisableCorrelation": false,
+    "Organization": {
+      "ID": "1",
+      "Name": "ORGNAME",
+      "UUID": "5ce29ac4-3b54-459e-a6ee-00acac110002",
+      "local": true
+    },
+    "OwnerOrganization": {
+      "ID": "7",
+      "Name": "CUDESO",
+      "UUID": "56c42374-fdb8-4544-a218-41ffc0a8ab16",
+      "local": false
+    },
+    "RelatedEvent": [],
+    "Galaxy": [
+      {
+        "Name": "Banker",
+        "Type": "banker",
+        "Description": "Banking malware galaxy."
+      }
+    ],
+    "Tag": [
+      {
+        "Name": "tlp:white",
+        "is_galaxy": false
+      },
+      {
+        "Name": "misp-galaxy:banker=Qakbot",
+        "is_galaxy": true
+      }
+    ],
+    "Object": []
+  },
+  {
+    "ID": "149",
+    "OwnerOrganization.ID": "8",
+    "OrganizationID": "1",
+    "Date": "2020-03-13",
+    "ThreatLevelID": "1",
+    "Info": "Capitalizing on Coronavirus Panic, Threat Actors Target Victims Worldwide",
+    "Published": false,
+    "UUID": "5e6b322a-9f80-4e2f-9f2a-3cab0a3b4631",
+    "Analysis": "0",
+    "AttributeCount": "54",
+    "Timestamp": "1624893849",
+    "Distribution": "3",
+    "ProposalEmailLock": false,
+    "Locked": true,
+    "PublishTimestamp": "1623832501",
+    "SharingGroupID": "0",
+    "DisableCorrelation": false,
+    "Organization": {
+      "ID": "1",
+      "Name": "ORGNAME",
+      "UUID": "5ce29ac4-3b54-459e-a6ee-00acac110002",
+      "local": true
+    },
+    "OwnerOrganization": {
+      "ID": "8",
+      "Name": "CERT.be",
+      "UUID": "5cf66e53-b5f8-43e7-be9a-49880a3b4631",
+      "local": false
+    },
+    "RelatedEvent": [
+      {
+        "ID": "143"
+      }
+    ],
+    "Galaxy": [
+      {
+        "Name": "m",
+        "Type": "m",
+        "Description": "Malware galaxy"
+      }
+    ]
+  }
+]

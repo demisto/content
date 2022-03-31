@@ -148,8 +148,8 @@ ignore=RP102
 [file:incidentfield-Detection_URL.json]
 ignore=IF107
 
-[file:CommonTypes]
-ignore=PA116
+[file:pack_metadata.json]
+ignore=PA116,PA129
 
 [file:layoutscontainer-Account.json]
 ignore=BA101
@@ -278,3 +278,12 @@ ignore=IF100
 
 [file:indicatorfield-Community_Notes.json]
 ignore=BA111
+
+[file:incidentfield-Detected_Endpoints.json]
+ignore=IF115
+
+[file:incidentfield-Alert_Source.json]
+ignore=IF100
+
+[file:incidentfield-Use_Case_Description.json]
+ignore=IF100

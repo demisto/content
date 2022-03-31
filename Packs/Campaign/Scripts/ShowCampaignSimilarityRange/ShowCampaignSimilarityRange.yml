@@ -1,0 +1,18 @@
+commonfields:
+  id: ShowCampaignSimilarityRange
+  version: -1
+name: ShowCampaignSimilarityRange
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Displays the similarity range between the incidents that make up the phishing campaign.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.8.24399
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

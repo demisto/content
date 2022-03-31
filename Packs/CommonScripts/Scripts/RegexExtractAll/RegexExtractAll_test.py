@@ -14,7 +14,8 @@ def test_main(mocker):
         'multi_line': 'false',
         'ignore_case': 'false',
         'period_matches_newline': 'false',
-        'error_if_no_match': 'false'
+        'error_if_no_match': 'false',
+        'unpack_matches': 'false'
     })
     mocker.patch.object(demisto, 'results')
     main()
@@ -32,7 +33,8 @@ def test_main(mocker):
         'multi_line': 'false',
         'ignore_case': 'true',
         'period_matches_newline': 'false',
-        'error_if_no_match': 'false'
+        'error_if_no_match': 'false',
+        'unpack_matches': 'false'
     })
     mocker.patch.object(demisto, 'results')
     main()
@@ -42,3 +44,25 @@ def test_main(mocker):
     assert results[0] == 'test@test.com'
     assert results[1] == 'testtrainee@test.com'
     assert results[2] == 'testtrainee@test.com'
+
+    # test unpack matches
+    mocker.patch.object(demisto, 'args', return_value={
+        'value': test_data,
+        'regex': r'([A-Za-z@.]+@([A-Za-z@.]+))',
+        'multi_line': 'false',
+        'ignore_case': 'true',
+        'period_matches_newline': 'false',
+        'error_if_no_match': 'false',
+        'unpack_matches': 'true'
+    })
+    mocker.patch.object(demisto, 'results')
+    main()
+    assert demisto.results.call_count == 1
+    results = demisto.results.call_args[0][0]
+    assert len(results) == 6
+    assert results[0] == 'test@test.com'
+    assert results[1] == 'test.com'
+    assert results[2] == 'testtrainee@test.com'
+    assert results[3] == 'test.com'
+    assert results[4] == 'testtrainee@test.com'
+    assert results[5] == 'test.com'

@@ -11,7 +11,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: Blacklist names e.g.(BlackListIPv4, BlackListURL,Malicious)
+- display: Block list names e.g.(BlackListIPv4, BlackListURL,Malicious)
   name: blacklist
   required: false
   type: 0

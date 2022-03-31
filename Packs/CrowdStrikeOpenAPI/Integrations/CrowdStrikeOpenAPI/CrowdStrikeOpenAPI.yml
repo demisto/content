@@ -257,7 +257,7 @@ script:
       isArray: false
       name: msa_aggregatequeryrequest_type
       required: true
-    description: Retrieve aggregate blocklist ticket values based on the matched filter
+    description: Retrieve aggregate block list ticket values based on the matched filter
     name: cs-aggregate-block-list
     outputs:
     - contextPath: CrowdStrike.msaAggregatesResponse.errors.code
@@ -27909,7 +27909,7 @@ script:
     - contextPath: CrowdStrike.modelsVerifyAccessResponseV1.resources.successful
       description: ''
       type: Boolean
-  dockerimage: demisto/python3:3.9.6.24019
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   script: ''
   subtype: python3

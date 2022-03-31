@@ -1,0 +1,503 @@
+description: Enriches RaDark incident with detailed items.
+id: Get RaDark Detailed Items
+inputs: []
+name: Get RaDark Detailed Items
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Playbook triggered.
+      id: e01dfafc-be99-4321-8541-9c8ded3a71c6
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: e01dfafc-be99-4321-8541-9c8ded3a71c6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": -1370,
+          "y": 30
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incident_id:
+        simple: ${incident.alertid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: RaDark
+      description: Get detailed items from RaDark by incident_id.
+      id: 8c22b835-703d-41a1-8743-174990fe754c
+      iscommand: true
+      name: RaDark - Get items
+      script: RaDark|||radark-incident-get-items
+      type: regular
+      version: -1
+    taskid: 8c22b835-703d-41a1-8743-174990fe754c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      feedDetails:
+        simple: ${Radark.itemDetails}
+      itemDetails:
+        simple: ${Radark.itemDetails}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Map RaDark items to the incident.
+      id: b8c2ead3-a45e-47c2-8791-63ff4640d901
+      iscommand: false
+      name: RaDark - Map Details
+      script: MapRaDarkIncidentDetails
+      type: regular
+      version: -1
+    taskid: b8c2ead3-a45e-47c2-8791-63ff4640d901
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 500
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "no":
+      - "26"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: RaDark
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      id: a6ac657b-1f10-4bf7-85f6-24150f764c23
+      iscommand: false
+      name: RaDark  - Is Integration Available
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: a6ac657b-1f10-4bf7-85f6-24150f764c23
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -1370,
+          "y": 180
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Done.
+      id: ccc98b8a-9aa9-4733-8fd1-d93c8dcab354
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: ccc98b8a-9aa9-4733-8fd1-d93c8dcab354
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 1280
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: inList
+          right:
+            value:
+              simple: 2, 3, 19, 23
+      label: Leaked Credentials
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: inList
+          right:
+            value:
+              simple: 16, 17, 18, 26
+      label: Compromised Accounts
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: inList
+          right:
+            value:
+              simple: 4, 5, 6, 7, 8, 9, 10, 11, 14, 20
+      label: Network Vulnerabilities
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: inList
+          right:
+            value:
+              simple: 13, 24
+      label: Credit Cards
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "1"
+      label: Hacking Discussions
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "26"
+      Compromised Accounts:
+      - "28"
+      Credit Cards:
+      - "30"
+      Hacking Discussions:
+      - "31"
+      Leaked Credentials:
+      - "27"
+      Network Vulnerabilities:
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Return the sub type of the incident in order to set the proper
+        grid table.
+      id: fb1268df-724f-4f8c-8afc-89989274853f
+      iscommand: false
+      name: RaDark - Extract Grid Type
+      type: condition
+      version: -1
+    taskid: fb1268df-724f-4f8c-8afc-89989274853f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 630
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: No action required.
+      id: d8fce382-0e0a-4370-80ec-54b0c9dd34d9
+      iscommand: false
+      name: No Grid Type Incident
+      type: title
+      version: -1
+    taskid: d8fce382-0e0a-4370-80ec-54b0c9dd34d9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -2010,
+          "y": 870
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      items:
+        simple: ${Radark.itemDetails.items}
+      sub_type:
+        simple: ${incident.kelaradarksubtype}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set grid for RaDark - Leaked Credentials incidents.
+      id: 4a6ce80c-d0d3-4c59-8e08-ea9c89a58e1c
+      iscommand: false
+      name: Set RaDark Grid For Leaked Credentials
+      playbookId: Set RaDark Grid For Leaked Credentials
+      type: playbook
+      version: -1
+    taskid: 4a6ce80c-d0d3-4c59-8e08-ea9c89a58e1c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -1490,
+          "y": 900
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      items:
+        simple: ${Radark.itemDetails.items}
+      sub_type:
+        simple: ${incident.kelaradarksubtype}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set grid for RaDark - Compromised Accounts incidents.
+      id: d17ef0bf-bcb0-4b04-88fb-bd6a989b7c3a
+      iscommand: false
+      name: Set RaDark Grid For Compromised Accounts
+      playbookId: Set RaDark Grid For Compromised Accounts
+      type: playbook
+      version: -1
+    taskid: d17ef0bf-bcb0-4b04-88fb-bd6a989b7c3a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -1270,
+          "y": 1005
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      items:
+        simple: ${Radark.itemDetails.items}
+      sub_type:
+        simple: ${incident.kelaradarksubtype}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set grid for RaDark - Network Vulnerabilities incidents.
+      id: f46d6f71-03da-4780-8764-dcdc8d76b979
+      iscommand: false
+      name: Set RaDark Grid For Network Vulnerabilities
+      playbookId: Set RaDark Grid For Network Vulnerabilities
+      type: playbook
+      version: -1
+    taskid: f46d6f71-03da-4780-8764-dcdc8d76b979
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 1110
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set grid for RaDark - Credit Cards incidents.
+      id: 36cf1d1f-a101-42b5-8201-a28e83d73545
+      iscommand: false
+      name: Set RaDark Grid For Credit Cards
+      playbookId: Set RaDark Grid For Credit Cards
+      type: playbook
+      version: -1
+    taskid: 36cf1d1f-a101-42b5-8201-a28e83d73545
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -650,
+          "y": 1005
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set grid for RaDark - Hacking Discussions incidents.
+      id: 2c17e6ed-33e3-4c96-80d1-c24137948bb5
+      iscommand: false
+      name: Set RaDark Grid For Hacking Discussions
+      playbookId: Set RaDark Grid For Hacking Discussions
+      type: playbook
+      version: -1
+    taskid: 2c17e6ed-33e3-4c96-80d1-c24137948bb5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 900
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1315,
+        "width": 1960,
+        "x": -2010,
+        "y": 30
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

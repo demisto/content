@@ -6,7 +6,7 @@
 <li>Fetch miners, IP addresses, files, domains, and URLs.</li>
 <li>Get a list of all your miners.</li>
 </ul>
-<p><strong>NOTE</strong>: Indicators on a whitelist get a DBot score of 1. Indicators on a blacklist get a DBot score of 3.</p>
+<p><strong>NOTE</strong>: Indicators on an allow list get a DBot score of 1. Indicators on a block list get a DBot score of 3.</p>
 <h2>Supported Miner Prototypes</h2>
 <ul>
 <li>localDB</li>
@@ -31,10 +31,10 @@
 <strong> <font style="vertical-align: inherit;">Username &amp;</font> <font style="vertical-align: inherit;"> Password</font> </strong> <font style="vertical-align: inherit;">: Your credentials in the MineMeld environment.</font>
 </li>
 <li>
-<strong> <font style="vertical-align: inherit;">Blacklist names</font> </strong> <font style="vertical-align: inherit;">:</font> <font style="vertical-align: inherit;"> Comma separated list of miners, to be added to the Cortex XSOAR blacklist. </font>
+<strong> <font style="vertical-align: inherit;">Block list names</font> </strong> <font style="vertical-align: inherit;">:</font> <font style="vertical-align: inherit;"> Comma separated list of miners, to be added to the Cortex XSOAR block list. </font>
 </li>
 <li>
-<strong> <font style="vertical-align: inherit;">Whitelist names:</font> </strong> <font style="vertical-align: inherit;"> CSV list of miners to add to the Cortex XSOAR whitelist.</font>
+<strong> <font style="vertical-align: inherit;">Allow list names:</font> </strong> <font style="vertical-align: inherit;"> CSV list of miners to add to the Cortex XSOAR allow list.</font>
 </li>
 <li><strong> <font style="vertical-align: inherit;">Use system proxy settings</font></strong></li>
 </ul>
@@ -303,7 +303,7 @@
 <h3 id="h_549080515261533045679386">5. Get IP address indicator</h3>
 <hr>
 <p>Retrieves all occurrences of the specified IP address, including the context in which it is found.</p>
-<p>For this command to succeed, the miner (associated with the IP address indicator) has to be on a Cortex XSOAR blacklist or whitelist.</p>
+<p>For this command to succeed, the miner (associated with the IP address indicator) has to be on a Cortex XSOAR block list or allow list.</p>
 <h5>Base Command</h5>
 <p><code>ip</code></p>
 <h5>Input</h5>
@@ -418,7 +418,7 @@
 <h3 id="h_7852984883241533030162610">6. Get file indicator</h3>
 <hr>
 <p>Retrieves all occurrences of the specified file, including the context in which it is found.</p>
-<p>For this command to succeed, the miner (associated with the file indicator) has to be on a Cortex XSOAR blacklist or whitelist.</p>
+<p>For this command to succeed, the miner (associated with the file indicator) has to be on a Cortex XSOAR block list or allow list.</p>
 <h5>Base Command</h5>
 <p><code>file</code></p>
 <h5>Input</h5>
@@ -541,7 +541,7 @@
 <h3 id="h_5903761773861533030170543">7. Get domain indicator</h3>
 <hr>
 <p>Retrieves all occurrences of the specified domain, including the context in which it is found.</p>
-<p>For this command to succeed, the miner (associated with the domain indicator) has to be on a Cortex XSOAR blacklist or whitelist.</p>
+<p>For this command to succeed, the miner (associated with the domain indicator) has to be on a Cortex XSOAR block list or allow list.</p>
 <h5>Base Command</h5>
 <p><code>domain</code></p>
 <h5>Input</h5>
@@ -656,7 +656,7 @@
 <h3 id="h_6945056004471533030179038">8. Get URL indicator</h3>
 <hr>
 <p>Retrieves all occurrences of the specified URL, including the context in which it is found.</p>
-<p>For this command to succeed, the miner (associated with the URL indicator) has to be on a Cortex XSOAR blacklist or whitelist.</p>
+<p>For this command to succeed, the miner (associated with the URL indicator) has to be on a Cortex XSOAR block list or allow list.</p>
 <h5>Base Command</h5>
 <p><code>url</code></p>
 <h5>Input</h5>

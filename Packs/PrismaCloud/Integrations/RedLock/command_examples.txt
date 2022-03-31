@@ -1,8 +1,13 @@
 !redlock-list-alert-filters
 !redlock-get-alert-details alert-id=P-214016
 !redlock-search-alerts alert-id=P-214016
+!redlock-search-network query="network from vpc.flow_record where bytes > 0" time-range-unit=hour time-range-value=2
+!redlock-search-event query=`event from cloud.audit_logs where ip EXISTS` time-range-date-from=10/30/2021 time-range-date-to=12/31/2021
 !redlock-get-remediation-details alert-id=P-214016
 !redlock-dismiss-alerts dismissal-note="testing" alert-id=P-214016
 !redlock-reopen-alerts alert-id=P-214016
 !redlock-dismiss-alerts alert-id=P-368370 dismissal-note=testing snooze-unit=hour snooze-value=1
 !redlock-get-rql-response rql="config where api.name = 'aws-ec2-describe-instances' as X; config where api.name = 'aws-ec2-describe-security-groups' as Y; config where api.name = 'aws-ec2-describe-vpcs' as Z; filter 'not _Set.intersection($.X.vpcId,$.Y.vpcId) intersects (vpc-5b9a3c33,vpc-b8ba2dd0,vpc-b8ba2dd01)'; show X;"
+!redlock-list-scans filter_type="absolute" filter_start_time="01/01/2021 10:10:10" filter_end_time="10/08/2021 10:10:10" filter_asset_type="GitHub" filter_asset_name="Github Asset Dev" filter_user="user@domain.example"
+!redlock-get-scan-status scan_id="81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d"
+!redlock-get-scan-results scan_id="81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d"

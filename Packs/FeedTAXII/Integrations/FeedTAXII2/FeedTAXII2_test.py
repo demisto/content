@@ -36,7 +36,7 @@ class TestFetchIndicators:
         Then:
         - update last run with latest collection fetch time
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False)
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False, objects_to_fetch='')
         default_id = 1
         nondefault_id = 2
         mock_client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
@@ -64,7 +64,7 @@ class TestFetchIndicators:
         - update last run with latest collection fetch time
         - don't update collection that wasn't fetched from
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False)
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False, objects_to_fetch='')
         default_id = 1
         nondefault_id = 2
         mock_client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
@@ -94,7 +94,7 @@ class TestFetchIndicators:
         - fetch 14 indicators
         - update last run with latest collection fetch time
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False)
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch='')
         default_id = 1
         nondefault_id = 2
         mock_client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
@@ -121,7 +121,7 @@ class TestFetchIndicators:
         - fetch 7 indicators
         - update last run with latest collection fetch time
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False)
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch='')
         id_1 = 1
         id_2 = 2
         mock_client.collections = [MockCollection(id_1, 'a'), MockCollection(id_2, 'b')]
@@ -131,6 +131,17 @@ class TestFetchIndicators:
         indicators, last_run = fetch_indicators_command(mock_client, '1 day', len(CORTEX_IOCS_1), last_run)
         assert len(indicators) == len(CORTEX_IOCS_1)
         assert last_run.get(mock_client.collections[1]) == 'test'
+
+
+def test_get_collections_function():
+    mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch='')
+    mock_client.collections = [MockCollection("first id", 'first name'), MockCollection("second id", 'second name')]
+
+    result = get_collections_command(mock_client)
+
+    assert len(result.outputs) == 2
+    assert result.outputs[0] == {"Name": "first name", "ID": "first id"}
+    assert result.outputs[1] == {"Name": "second name", "ID": "second id"}
 
 
 class TestHelperFunctions:

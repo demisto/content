@@ -7,7 +7,7 @@ configuration:
   name: cloud
   required: true
   type: 0
-- display: Credentials
+- display: Username
   name: credentials
   required: true
   type: 9
@@ -40,22 +40,22 @@ configuration:
   required: false
   type: 8
 description: Zscaler is a cloud security solution built for performance and flexible
-  scalability. This integration enables you to manage URL and IP address whitelists
-  and blacklists, manage and update categories, get Sandbox reports, and manually
+  scalability. This integration enables you to manage URL and IP address allow lists
+  and block lists, manage and update categories, get Sandbox reports, and manually
   log in, log out, and activate changes in a Zscaler session.
-display: Zscaler
+display: Zscaler Internet Access
 name: Zscaler
 script:
   commands:
   - arguments:
     - default: true
-      description: A comma-separated list of URLs to blacklist. For example, snapchat.com,facebook.com.
+      description: A comma-separated list of URLs to add to block list. For example, snapchat.com,facebook.com.
       isArray: true
       name: url
       required: true
       secret: false
     deprecated: false
-    description: Adds the specified URLs to the blacklist.
+    description: Adds the specified URLs to the block list.
     execution: true
     name: zscaler-blacklist-url
   - arguments:
@@ -73,7 +73,7 @@ script:
       defaultValue: 'true'
       description: Whether there are multiple URLs in the 'url' argument. If a URL
         contains commas, set this argument to 'false' and enter the single URL as
-        the 'url' argument. Default is 'true'.
+        the 'url' argument.
       isArray: false
       name: multiple
       predefined:
@@ -121,7 +121,7 @@ script:
       description: A comma-separated list of IP address for which to look up the classification.
         For example, 8.8.8.8,1.2.3.4. The maximum number of URLs per call is 100.
         An IP address cannot exceed 1024 characters.
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -161,86 +161,86 @@ script:
       type: number
   - arguments:
     - default: true
-      description: A comma-separated list of URLs to remove from the blacklist. For
+      description: A comma-separated list of URLs to remove from the block list. For
         example, snapchat.com,facebook.com.
       isArray: true
       name: url
       required: true
       secret: false
     deprecated: false
-    description: Removes the specified URLs from the blacklist.
+    description: Removes the specified URLs from the block list.
     execution: true
     name: zscaler-undo-blacklist-url
   - arguments:
     - default: true
-      description: A comma-separated list of URLs to add to the whitelist. For example,
+      description: A comma-separated list of URLs to add to the allow list. For example,
         snapchat.com,facebook.com.
       isArray: true
       name: url
       required: true
       secret: false
     deprecated: false
-    description: Adds the specified URLs to the whitelist.
+    description: Adds the specified URLs to the allow list.
     execution: true
     name: zscaler-whitelist-url
   - arguments:
     - default: true
-      description: A comma-separated list of URLs to remove from the whitelist. For
+      description: A comma-separated list of URLs to remove from the allow list. For
         example, snapchat.com,facebook.com.
       isArray: true
       name: url
       required: true
       secret: false
     deprecated: false
-    description: Removes the specified URLs from the whitelist.
+    description: Removes the specified URLs from the allow list.
     execution: true
     name: zscaler-undo-whitelist-url
   - arguments:
     - default: true
-      description: A comma-separated list of IP addresses to remove from the whitelist.
+      description: A comma-separated list of IP addresses to remove from the allow list.
         For example, 8.8.8.8,1.2.3.4.
       isArray: true
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: Removes the specified IP addresses from the whitelist.
+    description: Removes the specified IP addresses from the allow list.
     execution: true
     name: zscaler-undo-whitelist-ip
   - arguments:
     - default: true
-      description: A comma-separated list of IP addresses to add to the whitelist.
+      description: A comma-separated list of IP addresses to add to the allow list.
         For example, 8.8.8.8,1.2.3.4.
       isArray: true
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: Adds the specified IP address to the whitelist.
+    description: Adds the specified IP address to the allow list.
     execution: true
     name: zscaler-whitelist-ip
   - arguments:
     - default: true
-      description: A comma-separated list of IP addresses to remove from the blacklist.
+      description: A comma-separated list of IP addresses to remove from the allow list.
         For example, 8.8.8.8,1.2.3.4.
       isArray: true
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: Removes the specified IP addresses from the blacklist.
+    description: Removes the specified IP addresses from the allow list.
     execution: false
     name: zscaler-undo-blacklist-ip
   - arguments:
     - default: true
-      description: A comma-separated list of IP addresses to add to the blacklist.
+      description: A comma-separated list of IP addresses to add to the allow list.
         For example, 8.8.8.8,1.2.3.4.
       isArray: true
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: Adds the specified IP addresses to the blacklist.
+    description: Adds the specified IP addresses to the allow list.
     execution: true
     name: zscaler-blacklist-ip
   - arguments:
@@ -379,8 +379,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to display the URLs of each category in the War Room. Default
-        is 'false'. URLs will always be returned to the Context Data.
+      description: Whether to display the URLs of each category in the War Room. URLs will always be returned to the Context Data.
       isArray: false
       name: displayURL
       predefined:
@@ -391,8 +390,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to retrieve only custom categories to the War Room. Default
-        is 'false'.
+      description: Whether to retrieve only custom categories to the War Room. 
       isArray: false
       name: custom_categories_only
       predefined:
@@ -432,20 +430,31 @@ script:
       description: The name of the category.
       type: string
   - deprecated: false
-    description: Retrieves the Zscaler default blacklist.
+    description: Retrieves the Zscaler default block list.
     execution: false
     name: zscaler-get-blacklist
+    arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Filter results by URL or IP objects.
+      name: filter
+      predefined:
+      - 'url'
+      - 'ip'
+    - default: false
+      description: Query (Python regular expression) to match against. For example, 8.*.*.8
+      name: query
     outputs:
     - contextPath: Zscaler.Blacklist
-      description: The Zscaler blacklist.
+      description: The Zscaler block list.
       type: string
   - deprecated: false
-    description: Retrieves the Zscaler default whitelist.
+    description: Retrieves the Zscaler default allow list.
     execution: false
     name: zscaler-get-whitelist
     outputs:
     - contextPath: Zscaler.Whitelist
-      description: The Zscaler whitelist.
+      description: The Zscaler allow list.
       type: string
   - arguments:
     - default: false
@@ -534,7 +543,7 @@ script:
   runonce: false
   script: '-'
   subtype: python2
-  dockerimage: demisto/python:2.7.18.22912
+  dockerimage: demisto/python:2.7.18.24398
   type: python
 tests:
 - Zscaler Test

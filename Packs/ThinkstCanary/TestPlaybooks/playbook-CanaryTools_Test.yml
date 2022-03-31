@@ -36,7 +36,7 @@ tasks:
       id: e1063c50-6e0e-4c9c-8b8c-7281f84f1495
       version: -1
       name: canarytools-check-whitelist
-      description: Check whether a given IP and port are whitelisted
+      description: Check whether a given IP and port are on allow list
       script: Thinkst Canary|||canarytools-check-whitelist
       type: regular
       iscommand: true
@@ -428,7 +428,7 @@ tasks:
       id: 934b446b-df4f-4d86-8da5-854269a32b2e
       version: -1
       name: canarytools-check-whitelist
-      description: Check whether a given IP and port are whitelisted
+      description: Check whether a given IP and port are on alow list
       script: Thinkst Canary|||canarytools-check-whitelist
       type: regular
       iscommand: true
@@ -481,7 +481,7 @@ tasks:
     task:
       id: 9dd2009a-0271-4aa4-877b-3f091d1f4521
       version: -1
-      name: Check if not Whitelisted
+      name: Check if not on allow list
       type: condition
       iscommand: false
       brand: ""
@@ -623,7 +623,7 @@ tasks:
       id: 2f4bfc7d-a60f-4b1f-8fcd-d1542c2c9a45
       version: -1
       name: canarytools-whitelist-ip
-      description: Whitelist an IP address in Canary
+      description: Add an IP address to allow list in Canary
       script: Thinkst Canary|||canarytools-whitelist-ip
       type: regular
       iscommand: true

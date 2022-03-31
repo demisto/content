@@ -1,0 +1,42 @@
+commonfields:
+  id: GetTime
+  version: -1
+name: GetTime
+script: ''
+type: javascript
+tags:
+- Utility
+comment: |
+  Retrieves the current date and time.
+enabled: true
+args:
+- name: date
+  default: true
+  description: The date to use in the object
+- name: dateFormat
+  description: The date format for the result, can be ISO/GMT/UTC/Locale/Date/Year/Month/Day/DayInWeek/Hours.
+    Note that the response will start from 0, E.G. if the current month is October
+    (the 10th month) the result will be 9.
+- name: contextKey
+  description: prefix the keys in the context for the results
+- name: minutesAgo
+  description: Will subtract minutesAgo minutes from current time
+- name: hoursAgo
+  description: Will subtract hoursAgo hours from current time
+- name: daysAgo
+  description: Will subtract daysAgo days from current time
+- name: monthsAgo
+  description: Will subtract monthsAgo months from current time
+- name: yearsAgo
+  description: Will subtract yearsAgo years from current time
+outputs:
+- contextPath: TimeNowUnix
+  description: number of milliseconds since 1970/01/01
+- contextPath: TimeNow
+  description: current time in ISO format
+scripttarget: 0
+runonce: false
+tests:
+- GetTime-Test
+- GetTime-ObjectVsStringTest
+fromversion: 5.0.0

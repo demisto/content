@@ -121,6 +121,7 @@ def test_no_incidents_in_context(mocker):
 
     prepare(mocker)
     CUSTOM_FIELDS[SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME] = []
+    CUSTOM_FIELDS[SELECT_CAMPAIGN_LOWER_INCIDENTS_FIELD_NAME] = []
 
     # run
     main()

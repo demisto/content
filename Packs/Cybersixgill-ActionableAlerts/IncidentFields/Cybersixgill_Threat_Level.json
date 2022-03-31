@@ -1,0 +1,35 @@
+{
+    "id": "incident_cybersixgillthreatlevel",
+    "version": -1,
+    "modified": "2020-01-28T07:27:31.345544514Z",
+    "name": "Cybersixgill Threat Level",
+    "ownerOnly": false,
+    "description": "Threat Level of alert",
+    "cliName": "cybersixgillthreatlevel",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "selectValues": [
+        "imminent",
+        "emerging"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Cybersixgill Actionable Alerts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,11 @@
+{
+  "PassiveTotal.Asset(val.insightId == obj.insightId && val.segmentBy == obj.segmentBy)": {
+    "insightId": "40466",
+    "segmentBy": "savedfilter_metric_29644"
+  },
+  "PassiveTotal.Summary.Asset(val.name == obj.name)": {
+    "name": "pt-list-my-attack-surface-assets",
+    "totalCount": 28,
+    "totalPages": 2
+  }
+}

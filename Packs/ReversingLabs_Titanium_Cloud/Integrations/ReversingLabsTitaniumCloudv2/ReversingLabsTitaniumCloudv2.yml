@@ -26,8 +26,7 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-description: ReversingLabs TitaniumCloud provides threat analysis data from various
-  ReversingLabs cloud services.
+description: ReversingLabs TitaniumCloud provides threat analysis data from various ReversingLabs cloud services.
 display: ReversingLabs TitaniumCloud v2
 name: ReversingLabs TitaniumCloud v2
 script:
@@ -139,8 +138,7 @@ script:
       description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-rha1-analytics
-    description: Retrieve the number of hashes functionally similar to the provided
-      one grouped by classification.
+    description: Retrieve the number of hashes functionally similar to the provided one grouped by classification.
     deprecated: false
     execution: false
     arguments:
@@ -176,8 +174,7 @@ script:
       description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-uri-statistics
-    description: Retrieve the number of MALICIOUS, SUSPICIOUS and KNOWN files associated
-      with a specific URI.
+    description: Retrieve the number of MALICIOUS, SUSPICIOUS and KNOWN files associated with a specific URI.
     deprecated: false
     execution: false
     arguments:
@@ -204,8 +201,7 @@ script:
       description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-uri-index
-    description: Retrieve a list of all available file hashes associated with a given
-      URI.
+    description: Retrieve a list of all available file hashes associated with a given URI.
     deprecated: false
     execution: false
     arguments:
@@ -249,8 +245,7 @@ script:
       description: ''
       type: Unknown
   - name: reversinglabs-titaniumcloud-expression-search
-    description: Search provides samples first seen on a particular date, filtered
-      by search criteria.
+    description: Search provides samples first seen on a particular date, filtered by search criteria.
     deprecated: false
     execution: false
     arguments:
@@ -289,8 +284,7 @@ script:
       required: true
       secret: false
   - name: reversinglabs-titaniumcloud-file-upload
-    description: Upload a file using a byte stream with a SHA1 hash of the file provided
-      in the request.
+    description: Upload a file using a byte stream with a SHA1 hash of the file provided in the request.
     deprecated: false
     execution: false
     arguments:
@@ -379,7 +373,7 @@ script:
       secret: false
     outputs:
     - contextPath: File.SHA1
-      description: ''
+      description: 'The SHA1 hash of the file.'
       type: Unknown
     - contextPath: ReversingLabs.dynamic_analysis_results
       description: ''
@@ -399,7 +393,7 @@ script:
     - contextPath: ReversingLabs.certificate_analytics
       description: ''
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:1.1.0.19488
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.25193
   feed: false
   isfetch: false
   longRunning: false

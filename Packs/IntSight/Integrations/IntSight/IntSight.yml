@@ -720,16 +720,16 @@ script:
       description: A comma separated list of the value of the IOCs.
     - name: blocklist-status
       required: true
-      description: 'A comma separated list of the IOCs blocklist status. Options:
+      description: 'A comma separated list of the IOCs block list status. Options:
         Sent, NotSent.'
     outputs:
     - contextPath: IntSights.Alerts.ID
       description: The ID of the alert.
       type: string
     - contextPath: IntSights.Alerts.Status
-      description: The status of the blocklist.
+      description: The status of the block list.
       type: string
-    description: Updates the IOC blocklist status.
+    description: Updates the IOC block list status.
   - name: intsights-get-ioc-blocklist-status
     arguments:
     - name: alert-id
@@ -741,9 +741,9 @@ script:
       description: The ID of the alert.
       type: string
     - contextPath: IntSights.Alerts.Status
-      description: The status of the blocklist.
+      description: The status of the block list.
       type: string
-    description: Returns the status of the IOC blocklist.
+    description: Returns the status of the IOC block list.
   - name: intsights-close-alert
     arguments:
     - name: alert-id
@@ -935,7 +935,7 @@ script:
   isfetch: true
   runonce: false
   subtype: python2
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

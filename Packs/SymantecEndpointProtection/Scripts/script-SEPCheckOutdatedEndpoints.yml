@@ -75,4 +75,4 @@ timeout: 0s
 tests:
 - No test - postpone for later
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.20958
+dockerimage: demisto/python:2.7.18.24398

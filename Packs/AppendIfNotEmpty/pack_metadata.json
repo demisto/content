@@ -1,0 +1,23 @@
+{
+    "name": "AppendIfNotEmpty",
+    "description": "Append item(s) to the end of the list if they are not empty.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Masahiko Inoue",
+    "url": "",
+    "email": "",
+    "created": "2021-12-01T11:09:38Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "spearmin10"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

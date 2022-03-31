@@ -10,7 +10,7 @@
 <li>Fetch alerts from CanaryTools as incidents in Cortex XSOAR and acknowledge them.</li>
 <li>Get information about all registered Canaries.</li>
 <li>Get information about Canary Tokens.</li>
-<li>Whitelist IP addresses.</li>
+<li>Add IP addresses to allow list.</li>
 </ul>
 </div>
 <div class="cl-preview-section">
@@ -51,7 +51,7 @@
 <li><a href="#list-all-registered-canaries" target="_self">List all registered Canaries: canarytools-list-canaries</a></li>
 <li><a href="#list-all-canary-tokens" target="_self">List all Canary tokens: canarytools-list-tokens</a></li>
 <li><a href="#check-if-an-ip-address-is-whitelisted" target="_self">Check if an IP address is whitelisted: canarytools-check-whitelist</a></li>
-<li><a href="#add-an-ip-address-to-the-whitelist" target="_self">Add an IP address to the whitelist: canarytools-whitelist-ip</a></li>
+<li><a href="#add-an-ip-address-to-the-whitelist" target="_self">Add an IP address to the allow list: canarytools-whitelist-ip</a></li>
 <li><a href="#edit-an-alert-status" target="_self">Edit an alert status: canarytools-edit-alert-status</a></li>
 <li><a href="#get-a-canary-token-file" target="_self">Get a Canary Token file: canarytools-get-token</a></li>
 </ol>
@@ -279,11 +279,11 @@
 <p><img src="https://user-images.githubusercontent.com/43776787/53302739-35b11f80-386a-11e9-95be-5af5db6e8a8a.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
-<h3 id="check-if-an-ip-address-is-whitelisted">3. Check if an IP address is whitelisted</h3>
+<h3 id="check-if-an-ip-address-is-whitelisted">3. Check if an IP address is on allow list</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Checks whether a given IP address and port are whitelisted.</p>
+<p>Checks whether a given IP address and port are on allow list.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-2">Base Command</h5>
@@ -342,12 +342,12 @@
 <tr>
 <td style="width: 275px;">CanaryTools.IP.Port</td>
 <td style="width: 66px;">string</td>
-<td style="width: 399px;">Destination port for the IP whitelist</td>
+<td style="width: 399px;">Destination port for the IP allow list</td>
 </tr>
 <tr>
 <td style="width: 275px;">CanaryTools.IP.Whitelisted</td>
 <td style="width: 66px;">boolean</td>
-<td style="width: 399px;">Is the IP address whitelisted (true/false)</td>
+<td style="width: 399px;">Is the IP address on allow list (true/false)</td>
 </tr>
 </tbody>
 </table>
@@ -382,11 +382,11 @@
 <p><img src="https://user-images.githubusercontent.com/43776787/53302758-86c11380-386a-11e9-89c5-d1bd1ab46a45.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
-<h3 id="add-an-ip-address-to-the-whitelist">4. Add an IP address to the whitelist</h3>
+<h3 id="add-an-ip-address-to-the-whitelist">4. Add an IP address to the allow list</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Adds an IP address to the whitelist in Canary.</p>
+<p>Adds an IP address to the allow list in Canary.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-3">Base Command</h5>
@@ -410,12 +410,12 @@
 <tbody>
 <tr>
 <td style="width: 231px;">ip</td>
-<td style="width: 493px;">IP address to whitelist</td>
+<td style="width: 493px;">IP address to allow list</td>
 <td style="width: 16px;">Required</td>
 </tr>
 <tr>
 <td style="width: 231px;">port</td>
-<td style="width: 493px;">Destination port to whitelist</td>
+<td style="width: 493px;">Destination port to allow list</td>
 <td style="width: 16px;">Optional</td>
 </tr>
 </tbody>
@@ -445,12 +445,12 @@
 <tr>
 <td style="width: 266px;">CanaryTools.IP.Port</td>
 <td style="width: 39px;">string</td>
-<td style="width: 435px;">Destination port for the IP whitelist</td>
+<td style="width: 435px;">Destination port for the IP allow list</td>
 </tr>
 <tr>
 <td style="width: 266px;">CanaryTools.IP.Whitelisted</td>
 <td style="width: 39px;">boolean</td>
-<td style="width: 435px;">Is the IP address whitelisted (True/False)</td>
+<td style="width: 435px;">Is the IP address on allow list (True/False)</td>
 </tr>
 </tbody>
 </table>

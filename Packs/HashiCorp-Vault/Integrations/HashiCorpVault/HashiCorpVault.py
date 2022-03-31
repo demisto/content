@@ -24,6 +24,7 @@ if CREDENTIALS:
     PASSWORD = CREDENTIALS.get('password')
 VERIFY_SSL = not demisto.params().get('unsecure', False)
 TOKEN = demisto.params().get('token')
+USE_APPROLE_AUTH_METHOD = argToBoolean(demisto.params().get('use_approle', 'false') or 'false')
 
 
 def get_server_url():
@@ -57,10 +58,17 @@ def get_headers():
 
 
 def login():
-    path = 'auth/userpass/login/' + USERNAME  # type: ignore
-    body = {
-        'password': PASSWORD
-    }
+    if USE_APPROLE_AUTH_METHOD:
+        path = 'auth/approle/login'
+        body = {
+            'role_id': USERNAME,
+            'secret_id': PASSWORD,
+        }
+    else:
+        path = 'auth/userpass/login/' + USERNAME  # type: ignore
+        body = {
+            'password': PASSWORD
+        }
 
     url = '{}/{}'.format(SERVER_URL, path)
     res = requests.request('POST', url, headers=get_headers(), data=json.dumps(body), verify=VERIFY_SSL)
@@ -164,11 +172,13 @@ def list_secrets_command():
     })
 
 
-def list_secrets(engine_path, version):
+def list_secrets(engine_path, version, folder=None):
     path = engine_path
 
     if version == '2':
         path += '/metadata'
+        if folder:
+            path += os.path.join('/', folder)
 
     params = {
         'list': 'true'
@@ -551,8 +561,9 @@ def configure_engine_command():
     engine_path = demisto.args()['path']
     engine_type = demisto.args()['type']
     version = demisto.args().get('version')
+    folder = demisto.args().get('folder')
 
-    configure_engine(engine_path, engine_type, version)
+    configure_engine(engine_path, engine_type, version, folder)
 
     demisto.results('Engine configured successfully')
 
@@ -563,13 +574,15 @@ def reset_config_command():
     demisto.results('Successfully reset the engines configuration')
 
 
-def configure_engine(engine_path, engine_type, version):
+def configure_engine(engine_path, engine_type, version, folder=None):
     engine_conf = {
         'type': engine_type,
         'path': engine_path
     }
     if version:
         engine_conf['version'] = str(version)
+    if folder:
+        engine_conf['folder'] = folder
 
     ENGINE_CONFIGS.append(engine_conf)
 
@@ -581,6 +594,7 @@ def fetch_credentials():
     engines_to_fetch_from = []
     ENGINES = argToList(demisto.params().get('engines', []))
     identifier = demisto.args().get('identifier')
+    concat_username_to_cred_name = argToBoolean(demisto.params().get('concat_username_to_cred_name') or 'false')
 
     if len(ENGINES) == 0:
         return_error('No secrets engines specified')
@@ -597,11 +611,11 @@ def fetch_credentials():
             if 'version' not in engine:
                 return_error('Version not configured for KV engine, re-configure the engine')
             if engine['version'] == '1':
-                credentials += get_kv1_secrets(engine['path'])
+                credentials += get_kv1_secrets(engine['path'], concat_username_to_cred_name)
             elif engine['version'] == '2':
-                credentials += get_kv2_secrets(engine['path'])
+                credentials += get_kv2_secrets(engine['path'], concat_username_to_cred_name, engine.get('folder'))
         elif engine['type'] == 'Cubbyhole':
-            credentials += get_ch_secrets(engine['path'])
+            credentials += get_ch_secrets(engine['path'], concat_username_to_cred_name)
 
     if identifier:
         credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
@@ -609,7 +623,7 @@ def fetch_credentials():
     demisto.credentials(credentials)
 
 
-def get_kv1_secrets(engine_path):
+def get_kv1_secrets(engine_path, concat_username_to_cred_name=False):
     path = engine_path
     params = {
         'list': 'true'
@@ -625,10 +639,14 @@ def get_kv1_secrets(engine_path):
     for secret in res['data'].get('keys', []):
         secret_data = get_kv1_secret(engine_path, secret)
         for k, v in secret_data.get('data', {}).iteritems():
+            if concat_username_to_cred_name:
+                name = '{0}_{1}'.format(secret, k)
+            else:
+                name = secret
             secrets.append({
                 'user': k,
                 'password': v,
-                'name': secret
+                'name': name
             })
 
     return secrets
@@ -640,31 +658,38 @@ def get_kv1_secret(engine_path, secret):
     return send_request(path, 'get')
 
 
-def get_kv2_secrets(engine_path):
+def get_kv2_secrets(engine_path, concat_username_to_cred_name=False, folder=None):
     secrets = []
-    res = list_secrets(engine_path, '2')
+    res = list_secrets(engine_path, '2', folder)
     if not res or 'data' not in res:
         return []
 
     for secret in res['data'].get('keys', []):
-        secret_data = get_kv2_secret(engine_path, secret)
+        secret_data = get_kv2_secret(engine_path, secret, folder)
         for k, v in secret_data.get('data', {}).get('data', {}).iteritems():
+            if concat_username_to_cred_name:
+                name = '{0}_{1}'.format(secret, k)
+            else:
+                name = secret
             secrets.append({
                 'user': k,
                 'password': v,
-                'name': secret
+                'name': name
             })
 
     return secrets
 
 
-def get_kv2_secret(engine_path, secret):
-    path = engine_path + 'data/' + secret
+def get_kv2_secret(engine_path, secret, folder=None):
+    path = engine_path + 'data/'
+    if folder:
+        path += os.path.join(folder)
+    path += secret
 
     return send_request(path, 'get')
 
 
-def get_ch_secrets(engine_path):
+def get_ch_secrets(engine_path, concat_username_to_cred_name=False):
     path = engine_path
 
     params = {
@@ -681,10 +706,14 @@ def get_ch_secrets(engine_path):
     for secret in res['data'].get('keys', []):
         secret_data = get_ch_secret(engine_path, secret)
         for k, v in secret_data.get('data', {}).iteritems():
+            if concat_username_to_cred_name:
+                name = '{0}_{1}'.format(secret, k)
+            else:
+                name = secret
             secrets.append({
                 'user': k,
                 'password': v,
-                'name': secret
+                'name': name
             })
 
     return secrets

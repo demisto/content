@@ -553,7 +553,7 @@ See `Filter Syntax` for the details of `conditions`.
 ##### Filter
 > **Operator**: is filtered with
 
-> **Path**: Name
+> **Path**:
 
 > **Filter**:
 

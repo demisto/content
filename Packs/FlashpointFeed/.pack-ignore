@@ -1,0 +1,5 @@
+[file:FlashpointFeed.yml]
+ignore=IN145
+
+[file:FlashpointFeed_image.png]
+ignore=IM111

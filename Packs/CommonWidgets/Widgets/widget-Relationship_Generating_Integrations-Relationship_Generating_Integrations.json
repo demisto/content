@@ -1,0 +1,28 @@
+{
+    "dataType": "relationships",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 3,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "Relationship Generating Integrations",
+    "isPredefined": true,
+    "name": "Relationship Generating Integrations",
+    "params": {
+        "groupBy": [
+            "sources.brand"
+        ]
+    },
+    "version": -1,
+    "widgetType": "column",
+    "fromVersion": "6.2.0",
+    "description": ""
+}

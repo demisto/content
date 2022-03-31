@@ -1,0 +1,196 @@
+[
+  {
+        "actor": {
+            "alternateId": "example",
+            "detailEntry": null,
+            "displayName": "dummy name",
+            "id": "123",
+            "type": "User"
+        },
+        "authenticationContext": {
+            "authenticationProvider": null,
+            "authenticationStep": 0,
+            "credentialProvider": null,
+            "credentialType": null,
+            "externalSessionId": "123",
+            "interface": null,
+            "issuer": null
+        },
+        "client": {
+            "device": "Unknown",
+            "geographicalContext": {
+                "city": "Boardman",
+                "country": "United States",
+                "geolocation": {
+                    "lat": 1.2,
+                    "lon": 3.4
+                },
+                "postalCode": "123",
+                "state": "Oregon"
+            },
+            "id": null,
+            "ipAddress": "8.8.8.8",
+            "userAgent": {
+                "browser": "UNKNOWN",
+                "os": "Unknown",
+                "rawUserAgent": "1.0"
+            },
+            "zone": "null"
+        },
+        "debugContext": {
+            "debugData": {
+                "requestId": "123",
+                "requestUri": "/api/v1/groups",
+                "url": "/api/v1/groups"
+            }
+        },
+        "device": null,
+        "displayMessage": "Remove user from group membership",
+        "eventType": "group.user_membership.remove",
+        "legacyEventType": "core.user_group_member.user_remove",
+        "outcome": {
+            "reason": null,
+            "result": "SUCCESS"
+        },
+        "published": "2021-12-13T01:47:08.556Z",
+        "request": {
+            "ipChain": [
+                {
+                    "geographicalContext": {
+                        "city": "Boardman",
+                        "country": "United States",
+                        "geolocation": {
+                            "lat": 1.2,
+                            "lon": 3.4
+                        },
+                        "postalCode": "123",
+                        "state": "Oregon"
+                    },
+                    "ip": "8.8.8.8",
+                    "source": null,
+                    "version": "V4"
+                }
+            ]
+        },
+        "securityContext": {
+            "asNumber": null,
+            "asOrg": null,
+            "domain": null,
+            "isProxy": null,
+            "isp": null
+        },
+        "severity": "INFO",
+        "target": [
+            {
+                "alternateId": "test.com",
+                "detailEntry": null,
+                "displayName": "test this",
+                "id": "123",
+                "type": "User"
+            },
+            {
+                "alternateId": "unknown",
+                "detailEntry": null,
+                "displayName": "test1",
+                "id": "123",
+                "type": "UserGroup"
+            }
+        ],
+        "transaction": {
+            "detail": {},
+            "id": "123",
+            "type": "WEB"
+        },
+        "uuid": "123",
+        "version": "0"
+    },
+    {
+        "actor": {
+            "alternateId": "example",
+            "detailEntry": null,
+            "displayName": "dummy name",
+            "id": "123",
+            "type": "User"
+        },
+        "authenticationContext": {
+            "authenticationProvider": null,
+            "authenticationStep": 0,
+            "credentialProvider": null,
+            "credentialType": null,
+            "externalSessionId": "123",
+            "interface": null,
+            "issuer": null
+        },
+        "client": {
+            "device": "Unknown",
+            "geographicalContext": {
+                "city": "Boardman",
+                "country": "United States",
+                "geolocation": {
+                    "lat": 1.2,
+                    "lon": 3.4
+                },
+                "postalCode": "123",
+                "state": "Oregon"
+            },
+            "id": null,
+            "ipAddress": "8.8.8.8",
+            "userAgent": {
+                "browser": "UNKNOWN",
+                "os": "Unknown",
+                "rawUserAgent": "1.0"
+            },
+            "zone": "null"
+        },
+        "debugContext": {
+            "debugData": {
+                "requestId": "123",
+                "requestUri": "/api/v1/groups",
+                "url": "/api/v1/groups"
+            }
+        },
+        "device": null,
+        "displayMessage": "Remove user from group membership",
+        "eventType": "group.user_membership.remove",
+        "legacyEventType": "core.user_group_member.user_remove",
+        "outcome": {
+            "reason": null,
+            "result": "SUCCESS"
+        },
+        "published": "2021-12-13T01:47:08.556Z",
+        "request": {
+            "ipChain": []
+        },
+        "securityContext": {
+            "asNumber": null,
+            "asOrg": null,
+            "domain": null,
+            "isProxy": null,
+            "isp": null
+        },
+        "severity": "INFO",
+        "target": [
+            {
+                "alternateId": "test.com",
+                "detailEntry": null,
+                "displayName": "test this",
+                "id": "123",
+                "type": "User"
+            },
+            {
+                "alternateId": "unknown",
+                "detailEntry": null,
+                "displayName": "test1",
+                "id": "123",
+                "type": "UserGroup"
+            }
+        ],
+        "transaction": {
+            "detail": {},
+            "id": "123",
+            "type": "WEB"
+        },
+        "uuid": "123",
+        "version": "0"
+    }
+]

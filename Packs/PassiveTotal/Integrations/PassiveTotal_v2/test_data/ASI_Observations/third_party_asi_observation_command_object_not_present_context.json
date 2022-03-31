@@ -1,0 +1,26 @@
+{
+  "PassiveTotal.ThirdParty(val.id == obj.id)": {
+    "id": 45998,
+    "Observation": {
+      "asset": [
+        {
+          "type": "HOST",
+          "name": "riskiq.app",
+          "firstSeen": "2018-05-11 20:40:17",
+          "lastSeen": "2021-09-16 13:57:16"
+        },
+        {
+          "type": "HOST",
+          "name": "www.riskiq.app",
+          "firstSeen": "2018-06-30 00:03:32"
+        }
+      ],
+      "cveId": "CVE-2021-23017"
+    }
+  },
+  "PassiveTotal.Summary.ThirdPartyObservation(val.name == obj.name)": {
+    "name": "pt-list-third-party-attack-surface-observations",
+    "totalCount": 124,
+    "totalPages": 62
+  }
+}

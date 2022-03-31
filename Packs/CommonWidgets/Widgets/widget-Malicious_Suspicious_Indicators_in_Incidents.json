@@ -1,0 +1,32 @@
+{
+    "dataType": "indicators",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 30,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "5139168e-f555-442c-84a6-ee98aac55c1e",
+    "isPredefined": true,
+    "name": "Malicious/Suspicious Indicators in Incidents",
+    "params": {
+        "groupBy": [
+            "firstSeen(d)",
+            "score"
+        ],
+        "timeFrame": "days",
+        "valuesFormat": "abbreviated"
+    },
+    "query": "(verdict:Malicious or verdict:Suspicious) and incident.id:*",
+    "version": -1,
+    "widgetType": "line",
+    "fromVersion": "6.2.0",
+    "description": ""
+}

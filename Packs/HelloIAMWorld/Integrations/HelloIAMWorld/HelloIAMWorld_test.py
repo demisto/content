@@ -136,10 +136,9 @@ def test_create_user_command__success(mocker):
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=USER_APP_DATA)
 
-    user_profile = IAMCommand().create_user(client, args)
+    user_profile = IAMCommand(get_user_iam_attrs=['email']).create_user(client, args)
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.CREATE_USER
@@ -199,10 +198,9 @@ def test_update_user_command__non_existing_user(mocker):
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=USER_APP_DATA)
 
-    user_profile = IAMCommand(create_if_not_exists=True).update_user(client, args)
+    user_profile = IAMCommand(create_if_not_exists=True, get_user_iam_attrs=['email']).update_user(client, args)
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.CREATE_USER
@@ -258,10 +256,9 @@ def test_update_user_command__allow_enable(mocker):
             'allow-enable': 'true'}
 
     mocker.patch.object(client, 'get_user', return_value=DISABLED_USER_APP_DATA)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'update_user', return_value=USER_APP_DATA)
 
-    user_profile = IAMCommand().update_user(client, args)
+    user_profile = IAMCommand(get_user_iam_attrs=['email']).update_user(client, args)
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.UPDATE_USER

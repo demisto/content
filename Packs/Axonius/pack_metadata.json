@@ -1,8 +1,8 @@
 {
     "name": "Axonius",
-    "description": "Enrichment for devices and users in your envrionment.",
+    "description": "Enrichment for devices and users in your environment.",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Axonius",
     "url": "https://docs.axonius.com",
     "email": "support@axonius.com",
@@ -16,5 +16,9 @@
     "githubUser": [
         "Phillips-Chris"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

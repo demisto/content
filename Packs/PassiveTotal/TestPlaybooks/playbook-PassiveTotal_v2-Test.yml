@@ -4,20 +4,24 @@ name: PassiveTotal_v2-Test
 description: This playbook uses the PassiveTotal integration and tests the scenarios
   of the various commands like pt-whois-search, pt-get-components, pt-get-trackers,
   pt-get-pdns-details, pt-ssl-cert-search, pt-get-host-pairs, pt-get-cookies, pt-get-services,
-  pt-get-whois and pt-get-articles.
+  pt-get-whois, pt-get-articles, pt-get-data-card, pt-get-reputation, ip, pt-list-intel-profiles,
+  pt-list-intel-profile-indicators, pt-list-my-attack-surfaces, pt-list-my-attack-surface-insights,
+  pt-list-my-attack-surface-vulnerable-components, pt-list-my-attack-surface-vulnerabilities,
+  pt-list-my-attack-surface-observations, pt-list-third-party-attack-surface, pt-list-third-party-attack-surface-insights,
+  pt-list-third-party-attack-surface-vulnerable-components, pt-list-third-party-attack-surface-vulnerabilities
+  and pt-list-third-party-attack-surface-observations.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3bbc9faa-952c-45df-81f2-7c3df714d86e
+    taskid: 8c336f60-7876-4d0b-8a9e-11711693f4e7
     type: start
     task:
-      id: 3bbc9faa-952c-45df-81f2-7c3df714d86e
+      id: 8c336f60-7876-4d0b-8a9e-11711693f4e7
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -25,7 +29,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -34,17 +38,19 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ebca507a-6c3c-4e7a-8b43-ce8352a710f8
+    taskid: 7b102fae-b5bc-499d-8ae1-4b49785555d1
     type: regular
     task:
-      id: ebca507a-6c3c-4e7a-8b43-ce8352a710f8
+      id: 7b102fae-b5bc-499d-8ae1-4b49785555d1
       version: -1
       name: DeleteContext
-      script: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
@@ -56,7 +62,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 195
         }
       }
@@ -65,12 +71,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: c8c773a8-89e5-4055-8da2-0adbad5f8bc7
+    taskid: b9827606-6045-44ca-8fea-39d41ef2f96e
     type: regular
     task:
-      id: c8c773a8-89e5-4055-8da2-0adbad5f8bc7
+      id: b9827606-6045-44ca-8fea-39d41ef2f96e
       version: -1
       name: pt-whois-search
       script: '|||pt-whois-search'
@@ -89,8 +97,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 162.5,
+          "y": 360
         }
       }
     note: false
@@ -98,12 +106,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b03688ed-351a-4a56-8673-e322886736ab
+    taskid: 58ba4a0a-f625-44e1-8dfc-2fbc12485921
     type: condition
     task:
-      id: b03688ed-351a-4a56-8673-e322886736ab
+      id: 58ba4a0a-f625-44e1-8dfc-2fbc12485921
       version: -1
       name: Verify Outputs
       type: condition
@@ -409,7 +419,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 545
         }
       }
@@ -418,12 +428,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 4852f78b-4f8f-4aa7-81bd-17dcb50fe061
+    taskid: 72d2b905-7aac-4089-860b-df39469c4983
     type: regular
     task:
-      id: 4852f78b-4f8f-4aa7-81bd-17dcb50fe061
+      id: 72d2b905-7aac-4089-860b-df39469c4983
       version: -1
       name: pt-get-components
       script: '|||pt-get-components'
@@ -434,15 +446,13 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      end: {}
       query:
         simple: www.furth.com.ar
-      start: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 720
         }
       }
@@ -451,12 +461,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: c8de59d3-9b64-48d8-8e41-a0fc2372f699
+    taskid: e83dee3b-cf04-40ad-8583-73e3390f5223
     type: condition
     task:
-      id: c8de59d3-9b64-48d8-8e41-a0fc2372f699
+      id: e83dee3b-cf04-40ad-8583-73e3390f5223
       version: -1
       name: Verify Outputs
       type: condition
@@ -522,7 +534,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 895
         }
       }
@@ -531,12 +543,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: ba00f2c6-cb71-4214-8e36-58b047f7979a
+    taskid: 98438da3-df16-4523-855a-e710636007c0
     type: regular
     task:
-      id: ba00f2c6-cb71-4214-8e36-58b047f7979a
+      id: 98438da3-df16-4523-855a-e710636007c0
       version: -1
       name: pt-get-trackers
       script: '|||pt-get-trackers'
@@ -547,15 +561,13 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      end: {}
       query:
         simple: filmesonlinegratis.net
-      start: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1070
         }
       }
@@ -564,12 +576,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 4b181f2b-dbe2-43b7-835e-c83a1c7a5245
+    taskid: 7b7d1af5-bc7c-42af-857c-0542db2c890c
     type: condition
     task:
-      id: 4b181f2b-dbe2-43b7-835e-c83a1c7a5245
+      id: 7b7d1af5-bc7c-42af-857c-0542db2c890c
       version: -1
       name: Verify Outputs
       type: condition
@@ -635,7 +649,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1245
         }
       }
@@ -644,12 +658,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 5819495a-3467-4238-8a37-72e79724eddd
+    taskid: 54996e56-70bc-45b0-8648-dd959a12c39c
     type: regular
     task:
-      id: 5819495a-3467-4238-8a37-72e79724eddd
+      id: 54996e56-70bc-45b0-8648-dd959a12c39c
       version: -1
       name: pt-get-pdns-details
       script: '|||pt-get-pdns-details'
@@ -660,16 +676,13 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      end: {}
       query:
         simple: www.furth.com.ar
-      start: {}
-      timeout: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1420
         }
       }
@@ -678,12 +691,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 02da5749-7ef2-4098-88d9-0f5bed579d8b
+    taskid: 49a4d315-ebab-4b3f-8eaa-b42424792a1f
     type: condition
     task:
-      id: 02da5749-7ef2-4098-88d9-0f5bed579d8b
+      id: 49a4d315-ebab-4b3f-8eaa-b42424792a1f
       version: -1
       name: Verify Outputs
       type: condition
@@ -744,7 +759,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1595
         }
       }
@@ -753,12 +768,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 04ba6d1f-6be4-4fa7-8381-ec5f72abb163
+    taskid: 82e36b30-6999-4239-811b-1580f61dd229
     type: regular
     task:
-      id: 04ba6d1f-6be4-4fa7-8381-ec5f72abb163
+      id: 82e36b30-6999-4239-811b-1580f61dd229
       version: -1
       name: pt-ssl-cert-search
       script: '|||pt-ssl-cert-search'
@@ -777,7 +794,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1770
         }
       }
@@ -786,12 +803,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: a66ee29b-e097-4657-86ed-85ee22938a36
+    taskid: d173f4fe-116d-44e1-8e2f-2da12e83178f
     type: condition
     task:
-      id: a66ee29b-e097-4657-86ed-85ee22938a36
+      id: d173f4fe-116d-44e1-8e2f-2da12e83178f
       version: -1
       name: Verify Outputs
       type: condition
@@ -897,7 +916,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1945
         }
       }
@@ -906,12 +925,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: a06c4c15-2fed-448e-81b0-407203277c7c
+    taskid: 37e7d861-d379-45ce-8300-8ab17a8797ea
     type: regular
     task:
-      id: a06c4c15-2fed-448e-81b0-407203277c7c
+      id: 37e7d861-d379-45ce-8300-8ab17a8797ea
       version: -1
       name: pt-get-host-pairs
       script: '|||pt-get-host-pairs'
@@ -924,15 +945,13 @@ tasks:
     scriptarguments:
       direction:
         simple: children
-      end: {}
       query:
         simple: ns1.furth.com.ar
-      start: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 2120
         }
       }
@@ -941,12 +960,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: cae0dd0e-2bf4-4b27-8b5e-cc7c2f6efcf8
+    taskid: 3590eff8-99b7-4b02-83d8-e7ca1d415ea5
     type: condition
     task:
-      id: cae0dd0e-2bf4-4b27-8b5e-cc7c2f6efcf8
+      id: 3590eff8-99b7-4b02-83d8-e7ca1d415ea5
       version: -1
       name: Verify Outputs
       type: condition
@@ -987,7 +1008,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 2295
         }
       }
@@ -996,24 +1017,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 40268b1a-e258-4765-85a5-84b5d091daaf
+    taskid: 3d3c08a5-310e-47ff-8082-7a646d9f73af
     type: title
     task:
-      id: 40268b1a-e258-4765-85a5-84b5d091daaf
+      id: 3d3c08a5-310e-47ff-8082-7a646d9f73af
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4190
+          "x": 170,
+          "y": 14510
         }
       }
     note: false
@@ -1021,12 +1043,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: fcb6b9e6-5df9-479e-8aa2-65b68e501cc1
+    taskid: f4691fef-5c2b-4a8c-8b36-5018f4a87220
     type: regular
     task:
-      id: fcb6b9e6-5df9-479e-8aa2-65b68e501cc1
+      id: f4691fef-5c2b-4a8c-8b36-5018f4a87220
       version: -1
       name: pt-get-cookies
       description: Retrieves cookies addresses or hostname information based on cookie
@@ -1039,18 +1063,15 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      order: {}
-      page: {}
       query:
         simple: _fg
       search_by:
         simple: get addresses by cookie name
-      sort: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 2470
         }
       }
@@ -1059,12 +1080,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: e5ef86ff-0121-4dd0-86f2-885db0265806
+    taskid: 391ed456-57fe-4fe3-8c36-57a6a054c750
     type: condition
     task:
-      id: e5ef86ff-0121-4dd0-86f2-885db0265806
+      id: 391ed456-57fe-4fe3-8c36-57a6a054c750
       version: -1
       name: Verify Outputs
       type: condition
@@ -1115,7 +1138,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 2645
         }
       }
@@ -1124,12 +1147,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: b7b0a175-2967-46c9-80cb-729e41fe3ecf
+    taskid: 19449f6c-e73e-467f-8604-391aaefa8b77
     type: regular
     task:
-      id: b7b0a175-2967-46c9-80cb-729e41fe3ecf
+      id: 19449f6c-e73e-467f-8604-391aaefa8b77
       version: -1
       name: pt-get-services
       description: Retrieves exposed services on the recently open ports for an IP
@@ -1140,7 +1165,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+      - "34"
     scriptarguments:
       ip:
         simple: 2.2.2.2
@@ -1148,8 +1173,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2840
+          "x": 162.5,
+          "y": 2820
         }
       }
     note: false
@@ -1157,12 +1182,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: c7ea4c0c-b000-45df-8618-a1baadbfa695
+    taskid: 48dc6cbe-7a35-480e-8631-8abe6618ccda
     type: condition
     task:
-      id: c7ea4c0c-b000-45df-8618-a1baadbfa695
+      id: 48dc6cbe-7a35-480e-8631-8abe6618ccda
       version: -1
       name: Verify Outputs
       type: condition
@@ -1242,7 +1269,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3005
+          "y": 3170
         }
       }
     note: false
@@ -1250,12 +1277,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 9cdf018a-f3ca-4432-8439-d94f62448c2e
+    taskid: 8ca34915-5e35-4880-8bd9-9dfa3a9e1476
     type: regular
     task:
-      id: 9cdf018a-f3ca-4432-8439-d94f62448c2e
+      id: 8ca34915-5e35-4880-8bd9-9dfa3a9e1476
       version: -1
       name: pt-get-whois
       description: Gets WHOIS information records based on queries.
@@ -1267,15 +1296,14 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      history: {}
       query:
         simple: ituiguang.cc
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3400
+          "x": 162.5,
+          "y": 3520
         }
       }
     note: false
@@ -1283,12 +1311,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 695c64b8-0fc6-4ecc-8d39-425d55f43060
+    taskid: 27fc1d39-6734-40b5-81b5-c7cd577608f8
     type: condition
     task:
-      id: 695c64b8-0fc6-4ecc-8d39-425d55f43060
+      id: 27fc1d39-6734-40b5-81b5-c7cd577608f8
       version: -1
       name: Verify Outputs
       type: condition
@@ -1556,8 +1586,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3600
+          "x": 162.5,
+          "y": 3695
         }
       }
     note: false
@@ -1565,12 +1595,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 499f77e0-2817-4421-8b64-4adc2a5d2b42
+    taskid: 1b4a7a41-fb42-4ac8-89fc-d0bbd7c49c8c
     type: regular
     task:
-      id: 499f77e0-2817-4421-8b64-4adc2a5d2b42
+      id: 1b4a7a41-fb42-4ac8-89fc-d0bbd7c49c8c
       version: -1
       name: pt-get-articles
       description: Retrieves information related to articles for a specific indicator.
@@ -1584,13 +1616,12 @@ tasks:
     scriptarguments:
       query:
         simple: T1125
-      type: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3790
+          "x": 162.5,
+          "y": 3870
         }
       }
     note: false
@@ -1598,12 +1629,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 8c257413-1197-4845-8dc7-d6a4b9c74ef5
+    taskid: 3a9c8225-20fe-4c60-8094-491cb1d2eeb5
     type: condition
     task:
-      id: 8c257413-1197-4845-8dc7-d6a4b9c74ef5
+      id: 3a9c8225-20fe-4c60-8094-491cb1d2eeb5
       version: -1
       name: Verify Outputs
       type: condition
@@ -1611,7 +1644,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1647,8 +1680,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4000
+          "x": 162.5,
+          "y": 4045
         }
       }
     note: false
@@ -1656,12 +1689,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 77e0a6ee-73bf-4e2f-8d39-f5a23ba07ea7
+    taskid: 19f4edc0-6df3-4a74-86f5-97f5c048260f
     type: regular
     task:
-      id: 77e0a6ee-73bf-4e2f-8d39-f5a23ba07ea7
+      id: 19f4edc0-6df3-4a74-86f5-97f5c048260f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1675,17 +1710,14 @@ tasks:
     scriptarguments:
       all:
         simple: "no"
-      index: {}
       key:
         simple: PassiveTotal.WHOIS
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3195
+          "x": 162.5,
+          "y": 3345
         }
       }
     note: false
@@ -1693,17 +1725,2746 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 5d1052d9-ab57-41b3-842a-ba4ac9a63a0c
+    type: regular
+    task:
+      id: 5d1052d9-ab57-41b3-842a-ba4ac9a63a0c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key:
+        simple: PassiveTotal.WHOIS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 1d4f9fbe-6bb9-4fcf-844c-95b18731f772
+    type: regular
+    task:
+      id: 1d4f9fbe-6bb9-4fcf-844c-95b18731f772
+      version: -1
+      name: pt-get-data-card
+      description: Retrieves a summary data card associated with the given query.
+      script: '|||pt-get-data-card'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      query:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: fd9fc723-c6ca-4a73-8a16-68bde057f5c0
+    type: condition
+    task:
+      id: fd9fc723-c6ca-4a73-8a16-68bde057f5c0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.DataCard
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.DataCard
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.DataCard
+                accessor: link
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.DataCard
+                accessor: netblock
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.DataCard
+                accessor: os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.DataCard
+                accessor: organization
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.DataCard
+                accessor: asn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.DataCard
+                accessor: hosting_provider
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 535087c2-ef52-44c1-8b57-f9bc60be0cf4
+    type: regular
+    task:
+      id: 535087c2-ef52-44c1-8b57-f9bc60be0cf4
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key:
+        simple: PassiveTotal.WHOIS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: e7e621fa-da2b-4df7-89db-cbc6988623db
+    type: regular
+    task:
+      id: e7e621fa-da2b-4df7-89db-cbc6988623db
+      version: -1
+      name: pt-get-reputation
+      description: Gets reputation for a given domain, host or IP.
+      script: '|||pt-get-reputation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      query:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 66a5691c-7490-494a-886b-838c64b0f17d
+    type: condition
+    task:
+      id: 66a5691c-7490-494a-886b-838c64b0f17d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Reputation
+                accessor: query
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Reputation
+                accessor: score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Reputation
+                accessor: classification
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 2764a375-cb33-4d5e-8562-d8ea04828698
+    type: regular
+    task:
+      id: 2764a375-cb33-4d5e-8562-d8ea04828698
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key:
+        simple: PassiveTotal.WHOIS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 77e6b405-e593-4e1d-888b-c41ad890df03
+    type: regular
+    task:
+      id: 77e6b405-e593-4e1d-888b-c41ad890df03
+      version: -1
+      name: ip
+      description: Checks the reputation of an IP address.
+      script: PassiveTotal v2|||ip
+      type: regular
+      iscommand: true
+      brand: PassiveTotal v2
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 3a9cd253-8a49-4a1a-83b7-77dcdfaf5bce
+    type: condition
+    task:
+      id: 3a9cd253-8a49-4a1a-83b7-77dcdfaf5bce
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IP
+                accessor: query
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IP
+                accessor: score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IP
+                accessor: classification
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP
+                accessor: Address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: a6883900-1cba-47c8-8c51-736c8d1e67b9
+    type: regular
+    task:
+      id: a6883900-1cba-47c8-8c51-736c8d1e67b9
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key:
+        simple: PassiveTotal.WHOIS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 048eafcc-5394-4713-8b24-3c953b30e263
+    type: condition
+    task:
+      id: 048eafcc-5394-4713-8b24-3c953b30e263
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal
+                accessor: Service
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: ac7e34ec-87d7-4071-83e3-de3a520b34bb
+    type: condition
+    task:
+      id: ac7e34ec-87d7-4071-83e3-de3a520b34bb
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal
+                accessor: DataCard
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 789ac2bd-b3ae-475a-8efd-b5eaea483b7c
+    type: condition
+    task:
+      id: 789ac2bd-b3ae-475a-8efd-b5eaea483b7c
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal
+                accessor: Reputation
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: d192badb-2ed4-4b88-88a8-0465472d30e6
+    type: condition
+    task:
+      id: d192badb-2ed4-4b88-88a8-0465472d30e6
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal
+                accessor: IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 7a51df7e-494e-4b7d-8353-ddad88e750f7
+    type: regular
+    task:
+      id: 7a51df7e-494e-4b7d-8353-ddad88e750f7
+      version: -1
+      name: pt-list-intel-profiles
+      description: Retrieves the list of all profiles.
+      script: '|||pt-list-intel-profiles'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 4c225ef8-bb9f-4a35-84a2-ac0d853f1ab6
+    type: condition
+    task:
+      id: 4c225ef8-bb9f-4a35-84a2-ac0d853f1ab6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IntelProfile
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IntelProfile
+                accessor: title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IntelProfile
+                accessor: link
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IntelProfile
+                accessor: osintIndicatorsCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IntelProfile
+                accessor: riskIqIndicatorsCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IntelProfile
+                accessor: indicators
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IntelProfile
+                accessor: aliases
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 6830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: e957aee3-5b16-4ecb-80e4-924ce7f66965
+    type: regular
+    task:
+      id: e957aee3-5b16-4ecb-80e4-924ce7f66965
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key:
+        simple: PassiveTotal.WHOIS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: c4dfcb77-3a9a-41d5-88cd-d73993db1fc8
+    type: condition
+    task:
+      id: c4dfcb77-3a9a-41d5-88cd-d73993db1fc8
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal
+                accessor: IntelProfile
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 61b9a290-0063-49b9-88b1-cba3a90c17f6
+    type: regular
+    task:
+      id: 61b9a290-0063-49b9-88b1-cba3a90c17f6
+      version: -1
+      name: pt-list-intel-profile-indicators
+      description: Retrieves the indicators for the given profile.
+      script: '|||pt-list-intel-profile-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      id:
+        complex:
+          root: PassiveTotal.IntelProfile.[0]
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: c604a344-90ab-4e56-81a9-1922bc7b81c4
+    type: condition
+    task:
+      id: c604a344-90ab-4e56-81a9-1922bc7b81c4
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IntelProfile
+                accessor: indicator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: c7d8aa9c-dabe-4f21-8374-0dcce59660c6
+    type: condition
+    task:
+      id: c7d8aa9c-dabe-4f21-8374-0dcce59660c6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal
+                accessor: IntelProfile
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IntelProfile.indicator
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IntelProfile.indicator
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IntelProfile.indicator
+                accessor: value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IntelProfile.indicator
+                accessor: category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IntelProfile.indicator
+                accessor: firstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.IntelProfile.indicator
+                accessor: lastSeen
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 7410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 3a02d149-f8d2-4a95-8896-53e776566418
+    type: regular
+    task:
+      id: 3a02d149-f8d2-4a95-8896-53e776566418
+      version: -1
+      name: pt-list-my-attack-surfaces
+      description: Retrieves the attack surface information of the individual's account.
+      script: '|||pt-list-my-attack-surfaces'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: fb066ef9-f834-4ee5-80d8-67bc1b69f029
+    type: condition
+    task:
+      id: fb066ef9-f834-4ee5-80d8-67bc1b69f029
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal
+                accessor: AttackSurface
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 8d76a1b8-be50-40b0-8a4b-c6e2cee5a954
+    type: condition
+    task:
+      id: 8d76a1b8-be50-40b0-8a4b-c6e2cee5a954
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.AttackSurface
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.AttackSurface
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.AttackSurface.priority.high
+                accessor: observationCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.AttackSurface.priority.high
+                accessor: link
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.AttackSurface.priority.medium
+                accessor: observationCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.AttackSurface.priority.medium
+                accessor: link
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.AttackSurface.priority.low
+                accessor: observationCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.AttackSurface.priority.low
+                accessor: link
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 8140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 77b1ba25-8515-4413-8fe3-5d6298a0bcae
+    type: regular
+    task:
+      id: 77b1ba25-8515-4413-8fe3-5d6298a0bcae
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key:
+        simple: PassiveTotal.WHOIS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: a109117d-37c6-4464-847e-b29d504a6079
+    type: regular
+    task:
+      id: a109117d-37c6-4464-847e-b29d504a6079
+      version: -1
+      name: pt-list-my-attack-surface-insights
+      description: Retrieves the attack surface insight  information of the individual's
+        account.
+      script: '|||pt-list-my-attack-surface-insights'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      priority:
+        simple: high
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: e9faeab9-202f-4ecd-8c46-8fc8a61d7dab
+    type: condition
+    task:
+      id: e9faeab9-202f-4ecd-8c46-8fc8a61d7dab
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal
+                accessor: Insight
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: f6bcf856-a15b-4131-82c3-2160bdf72df6
+    type: condition
+    task:
+      id: f6bcf856-a15b-4131-82c3-2160bdf72df6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Insight
+                accessor: priorityLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Insight.insight
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Insight.insight
+                accessor: description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Insight.insight
+                accessor: observationCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Insight.insight
+                accessor: link
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Insight.insight
+                accessor: insightId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Insight.insight
+                accessor: segmentBy
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 8860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 83fe4555-5fb4-4058-8100-5db2ebba19b7
+    type: regular
+    task:
+      id: 83fe4555-5fb4-4058-8100-5db2ebba19b7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key:
+        simple: PassiveTotal.WHOIS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 6b1afc54-dad1-4646-84d3-1d04822ee20f
+    type: regular
+    task:
+      id: 6b1afc54-dad1-4646-84d3-1d04822ee20f
+      version: -1
+      name: pt-list-my-attack-surface-vulnerable-components
+      description: Retrieves the attack surface vulnerable component information of
+        the individual's account.
+      script: '|||pt-list-my-attack-surface-vulnerable-components'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: e841040d-ae6b-45ac-88b7-ebe0abfc26da
+    type: condition
+    task:
+      id: e841040d-ae6b-45ac-88b7-ebe0abfc26da
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal
+                accessor: VulnerableComponent
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: deb2527d-b2ad-4c16-8882-f4c7806a6bf4
+    type: condition
+    task:
+      id: deb2527d-b2ad-4c16-8882-f4c7806a6bf4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.VulnerableComponent
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.VulnerableComponent
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.VulnerableComponent
+                accessor: severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.VulnerableComponent
+                accessor: count
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 9625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 863d0955-38da-487b-89ea-24a7a3c2421d
+    type: regular
+    task:
+      id: 863d0955-38da-487b-89ea-24a7a3c2421d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key:
+        simple: PassiveTotal.WHOIS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 9830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: d0111bad-9737-4a3a-884c-f7d6ca0b52ea
+    type: regular
+    task:
+      id: d0111bad-9737-4a3a-884c-f7d6ca0b52ea
+      version: -1
+      name: pt-list-my-attack-surface-vulnerabilities
+      description: Retrieves the attack surface vulnerability information of the individual's
+        account.
+      script: '|||pt-list-my-attack-surface-vulnerabilities'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 10025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 46756ea3-1b0d-438c-882c-9afdd6ce4ef7
+    type: condition
+    task:
+      id: 46756ea3-1b0d-438c-882c-9afdd6ce4ef7
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "61"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal
+                accessor: Vulnerability
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 10210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: b43ab3b2-86f6-4f85-8dab-c53cb7a558cc
+    type: condition
+    task:
+      id: b43ab3b2-86f6-4f85-8dab-c53cb7a558cc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Vulnerability
+                accessor: cveId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Vulnerability
+                accessor: priorityScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Vulnerability
+                accessor: observationCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Vulnerability
+                accessor: cveLink
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Vulnerability.cwes
+                accessor: cweId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 10390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 9cba3a7a-df23-4eed-8f23-4195d8ab3071
+    type: regular
+    task:
+      id: 9cba3a7a-df23-4eed-8f23-4195d8ab3071
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key:
+        simple: PassiveTotal.WHOIS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 11130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 1ff23fb3-5b37-4c00-89b2-918fb9c24619
+    type: regular
+    task:
+      id: 1ff23fb3-5b37-4c00-89b2-918fb9c24619
+      version: -1
+      name: pt-list-my-attack-surface-observations
+      description: Retrieves the attack surface vulnerability observation information
+        of the individual's account.
+      script: '|||pt-list-my-attack-surface-observations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      cve_id:
+        complex:
+          root: PassiveTotal.Vulnerability.[0]
+          accessor: cveId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 10580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 9b5603cd-f343-45a5-8ca8-4c70e9217bec
+    type: condition
+    task:
+      id: 9b5603cd-f343-45a5-8ca8-4c70e9217bec
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "60"
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal
+                accessor: Observation
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 10770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 6ef60a79-d87c-4a63-846d-5b392bed89ab
+    type: condition
+    task:
+      id: 6ef60a79-d87c-4a63-846d-5b392bed89ab
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Observation.asset
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Observation.asset
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Observation.asset
+                accessor: firstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Observation.asset
+                accessor: lastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Observation
+                accessor: cveId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.Observation.cwe
+                accessor: cweId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 10950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 9705a696-ffe5-4ed9-8592-7ef662a28aa8
+    type: regular
+    task:
+      id: 9705a696-ffe5-4ed9-8592-7ef662a28aa8
+      version: -1
+      name: pt-list-third-party-attack-surface
+      description: Retrieves the attack surface observations by severity level for
+        the given third-party account.
+      script: '|||pt-list-third-party-attack-surface'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 11310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 6b4a94d0-3d14-4b45-8c95-779f759c3780
+    type: condition
+    task:
+      id: 6b4a94d0-3d14-4b45-8c95-779f759c3780
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "68"
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal
+                accessor: ThirdParty
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 11525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: a2d4d0d7-3a7e-4b19-8970-c7e2eaf7e067
+    type: condition
+    task:
+      id: a2d4d0d7-3a7e-4b19-8970-c7e2eaf7e067
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.priority.high
+                accessor: observationCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.priority.high
+                accessor: link
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.priority.medium
+                accessor: observationCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.priority.medium
+                accessor: link
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.priority.low
+                accessor: observationCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.priority.low
+                accessor: link
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 11720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 17022a31-2bd5-4c73-8948-8f6b777c5d00
+    type: regular
+    task:
+      id: 17022a31-2bd5-4c73-8948-8f6b777c5d00
+      version: -1
+      name: pt-list-third-party-attack-surface-insights
+      description: Retrieves the attack surface insight information of the given third-party
+        account.
+      script: '|||pt-list-third-party-attack-surface-insights'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      id:
+        complex:
+          root: PassiveTotal.ThirdParty.id
+          accessor: '[0]'
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      priority:
+        simple: high
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 11970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 62ace1b7-f564-4fbf-811b-420e315c9a99
+    type: condition
+    task:
+      id: 62ace1b7-f564-4fbf-811b-420e315c9a99
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "71"
+      "yes":
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.Insight
+                accessor: insight
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 12175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: dc78808b-5f9b-4b0c-8f42-43ecec19614c
+    type: condition
+    task:
+      id: dc78808b-5f9b-4b0c-8f42-43ecec19614c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.priority.high
+                accessor: observationCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.priority.high
+                accessor: link
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.priority.medium
+                accessor: observationCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.priority.medium
+                accessor: link
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.priority.low
+                accessor: observationCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.priority.low
+                accessor: link
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 12380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 25c58cb8-4f9e-42a4-8bc2-19a8bb694f46
+    type: regular
+    task:
+      id: 25c58cb8-4f9e-42a4-8bc2-19a8bb694f46
+      version: -1
+      name: pt-list-third-party-attack-surface-vulnerable-components
+      description: Retrieves the attack surface vulnerable component information of
+        the given third-party account.
+      script: '|||pt-list-third-party-attack-surface-vulnerable-components'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      id:
+        complex:
+          root: PassiveTotal.ThirdParty.id
+          accessor: '[0]'
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 12580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 697e51a1-373e-44c1-8063-ab722691d462
+    type: condition
+    task:
+      id: 697e51a1-373e-44c1-8063-ab722691d462
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "74"
+      "yes":
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty
+                accessor: VulnerableComponent
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 12775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 1ef8494e-e0f2-4d90-897a-2bb2eb1a9608
+    type: condition
+    task:
+      id: 1ef8494e-e0f2-4d90-897a-2bb2eb1a9608
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.VulnerableComponent
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.VulnerableComponent
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.VulnerableComponent
+                accessor: severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.VulnerableComponent
+                accessor: count
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 12960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 0c2bf1b5-dbbe-4ac9-89b6-7d5756b0e54f
+    type: regular
+    task:
+      id: 0c2bf1b5-dbbe-4ac9-89b6-7d5756b0e54f
+      version: -1
+      name: pt-list-third-party-attack-surface-vulnerabilities
+      description: Retrieves the attack surface vulnerability information of the given
+        third-party account.
+      script: '|||pt-list-third-party-attack-surface-vulnerabilities'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      id:
+        complex:
+          root: PassiveTotal.ThirdParty.id
+          accessor: '[0]'
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 13115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: cbc14023-f46a-4dbc-8758-f9c569ce9275
+    type: condition
+    task:
+      id: cbc14023-f46a-4dbc-8758-f9c569ce9275
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "77"
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty
+                accessor: Vulnerability
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 13305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: d81b4f92-b86b-462c-890b-704d6261fff7
+    type: condition
+    task:
+      id: d81b4f92-b86b-462c-890b-704d6261fff7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.Vulnerability
+                accessor: cveId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.Vulnerability
+                accessor: priorityScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.Vulnerability
+                accessor: observationCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.Vulnerability
+                accessor: cveLink
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.Vulnerability.cwes
+                accessor: cweId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 13500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: a3a668eb-847b-429a-8ad6-63ad26b6322f
+    type: regular
+    task:
+      id: a3a668eb-847b-429a-8ad6-63ad26b6322f
+      version: -1
+      name: pt-list-third-party-attack-surface-observations
+      description: Retrieves the attack surface vulnerability observation information
+        of the given third-party account.
+      script: '|||pt-list-third-party-attack-surface-observations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      cve_id:
+        complex:
+          root: PassiveTotal.ThirdParty.[0].Vulnerability.[0]
+          accessor: cveId
+      id:
+        complex:
+          root: PassiveTotal.ThirdParty.id
+          accessor: '[0]'
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 13670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 29ecdef4-291f-45ad-85c6-3c9a5eb85e76
+    type: condition
+    task:
+      id: 29ecdef4-291f-45ad-85c6-3c9a5eb85e76
+      version: -1
+      name: Is response received?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "80"
+      "yes":
+      - "79"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty
+                accessor: Observation
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 13865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 77cb7f02-c9d2-41a6-813c-fa0ffe6963cc
+    type: condition
+    task:
+      id: 77cb7f02-c9d2-41a6-813c-fa0ffe6963cc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.Observation.asset
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.Observation.asset
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.Observation.asset
+                accessor: firstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.Observation.asset
+                accessor: lastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.Observation
+                accessor: cveId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PassiveTotal.ThirdParty.Observation.cwe
+                accessor: cweId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 14060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 69b9c420-930d-4ed8-8492-70fd6b08236f
+    type: regular
+    task:
+      id: 69b9c420-930d-4ed8-8492-70fd6b08236f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key:
+        simple: PassiveTotal.WHOIS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 14250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
+      "11_12_yes": 0.88,
+      "13_15_yes": 0.9,
       "16_17_yes": 0.9,
-      "18_23_yes": 0.88
+      "18_23_yes": 0.88,
+      "20_21_yes": 0.88,
+      "39_42_yes": 0.86,
+      "5_6_yes": 0.88,
+      "7_8_yes": 0.9
     },
     "paper": {
       "dimensions": {
-        "height": 4205,
-        "width": 380,
-        "x": 50,
+        "height": 14525,
+        "width": 670,
+        "x": -120,
         "y": 50
       }
     }

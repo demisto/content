@@ -9,6 +9,7 @@ pytest = "*"
 pytest-mock = "*"
 
 [packages]
+python-docx = "*"
 
 [requires]
 python_version = "2.7"

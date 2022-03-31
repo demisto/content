@@ -1,0 +1,1 @@
+You can generate the client ID and secret by logging into the ATP console and generating a token under Settings->Data Sharing

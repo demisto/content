@@ -1,0 +1,862 @@
+category: Utilities
+commonfields:
+  id: O365 Defender SafeLinks
+  version: -1
+configuration:
+  - name: certificate
+    display: Certificate
+    required: true
+    type: 9
+    additionalinfo: A pfx certificate encoded in Base64.
+    displaypassword: "Password - Used to generate the certificate"
+    hiddenusername: false
+  - name: organization
+    display: Organization
+    required: true
+    type: 0
+    additionalinfo: The organization used in app-only authentication.
+  - name: app_id
+    display: The application ID from the Azure portal
+    required: true
+    defaultvalue: null
+    type: 0
+    additionalinfo: null
+description: Provides URL scanning and rewriting of inbound email messages in mail flow, and time-of-click verification of URLs and links in email messages and other locations.
+display: O365 Defender SafeLinks
+name: O365 Defender SafeLinks
+script:
+  commands:
+    - name: o365-defender-safelinks-policy-list
+      arguments:
+        - default: false
+          isArray: false
+          name: identity
+          description: "The identity of the Safe Links policy that you
+            want to view. Available identity fields of the policy are: Name, Distinguished name (DN), and GUID."
+          required: false
+          secret: false
+      deprecated: false
+      outputs:
+        - contextPath: O365Defender.SafeLinks.AdminDisplayName
+          description: Policy description.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.AllowClickThrough
+          description: Whether users are allowed to click through the original URL.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.CustomNotificationText
+          description: The customized notification text to show to users.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.DeliverMessageAfterScan
+          description: Whether the mail is delivered after Safe Links scanning was completed.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.DisableUrlRewrite
+          description: Whether URLs are rewritten (wrapped) in email messages.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.DistinguishedName
+          description: Policy distinguished name (DN).
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.DoNotAllowClickThrough
+          description: Whether users can click through the original URLs.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.DoNotTrackUserClicks
+          description: Whether user clicks are tracked.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.DoNotRewriteUrls
+          description: List of URLs that are not rewritten by Safe Links scanning.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Policy.EnableForInternalSenders
+          description: Whether the Safe Links policy is applied to messages sent between internal senders and internal recipients within the same Exchange Online organization.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.EnableOrganizationBranding
+          description: Whether the organization's logo is displayed on Safe Links warning and notification pages.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.EnableSafeLinksForTeams
+          description: Whether the Safe Links policy is enabled for Microsoft Teams.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.ExchangeObjectId
+          description: Exchange object ID.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.ExchangeVersion
+          description: The version of the Exchange server.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.Guid
+          description: The GUID of the Safe Links policy.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.Id
+          description: The ID of the Safe Links policy.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.Identity
+          description: The identity of the Safe Links policy.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.IsDefault
+          description: Whether the Safe Links policy is the default policy.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.IsEnabled
+          description: Whether Safe Links protection is enabled for email messages.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.IsValid
+          description: Whether the Safe Links policy is valid.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.Name
+          description: Policy name.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.ObjectState
+          description: The Safe Links policy state.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.OrganizationId
+          description: The organization ID.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.ScanUrls
+          description: Whether real-time scanning of clicked links in email messages is enabled.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.WhenChanged
+          description: 'The date and time the Safe Links policy was modified. Time format: YYYY-MM-DDThh:mm:ss+00:00.'
+          type: Date
+        - contextPath: O365Defender.SafeLinks.Policy.WhenChangedUTC
+          description: 'The date and time (in UTC) the  Safe Links policy was modified. Time format: YYYY-MM-DDTHH:MM:SSZ.'
+          type: Date
+        - contextPath: O365Defender.SafeLinks.Policy.WhenCreated
+          description: 'The date and time the Safe Links policy was created. Time format: YYYY-MM-DDThh:mm:ss+00:00.'
+          type: Date
+        - contextPath: O365Defender.SafeLinks.Policy.WhenCreatedUTC
+          description: 'The date and time (in UTC) the Safe Links policy was created. Time format: YYYY-MM-DDTHH:MM:SSZ.'
+          type: Date
+      description: List the Safe Links policies in your cloud-based organization.
+      execution: false
+    - name: o365-defender-safelinks-policy-create
+      arguments:
+        - name: name
+          description: "A unique name for the Safe Links policy."
+          required: true
+          isArray: false
+        - default: false
+          isArray: false
+          name: admin_display_name
+          description: The description for the policy.
+          required: false
+          secret: false
+        - name: custom_notification_text
+          description: The custom notification text to show to users.
+          required: false
+          isArray: false
+        - name: deliver_message_after_scan
+          description: 'Whether to deliver email messages only after Safe Links scanning was
+            completed. When true, messages that contain malicious links are not delivered. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: do_not_allow_click_through
+          description: 'Whether to allow users to click through to the original URL on
+            warning pages. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: do_not_rewrite_urls
+          description: Comma-separated list of URLs that are not rewritten by Safe Links scanning.
+          required: false
+          isArray: false
+        - name: do_not_track_user_clicks
+          description: 'Whether to track user clicks related to Safe Links protection of
+            links in email messages. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: enable_for_internal_senders
+          description: 'Whether the Safe Links policy is applied to messages sent between
+            internal senders and internal recipients within the same Exchange
+            Online organization.Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: enable_organization_branding
+          description: 'Whether to display the organization''s logo on Safe Links warning and notification pages. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: enable_safe_links_for_teams
+          description: 'Whether to enable Safe Links for Microsoft Teams. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: is_enabled
+          description: 'Whether to enable Safe Links protection for email messages. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: scan_urls
+          description: 'Whether to enable or disable real-time scanning of clicked links in
+            email messages. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: use_translated_notification_text
+          description: 'Whether to use Microsoft Translator to automatically localize the
+            custom notification text that you specified with the
+            CustomNotificationText parameter. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+      outputs:
+        - contextPath: O365Defender.SafeLinks.AdminDisplayName
+          description: Policy description.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.AllowClickThrough
+          description: Whether users are allowed to click through the original URL.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.CustomNotificationText
+          description: The customized notification text to show to users.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.DeliverMessageAfterScan
+          description: Whether the mail is delivered after Safe Links scanning was completed.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.DisableUrlRewrite
+          description: Whether URLs are rewritten (wrapped) in email messages.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.DistinguishedName
+          description: Policy distinguished name (DN).
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.DoNotAllowClickThrough
+          description: Whether users can click through the original URLs.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.DoNotTrackUserClicks
+          description: Whether user clicks are tracked.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.DoNotRewriteUrls
+          description: List of URLs that are not rewritten by Safe Links scanning.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Policy.EnableForInternalSenders
+          description: Whether the Safe Links policy is applied to messages sent between internal senders and internal recipients within the same Exchange Online organization.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.EnableOrganizationBranding
+          description: Whether the organization's logo is displayed on Safe Links warning and notification pages.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.EnableSafeLinksForTeams
+          description: Whether the Safe Links policy is enabled for Microsoft Teams.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.ExchangeObjectId
+          description: Exchange object ID.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.ExchangeVersion
+          description: The version of the Exchange server.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.Guid
+          description: The GUID of the Safe Links policy.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.Id
+          description: The ID of the Safe Links policy.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.Identity
+          description: The identity of the Safe Links policy.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.IsDefault
+          description: Whether the Safe Links policy is the default policy.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.IsEnabled
+          description: Whether Safe Links protection is enabled for email messages.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.IsValid
+          description: Whether the Safe Links policy is valid.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.Name
+          description: Policy name.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.ObjectState
+          description: The Safe Links policy state.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.OrganizationId
+          description: The organization ID.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.ScanUrls
+          description: Whether real-time scanning of clicked links in email messages is enabled.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.WhenChanged
+          description: 'The date and time the Safe Links policy was modified. Time format: YYYY-MM-DDThh:mm:ss+00:00.'
+          type: Date
+        - contextPath: O365Defender.SafeLinks.Policy.WhenChangedUTC
+          description: 'The date and time (in UTC) the Safe Links policy was modified. Time format: YYYY-MM-DDTHH:MM:SSZ'
+          type: Date
+        - contextPath: O365Defender.SafeLinks.Policy.WhenCreated
+          description: 'The date and time the Safe Links policy was created. Time format: YYYY-MM-DDThh:mm:ss+00:00.'
+          type: Date
+        - contextPath: O365Defender.SafeLinks.Policy.WhenCreatedUTC
+          description: 'The date and time (in UTC) the Safe Links policy was created. Time format: YYYY-MM-DDTHH:MM:SSZ'
+          type: Date
+      deprecated: false
+      description: Create a new Safe Links policy.
+      execution: false
+    - name: o365-defender-safelinks-policy-update
+      arguments:
+        - name: name
+          description: "A unique name for the Safe Links
+            policy."
+          required: true
+          isArray: false
+        - default: false
+          isArray: false
+          name: admin_display_name
+          description: The description for the policy.
+          required: false
+          secret: false
+        - name: custom_notification_text
+          description: The custom notification text to show to users.
+          required: false
+          isArray: false
+        - name: deliver_message_after_scan
+          description: 'Whether to deliver email messages only after Safe Links scanning was
+            completed. When true, messages that contain malicious links are not delivered. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: do_not_allow_click_through
+          description: 'Whether to allow users to click through to the original URL on
+            warning pages. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: do_not_rewrite_urls
+          description: Comma-separated list of URLs that are not rewritten by Safe Links scanning.
+          required: false
+          isArray: false
+        - name: do_not_track_user_clicks
+          description: 'Whether to track user clicks related to Safe Links protection of
+            links in email messages. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: enable_for_internal_senders
+          description: 'Whether the Safe Links policy is applied to messages sent between
+            internal senders and internal recipients within the same Exchange
+            Online organization. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: enable_organization_branding
+          description: 'Whether to display the organization''s logo on Safe Links warning and notification pages. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: enable_safe_links_for_teams
+          description: 'Whether to enable the Safe Links for Microsoft Teams. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: is_enabled
+          description: 'Whether to enable Safe Links protection for email messages. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: scan_urls
+          description: 'Whether to enable or disable real-time scanning of clicked links in
+            email messages. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: use_translated_notification_text
+          description: 'Whether to use Microsoft Translator to automatically localize the
+            custom notification text that you specified with the
+            CustomNotificationText parameter. Default is false.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+      outputs:
+        - contextPath: O365Defender.SafeLinks.AdminDisplayName
+          description: Policy description.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.AllowClickThrough
+          description: Whether users are allowed to click through the original URL.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.CustomNotificationText
+          description: The customized notification text to show to users.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.DeliverMessageAfterScan
+          description: Whether the mail is delivered after Safe Links scanning was completed.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.DisableUrlRewrite
+          description: Whether URLs are rewritten (wrapped) in email messages.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.DistinguishedName
+          description: Policy distinguished name (DN).
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.DoNotAllowClickThrough
+          description: Whether users can click through the original URLs.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.DoNotTrackUserClicks
+          description: Whether user clicks are tracked.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.DoNotRewriteUrls
+          description: List of URLs that are not rewritten by Safe Links scanning.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Policy.EnableForInternalSenders
+          description: Whether the Safe Links policy is applied to messages sent between internal senders and internal recipients within the same Exchange Online organization.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.EnableOrganizationBranding
+          description: whether the organization's logo is displayed on Safe Links warning and notification pages.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.EnableSafeLinksForTeams
+          description: Whether the Safe Links policy is enabled for Microsoft Teams.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.ExchangeObjectId
+          description: Exchange object ID.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.ExchangeVersion
+          description: The version of the Exchange server.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.Guid
+          description: The GUID of the Safe Links policy.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.Id
+          description: The ID of the Safe Links policy.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.Identity
+          description: The identity of the Safe Links policy.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.IsDefault
+          description: Whether the Safe Links policy is the default policy.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.IsEnabled
+          description: Whether Safe Links protection is enabled for email messages.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.IsValid
+          description: Whether the Safe Links policy is valid.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.Name
+          description: Policy name.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.ObjectState
+          description: The Safe Links policy state.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.OrganizationId
+          description: The organization ID.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Policy.ScanUrls
+          description: Whether real-time scanning of clicked links in email messages is enabled.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Policy.WhenChanged
+          description: 'The date and time the Safe Links policy was modified. Time format: YYYY-MM-DDThh:mm:ss+00:00.'
+          type: Date
+        - contextPath: O365Defender.SafeLinks.Policy.WhenChangedUTC
+          description: 'The date and time (in UTC) the Safe Links policy was modified. Time format: YYYY-MM-DDTHH:MM:SSZ.'
+          type: Date
+        - contextPath: O365Defender.SafeLinks.Policy.WhenCreated
+          description: 'The date and time the Safe Links policy was created. Time format: YYYY-MM-DDThh:mm:ss+00:00.'
+          type: Date
+        - contextPath: O365Defender.SafeLinks.Policy.WhenCreatedUTC
+          description: 'The date and time (in UTC) the Safe Links policy was created. Time format: YYYY-MM-DDTHH:MM:SSZ.'
+          type: Date
+      deprecated: false
+      description: Update a Safe Links policy.
+      execution: false
+    - name: o365-defender-safelinks-policy-remove
+      arguments:
+        - default: false
+          isArray: false
+          name: identity
+          description: "The identity of the Safe Links policy that you
+            want to remove. Available identity fields of the policy are: Name, Distinguished name (DN), and GUID."
+          required: true
+          secret: false
+      deprecated: false
+      outputs: []
+      description: Remove a Safe Links policy.
+      execution: false
+    - name: o365-defender-safelinks-rule-list
+      arguments:
+        - default: false
+          isArray: false
+          name: identity
+          description: "The identity of the Safe Links rule that you
+            want to view. Available identity fields are: Name, Distinguished name (DN), and GUID."
+          required: false
+          secret: false
+        - default: false
+          isArray: false
+          name: state
+          description: 'The state of the rules.'
+          required: false
+          secret: false
+          auto: PREDEFINED
+          predefined:
+            - 'Enabled'
+            - 'Disabled'
+      deprecated: false
+      outputs:
+        - contextPath: O365Defender.SafeLinks.Rule.Comments
+          description: Informative comments for the rule, such as what the rule is used for or how it has changed over time. The length of the comment cannot exceed 1024 characters.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.Conditions
+          description: The rule condition.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.Description
+          description: The description of the rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.DistinguishedName
+          description: Rule distinguished name (DN).
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.ExceptIfRecipientDomainIs
+          description: Recipients with email address in the specified domains are excluded.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.ExceptIfSentTo
+          description: Recipients to be excluded.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.ExceptIfSentToMemberOf
+          description: Recipients in these groups are excluded.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.Exceptions
+          description: Rule exceptions.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.Guid
+          description: The GUID of the rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.Identity
+          description: The identity of the Safe Links rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.IsValid
+          description: Whether the rule is valid.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Rule.Name
+          description: Rule name.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.ObjectState
+          description: The state of the rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.Priority
+          description: The priority of the rule.
+          type: Number
+        - contextPath: O365Defender.SafeLinks.Rule.RecipientDomainIs
+          description: List of domains that are included in the rule.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.RuleVersion.Build
+          description: Rule build number.
+          type: Number
+        - contextPath: O365Defender.SafeLinks.Rule.RunspaceId
+          description: Run space ID.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.SafeLinksPolicy
+          description: The Safe Links policy that's associated with this Safe Links rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.SentTo
+          description: List of recipients included in the rule.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.SentToMemberOf
+          description: List of distribution groups, dynamic distribution groups, or mail-enabled security groups included in the rule.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.State
+          description: The state of the rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.WhenChanged
+          description: 'The date and time the rule was modified. Time format: YYYY-MM-DDThh:mm:ss+00:00.'
+          type: Date
+      description: List Safe Links rules in your cloud-based organization.
+      execution: false
+    - name: o365-defender-safelinks-rule-create
+      description: Create a Safe Links rule in your cloud-based organization.
+      deprecated: false
+      arguments:
+        - name: name
+          description: A unique name for the Safe Links rule.
+          required: true
+          isArray: false
+        - name: safe_links_policy
+          description: The Safe Links policy to associate with this Safe Links rule.
+          required: true
+          isArray: false
+        - name: comments
+          description: An informative comment for the rule,
+            such as what the rule is used for or how it has changed over time.
+            The length of the comment cannot exceed 1024 characters.
+          required: false
+          isArray: false
+        - name: enabled
+          description: 'Whether the rule is enabled.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: except_if_recipient_domain_is
+          description: A comma-separated list of exceptions of recipients with email address in the specified domains.
+          required: false
+          isArray: true
+        - name: except_if_sent_to
+          description: A comma-separated list of exceptions of recipients in messages.
+          required: false
+          isArray: true
+        - name: except_if_sent_to_member_of
+          description: A comma-separated list of exceptions of messages sent to members of groups.
+          required: false
+          isArray: true
+        - name: priority
+          description: The priority value for the rule to determines the order of rule processing.
+            A lower integer value indicates a higher priority. The value 0 is the highest priority. Rules cannot have the same priority value.
+          required: false
+          isArray: false
+        - name: recipient_domain_is
+          description: A comma-separated list of recipients with email address in the specified domains.
+          required: false
+          isArray: true
+        - name: sent_to
+          description:  A comma-separated list of recipients in messages. You can use any value that uniquely
+            identifies the recipient.
+          required: false
+          isArray: true
+        - name: sent_to_member_of
+          description:  A comma-separated list of messages sent to members of distribution groups, dynamic
+            distribution groups, or mail-enabled security groups. You can use
+            any value that uniquely identifies the group.
+          required: false
+          isArray: true
+      outputs:
+        - contextPath: O365Defender.SafeLinks.Rule.Comments
+          description: Informative comments for the rule, such as what the rule is used for or how it has changed over time. The length of the comment cannot exceed 1024 characters.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.Conditions
+          description: The rule condition.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.Description
+          description: The description of the rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.DistinguishedName
+          description: Rule distinguished name (DN).
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.ExceptIfRecipientDomainIs
+          description: Recipients with an email address in the specified domains are excluded.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.ExceptIfSentTo
+          description: Recipients to be excluded.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.ExceptIfSentToMemberOf
+          description: Recipients in these groups are excluded.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.Exceptions
+          description: Rule exceptions.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.Guid
+          description: The GUID of the rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.Identity
+          description: The identity of the Safe Links rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.IsValid
+          description: Whether the rule is valid.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Rule.Name
+          description: Rule name.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.ObjectState
+          description: The state of the rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.Priority
+          description: The priority of the rule.
+          type: Number
+        - contextPath: O365Defender.SafeLinks.Rule.RecipientDomainIs
+          description: List of domains that are included in the rule.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.RuleVersion.Build
+          description: Rule build number.
+          type: Number
+        - contextPath: O365Defender.SafeLinks.Rule.RunspaceId
+          description: Run space ID.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.SafeLinksPolicy
+          description: The Safe Links policy that's associated with this Safe Links rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.SentTo
+          description: List of recipients included in the rule.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.SentToMemberOf
+          description: List of distribution groups, dynamic distribution groups, or mail-enabled security groups included in the rule.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.State
+          description: The state of the rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.WhenChanged
+          description: 'The date and time the rule was modified. Time format: YYYY-MM-DDThh:mm:ss+00:00.'
+          type: Date
+    - name: o365-defender-safelinks-rule-update
+      description: Update a given Safe Links rule.
+      deprecated: false
+      arguments:
+        - name: name
+          description: A unique name for the Safe Links rule.
+          required: true
+          isArray: false
+        - name: safe_links_policy
+          description: The Safe Links policy to associate with this Safe Links rule.
+          required: true
+          isArray: false
+        - name: comments
+          description: An informative comment for the rule,
+            such as what the rule is used for or how it has changed over time.
+            The length of the comment cannot exceed 1024 characters.
+          required: false
+          isArray: false
+        - name: enabled
+          description: 'Whether the rule is enabled.'
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+        - name: except_if_recipient_domain_is
+          description: A comma-separated list of exceptions of recipients with an email address in the specified domains.
+          required: false
+          isArray: true
+        - name: except_if_sent_to
+          description: A comma-separated list of exceptions of recipients in messages.
+          required: false
+          isArray: true
+        - name: except_if_sent_to_member_of
+          description: A comma-separated list of exceptions of messages sent to members of groups.
+          required: false
+          isArray: true
+        - name: priority
+          description: The priority value for the rule to determines the order of rule processing.
+            A lower integer value indicates a higher priority. The value 0 is the highest priority. Rules cannot have the same priority value.
+          required: false
+          isArray: false
+        - name: recipient_domain_is
+          description: A comma-separated list of recipients with an email address in the specified domains.
+          required: false
+          isArray: true
+        - name: sent_to
+          description: A comma-separated list of recipients in messages. You can use any value that uniquely
+            identifies the recipient.
+          required: false
+          isArray: true
+        - name: sent_to_member_of
+          description: A comma-separated list of messages sent to members of distribution groups, dynamic
+            distribution groups, or mail-enabled security groups. You can use
+            any value that uniquely identifies the group.
+          required: false
+          isArray: true
+      outputs:
+        - contextPath: O365Defender.SafeLinks.Rule.Comments
+          description: Informative comments for the rule, such as what the rule is used for or how it has changed over time. The length of the comment cannot exceed 1024 characters.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.Conditions
+          description: The rule condition.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.Description
+          description: The description of the rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.DistinguishedName
+          description: Rule distinguished name (DN).
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.ExceptIfRecipientDomainIs
+          description: Recipients with email address in the specified domains are excluded.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.ExceptIfSentTo
+          description: Recipients to be excluded.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.ExceptIfSentToMemberOf
+          description: Recipients in these groups are excluded.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.Exceptions
+          description: Rule exceptions.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.Guid
+          description: The GUID of the rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.Identity
+          description: The identity of the Safe Links rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.IsValid
+          description: Whether the rule is valid.
+          type: Boolean
+        - contextPath: O365Defender.SafeLinks.Rule.Name
+          description: Rule name.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.ObjectState
+          description: The state of the rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.Priority
+          description: The priority of the rule.
+          type: Number
+        - contextPath: O365Defender.SafeLinks.Rule.RecipientDomainIs
+          description: List of domains that are included in the rule.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.RuleVersion.Build
+          description: Rule build number.
+          type: Number
+        - contextPath: O365Defender.SafeLinks.Rule.RunspaceId
+          description: Run space ID.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.SafeLinksPolicy
+          description: The Safe Links policy that's associated with this Safe Links rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.SentTo
+          description: List of recipients included in the rule.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.SentToMemberOf
+          description: List of distribution groups, dynamic distribution groups, or mail-enabled security groups included in the rule.
+          type: Unknown
+        - contextPath: O365Defender.SafeLinks.Rule.State
+          description: The state of the rule.
+          type: String
+        - contextPath: O365Defender.SafeLinks.Rule.WhenChanged
+          description: 'The date and time the rule was modified. Time format: YYYY-MM-DDThh:mm:ss+00:00.'
+          type: Date
+  isfetch: false
+  runonce: false
+  script: "-"
+  type: powershell
+  dockerimage: demisto/pwsh-exchange:1.0.0.22307
+fromversion: 6.0.0
+tests:
+- No Test

@@ -1,9 +1,9 @@
 id: Check IP Address For Whitelisting - RiskIQ Digital Footprint
 version: -1
 name: Check IP Address For Whitelisting - RiskIQ Digital Footprint
-description: Checks if the provided IP Address should be whitelisted and excluded or not.
+description: Checks if the provided IP Address should be added to allow list and excluded or not.
   Use this playbook as a sub-playbook to loop over multiple IP Addresses to
-  check if they should be whitelisted and excluded.
+  check if they should be added to allow list and excluded.
 starttaskid: "0"
 tasks:
   "0":

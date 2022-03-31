@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "caseInsensitive": true,
+ "cliName": "logrhythmcollaborators",
+ "closeForm": false,
+ "content": true,
+ "description": "LogRhythm Case Collaborators",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_logrhythmcollaborators",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "LogRhythm Case Collaborators",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "associatedTypes": [
+  "Logrhythm Case"
+ ],
+ "version": -1,
+ "fromVersion": "5.5.0"
+}

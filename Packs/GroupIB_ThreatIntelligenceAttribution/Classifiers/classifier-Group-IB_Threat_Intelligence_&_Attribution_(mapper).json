@@ -3,6 +3,224 @@
     "feed": false,
     "id": "Group-IB Threat Intelligence & Attribution - mapper",
     "mapping": {
+        "GIB Brand Protection Domain": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB Address": {
+                    "complex": {
+                        "accessor": "address",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Date Created": {
+                    "complex": {
+                        "accessor": "date_registered",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\"False\""
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\"True\""
+                                        }
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GIB Date Expired": {
+                    "complex": {
+                        "accessor": "date_expired",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\"False\""
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\"True\""
+                                        }
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GIB Email": {
+                    "complex": {
+                        "accessor": "email",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Favicon": {
+                    "complex": {
+                        "accessor": "favicon",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB HTML": {
+                    "complex": {
+                        "accessor": "html",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Name Servers": {
+                    "complex": {
+                        "accessor": "name_server",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GIB Person": {
+                    "complex": {
+                        "accessor": "person",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Phishing Domain": {
+                    "complex": {
+                        "accessor": "domain",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Phishing Status": {
+                    "complex": {
+                        "accessor": "status",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Phishing Type": {
+                    "complex": {
+                        "accessor": "type",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Related Indicators Data": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "relatedIndicatorsData",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Screenshot": {
+                    "complex": {
+                        "accessor": "screenshot",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Title": {
+                    "complex": {
+                        "accessor": "page_title",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Phone Number": {
+                    "complex": {
+                        "accessor": "phone",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
         "GIB Brand Protection Phishing": {
             "dontMapEventToLabels": true,
             "internalMapping": {
@@ -96,6 +314,15 @@
                     },
                     "simple": ""
                 },
+                "GIB Title": {
+                    "complex": {
+                        "accessor": "title",
+                        "filters": [],
+                        "root": "phishingDomain",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "severity": {
                     "complex": {
                         "accessor": "",
@@ -155,6 +382,15 @@
                     },
                     "simple": ""
                 },
+                "GIB Phishing Kit Hash": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "hash",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "GIB Portal Link": {
                     "complex": {
                         "accessor": "",
@@ -205,6 +441,15 @@
         "GIB Compromised Account": {
             "dontMapEventToLabels": true,
             "internalMapping": {
+                "GIB Address": {
+                    "complex": {
+                        "accessor": "address",
+                        "filters": [],
+                        "root": "person",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "GIB Compromised Login": {
                     "complex": {
                         "accessor": "",
@@ -250,6 +495,15 @@
                     },
                     "simple": ""
                 },
+                "GIB Email": {
+                    "complex": {
+                        "accessor": "email",
+                        "filters": [],
+                        "root": "person",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "GIB ID": {
                     "complex": {
                         "accessor": "",
@@ -273,6 +527,15 @@
                         "accessor": "",
                         "filters": [],
                         "root": "password",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Person": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "person",
                         "transformers": []
                     },
                     "simple": ""
@@ -324,7 +587,7 @@
                 },
                 "GIB Threat Actor Name": {
                     "complex": {
-                        "accessor": "id",
+                        "accessor": "name",
                         "filters": [],
                         "root": "threatActor",
                         "transformers": []
@@ -349,6 +612,15 @@
                     },
                     "simple": ""
                 },
+                "Phone Number": {
+                    "complex": {
+                        "accessor": "phone",
+                        "filters": [],
+                        "root": "person",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "severity": {
                     "complex": {
                         "accessor": "",
@@ -363,6 +635,15 @@
         "GIB Compromised Card": {
             "dontMapEventToLabels": true,
             "internalMapping": {
+                "GIB Address": {
+                    "complex": {
+                        "accessor": "address",
+                        "filters": [],
+                        "root": "owner",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "GIB CVV": {
                     "complex": {
                         "accessor": "cvv",
@@ -426,6 +707,15 @@
                     },
                     "simple": ""
                 },
+                "GIB Email": {
+                    "complex": {
+                        "accessor": "email",
+                        "filters": [],
+                        "root": "owner",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "GIB ID": {
                     "complex": {
                         "accessor": "",
@@ -449,6 +739,15 @@
                         "accessor": "system",
                         "filters": [],
                         "root": "cardInfo",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Person": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "owner",
                         "transformers": []
                     },
                     "simple": ""
@@ -516,6 +815,15 @@
                     },
                     "simple": ""
                 },
+                "Phone Number": {
+                    "complex": {
+                        "accessor": "phone",
+                        "filters": [],
+                        "root": "owner",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "severity": {
                     "complex": {
                         "accessor": "",
@@ -535,7 +843,20 @@
                         "accessor": "",
                         "filters": [],
                         "root": "email",
-                        "transformers": []
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
                     },
                     "simple": ""
                 },
@@ -562,7 +883,20 @@
                         "accessor": "",
                         "filters": [],
                         "root": "password",
-                        "transformers": []
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
                     },
                     "simple": ""
                 },

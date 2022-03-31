@@ -3,7 +3,8 @@ commonfields:
   version: -1
 fromversion: 5.5.0
 name: Zoom Feed
-display: Zoom Feed
+beta: true
+display: Zoom Feed (Beta)
 category: Data Enrichment & Threat Intelligence
 description: Use the Zoom Feed integration to get indicators from the feed.
 configuration:
@@ -12,6 +13,31 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- additionalinfo: Zoom clients for certificate validation
+  defaultvalue: 'crl3.digicert.com,crl4.digicert.com,ocsp.digicert.com,certificates.godaddy.com,crl.godaddy.com,ocsp.godaddy.com,certificates.starfieldtech.com,crl.starfieldtech.com,ocsp.starfieldtech.com'
+  display: Firewall rules for certificate validation
+  name: zoom_clients_certificate_validation
+  options:
+    - crl3.digicert.com
+    - crl4.digicert.com
+    - ocsp.digicert.com
+    - certificates.godaddy.com
+    - crl.godaddy.com
+    - ocsp.godaddy.com
+    - certificates.starfieldtech.com
+    - crl.starfieldtech.com
+    - ocsp.starfieldtech.com
+  required: false
+  type: 16
+- additionalinfo: All Zoom Clients. User's web browser
+  defaultvalue: '*.zoom.us,*.cloudfront.net'
+  display: Firewall rules for Zoom website
+  name: zoom_clients_user_browser
+  options:
+    - '*.zoom.us'
+    - '*.cloudfront.net'
+  required: false
+  type: 16
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: Good
@@ -67,11 +93,6 @@ configuration:
   defaultvalue: "30"
   type: 19
   required: false
-- display: Zoom Endpoint URL
-  name: url
-  defaultvalue: https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom
-  type: 0
-  required: true
 - display: Tags
   name: feedTags
   defaultvalue: ""

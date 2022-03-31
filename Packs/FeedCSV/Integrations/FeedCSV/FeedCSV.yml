@@ -104,6 +104,7 @@ configuration:
   type: 0
 - additionalinfo: The names to apply to the fields in the CSV feed. The name for the
     field containing the indicator should be "value".
+    If left empty, the fetch will use existing headers only ('value' header is expected).
   display: Field Names
   name: fieldnames
   required: false
@@ -186,7 +187,7 @@ script:
     - contextPath: CSV.Indicator.rawJSON
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/jmespath:1.0.0.23980
+  dockerimage: demisto/py3-tools:0.0.1.26536
   feed: true
   isfetch: false
   longRunning: false

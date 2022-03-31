@@ -244,7 +244,7 @@ INTRUSION_SET = {
                    'firstseenbysource': '2018-04-18T17:59:24.739Z',
                    'mitreid': 'G0066',
                    'modified': '2021-03-02T22:40:11.097Z',
-                   'publications': [{'link': None,
+                   'publications': [{'link': '',
                                      'source': 'Elderwood',
                                      'title': '(Citation: Security Affairs Elderwood Sept '
                                               '2012)'}],
@@ -258,7 +258,7 @@ INTRUSION_SET = {
                                'firstseenbysource': '2018-04-18T17:59:24.739Z',
                                'mitreid': 'G0066',
                                'modified': '2021-03-02T22:40:11.097Z',
-                               'publications': [{'link': None,
+                               'publications': [{'link': '',
                                                  'source': 'Elderwood',
                                                  'title': '(Citation: Security Affairs '
                                                           'Elderwood Sept 2012)'}],

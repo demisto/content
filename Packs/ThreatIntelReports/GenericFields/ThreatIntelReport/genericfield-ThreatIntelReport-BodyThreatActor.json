@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Threat Actor"
+    ],
+    "caseInsensitive": true,
+    "cliName": "bodythreatactor",
+    "id": "generic_ThreatIntelReport_bodythreatactor",
+    "name": "Body Threat Actor",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 4,
+    "definitionId": "ThreatIntelReport",
+    "genericModuleId": "threatIntel",
+    "hidden": false,
+    "isReadOnly": false,
+    "locked": false,
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "template": "### Overview\n\n\n### Code Sample\n\n\n### Severity\n\n\n### Affects\n\n\n### Appendix\n\n",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

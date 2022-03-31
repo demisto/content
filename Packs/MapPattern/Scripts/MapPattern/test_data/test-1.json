@@ -1,0 +1,780 @@
+[
+  {
+    "algorithm": "regmatch",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": {
+      "Unknown": 0,
+      "Informational|Info": 0.5,
+      "Low": 1,
+      "Medium": 2,
+      "High": 3,
+      "Critical": 4
+    },
+    "patterns": [
+      {
+        "value": "High",
+        "result": 3
+      },
+      {
+        "value": "Abc",
+        "result": "Abc"
+      }
+    ]
+  },
+  {
+    "algorithm": "regmatch",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "*",
+    "mappings": {
+      "Unknown": 0,
+      "Informational|Info": 0.5,
+      "Low": 1,
+      "Medium": 2,
+      "High": 3,
+      "Critical": 4,
+      "*": 0
+    },
+    "patterns": [
+      {
+        "value": "High",
+        "result": 3
+      },
+      {
+        "value": "Abc",
+        "result": 0
+      }
+    ]
+  },
+  {
+    "algorithm": "regmatch",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": [
+      {
+        "Unknown": 0,
+        "Informational|Info": 0.5,
+        "Low": 1,
+        "Medium": 2,
+        "High": 3,
+        "Critical": 4
+      }
+    ],
+    "patterns": [
+      {
+        "value": "High",
+        "result": 3
+      },
+      {
+        "value": "Abc",
+        "result": "Abc"
+      }
+    ]
+  },
+  {
+    "algorithm": "wildcard",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": {
+      "*Low*": "low",
+      "*Medium*": "medium",
+      "*High*": "high",
+      "*": "unknown"
+    },
+    "patterns": [
+      {
+        "value": "1 - Low",
+        "result": "low"
+      },
+      {
+        "value": "high (3)",
+        "result": "high"
+      }
+    ]
+  },
+  {
+    "algorithm": "regex",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": {
+      "( *(Re: *|Fw: *)*)(.*)": "\\3"
+    },
+    "patterns": [
+      {
+        "value": "Re: Re: Fw: Hello!",
+        "result": "Hello!"
+      },
+      {
+        "value": "Hello!",
+        "result": "Hello!"
+      }
+    ]
+  },
+  {
+    "algorithm": "regex",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": {
+      "([^@]+)@.+": "\\1",
+      "[^\\\\]+\\\\(.+)": "\\1",
+      "[a-zA-Z_]([0-9a-zA-Z\\.-_]*)": null,
+      ".*": "<unknown>"
+    },
+    "patterns": [
+      {
+        "value": "username@domain",
+        "result": "username"
+      },
+      {
+        "value": "domain\\username",
+        "result": "username"
+      },
+      {
+        "value": "username",
+        "result": "username"
+      },
+      {
+        "value": "012abc$",
+        "result": "<unknown>"
+      }
+    ]
+  },
+  {
+    "algorithm": "regex",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": {
+      "\"(.*)\"": {
+        "output": "\\1",
+        "next": {
+          "([^@]+)@.+": "\\1",
+          "[^\\\\]+\\\\(.+)": "\\1",
+          "[a-zA-Z_]([0-9a-zA-Z\\.-_]*)": "\\0",
+          ".*": "<unknown>"
+        }
+      },
+      "([^@]+)@.+": "\\1",
+      "[^\\\\]+\\\\(.+)": "\\1",
+      "[a-zA-Z_]([0-9a-zA-Z\\.-_]*)": null,
+      ".*": "<unknown>"
+    },
+    "patterns": [
+      {
+        "value": "\"username@domain\"",
+        "result": "username"
+      },
+      {
+        "value": "username@domain",
+        "result": "username"
+      },
+      {
+        "value": "\"domain\\username\"",
+        "result": "username"
+      },
+      {
+        "value": "domain\\username",
+        "result": "username"
+      },
+      {
+        "value": "\"username\"",
+        "result": "username"
+      },
+      {
+        "value": "username",
+        "result": "username"
+      },
+      {
+        "value": "012abc$",
+        "result": "<unknown>"
+      }
+    ]
+  },
+  {
+    "algorithm": "regex",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": [
+      {
+        "([^.]+)\\.([^@]+)@.+": {
+          "exclude": ".*@example2.com",
+          "output": "\\1 \\2"
+        }
+      },
+      {
+        "([^.]+)\\.([^@]+)@.+": "\\2 \\1",
+        "([^@]+)@.+": "\\1"
+      }
+    ],
+    "patterns": [
+      {
+        "value": "john.doe@example1.com",
+        "result": "john doe"
+      },
+      {
+        "value": "doe.john@example2.com",
+        "result": "john doe"
+      },
+      {
+        "value": "username@example1.com",
+        "result": "username"
+      }
+    ]
+  },
+  {
+    "algorithm": "regex",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": {
+      "(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})(\\.\\d+)?Z": "\\1-\\2-\\3 \\4:\\5:\\6 GMT",
+      "[^,]+, (\\d{1,2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": {
+        "output": "\\2",
+        "next": {
+          "Jan": {
+            "output": null,
+            "next": {
+              "[^,]+, (\\d) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-01-0\\1 \\4:\\5:\\6 \\7",
+              "[^,]+, (\\d{2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-01-\\1 \\4:\\5:\\6 \\7"
+            }
+          },
+          "Feb": {
+            "output": null,
+            "next": {
+              "[^,]+, (\\d) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-02-0\\1 \\4:\\5:\\6 \\7",
+              "[^,]+, (\\d{2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-02-\\1 \\4:\\5:\\6 \\7"
+            }
+          },
+          "Mar": {
+            "output": null,
+            "next": {
+              "[^,]+, (\\d) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-03-0\\1 \\4:\\5:\\6 \\7",
+              "[^,]+, (\\d{2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-03-\\1 \\4:\\5:\\6 \\7"
+            }
+          },
+          "Apr": {
+            "output": null,
+            "next": {
+              "[^,]+, (\\d) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-04-0\\1 \\4:\\5:\\6 \\7",
+              "[^,]+, (\\d{2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-04-\\1 \\4:\\5:\\6 \\7"
+            }
+          },
+          "May": {
+            "output": null,
+            "next": {
+              "[^,]+, (\\d) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-05-0\\1 \\4:\\5:\\6 \\7",
+              "[^,]+, (\\d{2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-05-\\1 \\4:\\5:\\6 \\7"
+            }
+          },
+          "Jun": {
+            "output": null,
+            "next": {
+              "[^,]+, (\\d) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-06-0\\1 \\4:\\5:\\6 \\7",
+              "[^,]+, (\\d{2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-06-\\1 \\4:\\5:\\6 \\7"
+            }
+          },
+          "Jul": {
+            "output": null,
+            "next": {
+              "[^,]+, (\\d) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-07-0\\1 \\4:\\5:\\6 \\7",
+              "[^,]+, (\\d{2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-07-\\1 \\4:\\5:\\6 \\7"
+            }
+          },
+          "Aug": {
+            "output": null,
+            "next": {
+              "[^,]+, (\\d) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-08-0\\1 \\4:\\5:\\6 \\7",
+              "[^,]+, (\\d{2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-08-\\1 \\4:\\5:\\6 \\7"
+            }
+          },
+          "Sep": {
+            "output": null,
+            "next": {
+              "[^,]+, (\\d) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-09-0\\1 \\4:\\5:\\6 \\7",
+              "[^,]+, (\\d{2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-09-\\1 \\4:\\5:\\6 \\7"
+            }
+          },
+          "Oct": {
+            "output": null,
+            "next": {
+              "[^,]+, (\\d) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-10-0\\1 \\4:\\5:\\6 \\7",
+              "[^,]+, (\\d{2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-10-\\1 \\4:\\5:\\6 \\7"
+            }
+          },
+          "Nov": {
+            "output": null,
+            "next": {
+              "[^,]+, (\\d) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-11-0\\1 \\4:\\5:\\6 \\7",
+              "[^,]+, (\\d{2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-11-\\1 \\4:\\5:\\6 \\7"
+            }
+          },
+          "Dec": {
+            "output": null,
+            "next": {
+              "[^,]+, (\\d) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-12-0\\1 \\4:\\5:\\6 \\7",
+              "[^,]+, (\\d{2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": "\\3-12-\\1 \\4:\\5:\\6 \\7"
+            }
+          }
+        }
+      }
+    },
+    "patterns": [
+      {
+        "value": "2021-01-02T01:23:45.010Z",
+        "result": "2021-01-02 01:23:45 GMT"
+      },
+      {
+        "value": "2021-01-02T01:23:45Z",
+        "result": "2021-01-02 01:23:45 GMT"
+      },
+      {
+        "value": "Tue, 3 Jun 2008 11:05:30 GMT",
+        "result": "2008-06-03 11:05:30 GMT"
+      }
+    ]
+  },
+  {
+    "algorithm": "regex",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": {},
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": {
+      "(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})(\\.\\d+)?Z": "\\1-\\2-\\3 \\4:\\5:\\6 GMT",
+      "[^,]+, (\\d{1,2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": {
+        "output": {
+          "year": "\\3",
+          "month": "${.={Jan:'01', Feb: '02', Mar:'03', Apr:'04', May:'05', Jun:'06', Jul:'07', Aug:'08', Sep:'09', Oct:'10', Nov:'11', Dec:'12'}['\\2']}",
+          "day": "${.=('0'+'\\1').slice(-2)}",
+          "hour": "\\4",
+          "minute": "\\5",
+          "second": "\\6",
+          "tz": "\\7"
+        },
+        "next": {
+          "..month=val > 0": {
+            "algorithm": "dt",
+            "output": "${..year}-${..month}-${..day} ${..hour}:${..minute}:${..second} ${..tz}"
+          }
+        }
+      }
+    },
+    "patterns": [
+      {
+        "value": "2021-01-02T01:23:45.010Z",
+        "result": "2021-01-02 01:23:45 GMT"
+      },
+      {
+        "value": "2021-01-02T01:23:45Z",
+        "result": "2021-01-02 01:23:45 GMT"
+      },
+      {
+        "value": "Tue, 3 Jun 2008 11:05:30 GMT",
+        "result": "2008-06-03 11:05:30 GMT"
+      }
+    ]
+  },
+  {
+    "algorithm": "wildcard",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "true",
+    "wildcards": "",
+    "mappings": {
+      "IP": {
+        "127.*": "localhost"
+      },
+      "Host": {
+        "localhost": "localhost",
+        "*.local": "localhost",
+        "*": "other"
+      }
+    },
+    "patterns": [
+      {
+        "value": {
+          "IP": "127.0.0.1"
+        },
+        "result": "localhost"
+      },
+      {
+        "value": {
+          "Host": "paloaltonetworks.local"
+        },
+        "result": "localhost"
+      },
+      {
+        "value": {
+          "Host": "localhost"
+        },
+        "result": "localhost"
+      },
+      {
+        "value": {
+          "IP": "192.168.1.1"
+        },
+        "result": "other"
+      }
+    ]
+  },
+  {
+    "algorithm": "wildcard",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "true",
+    "wildcards": "",
+    "mappings": {
+      "I\\.P": {
+        "127.*": "localhost"
+      },
+      "Host": {
+        "localhost": "localhost",
+        "*.local": "localhost",
+        "*": "other"
+      }
+    },
+    "patterns": [
+      {
+        "value": {
+          "I.P": "127.0.0.1"
+        },
+        "result": "localhost"
+      },
+      {
+        "value": {
+          "Host": "localhost"
+        },
+        "result": "localhost"
+      },
+      {
+        "value": {
+          "I.P": "192.168.1.1"
+        },
+        "result": "other"
+      }
+    ]
+  },
+  {
+    "algorithm": "regex",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": {},
+    "flags": "",
+    "compare_fields": "true",
+    "wildcards": "",
+    "mappings": {
+      "score": {
+        "1": "low - ${.value}",
+        "2": "medium - ${.value}",
+        "3": "hight - ${.value}",
+        ".*": "unknown - ${.value}"
+      }
+    },
+    "patterns": [
+      {
+        "value": {
+          "score": 1,
+          "value": "192.168.1.1"
+        },
+        "result": "low - 192.168.1.1"
+      },
+      {
+        "value": {
+          "score": 4,
+          "value": "192.168.1.1"
+        },
+        "result": "unknown - 192.168.1.1"
+      }
+    ]
+  },
+  {
+    "algorithm": "regex",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": {},
+    "flags": "",
+    "compare_fields": "true",
+    "wildcards": "*",
+    "mappings": {
+      "score": {
+        "1": "low - ${.value}",
+        "2": "medium - ${.value}",
+        "3": "hight - ${.value}",
+        "*": "unknown - ${.value}"
+      }
+    },
+    "patterns": [
+      {
+        "value": {
+          "score": 1,
+          "value": "192.168.1.1"
+        },
+        "result": "low - 192.168.1.1"
+      },
+      {
+        "value": {
+          "score": 4,
+          "value": "192.168.1.1"
+        },
+        "result": "unknown - 192.168.1.1"
+      }
+    ]
+  },
+  {
+    "algorithm": "regex",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": {},
+    "flags": "",
+    "compare_fields": "true",
+    "wildcards": "",
+    "mappings": {
+      "a": {
+        "aaa": {
+          "output": null,
+          "compare_fields": true,
+          "next": {
+            "b": {
+              "bbb": "xxx"
+            }
+          }
+        }
+      }
+    },
+    "patterns": [
+      {
+        "value": {
+          "a": "aaa",
+          "b": "bbb"
+        },
+        "result": "xxx"
+      }
+    ]
+  },
+  {
+    "algorithm": "dt",
+    "caseless": "",
+    "priority": "first_match",
+    "context": {},
+    "flags": "",
+    "compare_fields": "true",
+    "wildcards": "*",
+    "mappings": {
+      "score": {
+        "...=val < 30": "low - ${.value}",
+        "...=val < 50": "medium - ${.value}",
+        "...=val >= 50": "high - ${.value}",
+        "*": "unknown - ${.value}"
+      }
+    },
+    "patterns": [
+      {
+        "value": {
+          "score": 10,
+          "value": "192.168.1.1"
+        },
+        "result": "low - 192.168.1.1"
+      },
+      {
+        "value": {
+          "score": 40,
+          "value": "192.168.1.1"
+        },
+        "result": "medium - 192.168.1.1"
+      },
+      {
+        "value": {
+          "score": 70,
+          "value": "192.168.1.1"
+        },
+        "result": "high - 192.168.1.1"
+      },
+      {
+        "value": {
+          "score": "x",
+          "value": "192.168.1.1"
+        },
+        "result": "unknown - 192.168.1.1"
+      }
+    ]
+  },
+  {
+    "algorithm": "dt",
+    "caseless": "",
+    "priority": "first_match",
+    "context": {},
+    "flags": "",
+    "compare_fields": "true",
+    "wildcards": "*",
+    "mappings": {
+      "score": {
+        "...=val < 30": {
+          "next": {
+            "type": {
+              "IP": {
+                "algorithm": "literal",
+                "output": "benign IP"
+              },
+              "*": "low"
+            }
+          }
+        },
+        "...=val < 50": {
+          "next": {
+            "type": {
+              "IP": {
+                "algorithm": "literal",
+                "output": "suspicious IP"
+              },
+              "*": "medium"
+            }
+          }
+        },
+        "...=val >= 50": {
+          "next": {
+            "type": {
+              "IP": {
+                "algorithm": "literal",
+                "output": "malicious IP"
+              },
+              "*": "high"
+            }
+          }
+        },
+        "*": "unknown - ${.value}"
+      }
+    },
+    "patterns": [
+      {
+        "value": {
+          "score": 70,
+          "value": "192.168.1.1",
+          "type": "IP"
+        },
+        "result": "malicious IP"
+      },
+      {
+        "value": {
+          "score": 10,
+          "value": "paloaltonetworks.com",
+          "type": "domain"
+        },
+        "result": "low"
+      },
+      {
+        "value": {
+          "score": "x",
+          "value": "192.168.1.1"
+        },
+        "result": "unknown - 192.168.1.1"
+      }
+    ]
+  },
+  {
+    "algorithm": "regex",
+    "caseless": "",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "*",
+    "mappings": {
+      "(Jan|Mar|May|Jul|Aug|Oct|Dec) (\\d\\d?), \\d{4}": {
+        "output": "\\2",
+        "next": {
+          "...=val <= 31": {
+            "algorithm": "dt",
+            "output": false
+          }
+        }
+      },
+      "(Apr|Jun|Sep|Nov) (\\d\\d?), \\d{4}": {
+        "output": "\\2",
+        "next": {
+          "...=val <= 30": {
+            "algorithm": "dt",
+            "output": false
+          }
+        }
+      },
+      "Feb (\\d\\d?), (\\d{4})": {
+        "output": {
+          "day": "\\1",
+          "year": "\\2"
+        },
+        "next": {
+          "...=val.day <= 28": {
+            "algorithm": "dt",
+            "output": false
+          },
+          "...=val.day == 29 && (val.year % 4) == 0 && !((val.year % 100) == 0 && (val.year % 400) != 0)": {
+            "algorithm": "dt",
+            "output": true
+          }
+        }
+      }
+    },
+    "patterns": [
+      {
+        "value": "Jun 6, 2021",
+        "result": false
+      },
+      {
+        "value": "Feb 29, 2000",
+        "result": true
+      },
+      {
+        "value": "Feb 29, 2004",
+        "result": true
+      },
+      {
+        "value": "Feb 29, 2001",
+        "result": "Feb 29, 2001"
+      },
+      {
+        "value": "Jun 32, 2021",
+        "result": "Jun 32, 2021"
+      }
+    ]
+  }
+]

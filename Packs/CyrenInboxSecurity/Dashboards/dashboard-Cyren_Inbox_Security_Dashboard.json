@@ -1,0 +1,189 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "Cyren Inbox Security Dashboard",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "41958db0-dcdf-11eb-b9dc-579368116fbb",
+            "id": "41958db0-dcdf-11eb-b9dc-579368116fbb",
+            "w": 12,
+            "widget": {
+                "category": "",
+                "commitMessage": "Widget imported",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 1,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "f1d6a668-19d9-4921-8543-169a15555593",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-07-04T15:31:46.376663281Z",
+                "name": "Cyren Targeted Users",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "cyrentargeteduser"
+                    ]
+                },
+                "prevName": "Cyren Targeted Users",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "",
+                "shouldCommit": true,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "42d27a80-dcdf-11eb-b9dc-579368116fbb",
+            "id": "42d27a80-dcdf-11eb-b9dc-579368116fbb",
+            "w": 12,
+            "widget": {
+                "category": "",
+                "commitMessage": "Widget imported",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 1,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "5a86f8d8-cf01-4fde-8813-b8f1961afb79",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-07-04T15:31:18.813036431Z",
+                "name": "Cyren Threat Type",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "cyrenthreattype"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "prevName": "Cyren Targeted Users",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "",
+                "shouldCommit": true,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 0,
+            "y": 3
+        }
+    ],
+    "name": "Cyren Inbox Security Dashboard",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 7,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "",
+    "isPredefined": true
+}

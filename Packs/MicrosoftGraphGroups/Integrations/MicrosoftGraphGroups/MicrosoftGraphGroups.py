@@ -66,9 +66,11 @@ class MsGraphClient:
       Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
       """
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed):
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
+                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-                                         base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed)
+                                         base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
+                                         certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
     def test_function(self):
         """Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -224,9 +226,10 @@ def list_groups_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, D
         next_link_response = groups['@odata.nextLink']
 
     if next_link_response:
-        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID).NextLink': next_link_response,
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}NextLink': {'GroupsNextLink': next_link_response},
                          f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
-        title = 'Groups (Note that there are more results. Please use the next_link argument to see them.):'
+        title = 'Groups (Note that there are more results. Please use the next_link argument to see them. The value ' \
+                'can be found in the context under MSGraphGroupsNextLink.GroupsNextLink): '
     else:
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
         title = 'Groups:'
@@ -341,16 +344,19 @@ def list_members_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
 
     # get the group data from the context
     group_data = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}(val.ID === "{group_id}")')
+    if not group_data:
+        return_error('Could not find group data in the context, please run "!msgraph-groups-get-group" to retrieve group data.')
     if isinstance(group_data, list):
         group_data = group_data[0]
 
     if '@odata.nextLink' in members:
         next_link_response = members['@odata.nextLink']
         group_data['Members'] = members_outputs  # add a field with the members to the group
-        group_data['Members']['NextLink'] = next_link_response
+        group_data['MembersNextLink'] = next_link_response
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_data}
         title = f'Group {group_id} members ' \
-                f'(Note that there are more results. Please use the next_link argument to see them.):'
+                f'(Note that there are more results. Please use the next_link argument to see them. The value can be ' \
+                f'found in the context under {INTEGRATION_CONTEXT_NAME}.MembersNextLink): '
     else:
         group_data['Members'] = members_outputs  # add a field with the members to the group
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_data}
@@ -407,12 +413,24 @@ def main():
     """
     params: dict = demisto.params()
     base_url = params.get('url', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('tenant_id')
-    auth_and_token_url = params.get('auth_id')
-    enc_key = params.get('enc_key')
+    tenant = params.get('tenant_id') or params.get('_tenant_id')
+    auth_and_token_url = params.get('auth_id') or params.get('_auth_id')
+    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy')
     self_deployed: bool = params.get('self_deployed', False)
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
+
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+    if not auth_and_token_url:
+        raise Exception('Authentication ID must be provided.')
+    if not tenant:
+        raise Exception('Token must be provided.')
 
     commands = {
         'test-module': test_function_command,
@@ -429,7 +447,8 @@ def main():
 
     try:
         client = MsGraphClient(base_url=base_url, tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
-                               app_name=APP_NAME, verify=verify, proxy=proxy, self_deployed=self_deployed)
+                               app_name=APP_NAME, verify=verify, proxy=proxy, self_deployed=self_deployed,
+                               certificate_thumbprint=certificate_thumbprint, private_key=private_key)
         # Run the command
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())
         # create a war room entry

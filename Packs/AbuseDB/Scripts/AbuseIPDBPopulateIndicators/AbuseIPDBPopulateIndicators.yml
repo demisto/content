@@ -6,7 +6,7 @@ script: ''
 type: python
 subtype: python2
 tags: []
-comment: Extracts blacklisted IP addresses from AbuseIPDB, and Populates Indicators
+comment: Extracts IP addresses on block lists from AbuseIPDB, and Populates Indicators
   accordingly.
 enabled: true
 args:
@@ -30,4 +30,4 @@ runas: DBotWeakRole
 tests:
 - AbuseIPDB PopulateIndicators Test
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398

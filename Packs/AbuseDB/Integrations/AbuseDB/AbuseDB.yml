@@ -231,7 +231,7 @@ script:
       name: limit
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to save a list of blacklisted IPs in the Context Data in
+      description: Whether to save a list of IPs on a block list in the Context Data in
         Demisto. Default is false.
       name: saveToContext
       predefined:
@@ -244,7 +244,7 @@ script:
     name: abuseipdb-get-blacklist
     outputs:
     - contextPath: AbuseIPDB.Blacklist
-      description: A list of blacklisted IP addresses.
+      description: A list of IP addresses on a block list.
       type: Unknown
   - arguments: []
     description: Returns a list of report categories from AbuseIPDB.
@@ -257,7 +257,7 @@ script:
   script: ''
   subtype: python2
   type: python
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python:2.7.18.24398
 fromversion: 5.0.0
 tests:
 - AbuseIPDB Test

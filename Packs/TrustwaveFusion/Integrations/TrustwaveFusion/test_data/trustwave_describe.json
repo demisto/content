@@ -1,0 +1,60 @@
+{
+    "/v2/assets": [
+        "GET"
+    ],
+    "/v2/assets/{id}": [
+        "GET"
+    ],
+    "/v2/assets/{id}/enriched": [
+        "GET"
+    ],
+    "/v2/findings": [
+        "GET"
+    ],
+    "/v2/findings/{id}": [
+        "GET",
+        "PATCH"
+    ],
+    "/v2/findings/{id}/assets": [
+        "POST"
+    ],
+    "/v2/findings/{id}/enriched": [
+        "GET"
+    ],
+    "/v2/findings/{id}/soarAction": [
+        "POST"
+    ],
+    "/v2/scan": [
+        "POST"
+    ],
+    "/v2/scan/validate": [
+        "GET"
+    ],
+    "/v2/scan/{id}/status": [
+        "GET"
+    ],
+    "/v2/tickets": [
+        "GET"
+    ],
+    "/v2/tickets/{id}": [
+        "GET"
+    ],
+    "/v2/trackedVulnerabilities": [
+        "GET"
+    ],
+    "/v2/trackedVulnerabilities/{id}": [
+        "GET"
+    ],
+    "/v2/trackedVulnerabilities/{id}/enriched": [
+        "GET"
+    ],
+    "/v2/vulnerabilities": [
+        "GET"
+    ],
+    "/v2/vulnerabilities/{id}": [
+        "GET"
+    ],
+    "/v2/vulnerabilities/{id}/enriched": [
+        "GET"
+    ]
+}

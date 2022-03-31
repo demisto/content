@@ -2,16 +2,22 @@
     "name": "Edgescan",
     "description": "Cloud-based continuous vulnerability management and penetration testing solution.",
     "support": "community",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "Maciej Drobniuch",
     "url": "",
     "email": "",
     "created": "2021-07-05T17:30:11Z",
-    "categories": [],
+    "categories": [
+        "Vulnerability Management"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "mdrobniu"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

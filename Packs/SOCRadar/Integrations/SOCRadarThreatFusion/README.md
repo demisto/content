@@ -1,5 +1,5 @@
 Enrich indicators by obtaining enhanced information and reputation via ThreatFusion of SOCRadar.
-This integration was integrated and tested with version 1.0 of SOCRadarThreatFusion
+This integration was integrated and tested with v21.11 of SOCRadar.
 
 ## Configure SOCRadarThreatFusion on Cortex XSOAR
 

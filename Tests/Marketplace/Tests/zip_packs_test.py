@@ -1,3 +1,6 @@
+# type: ignore[attr-defined]
+# pylint: disable=no-member
+
 import pytest
 
 from Tests.Marketplace.zip_packs import get_latest_pack_zip_from_pack_files, zip_packs,\

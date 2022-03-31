@@ -5,17 +5,29 @@ description: |-
   3. Retrieves the delete search action.
 id: O365 - Security And Compliance - Search Action - Delete
 inputs:
-- description: The name of the compliance search.
-  key: search_name
-  playbookInputQuery:
-  required: true
+- key: search_name
   value: {}
-- description: 'Purge type. Possible values are: "Soft" and "Hard". Default is "Soft".'
-  key: delete_type
-  playbookInputQuery:
   required: true
+  description: The name of the compliance search.
+  playbookInputQuery: null
+- key: delete_type
   value:
     simple: Soft
+  required: true
+  description: 'Purge type. Possible values are: "Soft" and "Hard". Default is "Soft".'
+  playbookInputQuery: null
+- key: polling_timeout
+  value:
+    simple: "45"
+  required: false
+  description: Search action polling timeout.
+  playbookInputQuery: null
+- key: polling_interval
+  value:
+    simple: "3"
+  required: false
+  description: Search action polling interval.
+  playbookInputQuery: null
 name: O365 - Security And Compliance - Search Action - Delete
 outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
@@ -122,24 +134,19 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: ef9beba1-fef3-4475-89b9-31c25d768d72
+    type: start
+    task:
+      id: ef9beba1-fef3-4475-89b9-31c25d768d72
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: ef9beba1-fef3-4475-89b9-31c25d768d72
-      iscommand: false
-      name: ""
-      version: -1
-      description: ""
-    taskid: ef9beba1-fef3-4475-89b9-31c25d768d72
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -147,14 +154,31 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    ignoreworker: false
+    taskid: 3ca34222-609f-4072-89f2-38c38f12bf3c
+    type: regular
+    task:
+      id: 3ca34222-609f-4072-89f2-38c38f12bf3c
+      version: -1
+      name: Search action - Hard delete
+      description: After you create a content search using the !o365-sc-new-search
+        command and run it using the !o365-sc-start-search command, you assign a search
+        action to the search using the !o365-sc-new-search-action command.
+      script: '|||o365-sc-new-search-action'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
-    note: false
-    quietmode: 0
     scriptarguments:
       action:
         simple: Purge
@@ -166,21 +190,6 @@ tasks:
         complex:
           root: inputs.search_name
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: After you create a content search using the !o365-sc-new-search
-        command and run it using the !o365-sc-start-search command, you assign a search
-        action to the search using the !o365-sc-new-search-action command.
-      id: 3ca34222-609f-4072-89f2-38c38f12bf3c
-      iscommand: true
-      name: Search action - Hard delete
-      script: '|||o365-sc-new-search-action'
-      type: regular
-      version: -1
-    taskid: 3ca34222-609f-4072-89f2-38c38f12bf3c
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -188,41 +197,21 @@ tasks:
           "y": 410
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    ignoreworker: false
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 100
-      wait: 1
-    nexttasks:
-      '#none#':
-      - "7"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
-      Ids:
-        complex:
-          accessor: Name
-          root: O365.SecurityAndCompliance.ContentSearch.SearchAction
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: search_action_name
-      PollingCommandName:
-        simple: o365-sc-get-search-action
-      Timeout:
-        simple: "10"
-      dt:
-        simple: O365.SecurityAndCompliance.ContentSearch.SearchAction(val.Status && val.Status
-          == "InProgress" || val.Status == "Starting" || val.Status == "Purging").Name
-    separatecontext: true
-    skipunavailable: false
+    taskid: ba396725-eaf8-4dba-815a-e68640172630
+    type: playbook
     task:
-      brand: ""
+      id: ba396725-eaf8-4dba-815a-e68640172630
+      version: -1
+      name: Waiting for delete operation to complete
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -231,15 +220,36 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      id: dc521027-5cc0-48d7-85ba-e1da11e1cff5
-      iscommand: false
-      name: Waiting for delete operation to complete
-      playbookId: GenericPolling
+      playbookName: GenericPolling
       type: playbook
-      version: -1
-    taskid: dc521027-5cc0-48d7-85ba-e1da11e1cff5
-    timertriggers: []
-    type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      Ids:
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.SearchAction
+          accessor: Name
+      Interval:
+        simple: ${inputs.polling_interval}
+      PollingCommandArgName:
+        simple: search_action_name
+      PollingCommandName:
+        simple: o365-sc-get-search-action
+      Timeout:
+        simple: ${inputs.polling_timeout}
+      dt:
+        simple: O365.SecurityAndCompliance.ContentSearch.SearchAction(val.Status &&
+          val.Status == "InProgress" || val.Status == "Starting" || val.Status ==
+          "Purging").Name
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -247,24 +257,24 @@ tasks:
           "y": 600
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: a0952765-7686-4a51-8341-9b67eaf925f2
+    type: title
     task:
-      brand: ""
       id: a0952765-7686-4a51-8341-9b67eaf925f2
-      iscommand: false
+      version: -1
       name: Search action completed.
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ""
-    taskid: a0952765-7686-4a51-8341-9b67eaf925f2
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -272,36 +282,25 @@ tasks:
           "y": 925
         }
       }
-  "5":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                root: inputs.delete_type
-                transformers:
-                - operator: toUpperCase
-          operator: isEqualString
-          right:
-            value:
-              simple: HARD
-      label: Hard delete
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                root: inputs.delete_type
-                transformers:
-                - operator: toUpperCase
-          operator: isEqualString
-          right:
-            value:
-              simple: SOFT
-      label: Soft delete
-    id: "5"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a0b2fe95-1349-4379-8684-0601ef705510
+    type: condition
+    task:
+      id: a0b2fe95-1349-4379-8684-0601ef705510
+      version: -1
+      name: Perform a hard delete on the compliance search results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "8"
@@ -309,21 +308,34 @@ tasks:
       - "1"
       Soft delete:
       - "6"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: a0b2fe95-1349-4379-8684-0601ef705510
-      iscommand: false
-      name: Perform a hard delete on the compliance search results?
-      type: condition
-      version: -1
-      description: ""
-    taskid: a0b2fe95-1349-4379-8684-0601ef705510
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: Hard delete
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.delete_type
+                transformers:
+                - operator: toUpperCase
+            iscontext: true
+          right:
+            value:
+              simple: HARD
+    - label: Soft delete
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.delete_type
+                transformers:
+                - operator: toUpperCase
+            iscontext: true
+          right:
+            value:
+              simple: SOFT
     view: |-
       {
         "position": {
@@ -331,14 +343,31 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    ignoreworker: false
+    taskid: 849b3d7c-5f6c-40b7-8f2b-066e5bf14d6e
+    type: regular
+    task:
+      id: 849b3d7c-5f6c-40b7-8f2b-066e5bf14d6e
+      version: -1
+      name: Search action - Soft delete.
+      description: After you create a content search using the !o365-sc-new-search
+        command and run it using the !o365-sc-start-search command, you assign a search
+        action to the search using the !o365-sc-new-search-action command.
+      script: '|||o365-sc-new-search-action'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
-    note: false
-    quietmode: 0
     scriptarguments:
       action:
         simple: Purge
@@ -350,21 +379,6 @@ tasks:
         complex:
           root: inputs.search_name
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: After you create a content search using the !o365-sc-new-search
-        command and run it using the !o365-sc-start-search command, you assign a search
-        action to the search using the !o365-sc-new-search-action command.
-      id: 849b3d7c-5f6c-40b7-8f2b-066e5bf14d6e
-      iscommand: true
-      name: Search action - Soft delete.
-      script: '|||o365-sc-new-search-action'
-      type: regular
-      version: -1
-    taskid: 849b3d7c-5f6c-40b7-8f2b-066e5bf14d6e
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -372,40 +386,40 @@ tasks:
           "y": 410
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    ignoreworker: false
+    taskid: a366b3b2-a1b5-498b-84c5-ea740e05437c
+    type: regular
+    task:
+      id: a366b3b2-a1b5-498b-84c5-ea740e05437c
+      version: -1
+      name: Get the search action.
+      description: Get the compliance search action from the Security & Compliance
+        Center.
+      script: '|||o365-sc-get-search-action'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       export:
         simple: "true"
-      limit: {}
-      results: {}
       retry-count:
         simple: "10"
       search_action_name:
         complex:
-          accessor: Name
           root: O365.SecurityAndCompliance.ContentSearch.SearchAction
+          accessor: Name
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Get the compliance search action from the Security & Compliance
-        Center.
-      id: a366b3b2-a1b5-498b-84c5-ea740e05437c
-      iscommand: true
-      name: Get the search action.
-      script: '|||o365-sc-get-search-action'
-      type: regular
-      version: -1
-    taskid: a366b3b2-a1b5-498b-84c5-ea740e05437c
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -413,28 +427,30 @@ tasks:
           "y": 760
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    ignoreworker: false
-    note: false
-    quietmode: 0
+    taskid: 5188bc1a-4187-4f4d-8a1c-215de4714c73
+    type: regular
+    task:
+      id: 5188bc1a-4187-4f4d-8a1c-215de4714c73
+      version: -1
+      name: Error - Invalid delete_type parameter.
+      description: Print an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
     scriptarguments:
       message:
         simple: delete_type parameter should be Soft or Hard.
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Print an error entry with a given message.
-      id: 5188bc1a-4187-4f4d-8a1c-215de4714c73
-      iscommand: false
-      name: Error - Invalid delete_type parameter.
-      script: PrintErrorEntry
-      type: regular
-      version: -1
-    taskid: 5188bc1a-4187-4f4d-8a1c-215de4714c73
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -442,7 +458,13 @@ tasks:
           "y": 370
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -458,6 +480,7 @@ view: |-
       }
     }
   }
+version: -1
 fromversion: 5.5.0
 tests:
 - O365-SecurityAndCompliance-Test

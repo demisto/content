@@ -1098,8 +1098,8 @@ def main() -> None:
     base_url = demisto.params().get('url')
 
     # Collect API tokens
-    public_api_token = demisto.params().get('public_api_token', '')
-    private_api_token = demisto.params().get('private_api_token', '')
+    public_api_token = demisto.params().get('public_api_token', '') or demisto.params().get('public_creds', {}).get('password')
+    private_api_token = demisto.params().get('private_api_token', '') or demisto.params().get('private_creds', {}).get('password')
     tokens = (public_api_token, private_api_token)
 
     # Client class inherits from BaseClient, so SSL verification is

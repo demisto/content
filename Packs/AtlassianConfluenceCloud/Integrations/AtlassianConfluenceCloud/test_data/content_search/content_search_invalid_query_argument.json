@@ -1,0 +1,10 @@
+{
+  "statusCode": 400,
+  "data": {
+    "authorized": false,
+    "valid": true,
+    "errors": [],
+    "successful": false
+  },
+  "message": "com.atlassian.confluence.api.service.exceptions.BadRequestException: Unsupported value for type, got : pagenjkkj, expected one of : [space, user, page, blogpost, comment, attachment, com.atlassian.confluence.extra.team-calendars:calendar-content-type, com.atlassian.confluence.extra.team-calendars:space-calendars-view-content-type, ac:com.addonengine.analytics:space-analytics]"
+}

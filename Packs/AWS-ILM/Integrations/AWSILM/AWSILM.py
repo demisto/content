@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import traceback
 import urllib3
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -12,6 +13,49 @@ patchSchema = 'urn:ietf:params:scim:api:messages:2.0:PatchOp'
 ERROR_CODES_TO_SKIP = [
     404
 ]
+SUPPORTED_GET_USER_IAM_ATTRIBUTES = ['id', 'userName']
+
+AWS_DEFAULT_SCHEMA_MAPPING = {
+    'id': 'id',
+    'userName': 'userName',
+    'name': {
+        'formatted': 'formatted',
+        'familyName': 'familyName',
+        'givenName': 'givenName',
+        'middleName': 'middleName',
+        'honorificPrefix': 'honorificPrefix',
+        'honorificSuffix': 'honorificSuffix'
+    },
+    'displayName': 'displayName',
+    'nickName': 'nickName',
+    'profileUrl': 'profileUrl',
+    'title': 'title',
+    'userType': 'userType',
+    'preferredLanguage': 'preferredLanguage',
+    'locale': 'locale',
+    'timezone': 'timezone',
+    'active': 'active',
+    'password': 'password',
+    'emails': [{
+        'type': 'type',
+        'value': 'value',
+        'primary': 'primary'
+    }],
+    'phoneNumbers': [{
+        'type': 'type',
+        'value': 'value'
+    }],
+    'addresses': [{
+        'formatted': 'formatted',
+        'streetAddress': 'streetAddress',
+        'locality': 'locality',
+        'region': 'region',
+        'postalCode': 'postalCode',
+        'Country': 'Country'
+    }],
+    'groups': ['group'],
+    'roles': ['role']
+}
 
 
 def build_body_request_for_update_user(old_user_data, new_user_data):
@@ -43,33 +87,39 @@ class Client(BaseClient):
 
         self._http_request(method='GET', url_suffix=userUri)
 
-    def get_user(self, user_name: str) -> Optional['IAMUserAppData']:
+    def get_user(self, iam_attribute: str, iam_attribute_val: str) -> Optional['IAMUserAppData']:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type user_name: ``str``
-        :param user_name: User name of the user
+        :type iam_attribute: ``str``
+        :param iam_attribute: The IAM attribute.
+
+        :type iam_attribute_val: ``str``
+        :param iam_attribute_val: Value of the given IAM attribute.
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        params = {
-            'filter': f'userName eq "{user_name}"'
-        }
+        params = {'filter': f'userName eq "{iam_attribute_val}"'} if iam_attribute == 'userName' else None
+        url_suffix: str = f'{userUri}{iam_attribute_val}' if iam_attribute == 'id' else userUri
 
         res = self._http_request(
             method='GET',
-            url_suffix=userUri,
-            params=params,
+            url_suffix=url_suffix,
+            params=params
         )
-
-        if res.get('totalResults') > 0:
+        user_app_data = None
+        if res.get('totalResults', 0) > 0:
             user_app_data = res.get('Resources')[0]
+        elif iam_attribute == 'id':
+            user_app_data = res
+
+        if user_app_data:
             user_id = user_app_data.get('id')
             username = user_app_data.get('userName')
             is_active = user_app_data.get('active')
-
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+            return IAMUserAppData(user_id, username, is_active, user_app_data,
+                                  email=get_first_primary_email_by_scim_schema(user_app_data))
         return None
 
     def create_user(self, user_data: Dict[str, Any]) -> 'IAMUserAppData':
@@ -97,7 +147,7 @@ class Client(BaseClient):
         is_active = res.get('active')
         username = res.get('userName')
 
-        return IAMUserAppData(user_id, username, is_active, res)
+        return IAMUserAppData(user_id, username, is_active, res, email=get_first_primary_email_by_scim_schema(res))
 
     def update_user(self, user_id: str, new_user_data: Dict[str, Any]) -> 'IAMUserAppData':
         """ Updates a user in the application using REST API.
@@ -125,7 +175,7 @@ class Client(BaseClient):
         is_active = res.get('active')
         username = res.get('userName')
 
-        return IAMUserAppData(user_id, username, is_active, res)
+        return IAMUserAppData(user_id, username, is_active, res, email=get_first_primary_email_by_scim_schema(res))
 
     def enable_user(self, user_id: str) -> 'IAMUserAppData':
         """ Enables a user in the application using REST API.
@@ -160,7 +210,7 @@ class Client(BaseClient):
         is_active = res.get('active')
         username = res.get('userName')
 
-        return IAMUserAppData(user_id, username, is_active, res)
+        return IAMUserAppData(user_id, username, is_active, res, email=get_first_primary_email_by_scim_schema(res))
 
     def disable_user(self, user_id: str) -> 'IAMUserAppData':
         """ Disables a user in the application using REST API.
@@ -195,7 +245,7 @@ class Client(BaseClient):
         is_active = res.get('active')
         username = res.get('userName')
 
-        return IAMUserAppData(user_id, username, is_active, res)
+        return IAMUserAppData(user_id, username, is_active, res, email=get_first_primary_email_by_scim_schema(res))
 
     def get_group_by_id(self, group_id):
         return self._http_request(
@@ -221,6 +271,7 @@ class Client(BaseClient):
             url_suffix=groupUri,
             json_data=data,
             resp_type='response',
+            ok_codes=(200, 201, 409)
         )
 
     def update_group(self, group_id, data):
@@ -237,22 +288,6 @@ class Client(BaseClient):
             url_suffix=groupUri + group_id,
             resp_type='response',
         )
-
-    def get_app_fields(self) -> Dict[str, Any]:
-        """ Gets a dictionary of the user schema fields in the application and their description.
-
-        :return: The user schema fields dictionary
-        :rtype: ``Dict[str, str]``
-        """
-
-        uri = '/schema'
-        res = self._http_request(
-            method='GET',
-            url_suffix=uri,
-        )
-
-        fields = res.get('result', [])
-        return {field.get('name'): field.get('description') for field in fields}
 
     @staticmethod
     def handle_exception(user_profile, e, action):
@@ -299,7 +334,7 @@ class Client(BaseClient):
         user_profile.set_result(action=action,
                                 success=False,
                                 error_code=error_code,
-                                error_message=error_message)
+                                error_message=f'{error_message}\n{traceback.format_exc()}')
 
         demisto.error(traceback.format_exc())
 
@@ -573,18 +608,13 @@ def delete_group_command(client, args):
     )
 
 
-def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
+def get_mapping_fields() -> GetMappingFieldsResponse:
     """ Creates and returns a GetMappingFieldsResponse object of the user schema in the application
 
-    :param client: (Client) The integration Client object that implements a get_app_fields() method
     :return: (GetMappingFieldsResponse) An object that represents the user schema
     """
-    app_fields = client.get_app_fields()
-    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
-
-    for field, description in app_fields.items():
-        incident_type_scheme.add_field(field, description)
-
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE,
+                                             fields=AWS_DEFAULT_SCHEMA_MAPPING)
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
@@ -609,7 +639,8 @@ def main():
     create_if_not_exists = params.get('create_if_not_exists')
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out, 'username')
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=SUPPORTED_GET_USER_IAM_ATTRIBUTES)
 
     headers = {
         'Content-Type': 'application/json',
@@ -663,7 +694,7 @@ def main():
             return_results(delete_group_command(client, args))
 
         elif command == 'get-mapping-fields':
-            return_results(get_mapping_fields(client))
+            return_results(get_mapping_fields())
 
     except Exception as exc:
         # For any other integration command exception, return an error
@@ -671,7 +702,7 @@ def main():
         return_error(f'Failed to execute {command} command. Error:\n{exc}', error=exc)
 
 
-from IAMApiModule import * # noqa E402
+from IAMApiModule import *  # noqa E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

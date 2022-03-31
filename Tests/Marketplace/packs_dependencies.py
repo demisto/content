@@ -1,7 +1,7 @@
 import argparse
 import json
-import logging
 import os
+import sys
 from concurrent.futures import as_completed
 from contextlib import contextmanager
 from pprint import pformat
@@ -9,8 +9,11 @@ from typing import Tuple, Iterable, List, Callable
 
 from Tests.Marketplace.marketplace_constants import GCPConfig, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES
 from Tests.scripts.utils.log_util import install_logging
-from demisto_sdk.commands.find_dependencies.find_dependencies import PackDependencies, parse_for_pack_metadata
+from Tests.scripts.utils import logging_wrapper as logging
+from demisto_sdk.commands.find_dependencies.find_dependencies import PackDependencies, \
+    calculate_single_pack_dependencies
 from pebble import ProcessPool, ProcessFuture
+
 
 PROCESS_FAILURE = False
 
@@ -64,43 +67,6 @@ def wait_futures_complete(futures: List[ProcessFuture], done_fn: Callable):
             raise
 
 
-def calculate_single_pack_dependencies(pack: str, dependency_graph: object) -> Tuple[dict, list, str]:
-    """
-    Calculates pack dependencies given a pack and a dependencies graph.
-    First is extract the dependencies subgraph of the given graph only using DFS algorithm with the pack as source.
-
-    Then, for all the dependencies of that pack it Replaces the 'mandatory_for_packs' key with a boolean key 'mandatory'
-    which indicates whether this dependency is mandatory for this pack or not.
-
-    Then using that subgraph we get the first-level dependencies and all-levels dependencies.
-
-    Args:
-        pack: The pack for which we need to calculate the dependencies
-        dependency_graph: The full dependencies graph
-
-    Returns:
-        first_level_dependencies: A dict of the form {'dependency_name': {'mandatory': < >, 'display_name': < >}}
-        all_level_dependencies: A list with all dependencies names
-        pack: The pack name
-    """
-    install_logging('Calculate_Packs_Dependencies.log', include_process_name=True)
-    first_level_dependencies = {}
-    all_level_dependencies = []
-    try:
-        logging.info(f"Calculating {pack} pack dependencies.")
-        subgraph = PackDependencies.get_dependencies_subgraph_by_dfs(dependency_graph, pack)
-        for dependency_pack, additional_data in subgraph.nodes(data=True):
-            logging.debug(f'Iterating dependency {dependency_pack} for pack {pack}')
-            additional_data['mandatory'] = pack in additional_data['mandatory_for_packs']
-            del additional_data['mandatory_for_packs']
-            first_level_dependencies, all_level_dependencies = parse_for_pack_metadata(subgraph, pack)
-    except Exception:
-        logging.exception(f"Failed calculating {pack} pack dependencies")
-        raise
-
-    return first_level_dependencies, all_level_dependencies, pack
-
-
 def get_all_packs_dependency_graph(id_set: dict, packs: list) -> Iterable:
     """
     Gets a graph with dependencies for all packs
@@ -117,7 +83,7 @@ def get_all_packs_dependency_graph(id_set: dict, packs: list) -> Iterable:
         return dependency_graph
     except Exception:
         logging.exception("Failed calculating dependencies graph")
-        exit(2)
+        sys.exit(2)
 
 
 def select_packs_for_calculation() -> list:
@@ -197,13 +163,13 @@ def main():
     packs dependencies. The logic of pack dependency is identical to sdk find-dependencies command.
 
     """
-    install_logging('Calculate_Packs_Dependencies.log', include_process_name=True)
+    install_logging('Calculate_Packs_Dependencies.log', include_process_name=True, logger=logging)
     option = option_handler()
     output_path = option.output_path
     id_set_path = option.id_set_path
     id_set = get_id_set(id_set_path)
 
-    pack_dependencies_result = {}
+    pack_dependencies_result: dict = {}
 
     logging.info("Selecting packs for dependencies calculation")
     packs = select_packs_for_calculation()
@@ -213,7 +179,6 @@ def main():
     logging.info(f"Number of created pack dependencies entries: {len(pack_dependencies_result.keys())}")
     # finished iteration over pack folders
     logging.success("Finished dependencies calculation")
-
     with open(output_path, 'w') as pack_dependencies_file:
         json.dump(pack_dependencies_result, pack_dependencies_file, indent=4)
 

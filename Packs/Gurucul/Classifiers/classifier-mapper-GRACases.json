@@ -1,0 +1,200 @@
+{
+    "defaultIncidentType": "GRACase",
+    "description": "",
+    "feed": false,
+    "id": "GRACase-Mapper",
+    "mapping": {
+        "GRACase": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "GRA Case": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "caseId",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "CS-"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GRA Case Anomaly Details": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "anomalies",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "Stringify"
+                            },
+                            {
+                                "args": {},
+                                "operator": "toLowerCase"
+                            },
+                            {
+                                "args": {},
+                                "operator": "ParseJSON"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GRA Case Entity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "entity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Case Entity Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "entityId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Case Entity Type Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "entityTypeId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Case Open Date": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "openDate",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Case Owner Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ownerId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Case Owner Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ownerName",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Case Owner Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ownerType",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Case Risk Date": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "riskDate",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Case Risk Score": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "riskScore",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Case Status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Case Weblink": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "graweblink",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "entity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "GRA Case Anomaly Details": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "anomalies",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "Stringify"
+                            },
+                            {
+                                "args": {},
+                                "operator": "toLowerCase"
+                            },
+                            {
+                                "args": {},
+                                "operator": "ParseJSON"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "GRACase-Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

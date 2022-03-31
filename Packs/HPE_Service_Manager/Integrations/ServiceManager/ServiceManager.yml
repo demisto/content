@@ -1,0 +1,628 @@
+commonfields:
+  id: Service Manager
+  version: -1
+name: Service Manager
+display: Micro Focus Service Manager
+category: Case Management
+description: Service Manager By Micro Focus (Formerly HPE Software).
+configuration:
+- display: Server URL (e.g. https://192.168.0.1:13080)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: username
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: hpsm-update-incident
+    description: 'Updates existing incident (beta).'
+    arguments:
+    - name: incidentId
+      description: 'The ID of the incident. For example: "IM10013".'
+      required: true
+    - name: title
+      description: The title of the incident.
+      required: false
+    - name: description
+      description: The description of the incident
+      required: false
+    - name: service
+      required: false
+      description: 'The service. For example: "CI1001060", "CI1001030".'
+    - name: impact
+      description: The impact. Default is 4. Should be a number like 3 or 4.
+    - name: urgency
+      description: The urgency. Default is 4. Should be a number like 3 or 4.
+    - name: alertStatus
+      description: 'The alert status. For example: "SLA BREACH".'
+    - name: area
+      description: 'The area. For example: "performance", "failure", "hardware", "access". '
+    - name: assignmentGroup
+      description: 'The assignment group. For example: "Office Supplies (North America)".'
+    - name: affectedCI
+      description: 'The affected CI. For example: "CI1000783".'
+    - name: category
+      required: false
+      description: 'Category of the incident. For example: "incident", "complaint".'
+    - name: company
+      description: 'The company. For example: "advantage".'
+    - name: phase
+      description: 'The phase. For example: "Categorization".'
+    - name: status
+      description: 'The status. For example: "Categorize".'
+    - name: subarea
+      description: 'The sub-area. For example: system or application hangs, function
+        or feature not working, error message, job failed, hardware failure, etc.'
+    - name: customFields
+      description: 'Custom fields in JSON format. For example: {"businessUnit":"5"}.
+        Field name is case-sensitive.'
+    outputs:
+    - contextPath: Ticket.ID
+      description: The ID of the ticket.
+    - contextPath: Ticket.Creator
+      description: The name of the user who created/opened the ticket.
+    - contextPath: Ticket.Assignee
+      description: To whom the ticket is assigned.
+    - contextPath: Ticket.State
+      description: The state of the ticket (open, closed, on hold).
+    - contextPath: HPSM.Incidents.IncidentID
+      description: The ID of the incident.
+    - contextPath: HPSM.Incidents.Service
+      description: 'Service/device number (For example: CI1001030).'
+    - contextPath: HPSM.Incidents.Area
+      description: Incident area.
+    - contextPath: HPSM.Incidents.Assignee
+      description: Incident assignee.
+    - contextPath: HPSM.Incidents.AssignmentGroup
+      description: Incident assignment group.
+    - contextPath: HPSM.Incidents.Category
+      description: Incident category.
+    - contextPath: HPSM.Incidents.ClosedBy
+      description: The user who closed the incident.
+    - contextPath: HPSM.Incidents.ClosedTime
+      description: Incident close time.
+    - contextPath: HPSM.Incidents.ClosureCode
+      description: Incident closure code.
+    - contextPath: HPSM.Incidents.Company
+      description: Incident company.
+    - contextPath: HPSM.Incidents.Contact
+      description: Incident contact details.
+    - contextPath: HPSM.Incidents.Description
+      description: Incident description.
+    - contextPath: HPSM.Incidents.Impact
+      description: Incident impact.
+    - contextPath: HPSM.Incidents.JournalUpdates
+      description: Incident journal updates.
+    - contextPath: HPSM.Incidents.OpenTime
+      description: Incident open time.
+    - contextPath: HPSM.Incidents.OpenedBy
+      description: The user who opened the incident.
+    - contextPath: HPSM.Incidents.Phase
+      description: Incident phase.
+    - contextPath: HPSM.Incidents.Solution
+      description: Incident solution.
+    - contextPath: HPSM.Incidents.Status
+      description: Incident status.
+    - contextPath: HPSM.Incidents.Subarea
+      description: Incident sub-area.
+    - contextPath: HPSM.Incidents.Title
+      description: Incident title.
+    - contextPath: HPSM.Incidents.UpdatedBy
+      description: The last user who updated the incident.
+    - contextPath: HPSM.Incidents.UpdatedTime
+      description: Incident update time.
+    - contextPath: HPSM.Incidents.Urgency
+      description: Incident urgency.
+  - name: hpsm-create-incident
+    description: 'Creates a new incident.'
+    arguments:
+    - name: title
+      description: The title of the incident.
+      required: true
+    - name: description
+      description: The description of the incident.
+      required: true
+    - name: service
+      required: true
+      description: 'The service. For example: "CI1001060", "CI1001030".'
+    - name: impact
+      description: The impact. Default is 4. Should be a number like 3 or 4.
+    - name: urgency
+      description: The impact. Default is 4. Should be a number like 3 or 4.
+    - name: alertStatus
+      description: 'The alert status. For example: "SLA BREACH".'
+    - name: area
+      description: 'The area. For example: "performance", "failure", "hardware", "access".'
+    - name: assignmentGroup
+      description: 'The assignment group. For example: "Office Supplies (North America)".'
+    - name: affectedCI
+      description: 'The affected CI. For example: "CI1000783".'
+    - name: category
+      required: true
+      description: 'Category of the incident. For example: "incident", "complaint".'
+    - name: company
+      description: 'The company. For example: "advantage".'
+    - name: phase
+      description: 'The phase. For example: "Categorization".'
+    - name: status
+      description: 'The status. For example: "Categorize".'
+    - name: subarea
+      description: 'The sub-area. For example: system or application hangs, function
+        or feature not working, error message, job failed, hardware failure, etc.'
+    - name: customFields
+      description: 'Custom fields in JSON format. For example: {"businessUnit":"5"}.
+        Field name is case-sensitive.'
+    outputs:
+    - contextPath: Ticket.ID
+      description: The ID of the ticket.
+    - contextPath: Ticket.Creator
+      description: The user who created/opened the ticket.
+    - contextPath: Ticket.Assignee
+      description: To whom the ticket is assigned.
+    - contextPath: Ticket.State
+      description: The state of the ticket (open, closed, on hold).
+    - contextPath: HPSM.Incidents.IncidentID
+      description: The ID of the incident.
+    - contextPath: HPSM.Incidents.Service
+      description: Service/device number.
+    - contextPath: HPSM.Incidents.Area
+      description: Incident area.
+    - contextPath: HPSM.Incidents.Assignee
+      description: Incident assignee.
+    - contextPath: HPSM.Incidents.AssignmentGroup
+      description: Incident assignment group.
+    - contextPath: HPSM.Incidents.Category
+      description: Incident category.
+    - contextPath: HPSM.Incidents.ClosedBy
+      description: The user who closed the incident.
+    - contextPath: HPSM.Incidents.ClosedTime
+      description: Incident close time.
+    - contextPath: HPSM.Incidents.ClosureCode
+      description: Incident closure code.
+    - contextPath: HPSM.Incidents.Company
+      description: Incident company.
+    - contextPath: HPSM.Incidents.Contact
+      description: Incident contact details.
+    - contextPath: HPSM.Incidents.Description
+      description: Incident description.
+    - contextPath: HPSM.Incidents.Impact
+      description: Incident impact.
+    - contextPath: HPSM.Incidents.JournalUpdates
+      description: Incident journal updates.
+    - contextPath: HPSM.Incidents.OpenTime
+      description: Incident open time.
+    - contextPath: HPSM.Incidents.OpenedBy
+      description: The user who opened the incident.
+    - contextPath: HPSM.Incidents.Phase
+      description: Incident phase.
+    - contextPath: HPSM.Incidents.Solution
+      description: Incident solution.
+    - contextPath: HPSM.Incidents.Status
+      description: Incident status.
+    - contextPath: HPSM.Incidents.Subarea
+      description: Incident sub-area.
+    - contextPath: HPSM.Incidents.Title
+      description: Incident title.
+    - contextPath: HPSM.Incidents.UpdatedBy
+      description: The last user who updated the incident.
+    - contextPath: HPSM.Incidents.UpdatedTime
+      description: Incident update time.
+    - contextPath: HPSM.Incidents.Urgency
+      description: Incident urgency.
+  - name: hpsm-list-incidents
+    arguments:
+    - name: query
+      description: 'The query by which to limit the returned list of incidents. For
+        example: field1=value1&field2=value2. For more information, see https://docs.microfocus.com/SM/9.41/Codeless/Content/Resources/PDF_PD/HP_Service_Manager_Web_Services_codeless.pdf.'
+    outputs:
+    - contextPath: HPSM.IncidentIDs
+      description: An array of incident IDs.
+    description: Returns all incidents.
+  - name: hpsm-get-incident-by-id
+    description: Returns a single incident by ID. If no incident exists with the specified
+      ID, an error will be returned.
+    arguments:
+    - name: incidentId
+      required: true
+      default: true
+      description: 'The ID of an incident. For exampleJ: "IM10013".'
+    outputs:
+    - contextPath: Ticket.ID
+      description: The ID of the ticket.
+    - contextPath: Ticket.Creator
+      description: The user who created/opened the ticket.
+    - contextPath: Ticket.Assignee
+      description: To whom the ticket is assigned.
+    - contextPath: Ticket.State
+      description: The state of the ticket (open, closed, on hold).
+    - contextPath: HPSM.Incidents.IncidentID
+      description: The ID of the incident.
+    - contextPath: HPSM.Incidents.Service
+      description: Service/device number.
+    - contextPath: HPSM.Incidents.Area
+      description: Incident area.
+    - contextPath: HPSM.Incidents.Assignee
+      description: Incident assignee.
+    - contextPath: HPSM.Incidents.AssignmentGroup
+      description: Incident assignment group.
+    - contextPath: HPSM.Incidents.Category
+      description: Incident category.
+    - contextPath: HPSM.Incidents.ClosedBy
+      description: The user who closed the incident.
+    - contextPath: HPSM.Incidents.ClosedTime
+      description: Incident close time.
+    - contextPath: HPSM.Incidents.ClosureCode
+      description: Incident closure code.
+    - contextPath: HPSM.Incidents.Company
+      description: Incident company.
+    - contextPath: HPSM.Incidents.Contact
+      description: Incident contact details.
+    - contextPath: HPSM.Incidents.Description
+      description: Incident description.
+    - contextPath: HPSM.Incidents.Impact
+      description: Incident impact.
+    - contextPath: HPSM.Incidents.JournalUpdates
+      description: Incident journal updates.
+    - contextPath: HPSM.Incidents.OpenTime
+      description: Incident open time.
+    - contextPath: HPSM.Incidents.OpenedBy
+      description: The user who opened the incident.
+    - contextPath: HPSM.Incidents.Phase
+      description: Incident phase.
+    - contextPath: HPSM.Incidents.Solution
+      description: Incident solution.
+    - contextPath: HPSM.Incidents.Status
+      description: Incident status.
+    - contextPath: HPSM.Incidents.Subarea
+      description: Incident sub-area.
+    - contextPath: HPSM.Incidents.Title
+      description: Incident title.
+    - contextPath: HPSM.Incidents.UpdatedBy
+      description: The last user who updated the incident.
+    - contextPath: HPSM.Incidents.UpdatedTime
+      description: Incident update time.
+    - contextPath: HPSM.Incidents.Urgency
+      description: Incident urgency.
+  - name: hpsm-create-resource
+    arguments:
+    - name: title
+      required: true
+      description: The title of the resource.
+    - name: description
+      required: true
+      description: The description of the resource.
+    - name: service
+      required: true
+      description: 'The service. For example: "CI1001060", "CI1001030".'
+    - name: impact
+      description: The impact. Default is 4. Should be a number like 3 or 4.
+    - name: urgency
+      description: The urgency. Default is 4. Should be a number like 3 or 4.
+    - name: alertStatus
+      description: 'The alert status. For example: "SLA BREACH".'
+    - name: area
+      description: 'The area. For example: performance, failure, hardware, access".'
+    - name: assignmentGroup
+      description: 'The assignment group. For example: "Office Supplies (North America)".'
+    - name: affectedCI
+      description: 'The affected CI. For example: "CI1000783".'
+    - name: category
+      required: true
+      description: 'Category of resource. For example: "resource", "complaint".'
+    - name: company
+      description: 'The company. For example: "advantage".'
+    - name: phase
+      description: 'The phase. For example: "Categorization".'
+    - name: status
+      description: 'The status. For example: "Categorize".'
+    - name: subarea
+      description: 'The sub-area. For example: system or application hangs, function
+        or feature not working, error message, job failed, hardware failure, etc.'
+    - name: customFields
+      description: 'Custom fields in JSON format. For example: {"businessUnit":"5"}.
+        Field name is case-sensitive.'
+    - name: resourceName
+      required: true
+      description: 'The resource name (API URI) that will be used. For example: "incidents".'
+    - name: resourceKey
+      required: true
+      description: 'The resource key that will be used. For example: "InteractionID".'
+    outputs:
+    - contextPath: Ticket.ID
+      description: The ID of the ticket.
+    - contextPath: Ticket.Creator
+      description: The user who created/opened the ticket.
+    - contextPath: Ticket.Assignee
+      description: To whom the ticket is assigned.
+    - contextPath: Ticket.State
+      description: The state of the ticket (open, closed, on hold).
+    - contextPath: HPSM.Resources.ResourceID
+      description: The ID of the resource.
+    - contextPath: HPSM.Resources.Service
+      description: Service/device number.
+    - contextPath: HPSM.Resources.Area
+      description: Resource area.
+    - contextPath: HPSM.Resources.Assignee
+      description: Resource assignee.
+    - contextPath: HPSM.Resources.AssignmentGroup
+      description: Resource assignment group.
+    - contextPath: HPSM.Resources.Category
+      description: Resource category.
+    - contextPath: HPSM.Resources.ClosedBy
+      description: The user who closed the resource.
+    - contextPath: HPSM.Resources.ClosedTime
+      description: Resource close time.
+    - contextPath: HPSM.Resources.ClosureCode
+      description: Resource closure code.
+    - contextPath: HPSM.Resources.Company
+      description: Resource company.
+    - contextPath: HPSM.Resources.Contact
+      description: Resource contact details.
+    - contextPath: HPSM.Resources.Description
+      description: Resource description.
+    - contextPath: HPSM.Resources.Impact
+      description: Resource impact.
+    - contextPath: HPSM.Resources.JournalUpdates
+      description: Resource journal updates.
+    - contextPath: HPSM.Resources.OpenTime
+      description: Resource open time.
+    - contextPath: HPSM.Resources.OpenedBy
+      description: The user who opened the resource.
+    - contextPath: HPSM.Resources.Phase
+      description: Resource phase.
+    - contextPath: HPSM.Resources.Solution
+      description: Resource solution.
+    - contextPath: HPSM.Resources.Status
+      description: Resource status.
+    - contextPath: HPSM.Resources.Subarea
+      description: Resource sub-area.
+    - contextPath: HPSM.Resources.Title
+      description: Resource title.
+    - contextPath: HPSM.Resources.UpdatedBy
+      description: The last user who updated the resource.
+    - contextPath: HPSM.Resources.UpdatedTime
+      description: Resource update time.
+    - contextPath: HPSM.Resources.Urgency
+      description: Resource urgency.
+    description: Updates the existing resource (beta).
+  - name: hpsm-update-resource
+    arguments:
+    - name: title
+      required: true
+      description: The title of the resource.
+    - name: description
+      required: true
+      description: The description of the resource.
+    - name: service
+      required: true
+      description: 'The service. For example: "CI1001060", "CI1001030".'
+    - name: impact
+      description: The impact. Default is 4. Should be a number like 3 or 4.
+    - name: urgency
+      description: The urgency. Default is 4. Should be a number like 3 or 4.
+    - name: alertStatus
+      description: 'The alert status. For example: "SLA BREACH".'
+    - name: area
+      description: 'The area. For example: "performance", "failure", "hardware", "access".'
+    - name: assignmentGroup
+      description: 'The assignment group. For example: "Office Supplies (North America)".'
+    - name: affectedCI
+      description: 'The affected CI. For example: "CI1000783".'
+    - name: category
+      required: true
+      description: 'Category of resource. For example: "resource", "complaint".'
+    - name: company
+      description: 'The company. For example: "advantage".'
+    - name: phase
+      description: 'The phase. For example: "Categorization".'
+    - name: status
+      description: 'The status. For example: "Categorize".'
+    - name: subarea
+      description: 'The sub-area. For example: system or application hangs, function
+        or feature not working, error message, job failed, hardware failure, etc.'
+    - name: customFields
+      description: 'Custom fields in JSON format. For example: {"businessUnit":"5"}.
+        Field name is case-sensitive.'
+    - name: resourceName
+      required: true
+      description: 'The resource name (API URI) that will be used. For example: "incidents".'
+    - name: resourceKey
+      required: true
+      description: 'The resource key that will be used. For example: "InteractionID".'
+    outputs:
+    - contextPath: Ticket.ID
+      description: The ID of the ticket.
+    - contextPath: Ticket.Creator
+      description: The user who created/opened the ticket.
+    - contextPath: Ticket.Assignee
+      description: To whom the ticket is assigned.
+    - contextPath: Ticket.State
+      description: The state of the ticket (open, closed, on hold).
+    - contextPath: HPSM.Resources.ResourceID
+      description: The ID of the resource.
+    - contextPath: HPSM.Resources.Service
+      description: Service/device number.
+    - contextPath: HPSM.Resources.Area
+      description: Resource area.
+    - contextPath: HPSM.Resources.Assignee
+      description: Resource assignee.
+    - contextPath: HPSM.Resources.AssignmentGroup
+      description: Resource assignment group.
+    - contextPath: HPSM.Resources.Category
+      description: Resource category.
+    - contextPath: HPSM.Resources.ClosedBy
+      description: The user who closed the resource.
+    - contextPath: HPSM.Resources.ClosedTime
+      description: Resource close time.
+    - contextPath: HPSM.Resources.ClosureCode
+      description: Resource closure code.
+    - contextPath: HPSM.Resources.Company
+      description: Resource company.
+    - contextPath: HPSM.Resources.Contact
+      description: Resource contact details.
+    - contextPath: HPSM.Resources.Description
+      description: Resource description.
+    - contextPath: HPSM.Resources.Impact
+      description: Resource impact.
+    - contextPath: HPSM.Resources.JournalUpdates
+      description: Resource journal updates.
+    - contextPath: HPSM.Resources.OpenTime
+      description: Resource open time.
+    - contextPath: HPSM.Resources.OpenedBy
+      description: The user who opened the resource.
+    - contextPath: HPSM.Resources.Phase
+      description: Resource phase.
+    - contextPath: HPSM.Resources.Solution
+      description: Resource solution.
+    - contextPath: HPSM.Resources.Status
+      description: Resource status.
+    - contextPath: HPSM.Resources.Subarea
+      description: Resource sub-area.
+    - contextPath: HPSM.Resources.Title
+      description: Resource title.
+    - contextPath: HPSM.Resources.UpdatedBy
+      description: The last user who updated the resource.
+    - contextPath: HPSM.Resources.UpdatedTime
+      description: Resource update time.
+    - contextPath: HPSM.Resources.Urgency
+      description: Resource urgency.
+    description: Creates a new resource.
+  - name: hpsm-list-resources
+    arguments:
+    - name: query
+      description: 'The query by which to limit the returned list of incidents. For
+        example: field1=value1&field2=value2. For more information, see https://docs.microfocus.com/SM/9.41/Codeless/Content/Resources/PDF_PD/HP_Service_Manager_Web_Services_codeless.pdf.'
+    - name: resourceName
+      required: true
+      description: 'The resource name (API URI) that will be used. For example: "incidents".'
+    outputs:
+    - contextPath: HPSM.ResourceIDs
+      description: An array of resource IDs.
+    description: Returns all resources (beta).
+  - name: hpsm-get-resource-by-id
+    arguments:
+    - name: resourceId
+      required: true
+      default: true
+      description: 'The ID of the resource. For example: "IM10013".'
+    - name: resourceName
+      required: true
+      description: 'The resource name (API URI) that will be used. For example: "incidents".'
+    outputs:
+    - contextPath: Ticket.ID
+      description: The ID of the ticket.
+    - contextPath: Ticket.Creator
+      description: The user who created/opened the ticket.
+    - contextPath: Ticket.Assignee
+      description: To whom the ticket is assigned.
+    - contextPath: Ticket.State
+      description: The state of the ticket (open, closed, on hold).
+    - contextPath: HPSM.Resources.ResourceID
+      description: The ID of the resource.
+    - contextPath: HPSM.Resources.Service
+      description: Service/device number.
+    - contextPath: HPSM.Resources.Area
+      description: Resource area.
+    - contextPath: HPSM.Resources.Assignee
+      description: Resource assignee.
+    - contextPath: HPSM.Resources.AssignmentGroup
+      description: Resource assignment group.
+    - contextPath: HPSM.Resources.Category
+      description: Resource category.
+    - contextPath: HPSM.Resources.ClosedBy
+      description: The user who closed the resource.
+    - contextPath: HPSM.Resources.ClosedTime
+      description: Resource close time.
+    - contextPath: HPSM.Resources.ClosureCode
+      description: Resource closure code.
+    - contextPath: HPSM.Resources.Company
+      description: Resource company.
+    - contextPath: HPSM.Resources.Contact
+      description: Resource contact details.
+    - contextPath: HPSM.Resources.Description
+      description: Resource description.
+    - contextPath: HPSM.Resources.Impact
+      description: Resource impact.
+    - contextPath: HPSM.Resources.JournalUpdates
+      description: Resource journal updates.
+    - contextPath: HPSM.Resources.OpenTime
+      description: Resource open time.
+    - contextPath: HPSM.Resources.OpenedBy
+      description: The user who opened the resource.
+    - contextPath: HPSM.Resources.Phase
+      description: Resource phase.
+    - contextPath: HPSM.Resources.Solution
+      description: Resource solution.
+    - contextPath: HPSM.Resources.Status
+      description: Resource status.
+    - contextPath: HPSM.Resources.Subarea
+      description: Resource sub-area.
+    - contextPath: HPSM.Resources.Title
+      description: Resource title.
+    - contextPath: HPSM.Resources.UpdatedBy
+      description: The last user who updated the resource.
+    - contextPath: HPSM.Resources.UpdatedTime
+      description: Resource update time.
+    - contextPath: HPSM.Resources.Urgency
+      description: Resource urgency.
+    description: Returns a single resource by ID. If no resource exists with the specified
+      ID, an error will be returned (beta).
+  - name: hpsm-list-devices
+    description: 'Returns a list of devices, filtered according to query.'
+    arguments:
+    - name: query
+      description: 'The query by which to limit the returned list of incidents. For
+        example: field1=value1&field2=value2. For more information, see https://docs.microfocus.com/SM/9.41/Codeless/Content/Resources/PDF_PD/HP_Service_Manager_Web_Services_codeless.pdf.'
+    outputs:
+    - contextPath: HPSM.DeviceIDs
+      description: "The IDs (configuration items) of the devices."
+  - name: hpsm-get-device
+    description: Find and return a device by ID.
+    arguments:
+    - name: configurationItem
+      required: true
+      description: 'ID of the configuration item of the device. For example: "CI1000011".'
+    outputs:
+    - contextPath: HPSM.Devices.AssignmentGroup
+      description: Device assignment group.
+    - contextPath: HPSM.Devices.Company
+      description: Device company.
+    - contextPath: HPSM.Devices.ConfigurationItem
+      description: Device configuration item.
+    - contextPath: HPSM.Devices.ConfigurationItemSubType
+      description: Device configurationItem sub-type.
+    - contextPath: HPSM.Devices.ConfigurationItemType
+      description: Device configuration item type.
+    - contextPath: HPSM.Devices.Department
+      description: Device department.
+    - contextPath: HPSM.Devices.DisplayName
+      description: Device display name.
+    - contextPath: HPSM.Devices.Location
+      description: Device location.
+    - contextPath: HPSM.Devices.LocationCode
+      description: Device location code.
+    - contextPath: HPSM.Devices.Model
+      description: Device model.
+    - contextPath: HPSM.Devices.PartNumber
+      description: Device part number.
+    - contextPath: HPSM.Devices.Status
+      description: Device status.
+    - contextPath: HPSM.Devices.UpdatedBy
+      description: The last user who updated the device.
+fromversion: 5.0.0

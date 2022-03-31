@@ -1,0 +1,140 @@
+id: QRadar - Get Offense Logs Test
+version: 10
+vcShouldKeepItemLegacyProdMachine: false
+name: QRadar - Get Offense Logs Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b5ceffcc-4c44-4fbd-82d3-2c9cced17989
+    type: start
+    task:
+      id: b5ceffcc-4c44-4fbd-82d3-2c9cced17989
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 966de690-36f3-494c-8bcb-e43045ec5e40
+    type: playbook
+    task:
+      id: 966de690-36f3-494c-8bcb-e43045ec5e40
+      version: -1
+      name: QRadar - Get Offense Logs
+      description: "Works for QRadar integrations versions 2 and 3, v1 is deprecated.\n\nNote
+        that for QRadar v2 and v3 you can use the integration to fetch the events
+        with the offense however it will fetch the events according to the specified
+        limit defined in the instance settings. By using this playbook you can define
+        an additional search to query a larger number of logs.\n\nDefault playbook
+        inputs use the QRadar incident fields such as idoffense, starttime. These
+        fields can be replaced but need to point to relevant offense ID and starttime
+        fields. "
+      playbookName: QRadar - Get Offense Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Fields:
+        simple: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory),
+          CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport,
+          destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid),
+          RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6,
+          destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype),
+          credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP,
+          postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort,
+          preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime
+      GetOnlyCREEvents:
+        simple: ${inputs.GetOnlyCREEvents}
+      ID:
+        complex:
+          root: inputs.ID
+      MaxLogsCount:
+        simple: "50"
+      StartTime:
+        complex:
+          root: inputs.StartTime
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 285,
+        "width": 380,
+        "x": 450,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: ID
+  value:
+    simple: "145"
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: StartTime
+  value:
+    simple: "2021-11-21T11:49:10.011000+00:00"
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: GetOnlyCREEvents
+  value:
+    simple: All
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: Fields
+  value:
+    simple: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory),
+      CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip,
+      destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"),
+      sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation,
+      destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude,
+      eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP,
+      postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort,
+      UTF8(payload), starttime, devicetime
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
+fromversion: 6.0.0

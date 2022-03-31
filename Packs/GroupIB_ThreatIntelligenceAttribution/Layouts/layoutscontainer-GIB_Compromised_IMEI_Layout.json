@@ -1,4 +1,5 @@
 {
+    "description": "Layout for GIB Compromised IMEI",
     "group": "indicator",
     "id": "GIB Compromised IMEI Layout",
     "indicatorsDetails": {
@@ -320,7 +321,7 @@
                         "minH": 1,
                         "minW": 2,
                         "moved": false,
-                        "name": "Information from GIB TI&A",
+                        "name": "Information from GIB TIA",
                         "static": false,
                         "w": 2,
                         "x": 0,
@@ -334,6 +335,5 @@
     "name": "GIB Compromised IMEI Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": ""
+    "fromVersion": "6.0.0"
 }

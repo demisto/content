@@ -1,0 +1,18 @@
+[
+    {
+        "id": "1",
+        "timestamp": "2021-06-15 13:29:11.412",
+        "timestamp_raw": 1623763751412,
+        "type": "Process",
+        "operation": "CreateProcess",
+        "detail": "1: C:\\File.exe"
+    },
+    {
+        "id": "2",
+        "timestamp": "2021-06-15 13:32:07.037",
+        "timestamp_raw": 1623763927037,
+        "type": "Process",
+        "operation": "EndProcess",
+        "detail": "2664: C:\\File.exe"
+    }
+]

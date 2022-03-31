@@ -2,6 +2,7 @@ commonfields:
   id: DemistoUploadFileToIncident
   version: -1
 name: DemistoUploadFileToIncident
+deprecated: true
 script: >-
   args = demisto.args()
 
@@ -25,7 +26,7 @@ type: python
 subtype: python2
 tags:
 - DemistoAPI
-comment: Copies a file from this incident to the specified incident. The file is uploaded as an attachment to the specified incident’s Summary page, and recorded as an entry in the War Room.
+comment: Deprecated. Use the *DemistoUploadFileV2* script instead. Copies a file from this incident to the specified incident. The file is uploaded as an attachment to the specified incident’s Summary page, and recorded as an entry in the War Room.
 enabled: true
 args:
 - name: incident_id

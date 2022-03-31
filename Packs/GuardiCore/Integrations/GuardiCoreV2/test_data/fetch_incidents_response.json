@@ -1,0 +1,443 @@
+{
+  "first":
+    {
+      "objects": [
+        {
+          "_id": "adb636b7-f941-438f-82ce-c0f44ddb5324",
+          "_cls": "Incident.NetworkVisibilityIncident",
+          "doc_version": 143,
+          "sensor_type": "VISIBILITY",
+          "start_time": 1611322111111,
+          "end_time": 1611322117545,
+          "last_updated_time": 1611322117545,
+          "ended": true,
+          "severity": 30,
+          "affected_assets": [
+            {
+              "labels": [
+                "source"
+              ],
+              "ip": "1.1.1.1",
+              "is_inner": false
+            },
+            {
+              "labels": [
+                "destination"
+              ],
+              "ip": "1.1.1.1",
+              "vm_id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5",
+              "vm": {
+                "id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5",
+                "name": "jumpbox-linux-1",
+                "recent_domains": [],
+                "tenant_name": "esx10/lab_a/Endpoints",
+                "full_name": "esx10/lab_a/Endpoints\\jumpbox-linux-1"
+              },
+              "is_inner": true
+            }
+          ],
+          "enriched": true,
+          "reenrich_count": 0,
+          "iocs": [],
+          "recommendations": [],
+          "similarity_calculated": true,
+          "incident_group": [
+            {
+              "gname": "GRP-5675a418",
+              "gid": "5675a418-6205-4ff9-b8e9-53b46c82721b"
+            }
+          ],
+          "flow_ids": [
+            "d85fcc8a5941c9e8586cf1819f84c9c1b7943003fb43994f9e6d662c7dc7eb58",
+            "9e33634837099aedb7986beaccb7919a3fb666d9bcf3f7427fe47c698bed8911"
+          ],
+          "remote_index": "incidents__1__2021_01_22_00_00_00",
+          "is_experimental": false,
+          "original_id": "",
+          "experimental_id": "",
+          "first_asset": {
+            "asset_type": 2,
+            "asset_id": "1.1.1.1"
+          },
+          "second_asset": {
+            "asset_type": 1,
+            "asset_id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5"
+          },
+          "labels": [
+            {
+              "id": "18fc433d-519d-4f70-8342-c657cb097eb4",
+              "key": "Environment",
+              "value": "Infrastructure",
+              "name": "Environment: Infrastructure",
+              "color_index": -1,
+              "asset_ids": [
+                "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5"
+              ]
+            },
+            {
+              "id": "962674f4-1838-4c47-bbb5-dfa1cf681367",
+              "key": "Role",
+              "value": "Linux Jumpbox",
+              "name": "Role: Linux Jumpbox",
+              "color_index": -1,
+              "asset_ids": [
+                "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5"
+              ]
+            },
+            {
+              "id": "da2a06bd-9304-4e43-8ec6-28559ec26386",
+              "key": "App",
+              "value": "Jumpbox",
+              "name": "App: Jumpbox",
+              "color_index": -1,
+              "asset_ids": [
+                "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5"
+              ]
+            }
+          ],
+          "policy_revision": 3,
+          "closed_time": 1611322180521,
+          "id": "adb636b7-f941-438f-82ce-c0f44ddb5324",
+          "incident_type": "Reveal",
+          "has_export": true,
+          "concatenated_tags": [
+            {
+              "display_name": "Blacklisted IP Address",
+              "tag_class": "ENRICHER",
+              "events": [
+                "97a5804c-aeb0-4efb-bf6d-f47f0e6e7de7",
+                "6dc49733-b507-4f78-8d8a-031b71379dfc"
+              ]
+            }
+          ],
+          "direction": "unidirectional",
+          "source_asset": {
+            "labels": [
+              "source"
+            ],
+            "ip": "1.1.1.1",
+            "is_inner": false
+          },
+          "destination_asset": {
+            "labels": [
+              "destination"
+            ],
+            "ip": "1.1.1.1",
+            "vm_id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5",
+            "vm": {
+              "id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5",
+              "name": "jumpbox-linux-1",
+              "recent_domains": [],
+              "tenant_name": "esx10/lab_a/Endpoints",
+              "full_name": "esx10/lab_a/Endpoints\\jumpbox-linux-1"
+            },
+            "is_inner": true
+          }
+        },
+        {
+          "_id": "aa02280b-3f49-403e-b232-a263ee822d52",
+          "_cls": "Incident.NetworkVisibilityIncident",
+          "doc_version": 143,
+          "sensor_type": "VISIBILITY",
+          "start_time": 1611322222222,
+          "end_time": 1611322012060,
+          "last_updated_time": 1611322012060,
+          "ended": true,
+          "severity": 30,
+          "affected_assets": [
+            {
+              "labels": [
+                "source"
+              ],
+              "ip": "1.1.1.1",
+              "is_inner": false,
+              "country_code": "CN",
+              "country": "China"
+            },
+            {
+              "labels": [
+                "destination"
+              ],
+              "ip": "1.1.1.1",
+              "vm_id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5",
+              "vm": {
+                "id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5",
+                "name": "jumpbox-linux-1",
+                "recent_domains": [],
+                "tenant_name": "esx10/lab_a/Endpoints",
+                "full_name": "esx10/lab_a/Endpoints\\jumpbox-linux-1"
+              },
+              "is_inner": true
+            }
+          ],
+          "enriched": true,
+          "reenrich_count": 0,
+          "iocs": [],
+          "recommendations": [],
+          "similarity_calculated": true,
+          "incident_group": [
+            {
+              "gname": "GRP-24c8a7d1",
+              "gid": "24c8a7d1-4ced-4ca3-8edc-7669f14cf0aa"
+            }
+          ],
+          "flow_ids": [
+            "f8c2df774bb0487ca0cbad8977b114a868b46ca80b948793c31a5799430c1680",
+            "93f4adb5e63449f6de8f087e0cfb5a75918b144320b7862f7d2f4000d925221d"
+          ],
+          "remote_index": "incidents__1__2021_01_22_00_00_00",
+          "is_experimental": false,
+          "original_id": "",
+          "experimental_id": "",
+          "first_asset": {
+            "asset_type": 2,
+            "asset_id": "1.1.1.1"
+          },
+          "second_asset": {
+            "asset_type": 1,
+            "asset_id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5"
+          },
+          "labels": [
+            {
+              "id": "18fc433d-519d-4f70-8342-c657cb097eb4",
+              "key": "Environment",
+              "value": "Infrastructure",
+              "name": "Environment: Infrastructure",
+              "color_index": -1,
+              "asset_ids": [
+                "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5"
+              ]
+            },
+            {
+              "id": "962674f4-1838-4c47-bbb5-dfa1cf681367",
+              "key": "Role",
+              "value": "Linux Jumpbox",
+              "name": "Role: Linux Jumpbox",
+              "color_index": -1,
+              "asset_ids": [
+                "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5"
+              ]
+            },
+            {
+              "id": "da2a06bd-9304-4e43-8ec6-28559ec26386",
+              "key": "App",
+              "value": "Jumpbox",
+              "name": "App: Jumpbox",
+              "color_index": -1,
+              "asset_ids": [
+                "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5"
+              ]
+            }
+          ],
+          "policy_revision": 3,
+          "closed_time": 1611322180472,
+          "id": "aa02280b-3f49-403e-b232-a263ee822d52",
+          "incident_type": "Reveal",
+          "has_export": true,
+          "concatenated_tags": [
+            {
+              "display_name": "Blacklisted IP Address",
+              "tag_class": "ENRICHER",
+              "events": [
+                "0ef957e9-9ccb-4053-95c8-03d86ba39310",
+                "b9b0efc0-ccc1-4e1f-affd-480918b43b9d"
+              ]
+            }
+          ],
+          "direction": "unidirectional",
+          "source_asset": {
+            "labels": [
+              "source"
+            ],
+            "ip": "1.1.1.1",
+            "is_inner": false,
+            "country_code": "CN",
+            "country": "China"
+          },
+          "destination_asset": {
+            "labels": [
+              "destination"
+            ],
+            "ip": "1.1.1.1",
+            "vm_id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5",
+            "vm": {
+              "id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5",
+              "name": "jumpbox-linux-1",
+              "recent_domains": [],
+              "tenant_name": "esx10/lab_a/Endpoints",
+              "full_name": "esx10/lab_a/Endpoints\\jumpbox-linux-1"
+            },
+            "is_inner": true
+          }
+        }
+      ],
+      "total_count": 9186,
+      "is_count_exact": true,
+      "current_page": 1,
+      "results_in_page": 3,
+      "from": 0,
+      "to": 3,
+      "sort": "",
+      "filter": {
+        "from_time": "1605661077000",
+        "to_time": "1625661077000",
+        "severity__gte": 1
+      },
+      "db_query_time": "0.0 seconds",
+      "dict_mapping_time": "0.001 seconds",
+      "objects_mapping_time": "0.002 seconds",
+      "objects_cleanup_time": "0.0 seconds"
+    },
+  "second": {
+    "objects": [
+      {
+        "_id": "79bb091f-0b87-43cf-a383-03badd9ff546",
+        "_cls": "Incident.NetworkVisibilityIncident",
+        "doc_version": 143,
+        "sensor_type": "VISIBILITY",
+        "start_time": 1611322333333,
+        "end_time": 1611322097534,
+        "last_updated_time": 1611322097534,
+        "ended": true,
+        "severity": 30,
+        "affected_assets": [
+          {
+            "labels": [
+              "source"
+            ],
+            "ip": "1.1.1.1",
+            "is_inner": false
+          },
+          {
+            "labels": [
+              "destination"
+            ],
+            "ip": "1.1.1.1",
+            "vm_id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5",
+            "vm": {
+              "id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5",
+              "name": "jumpbox-linux-1",
+              "recent_domains": [],
+              "tenant_name": "esx10/lab_a/Endpoints",
+              "full_name": "esx10/lab_a/Endpoints\\jumpbox-linux-1"
+            },
+            "is_inner": true
+          }
+        ],
+        "enriched": true,
+        "reenrich_count": 0,
+        "iocs": [],
+        "recommendations": [],
+        "similarity_calculated": true,
+        "incident_group": [
+          {
+            "gname": "GRP-17eb5f52",
+            "gid": "17eb5f52-0d2b-457a-a628-59729da8de41"
+          }
+        ],
+        "flow_ids": [
+          "429e9caf8cf6fa5b4cbb7aeda41760c7346c627e07764f13cca5d496184769d8",
+          "36e8f5cd0f4e9d14cbdf69f9f555018cab6076dba792f1fbec5f0b8d654f985b"
+        ],
+        "remote_index": "incidents__1__2021_01_22_00_00_00",
+        "is_experimental": false,
+        "original_id": "",
+        "experimental_id": "",
+        "first_asset": {
+          "asset_type": 2,
+          "asset_id": "1.1.1.1"
+        },
+        "second_asset": {
+          "asset_type": 1,
+          "asset_id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5"
+        },
+        "labels": [
+          {
+            "id": "18fc433d-519d-4f70-8342-c657cb097eb4",
+            "key": "Environment",
+            "value": "Infrastructure",
+            "name": "Environment: Infrastructure",
+            "color_index": -1,
+            "asset_ids": [
+              "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5"
+            ]
+          },
+          {
+            "id": "962674f4-1838-4c47-bbb5-dfa1cf681367",
+            "key": "Role",
+            "value": "Linux Jumpbox",
+            "name": "Role: Linux Jumpbox",
+            "color_index": -1,
+            "asset_ids": [
+              "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5"
+            ]
+          },
+          {
+            "id": "da2a06bd-9304-4e43-8ec6-28559ec26386",
+            "key": "App",
+            "value": "Jumpbox",
+            "name": "App: Jumpbox",
+            "color_index": -1,
+            "asset_ids": [
+              "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5"
+            ]
+          }
+        ],
+        "policy_revision": 3,
+        "closed_time": 1611322180423,
+        "id": "79bb091f-0b87-43cf-a383-03badd9ff546",
+        "incident_type": "Reveal",
+        "has_export": true,
+        "concatenated_tags": [
+          {
+            "display_name": "Blacklisted IP Address",
+            "tag_class": "ENRICHER",
+            "events": [
+              "31a5def9-8f28-457a-8c9e-c2fb3331abad",
+              "abe73575-2c52-45be-af02-43958cf1de0a"
+            ]
+          }
+        ],
+        "direction": "unidirectional",
+        "source_asset": {
+          "labels": [
+            "source"
+          ],
+          "ip": "1.1.1.1",
+          "is_inner": false
+        },
+        "destination_asset": {
+          "labels": [
+            "destination"
+          ],
+          "ip": "1.1.1.1",
+          "vm_id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5",
+          "vm": {
+            "id": "7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5",
+            "name": "jumpbox-linux-1",
+            "recent_domains": [],
+            "tenant_name": "esx10/lab_a/Endpoints",
+            "full_name": "esx10/lab_a/Endpoints\\jumpbox-linux-1"
+          },
+          "is_inner": true
+        }
+      }
+    ],
+    "total_count": 9186,
+    "is_count_exact": true,
+    "current_page": 1,
+    "results_in_page": 3,
+    "from": 0,
+    "to": 3,
+    "sort": "",
+    "filter": {
+      "from_time": "1605661077000",
+      "to_time": "1625661077000",
+      "severity__gte": 1
+    },
+    "db_query_time": "0.0 seconds",
+    "dict_mapping_time": "0.001 seconds",
+    "objects_mapping_time": "0.002 seconds",
+    "objects_cleanup_time": "0.0 seconds"
+  }
+}

@@ -1,6 +1,8 @@
 args:
 - default: false
-  description: The list of roles from which to assign analysts to the shift handover incident. Can be an array or a comma-separated list. Leave empty to assign all analysts.
+  description: The list of roles from which to assign analysts to the shift handover
+    incident. Can be an array or a comma-separated list. Leave empty to assign all
+    analysts.
   isArray: true
   name: roles
   required: false
@@ -8,7 +10,9 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: 'Whether to randomly assign analysts who are on call for the shift handover.  Possible values: "true" and "false". Requires Cortex XSOAR v5.5 or later.'
+  description: 'Whether to randomly assign analysts who are on call for the shift
+    handover.  Possible values: "true" and "false". Requires Cortex XSOAR v5.5 or
+    later.'
   isArray: false
   name: oncall
   predefined:
@@ -26,7 +30,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Whether to assign all on call analysts to the shift handover incident. Set to "true" to assign all on call analysts.
+  description: Whether to assign all on call analysts to the shift handover incident.
+    Set to "true" to assign all on call analysts.
   isArray: false
   name: assignAll
   predefined:
@@ -34,11 +39,15 @@ args:
   - 'false'
   required: false
   secret: false
-comment: |-
-  Assigns analysts who are not out of the office to the shift handover incident. Use the ManageOOOusers automation to add or remove analysts from the out-of-office list.
+comment: "Assigns analysts who are not out of the office to the shift handover incident.\n\
+  Use the ManageOOOusers automation to add or remove analysts from the out-of-office\
+  \ list.\n\nThis automation runs using the default Limited User role, unless you\
+  \ explicitly change the permissions.\nFor more information, see the section about\
+  \ permissions here:\nhttps://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html"
 commonfields:
   id: AssignAnalystToIncidentOOO
   version: -1
+dockerimage: demisto/python3:3.9.9.25564
 enabled: true
 name: AssignAnalystToIncidentOOO
 script: '-'
@@ -49,8 +58,6 @@ tags:
 - ooo
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.1.14969
-runas: DBotRole
 runonce: false
 tests:
 - No tests (auto formatted)

@@ -2,9 +2,9 @@ import argparse
 import os
 import ast
 import demisto_client
-import logging
 
 from Tests.scripts.utils.log_util import install_simple_logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 
 def options_handler():
@@ -46,14 +46,14 @@ def update_content(content_zip_path, server=None, username=None, password=None, 
             result_object = ast.literal_eval(response_data)
             message = result_object['message']
             raise Exception(f"Upload has failed with status code {status_code}\n{message}")
-        else:
-            logging.success(f'"{content_zip_path}" successfully uploaded to server "{server}"')
+        success_msg = f'"{content_zip_path}" successfully uploaded to server "{server}"'
+        logging.success(success_msg)
     except Exception:
         logging.exception(f'Failed to upload {content_zip_path} to server {server}')
 
 
 def main():
-    install_simple_logging()
+    install_simple_logging(logger=logging)
     options = options_handler()
     server_url = 'https://{}'
     server = options.server if options.server.startswith('http') else server_url.format(options.server)

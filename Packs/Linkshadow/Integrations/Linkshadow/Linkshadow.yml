@@ -141,7 +141,7 @@ script:
     description: Return the full entity details for all devices referenced  by data
       in an API response. Use of this command will return the JSON structure of the
       API response .
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
   runonce: false
   script: '-'

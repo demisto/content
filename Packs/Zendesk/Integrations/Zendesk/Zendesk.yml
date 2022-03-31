@@ -1,0 +1,291 @@
+commonfields:
+  id: Zendesk
+  version: -1
+name: Zendesk
+display: Zendesk
+category: Case Management
+description: IT service management
+configuration:
+- display: Zendesk address (e.g. https://demisto.zendesk.com)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username (email address)
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API key
+  name: api
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ''
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Initial fetching history (in minutes)
+  name: fetch_interval
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: Fetch incident query
+  name: fetchQuery
+  defaultvalue: -status:solved -status:closed
+  type: 0
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: zendesk-create-ticket
+    arguments:
+    - name: subject
+      description: The subject of the ticket.
+    - name: requester_email
+      description: The email address of the user that opened the ticket.
+    - name: assignee_email
+      description: The email address of the agent to assign to the ticket.
+    - name: comment
+      required: true
+      description: Comment body for the ticket.
+    - name: private
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Whether the comment body is private. Can be "yes" or "no". Default
+        is "no".
+      defaultValue: "no"
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - problem
+      - incident
+      - question
+      - task
+      description: Ticket type. Can be "problem", "incident", "question", or "task".
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - urgent
+      - high
+      - normal
+      - low
+      description: Ticket priority. Can be "urgent", "high", "normal", or "low".
+    - name: tags
+      description: An array of tags to add to the ticket.
+      isArray: true
+    - name: external_id
+      description: An ID to link Zendesk Support tickets to local records.
+    - name: forum_topic_id
+      description: The numeric ID of the topic from which the ticket originated.
+    - name: problem_id
+      description: For tickets of type "incident", the numeric ID of the problem to
+        which the incident is linked.
+    - name: due_at
+      description: 'For tickets of type "task", the due date of the task. Date format
+        is ISO 8601, for example: (yyyy-mm-dd).'
+    - name: via_followup_source_id
+      description: The ID of a closed ticket for a follow-up ticket.
+    - name: collaborators
+      description: An array of numeric IDs, emails, or objects containing name and
+        email properties. See Setting Collaborators. An email notification is sent
+        to collaborators when the ticket is created.
+      isArray: true
+    - name: custom_fields
+      description: 'An array of the custom fields of the ticket. For example: fieldid=text,fieldid=text'
+    outputs:
+    - contextPath: Ticket.id
+      description: Ticket ID.
+    - contextPath: Ticket.vendor
+      description: Zendesk.
+    - contextPath: Ticket.description
+      description: Ticket description.
+    - contextPath: Ticket.subject
+      description: Ticket subject.
+    description: Creates a new ticket in the Zendesk.
+  - name: zendesk-list-tickets
+    arguments:
+    - name: query
+      description: 'Query to search for tickets. For more information about the search
+        syntax, see https://developer.zendesk.com/rest_api/docs/core/search. '
+    outputs:
+    - contextPath: Ticket.id
+      description: Ticked ID.
+    - contextPath: Ticket.description
+      description: Ticket description.
+    - contextPath: Ticket.subject
+      description: Ticket subject.
+    - contextPath: Ticket.vendor
+      description: Zendesk.
+    description: 'Lists all open tickets in Zendesk. '
+  - name: zendesk-ticket-details
+    arguments:
+    - name: id
+      default: true
+      description: Ticket ID. If not provided, the command will use the current incident
+        details (for tickets that were created by the Zendesk integration).
+    outputs:
+    - contextPath: Ticket.subject
+      description: Subject of the Zendesk ticket.
+    - contextPath: Ticket.created_at
+      description: Date and time that the Zendesk ticket was created.
+    - contextPath: Ticket.description
+      description: Description of the Zendesk ticket.
+    - contextPath: Ticket.priority
+      description: Priority of the Zendesk ticket.
+    - contextPath: Ticket.status
+      description: Status of the Zendesk ticket.
+    description: Returns details for a Zendesk ticket.
+  - name: zendesk-update-ticket
+    arguments:
+    - name: subject
+      description: The subject of the ticket.
+    - name: requester_email
+      description: The email address of the user that opened the ticket.
+    - name: assignee_email
+      description: The email address of the agent to assign to the ticket.
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - problem
+      - incident
+      - question
+      - task
+      description: Ticket type. Can be "problem", "incident", "question", or "task".Allowed
+        values are problem, incident, question, or task
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - urgent
+      - high
+      - normal
+      - low
+      description: Ticket priority. Can be "urgent", "high", "normal", or "low".
+    - name: tags
+      description: An array of tags to add to the ticket.
+      isArray: true
+    - name: external_id
+      description: An ID to link Zendesk support tickets to local records.
+    - name: problem_id
+      description: For tickets of type "incident", the numeric ID of the problem to
+        which the incident is linked.
+    - name: due_at
+      description: 'For tickets of type "task", the due date of the task. Date format
+        is ISO 8601, for example: (yyyy-mm-dd).'
+    - name: collaborators
+      description: An array of numeric IDs, emails, or objects containing name and
+        email properties. See Setting Collaborators. An email notification is sent
+        to collaborators when the ticket is created.
+      isArray: true
+    - name: id
+      default: true
+      description: Ticket ID. If not provided, the command will use the current incident
+        details (for tickets that were created by the Zendesk integration).
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - open
+      - pending
+      - hold
+      - solved
+      - closed
+      description: Ticket status. Can be "open, "pending", "hold", "solved", or "closed".
+    - name: custom_fields
+      description: 'An array of the custom fields of the ticket. For example: fieldid=text,fieldid=text'
+    description: Updates a Zendesk ticket.
+  - name: zendesk-add-comment
+    arguments:
+    - name: comment
+      required: true
+      default: true
+      description: Comment text to add to the ticket.
+    - name: private
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Whether the comment body is private. Can be "yes" or "no". Default
+        is "no".
+      defaultValue: "no"
+    - name: id
+      description: Ticket ID. If not provided, the command will use the current incident
+        details (for tickets that were created by the Zendesk integration).
+    - name: addFooter
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Whether to add Demisto footer to the comment. Default is "yes".
+      defaultValue: "yes"
+    description: Adds a comment to an existing Zendesk ticket.
+  - name: zendesk-list-agents
+    arguments: []
+    outputs:
+    - contextPath: ZendeskUsers.id
+      description: ID of the Zendesk agent.
+    - contextPath: ZendeskUsers.name
+      description: Name of the Zendesk agent.
+    - contextPath: ZendeskUsers.email
+      description: Email address of the Zendesk agent.
+    - contextPath: ZendeskUsers.role
+      description: Role of the Zendesk agent.
+    - contextPath: ZendeskUsers.timeZone
+      description: 'Time zone in which Zendesk agent '
+    description: Lists all the Zendesk agents and admins users.
+  - name: zendesk-get-attachment
+    arguments:
+    - name: id
+      required: true
+      description: Attachment id
+    description: Returns an attachment from Zendesk.
+  - name: zendesk-clear-cache
+    arguments: []
+    description: Clears the Zendesk integration cache.
+  - name: zendesk-add-user
+    arguments:
+    - name: name
+      required: true
+      description: Full name of teh user to add.
+    - name: email
+      required: true
+      description: Email address of the user to add.
+    - name: check_if_user_exists
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to check if the specified user already exists in Zendesk.
+        Can be "True" or "False". Default is "False".
+      defaultValue: "False"
+    description: Adds a user (not agent or admin) to Zendesk.
+  - name: zendesk-get-article
+    arguments:
+    - name: articleID
+      required: true
+      default: true
+      description: ID of the article to return.
+    - name: locale
+      description: Locale. Defaults to en-us
+    description: Returns an article from the Zendesk Help Center.
+  isfetch: true
+fromversion: 5.0.0
+tests:
+- No test - tested manually Zendesk_test playbook

@@ -21,6 +21,7 @@ configuration:
   required: true
   type: 0
 - defaultvalue: '50'
+  display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
   type: 0
@@ -41,12 +42,14 @@ configuration:
   required: false
   type: 8
 - display: Incident type
+  defaultvalue: Ironscales
   name: incidentType
   required: false
   type: 13
-description: IRONSCLAES, a self-learning email security platform integration
+description: IRONSCALES, a self-learning email security platform integration
 display: Ironscales
 name: Ironscales
+defaultmapperin: Ironscales - Incoming Mapper
 script:
   commands:
   - arguments:
@@ -143,7 +146,7 @@ script:
     description: Classify incident by ID.
     name: ironscales-classify-incident
     outputs:
-    - contextPath: Ironscales.classifyincidnet
+    - contextPath: Ironscales.classifyincident
       description: Classification succeeded
       type: boolean
   - arguments: []
@@ -152,7 +155,7 @@ script:
     outputs:
     - contextPath: Ironscales.OpenIncidents.incident_ids
       description: List of open incidents IDs.
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isFetchSamples: true
   isfetch: true
   runonce: false

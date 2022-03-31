@@ -86,7 +86,7 @@ configuration:
   name: maxFetch
   required: false
   type: 0
-- defaultvalue: 'false'
+- defaultvalue: 'true'
   display: Run as a separate process (protects against memory depletion)
   name: separate_process
   required: false

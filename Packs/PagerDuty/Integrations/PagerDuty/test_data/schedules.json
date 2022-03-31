@@ -1,0 +1,88 @@
+{
+  "users": [
+    {
+      "id": "PAM4FGS",
+      "type": "user",
+      "summary": "Jane Doe",
+      "self": "https://api.pagerduty.com/users/PAM4FGS",
+      "html_url": "https://subdomain.pagerduty.com/users/PAM4FGS",
+      "name": "Jane Doe",
+      "email": "jane.doe@example.com",
+      "time_zone": "Asia/Hong_Kong",
+      "color": "red",
+      "role": "admin",
+      "avatar_url": "https://secure.gravatar.com/avatar/47857d059adacf9a41dc4030c2e14b0a.png?d=mm&r=PG",
+      "description": "Engineer based in HK",
+      "invitation_sent": false,
+      "contact_methods": [
+        {
+          "id": "PVMGSML",
+          "type": "email_contact_method_reference",
+          "summary": "Work",
+          "self": "https://api.pagerduty.com/users/PAM4FGS/contact_methods/PVMGSMLL"
+        }
+      ],
+      "notification_rules": [
+        {
+          "id": "P8GRWKZ",
+          "type": "assignment_notification_rule_reference",
+          "summary": "Default",
+          "self": "https://api.pagerduty.com/users/PAM4FGS/notification_rules/P8GRWKZ",
+          "html_url": null
+        }
+      ],
+      "job_title": "Senior Engineer",
+      "teams": [
+        {
+          "id": "PQ9K7I8",
+          "type": "team_reference",
+          "summary": "Engineering",
+          "self": "https://api.pagerduty.com/teams/PQ9K7I8",
+          "html_url": "https://subdomain.pagerduty.com/teams/PQ9K7I8"
+        }
+      ]
+    },
+    {
+      "id": "PXPGF42",
+      "type": "user",
+      "summary": "John Doe",
+      "self": "https://api.pagerduty.com/users/PXPGF42",
+      "html_url": "https://subdomain.pagerduty.com/users/PXPGF42",
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "time_zone": "America/Lima",
+      "color": "green",
+      "role": "admin",
+      "avatar_url": "https://secure.gravatar.com/avatar/a8b714a39626f2444ee05990b078995f.png?d=mm&r=PG",
+      "description": "I'm the boss",
+      "invitation_sent": false,
+      "contact_methods": [
+        {
+          "id": "PTDVERC",
+          "type": "email_contact_method_reference",
+          "summary": "Default",
+          "self": "https://api.pagerduty.com/users/PXPGF42/contact_methods/PTDVERC"
+        }
+      ],
+      "notification_rules": [
+        {
+          "id": "P8GRWKK",
+          "type": "assignment_notification_rule_reference",
+          "summary": "Default",
+          "self": "https://api.pagerduty.com/users/PXPGF42/notification_rules/P8GRWKK",
+          "html_url": null
+        }
+      ],
+      "job_title": "Director of Engineering",
+      "teams": [
+        {
+          "id": "PQ9K7I8",
+          "type": "team_reference",
+          "summary": "Engineering",
+          "self": "https://api.pagerduty.com/teams/PQ9K7I8",
+          "html_url": "https://subdomain.pagerduty.com/teams/PQ9K7I8"
+        }
+      ]
+    }
+  ]
+}

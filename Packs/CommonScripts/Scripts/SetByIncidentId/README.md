@@ -1,11 +1,18 @@
 Sets a value into the context with the given context key. By default this will not append. This script works the same as the `Set` command, but can work across incidents by specifying `ID` as an argument. 
 
+## Permissions
+---
+
+This automation runs using the default Limited User role, unless you explicitly change the permissions.
+For more information, see the section about permissions here: [https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html)
+
 ## Script Data
 ---
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
+| Script Type | python3 |
 | Tags | DemistoAPI |
 
 

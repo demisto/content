@@ -1,0 +1,24 @@
+commonfields:
+  id: TimeStampToDate
+  version: -1
+name: TimeStampToDate
+script: ''
+type: javascript
+tags:
+- transformer
+- date
+comment: |-
+  Converts UNIX Epoch time stamp to a simplified extended ISO format string. Use it to convert time stamp to Demisto date field
+
+  e.g. 1525006939 will return '2018-04-29T13:02:19.000Z'
+enabled: true
+args:
+- name: value
+  required: true
+  default: true
+  description: Time stamp to convert
+scripttarget: 0
+runonce: false
+fromversion: 5.0.0
+tests:
+- No tests

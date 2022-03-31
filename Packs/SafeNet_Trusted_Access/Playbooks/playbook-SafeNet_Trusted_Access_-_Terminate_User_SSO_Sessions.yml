@@ -1,0 +1,750 @@
+description: This playbook terminates user SSO sessions so that upon the next login
+  attempt following the unlocking of the account, authentication is required.
+id: SafeNet Trusted Access - Terminate User SSO Sessions
+inputs:
+- description: Username of the user.
+  key: UserName
+  playbookInputQuery:
+  required: true
+  value:
+    simple: ${incident.safenettrustedaccessusername}
+- description: Name of the SafeNet Trusted Access integration instance.
+  key: InstanceName
+  playbookInputQuery:
+  required: true
+  value:
+    simple: ${incident.safenettrustedaccessinstancename}
+name: SafeNet Trusted Access - Terminate User SSO Sessions
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 84607519-8e76-42a1-88c7-f291b8f5bb0c
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 84607519-8e76-42a1-88c7-f291b8f5bb0c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: All the SSO sessions successfully deleted.
+      closeReason:
+        simple: Resolved
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      safenettrustedaccessremoveuserfromunusualactivitygroup: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 2f0a6b67-6afe-4592-8cf3-92740566a354
+      iscommand: true
+      name: Close Incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 2f0a6b67-6afe-4592-8cf3-92740566a354
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2100
+        }
+      }
+  "22":
+    continueonerror: true
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      userName:
+        complex:
+          root: inputs.UserName
+          transformers:
+          - operator: trim
+      using:
+        simple: ${inputs.InstanceName}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get the profile information for a specific user.
+      id: 2bfef1ee-9104-4bba-8d2b-7700e7d3d369
+      iscommand: true
+      name: Get User Information.
+      script: '|||sta-get-user-info'
+      type: regular
+      version: -1
+    taskid: 2bfef1ee-9104-4bba-8d2b-7700e7d3d369
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 895
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: STA.USER
+          operator: isNotEmpty
+      label: "yes"
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if the user exists in the tenant.
+      id: 8e8b4f02-1728-422d-851e-0553429a503b
+      iscommand: false
+      name: User exist in the tenant ?
+      type: condition
+      version: -1
+    taskid: 8e8b4f02-1728-422d-851e-0553429a503b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 1070
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: User - ${inputs.UserName} doesn't exist in the tenant.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message.
+      id: 56fee624-e95d-4532-86a4-2f2f74346bd0
+      iscommand: false
+      name: Failed Message
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 56fee624-e95d-4532-86a4-2f2f74346bd0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2190,
+          "y": 2100
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: No active SSO session found for the user.
+      closeReason:
+        simple: Resolved
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      safenettrustedaccessremoveuserfromunusualactivitygroup: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: cbd858b1-f1af-4f24-838d-e6aa53dc88dd
+      iscommand: true
+      name: Close Incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: cbd858b1-f1af-4f24-838d-e6aa53dc88dd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 2100
+        }
+      }
+  "31":
+    continueonerror: true
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      using:
+        simple: ${inputs.InstanceName}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether you have permission to access the requested tenant.
+      id: 3b6bdf23-e9d2-4eee-8c60-df43cd5a5694
+      iscommand: true
+      name: Validate tenant.
+      script: '|||sta-validate-tenant'
+      type: regular
+      version: -1
+    taskid: 3b6bdf23-e9d2-4eee-8c60-df43cd5a5694
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+  "32":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: STA.VALIDATE.TENANT
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: STA.VALIDATE.TENANT
+          operator: isTrue
+      label: "yes"
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check permissions of the tenant.
+      id: 5713411d-8bbf-43a9-83f5-27689bb85ed1
+      iscommand: false
+      name: Check if tenant is accessible?
+      type: condition
+      version: -1
+    taskid: 5713411d-8bbf-43a9-83f5-27689bb85ed1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: |-
+          Please ensure that the following requirements are fulfilled.
+          1. The SafeNet Trusted Access integration instance's name must be the same as the Instance name mentioned in the alert email template.
+          2. Ensure that you have the correct Tenant Code or API Key in the SafeNet Trusted Access Integration instance.
+          3. Ensure that the integration instance is Enabled.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message.
+      id: 91bb76e7-d12a-4acb-8ca2-d8a9cfbfc92f
+      iscommand: false
+      name: Failed Message
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 91bb76e7-d12a-4acb-8ca2-d8a9cfbfc92f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2100
+        }
+      }
+  "34":
+    continueonerror: true
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      severity:
+        simple: "2"
+      sla:
+        simple: "3"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 8da30ec8-a362-4657-863a-c4d759f6a594
+      iscommand: true
+      name: Set Incident Fields.
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 8da30ec8-a362-4657-863a-c4d759f6a594
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+  "35":
+    continueonerror: true
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "36"
+      "yes":
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: SafeNet Trusted Access
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      id: bad7d390-d7ac-4635-87a9-24240a1ee6e0
+      iscommand: false
+      name: Is Integration Available?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: bad7d390-d7ac-4635-87a9-24240a1ee6e0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: No instance found for SafeNet Trusted Access integration.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: d973b1b6-d152-438f-8b08-02a6582b0317
+      iscommand: false
+      name: Failed Message
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: d973b1b6-d152-438f-8b08-02a6582b0317
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 2100
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 523a44b4-e5f5-481b-8eb9-62be061f4a22
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 523a44b4-e5f5-481b-8eb9-62be061f4a22
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 2300
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      userName:
+        simple: ${inputs.UserName}
+      using:
+        simple: ${inputs.InstanceName}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get sessions for a specific user.
+      id: 685acc9c-72ec-4ae6-8581-b79f759d8b39
+      iscommand: true
+      name: Get SSO sessions.
+      script: '|||sta-get-user-sessions'
+      type: regular
+      version: -1
+    taskid: 685acc9c-72ec-4ae6-8581-b79f759d8b39
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1245
+        }
+      }
+  "39":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: USER
+                root: STA
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: sessions
+                  operator: getField
+          operator: isNotEmpty
+      label: "yes"
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check for active SSO sessions.
+      id: bcfe779f-f184-4954-8c19-f6f6acceaf0b
+      iscommand: false
+      name: Check for active SSO sessions.
+      type: condition
+      version: -1
+    taskid: bcfe779f-f184-4954-8c19-f6f6acceaf0b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1420
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      userName:
+        simple: ${inputs.UserName}
+      using:
+        simple: ${inputs.InstanceName}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete all the active sessions for a specific user from STA.
+      id: e1cb09cb-8e2f-453a-822e-1b5554d4e9c9
+      iscommand: true
+      name: Terminate all active SSO sessions.
+      script: '|||sta-delete-user-sessions'
+      type: regular
+      version: -1
+    taskid: e1cb09cb-8e2f-453a-822e-1b5554d4e9c9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 1595
+        }
+      }
+  "41":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: USER
+                root: STA
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: sessions
+                  operator: getField
+                - args:
+                    field:
+                      value:
+                        simple: Deleted
+                  operator: getField
+          operator: isTrue
+      label: "yes"
+    id: "41"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if all SSO sessions successfully deleted.
+      id: 7ed47cee-83c4-433d-87d9-5b8d69b7c90a
+      iscommand: false
+      name: All the SSO sessions successfully deleted?
+      type: condition
+      version: -1
+    taskid: 7ed47cee-83c4-433d-87d9-5b8d69b7c90a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 1770
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Unable to terminate user SSO sessions.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: c3df515e-75cb-4d04-8794-48fef12d60a2
+      iscommand: false
+      name: Failed Message.
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: c3df515e-75cb-4d04-8794-48fef12d60a2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 2100
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      seconds:
+        simple: "120"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: b3ccc3f6-78cf-464d-81ca-8668e8c36993
+      iscommand: false
+      name: Sessions deleted.
+      script: Sleep
+      type: regular
+      version: -1
+    taskid: b3ccc3f6-78cf-464d-81ca-8668e8c36993
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1950
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      seconds:
+        simple: "120"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: ca53e80f-9c3e-41ab-82c4-e295060233e9
+      iscommand: false
+      name: No Active Sessions.
+      script: Sleep
+      type: regular
+      version: -1
+    taskid: ca53e80f-9c3e-41ab-82c4-e295060233e9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1950
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2315,
+        "width": 2500,
+        "x": 70,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- Test Playbook STA

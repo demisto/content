@@ -1,10 +1,13 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 # noqa: F401
 # noqa: F401
 import os
 import sys
 import re
+
 
 LS_RE = br'(?P<type>^[d-])(?P<u>.{3})(?P<g>.{3})(?P<o>.{3})(?P<S>[.\s]+)(?P<hlinks>\d+)\s+(?P<uid>\S+)\s+' \
         br'(?P<gid>\S+)\s+(?P<size>[\w\d.]+)\s+(?P<modified>\w+\s+\d+\s+\d+:?\d+)\s+(?P<name>.*)'
@@ -12,10 +15,16 @@ UNITS = {'B': 1, 'K': 10**3, 'M': 10**6, 'G': 10**9, 'T': 10**12}
 
 
 def count_partitions(filesystem):
+    partitionscounter = 0
     if filesystem:
         for path in filesystem:
             if '/data/partitionsData' in path:
-                return len(filesystem[path]) - 2
+                for file in filesystem[path]:
+                    name = file.get('name')
+                    regx = re.search("demisto_\d{6}\.db", name)
+                    if regx:
+                        partitionscounter += 1
+        return partitionscounter
 
 
 def parse_size(size):
@@ -34,11 +43,14 @@ LARGE_FILE = parse_size(demisto.getArg('minFileSize').strip().encode())
 
 def read_section(section):
     path = ""
+    total = ""
     files = []
     large_files = []
     for line in section.split(os.linesep.encode()):
         if line.endswith(b':'):
             path = line[:-1].decode("utf-8")
+        if line.startswith(b"total "):
+            total = line.decode("utf-8")
         else:
             m = re.match(LS_RE, line)
             if not m:
@@ -65,7 +77,7 @@ def read_section(section):
             files.append(f)
     if isinstance(path, bytes):
         path = path.decode("utf-8")
-    return path, files, large_files
+    return path, files, large_files, total
 
 
 RESOLUTION = ["Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
@@ -84,14 +96,26 @@ def main(args):
     file_content = fs.split(2 * os.linesep.encode())
     large = []
     filesystem = {}
+    importantPathTable = []
     for section in file_content:
-        path, files, large_files = read_section(section)
+        path, files, large_files, total = read_section(section)
         filesystem[path] = files
+
         if large_files:
             large += large_files
 
+        if re.match(".*_(?:0[1-9]|1[0-2])[0-9]{4}\/store", path):
+            if re.match("total\s(?:[1-9]\d*[MG]$|\d*.\d*[MG])", total):  # bigger than M and G
+
+                entry = {
+                    'path': path,
+                    'size': total[6:]
+                }
+                importantPathTable.append(entry)
     number_of_partitions = count_partitions(filesystem)
-    demisto.executeCommand('setIncident', {"xsoarnumberofdbpartitions": number_of_partitions})
+    demisto.executeCommand('setIncident', {"xsoarnumberofdbpartitions": number_of_partitions,
+                                           "healthcheckfilesystemdirectories": importantPathTable})
+
     for file in large:
         res.append({'category': 'File system', 'severity': 'Medium',
                     'description': f"The file: {file['path']}/{file['name']} has a size of: {file['size']}\n",

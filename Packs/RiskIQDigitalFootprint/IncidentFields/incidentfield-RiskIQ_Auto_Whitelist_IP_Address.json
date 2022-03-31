@@ -13,7 +13,6 @@
  "neverSetAsRequired": false,
  "isReadOnly": false,
  "selectValues": [
-  "",
   "Yes",
   "No"
  ],

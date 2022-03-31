@@ -1,9 +1,10 @@
 id: Extract Indicators From File - Generic v2
 version: -1
-fromversion: 5.0.0
+contentitemexportablefields:
+  contentitemfields: {}
 name: Extract Indicators From File - Generic v2
 description: |-
-  Extracts indicators from a file.
+  This playbook extracts indicators from a file.
   Supported file types:
   - CSV
   - PDF
@@ -37,7 +38,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": -20
+          "y": -10
         }
       }
     note: false
@@ -45,6 +46,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 01e70914-25f3-495d-81f4-5864bd04340a
@@ -78,7 +81,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 115
+          "y": 150
         }
       }
     note: false
@@ -86,6 +89,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 5ba31bc7-84ab-4d1b-8c1a-501b04cfe9c6
@@ -94,7 +99,7 @@ tasks:
       id: 5ba31bc7-84ab-4d1b-8c1a-501b04cfe9c6
       version: -1
       name: Set file to local context
-      description: Set the input file into local context.
+      description: Sets the input file into local context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -124,6 +129,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: cd4f63cd-d080-4574-86f2-73b6dd9854d9
@@ -141,7 +148,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 1730
+          "y": 2340
         }
       }
     note: false
@@ -149,6 +156,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 3745ecc5-a6c8-4c53-83ff-25d3dbef7eb1
@@ -180,6 +189,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 816708c1-620e-495b-8102-081c06a0146f
@@ -309,6 +320,14 @@ tasks:
                     right:
                       value:
                         simple: message/rfc822
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: p7m
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -325,6 +344,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: baa0320d-9647-44bb-8110-99b6d1c618df
@@ -340,7 +361,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "19"
     scriptarguments:
       entryID:
         complex:
@@ -464,6 +485,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 60ecb284-7af0-463e-80d7-8f7e36dce929
@@ -525,6 +548,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: fa0e5d0b-c66c-4837-8b73-bacf7e890d12
@@ -540,7 +565,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "18"
     scriptarguments:
       entryID:
         complex:
@@ -580,6 +605,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 839e3d49-c17e-4eb3-85b5-a797e1627d32
@@ -750,6 +777,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: c0b4f86a-6063-455f-8bc7-92d09cd519fa
@@ -764,12 +793,12 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - "19"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -350,
+          "x": -320,
           "y": 950
         }
       }
@@ -778,6 +807,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 54ad5a67-0f23-40af-8e77-451ddbc84108
@@ -793,7 +824,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "19"
     scriptarguments:
       entryID:
         complex:
@@ -918,6 +949,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 1572cbb3-ceff-4d00-8f8a-468ad338953b
@@ -932,7 +965,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "19"
       "yes":
       - "14"
     separatecontext: false
@@ -987,8 +1020,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1180,
-          "y": 1360
+          "x": 1240,
+          "y": 1740
         }
       }
     note: false
@@ -996,6 +1029,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 92e92794-63db-4875-88c3-89bd5a4ec179
@@ -1004,14 +1039,14 @@ tasks:
       id: 92e92794-63db-4875-88c3-89bd5a4ec179
       version: -1
       name: Is Image OCR enabled?
-      description: Checks whether there is an active instance of the Image OCR integration
+      description: Checks whether there is an active instance of the Image OCR integration.
         enabled.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "19"
       "yes":
       - "12"
     separatecontext: false
@@ -1036,8 +1071,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 1170
+          "x": 930,
+          "y": 1560
         }
       }
     note: false
@@ -1045,6 +1080,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: c6d841e4-812f-40e0-8ef4-9203859c9781
@@ -1061,7 +1098,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "19"
     scriptarguments:
       entryid:
         complex:
@@ -1111,8 +1148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1300,
-          "y": 1540
+          "x": 1480,
+          "y": 1910
         }
       }
     note: false
@@ -1120,6 +1157,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 32dd3613-cac8-4ac6-8b2a-59fd9c2e4233
@@ -1259,7 +1298,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
+          "x": 1480,
           "y": 700
         }
       }
@@ -1268,14 +1307,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 787894ac-9cb7-4897-8de5-7ea136e9bebd
+    taskid: 430b4252-4478-4150-8641-2444119a6005
     type: regular
     task:
-      id: 787894ac-9cb7-4897-8de5-7ea136e9bebd
+      id: 430b4252-4478-4150-8641-2444119a6005
       version: -1
-      name: Convert document to PDF
+      name: Convert a document to PDF
       description: |-
         Converts the following formats to PDF format:
         - PPT
@@ -1395,8 +1436,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
-          "y": 970
+          "x": 1480,
+          "y": 1000
         }
       }
     note: false
@@ -1404,29 +1445,195 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 68c81da0-f91d-4ea4-8616-82a0e333eb6f
+    type: regular
+    task:
+      id: 68c81da0-f91d-4ea4-8616-82a0e333eb6f
+      version: -1
+      name: Preview PDF files
+      description: Gets a preview (image) of the PDF files.
+      tags:
+      - PDF_Images
+      script: '|||rasterize-pdf'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: application/pdf
+              ignorecase: true
+            - operator: containsString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: application/pdf
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+      file_name:
+        simple: PDF_preview
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: d3466327-cfe5-4364-8b19-187f67320432
+    type: condition
+    task:
+      id: d3466327-cfe5-4364-8b19-187f67320432
+      version: -1
+      name: Is Rasterize enabled?
+      description: Checks if the Rasterize integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Rasterize
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                transformers:
+                - operator: uniq
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 78c502fd-f7dd-4fa5-8cac-14a11bf176f7
+    type: regular
+    task:
+      id: 78c502fd-f7dd-4fa5-8cac-14a11bf176f7
+      version: -1
+      name: Set ExtractedURLsFromFiles
+      description: |-
+        Extracts URLs from files and stores them under the "ExtractedURLsFromFiles" key in the playbook output.
+        Parent playbooks can use this key to indicate which URLs were extracted.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: ExtractedURLsFromFiles
+      value:
+        complex:
+          root: URL
+          accessor: Data
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {
       "12_14_yes": 0.55,
-      "12_3_#default#": 0.34,
       "13_12_yes": 0.55,
-      "13_3_#default#": 0.19,
+      "15_10_#default#": 0.1,
       "15_16_yes": 0.38,
+      "18_13_#default#": 0.41,
+      "18_17_yes": 0.31,
       "1_10_#default#": 0.15,
-      "5_10_#default#": 0.36,
+      "5_10_#default#": 0.19,
       "5_6_yes": 0.36,
       "7_10_#default#": 0.1,
       "7_8_yes": 0.38,
-      "9_10_#default#": 0.21,
+      "9_10_#default#": 0.11,
       "9_11_yes": 0.35
     },
     "paper": {
       "dimensions": {
-        "height": 1815,
-        "width": 2270,
-        "x": -350,
-        "y": -20
+        "height": 2415,
+        "width": 2180,
+        "x": -320,
+        "y": -10
       }
     }
   }
@@ -1436,43 +1643,86 @@ inputs:
     complex:
       root: File
   required: false
-  description: The file from which to extract indicators.
+  description: The file to extract indicators from.
   playbookInputQuery:
 outputs:
 - contextPath: Domain.Name
-  description: Extracted domains.
+  description: The extracted domains.
+  type: string
 - contextPath: Account.Email.Address
-  description: Extracted emails addresses.
+  description: The extracted email addresses.
+  type: string
 - contextPath: File.MD5
-  description: Extracted MD5 hash.
+  description: The extracted MD5 hash.
+  type: string
 - contextPath: File.SHA1
-  description: Extracted SHA1 hash.
+  description: The extracted SHA1 hash.
+  type: string
 - contextPath: File.SHA256
-  description: Extracted SHA256 hash.
+  description: The extracted SHA256 hash.
+  type: string
 - contextPath: IP.Address
-  description: Extracted IP addresses.
+  description: The extracted IP addresses.
+  type: string
 - contextPath: File.Text
   description: The text or images extracted from the PDF file.
+  type: string
 - contextPath: File.Producer
   description: The PDF file producer.
+  type: string
 - contextPath: File.Title
   description: The title of the PDF file.
+  type: string
 - contextPath: File.xap
-  description: The xap of the PDF file.
+  description: The XAP of the PDF file.
+  type: string
 - contextPath: File.Author
   description: The author of the file.
+  type: string
 - contextPath: File.dc
-  description: The dc of the file.
+  description: The DC of the file.
+  type: string
 - contextPath: File.xapmm
-  description: The xapmm of the file.
+  description: The XAPMM of the file.
+  type: string
 - contextPath: File.ModDate
-  description: The ModDate of the file.
+  description: The mod date of the file.
+  type: string
 - contextPath: File.CreationDate
-  description: The CreationDate of the file.
+  description: The creation date of the file.
+  type: string
 - contextPath: File.Pages
-  description: Number of pages in file.
+  description: The number of pages in the file.
+  type: string
 - contextPath: URL.Data
-  description: List of URLs that were extracted from the file.
-  type: unknown
+  description: The list of URLs that were extracted from the file.
+  type: string
+- contextPath: ExtractedURLsFromFiles
+  description: The list of URLs that were extracted from the file. This output is a
+    duplicate of the URL.Data output and it enables parent playbooks to identify
+    the URLs generated by this playbook.
+  type: String
 tests:
+- Field polling test
+- test-domain-indicator
+- Calculate Severity - Generic v2 - Test
+- Wait Until Datetime - Test
+- Calculate Severity - Standard - Test
 - Extract Indicators From File - Generic v2 - Test
+- URL Enrichment - Generic v2 - Test
+- File Enrichment - Generic v2 - Test
+- Domain Enrichment - Generic v2 - Test
+- Account Enrichment - Generic v2.1 - Test
+- IP Enrichment - Generic v2 - Test
+- Get endpoint details - Generic - test
+- Detonate URL - Generic Test
+- Email Address Enrichment - Generic v2.1 - Test
+- Generic Polling Test
+- Send Investigation Summary Reports - Test
+- Detonate File - No Files test
+- Test Convert file hash to corresponding hashes
+- Detonate File - Generic Test
+- Endpoint Enrichment - Generic v2.1 - Test
+- Retrieve File from Endpoint - Generic V2 Test
+- Isolate and unisolate endpoint - test
+fromversion: 5.0.0

@@ -1,6 +1,7 @@
 import io
 
 import pytest
+from freezegun import freeze_time
 
 from FireEyeEX import *
 from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT, \
@@ -10,6 +11,13 @@ from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CO
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def date_parser_mock(time_str: str):
+    if '10 minutes' in time_str:
+        # We return this constant time since the integration is performing relative time search (10 minutes ago).
+        return dateparser.parse('2021-02-20T17:01:14.000000+00:00')
+    return dateparser.parse(time_str)
 
 
 def test_get_alerts(mocker):
@@ -450,26 +458,31 @@ def test_fetch_incidents_with_limit(mocker):
     assert last_run.get('time') == '2021-02-14 09:43:55 +0000'  # occurred time of the last alert
 
 
-def test_fetch_incidents_last_alert_ids(mocker):
+def test_fetch_incidents_last_alerts(mocker):
     """Unit test
     Given
-    - fetch incidents command
+    - Fetch incidents command is called
     - command args
     - command raw response
+
     When
-    - mock the Client's token generation.
-    - mock the last_event_alert_ids
-    - mock the Client's get_alerts_request.
+    - The alerts returned from teh server are already in (1,2,3,4,5)
+
     Then
     - Validate that no incident will be returned.
-    - Validate that the last_run is at the latest incident fetched
+    - Validate that the last_run is pushed in two days from the latest incident fetched
+    - Validate last_alert_ids stays the same
     """
+    # mocker.patch.object(dateparser, 'parse', side_effect=date_parser_mock)
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
+    last_run_time = '2021-02-14T17:01:14+00:00'
+    next_run_time_to_expect = (dateparser.parse(last_run_time) + timedelta(hours=48)).isoformat()
+    last_alert_ids = '["1", "2", "3", "4", "5"]'
     last_run = {
-        'time': "2021-02-14 17:01:14 +0000",
-        'last_alert_ids': '["1", "2", "3", "4", "5"]'
+        'time': last_run_time,
+        'last_alert_ids': last_alert_ids
     }
     next_run, incidents = fetch_incidents(client=client,
                                           last_run=last_run,
@@ -478,5 +491,132 @@ def test_fetch_incidents_last_alert_ids(mocker):
                                           info_level='concise')
 
     assert len(incidents) == 0
-    # trim miliseconds to avoid glitches such as 2021-05-19T10:21:52.121+00:00 != 2021-05-19T10:21:52.123+00:00
-    assert next_run.get('time')[:-9] == last_run.get('time')[:-9]
+    assert next_run.get('time') == next_run_time_to_expect
+    assert next_run.get('last_alert_ids') == last_alert_ids
+
+
+# We freeze the time since we are using dateparser.parse('now') in the fetch incidents
+@freeze_time('2021-02-15T17:10:00+00:00')
+def test_fetch_incidents_no_alerts(mocker):
+    """Unit test
+    Given
+    - Current time is 2021-02-15 17:10:00 +00:00
+    - Fetch incidents command is called
+
+    When
+    - No results returned from the search for the start_time = 2021-02-14 17:01:14 +00:00 (no new alerts created until
+    now)
+
+    Then
+    - Validate that no incident will be returned.
+    - Validate that the last_run is set to the current time minus ten minutes (2021-02-15 17:00:00 +00:00)
+    - Validate last_alert_ids is reset to empty list
+    """
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/no_alerts.json'))
+    last_run_time = '2021-02-14T17:01:14+00:00'
+    last_alert_ids = '["1", "2", "3", "4", "5"]'
+    last_run = {
+        'time': last_run_time,
+        'last_alert_ids': last_alert_ids
+    }
+    next_run, incidents = fetch_incidents(client=client,
+                                          last_run=last_run,
+                                          first_fetch='1 year',
+                                          max_fetch=50,
+                                          info_level='concise')
+
+    assert len(incidents) == 0
+    assert next_run.get('time') == '2021-02-15T17:00:00+00:00'
+    assert next_run.get('last_alert_ids') == []
+
+
+def test_module_test(mocker):
+    """
+    Given:
+        -
+
+    When:
+        - Run the test-module command
+
+    Then:
+        - Validate the get_alerts_request was called with the start_time argument
+    """
+
+    # prepare
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
+    mocker.patch.object(FireEyeClient, 'get_alerts_request')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+
+    # run
+    run_test_module(client=client)
+
+    # validate
+
+    # take the date from the whole fe_datetime by split by the T
+    start_time = to_fe_datetime_converter('1 day').split('T')[0]
+    call_args_dict = FireEyeClient.get_alerts_request.call_args[0][0]
+    assert start_time in call_args_dict['start_time']
+    assert call_args_dict['duration'] == '24_hours'
+
+
+@pytest.mark.parametrize(argnames='status_code', argvalues=OK_CODES)
+def test_ok_status_codes_in_fe_response(mocker, status_code):
+    """
+    Given:
+        - ok status codes defined in FireEyeApiModule
+
+    When:
+        - Run any FireEye request
+
+    Then:
+        - Validate the response consider ok and return the data
+    """
+
+    # prepare
+    mocked_response = requests.Response()
+    mocked_response.status_code = status_code
+    mocked_response._content = json.dumps({'request_status': 'success'}).encode('utf-8')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
+    mocker.patch('requests.sessions.Session.request', return_value=mocked_response)
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+
+    # run
+    res = client.fe_client.get_alerts_request({
+        'info_level': 'concise',
+        'start_time': to_fe_datetime_converter('1 day'),
+        'duration': '24_hours',
+    })
+
+    # validate
+    assert res['request_status'] == 'success'
+
+
+def test_wrong_status_codes_in_fe_response(mocker):
+    """
+    Given:
+        - wrong status codes not defined as ok_codes in FireEyeApiModule
+
+    When:
+        - Run any FireEye request
+
+    Then:
+        - Validate the request was failed
+    """
+
+    # prepare
+    mocked_response = requests.Response()
+    mocked_response.status_code = 300
+    mocked_response._content = json.dumps({'request_status': 'failed'}).encode('utf-8')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
+    mocker.patch('requests.sessions.Session.request', return_value=mocked_response)
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+
+    # run
+    with pytest.raises(DemistoException, match='Error in API call'):
+        client.fe_client.get_alerts_request({
+            'info_level': 'concise',
+            'start_time': to_fe_datetime_converter('1 day'),
+            'duration': '24_hours',
+        })

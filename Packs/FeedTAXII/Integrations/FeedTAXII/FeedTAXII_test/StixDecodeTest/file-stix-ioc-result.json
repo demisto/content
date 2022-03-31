@@ -1,5 +1,6 @@
 [
   {
+    "indicator_ref": "example:Observable-7b97c8a2-2d0b-4af7-bcf0-cad28f2fea5a",
     "indicator": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "htype": "sha256",
     "type": "File",

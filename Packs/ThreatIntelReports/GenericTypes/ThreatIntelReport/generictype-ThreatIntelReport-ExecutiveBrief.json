@@ -1,0 +1,12 @@
+{
+    "id": "ThreatIntelReport_Executive Brief",
+    "layout": "Executive Brief Report",
+    "locked": false,
+    "name": "Executive Brief",
+    "color": "#755D42",
+    "definitionId": "ThreatIntelReport",
+    "genericModuleId": "threatIntel",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

@@ -1,0 +1,202 @@
+{
+    "code": 200,
+    "result": {
+        "autonomous_system": {
+            "asn": 15169,
+            "bgp_prefix": "8.8.8.0/24",
+            "country_code": "US",
+            "description": "GOOGLE",
+            "name": "GOOGLE"
+        },
+        "autonomous_system_updated_at": "2021-11-21T12:57:11.200575Z",
+        "dns": {
+            "names": [
+                "wiki.leadershipnigeria.com.",
+                "uuu.mkppy.site.",
+                "hisports.club."
+
+            ],
+            "records": {
+                "1508cleveland.duckdns.org": {
+                    "record_type": "A",
+                    "resolved_at": "2021-10-02T06:16:39.231714247Z"
+                },
+                "albertogozzi.it": {
+                    "record_type": "A",
+                    "resolved_at": "2021-10-02T01:15:04.162523844Z"
+                },
+                "alpha.lab.toshokan.fr": {
+                    "record_type": "A",
+                    "resolved_at": "2021-10-03T14:18:01.127044067Z"
+                }
+            },
+            "reverse_dns": {
+                "names": [
+                    "dns.google"
+                ],
+                "resolved_at": "2021-11-19T14:46:47.044806032Z"
+            }
+        },
+        "ip": "8.8.8.8",
+        "last_updated_at": "2021-12-05T13:47:02.691Z",
+        "location": {
+            "continent": "North America",
+            "coordinates": {
+                "latitude": 37.751,
+                "longitude": -97.822
+            },
+            "country": "United States",
+            "country_code": "US",
+            "postal_code": "",
+            "registered_country": "United States",
+            "registered_country_code": "US",
+            "timezone": "America/LA"
+        },
+        "location_updated_at": "2021-11-26T17:14:23.038540Z",
+        "services": [
+            {
+                "_decoded": "dns",
+                "dns": {
+                    "answers": [
+                        {
+                            "name": "ip.parrotdns.com.",
+                            "response": "2.2.2.2",
+                            "type": "A"
+                        },
+                        {
+                            "name": "ip.parrotdns.com.",
+                            "response": "1.1.1.1",
+                            "type": "A"
+                        }
+                    ],
+                    "edns": {
+                        "do": true,
+                        "udp": 512,
+                        "version": 0
+                    },
+                    "questions": [
+                        {
+                            "name": "ip.parrotdns.com.",
+                            "response": ";ip.parrotdns.com.\tIN\t A",
+                            "type": "A"
+                        }
+                    ],
+                    "r_code": "SUCCESS",
+                    "resolves_correctly": true,
+                    "server_type": "FORWARDING"
+                },
+                "extended_service_name": "DNS",
+                "observed_at": "2021-12-05T13:47:02.604625718Z",
+                "perspective_id": "PERSPECTIVE_HE",
+                "port": 53,
+                "service_name": "DNS",
+                "source_ip": "1.2.3.48",
+                "transport_protocol": "UDP",
+                "truncated": false
+            },
+            {
+                "_decoded": "http",
+                "_encoding": {
+                    "banner": "DISPLAY_UTF8",
+                    "banner_hex": "DISPLAY_HEX",
+                    "certificate": "DISPLAY_HEX"
+                },
+                "certificate": "bb9648a9935fe0d07ba4e1c341286382d54a75e79ac1564988bd78e20cb81234",
+                "extended_service_name": "HTTPS",
+                "observed_at": "2021-12-05T09:16:41.181804929Z",
+                "perspective_id": "PERSPECTIVE_NTT",
+                "port": 443,
+                "service_name": "HTTP",
+                "source_ip": "1.2.3.4",
+                "tls": {
+                    "certificates": {
+                        "_encoding": {
+                            "chain_fps_sha_256": "DISPLAY_HEX",
+                            "leaf_fp_sha_256": "DISPLAY_HEX"
+                        },
+                        "chain": [
+                            {
+                                "fingerprint": "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2381234",
+                                "issuer_dn": "C=US, O=Google Trust Services LLC, CN=GTS Root R1",
+                                "subject_dn": "C=US, O=Google Trust Services LLC, CN=GTS CA 1C3"
+                            },
+                            {
+                                "fingerprint": "3ee0278df71fa3c125c4cd487f01d774694e6fc57e0cd94c24efd76913391234",
+                                "issuer_dn": "C=BE, O=GlobalSign nv-sa, OU=Root CA, CN=GlobalSign Root CA",
+                                "subject_dn": "C=US, O=Google Trust Services LLC, CN=GTS Root R1"
+                            }
+                        ],
+                        "chain_fps_sha_256": [
+                            "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2381234",
+                            "3ee0278df71fa3c125c4cd487f01d774694e6fc57e0cd94c24efd76913391123"
+                        ],
+                        "leaf_data": {
+                            "fingerprint": "bb9648a9935fe0d07ba4e1c341286382d54a75e79ac1564988bd78e20cb81234",
+                            "issuer": {
+                                "common_name": [
+                                    "GTS CA 1C3"
+                                ],
+                                "country": [
+                                    "US"
+                                ],
+                                "organization": [
+                                    "Google Trust Services LLC"
+                                ]
+                            },
+                            "issuer_dn": "C=US, O=Google Trust Services LLC, CN=GTS CA 1C3",
+                            "names": [
+                                "*.dns.google.com",
+                                "8.8.4.4",
+                                "8.8.8.8",
+                                "8888.google",
+                                "dns.google",
+                                "dns.google.com",
+                                "dns64.dns.google"
+                            ],
+                            "pubkey_algorithm": "RSA",
+                            "pubkey_bit_size": 2048,
+                            "public_key": {
+                                "fingerprint": "eb975485cb4281ae832fb5ebd210c58be57c57fddab0631b30eec783730a1234",
+                                "key_algorithm": "RSA",
+                                "rsa": {
+                                    "_encoding": {
+                                        "exponent": "DISPLAY_BASE64",
+                                        "modulus": "DISPLAY_BASE64"
+                                    },
+                                    "exponent": "AAEAAQ==",
+                                    "length": 256
+                                }
+                            },
+                            "signature": {
+                                "self_signed": false,
+                                "signature_algorithm": "SHA256-RSA"
+                            },
+                            "subject": {
+                                "common_name": [
+                                    "dns.google"
+                                ]
+                            },
+                            "subject_dn": "CN=dns.google",
+                            "tbs_fingerprint": "7f2e4098c54f11e6d1f1ea679716525852f819b12fdd443f4074f862ff751234"
+                        },
+                        "leaf_fp_sha_256": "bb9648a9935fe0d07ba4e1c341286382d54a75e79ac1564988bd78e20cb81234"
+                    },
+                    "cipher_selected": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                    "server_key_exchange": {
+                        "ec_params": {
+                            "named_curve": 23
+                        }
+                    },
+                    "session_ticket": {
+                        "length": 221,
+                        "lifetime_hint": 100800
+                    },
+                    "version_selected": "TLSv1_2"
+                },
+                "transport_protocol": "TCP",
+                "truncated": false
+            }
+        ]
+    },
+    "status": "OK"
+}

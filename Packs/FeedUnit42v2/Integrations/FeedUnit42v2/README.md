@@ -1,11 +1,11 @@
-Unit42 ATOMs feed of published IOCs, which contains known malicious indicators.
+Unit 42 ATOMs feed of published IOCs, which contains known malicious indicators.
 
 Note: Install the MITRE ATT&CK pack if you want the feed to create MITRE ATT&CK indicators in your environment from the the STIX reports.
 
-## Configure Unit42 ATOMs Feed on Cortex XSOAR
+## Configure Unit 42 ATOMs Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Unit42 ATOMs Feed.
+2. Search for Unit 42 ATOMs Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |

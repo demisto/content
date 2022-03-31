@@ -2,7 +2,7 @@
     "name": "Cyberint",
     "description": "Cyberint provides intelligence-driven digital risk protection. This integration will help your enterprise effectively consume actionable cyber alerts to increase your security posture.",
     "support": "partner",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.13",
     "author": "Cyberint",
     "url": "https://cyberint.com",
     "email": "support@cyberint.com",
@@ -12,5 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -1,0 +1,31 @@
+{
+    "id": "incident_flashpointheaderindexedatdate",
+    "version": -1,
+    "modified": "2021-07-20T16:17:02.942247381+05:30",
+    "name": "Flashpoint Header Indexed At Date",
+    "description": "Timestamp for when this document was indexed into the Flashpoint database.",
+    "ownerOnly": false,
+    "cliName": "flashpointheaderindexedatdate",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Flashpoint Compromised Credentials"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

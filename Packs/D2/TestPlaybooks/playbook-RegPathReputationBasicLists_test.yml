@@ -36,7 +36,7 @@ tasks:
       id: 8f267e88-5bdd-4f72-8aa5-1dfeeb25d3dc
       version: -1
       name: RegPathReputationBasicLists
-      description: Check the given registry path against a small blacklist (score 3), whitelist (score 1), and suspicious list (score 2). If the key matches neither, returns an answer of 0.
+      description: Check the given registry path against a small blacklist (score 3), allow list (score 1), and suspicious list (score 2). If the key matches neither, returns an answer of 0.
       scriptName: RegPathReputationBasicLists
       type: regular
       iscommand: false

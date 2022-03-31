@@ -31,9 +31,16 @@ def arg_to_list_with_regex(arg):
     return arg
 
 
+def mark_http_as_suspicious(set_http_as_suspicious):
+    # Could be None in previous playbooks that using this automation.
+    return set_http_as_suspicious != 'false'
+
+
 def main():
     url_arg = demisto.get(demisto.args(), "url")
     urls = arg_to_list_with_regex(url_arg)
+
+    set_http_as_suspicious = demisto.args().get('set_http_as_suspicious')
 
     url_list = []
 
@@ -49,7 +56,7 @@ def main():
         malicious = None
 
         # Check if url is non SSL
-        if SSL_PREFIX not in url.lower():
+        if SSL_PREFIX not in url.lower() and mark_http_as_suspicious(set_http_as_suspicious):
             malicious = {
                 "Vendor": VENDOR,
                 "Description": "The URL is not secure under SSL"

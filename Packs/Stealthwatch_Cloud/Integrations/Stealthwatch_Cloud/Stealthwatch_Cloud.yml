@@ -250,19 +250,19 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Domain to add to the blacklist
+      description: Domain to add to the block list
       isArray: false
       name: domain
       required: false
       secret: false
     - default: false
-      description: IP to add to the blacklist
+      description: IP to add to the block list
       isArray: false
       name: ip
       required: false
       secret: false
     deprecated: false
-    description: Add a domain or IP to the blacklist
+    description: Add a domain or IP to the block list
     execution: false
     name: sw-block-domain-or-ip
     outputs:
@@ -286,13 +286,13 @@ script:
       type: string
   - arguments:
     - default: false
-      description: ID of the domain to remove from the blacklist. You can find the id using 'sw-list-blocked-domains'
+      description: ID of the domain to remove from the block list. You can find the id using 'sw-list-blocked-domains'
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Remove a domain from the blacklist
+    description: Remove a domain from the block list
     execution: false
     name: sw-unblock-domain
   - arguments:
@@ -465,7 +465,7 @@ script:
   script: '-'
   type: python
   subtype: python2
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
 tests:
 - No test
 fromversion: 5.0.0

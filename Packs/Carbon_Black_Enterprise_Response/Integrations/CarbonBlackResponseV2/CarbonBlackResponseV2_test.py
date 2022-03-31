@@ -337,3 +337,76 @@ def test_fetch_incidents(mocker):
     assert len(incidents) == 1
     assert incidents[0].get('name') == 'Carbon Black EDR: 2 svchost.exe'
     assert last_fetch == {'last_fetch': 1615648046.79}
+
+
+def test_quarantine_device_command_not_have_id(mocker):
+    """
+        Given:
+            A sensor id
+        When:
+           _get_sensor_isolation_change_body in a quarantine_device_command and unquarantine_device_command
+        Then:
+            Assert the 'id' field is not in the request body.
+    """
+    from CarbonBlackResponseV2 import _get_sensor_isolation_change_body, Client
+    client = Client(base_url="url", apitoken="api_key", use_ssl=True, use_proxy=False)
+    mocker.patch.object(Client, 'get_sensors', return_value=(1, [{"id": "some_id", "some_other_stuff": "some"}]))
+    sensor_data = _get_sensor_isolation_change_body(client, 5, False)
+    assert "id" not in sensor_data
+
+
+def test_get_sensor_isolation_change_body_compatible(mocker):
+    """
+        Given:
+            A sensor id
+        When:
+           Running _get_sensor_isolation_change_body in a quarantine_device_command and unquarantine_device_command
+        Then:
+            Assert the the request body is in the compatible format for version 7.5 and 6.2.
+    """
+    from CarbonBlackResponseV2 import _get_sensor_isolation_change_body, Client
+    client = Client(base_url="url", apitoken="api_key", use_ssl=True, use_proxy=False)
+    mocker.patch.object(Client, 'get_sensors', return_value=(1, [{"id": "some_id", "group_id": "some_group_id",
+                                                                  "some_other_stuff": "some"}]))
+    sensor_data = _get_sensor_isolation_change_body(client, 5, False)
+    assert sensor_data == {'group_id': 'some_group_id', 'network_isolation_enabled': False}
+
+
+def test_endpoint_command(mocker):
+    """
+    Given:
+        - endpoint_command
+    When:
+        - Filtering using both id and hostname
+    Then:
+        - Verify that duplicates are removed (since the mock is called twice the same endpoint is retrieved, but if
+        working properly, only one result should be returned).
+    """
+    from CarbonBlackResponseV2 import endpoint_command, Client
+    from CommonServerPython import Common
+
+    endpoints_response = util_load_json('test_data/commands_test_data.json').get('endpoint_response')
+    mocker.patch.object(Client, 'get_sensors', return_value=(1, endpoints_response))
+    client = Client(base_url='url', apitoken='api_key', use_ssl=True, use_proxy=False)
+
+    outputs = endpoint_command(client, id='15', hostname='hostname')
+
+    get_endpoints_response = {
+        Common.Endpoint.CONTEXT_PATH: [{
+            'ID': '15',
+            'Hostname': 'hostname',
+            'IPAddress': '3.3.3.3',
+            'OSVersion': 'Windows Server 2012 R2 Server Standard, 64-bit',
+            'Vendor': 'Carbon Black Response',
+            'Status': 'Online',
+            'IsIsolated': 'No',
+            'Memory': '1073332224',
+            'MACAddress': '06d3d4a5ba28'
+        }]
+    }
+
+    results = outputs[0].to_context()
+    for key, val in results.get("EntryContext").items():
+        assert results.get("EntryContext")[key] == get_endpoints_response[key]
+    assert results.get("EntryContext") == get_endpoints_response
+    assert len(outputs) == 1

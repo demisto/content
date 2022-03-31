@@ -1,0 +1,116 @@
+id: test_manageOOOUsers
+version: -1
+name: test_manageOOOUsers
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 82d1bef5-8e89-47c7-8a17-f65c6421b069
+    type: start
+    task:
+      id: 82d1bef5-8e89-47c7-8a17-f65c6421b069
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c75d386a-9b6a-457e-8854-8d2ddd0ef0d4
+    type: regular
+    task:
+      id: c75d386a-9b6a-457e-8854-8d2ddd0ef0d4
+      version: -1
+      name: try adding to list
+      description: Adds or removes an analyst from the out-of-office list in XSOAR.
+        When used with the AssignAnalystToIncidentOOO automation, prevents incidents
+        from being assigned to an analyst who is out of office.
+      scriptName: ManageOOOusers
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      option:
+        simple: add
+      username:
+        simple: admin
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 04cb35d8-e5f4-4fd7-8692-d2831a621b26
+    type: title
+    task:
+      id: 04cb35d8-e5f4-4fd7-8692-d2831a621b26
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 365,
+        "width": 390,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+description: Test playbook for the manageOOOUsers script

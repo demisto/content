@@ -1,0 +1,254 @@
+id: Mirror Jira Ticket
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Mirror Jira Ticket
+description: Mirror Jira Ticket is designed to serve as a sub-playbook, which enables
+  ticket mirroring with Jira.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b3fb695c-6437-4c1d-8b3f-f6cd1c6eb929
+    type: start
+    task:
+      id: b3fb695c-6437-4c1d-8b3f-f6cd1c6eb929
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e050eea9-ff4c-4afc-8a65-efcffb1f37e2
+    type: regular
+    task:
+      id: e050eea9-ff4c-4afc-8a65-efcffb1f37e2
+      version: -1
+      name: Set Mirroring fields
+      description: Change the properties of an incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      dbotMirrorDirection:
+        complex:
+          root: inputs.MirrorDirection
+      dbotMirrorId:
+        complex:
+          root: inputs.TicketId
+      dbotMirrorInstance:
+        complex:
+          root: inputs.MirrorInstanceName
+      dbotMirrorTags:
+        complex:
+          root: inputs.MirrorTags
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f9c6dfc4-2b6f-48c7-832c-b4b0532e6a19
+    type: title
+    task:
+      id: f9c6dfc4-2b6f-48c7-832c-b4b0532e6a19
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 669cf93d-4f57-4cd5-861d-1013e5f2883b
+    type: condition
+    task:
+      id: 669cf93d-4f57-4cd5-861d-1013e5f2883b
+      version: -1
+      name: Is FieldPolling set to true?
+      description: Conditional task to verify if FieldPolliung value = true.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: 'inputs.FieldPolling '
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: fb7fa6c1-2aef-47a8-8621-7d3f9fd0c21e
+    type: playbook
+    task:
+      id: fb7fa6c1-2aef-47a8-8621-7d3f9fd0c21e
+      version: -1
+      name: Field Polling - Generic
+      description: This playbook polls a field to check if a specific value exists.
+      playbookName: Field Polling - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      field:
+        simple: jirastatus
+      frequency:
+        complex:
+          root: inputs.FieldPollingInterval
+      timeout:
+        complex:
+          root: inputs.FieldPollingTimeout
+      value:
+        simple: Done
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_8_#default#": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 805,
+        "width": 380,
+        "x": 450,
+        "y": 400
+      }
+    }
+  }
+inputs:
+- key: TicketId
+  value: {}
+  required: false
+  description: Jira Ticket ID to mirror.
+  playbookInputQuery:
+- key: MirrorInstanceName
+  value: {}
+  required: false
+  description: Set the mirror instance name to enable mirroring with Jira.
+  playbookInputQuery:
+- key: MirrorDirection
+  value: {}
+  required: false
+  description: "Set the mirror direction to one of the following values: \n1. In\n\
+    2. Out\n3. Both"
+  playbookInputQuery:
+- key: MirrorTags
+  value: {}
+  required: false
+  description: Set tags for mirror comments and files to Jira
+  playbookInputQuery:
+- key: 'FieldPolling '
+  value: {}
+  required: false
+  description: |
+    Set the value to true or false to determine if the FieldPolling sub-playbook will be executed in the context of a parent playbook.
+    This is useful in cases when it is needed to wait for the Jira issue to be resolved in order to continue the parent playbook.
+  playbookInputQuery:
+- key: FieldPollingInterval
+  value: {}
+  required: false
+  description: |-
+    Set interval time for the polling to run
+    (In minutes)
+  playbookInputQuery:
+- key: FieldPollingTimeout
+  value: {}
+  required: false
+  description: |2-
+
+    Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.
+    (In minutes)
+  playbookInputQuery:
+outputs: []
+tests:
+- No test.
+fromversion: 6.0.0

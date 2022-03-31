@@ -1,0 +1,31 @@
+{
+    "id": "incident_hackeronereportweaknessexternalid",
+    "version": -1,
+    "modified": "2021-08-26T18:31:16.439553868+05:30",
+    "name": "HackerOne Report Weakness External ID",
+    "ownerOnly": false,
+    "description": "The weakness' external reference to CWE or CAPEC.",
+    "cliName": "hackeronereportweaknessexternalid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "HackerOne Report"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

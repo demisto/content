@@ -2,8 +2,8 @@ id: TIM - Review Indicators Manually For Whitelisting
 version: -1
 fromversion: 5.5.0
 name: TIM - Review Indicators Manually For Whitelisting
-description: This playbook helps analysts manage the manual process of whitelisting
-  indicators from cloud providers, apps, services etc . The playbook indicator query
+description: This playbook helps analysts manage the manual process of adding
+  indicators from cloud providers, apps, services etc. to an allow list. The playbook indicator query
   is set to search for indicators that have the 'whitelist_review' tag. The playbooks
   layout displays all of the related indicators in the summary page. While reviewing
   the indicators, the analyst can go to the summary page and tag the indicators accordingly

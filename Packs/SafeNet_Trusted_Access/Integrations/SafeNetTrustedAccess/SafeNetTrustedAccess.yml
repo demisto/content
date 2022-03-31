@@ -30,7 +30,7 @@ configuration:
 description: This integration enables you to process alerts from SafeNet Trusted Access
   (STA) indicating security risks to end user accounts, and apply security remediation
   actions on SafeNet Trusted Access through security orchestration playbooks.
-display: SafeNet Trusted Access
+display: Thales SafeNet Trusted Access
 name: SafeNet Trusted Access
 script:
   commands:
@@ -196,7 +196,7 @@ script:
       name: postal_code
     - description: Is user synchronized.
       name: synchronized
-    description: Create new user in the tenant
+    description: Create a new user in the tenant
     name: sta-create-user
     outputs:
     - contextPath: STA.USER.ID
@@ -711,7 +711,217 @@ script:
     - contextPath: STA.VALIDATE.TENANT
       description: Checks if you have permission to access the requested tenant.
       type: boolean
-  dockerimage: demisto/python3:3.9.7.24076
+  - arguments:
+    - description: The maximum number of results to return.
+      name: limit
+    description: Get the list of the applications in the tenant.
+    name: sta-get-application-list
+    outputs:
+    - contextPath: STA.APPLICATION.ID
+      description: ID of the application.
+      type: string
+    - contextPath: STA.APPLICATION.NAME
+      description: Name of the application.
+      type: string
+    - contextPath: STA.APPLICATION.STATUS
+      description: Status of the application.
+      type: string
+  - arguments:
+    - description: Name of the application.
+      name: applicationName
+      required: true
+    description: Get the information for a specific application in the tenant.
+    name: sta-get-application-info
+    outputs:
+    - contextPath: STA.APPLICATION.ID
+      description: ID of the application.
+      type: string
+    - contextPath: STA.APPLICATION.NAME
+      description: Name of the application.
+      type: string
+    - contextPath: STA.APPLICATION.STATUS
+      description: Status of the application.
+      type: string
+    - contextPath: STA.APPLICATION.TYPE
+      description: Status of the application.
+      type: string
+    - contextPath: STA.APPLICATION.TEMPLATE
+      description: Name of the template.
+      type: string
+    - contextPath: STA.APPICATION.ASSIGNMENT
+      description: Groups or users authorized to access an application.
+      type: string
+    - contextPath: STA.APPICATION.SCHEMA
+      description: Schema version number.
+      type: string
+    - contextPath: STA.APPICATION.LASTMODIFIED
+      description: Last modified date and time of application.
+      type: string
+  - arguments:
+    - description: Username of the user.
+      name: userName
+      required: true
+    - description: The maximum number of results to return.
+      name: limit
+    description: Get the list of the applications assigned to a specific user.
+    name: sta-get-user-applications
+    outputs:
+    - contextPath: STA.USER.ID
+      description: User ID of the user.
+      type: string
+    - contextPath: STA.USER.SCHEMA
+      description: Schema version number.
+      type: string
+    - contextPath: STA.USER.USERNAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.USER.FIRSTNAME
+      description: First name of the user.
+      type: string
+    - contextPath: STA.USER.LASTNAME
+      description: Last name of the user.
+      type: string
+    - contextPath: STA.USER.EMAIL
+      description: Email ID of the user.
+      type: string
+    - contextPath: STA.USER.MOBILENUMBER
+      description: Mobile number for the user.
+      type: number
+    - contextPath: STA.USER.ALIAS1
+      description: Alias for the user.
+      type: string
+    - contextPath: STA.USER.ALIAS2
+      description: Additional alias for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM1
+      description: Custom value for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM2
+      description: Additional custom value for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM3
+      description: Additional custom value for the user.
+      type: string
+    - contextPath: STA.USER.ADDRESS
+      description: Address of the user.
+      type: string
+    - contextPath: STA.USER.CITY
+      description: City of the user.
+      type: string
+    - contextPath: STA.USER.STATE
+      description: State of the user.
+      type: string
+    - contextPath: STA.USER.COUNTRY
+      description: Country of the user.
+      type: string
+    - contextPath: STA.USER.POSTALCODE
+      description: Postal Code of the user.
+      type: number
+    - contextPath: STA.USER.SYNCHRONIZED
+      description: Is user synchronized.
+      type: boolean
+    - contextPath: STA.USER.APPLICATION.ID
+      description: ID of the application.
+      type: string
+    - contextPath: STA.USER.APPLICATION.NAME
+      description: Name of the application.
+      type: string
+    - contextPath: STA.USER.APPLICATION.STATUS
+      description: Status of the application.
+      type: string
+  - arguments:
+    - description: Username of the user.
+      name: userName
+      required: true
+    description: Get sessions for a specific user.
+    name: sta-get-user-sessions
+    outputs:
+    - contextPath: STA.USER.ID
+      description: User ID of the user.
+      type: string
+    - contextPath: STA.USER.SCHEMA
+      description: Schema version number.
+      type: string
+    - contextPath: STA.USER.USERNAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.USER.FIRSTNAME
+      description: First name of the user.
+      type: string
+    - contextPath: STA.USER.LASTNAME
+      description: Last name of the user.
+      type: string
+    - contextPath: STA.USER.EMAIL
+      description: Email ID of the user.
+      type: string
+    - contextPath: STA.USER.MOBILENUMBER
+      description: Mobile number for the user.
+      type: number
+    - contextPath: STA.USER.ALIAS1
+      description: Alias for the user.
+      type: string
+    - contextPath: STA.USER.ALIAS2
+      description: Additional alias for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM1
+      description: Custom value for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM2
+      description: Additional custom value for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM3
+      description: Additional custom value for the user.
+      type: string
+    - contextPath: STA.USER.ADDRESS
+      description: Address of the user.
+      type: string
+    - contextPath: STA.USER.CITY
+      description: City of the user.
+      type: string
+    - contextPath: STA.USER.STATE
+      description: State of the user.
+      type: string
+    - contextPath: STA.USER.COUNTRY
+      description: Country of the user.
+      type: string
+    - contextPath: STA.USER.POSTALCODE
+      description: Postal Code of the user.
+      type: number
+    - contextPath: STA.USER.SYNCHRONIZED
+      description: Is user synchronized.
+      type: boolean
+    - contextPath: STA.USER.SESSION.ID
+      description: Session ID for the user.
+      type: string
+    - contextPath: STA.USER.SESSION.START
+      description: Session start timestamp.
+      type: string
+    - contextPath: STA.USER.SESSION.EXPIRY
+      description: Session end timestamp.
+      type: string
+    - contextPath: STA.USER.SESSION.APPLICATION.ID
+      description: Name of the application.
+      type: string
+    - contextPath: STA.USER.SESSION.APPLICATION.NAME
+      description: Returns true, if the user session deleted for an application.
+      type: boolean
+  - arguments:
+    - description: Username of the user.
+      name: userName
+      required: true
+    description: Delete all the active SSO sessions for a specific user from the STA.
+    name: sta-delete-user-sessions
+    outputs:
+    - contextPath: STA.USER.ID
+      description: User ID of the user.
+      type: string
+    - contextPath: STA.USER.USERNAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.USER.SESSION.DELETED
+      description: Returns true, if all the user SSO sessions deleted successfully.
+      type: boolean
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3

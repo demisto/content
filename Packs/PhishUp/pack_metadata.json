@@ -1,0 +1,41 @@
+{
+    "name": "PhishUp",
+    "description": "PhishUp prevents phishing attacks, protects your staff and your brand with AI",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "PhishUp",
+    "url": "https://phishup.co",
+    "email": "info@phishup.co",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "devEmail": [
+        "osman@diatics.com",
+        "cagri@diatics.com"
+    ],
+    "githubUser": [
+        "diCagri"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "Phishing": {
+            "mandatory": false,
+            "display_name": "Phishing"
+        },
+        "Gmail": {
+            "mandatory": true,
+            "display_name": "Gmail"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts",
+        "Phishing",
+        "Gmail"
+    ]
+}

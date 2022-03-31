@@ -1,0 +1,56 @@
+{
+  "type": "IP Address",
+  "name": "1.1.1.1",
+  "link": "https://community.riskiq.com/search/1.1.1.1",
+  "netblock": "1.1.1.0/24",
+  "os": "Unix",
+  "organization": "Cloudflare, Inc.",
+  "asn": "AS13335 - CLOUDFLARENET",
+  "hosting_provider": "Cloudflare",
+  "data_summary": {
+    "resolutions": {
+      "count": 997,
+      "link": "https://community.riskiq.com/search/1.1.1.1/resolutions"
+    },
+    "services": {
+      "count": 3,
+      "link": "https://community.riskiq.com/search/1.1.1.1/services"
+    },
+    "certificates": {
+      "count": 1843,
+      "link": "https://community.riskiq.com/search/1.1.1.1/domaincertificates"
+    },
+    "hashes": {
+      "count": 0,
+      "link": "https://community.riskiq.com/search/1.1.1.1/hashes"
+    },
+    "projects": {
+      "count": 4,
+      "link": "https://community.riskiq.com/search/1.1.1.1/projects"
+    },
+    "articles": {
+      "count": 0,
+      "link": "https://community.riskiq.com/research/1.1.1.1"
+    },
+    "trackers": {
+      "count": 1021,
+      "link": "https://community.riskiq.com/search/1.1.1.1/trackers"
+    },
+    "components": {
+      "count": 587,
+      "link": "https://community.riskiq.com/search/1.1.1.1/components"
+    },
+    "host_pairs": {
+      "count": 6970,
+      "link": "https://community.riskiq.com/search/1.1.1.1/hostpairs"
+    },
+    "reverse_dns": {
+      "count": 5,
+      "link": "https://community.riskiq.com/search/1.1.1.1/dns"
+    },
+    "cookies": {
+      "count": 19831,
+      "link": "https://community.riskiq.com/search/1.1.1.1/cookies"
+    }
+  }
+}

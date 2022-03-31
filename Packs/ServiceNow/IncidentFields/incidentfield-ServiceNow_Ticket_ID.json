@@ -1,0 +1,32 @@
+{
+    "id": "incident_servicenowticketid",
+    "version": -1,
+    "modified": "2021-10-24T10:18:06.47687+03:00",
+    "name": "ServiceNow Ticket ID",
+    "ownerOnly": false,
+    "cliName": "servicenowticketid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "ServiceNow Ticket",
+	"ServiceNow Create Ticket and Mirror"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

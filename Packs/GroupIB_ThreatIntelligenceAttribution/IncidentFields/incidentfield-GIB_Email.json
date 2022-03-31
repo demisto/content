@@ -1,7 +1,10 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Data Breach"
+        "GIB Data Breach",
+        "GIB Compromised Account",
+        "GIB Compromised Card",
+        "GIB Brand Protection Domain"
     ],
     "caseInsensitive": false,
     "cliName": "gibemail",

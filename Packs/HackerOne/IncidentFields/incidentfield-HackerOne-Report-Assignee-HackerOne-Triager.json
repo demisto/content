@@ -1,0 +1,31 @@
+{
+    "id": "incident_hackeronereportassigneehackeronetriager",
+    "version": -1,
+    "modified": "2021-08-26T19:23:11.940639128+05:30",
+    "name": "HackerOne Report Assignee HackerOne Triager",
+    "ownerOnly": false,
+    "description": "Indicates if the assignee is a hackerone triager.",
+    "cliName": "hackeronereportassigneehackeronetriager",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "HackerOne Report"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

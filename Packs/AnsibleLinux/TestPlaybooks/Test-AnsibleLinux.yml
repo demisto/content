@@ -1,0 +1,1525 @@
+id: Test-AnsibleLinux
+version: -1
+name: Test-AnsibleLinux
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c5beac53-e9ec-4d0c-8d53-da90e723661c
+    type: start
+    task:
+      id: c5beac53-e9ec-4d0c-8d53-da90e723661c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 21d91818-eab4-4c5b-8b8a-b8fe207a730d
+    type: regular
+    task:
+      id: 21d91818-eab4-4c5b-8b8a-b8fe207a730d
+      version: -1
+      name: linux-ping
+      description: |-
+        Try to connect to host, verify a usable python and return C(pong) on success
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ping_module.html
+      script: '|||linux-ping'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      data: {}
+      host:
+        simple: ${inputs.host}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 39cd9096-d878-4a7b-8ff8-f0b28f952de5
+    type: condition
+    task:
+      id: 39cd9096-d878-4a7b-8ff8-f0b28f952de5
+      version: -1
+      name: check linux-ping
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Linux.Ping.[0]
+            iscontext: true
+          right:
+            value:
+              simple: pong
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 4739eca8-3a73-4ca8-8cb1-ec1864d38e03
+    type: regular
+    task:
+      id: 4739eca8-3a73-4ca8-8cb1-ec1864d38e03
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5ba5b744-120b-4ed1-8835-08d2d4e3b538
+    type: title
+    task:
+      id: 5ba5b744-120b-4ed1-8835-08d2d4e3b538
+      version: -1
+      name: Basic Info
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 0e6f6d79-673a-47cc-8afd-d4830afa1f43
+    type: title
+    task:
+      id: 0e6f6d79-673a-47cc-8afd-d4830afa1f43
+      version: -1
+      name: File
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": -45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: aff0f69e-a06e-48be-8cf1-4a7013e7d92b
+    type: title
+    task:
+      id: aff0f69e-a06e-48be-8cf1-4a7013e7d92b
+      version: -1
+      name: User
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ce0fd0d5-a295-4ff5-83ac-d3c300ffdfd9
+    type: title
+    task:
+      id: ce0fd0d5-a295-4ff5-83ac-d3c300ffdfd9
+      version: -1
+      name: Firewall
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2010,
+          "y": -45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 3285498e-4280-4698-8414-89ac5d28f810
+    type: title
+    task:
+      id: 3285498e-4280-4698-8414-89ac5d28f810
+      version: -1
+      name: Package
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2550,
+          "y": -45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 0771cd8f-9da2-4659-8579-ec66e76b6ba1
+    type: regular
+    task:
+      id: 0771cd8f-9da2-4659-8579-ec66e76b6ba1
+      version: -1
+      name: linux-gather-facts
+      description: |-
+        Gathers facts about remote hosts
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gather_facts_module.html
+      script: '|||linux-gather-facts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      host:
+        simple: ${inputs.host}
+      parallel: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 1bd99313-d6a4-4869-858d-09fdd4075d1b
+    type: condition
+    task:
+      id: 1bd99313-d6a4-4869-858d-09fdd4075d1b
+      version: -1
+      name: check linux-gather-facts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Linux.GatherFacts.processor_count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: cb2cef52-d3d2-472d-8824-4c69a48f267e
+    type: regular
+    task:
+      id: cb2cef52-d3d2-472d-8824-4c69a48f267e
+      version: -1
+      name: linux-tempfile
+      description: |-
+        Creates temporary files and directories
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/tempfile_module.html
+      script: '|||linux-tempfile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      host:
+        simple: ${inputs.host}
+      path:
+        simple: /tmp/testingplaybook/
+      prefix: {}
+      state:
+        simple: file
+      suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 3f60ec93-7098-4925-8829-151647b6d02f
+    type: condition
+    task:
+      id: 3f60ec93-7098-4925-8829-151647b6d02f
+      version: -1
+      name: check linux-tempfile
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: Linux.Tempfile.path
+            iscontext: true
+          right:
+            value:
+              simple: /tmp/testingplaybook/ansible.
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 788f5ebf-59cb-4feb-800a-a7523360c251
+    type: regular
+    task:
+      id: 788f5ebf-59cb-4feb-800a-a7523360c251
+      version: -1
+      name: linux-ini-file
+      description: |-
+        Tweak settings in INI files
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ini_file_module.html
+      script: '|||linux-ini-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      allow_no_value: {}
+      attributes: {}
+      backup: {}
+      create: {}
+      group: {}
+      host:
+        simple: ${inputs.host}
+      mode: {}
+      no_extra_spaces: {}
+      option:
+        simple: setting
+      owner: {}
+      path:
+        simple: ${Linux.Tempfile.path}
+      section:
+        simple: test
+      selevel: {}
+      serole: {}
+      setype: {}
+      seuser: {}
+      state: {}
+      unsafe_writes: {}
+      value:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 988094c4-c213-4641-8d04-2d8b234c209f
+    type: condition
+    task:
+      id: 988094c4-c213-4641-8d04-2d8b234c209f
+      version: -1
+      name: check linux-ini-file
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Linux.IniFile.msg
+            iscontext: true
+          right:
+            value:
+              simple: section and option added
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: c1ee0555-de15-4146-8ddb-1fea9f7c4834
+    type: regular
+    task:
+      id: c1ee0555-de15-4146-8ddb-1fea9f7c4834
+      version: -1
+      name: linux-acl
+      description: |-
+        Set and retrieve file ACL information.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/acl_module.html
+      script: '|||linux-acl'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      default: {}
+      entity: {}
+      entry: {}
+      etype: {}
+      follow: {}
+      host:
+        simple: ${inputs.host}
+      path:
+        simple: ${Linux.Tempfile.path}
+      permissions: {}
+      recalculate_mask: {}
+      recursive: {}
+      state:
+        simple: query
+      use_nfsv4_acls: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: ad718680-a72d-4033-8835-e81660b46514
+    type: condition
+    task:
+      id: ad718680-a72d-4033-8835-e81660b46514
+      version: -1
+      name: linux-check-acl
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Linux.Acl.[0].[0]
+            iscontext: true
+          right:
+            value:
+              simple: user::rw-
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: c61b424c-7acd-4618-8374-58f95679ad01
+    type: condition
+    task:
+      id: c61b424c-7acd-4618-8374-58f95679ad01
+      version: -1
+      name: check linux-user
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Linux.User.home
+            iscontext: true
+          right:
+            value:
+              simple: /home/testplaybook
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 7da171f7-da3f-4f92-81cb-c509f5d1eb88
+    type: condition
+    task:
+      id: 7da171f7-da3f-4f92-81cb-c509f5d1eb88
+      version: -1
+      name: check linux-firewalld
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Linux.Firewalld.msg
+            iscontext: true
+          right:
+            value:
+              simple: Non-permanent operation, Changed service https to enabled
+    view: |-
+      {
+        "position": {
+          "x": 2010,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: e3552ce9-50c8-4b76-839b-789faca9b798
+    type: condition
+    task:
+      id: e3552ce9-50c8-4b76-839b-789faca9b798
+      version: -1
+      name: check linux-yum
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: Linux.Yum.results.[0]
+            iscontext: true
+          right:
+            value:
+              simple: 'Installed: make'
+    view: |-
+      {
+        "position": {
+          "x": 2550,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 420a1805-664f-42b7-8103-e2eb487295e7
+    type: title
+    task:
+      id: 420a1805-664f-42b7-8103-e2eb487295e7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 4e3a5c6e-97e1-4802-8ea0-d4e37261e153
+    type: regular
+    task:
+      id: 4e3a5c6e-97e1-4802-8ea0-d4e37261e153
+      version: -1
+      name: linux-file (absent)
+      description: |-
+        Manage files and file properties
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/file_module.html
+      script: '|||linux-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      access_time: {}
+      access_time_format: {}
+      attributes: {}
+      follow: {}
+      force: {}
+      group: {}
+      host:
+        simple: ${inputs.host}
+      mode: {}
+      modification_time: {}
+      modification_time_format: {}
+      owner: {}
+      path:
+        simple: /tmp/testingplaybook
+      recurse: {}
+      selevel: {}
+      serole: {}
+      setype: {}
+      seuser: {}
+      src: {}
+      state:
+        simple: absent
+      unsafe_writes: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: de53bdd1-a4bf-48fa-88d5-09774aeb7453
+    type: regular
+    task:
+      id: de53bdd1-a4bf-48fa-88d5-09774aeb7453
+      version: -1
+      name: linux-user (absent)
+      description: |-
+        Manage user accounts
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/user_module.html
+      script: '|||linux-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      append: {}
+      authorization: {}
+      comment: {}
+      create_home: {}
+      expires: {}
+      force: {}
+      generate_ssh_key: {}
+      group: {}
+      groups: {}
+      hidden: {}
+      home: {}
+      host:
+        simple: ${inputs.host}
+      local: {}
+      login_class: {}
+      move_home: {}
+      name:
+        simple: testplaybook
+      non_unique: {}
+      password: {}
+      password_lock: {}
+      profile: {}
+      remove: {}
+      role: {}
+      seuser: {}
+      shell: {}
+      skeleton: {}
+      ssh_key_bits:
+        simple: "1024"
+      ssh_key_comment: {}
+      ssh_key_file: {}
+      ssh_key_passphrase: {}
+      ssh_key_type: {}
+      state:
+        simple: absent
+      system: {}
+      uid: {}
+      update_password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 7807ac26-4914-408a-8057-fba2068bd784
+    type: regular
+    task:
+      id: 7807ac26-4914-408a-8057-fba2068bd784
+      version: -1
+      name: linux-firewalld (disabled)
+      description: |-
+        Manage arbitrary ports/services with firewalld
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/firewalld_module.html
+      script: '|||linux-firewalld'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      host:
+        simple: ${inputs.host}
+      icmp_block: {}
+      icmp_block_inversion: {}
+      immediate: {}
+      interface: {}
+      masquerade: {}
+      offline: {}
+      permanent: {}
+      port: {}
+      rich_rule: {}
+      service:
+        simple: https
+      source: {}
+      state:
+        simple: disabled
+      timeout: {}
+      zone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: d1abcc9e-9c37-4a77-8d93-d3249d2a4dc5
+    type: regular
+    task:
+      id: d1abcc9e-9c37-4a77-8d93-d3249d2a4dc5
+      version: -1
+      name: linux-yum (absent)
+      description: |-
+        Manages packages with the I(yum) package manager
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yum_module.html
+      script: '|||linux-yum'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      allow_downgrade: {}
+      autoremove: {}
+      bugfix: {}
+      conf_file: {}
+      disable_excludes: {}
+      disable_gpg_check: {}
+      disable_plugin: {}
+      disablerepo: {}
+      download_dir: {}
+      download_only: {}
+      enable_plugin: {}
+      enablerepo: {}
+      exclude: {}
+      host:
+        simple: ${inputs.host}
+      install_weak_deps: {}
+      installroot: {}
+      list: {}
+      lock_timeout: {}
+      name:
+        simple: make
+      releasever: {}
+      security: {}
+      skip_broken: {}
+      state:
+        simple: absent
+      update_cache: {}
+      update_only: {}
+      use_backend: {}
+      validate_certs: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: b4e0743b-b3c0-4163-8472-96172a6c244b
+    type: regular
+    task:
+      id: b4e0743b-b3c0-4163-8472-96172a6c244b
+      version: -1
+      name: linux-yum (absent)
+      description: |-
+        Manages packages with the I(yum) package manager
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yum_module.html
+      script: '|||linux-yum'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      allow_downgrade: {}
+      autoremove: {}
+      bugfix: {}
+      conf_file: {}
+      disable_excludes: {}
+      disable_gpg_check: {}
+      disable_plugin: {}
+      disablerepo: {}
+      download_dir: {}
+      download_only: {}
+      enable_plugin: {}
+      enablerepo: {}
+      exclude: {}
+      host:
+        simple: ${inputs.host}
+      install_weak_deps: {}
+      installroot: {}
+      list: {}
+      lock_timeout: {}
+      name:
+        simple: make
+      releasever: {}
+      security: {}
+      skip_broken: {}
+      state:
+        simple: absent
+      update_cache: {}
+      update_only: {}
+      use_backend: {}
+      validate_certs: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2550,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 8858ddc5-e203-4cde-80cd-dcef62968998
+    type: regular
+    task:
+      id: 8858ddc5-e203-4cde-80cd-dcef62968998
+      version: -1
+      name: linux-yum
+      description: |-
+        Manages packages with the I(yum) package manager
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yum_module.html
+      script: '|||linux-yum'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      allow_downgrade: {}
+      autoremove: {}
+      bugfix: {}
+      conf_file: {}
+      disable_excludes: {}
+      disable_gpg_check: {}
+      disable_plugin: {}
+      disablerepo: {}
+      download_dir: {}
+      download_only: {}
+      enable_plugin: {}
+      enablerepo: {}
+      exclude: {}
+      host:
+        simple: ${inputs.host}
+      install_weak_deps: {}
+      installroot: {}
+      list: {}
+      lock_timeout: {}
+      name:
+        simple: make
+      releasever: {}
+      security: {}
+      skip_broken: {}
+      state:
+        simple: present
+      update_cache: {}
+      update_only: {}
+      use_backend: {}
+      validate_certs: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2550,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 1e0e3960-f375-4e81-83bf-e092d9bc1cf9
+    type: regular
+    task:
+      id: 1e0e3960-f375-4e81-83bf-e092d9bc1cf9
+      version: -1
+      name: linux-firewalld (disabled)
+      description: |-
+        Manage arbitrary ports/services with firewalld
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/firewalld_module.html
+      script: '|||linux-firewalld'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      host:
+        simple: ${inputs.host}
+      icmp_block: {}
+      icmp_block_inversion: {}
+      immediate: {}
+      interface: {}
+      masquerade: {}
+      offline: {}
+      permanent: {}
+      port: {}
+      rich_rule: {}
+      service:
+        simple: https
+      source: {}
+      state:
+        simple: disabled
+      timeout: {}
+      zone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2010,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: bef20fad-c4d3-4223-8cd7-faef3aa8c368
+    type: regular
+    task:
+      id: bef20fad-c4d3-4223-8cd7-faef3aa8c368
+      version: -1
+      name: linux-firewalld
+      description: |-
+        Manage arbitrary ports/services with firewalld
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/firewalld_module.html
+      script: '|||linux-firewalld'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      host:
+        simple: ${inputs.host}
+      icmp_block: {}
+      icmp_block_inversion: {}
+      immediate: {}
+      interface: {}
+      masquerade: {}
+      offline: {}
+      permanent: {}
+      port: {}
+      rich_rule: {}
+      service:
+        simple: https
+      source: {}
+      state:
+        simple: enabled
+      timeout: {}
+      zone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2010,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 8c81cdc2-6d6c-4b73-8c21-295a9a2debd0
+    type: regular
+    task:
+      id: 8c81cdc2-6d6c-4b73-8c21-295a9a2debd0
+      version: -1
+      name: linux-user (absent)
+      description: |-
+        Manage user accounts
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/user_module.html
+      script: '|||linux-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append: {}
+      authorization: {}
+      comment: {}
+      create_home: {}
+      expires: {}
+      force: {}
+      generate_ssh_key: {}
+      group: {}
+      groups: {}
+      hidden: {}
+      home: {}
+      host:
+        simple: ${inputs.host}
+      local: {}
+      login_class: {}
+      move_home: {}
+      name:
+        simple: testplaybook
+      non_unique: {}
+      password: {}
+      password_lock: {}
+      profile: {}
+      remove: {}
+      role: {}
+      seuser: {}
+      shell: {}
+      skeleton: {}
+      ssh_key_bits:
+        simple: "1024"
+      ssh_key_comment: {}
+      ssh_key_file: {}
+      ssh_key_passphrase: {}
+      ssh_key_type: {}
+      state:
+        simple: absent
+      system: {}
+      uid: {}
+      update_password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: fb97c73d-d1da-4d75-8e28-10b5e6bac628
+    type: regular
+    task:
+      id: fb97c73d-d1da-4d75-8e28-10b5e6bac628
+      version: -1
+      name: linux-user
+      description: |-
+        Manage user accounts
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/user_module.html
+      script: '|||linux-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append: {}
+      authorization: {}
+      comment: {}
+      create_home: {}
+      expires: {}
+      force: {}
+      generate_ssh_key: {}
+      group: {}
+      groups: {}
+      hidden: {}
+      home: {}
+      host:
+        simple: ${inputs.host}
+      local: {}
+      login_class: {}
+      move_home: {}
+      name:
+        simple: testplaybook
+      non_unique: {}
+      password: {}
+      password_lock: {}
+      profile: {}
+      remove: {}
+      role: {}
+      seuser: {}
+      shell: {}
+      skeleton: {}
+      ssh_key_bits:
+        simple: "1024"
+      ssh_key_comment: {}
+      ssh_key_file: {}
+      ssh_key_passphrase: {}
+      ssh_key_type: {}
+      state:
+        simple: present
+      system: {}
+      uid: {}
+      update_password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: dbe84700-bf0d-4273-884c-166bc5e8150c
+    type: regular
+    task:
+      id: dbe84700-bf0d-4273-884c-166bc5e8150c
+      version: -1
+      name: linux-file (absent)
+      description: |-
+        Manage files and file properties
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/file_module.html
+      script: '|||linux-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      access_time: {}
+      access_time_format: {}
+      attributes: {}
+      follow: {}
+      force: {}
+      group: {}
+      host:
+        simple: ${inputs.host}
+      mode: {}
+      modification_time: {}
+      modification_time_format: {}
+      owner: {}
+      path:
+        simple: /tmp/testingplaybook
+      recurse: {}
+      selevel: {}
+      serole: {}
+      setype: {}
+      seuser: {}
+      src: {}
+      state:
+        simple: absent
+      unsafe_writes: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: aab3446a-7a94-4539-8154-0511a743b2d7
+    type: regular
+    task:
+      id: aab3446a-7a94-4539-8154-0511a743b2d7
+      version: -1
+      name: linux-file
+      description: |-
+        Manage files and file properties
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/file_module.html
+      script: '|||linux-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      access_time: {}
+      access_time_format: {}
+      attributes: {}
+      follow: {}
+      force: {}
+      group: {}
+      host:
+        simple: ${inputs.host}
+      mode: {}
+      modification_time: {}
+      modification_time_format: {}
+      owner: {}
+      path:
+        simple: /tmp/testingplaybook
+      recurse: {}
+      selevel: {}
+      serole: {}
+      setype: {}
+      seuser: {}
+      src: {}
+      state:
+        simple: directory
+      unsafe_writes: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: bd0c9d79-cdd1-4b80-8811-e175148ed871
+    type: condition
+    task:
+      id: bd0c9d79-cdd1-4b80-8811-e175148ed871
+      version: -1
+      name: check linux-file
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Linux.File.path
+            iscontext: true
+          right:
+            value:
+              simple: /tmp/testingplaybook
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2995,
+        "width": 2470,
+        "x": 460,
+        "y": -1110
+      }
+    }
+  }
+inputs:
+- key: host
+  value:
+    simple: 192.168.1.18
+  required: true
+  description: Host to run tests against
+  playbookInputQuery:
+outputs: []
+fromversion: 6.0.0
+description: Test playbook for Ansible Linux

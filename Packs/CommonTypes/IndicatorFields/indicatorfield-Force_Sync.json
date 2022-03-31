@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "User Profile"
+    ],
+    "caseInsensitive": true,
+    "cliName": "forcesync",
+    "closeForm": false,
+    "content": true,
+    "description": "Whether to force user synchronization.",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_forcesync",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Force Sync",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "boolean",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

@@ -2,16 +2,22 @@
     "name": "Forti Sandbox",
     "description": "Pack contains integration with playbooks to upload file for malware analysis, retrieve the results and get file rating for previously scanned files from FortiSandbox",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "vibhuabharadwaj",
     "url": "",
     "email": "",
     "created": "2021-01-21T23:27:50Z",
-    "categories": [],
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "vibhuabharadwaj"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

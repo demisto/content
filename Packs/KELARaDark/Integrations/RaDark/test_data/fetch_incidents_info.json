@@ -1,0 +1,74 @@
+{
+  "FETCH_INCIDENTS_RESPONSE": {
+    "data": {
+      "aggregations": [
+        {
+          "feed_property_id": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+          "title": null,
+          "sub_type": 2,
+          "sub_type_description": "Leaked Credentials",
+          "type": "leaked_credentials",
+          "severity": 3,
+          "incident_date": 1594823500,
+          "id": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+          "text": null,
+          "assets": [],
+          "tags": [
+            "testa@test.com",
+            "test.com"
+          ],
+          "categories": [
+              "data leak",
+              "database dump"
+          ],
+          "items_count": 10
+        }
+      ]
+    }
+  },
+  "FETCH_INCIDENTS_PARAMS": {
+    "max_results": 10,
+    "last_run": {},
+    "first_fetch_time": 1594823426,
+    "incident_types": [
+      "Leaked Credentials",
+      "Intelligence Reports",
+      "Compromised Accounts"
+    ]
+  },
+  "FETCH_INCIDENTS_RESULTS": {
+    "next_run": {
+      "last_fetch": 1594823500
+    },
+    "incidents": [
+      {
+        "name": "Leaked Credentials",
+        "occurred": "2020-07-15T14:31:40.000Z",
+        "rawJSON": {
+          "feed_property_id": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+          "sub_type": 2,
+          "sub_type_description": "Leaked Credentials",
+          "type": "leaked_credentials",
+          "type_description": "Leaked Credentials",
+          "incident_url": "https://radark2.ke-la.com/#/incident?monitorId=0000&feedPropertyId=yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+          "monitor_id": "0000",
+          "severity": 3,
+          "incident_date": 1594823500,
+          "id": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+          "text": null,
+          "assets": [],
+          "tags": [
+            "testa@test.com",
+            "test.com"
+          ],
+          "categories": [
+              "data leak",
+              "database dump"
+          ],
+          "items_count": 10
+        }
+      }
+    ]
+  }
+}
+

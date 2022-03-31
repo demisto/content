@@ -3,9 +3,11 @@ This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script.
 Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
+# If you change this section, make sure you update the line offset magic number
 from __future__ import print_function
 
 import base64
+import gc
 import json
 import logging
 import os
@@ -14,6 +16,8 @@ import socket
 import sys
 import time
 import traceback
+import types
+import urllib
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -21,9 +25,126 @@ from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
+from inspect import currentframe
 
 import demistomock as demisto
 import warnings
+
+
+def __line__():
+    cf = currentframe()
+    return cf.f_back.f_lineno
+
+
+# 41 - The line offset from the beggining of the file.
+_MODULES_LINE_MAPPING = {
+    'CommonServerPython': {'start': __line__() - 41, 'end': float('inf')},
+}
+
+
+def register_module_line(module_name, start_end, line, wrapper=0):
+    """
+        Register a module in the line mapping for the traceback line correction algorithm.
+
+        :type module_name: ``str``
+        :param module_name: The name of the module. (required)
+
+        :type start_end: ``str``
+        :param start_end: Whether to register the line as the start or the end of the module.
+            Possible values: start, end. (required)
+
+        :type line: ``int``
+        :param line: the line number to record. (required)
+
+        :type wrapper: ``int``
+        :param wrapper: Wrapper size (used for inline replacements with headers such as ApiModules). (optional)
+
+        :return: None
+        :rtype: ``None``
+    """
+    global _MODULES_LINE_MAPPING
+    default_module_info = {'start': 0, 'start_wrapper': 0, 'end': float('inf'), 'end_wrapper': float('inf')}
+    try:
+        if start_end not in ('start', 'end'):
+            raise ValueError('Invalid start_end argument. Acceptable values are: start, end.')
+        if not isinstance(line, int) or line < 0:
+            raise ValueError('Invalid line argument. Expected non-negative integer, '
+                             'got {}({})'.format(type(line), line))
+
+        _MODULES_LINE_MAPPING.setdefault(module_name, default_module_info).update(
+            {start_end: line, '{}_wrapper'.format(start_end): line + wrapper}
+        )
+    except Exception as exc:
+        demisto.info(
+            'failed to register module line. '
+            'module: "{}" start_end: "{}" line: "{}".\nError: {}'.format(module_name, start_end, line, exc))
+
+
+def _find_relevant_module(line):
+    """
+    Find which module contains the given line number.
+
+    :type line: ``int``
+    :param trace_str: Line number to search. (required)
+
+    :return: The name of the module.
+    :rtype: ``str``
+    """
+    global _MODULES_LINE_MAPPING
+
+    relevant_module = ''
+    for module, info in _MODULES_LINE_MAPPING.items():
+        if info['start'] <= line <= info['end']:
+            if not relevant_module:
+                relevant_module = module
+            elif info['start'] > _MODULES_LINE_MAPPING[relevant_module]['start']:
+                relevant_module = module
+
+    return relevant_module
+
+
+def fix_traceback_line_numbers(trace_str):
+    """
+    Fixes the given traceback line numbers.
+
+    :type trace_str: ``str``
+    :param trace_str: The traceback string to edit. (required)
+
+    :return: The new formated traceback.
+    :rtype: ``str``
+    """
+    for number in re.findall(r'line (\d+)', trace_str):
+        line_num = int(number)
+        module = _find_relevant_module(line_num)
+        if module:
+            module_start_line = _MODULES_LINE_MAPPING.get(module, {'start': 0})['start']
+            actual_number = line_num - module_start_line
+
+            # in case of ApiModule injections, adjust the line numbers of the code after the injection.
+            for module_info in _MODULES_LINE_MAPPING.values():
+                block_start = module_info.get('start_wrapper', module_info['start'])
+                block_end = module_info.get('end_wrapper', module_info['end'])
+                if block_start > module_start_line and block_end < line_num:
+                    actual_number -= block_end - block_start
+
+            # a traceback line is of the form: File "<string>", line 8853, in func5
+            trace_str = trace_str.replace(
+                'File "<string>", line {},'.format(number),
+                'File "<{}>", line {},'.format(module, actual_number)
+            )
+
+    return trace_str
+
+
+OS_LINUX = False
+OS_MAC = False
+OS_WINDOWS = False
+if sys.platform.startswith('linux'):
+    OS_LINUX = True
+elif sys.platform.startswith('darwin'):
+    OS_MAC = True
+elif sys.platform.startswith('win32'):
+    OS_WINDOWS = True
 
 
 class WarningsHandler(object):
@@ -57,7 +178,7 @@ try:
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set
 
-    import dateparser
+    import dateparser  # type: ignore
     from datetime import timezone  # type: ignore
 except Exception:
     if sys.version_info[0] < 3:
@@ -68,11 +189,15 @@ except Exception:
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
+PY_VER_MINOR = sys.version_info[1]
 STIX_PREFIX = "STIX "
 # pylint: disable=undefined-variable
 
 ZERO = timedelta(0)
 HOUR = timedelta(hours=1)
+
+# The max number of profiling related rows to print to the log on memory dump
+PROFILING_DUMP_ROWS_LIMIT = 20
 
 
 if IS_PY3:
@@ -1413,6 +1538,11 @@ class IntegrationLogger(object):
                 if js.endswith('"'):
                     js = js[:-1]
                 to_add.append(js)
+                if IS_PY3:
+                    to_add.append(urllib.parse.quote_plus(a))  # type: ignore[attr-defined]
+                else:
+                    to_add.append(urllib.quote_plus(a))
+
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
@@ -1566,25 +1696,27 @@ def logger(func):
     return func_wrapper
 
 
-def formatCell(data, is_pretty=True):
+def formatCell(data, is_pretty=True, json_transform=None):
     """
        Convert a given object to md while decending multiple levels
 
-       :type data: ``str`` or ``list``
+
+       :type data: ``str`` or ``list`` or ``dict``
        :param data: The cell content (required)
 
        :type is_pretty: ``bool``
        :param is_pretty: Should cell content be prettified (default is True)
 
+       :type json_transform: ``JsonTransformer``
+       :param json_transform: The Json transform object to transform the data
+
        :return: The formatted cell content as a string
        :rtype: ``str``
     """
-    if isinstance(data, STRING_TYPES):
-        return data
-    elif isinstance(data, dict):
-        return '\n'.join([u'{}: {}'.format(k, flattenCell(v, is_pretty)) for k, v in data.items()])
-    else:
-        return flattenCell(data, is_pretty)
+    if json_transform is None:
+        json_transform = JsonTransformer(flatten=True)
+
+    return json_transform.json_to_str(data, is_pretty)
 
 
 def flattenCell(data, is_pretty=True):
@@ -1654,6 +1786,25 @@ def argToList(arg, separator=','):
             return json.loads(arg)
         return [s.strip() for s in arg.split(separator)]
     return [arg]
+
+
+def remove_duplicates_from_list_arg(args, field):
+    """
+        Removes duplicates from a list after calling argToList.
+        For example: args: {'ids': "1,2,1"}, field='ids'
+        The return output will be ["1", "2"]
+
+        :type args: ``dict``
+        :param args: Args to be converted (required)
+
+        :type field: ``str``
+        :param field: Field in args to be converted into list without duplicates (required)
+
+        :return: A python list of args without duplicates
+        :rtype: ``list``
+    """
+    convert_to_list = argToList(args.get(field))
+    return list(set(convert_to_list))
 
 
 def argToBoolean(value):
@@ -1774,7 +1925,127 @@ def create_clickable_url(url):
     return '[{}]({})'.format(url, url)
 
 
-def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
+class JsonTransformer:
+    """
+    A class to transform a json to
+
+    :type flatten: ``bool``
+    :param flatten: Should we flatten the json using `flattenCell` (for BC)
+
+    :type keys: ``Set[str]``
+    :param keys: Set of keys to keep
+
+    :type is_nested: ``bool``
+    :param is_nested: If look for nested
+
+    :type func: ``Callable``
+    :param func: A function to parse the json
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
+        """
+        Constructor for JsonTransformer
+
+        :type flatten: ``bool``
+        :param flatten:  Should we flatten the json using `flattenCell` (for BC)
+
+        :type keys: ``Iterable[str]``
+        :param keys: an iterable of relevant keys list from the json. Notice we save it as a set in the class
+
+        :type is_nested: ``bool``
+        :param is_nested: Whether to search in nested keys or not
+
+        :type func: ``Callable``
+        :param func: A function to parse the json
+        """
+        if keys is None:
+            keys = []
+        self.keys = set(keys)
+        self.is_nested = is_nested
+        self.func = func
+        self.flatten = flatten
+
+    def json_to_str(self, json_input, is_pretty=True):
+        if self.func:
+            return self.func(json_input)
+        if isinstance(json_input, STRING_TYPES):
+            return json_input
+        if self.flatten:
+            if not isinstance(json_input, dict):
+                return flattenCell(json_input, is_pretty)
+            return '\n'.join(
+                [u'{key}: {val}'.format(key=k, val=flattenCell(v, is_pretty)) for k, v in json_input.items()])  # for BC
+
+        str_lst = []
+        prev_path = []  # type: ignore
+        for path, key, val in self.json_to_path_generator(json_input):
+            str_path = ''
+            full_tabs = '\t' * len(path)
+            if path != prev_path:  # need to construct tha `path` string only of it changed from the last one
+                common_prefix_index = len(os.path.commonprefix((prev_path, path)))  # type: ignore
+                path_suffix = path[common_prefix_index:]
+
+                str_path_lst = []
+                for i, p in enumerate(path_suffix):
+                    is_list = isinstance(p, int)
+                    tabs = (common_prefix_index + i) * '\t'
+                    path_value = p if not is_list else '-'
+                    delim = ':\n' if not is_list else ''
+                    str_path_lst.append('{tabs}**{path_value}**{delim}'.format(tabs=tabs, path_value=path_value, delim=delim))
+                str_path = ''.join(str_path_lst)
+                prev_path = path
+                if path and isinstance(path[-1], int):
+                    # if it is a beginning of a list, there is only one tab left
+                    full_tabs = '\t'
+
+            str_lst.append(
+                '{path}{tabs}***{key}***: {val}'.format(path=str_path, tabs=full_tabs, key=key, val=flattenCell(val, is_pretty)))
+
+        return '\n'.join(str_lst)
+
+    def json_to_path_generator(self, json_input, path=None):
+        """
+        :type json_input: ``list`` or ``dict``
+        :param json_input: The json input to transform
+        :type path: ``List[str + int]``
+        :param path: The path of the key, value pair inside the json
+
+        :rtype ``Tuple[List[str + int], str, str]``
+        :return:  A tuple. the second and third elements are key, values, and the first is their path in the json
+        """
+        if path is None:
+            path = []
+        is_in_path = not self.keys or any(p for p in path if p in self.keys)
+        if isinstance(json_input, dict):
+            for k, v in json_input.items():
+                if is_in_path or k in self.keys:  # found data to return
+                    # recurse until finding a primitive value
+                    if not isinstance(v, dict) and not isinstance(v, list):
+                        yield path, k, v
+                    else:
+                        for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                            yield res
+
+                elif self.is_nested:
+                    # recurse all the json_input to find the relevant data
+                    for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                        yield res
+
+        if isinstance(json_input, list):
+            if not json_input or (not isinstance(json_input[0], list) and not isinstance(json_input[0], dict)):
+                # if the items of the lists are primitive, put the values in one line
+                yield path, 'values', ', '.join(json_input)
+            else:
+                for i, item in enumerate(json_input):
+                    for res in self.json_to_path_generator(item, path + [i]):  # this is yield from for python2 BC
+                        yield res
+
+
+def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
+                    date_fields=None, json_transform_mapping=None, is_auto_json_transform=False):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1799,6 +2070,15 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 
        :type url_keys: ``list``
        :param url_keys: a list of keys in the given JSON table that should be turned in to clickable
+
+       :type date_fields: ``list``
+       :param date_fields: A list of date fields to format the value to human-readable output.
+
+        :type json_transform_mapping: ``Dict[str, JsonTransformer]``
+        :param json_transform_mapping: A mapping between a header key to corresponding JsonTransformer
+
+        :type is_auto_json_transform: ``bool``
+        :param is_auto_json_transform: Boolean to try to auto transform complex json
 
        :return: A string representation of the markdown table
        :rtype: ``str``
@@ -1850,6 +2130,10 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                 headers_aux.remove(header)
         headers = headers_aux
 
+    if not json_transform_mapping:
+        json_transform_mapping = {header: JsonTransformer(flatten=not is_auto_json_transform) for header in
+                                  headers}
+
     if t and len(headers) > 0:
         newHeaders = []
         if headerTransform is None:  # noqa
@@ -1865,8 +2149,18 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         sep = '---'
         mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
         for entry in t:
-            vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''),
+            entry_copy = entry.copy()
+            if date_fields:
+                for field in date_fields:
+                    try:
+                        entry_copy[field] = datetime.fromtimestamp(int(entry_copy[field]) / 1000).strftime('%Y-%m-%d %H:%M:%S')
+                    except Exception:
+                        pass
+
+            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False,
+                                               json_transform_mapping.get(h)) if entry_copy.get(h) is not None else ''),
                                    True, True) for h in headers]
+
             # this pipe is optional
             mdResult += '| '
             try:
@@ -2087,7 +2381,7 @@ def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
         st = st.replace('\n', '<br>')  # Unix
 
     if minimal_escaping:
-        for c in '|':
+        for c in ('|', '`'):
             st = st.replace(c, '\\' + c)
     else:
         st = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
@@ -2385,7 +2679,16 @@ def get_integration_name():
     :return: Calling integration's name
     :rtype: ``str``
     """
-    return demisto.callingContext.get('context', '').get('IntegrationBrand')
+    return demisto.callingContext.get('context', {}).get('IntegrationBrand', '')
+
+
+def get_script_name():
+    """
+    Getting calling script name
+    :return: Calling script name
+    :rtype: ``str``
+    """
+    return demisto.callingContext.get('context', {}).get('ScriptName', '')
 
 
 class Common(object):
@@ -2421,6 +2724,9 @@ class Common(object):
         :type reliability: ``DBotScoreReliability``
         :param reliability: use DBotScoreReliability class
 
+        :type message: ``str``
+        :param message: Used to message on the api response, for example: When return api response is "Not found".
+
         :return: None
         :rtype: ``None``
         """
@@ -2435,13 +2741,13 @@ class Common(object):
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
         def __init__(self, indicator, indicator_type, integration_name='', score=None, malicious_description=None,
-                     reliability=None):
+                     reliability=None, message=None):
 
             if not DBotScoreType.is_valid_type(indicator_type):
                 raise TypeError('indicator_type must be of type DBotScoreType enum')
 
             if not Common.DBotScore.is_valid_score(score):
-                raise TypeError('indicator_type must be of type DBotScore enum')
+                raise TypeError('indicator `score` must be of type DBotScore enum')
 
             if reliability and not DBotScoreReliability.is_valid_type(reliability):
                 raise TypeError('reliability must be of type DBotScoreReliability enum')
@@ -2450,12 +2756,14 @@ class Common(object):
             self.indicator_type = indicator_type
             # For integrations - The class will automatically determine the integration name.
             if demisto.callingContext.get('integration'):
-                self.integration_name = get_integration_name()
+                context_integration_name = get_integration_name()
+                self.integration_name = context_integration_name if context_integration_name else integration_name
             else:
                 self.integration_name = integration_name
             self.score = score
             self.malicious_description = malicious_description
             self.reliability = reliability
+            self.message = message
 
         @staticmethod
         def is_valid_score(score):
@@ -2483,6 +2791,9 @@ class Common(object):
 
             if self.reliability:
                 dbot_context['Reliability'] = self.reliability
+
+            if self.message:
+                dbot_context['Message'] = self.message
 
             ret_value = {
                 Common.DBotScore.get_context_path(): dbot_context
@@ -4964,7 +5275,7 @@ class Common(object):
             if (
                 extensions
                 and not isinstance(extensions, list)
-                and any(isinstance(e, Common.CertificateExtension) for e in extensions)
+                and any(isinstance(e, Common.CertificateExtension) for e in extensions)  # type: ignore
             ):
                 raise TypeError('extensions must be of type List[Common.CertificateExtension]')
             self.extensions = extensions
@@ -5260,6 +5571,9 @@ def arg_to_number(arg, arg_name=None, required=False):
                 raise ValueError('Missing required argument')
 
         return None
+
+    arg = encode_string_results(arg)
+
     if isinstance(arg, str):
         if arg.isdigit():
             return int(arg)
@@ -6029,7 +6343,7 @@ def return_error(message, error='', outputs=None):
                                                              'long-running-execution',
                                                              'fetch-indicators')
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
-        message = "{}\n\n{}".format(message, traceback.format_exc())
+        message = "{}\n\n{}".format(message, fix_traceback_line_numbers(traceback.format_exc()))
 
     message = LOG(message)
     if error:
@@ -6091,6 +6405,190 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
     })
     if exit:
         sys.exit(0)
+
+
+class CommandRunner:
+    """
+    Class for executing multiple commands and save the results of each command.
+
+    :return: None
+    :rtype: ``None``
+    """
+    class Command:
+        """
+        Data class with the data required to execute a command.
+
+        :return: None
+        :rtype: ``None``
+        """
+        def __init__(self, commands, args_lst, brand=None, instance=None):
+            """
+
+            :param commands: The commands list or a single command
+            :type commands: str + List[str]
+            :param args_lst: The args list or a single args
+            :type args_lst: List[Dict] + Dict
+            :param brand: The brand to use
+            :type brand: str
+            :param instance: The instance to use
+            :type instance: str
+            """
+            if isinstance(commands, str) and isinstance(args_lst, dict):
+                commands = [commands]
+                args_lst = [args_lst]
+            if isinstance(commands, str) and isinstance(args_lst, list):
+                commands = [commands for _ in range(len(args_lst))]
+            self._is_valid(commands, args_lst)
+            self.commands = commands
+            self.args_lst = args_lst
+            if brand:
+                for args in self.args_lst:
+                    args.update({'using-brand': brand})
+            if instance:
+                for args in self.args_lst:
+                    args.update({'using': instance})
+
+        @staticmethod
+        def _is_valid(commands, args_lst):
+            """
+            Error handling of the given arguments
+            :param commands: list of commands
+            :param args_lst: list of args
+            :return:
+            """
+            if not isinstance(commands, list):
+                raise DemistoException('Expected "commands" argument to be a list. received: {}'.format(type(commands)))
+            if not isinstance(args_lst, list):
+                raise DemistoException('Expected "args_lst" argument to be a list. received: {}'.format(type(args_lst)))
+            if len(commands) != len(args_lst):
+                raise DemistoException('"commands" and "args_lst" should be in the same size')
+
+    class Result:
+        """
+        Class for the result of the command.
+
+        :return: None
+        :rtype: ``None``
+        """
+        def __init__(self, command, args, brand, instance, result):
+            """
+            :param command: command that was run.
+            :type command ``str``
+            :param args: args that was run.
+            :type args: ``dict``
+            :param brand: The brand that was used.
+            :type brand: ``str``
+            :param instance: The instance that was used.
+            :type instance: ``str``
+            :param result: The result of the command.
+            :type result: ``object``
+            """
+            self.command = command
+            self.args = args
+            self.brand = brand
+            self.instance = instance
+            self.result = result
+
+    @staticmethod
+    def execute_commands(command, extract_contents=True):
+        """
+        Runs the `demisto.executeCommand()` and gets all the results, including the errors, returned from the command.
+
+        :type command: ``Command``
+        :param command: The commands to run. (required)
+
+        :type extract_contents: ``bool``
+        :param extract_contents: Whether to extract Contents part of the results. Default is True.
+
+        :return: A tuple of two lists: the command results list and command errors list.
+        :rtype: ``Tuple[List[ResultWrapper], List[ResultWrapper]]``
+        """
+        results, errors = [], []
+        for command, args in zip(command.commands, command.args_lst):
+            try:
+                execute_command_results = demisto.executeCommand(command, args)
+                for res in execute_command_results:
+                    brand_name = res.get('Brand', 'Unknown') if isinstance(res, dict) else 'Unknown'
+                    module_name = res.get('ModuleName', 'Unknown') if isinstance(res, dict) else 'Unknown'
+                    if is_error(res):
+                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, get_error(res)))
+                    else:
+                        if extract_contents:
+                            res = res.get('Contents', {})
+                        if res is None:
+                            res = {}
+                        results.append(CommandRunner.Result(command, args, brand_name, module_name, res))
+            except ValueError as e:
+                # We expect this error when the command is not supported.
+                demisto.debug('demisto.executeCommand received an error because the command is not supported:'
+                              ' {e}'.format(e=str(e)))
+        return results, errors
+
+    @staticmethod
+    def run_commands_with_summary(commands):
+        """
+        Given a list of commands, return a list of results (to pass to return_results).
+        In addition, it will create a `CommandResult` of the summary of the commands, which is a `readable_output`.
+
+        :param commands: A list of commands.
+        :type commands: ``List[Command]``
+        :return: list of results
+        """
+        full_results, full_errors = [], []
+        for command in commands:
+            results, errors = CommandRunner.execute_commands(command, extract_contents=False)
+            full_results.extend(results)
+            full_errors.extend(errors)
+
+        summary_md = CommandRunner.get_results_summary(full_results, full_errors)
+        command_results = [res.result for res in full_results]
+        if not command_results:
+            if full_errors:  # no results were given but there are errors
+                errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
+                error_msg = '\n'.join(['Script failed. The following errors were encountered: '] + errors)
+            else:
+                error_msg = 'The commands that run are not supported in this Instance. ' \
+                            'Try to configure the integrations in XSOAR settings.'
+            raise DemistoException(error_msg)
+
+        command_results.append(CommandResults(readable_output=summary_md))
+        return command_results
+
+    @staticmethod
+    def get_results_summary(results, errors):
+        """
+        Get a Human Readable result for all the results of the commands.
+        :param results: list of returned results
+        :param errors: list of returned errors
+        :return: `CommandResults` of HumanReadable that summarizes the results and errors.
+        """
+        results_summary_table = []
+        headers = ['Instance', 'Command', 'Result', 'Comment']
+        for res in results:
+            # don't care about using arg in command
+            res.args.pop('using', None)
+            res.args.pop('using-brand', None)
+            command = {'command': res.command,
+                       'args': res.args}
+            results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=res.brand,
+                                                                                         instance=res.instance),
+                                          'Command': command,
+                                          'Result': 'Success',
+                                          'Comment': None})
+
+        for err in errors:
+            # don't care about using arg in command
+            err.args.pop('using', None)
+            err.args.pop('using-brand', None)
+            command = {'command': err.command,
+                       'args': err.args}
+            results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=err.brand,
+                                                                                         instance=err.instance),
+                                          'Command': command,
+                                          'Result': 'Error',
+                                          'Comment': err.result})
+        summary_md = tableToMarkdown('Results Summary', results_summary_table, headers=headers, is_auto_json_transform=True)
+        return summary_md
 
 
 def execute_command(command, args, extract_contents=True, fail_on_error=True):
@@ -6228,10 +6726,9 @@ ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9
 ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'  # noqa: E501
 ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'  # noqa: E501
 ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'  # noqa: E501
-emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
+emailRegex = r'\b[^@\s]{1,64}@[^@\s]{1,253}\.[^@\s]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
-urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
-           r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
+urlRegex = r'(?i)((?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/|www\[?\.\]?|ftp\[?\.\]?|(?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/www\[?\.\]?))(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)(\[?\.\]?[A-Za-z]{2,6})?)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6})|(0\[?x\]?[0-9a-fA-F]{8})|([0-7]{4}\.[0-7]{4}\.[0-7]{4}\.[0-7]{4})|([0-9]{1,10}))($|\/\S+|\/$|:[0-9]{1,5}($|\/\S*))|^(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?))(\/([0-9]|[12][0-9]|3[0-2])\/\S+|\/[A-Za-z]\S*|\/([3-9]{2}|[0-9]{3,})\S*|(:[0-9]{1,5}\/\S+))$)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6}(((\/\S+))|(:[0-9]{1,5}\/\S+))$)|\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b((\/([0-9]|[1-5][0-9]|6[0-4])\/\S+|\/[A-Za-z]\S*|\/((6[5-9]|[7-9][0-9])|[0-9]{3,}|65)\S*|(:[0-9]{1,5}\/\S+))$))'  # noqa: E501
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
@@ -6310,10 +6807,8 @@ def pascalToSpace(s):
     if not isinstance(s, STRING_OBJ_TYPES):
         return s
 
-    tokens = pascalRegex.findall(s)
-    for t in tokens:
-        # double space to handle capital words like IP/URL/DNS that not included in the regex
-        s = s.replace(t, ' {} '.format(t.title()))
+    # double space to handle capital words like IP/URL/DNS that not included in the regex
+    s = re.sub(pascalRegex, lambda match: r' {} '.format(match.group(1).title()), s)
 
     # split and join: to remove double spacing caused by previous workaround
     s = ' '.join(s.split())
@@ -6715,6 +7210,21 @@ except Exception as ex:
     demisto.info('Failed initializing DebugLogger: {}'.format(ex))
 
 
+def add_sensitive_log_strs(sensitive_str):
+    """
+    Adds the received string to both LOG and DebugLogger. The logger will mask the string each time he encounters it.
+
+    :type sensitive_str: ``str``
+    :param sensitive_str: The string to be replaced.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    if _requests_logger:
+        _requests_logger.int_logger.add_replace_strs(sensitive_str)
+    LOG.add_replace_strs(sensitive_str)
+
+
 def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
     """
         Parses the date_string function to the corresponding datetime object.
@@ -6904,6 +7414,32 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
 
 # Will add only if 'requests' module imported
 if 'requests' in sys.modules:
+    if IS_PY3 and PY_VER_MINOR >= 10:
+        from requests.packages.urllib3.util.ssl_ import create_urllib3_context
+
+        # The ciphers string used to replace default cipher string
+
+        CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
+                         'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
+
+        class SSLAdapter(HTTPAdapter):
+            """
+                A wrapper used for https communication to enable ciphers that are commonly used
+                and are not enabled by default
+                :return: No data returned
+                :rtype: ``None``
+            """
+
+            def init_poolmanager(self, *args, **kwargs):
+                context = create_urllib3_context(ciphers=CIPHERS_STRING)
+                kwargs['ssl_context'] = context
+                return super(SSLAdapter, self).init_poolmanager(*args, **kwargs)
+
+            def proxy_manager_for(self, *args, **kwargs):
+                context = create_urllib3_context(ciphers=CIPHERS_STRING)
+                kwargs['ssl_context'] = context
+                return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
+
     class BaseClient(object):
         """Client to use in integrations with powerful _http_request
         :type base_url: ``str``
@@ -6934,13 +7470,32 @@ if 'requests' in sys.modules:
         :rtype: ``None``
         """
 
-        def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+        REQUESTS_TIMEOUT = 60
+
+        def __init__(
+            self,
+            base_url,
+            verify=True,
+            proxy=False,
+            ok_codes=tuple(),
+            headers=None,
+            auth=None,
+            timeout=REQUESTS_TIMEOUT,
+        ):
             self._base_url = base_url
             self._verify = verify
             self._ok_codes = ok_codes
             self._headers = headers
             self._auth = auth
             self._session = requests.Session()
+
+            # the following condition was added to overcome the security hardening happened in Python 3.10.
+            # https://github.com/python/cpython/pull/25778
+            # https://bugs.python.org/issue43998
+
+            if IS_PY3 and PY_VER_MINOR >= 10 and not verify:
+                self._session.mount('https://', SSLAdapter())
+
             if proxy:
                 ensure_proxy_has_http_prefix()
             else:
@@ -6948,6 +7503,11 @@ if 'requests' in sys.modules:
 
             if not verify:
                 skip_cert_verification()
+
+            # removing trailing = char from env var value added by the server
+            entity_timeout = os.getenv('REQUESTS_TIMEOUT.' + (get_integration_name() or get_script_name()), '')
+            system_timeout = os.getenv('REQUESTS_TIMEOUT', '')
+            self.timeout = float(entity_timeout or system_timeout or timeout)
 
         def __del__(self):
             try:
@@ -7016,14 +7576,26 @@ if 'requests' in sys.modules:
                     raise_on_redirect=raise_on_redirect,
                     **whitelist_kawargs
                 )
-                adapter = HTTPAdapter(max_retries=retry)
-                self._session.mount('http://', adapter)
-                self._session.mount('https://', adapter)
+                http_adapter = HTTPAdapter(max_retries=retry)
+
+                # the following condition was added to overcome the security hardening happened in Python 3.10.
+                # https://github.com/python/cpython/pull/25778
+                # https://bugs.python.org/issue43998
+
+                if self._verify:
+                    https_adapter = http_adapter
+                elif IS_PY3 and PY_VER_MINOR >= 10:
+                    https_adapter = SSLAdapter(max_retries=retry)
+                else:
+                    https_adapter = http_adapter
+
+                self._session.mount('https://', https_adapter)
+
             except NameError:
                 pass
 
         def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
-                          params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
+                          params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
                           error_handler=None, empty_valid_codes=None, **kwargs):
@@ -7130,6 +7702,9 @@ if 'requests' in sys.modules:
                 auth = auth if auth else self._auth
                 if retries:
                     self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
+                if not timeout:
+                    timeout = self.timeout
+
                 # Execute
                 res = self._session.request(
                     method,
@@ -7175,7 +7750,7 @@ if 'requests' in sys.modules:
                     if resp_type == 'content':
                         return res.content
                     if resp_type == 'xml':
-                        ET.parse(res.text)
+                        ET.fromstring(res.text)
                     if resp_type == 'response':
                         return res
                     return res
@@ -7917,7 +8492,7 @@ class TableOrListWidget(BaseWidget):
 class IndicatorsSearcher:
     """Used in order to search indicators by the paging or serachAfter param
     :type page: ``int``
-    :param page: the number of page from which we start search indicators from. (will be updated via iter)
+    :param page: the number of page from which we start search indicators from.
 
     :type filter_fields: ``Optional[str]``
     :param filter_fields: comma separated fields to filter (e.g. "value,type")
@@ -7928,21 +8503,20 @@ class IndicatorsSearcher:
     :type query: ``Optional[str]``
     :param query: indicator search query
 
-    :type size: ``int``
-    :param size: limit the number of returned results.
-
     :type to_date: ``Optional[str]``
     :param to_date: the end date to search until to.
 
     :type value: ``str``
     :param value: the indicator value to search.
 
-    :type limit ``Optional[int]``
-    :param limit the upper limit of the search (will be updated via iter)
+    :type limit: ``Optional[int]``
+    :param limit: the current upper limit of the search (can be updated after init)
 
     :return: No data returned
     :rtype: ``None``
     """
+    SEARCH_AFTER_TITLE = 'searchAfter'
+
     def __init__(self,
                  page=0,
                  filter_fields=None,
@@ -7956,9 +8530,7 @@ class IndicatorsSearcher:
         self._can_use_search_after = is_demisto_version_ge('6.1.0')
         # populateFields merged in https://github.com/demisto/server/pull/18398
         self._can_use_filter_fields = is_demisto_version_ge('6.1.0', build_number='1095800')
-        self._search_after_title = 'searchAfter'
         self._search_after_param = None
-        self._original_page = page
         self._page = page
         self._filter_fields = filter_fields
         self._total = None
@@ -7967,16 +8539,10 @@ class IndicatorsSearcher:
         self._size = size
         self._to_date = to_date
         self._value = value
-        self._original_limit = limit
-        self._next_limit = limit
-        self._search_is_done = False
+        self._limit = limit
+        self._total_iocs_fetched = 0
 
     def __iter__(self):
-        self._total = None
-        self._search_after_param = None
-        self._page = self._original_page
-        self._next_limit = self._original_limit
-        self._search_is_done = False
         return self
 
     # python2
@@ -7984,20 +8550,17 @@ class IndicatorsSearcher:
         return self.__next__()
 
     def __next__(self):
-        if self._search_is_done:
+        if self.is_search_done():
             raise StopIteration
-        size = min(self._size, self._next_limit or self._size)
         res = self.search_indicators_by_version(from_date=self._from_date,
                                                 query=self._query,
-                                                size=size,
+                                                size=self._size,
                                                 to_date=self._to_date,
                                                 value=self._value)
         fetched_len = len(res.get('iocs') or [])
         if fetched_len == 0:
             raise StopIteration
-        if self._next_limit:
-            self._next_limit -= fetched_len
-        self._search_is_done = self._is_search_done()
+        self._total_iocs_fetched += fetched_len
         return res
 
     @property
@@ -8010,33 +8573,34 @@ class IndicatorsSearcher:
 
     @property
     def limit(self):
-        return self._next_limit
+        return self._limit
 
     @limit.setter
     def limit(self, value):
-        self._next_limit = self._original_limit = value
+        self._limit = value
 
-    def _is_search_done(self):
+    def is_search_done(self):
         """
-        Checks one of these conditions:
-        1. self.limit is set, and it's updated to be less or equal to zero
+        Return True if one of these conditions is met (else False):
+        1. self.limit is set, and it's updated to be less or equal to zero - return True
         2. for search_after if self.total was populated by a previous search, but no self._search_after_param
         3. for page if self.total was populated by a previous search, but page is too large
         """
-        if self._search_is_done:
-            return True
-
-        reached_limit = isinstance(self._next_limit, int) and self._next_limit <= 0
+        reached_limit = self.limit is not None and self.limit <= self._total_iocs_fetched
         if reached_limit:
+            demisto.debug("IndicatorsSearcher has reached its limit: {}".format(self.limit))
+            # update limit to match _total_iocs_fetched value
+            if self._total_iocs_fetched > self.limit:
+                self.limit = self._total_iocs_fetched
             return True
-
-        if self.total is None:
-            return False
         else:
-            if self._can_use_search_after:
-                return self._search_after_param is None
-            else:
-                return self.total == self.page * self._size
+            if self.total is None:
+                return False
+            no_more_indicators = (self.total and self._search_after_param is None) if self._can_use_search_after \
+                else self.total <= self.page * self._size
+            if no_more_indicators:
+                demisto.debug("IndicatorsSearcher can not fetch anymore indicators")
+            return no_more_indicators
 
     def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
         """There are 2 cases depends on the sever version:
@@ -8061,28 +8625,22 @@ class IndicatorsSearcher:
         :return: object contains the search results
         :rtype: ``dict``
         """
-        # use paging as fallback when cannot use search_after
-        use_paging = not (self._search_after_param and self._can_use_search_after)
-        search_iocs_params = assign_params(
+        search_args = assign_params(
             fromDate=from_date,
             toDate=to_date,
             query=query,
             size=size,
             value=value,
-            searchAfter=self._search_after_param if not use_paging else None,
+            searchAfter=self._search_after_param if self._can_use_search_after else None,
             populateFields=self._filter_fields if self._can_use_filter_fields else None,
-            page=self.page if use_paging else None
+            # use paging as fallback when cannot use search_after
+            page=self.page if not self._can_use_search_after else None
         )
-        res = demisto.searchIndicators(**search_iocs_params)
-        if len(res.get('iocs') or []) > 0:
-            self._page += 1  # advance pages for search_after, as fallback
-        else:
-            self._search_is_done = True
-        self._search_after_param = res.get(self._search_after_title)
+        res = demisto.searchIndicators(**search_args)
+        if isinstance(self._page, int):
+            self._page += 1  # advance pages
+        self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
         self._total = res.get('total')
-        if self._search_after_title in res and self._search_after_param is None:
-            demisto.info('Elastic search using searchAfter returned all indicators')
-            self._search_is_done = True
         return res
 
 
@@ -8143,6 +8701,34 @@ def set_feed_last_run(last_run_indicators):
         demisto.setIntegrationContext(last_run_indicators)
 
 
+def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
+    """
+    This function sets the last run of the mirror, from XSOAR version 6.6.0, by using `demisto.setLastMirrorRun()`.
+    Before XSOAR version 6.6.0, we don't set the given data and an exception will be raised.
+    :type last_mirror_run: ``dict``
+    :param last_mirror_run: Data to save in the "LastMirrorRun" object.
+    :rtype: ``None``
+    :return: None
+    """
+    if is_demisto_version_ge('6.6.0'):
+        demisto.setLastMirrorRun(last_mirror_run)
+    else:
+        raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
+
+
+def get_last_mirror_run():  # type: () -> Optional[Dict[Any, Any]]
+    """
+    This function gets the last run of the mirror, from XSOAR version 6.6.0, using `demisto.getLastMirrorRun()`.
+    Before XSOAR version 6.6.0, the given data is not returned and an exception will be raised.
+    :rtype: ``dict``
+    :return: A dictionary representation of the data that was already set in the previous runs (or an empty dict if
+     we did not set anything yet).
+    """
+    if is_demisto_version_ge('6.6.0'):
+        return demisto.getLastMirrorRun() or {}
+    raise DemistoException("You cannot use getLastMirrorRun as your version is below 6.6.0")
+
+
 def support_multithreading():
     """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
 
@@ -8154,12 +8740,945 @@ def support_multithreading():
     demisto.lock = Lock()  # type: ignore[attr-defined]
 
     def locked_do(cmd):
-        try:
-            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+        if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+            try:
                 return prev_do(cmd)  # type: ignore[call-arg]
-            else:
-                raise RuntimeError('Failed acquiring lock')
-        finally:
-            demisto.lock.release()  # type: ignore[attr-defined]
+            finally:
+                demisto.lock.release()  # type: ignore[attr-defined]
+        else:
+            raise RuntimeError('Failed acquiring lock')
 
     demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
+
+
+def get_tenant_account_name():
+    """Gets the tenant name from the server url.
+
+    :return: The account name.
+    :rtype: ``str``
+
+    """
+    urls = demisto.demistoUrls()
+    server_url = urls.get('server', '')
+    account_name = ''
+    if '/acc_' in server_url:
+        tenant_name = server_url.split('acc_')[-1]
+        account_name = "acc_{}".format(tenant_name) if tenant_name != "" else ""
+
+    return account_name
+
+
+def indicators_value_to_clickable(indicators):
+    """
+    Function to get the indicator url link for indicators
+
+    :type indicators: ``dict`` + List[dict]
+    :param indicators: An indicator or a list of indicators
+
+    :rtype: ``dict``
+    :return: Key is the indicator, and the value is it's url in the server
+
+    """
+    if not isinstance(indicators, (list, dict)):
+        return {}
+    if not isinstance(indicators, list):
+        indicators = [indicators]
+    res = {}
+    query = ' or '.join(['value:{indicator}'.format(indicator=indicator) for indicator in indicators])
+    indicator_searcher = IndicatorsSearcher(query=query)
+    for ioc_res in indicator_searcher:
+        for inidicator_data in ioc_res.get('iocs', []):
+            indicator = inidicator_data.get('value')
+            indicator_id = inidicator_data.get('id')
+            if not indicator or not indicator_id:
+                raise DemistoException('The response of indicator searcher is invalid')
+            indicator_url = os.path.join('#', 'indicator', indicator_id)
+            res[indicator] = '[{indicator}]({indicator_url})'.format(indicator=indicator, indicator_url=indicator_url)
+    return res
+
+
+def get_message_threads_dump(_sig, _frame):
+    """
+    Listener function to dump the threads to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    code = []
+    for threadId, stack in sys._current_frames().items():
+        code.append("\n# ThreadID: %s" % threadId)
+        for filename, lineno, name, line in traceback.extract_stack(stack):
+            code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
+            if line:
+                code.append("  %s" % (line.strip()))
+
+    ret_value = '\n\n--- Start Threads Dump ---\n'\
+        + '\n'.join(code)\
+        + '\n\n--- End Threads Dump ---\n'
+    return ret_value
+
+
+def get_message_memory_dump(_sig, _frame):
+    """
+    Listener function to dump the memory to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    classes_dict = {}  # type: Dict[str, Dict]
+    for obj in gc.get_objects():
+        size = sys.getsizeof(obj, 0)
+        if hasattr(obj, '__class__'):
+            cls = str(obj.__class__)[8:-2]
+            if cls in classes_dict:
+                current_class = classes_dict.get(cls, {})  # type: Dict
+                current_class['count'] += 1  # type: ignore
+                current_class['size'] += size  # type: ignore
+                classes_dict[cls] = current_class
+            else:
+                current_class = {
+                    'name': cls,
+                    'count': 1,
+                    'size': size,
+                }
+                classes_dict[cls] = current_class
+
+    classes_as_list = list(classes_dict.values())
+    ret_value = '\n\n--- Start Variables Dump ---\n'
+    ret_value += get_message_classes_dump(classes_as_list)
+    ret_value += '\n--- End Variables Dump ---\n\n'
+
+    ret_value = '\n\n--- Start Variables Dump ---\n'
+    ret_value += get_message_local_vars()
+    ret_value += get_message_global_vars()
+    ret_value += '\n--- End Variables Dump ---\n\n'
+
+    ret_value += get_message_modules_sizes()
+
+    return ret_value
+
+
+def get_message_classes_dump(classes_as_list):
+    """
+    A function that returns the printable message about classes dump
+
+    :type classes_as_list: ``list``
+    :param classes_as_list: The classes to print to the log
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+
+    ret_value = '\n\n--- Start Memory Dump ---\n'
+
+    ret_value += '\n--- Start Top {} Classes by Count ---\n\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    classes_sorted_by_count = sorted(classes_as_list, key=lambda d: d['count'], reverse=True)
+    ret_value += 'Count\t\tSize\t\tName\n'
+    for current_class in classes_sorted_by_count[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_class["count"], current_class["size"], current_class["name"])
+    ret_value += '\n--- End Top {} Classes by Count ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    ret_value += '\n--- Start Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    classes_sorted_by_size = sorted(classes_as_list, key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tCount\t\tName\n'
+    for current_class in classes_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_class["size"], current_class["count"], current_class["name"])
+    ret_value += '\n--- End Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    ret_value += '\n--- End Memory Dump ---\n\n'
+
+    return ret_value
+
+
+def get_message_local_vars():
+    """
+    A function that returns the printable message about local variables
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    local_vars = list(locals().items())
+    ret_value = '\n\n--- Start Local Vars ---\n\n'
+    for current_local_var in local_vars:
+        ret_value += shorten_string_for_printing(str(current_local_var)) + '\n'
+
+    ret_value += '\n--- End Local Vars ---\n\n'
+
+    return ret_value
+
+
+def get_size_of_object(input_object):
+    """
+    A function that recursively iterate to sum size of object & members.
+
+    :type input_object: ``Any``
+    :param input_object: The object to calculate its memory footprint
+
+    :return: Size of input_object in bytes.
+    :rtype: ``int``
+    """
+    if IS_PY3 and PY_VER_MINOR >= 10:
+        from collections.abc import Mapping
+    else:
+        from collections import Mapping  # type: ignore[no-redef]
+
+    from collections import deque
+    from numbers import Number
+    # IS_PY3:
+    # ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray) if IS_PY3 else (str, bytes, Number, bytearray)
+    ZERO_DEPTH_BASES = (str, bytes, Number, bytearray)
+    MAX_LEVEL = 20
+    _seen_ids = set()
+
+    def inner(obj, level):
+        """
+        A recursion that goes deep into objects, to calculate their deep memory footprint.
+
+        :type level: ``int``
+        :param level: Current level of the recursion (object)
+
+        :return: Size of obj in bytes.
+        :rtype: ``int``
+        """
+        if level == MAX_LEVEL:
+            # Stop at MAX_LEVEL
+            return sys.getsizeof(obj)
+        obj_id = id(obj)
+        if obj_id in _seen_ids:
+            return 0
+        _seen_ids.add(obj_id)
+        size = sys.getsizeof(obj)
+        if isinstance(obj, ZERO_DEPTH_BASES):
+            pass
+        elif isinstance(obj, (tuple, list, set, deque)):
+            size += sum(inner(i, level + 1) for i in obj)
+        elif isinstance(obj, Mapping):
+            mapping_items_keys = list(getattr(obj, 'keys')())
+            for current_key in mapping_items_keys:
+                if current_key in obj:
+                    size += (inner(current_key, level + 1) + inner(obj[current_key], level + 1))
+        # Check for custom object instances - may subclass above too
+        if hasattr(obj, '__dict__'):
+            size += inner(vars(obj), level + 1)
+        return size
+    return inner(input_object, 0)
+
+
+excluded_globals = ['__name__', '__doc__', '__package__', '__loader__',
+                    '__spec__', '__annotations__', '__builtins__',
+                    '__file__', '__cached__', '_Feature',
+                    ]
+excluded_types_names = ['MagicMock',  # When running tests locally
+                        ]
+
+
+def get_message_global_vars():
+    """
+    A function that returns the printable message about global variables
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    excluded_types = [types.ModuleType, types.FunctionType,
+                      ]
+
+    globals_dict = dict(globals())
+    globals_dict_full = {}
+    for current_key in globals_dict.keys():
+        current_value = globals_dict[current_key]
+        if not type(current_value) in excluded_types \
+                and current_key not in excluded_globals \
+                and type(current_value).__name__ not in excluded_types_names:
+            globals_dict_full[current_key] = {
+                'name': current_key,
+                'value': current_value,
+                # Deep calculation. Better than sys.getsizeof(current_value)
+                'size': get_size_of_object(current_value)
+            }
+
+    ret_value = '\n\n--- Start Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tName\t\tValue\n'
+    for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"],
+                                               shorten_string_for_printing(str(current_global["value"])))
+    ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    return ret_value
+
+
+def get_message_modules_sizes():
+    """
+    A function that returns the printable message about the loaded modules by size
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    globals_dict = dict(globals())
+    globals_dict_full = {}
+    for current_key in globals_dict.keys():
+        current_value = globals_dict[current_key]
+        if isinstance(current_value, types.ModuleType) \
+                and current_key not in excluded_globals \
+                and type(current_value).__name__ not in excluded_types_names:
+            globals_dict_full[current_key] = {
+                'name': current_key,
+                'value': current_value,
+                # Deep calculation. Better than sys.getsizeof(current_value)
+                'size': get_size_of_object(current_value)
+            }
+
+    ret_value = '\n\n--- Start Top {} Modules by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tName\t\tValue\n'
+    for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"],
+                                               shorten_string_for_printing(str(current_global["value"])))
+    ret_value += '\n--- End Top {} Modules by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    return ret_value
+
+
+def signal_handler_profiling_dump(_sig, _frame):
+    """
+    Listener function to dump the threads and memory to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    msg = '\n\n--- Start Profiling Dump ---\n'
+    msg += get_message_threads_dump(_sig, _frame)
+    msg += get_message_memory_dump(_sig, _frame)
+    msg += '\n--- End Profiling Dump ---\n\n'
+    LOG(msg)
+    LOG.print_log()
+
+
+def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
+    """
+    Function that registers the threads and memory dump signal listener
+
+    :type profiling_dump_rows_limit: ``int``
+    :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
+
+    :type profiling_dump_rows_limit: ``int``
+    :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    if OS_LINUX or OS_MAC:
+
+        import signal
+
+        globals_ = globals()
+        globals_['PROFILING_DUMP_ROWS_LIMIT'] = profiling_dump_rows_limit
+
+        requested_signal = signal_type if signal_type else signal.SIGUSR1
+        signal.signal(requested_signal, signal_handler_profiling_dump)
+    else:
+        demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')
+
+
+def shorten_string_for_printing(source_string, max_length=64):
+    """
+    Function that removes the middle of a long str, for printint or logging.
+    If needed, it will replace the middle with '...',
+    Examples:
+    >>> shorten_string_for_printing('123456789', 9)
+    '123456789'
+    >>> shorten_string_for_printing('1234567890', 9)
+    'abc...890'
+    >>> shorten_string_for_printing('123456789012', 10)
+    '1234...012'
+
+    :type source_string: ``str``
+    :param source_string: A long str that needs shortening.
+
+    :type max_length: ``int``
+    :param max_length: Maximum length of the returned str, should be higher than 0. Default is 64.
+
+    :return:: A string no longer than max_length.
+    :rtype: ``str``
+    """
+    if not source_string or max_length < 1 or len(source_string) <= max_length:
+        return source_string
+
+    extremeties_length = int((max_length - 3) / 2)
+    if max_length % 2 == 0:
+        # even max_length. Start with one more char than at the beginning
+        ret_value = source_string[:extremeties_length + 1] \
+            + '...' \
+            + source_string[-extremeties_length:]
+        return ret_value
+    else:
+        # odd max_length
+        ret_value = source_string[:extremeties_length] \
+            + '...' \
+            + source_string[-extremeties_length:]
+        return ret_value
+
+
+class PollResult:
+    """The response object for polling functions. This object contains information about whether to run again, and what
+    the CommandResults are in case of success, or failure.
+
+    :return: PollResult
+    :rtype: ``PollResult``
+
+    """
+    def __init__(self, response, continue_to_poll=False, args_for_next_run=None, partial_result=None):
+        """
+        Constructor for PollResult
+
+        :type response: ``Any``
+        :param response: The response of the command in the event of success,
+        or in case of failure but Polling is false
+
+        :type continue_to_poll: ``Union[bool, Callable]``
+        :param continue_to_poll: An iterable of relevant keys list from the json. Notice we save it as a set in the class
+
+        :type args_for_next_run: ``Dict``
+        :param args_for_next_run: The arguments to use in the next iteration. Will use the input args in case of None
+
+        :type partial_result: ``CommandResults``
+        :param partial_result: CommandResults to return, even though we will poll again
+
+        """
+        self.response = response
+        self.continue_to_poll = continue_to_poll
+        self.args_for_next_run = args_for_next_run
+        self.partial_result = partial_result
+
+
+def polling_function(name, interval=30, timeout=600, poll_message='Fetching Results:', polling_arg_name="polling",
+                     requires_polling_arg=True):
+    """
+    To use on a function that should rerun itself
+    Commands that use this decorator must have a Polling argument, polling: true in yaml,
+    and a hidden hide_polling_output argument.
+    Commands that use this decorator should return a PollResult.
+    Will raise an DemistoException if the server version doesn't support Scheduled Commands (< 6.2.0)
+
+    :type name: ``str``
+    :param name: The name of the command
+
+    :type interval: ``int``
+    :param interval: How many seconds until the next run
+
+    :type timeout: ``int``
+    :param timeout: How long
+
+    :type poll_message: ``str``
+    :param poll_message: The message to display in the war room while polling
+
+    :type requires_polling_arg: ``bool``
+    :param requires_polling_arg: Whether a polling argument should be expected as one of the demisto args
+
+    :return: Decorator for polling functions
+    :rtype: ``Function``
+    """
+
+    def dec(func):
+        def inner(client, args):
+            if not requires_polling_arg or args.get(polling_arg_name):
+                ScheduledCommand.raise_error_if_not_supported()
+                poll_result = func(client, args)
+
+                should_poll = poll_result.continue_to_poll if isinstance(poll_result.continue_to_poll, bool) \
+                    else poll_result.continue_to_poll()
+                if not should_poll:
+                    return poll_result.response
+
+                readable_output = poll_message if not args.get('hide_polling_output') else None
+                poll_args = poll_result.args_for_next_run or args
+                poll_args['hide_polling_output'] = True
+
+                poll_response = poll_result.partial_result or CommandResults(readable_output=readable_output)
+                poll_response.scheduled_command = ScheduledCommand(command=name, next_run_in_seconds=interval,
+                                                                   args=poll_args, timeout_in_seconds=timeout)
+                return poll_response
+            else:
+                return func(client, args).response
+
+        return inner
+
+    return dec
+
+
+def get_pack_version(pack_name=''):
+    """
+    Get a pack version.
+    The version can be retrieved either by a pack name or by the calling script/integration in which
+    script/integration is part of.
+
+    To get the version of the pack in which the calling script/integration is part of,
+    just call the function without pack_name.
+
+    :type pack_name: ``str``
+    :param pack_name: the pack name as mentioned in the pack metadata file to query its version.
+            use only if querying by a pack name.
+
+    :return: The pack version in which the integration/script is part of / the version of the requested pack name in
+        case provided. in case not found returns empty string.
+    :rtype: ``str``
+    """
+    def _get_packs_by_query(_body_request):
+        packs_body_response = demisto.internalHttpRequest(
+            'POST', uri='/contentpacks/marketplace/search', body=json.dumps(body_request)
+        )
+        return _load_response(_response=packs_body_response.get('body')).get('packs') or []
+
+    def _load_response(_response):
+        try:
+            return json.loads(_response)
+        except json.JSONDecodeError:  # type: ignore[attr-defined]
+            demisto.debug('Unable to load response {response}'.format(response=_response))
+            return {}
+
+    def _extract_current_pack_version(_packs, _query_type, _entity_name):
+        # in case we have more than 1 pack returned from the search, need to make sure to retrieve the correct pack
+        if query_type == 'automation' or query_type == 'integration':
+            for pack in _packs:
+                for content_entity in (pack.get('contentItems') or {}).get(_query_type) or []:
+                    if (content_entity.get('name') or '') == _entity_name:
+                        return pack.get('currentVersion') or ''
+        else:
+            for pack in _packs:
+                if pack.get('name') == _entity_name:
+                    return pack.get('currentVersion') or ''
+        return ''
+
+    def _extract_integration_display_name(_integration_brand):
+        integrations_body_response = demisto.internalHttpRequest(
+            'POST', uri='/settings/integration/search', body=json.dumps({})
+        )
+        integrations_body_response = _load_response(_response=integrations_body_response.get('body'))
+        integrations = integrations_body_response.get('configurations') or []
+
+        for integration in integrations:
+            integration_display_name = integration.get('display')
+            if integration.get('id') == _integration_brand and integration_display_name:
+                return integration_display_name
+        return ''
+    # query by pack name
+    if pack_name:
+        entity_name = pack_name
+        body_request = {'packsQuery': entity_name}
+        query_type = 'pack'
+    # query by integration name
+    elif demisto.callingContext.get('integration'):  # True means its integration, False means its script/automation.
+        entity_name = (demisto.callingContext.get('context') or {}).get('IntegrationBrand') or ''
+        body_request = {'integrationsQuery': entity_name}
+        query_type = 'integration'
+    # query by script/automation name
+    else:
+        entity_name = (demisto.callingContext.get('context') or {}).get('ScriptName') or ''
+        body_request = {'automationQuery': entity_name}
+        query_type = 'automation'
+
+    pack_version = _extract_current_pack_version(
+        _packs=_get_packs_by_query(_body_request=body_request),
+        _query_type=query_type,
+        _entity_name=entity_name
+    )
+    if not pack_version and query_type == 'integration':
+        # handle the case where the display name of the integration is not the same as the integration brand
+        integration_display = _extract_integration_display_name(_integration_brand=entity_name)
+        if integration_display and integration_display != entity_name:
+            body_request['integrationsQuery'] = integration_display
+
+            return _extract_current_pack_version(
+                _packs=_get_packs_by_query(_body_request=body_request),
+                _query_type=query_type,
+                _entity_name=integration_display
+            )
+        return ''
+    return pack_version
+
+
+def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, reliability=None,
+                                                   context_prefix=None, address_type=None):
+    '''
+    Used for cases where the api response to an indicator is not found,
+    returns CommandResults with readable_output generic in this case, and indicator with DBotScore unknown
+
+    :type indicator: ``str``
+    :param indicator: The value of the indicator
+
+    :type indicator_type: ``DBotScoreType``
+    :param indicator_type: use DBotScoreType class [Unsupport in types CVE and ATTACKPATTERN]
+
+    :type reliability: ``DBotScoreReliability``
+    :param reliability: use DBotScoreReliability class
+
+    :type context_prefix: ``str``
+    :param context_prefix: Use only in case that the indicator is CustomIndicator
+
+    :type address_type: ``str``
+    :param address_type: Use only in case that the indicator is Cryptocurrency
+
+    :rtype: ``CommandResults``
+    :return: CommandResults
+    '''
+    if not context_prefix and (indicator_type is DBotScoreType.CUSTOM or not DBotScoreType.is_valid_type(indicator_type)):
+        raise ValueError('Indicator type is invalid')
+
+    if indicator_type in [DBotScoreType.CVE, DBotScoreType.ATTACKPATTERN]:
+        #  not supportted, because they have a fixed dbotscore
+        msg_error = 'DBotScoreType.{} is unsupported'.format(indicator_type.upper())
+        raise ValueError(msg_error)
+
+    dbot_score = Common.DBotScore(indicator=indicator,
+                                  indicator_type=indicator_type
+                                  if DBotScoreType.is_valid_type(indicator_type) else DBotScoreType.CUSTOM,
+                                  score=Common.DBotScore.NONE,
+                                  reliability=reliability,
+                                  message='No results found.')
+
+    integration_name = dbot_score.integration_name or 'Results'
+    indicator_ = None  # type: Any
+    if indicator_type is DBotScoreType.FILE:
+        if sha1Regex.match(indicator):
+            indicator_ = Common.File(dbot_score=dbot_score, sha1=indicator)
+            indicator_type = 'sha1'
+        elif sha256Regex.match(indicator):
+            indicator_ = Common.File(dbot_score=dbot_score, sha256=indicator)
+            indicator_type = 'sha256'
+        elif sha512Regex.match(indicator):
+            indicator_ = Common.File(dbot_score=dbot_score, sha512=indicator)
+            indicator_type = 'sha512'
+        elif md5Regex.match(indicator):
+            indicator_ = Common.File(dbot_score=dbot_score, md5=indicator)
+            indicator_type = 'md5'
+        else:
+            raise ValueError('This indicator -> {} is incorrect'.format(indicator))
+
+    elif indicator_type is DBotScoreType.IP:
+        indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.URL:
+        indicator_ = Common.URL(url=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.DOMAIN:
+        indicator_ = Common.Domain(domain=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.EMAIL:
+        indicator_ = Common.EMAIL(address=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.CERTIFICATE:
+        indicator_ = Common.Certificate(subject_dn=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.ACCOUNT:
+        indicator_ = Common.Account(id=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.CRYPTOCURRENCY:
+        if not address_type:
+            raise ValueError('Missing address_type parameter')
+        indicator_ = Common.Cryptocurrency(address=indicator, address_type=address_type, dbot_score=dbot_score)
+        indicator_type = address_type
+
+    else:
+        indicator_ = Common.CustomIndicator(indicator_type=indicator_type,
+                                            value=indicator,
+                                            dbot_score=dbot_score,
+                                            data={},
+                                            context_prefix=context_prefix)
+
+    indicator_type = indicator_type.upper()
+    readable_output = tableToMarkdown(name='{}:'.format(integration_name),
+                                      t={indicator_type: indicator, 'Result': 'Not found'},
+                                      headers=[indicator_type, 'Result'])
+
+    return CommandResults(readable_output=readable_output, indicator=indicator_)
+
+
+def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, date_format='%Y-%m-%dT%H:%M:%S'):
+    """
+    Gets the time range for fetch
+
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type first_fetch: ``str``
+    :param first_fetch: The first time to fetch, used in the first fetch
+
+    :type look_back: ``int``
+    :param look_back: The time to look back in fetch in minutes
+
+    :type timezone: ``int``
+    :param timezone: The time zone offset in hours
+
+    :type date_format: ``str``
+    :param date_format: The date format
+
+    :return: The time range of the creation date for the incidents to fetch in the current run.
+    :rtype: ``Tuple``
+    """
+    last_run_time = last_run and 'time' in last_run and last_run['time']
+    now = datetime.utcnow() + timedelta(hours=timezone)
+    if not last_run_time:
+        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}) + timedelta(hours=timezone)
+    else:
+        last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC'})
+
+    if look_back > 0:
+        if now - last_run_time < timedelta(minutes=look_back):
+            last_run_time = now - timedelta(minutes=look_back)
+
+    return last_run_time.strftime(date_format), now.strftime(date_format)
+
+
+def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
+    """
+    Remove duplicate incidents from response and returns the incidents till limit
+
+    :type incidents_res: ``list``
+    :param incidents_res: The incidents from response
+
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type fetch_limit: ``int``
+    :param fetch_limit: The incidents limit to return
+
+    :type id_field: ``str``
+    :param id_field: The incident id field
+
+    :return: The incidents till limit after filtering duplicates
+    :rtype: ``list``
+    """
+    found_incidents = last_run.get('found_incident_ids', {})
+
+    incidents = []
+    for incident in incidents_res:
+        if incident[id_field] not in found_incidents:
+            incidents.append(incident)
+
+    return incidents[:fetch_limit]
+
+
+def get_latest_incident_created_time(incidents, created_time_field, date_format='%Y-%m-%dT%H:%M:%S',
+                                     increase_last_run_time=False):
+    """
+    Gets the latest incident created time
+
+    :type incidents: ``list``
+    :param incidents: List of incidents
+
+    :type created_time_field: ``str``
+    :param created_time_field: The incident created time field
+
+    :type date_format: ``str``
+    :param date_format: The date format
+
+    :type increase_last_run_time: ``bool``
+    :param increase_last_run_time: Whether to increase the last run time with one millisecond
+
+    :return: The latest incident time
+    :rtype: ``str``
+    """
+    latest_incident_time = datetime.strptime(incidents[0][created_time_field], date_format)
+
+    for incident in incidents:
+        incident_time = datetime.strptime(incident[created_time_field], date_format)
+        if incident_time > latest_incident_time:
+            latest_incident_time = incident_time
+
+    if increase_last_run_time:
+        latest_incident_time = latest_incident_time + timedelta(milliseconds=1)
+
+    return latest_incident_time.strftime(date_format)
+
+
+def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
+    """
+    Removes old incident ids
+
+    :type found_incidents_ids: ``dict``
+    :param found_incidents_ids: Dict of incidents ids
+
+    :type current_time: ``int``
+    :param current_time: The current epoch time
+
+    :type look_back: ``int``
+    :param look_back: The look back time in minutes
+
+    :return: The new incidents ids
+    :rtype: ``dict``
+    """
+    look_back_in_seconds = look_back * 60
+    deletion_threshold_in_seconds = look_back_in_seconds * 2
+
+    new_found_incidents_ids = {}
+    for inc_id, addition_time in found_incidents_ids.items():
+
+        if current_time - addition_time < deletion_threshold_in_seconds:
+            new_found_incidents_ids[inc_id] = addition_time
+
+    return new_found_incidents_ids
+
+
+def get_found_incident_ids(last_run, incidents, look_back, id_field):
+    """
+    Gets the found incident ids
+
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type incidents: ``list``
+    :param incidents: List of incidents
+
+    :type look_back: ``int``
+    :param look_back: The look back time in minutes
+
+    :type id_field: ``str``
+    :param id_field: The incident id field
+
+    :return: The new incidents ids
+    :rtype: ``dict``
+    """
+
+    found_incidents = last_run.get('found_incident_ids', {})
+    current_time = int(time.time())
+
+    for incident in incidents:
+        found_incidents[incident[id_field]] = current_time
+
+    found_incidents = remove_old_incidents_ids(found_incidents, current_time, look_back)
+
+    return found_incidents
+
+
+def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
+                                   created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+    """
+    Creates an updated LastRun object
+
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type incidents: ``list``
+    :param incidents: List of incidents
+
+    :type fetch_limit: ``int``
+    :param fetch_limit: The fetch limit
+
+    :type look_back: ``int``
+    :param look_back: The time to look back in fetch in minutes
+
+    :type start_fetch_time: ``str``
+    :param start_fetch_time: The start time to fetch
+
+    :type end_fetch_time: ``str``
+    :param end_fetch_time: The end time to fetch
+
+    :type created_time_field: ``str``
+    :param created_time_field: The incident created time field
+
+    :type date_format: ``str``
+    :param date_format: The date format
+
+    :type increase_last_run_time: ``bool``
+    :param increase_last_run_time: Whether to increase the last run time with one millisecond
+
+    :return: The updated LastRun object
+    :rtype: ``Dict``
+    """
+
+    if len(incidents) == 0:
+        new_last_run = {
+            'time': end_fetch_time,
+            'limit': fetch_limit,
+        }
+    elif len(incidents) < fetch_limit or look_back == 0:
+        latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
+                                                                        increase_last_run_time)
+        new_last_run = {
+            'time': latest_incident_fetched_time,
+            'limit': fetch_limit,
+        }
+    else:
+        new_last_run = {
+            'time': start_fetch_time,
+            'limit': last_run.get('limit', fetch_limit) + fetch_limit,
+        }
+
+    return new_last_run
+
+
+def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
+                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+    """
+    Updates the LastRun object
+
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type incidents: ``list``
+    :param incidents: List of incidents
+
+    :type fetch_limit: ``int``
+    :param fetch_limit: The fetch limit
+
+    :type start_fetch_time: ``str``
+    :param start_fetch_time: The start time to fetch
+
+    :type end_fetch_time: ``str``
+    :param end_fetch_time: The end time to fetch
+
+    :type look_back: ``int``
+    :param look_back: The time to look back in fetch in minutes
+
+    :type created_time_field: ``str``
+    :param created_time_field: The incident created time field
+
+    :type id_field: ``str``
+    :param id_field: The incident id field
+
+    :type date_format: ``str``
+    :param date_format: The date format
+
+    :type increase_last_run_time: ``bool``
+    :param increase_last_run_time: Whether to increase the last run time with one millisecond
+
+    :return: The new last run object and list of incidents
+    :rtype: ``Dict``
+    """
+
+    found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field)
+
+    updated_last_run = create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time,
+                                                      end_fetch_time, created_time_field, date_format, increase_last_run_time)
+
+    if found_incidents:
+        updated_last_run.update({'found_incident_ids': found_incidents})
+
+    last_run.update(updated_last_run)
+
+    return last_run
+
+
+###########################################
+#     DO NOT ADD LINES AFTER THIS ONE     #
+###########################################
+register_module_line('CommonServerPython', 'end', __line__())
+register_module_line('CustomScriptIntegration', 'start', __line__())

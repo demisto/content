@@ -231,6 +231,69 @@ Gather user info by email address
 >| 1 | active_directory_adapter | Administrator@testdomain.test | Administrator | a6f0d051a30d401b7f73416fbc90a3cf |
 
 
+### axonius-get-users-by-mail-regex
+***
+Gather user info by email address. The supplied value is used in a fuzzy regular expression.
+
+
+#### Base Command
+
+`axonius-get-users-by-mail-regex`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| value | The value to be used inside a fuzzy regular expression to search for user email addresses within Axonius. | Required |
+| max_results | The maximum number of results to return. | Optional |
+| fields | Comma separated list of Axonius fields to return. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset |
+| Axonius.Users.adapters | String | The specific adapter names with asset information |
+| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset |
+| Axonius.Users.username | String | Username of the asset |
+| Axonius.Users.mail | String | Email address of the asset |
+| Axonius.Users.is_admin | Boolean | If the asset has admin privileges |
+| Axonius.Users.last_seen | Date | Last seen date/time of the asset |
+| Axonius.Users.labels | String | Tags assigned to the asset |
+
+
+#### Command Example
+```!axonius-get-users-by-mail-regex value=Administrator```
+
+#### Context Example
+```
+{
+    "Axonius": {
+        "Users": {
+            "adapter_list_length": 1,
+            "adapters": [
+                "active_directory_adapter"
+            ],
+            "aggregated_mail": [
+                "Administrator@testdomain.test"
+            ],
+            "aggregated_username": [
+                "Administrator"
+            ],
+            "internal_axon_id": "a6f0d051a30d401b7f73416fbc90a3cf"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|adapter_list_length|adapters|aggregated_mail|aggregated_username|internal_axon_id|
+>|---|---|---|---|---|
+>| 1 | active_directory_adapter | Administrator@testdomain.test | Administrator | a6f0d051a30d401b7f73416fbc90a3cf |
+
+
 ### axonius-get-users-by-username
 ***
 Gather user info by username
@@ -264,6 +327,64 @@ Gather user info by username
 
 #### Command Example
 ```!axonius-get-users-by-username value=test_ldap_login_user```
+
+#### Context Example
+```
+{
+    "Axonius": {
+        "Users": {
+            "adapter_list_length": 1,
+            "adapters": [
+                "active_directory_adapter"
+            ],
+            "aggregated_username": "test_ldap_login_user",
+            "internal_axon_id": "4d5f47f067388e8ffc53b6bbe8a10800"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|adapter_list_length|adapters|aggregated_username|internal_axon_id|
+>|---|---|---|---|
+>| 1 | active_directory_adapter | test_ldap_login_user | 4d5f47f067388e8ffc53b6bbe8a10800 |
+
+
+### axonius-get-users-by-username-regex
+***
+Gather user info by username. The supplied value is used in a fuzzy regular expression.
+
+
+#### Base Command
+
+`axonius-get-users-by-username-regex`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| value | The value to be used inside a fuzzy regular expression to search for users by username within Axonius. | Required |
+| max_results | The maximum number of results to return. | Optional |
+| fields | Comma separated list of Axonius fields to return. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset |
+| Axonius.Users.adapters | String | The specific adapter names with asset information |
+| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset |
+| Axonius.Users.username | String | Username of the asset |
+| Axonius.Users.mail | String | Email address of the asset |
+| Axonius.Users.is_admin | Boolean | If the asset has admin privileges |
+| Axonius.Users.last_seen | Date | Last seen date/time of the asset |
+| Axonius.Users.labels | String | Tags assigned to the asset |
+
+
+#### Command Example
+```!axonius-get-users-by-username-regex value=test```
 
 #### Context Example
 ```
@@ -373,6 +494,91 @@ Gather device info by hostname
 >| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | x.x.x.x/24 | d530db3cfef6a2220b315d54fa1901b2 |
 
 
+### axonius-get-devices-by-hostname-regex
+***
+Gather device info by hostname. The supplied value is used in a fuzzy regular expression.
+
+
+#### Base Command
+
+`axonius-get-devices-by-hostname-regex`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| value | The value to be used inside a fuzzy regular expression to search for devices by hostname within Axonius. | Required |
+| max_results | The maximum number of results to return. | Optional |
+| fields | Comma separated list of Axonius fields to return. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
+| Axonius.Devices.adapters | String | The specific adapter names with asset information |
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
+| Axonius.Devices.hostname | String | The hostnames of the assset |
+| Axonius.Devices.name | String | The names of the asset |
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
+| Axonius.Devices.labels | String | Tags assigned to the asset |
+
+
+#### Command Example
+```!axonius-get-devices-by-hostname-regex value=DC4```
+
+#### Context Example
+```
+{
+    "Axonius": {
+        "Devices": {
+            "adapter_list_length": 5,
+            "adapters": [
+                "nexpose_adapter",
+                "esx_adapter",
+                "active_directory_adapter",
+                "solarwinds_orion_adapter",
+                "crowd_strike_adapter",
+                "esx_adapter",
+                "crowd_strike_adapter",
+                "crowd_strike_adapter",
+                "crowd_strike_adapter",
+                "esx_adapter"
+            ],
+            "aggregated_hostname": [
+                "DC4"
+            ],
+            "aggregated_network_interfaces_ips": [
+                "x.x.x.x",
+            ],
+            "aggregated_network_interfaces_mac": [
+                "00:0C:29:B6:DA:46",
+                "00:50:56:91:DE:BB",
+                "00:50:56:91:3A:EC",
+                "00:50:56:91:33:E2",
+                "00:50:56:91:21:B3"
+            ],
+            "aggregated_network_interfaces_subnets": [
+                "x.x.x.x/24"
+            ],
+            "internal_axon_id": "d530db3cfef6a2220b315d54fa1901b2"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|adapter_list_length|adapters|aggregated_hostname|aggregated_network_interfaces_ips|aggregated_network_interfaces_mac|aggregated_network_interfaces_subnets|internal_axon_id|
+>|---|---|---|---|---|---|---|
+>| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | x.x.x.x/24 | d530db3cfef6a2220b315d54fa1901b2 |
+
+
+
 ### axonius-get-devices-by-ip
 ***
 Gather device info by IP address
@@ -457,6 +663,91 @@ Gather device info by IP address
 >| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | x.x.x.x/24 | d530db3cfef6a2220b315d54fa1901b2 |
 
 
+### axonius-get-devices-by-ip-regex
+***
+Gather device info by IP address. The supplied value is used in a fuzzy regular expression.
+
+
+#### Base Command
+
+`axonius-get-devices-by-ip-regex`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| value | The value to be used inside a fuzzy regular expression to search for devices by IP address within Axonius. | Required |
+| max_results | The maximum number of results to return. | Optional |
+| fields | Comma separated list of Axonius fields to return. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
+| Axonius.Devices.adapters | String | The specific adapter names with asset information |
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
+| Axonius.Devices.hostname | String | The hostnames of the assset |
+| Axonius.Devices.name | String | The names of the asset |
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
+| Axonius.Devices.labels | String | Tags assigned to the asset |
+
+
+#### Command Example
+```!axonius-get-devices-by-ip-regex value=192.168```
+
+#### Context Example
+```
+{
+    "Axonius": {
+        "Devices": {
+            "adapter_list_length": 5,
+            "adapters": [
+                "nexpose_adapter",
+                "esx_adapter",
+                "active_directory_adapter",
+                "solarwinds_orion_adapter",
+                "crowd_strike_adapter",
+                "esx_adapter",
+                "crowd_strike_adapter",
+                "crowd_strike_adapter",
+                "crowd_strike_adapter",
+                "esx_adapter"
+            ],
+            "aggregated_hostname": [
+                "DC4"
+            ],
+            "aggregated_network_interfaces_ips": [
+                "x.x.x.x",
+            ],
+            "aggregated_network_interfaces_mac": [
+                "00:0C:29:B6:DA:46",
+                "00:50:56:91:DE:BB",
+                "00:50:56:91:3A:EC",
+                "00:50:56:91:33:E2",
+                "00:50:56:91:21:B3"
+            ],
+            "aggregated_network_interfaces_subnets": [
+                "x.x.x.x/24"
+            ],
+            "internal_axon_id": "d530db3cfef6a2220b315d54fa1901b2"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|adapter_list_length|adapters|aggregated_hostname|aggregated_network_interfaces_ips|aggregated_network_interfaces_mac|aggregated_network_interfaces_subnets|internal_axon_id|
+>|---|---|---|---|---|---|---|
+>| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | x.x.x.x/24 | d530db3cfef6a2220b315d54fa1901b2 |
+
+
+
 ### axonius-get-devices-by-mac
 ***
 Gather device info by MAC address
@@ -492,6 +783,90 @@ Gather device info by MAC address
 
 #### Command Example
 ```!axonius-get-devices-by-mac value=00:0C:29:B6:DA:46```
+
+#### Context Example
+```
+{
+    "Axonius": {
+        "Devices": {
+            "adapter_list_length": 5,
+            "adapters": [
+                "nexpose_adapter",
+                "esx_adapter",
+                "active_directory_adapter",
+                "solarwinds_orion_adapter",
+                "crowd_strike_adapter",
+                "esx_adapter",
+                "crowd_strike_adapter",
+                "crowd_strike_adapter",
+                "crowd_strike_adapter",
+                "esx_adapter"
+            ],
+            "aggregated_hostname": [
+                "DC4"
+            ],
+            "aggregated_network_interfaces_ips": [
+                "x.x.x.x",
+            ],
+            "aggregated_network_interfaces_mac": [
+                "00:0C:29:B6:DA:46",
+                "00:50:56:91:DE:BB",
+                "00:50:56:91:3A:EC",
+                "00:50:56:91:33:E2",
+                "00:50:56:91:21:B3"
+            ],
+            "aggregated_network_interfaces_subnets": [
+                "x.x.x.x/24"
+            ],
+            "internal_axon_id": "d530db3cfef6a2220b315d54fa1901b2"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|adapter_list_length|adapters|aggregated_hostname|aggregated_network_interfaces_ips|aggregated_network_interfaces_mac|aggregated_network_interfaces_subnets|internal_axon_id|
+>|---|---|---|---|---|---|---|
+>| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | x.x.x.x/24 | d530db3cfef6a2220b315d54fa1901b2 |
+
+
+### axonius-get-devices-by-mac-regex
+***
+Gather device info by MAC address. The supplied value is used in a fuzzy regular expression.
+
+
+#### Base Command
+
+`axonius-get-devices-by-mac-regex`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| value | The value to be used inside a fuzzy regular expression to search for devices by MAC address within Axonius. | Required |
+| max_results | The maximum number of results to return. | Optional |
+| fields | Comma separated list of Axonius fields to return. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
+| Axonius.Devices.adapters | String | The specific adapter names with asset information |
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
+| Axonius.Devices.hostname | String | The hostnames of the assset |
+| Axonius.Devices.name | String | The names of the asset |
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
+| Axonius.Devices.labels | String | Tags assigned to the asset |
+
+
+#### Command Example
+```!axonius-get-devices-by-mac-regex value=DA:46```
 
 #### Context Example
 ```

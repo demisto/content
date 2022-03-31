@@ -18,10 +18,7 @@
         "all"
     ],
     "required": false,
-    "selectValues": [
-        "",
-        ""
-    ],
+    "selectValues": [],
     "sla": 0,
     "system": false,
     "threshold": 72,
@@ -30,5 +27,6 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0"
+    "fromVersion": "5.5.0",
+    "openEnded": true
 }

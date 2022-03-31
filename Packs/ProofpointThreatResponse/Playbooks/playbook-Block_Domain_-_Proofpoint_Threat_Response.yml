@@ -1,0 +1,231 @@
+id: Block Domain - Proofpoint Threat Response
+version: -1
+name: Block Domain - Proofpoint Threat Response
+description: |-
+  This playbook blocks domains using Proofpoint Threat Response.
+  The playbook checks whether the Proofpoint Threat Response integration is enabled, whether the Domain input has been provided and if so, blocks the domain.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 74cfb49a-85e7-4d70-82df-6eec688b84b0
+    type: start
+    task:
+      id: 74cfb49a-85e7-4d70-82df-6eec688b84b0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 480634cc-137e-4540-8320-57bede8c1434
+    type: condition
+    task:
+      id: 480634cc-137e-4540-8320-57bede8c1434
+      version: -1
+      name: Is Proofpoint Threat Response enabled?
+      description: Verify that there is a valid instance of Check Point Firewall enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Proofpoint Threat Response
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 3ebeaad6-b6de-4e4d-85df-19734521adf4
+    type: regular
+    task:
+      id: 3ebeaad6-b6de-4e4d-85df-19734521adf4
+      version: -1
+      name: Block Domain
+      description: Adds the supplied domains to the specified block list.
+      script: '|||proofpoint-tr-block-domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      blacklist_domain:
+        complex:
+          root: inputs.DomainBlackListID
+      domain:
+        complex:
+          root: inputs.Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d9d40cf1-5be4-4d84-8739-27b065949e57
+    type: title
+    task:
+      id: d9d40cf1-5be4-4d84-8739-27b065949e57
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 43e0f76e-d745-4fd7-810d-761ceba711f2
+    type: condition
+    task:
+      id: 43e0f76e-d745-4fd7-810d-761ceba711f2
+      version: -1
+      name: Check if inputs were provided
+      description: Check whether the necessary inputs were provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.DomainBlackListID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.53,
+      "4_1_yes": 0.65
+    },
+    "paper": {
+      "dimensions": {
+        "height": 805,
+        "width": 380,
+        "x": 450,
+        "y": -110
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value: {}
+  required: false
+  description: The Domain to block.
+  playbookInputQuery:
+- key: DomainBlackListID
+  value: {}
+  required: false
+  description: The ID of the block list to block the domain in.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

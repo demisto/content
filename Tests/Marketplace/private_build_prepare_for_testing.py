@@ -51,9 +51,11 @@ def option_handler():
     return parser.parse_args()
 
 
-def upload_premium_pack_to_private_testing_bucket(premium_pack, private_testing_repo_client, extract_destination_path):
-    _, zip_pack_path = premium_pack.zip_pack(extract_destination_path, premium_pack._pack_name, False, '')
-    premium_pack.upload_to_storage(zip_pack_path, premium_pack.latest_version, private_testing_repo_client, True, True)
+def upload_premium_pack_to_private_testing_bucket(premium_pack, private_testing_repo_client, extract_destination_path,
+                                                  storage_base_path):
+    _, zip_pack_path = premium_pack.zip_pack(extract_destination_path, False, '')
+    premium_pack.upload_to_storage(zip_pack_path, premium_pack.latest_version, private_testing_repo_client,
+                                   storage_base_path, True, True)
 
 
 def main():
@@ -71,9 +73,6 @@ def main():
     pack_name = upload_config.pack_names
     storage_base_path = upload_config.storage_base_path
 
-    if storage_base_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_base_path
-
     storage_client = init_storage_client(service_account)
     private_testing_bucket_client = storage_client.bucket(GCPConfig.CI_PRIVATE_BUCKET)
 
@@ -81,4 +80,4 @@ def main():
     path_to_pack = os.path.join(extract_destination_path, pack_name)
     premium_pack = Pack(pack_name, path_to_pack)
 
-    upload_premium_pack_to_private_testing_bucket(premium_pack, pack_name, private_testing_bucket_client)
+    upload_premium_pack_to_private_testing_bucket(premium_pack, pack_name, private_testing_bucket_client, storage_base_path)

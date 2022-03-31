@@ -1,13 +1,19 @@
 {
-	"name": "Palo Alto Networks Enterprise DLP Contribution Pack",
-	"description": "Enterprise DLP Integration",
-	"created": "2020-11-04T18:13:35Z",
-	"support": "xsoar",
-	"author": "Enterprise DLP",
-	"url": "https://www.paloaltonetworks.com/enterprise-data-loss-prevention",
-    "currentVersion": "1.0.1",
-    "categories": [],
+    "name": "Palo Alto Networks Enterprise DLP Contribution Pack",
+    "description": "Enterprise DLP Integration",
+    "created": "2020-11-04T18:13:35Z",
+    "support": "xsoar",
+    "author": "Enterprise DLP",
+    "url": "https://www.paloaltonetworks.com/enterprise-data-loss-prevention",
+    "currentVersion": "1.0.2",
+    "categories": [
+        "Network Security"
+    ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

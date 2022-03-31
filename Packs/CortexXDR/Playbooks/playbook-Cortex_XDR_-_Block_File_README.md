@@ -20,7 +20,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| HashList | List of hashed files you want to blacklist. Must be a valid SHA256 hash. |  | Optional |
+| HashList | List of hashed files you want to add to block list. Must be a valid SHA256 hash. |  | Optional |
 
 ## Playbook Outputs
 ---

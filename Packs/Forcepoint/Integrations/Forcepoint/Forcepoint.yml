@@ -1,0 +1,146 @@
+commonfields:
+  id: Forcepoint
+  version: -1
+name: Forcepoint
+display: Forcepoint
+category: Network Security
+description: Advanced threat protection with added local management controls.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: fp-add-category
+    arguments:
+    - name: categoryName
+      required: true
+      description: The category name. Must be unique, alphanumeric name.
+    - name: categoryDescription
+      description: The category description.  It may contain alphanumeric characters,
+        periods, and commas.
+    - name: parent
+      description: "The category parent. 0 is the top-level category, and can be specified\
+        \ as the parent. \t Subcategories can be added to categories that have a parent\
+        \ of 0, but not to categories with a different parent."
+      defaultValue: "0"
+    outputs:
+    - contextPath: Forcepoint.AddCategory.CategoryName
+      description: The category name.
+    description: Create custom category.
+  - name: fp-list-categories
+    arguments:
+    - name: allCategories
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Select 'true' to retrieve a list of all the categories. Else, only
+        API-managed categories will be listed.
+      defaultValue: "false"
+    outputs:
+    - contextPath: ListCategories.CategoryName
+      description: Category name
+    - contextPath: ListCategories.CategoryID
+      description: Category ID
+    - contextPath: ListCategories.CategoryDescription
+      description: Category description
+    - contextPath: ListCategories.CategoryOwner
+      description: Category owner
+    description: Retrieve a list of all the categories, or only API-managed categories.
+  - name: fp-get-category-detailes
+    arguments:
+    - name: categoryName
+      description: The category name.  Leave blank if category ID is provided.
+    - name: categoryId
+      description: The category ID.  Leave blank if category name is provided.
+    outputs:
+    - contextPath: Forcepoint.CategoryDetails.CategoryName
+      description: Category name
+    - contextPath: Forcepoint.CategoryDetails.CategoryID
+      description: Category ID
+    - contextPath: Forcepoint.CategoryDetails.URLs
+      description: Category URLs
+    - contextPath: Forcepoint.CategoryDetails.IPs
+      description: Category IPs
+    description: Get a list of URLs and IP addresses in an API-managed category.
+  - name: fp-add-address-to-category
+    arguments:
+    - name: urls
+      description: 'Comma separated list of URL addresses to add. '
+    - name: ips
+      description: 'Comma separated list of IP address to add. '
+    - name: categoryID
+      description: The category ID. Leave blank if category name is provided.
+    - name: categoryName
+      description: The category name. Leave Blank if category ID is provided.
+    outputs:
+    - contextPath: Forcepoint.AddAddressToCategory.CategoryName
+      description: The category name.
+    - contextPath: Forcepoint.AddAddressToCategory.CategoryID
+      description: The category ID.
+    - contextPath: Forcepoint.AddAddressToCategory.Totals.AddedURLs
+      description: Total URLs added to category.
+    - contextPath: Forcepoint.AddAddressToCategory.Totals.AddedIPs
+      description: Total IP addresses added to category.
+    description: Add URLs and IP addresses to an API-managed category. Refer to category
+      either by it's ID or by it's name.
+  - name: fp-delete-categories
+    arguments:
+    - name: categoryIDs
+      description: Comma separated list of category IDs.
+    - name: categoryNames
+      description: Comma separated list of category names.
+    outputs:
+    - contextPath: Forcepoint.DeletedCategories.CategoryName
+      description: Category name
+    - contextPath: Forcepoint.DeletedCategories.CategoryID
+      description: Category ID
+    - contextPath: Forcepoint.DeletedCategories.URLs
+      description: Category URLs
+    - contextPath: Forcepoint.DeletedCategories.IPs
+      description: Category IPs
+    description: Delete API-managed categories. Refer to categories you wish to delete
+      either by ID list or by name list. It is possible to pass both lists, when each
+      list refers to different categories.
+  - name: fp-delete-address-from-category
+    arguments:
+    - name: categoryID
+      description: The category ID.  Leave blank if category name is provided.
+    - name: urls
+      description: Comma separated list of URL address to remove.
+    - name: ips
+      description: Comma separated list of IP address to remove.
+    - name: categoryName
+      description: The category name.  Leave blank if category ID is provided.
+    outputs:
+    - contextPath: Forcepoint.DeleteAddressesFromCategory.CategoryName
+      description: The category Name.
+    - contextPath: Forcepoint.DeleteAddressesFromCategory.CategoryID
+      description: The category ID.
+    - contextPath: Forcepoint.DeleteAddressesFromCategory.Totals.DeletedURLs
+      description: Total URLs deleted from category.
+    - contextPath: Forcepoint.DeleteAddressesFromCategory.Totals.DeletedIPs
+      description: Total IP addresses deleted from category.
+    description: ' Remove URLs, IP addresses, and ranges from a specific API-managed
+      category.  Refer to category either by it''s ID or by it''s name.'
+fromversion: 5.0.0

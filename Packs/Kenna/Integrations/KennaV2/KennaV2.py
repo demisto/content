@@ -1,5 +1,7 @@
-from typing import List, Tuple, Dict, Any, Optional, Callable
+from typing import Tuple, Callable
+
 import urllib3
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -559,7 +561,7 @@ def main():
     # Should we use SSL
     use_ssl = not params.get('insecure', False)
     # Should we use system proxy settings
-    use_proxy = params.get('proxy') == 'true'
+    use_proxy = params.get('proxy')
     # Initialize Client object
     client = Client(base_url=base_url, api_key=api, verify=use_ssl, proxy=use_proxy)
     command = demisto.command()

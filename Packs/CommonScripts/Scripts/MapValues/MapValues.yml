@@ -1,0 +1,26 @@
+commonfields:
+  id: MapValues
+  version: -1
+name: MapValues
+script: ''
+type: javascript
+tags:
+- Utility
+comment: 'Map the given values to the translated values. If given values: a,b,c and
+  translated: 1,2,3 then input is a will return 1'
+system: true
+args:
+- name: values
+  required: true
+  default: true
+  description: The values we should translate
+- name: translated
+  required: true
+  description: The translated values we will use to replace the values
+- name: input
+  required: true
+  description: The value to compare and replace
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests

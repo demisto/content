@@ -153,7 +153,7 @@ script:
     description: Fetches indicators from the feed.
     execution: false
     name: aws-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.23290
+  dockerimage: demisto/jmespath:1.0.0.23980
   feed: true
   isfetch: false
   longRunning: false

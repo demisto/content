@@ -154,6 +154,7 @@ Python 3) and then calls the ``main()`` function. Just keep this convention.
 from typing import Dict, List, Optional
 
 import urllib3
+from urllib.parse import urlparse
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -195,11 +196,26 @@ class Client(BaseClient):
             for indicator in indicators:
                 # Infer the type of the indicator using 'auto_detect_indicator_type(indicator)' function
                 # (defined in CommonServerPython).
-                if auto_detect_indicator_type(indicator):
+                if indicator_type := auto_detect_indicator_type(indicator):
+                    related_indicator = {}
+
+                    # Adding domain related to url indicator.
+                    # This is an example of creating relationships in Feeds.
+                    # We will create relationships between indicators only in case that the API returns information
+                    # about the relationship between two indicators.
+                    if indicator_type == FeedIndicatorType.URL:
+                        domain = urlparse(indicator).netloc
+                        related_indicator = {
+                            'value': domain,
+                            'type': FeedIndicatorType.Domain,
+                            'relationType': 'hosted-on'
+                        }
+
                     result.append({
                         'value': indicator,
-                        'type': auto_detect_indicator_type(indicator),
-                        'FeedURL': self._base_url
+                        'type': indicator_type,
+                        'FeedURL': self._base_url,
+                        'relations': [related_indicator]
                     })
 
         except ValueError as err:
@@ -229,14 +245,15 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags: List = [], limit: int = -1) \
-        -> List[Dict]:
+def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags: List = [], limit: int = -1,
+                     create_relationships: bool = False) -> List[Dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
         tlp_color (str): Traffic Light Protocol color
         feed_tags (list): tags to assign fetched indicators
         limit (int): limit the results
+        create_relationships (bool): create related indicators entries
     Returns:
         Indicators.
     """
@@ -280,6 +297,22 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
+        # Example of creating indicator relationships.
+        # For more information see: https://xsoar.pan.dev/docs/integrations/feeds#indicator-objects
+        if (relations := item.get('relations')) and create_relationships:
+            relationships = []
+            for relation in relations:
+                entity_relation = EntityRelationship(
+                    name=relation.get('relationType'),
+                    entity_a=value_,
+                    entity_a_type=type_,
+                    entity_b=relation.get('value'),
+                    entity_b_type=relation.get('type')
+                )
+                relationships.append(entity_relation.to_indicator())
+
+            indicator_obj['relationships'] = relationships
+
         indicators.append(indicator_obj)
 
     return indicators
@@ -322,7 +355,9 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dic
     """
     feed_tags = argToList(params.get('feedTags', ''))
     tlp_color = params.get('tlp_color')
-    indicators = fetch_indicators(client, tlp_color, feed_tags)
+    create_relationships = argToBoolean(params.get('create_relationships', True))
+
+    indicators = fetch_indicators(client, tlp_color, feed_tags, create_relationships=create_relationships)
     return indicators
 
 

@@ -1,2 +1,8 @@
 [file:README.md]
 ignore=RM104
+
+[file:CyberTotal.yml]
+ignore=IN145
+
+[file:CyberTotal_image.png]
+ignore=IM111

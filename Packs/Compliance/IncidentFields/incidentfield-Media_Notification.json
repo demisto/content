@@ -1,6 +1,9 @@
 {
-    "associatedToAll": true,
-    "associatedTypes": [],
+    "associatedToAll": false,
+    "associatedTypes": [
+        "HIPAA Breach Notification",
+        "US Breach Notification"
+    ],
     "breachScript": "",
     "caseInsensitive": true,
     "cliName": "medianotification",

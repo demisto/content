@@ -18,5 +18,5 @@ test_instances:
     - !reference [.open-ssh-tunnel]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE" || EXIT_CODE=$?
     - ./Tests/scripts/instance_test.sh || EXIT_CODE=$?
-    - python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS $CIRCLE_ARTIFACTS/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
+    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - exit "$EXIT_CODE"

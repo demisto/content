@@ -1,0 +1,26 @@
+{
+  "PassiveTotal.Insight(val.priorityLevel == obj.priorityLevel)": {
+    "priorityLevel": "high",
+    "insight": [
+      {
+        "name": "ASI: Microsoft Patches Four 0-Day Remote Code Execution Vulnerabilities in Exchange Server (Patch)",
+        "description": "Microsoft Patches Four 0-Day Remote Code Execution Vulnerabilities",
+        "observationCount": 0,
+        "link": "https://api.pt.net/pt/v2/attack-surface/insight/40464?page=0&size=25&groupBy=RISK_CATEGORY&segmentBy=savedfilter_metric_35944",
+        "insightId": "40464",
+        "segmentBy": "savedfilter_metric_35944"
+      },
+      {
+        "description": "CVE-2021-40539 - ManageEngine ADSelfService Plus Auth Bypass",
+        "name": "ASI: [Potential] CVE-2021-40539 - ManageEngine ADSelfService Plus Auth Bypass in REST API",
+        "observationCount": 0
+      }
+    ]
+  },
+  "PassiveTotal.Summary.Insight(val.name == obj.name)": {
+    "name": "pt-list-my-attack-surface-insights",
+    "activeInsightCount": 1,
+    "totalInsightCount": 41,
+    "totalObservations": 8
+  }
+}

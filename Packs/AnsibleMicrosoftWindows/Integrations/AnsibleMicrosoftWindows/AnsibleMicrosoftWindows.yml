@@ -561,7 +561,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_facts_module.html"
     name: win-chocolatey-facts
     outputs:
-    - contextPath: MicrosoftWindows.WinChocolateyFacts.ansible_facts
+    - contextPath: MicrosoftWindows.WinChocolateyFacts.facts
       description: Detailed information about the Chocolatey installation
       type: unknown
   - arguments:
@@ -906,7 +906,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_disk_facts_module.html"
     name: win-disk-facts
     outputs:
-    - contextPath: MicrosoftWindows.WinDiskFacts.ansible_facts
+    - contextPath: MicrosoftWindows.WinDiskFacts.facts
       description: Dictionary containing all the detailed information about the disks
         of the target.
       type: unknown
@@ -3299,7 +3299,7 @@ script:
         `creates_path` MUST be set and is a file. You can use this in conjunction
         with `product_id` and other `creates_*`.'
       name: creates_version
-    - defaultValue: '[0, 3010]'
+    - defaultValue: '0'
       description: 'One or more return codes from the package installation that indicates
         success. Before Ansible 2.4 this was just 0 but since Ansible 2.4 this is
         both `0` and `3010`. A return code of `3010` usually means that a reboot is
@@ -3639,7 +3639,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_product_facts_module.html"
     name: win-product-facts
     outputs:
-    - contextPath: MicrosoftWindows.WinProductFacts.ansible_facts
+    - contextPath: MicrosoftWindows.WinProductFacts.facts
       description: Dictionary containing all the detailed information about the Windows
         product and license.
       type: unknown
@@ -5323,7 +5323,7 @@ script:
         which updates are to be searched or installed. If an available update does
         not match one of the entries, then it is skipped and not installed. Each entry
         can either be the KB article or Update title as a regex according to the PowerShell
-        regex rules. The whitelist is only validated on updates that were found based
+        regex rules. The allow list is only validated on updates that were found based
         on `category_names`. It will not force the module to install an update if
         it was not in the category specified.'
       isArray: true
@@ -6016,10 +6016,10 @@ script:
     - contextPath: MicrosoftWindows.WinXml.err
       description: XML comparison exceptions.
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.23806
+  dockerimage: demisto/ansible-runner:1.0.0.24037
   runonce: false
   script: ''
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- Test-AnsibleWindows

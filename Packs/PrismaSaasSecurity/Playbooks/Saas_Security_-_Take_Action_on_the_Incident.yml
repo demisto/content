@@ -1,0 +1,343 @@
+id: Saas Security - Take Action on the Incident
+version: -1
+name: Saas Security - Take Action on the Incident
+description: This sub-playbook will send email notification to the Saas Security Admin
+  for taking remediation action on the incident.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4725091a-4516-42a9-853f-157ea6e9467e
+    type: start
+    task:
+      id: 4725091a-4516-42a9-853f-157ea6e9467e
+      description: Begin task to take action on the incident
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c3c29db4-4a98-460a-8614-93884d9021dc
+    type: collection
+    task:
+      id: c3c29db4-4a98-460a-8614-93884d9021dc
+      description: Send remediation action options to SaaS Security admin.
+      version: -1
+      name: Send Remediation Action Request Email
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.email}
+      subject:
+        simple: Take Action to Asset ${incident.name}
+      body:
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Actions to incident ${inputs.incident_id}
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Close Incident
+        - simple: Quarantine Asset
+        - simple: Remove Public Sharing
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: SaaS Security Incident
+      description: Admin can select remediation action to be taken from the options below.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 512b8015-fabf-4f0f-8a54-f222797f9704
+    type: condition
+    task:
+      id: 512b8015-fabf-4f0f-8a54-f222797f9704
+      description: Collect the admin's answer from questionaire.
+      version: -1
+      name: Check Customer Answer
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      close_incident:
+      - "5"
+      quarantine_asset:
+      - "4"
+      remove_public_sharing:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: close_incident
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SaaS Security Incident.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Close Incident
+    - label: quarantine_asset
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SaaS Security Incident.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Quarantine Asset
+    - label: remove_public_sharing
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SaaS Security Incident.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Remove Public Sharing
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 2006a40e-4b1f-45fd-8f18-92a149ba3a7b
+    type: regular
+    task:
+      id: 2006a40e-4b1f-45fd-8f18-92a149ba3a7b
+      version: -1
+      name: Remove Public Sharing
+      description: Remediate an asset.
+      script: SaasSecurity|||saas-security-asset-remediate
+      type: regular
+      iscommand: true
+      brand: SaasSecurity
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      asset_id:
+        simple: ${inputs.asset_id}
+      remediation_type:
+        simple: Remove public sharing
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 6112d95b-1503-4aba-8e6a-4d815c02c46a
+    type: regular
+    task:
+      id: 6112d95b-1503-4aba-8e6a-4d815c02c46a
+      version: -1
+      name: Quarantine Asset
+      description: Remediate an asset.
+      script: SaasSecurity|||saas-security-asset-remediate
+      type: regular
+      iscommand: true
+      brand: SaasSecurity
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      asset_id:
+        simple: ${inputs.asset_id}
+      remediation_type:
+        simple: Quarantine
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a7df6f5d-1305-44cf-8972-5fc6eb1710d5
+    type: regular
+    task:
+      id: a7df6f5d-1305-44cf-8972-5fc6eb1710d5
+      version: -1
+      name: Close Incident
+      description: Close an incident and update its category.
+      script: SaasSecurity|||saas-security-incident-state-update
+      type: regular
+      iscommand: true
+      brand: SaasSecurity
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      category:
+        simple: Misidentified
+      id:
+        simple: ${inputs.incident_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6cf614d3-04e9-4fcb-82a5-c437490ce40e
+    type: title
+    task:
+      id: 6cf614d3-04e9-4fcb-82a5-c437490ce40e
+      description: End of flow.
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 1080,
+        "x": 100,
+        "y": -140
+      }
+    }
+  }
+inputs:
+- key: email
+  value: {}
+  required: false
+  description: "Admin Email"
+  playbookInputQuery:
+- key: incident_id
+  value: {}
+  required: false
+  description: "SaaS Security Incident Id"
+  playbookInputQuery:
+- key: asset_id
+  value: {}
+  required: false
+  description: "SaaS Security Asset Id"
+  playbookInputQuery:
+- key: asset_name
+  value: {}
+  required: false
+  description: "SaaS Security Asset Name"
+  playbookInputQuery:
+outputs: []
+
+fromversion: 6.0.0
+tests:
+- No tests

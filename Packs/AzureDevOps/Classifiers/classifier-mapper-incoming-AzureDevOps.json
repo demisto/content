@@ -1,0 +1,65 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Azure DevOps Incoming Mapper",
+    "mapping": {
+        "Azure DevOps": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "AzureDevOps  Project ID": {
+                    "complex": null,
+                    "simple": "project_id"
+                },
+                "AzureDevOps  Project Name": {
+                    "complex": null,
+                    "simple": "project_name"
+                },
+                "AzureDevOps  Pull Request ID": {
+                    "complex": null,
+                    "simple": "pull_request_id"
+                },
+                "AzureDevOps  Repository Name": {
+                    "complex": null,
+                    "simple": "repository_name"
+                },
+                "AzureDevOps  RepositoryID": {
+                    "complex": null,
+                    "simple": "repository_id"
+                },
+                "AzureDevOps  Status": {
+                    "complex": null,
+                    "simple": "status"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "Title": {
+                    "complex": null,
+                    "simple": "title"
+                },
+                "dbotCreatedBy": {
+                    "complex": null,
+                    "simple": "created_by"
+                },
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "mirror_instance"
+                }
+            }
+        }
+    },
+    "name": "Azure DevOps Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

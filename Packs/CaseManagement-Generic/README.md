@@ -65,5 +65,3 @@ Want to take it to the next level?  The next steps after implementing this pack 
 - Use pre-processing rules to drop or link duplicate alerts!
 - Map data from incoming alerts to fields, allowing search ability, correlation of Incidents between different alert sources (i.e. map a username from different sources to the same field in XSOAR!)
 - Modify the Case layout on new types, replacing the labels section with the data from the incoming Incident that you mapped to fields.  This maintains a consistent look and feel for your Analysts, but places the information they need directly on the Incident.
-
-Fin.

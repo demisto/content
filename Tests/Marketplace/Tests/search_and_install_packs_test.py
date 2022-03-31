@@ -286,8 +286,8 @@ def test_install_nightly_packs_endless_loop(mocker):
 
 
 @pytest.mark.parametrize('path, latest_version', [
-    (f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.1/TestPack.zip', '1.0.1'),
-    (f'{GCPConfig.STORAGE_BASE_PATH}/Blockade.io/1.0.1/Blockade.io.zip', '1.0.1')
+    (f'{GCPConfig.CONTENT_PACKS_PATH}/TestPack/1.0.1/TestPack.zip', '1.0.1'),
+    (f'{GCPConfig.CONTENT_PACKS_PATH}/Blockade.io/1.0.1/Blockade.io.zip', '1.0.1')
 ])
 def test_pack_path_version_regex(path, latest_version):
     """
@@ -307,13 +307,16 @@ def test_get_latest_version_from_bucket(mocker):
            - An id of a pack and the bucket.
        When:
            - Getting the latest version of the pack in the bucket.
+           - Having a with_dependency.zip file in the bucket.
        Then:
            - Validate that the version is the one we expect for.
+           - Skip over with_dependencies.zip file.
    """
     dummy_prod_bucket = mocker.MagicMock()
-    first_blob = Blob(f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.0/TestPack.zip', dummy_prod_bucket)
-    second_blob = Blob(f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.1/TestPack.zip', dummy_prod_bucket)
-    dummy_prod_bucket.list_blobs.return_value = [first_blob, second_blob]
+    first_blob = Blob(f'{GCPConfig.CONTENT_PACKS_PATH}/TestPack/1.0.0/TestPack.zip', dummy_prod_bucket)
+    second_blob = Blob(f'{GCPConfig.CONTENT_PACKS_PATH}/TestPack/1.0.1/TestPack.zip', dummy_prod_bucket)
+    third_blob = Blob(f'{GCPConfig.CONTENT_PACKS_PATH}/TestPack/TestPack_with_dependencies.zip', dummy_prod_bucket)
+    dummy_prod_bucket.list_blobs.return_value = [first_blob, second_blob, third_blob]
     assert script.get_latest_version_from_bucket('TestPack', dummy_prod_bucket) == '1.0.1'
 
 

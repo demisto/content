@@ -14,6 +14,12 @@ configuration:
   defaultvalue: '45'
   required: false
   type: 0
+- display: Read Timeout
+  additionalinfo: Default is 20 seconds. In cases content is too long, Read Timeout Error is return, to handle it increase the read timeout value.
+  name: read_timeout
+  defaultvalue: '20'
+  required: false
+  type: 0
 - display: Fetch indicators
   name: feed
   defaultvalue: 'true'
@@ -113,7 +119,7 @@ script:
     description: Gets the reports from the RSS feed.
     execution: false
     name: rss-get-indicators
-  dockerimage: demisto/feed-parser-html:1.0.0.22272
+  dockerimage: demisto/feed-parser-html:1.0.0.24037
   feed: true
   isfetch: false
   longRunning: false

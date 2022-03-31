@@ -30,7 +30,7 @@
         "complex": {
           "root": "CVE",
           "filters": [],
-          "accessor": "CVEDescription",
+          "accessor": "Description",
           "transformers": [
             {
               "operator": "uniq",

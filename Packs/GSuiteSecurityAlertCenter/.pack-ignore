@@ -13,3 +13,9 @@ ignore=IF100
 
 [file:incidentfield-GSuiteSAC-Alert-Type.json]
 ignore=IF100
+
+[file:GSuiteSecurityAlertCenter.yml]
+ignore=IN145
+
+[file:GSuiteSecurityAlertCenter_image.png]
+ignore=IM111

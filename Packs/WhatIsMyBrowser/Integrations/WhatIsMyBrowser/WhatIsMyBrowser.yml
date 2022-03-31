@@ -63,7 +63,7 @@ script:
     description: Parses a User Agent string
   runonce: false
   subtype: python3
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.10.1.25933
 tests:
 - WhatsMyBrowser-Test
 fromversion: 5.0.0

@@ -16,8 +16,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * PrintErrorEntry
 
 ### Commands
-* o365-sc-new-search-action
 * o365-sc-get-search-action
+* o365-sc-new-search-action
 
 ## Playbook Inputs
 ---
@@ -26,6 +26,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | search_name | The name of the compliance search. |  | Required |
 | delete_type | Purge type. Possible values are: "Soft" and "Hard". Default is "Soft". | Soft | Required |
+| polling_timeout | Search action polling timeout. | 45 | Optional |
+| polling_interval | Search action polling interval. | 3 | Optional |
 
 ## Playbook Outputs
 ---

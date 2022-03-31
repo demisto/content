@@ -1,0 +1,169 @@
+{
+  "PARSE_EMAIL_ENRICHMENT_MARKDOWN_TABLE": {
+    "ARGS": {
+      "DATA": {
+        "incidents": [
+          {
+            "email": "test@test.com",
+            "domain": "test.com",
+            "password": null,
+            "password_type": null,
+            "source": "Test Source",
+            "posted_date": 1568062800,
+            "service": "Test Service"
+          }
+        ]
+      }
+    },
+    "RETURN_VALUE": [
+      [
+        {
+          "email": "test@test.com",
+          "domain": "test.com",
+          "password": "-",
+          "password_type": "-",
+          "source": "Test Source",
+          "date": "2019-09-09T21:00:00Z",
+          "service": "Test Service"
+        }
+      ],
+      "|Email|Domain|Password Type|Password|Service|Source|Date|\n|---|---|---|---|---|---|---|\n| test@test.com | test.com | - | - | Test Service | Test Source | 2019-09-09T21:00:00Z |\n"
+    ]
+  },
+  "PARSE_LEAKED_CREDENTIALS_MARKDOWN_TABLE": {
+    "ARGS": {
+      "ITEMS": [
+        {
+          "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "email": "test@test.com",
+          "domain": "test.com",
+          "password": null,
+          "password_type": null,
+          "source": "Test Source",
+          "posted_date": 1568062800
+        }
+      ],
+      "SUB_TYPE": 2
+    },
+    "RETURN_VALUE": [
+      {
+        "item_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "email": "test@test.com",
+        "domain": "test.com",
+        "password": "-",
+        "password_type": "-",
+        "source": "Test Source",
+        "date": "2019-09-09T21:00:00Z"
+      }
+    ]
+  },
+  "PARSE_BOTNETS_MARKDOWN_TABLE": {
+    "ARGS": {
+      "ITEMS": [
+        {
+          "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "bot_id": "yyyyyyyyyy",
+          "resource": "test",
+          "country": "testland",
+          "updated_date": 1568062800,
+          "username": "test",
+          "password": null,
+          "source_ip": "1.1.1.1",
+          "infection_type": null
+
+        }
+      ],
+      "SUB_TYPE": 17
+    },
+    "RETURN_VALUE": [
+      {
+          "item_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "bot_id": "yyyyyyyyyy",
+          "resource": "test",
+          "country": "testland",
+          "updated_date": "2019-09-09T21:00:00Z",
+          "username": "test",
+          "password": "-",
+          "source_ip": "1.1.1.1",
+          "infection_type": "-"
+      }
+    ]
+  },
+  "PARSE_NETWORK_VULNERABILITIES_MARKDOWN_TABLE": {
+    "ARGS": {
+      "ITEMS": [
+        {
+          "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "hostname": "hostname",
+          "technology": "technology",
+          "cve_details": "cve_details"
+        }
+      ],
+      "SUB_TYPE": 9
+    },
+    "RETURN_VALUE": [
+      {
+          "item_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "hostname": "hostname",
+          "technology": "technology",
+          "cve_details": "cve_details"
+      }
+    ]
+  },
+  "PARSE_CREDIT_CARDS_MARKDOWN_TABLE": {
+    "ARGS": {
+      "ITEMS": [
+        {
+          "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "bin": "bin",
+          "number": "123456",
+          "source": "source",
+          "posted_date": 1568062800
+        }
+      ],
+      "SUB_TYPE": 13
+    },
+    "RETURN_VALUE": [
+      {
+          "item_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "bin": "bin",
+          "number": "123456",
+          "source": "source",
+          "date": "2019-09-09T21:00:00Z"
+      }
+    ]
+  },
+  "PARSE_HACKING_DISCUSSIONS_MARKDOWN_TABLE": {
+    "ARGS": {
+      "ITEMS": [
+        {
+          "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "text": "text1\ntext2\ntext3\ntext4\ntext5\ntext6\ntest7\ntext8\ntext9\ntext10\ntext11\ntext12\ntext13\ntext14"
+        }
+      ],
+      "AGGR": {
+        "media": [],
+        "tags": ["test"]
+      }
+    },
+    "RETURN_VALUE": [
+      {
+        "type": "text",
+        "tags": "test",
+        "link": "-",
+        "context": "text2\ntext3\ntext4\ntext5\ntext6\ntest7\ntext8\ntext9\ntext10\ntext11\ntext12"
+      }
+    ]
+  },
+  "EXTRACT_AVAILABLE_DATA_FROM_ITEM": {
+    "ARGS": {
+      "ITEM": {
+        "available_data": {
+          "username": "test",
+          "password": "password"
+        }
+      }
+    },
+    "RETURN_VALUE": ["username(test),password(password)", "test", "password"]
+  }
+}

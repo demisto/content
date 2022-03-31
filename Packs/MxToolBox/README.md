@@ -13,7 +13,7 @@ You can query MxToolBox for threat intelligence information as seen [here](https
    - ptr
 
 - Network Lookup Types:
-   - blacklist
+   - block list
    - smtp
    - tcp
    - http

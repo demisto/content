@@ -1,0 +1,20 @@
+{
+  "Content-Length": "18715",
+  "Content-Type": "application/octet-stream",
+  "Content-MD5": "DPWmUdkhcDWvyYWlz4rvsA==",
+  "Last-Modified": "Thu, 19 Aug 2021 07:28:31 GMT",
+  "Accept-Ranges": "bytes",
+  "ETag": "0x8D962E2F22C50A4",
+  "Server": "Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0",
+  "x-ms-request-id": "XXXX",
+  "x-ms-version": "2020-10-02",
+  "x-ms-tag-count": "1",
+  "x-ms-creation-time": "Thu, 19 Aug 2021 07:26:18 GMT",
+  "x-ms-lease-status": "unlocked",
+  "x-ms-lease-state": "available",
+  "x-ms-blob-type": "BlockBlob",
+  "x-ms-server-encrypted": "true",
+  "x-ms-access-tier": "Hot",
+  "x-ms-access-tier-inferred": "true",
+  "Date": "Thu, 19 Aug 2021 13:00:39 GMT"
+}

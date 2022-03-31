@@ -20,9 +20,7 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "selectValues": [
-       
-    ],
+    "selectValues": [],
     "sla": 0,
     "system": false,
     "threshold": 72,
@@ -31,5 +29,6 @@
     "unsearchable": false,
     "useAsKpi": true,
     "version": -1,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.0.0",
+    "openEnded": true
 }

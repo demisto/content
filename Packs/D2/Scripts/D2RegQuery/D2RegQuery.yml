@@ -1,0 +1,22 @@
+commonfields:
+  id: D2RegQuery
+  version: -1
+name: D2RegQuery
+script: ''
+type: javascript
+tags:
+- agent
+- registry
+comment: Use the D2 agent to retrieve the value of the given registry key.
+system: true
+args:
+- name: regpath
+  required: true
+  default: true
+  description: The registry path of the key to be queried
+scripttarget: 1
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- no test

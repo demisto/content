@@ -1,0 +1,12 @@
+{
+    "id": "ThreatIntelReport_Threat Actor",
+    "layout": "Threat Actor Report",
+    "locked": false,
+    "name": "Threat Actor",
+    "color": "#9D2B26",
+    "definitionId": "ThreatIntelReport",
+    "genericModuleId": "threatIntel",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

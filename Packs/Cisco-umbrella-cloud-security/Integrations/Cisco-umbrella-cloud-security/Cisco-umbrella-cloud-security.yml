@@ -35,7 +35,7 @@ script:
     name: umbrella-get-destination-lists
     outputs:
     - contextPath: Umbrella.DestinationLists
-      description: 'List of destination lists in organization'
+      description: List of destination lists in organization
       type: Unknown
   - arguments:
     - description: Optional organization ID. If not provided, will use the one provided
@@ -64,15 +64,15 @@ script:
     name: umbrella-get-destination-domains
     outputs:
     - contextPath: Umbrella.Destinations.id
-      description: 'ID of domain within destination list'
+      description: ID of domain within destination list
     - contextPath: Umbrella.Destinations.destination
-      description: 'Domain within destination list'
+      description: Domain within destination list
     - contextPath: Umbrella.Destinations.type
-      description: 'Type of destination within destination list'
+      description: Type of destination within destination list
     - contextPath: Umbrella.Destinations.createdAt
-      description: 'When the domain within destination list was created'
+      description: When the domain within destination list was created
     - contextPath: Umbrella.Destinations.comment
-      description: 'Comment associated with domain within destination list'
+      description: Comment associated with domain within destination list
   - arguments:
     - description: Optional organization ID. If not provided, will use the one provided
         in the integration configuration.
@@ -100,16 +100,45 @@ script:
     name: umbrella-get-destination-domain
     outputs:
     - contextPath: Umbrella.Destinations.id
-      description: 'ID of domain within destination list'
+      description: ID of domain within destination list
     - contextPath: Umbrella.Destinations.destination
-      description: 'Domain within destination list'
+      description: Domain within destination list
     - contextPath: Umbrella.Destinations.type
-      description: 'Type of destination within destination list'
+      description: Type of destination within destination list
     - contextPath: Umbrella.Destinations.createdAt
-      description: 'When the domain within destination list was created'
+      description: When the domain within destination list was created
     - contextPath: Umbrella.Destinations.comment
-      description: 'Comment associated with domain within destination list'
-  dockerimage: demisto/python3:3.9.7.24076
+      description: Comment associated with domain within destination list
+  - arguments:
+    - description: Optional orgId, by default uses the one set in the instance configuration
+      name: orgId
+    - description: Destination list ID to get domains from. Use umbrella-get-destination-lists
+        to get the list ID
+      name: destId
+      required: true
+    - description: Domains to search for in a destination list
+      isArray: true
+      name: domains
+      required: true
+    description: Search for multiple domains in a destination list
+    name: umbrella-search-destination-domains
+    outputs:
+    - contextPath: Umbrella.Destinations.id
+      description: ID of domain within destination list
+      type: number
+    - contextPath: Umbrella.Destinations.destination
+      description: Domain within destination list
+      type: string
+    - contextPath: Umbrella.Destinations.type
+      description: Type of destination within destination list
+      type: string
+    - contextPath: Umbrella.Destinations.createdAt
+      description: When the domain within destination list was created
+      type: date
+    - contextPath: Umbrella.Destinations.comment
+      description: Comment associated with domain within destination list
+      type: string
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3

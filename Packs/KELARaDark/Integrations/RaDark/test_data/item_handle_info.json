@@ -1,0 +1,13 @@
+{
+  "ITEM_HANDLE_RESPONSE": {
+    "data": {
+      "value": "Test User"
+    }
+  },
+  "ITEM_HANDLE_ARGS": {
+    "item_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  "ITEM_HANDLE_COMMAND_RESULTS": {
+    "readable_output": "Item ID (xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx) marked as handled."
+  }
+}

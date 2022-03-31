@@ -1,0 +1,33 @@
+commonfields:
+  id: D2Drop
+  version: -1
+name: D2Drop
+script: ''
+type: javascript
+tags:
+- agent
+- util
+comment: |-
+  Drop a file to a target system by providing its path on the server. Use CopyFileD2 instead in most cases.
+  This is a utility agent script to be used inside server scripts. See CopyFileD2 for an example.
+enabled: true
+system: true
+args:
+- name: destpath
+  required: true
+  description: Full filesystem path and filename under which to save the file
+- name: files
+  required: true
+  description: Source file name
+- name: force
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Overwrite file
+scripttarget: 1
+runonce: false
+runas: DBotWeakRole
+tests:
+- No test - D2 tests are not supported yet in content tests
+fromversion: 5.0.0

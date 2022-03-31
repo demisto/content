@@ -164,7 +164,7 @@ script:
     - contextPath: FrontlineVM.Scan.IP
       description: The IP address of the scan (can be a single IP address or a range of IP addresses).
     description: Performs a scan on the specified asset.
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
   runonce: false
   subtype: python3

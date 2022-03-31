@@ -20,7 +20,7 @@ class Client:
         return RESPONSE
 
 
-def test_get_members(mocker):
+def test_get_members():
     """
     Given
     - get-members command
@@ -32,8 +32,7 @@ def test_get_members(mocker):
     - Ensure that empty map is not returned to the context
     """
     client = Client
-    mocker.patch('AWSGuardDuty.aws_session', return_value=client)
-    members_res = get_members({})
+    members_res = get_members(client, {})
     assert members_res['Contents'] == [{'AccountId': 1, 'DetectorId': 1, 'MasterId': 1}]
 
 

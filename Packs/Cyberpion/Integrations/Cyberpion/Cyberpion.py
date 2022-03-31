@@ -220,6 +220,7 @@ def fetch_incidents(client: Client,
                     min_severity: int,
                     alert_types: list,
                     show_only_active: bool,
+                    first_fetch: str = None
                     ) -> Tuple[Dict[str, str], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
 
@@ -238,6 +239,10 @@ def fetch_incidents(client: Client,
     :param alert_type:
         type of alerts to search for. There is no list of predefined types
 
+    :type first_fetch: `str`
+    :param first_fetch:
+        first date to fetch from. if null, all incidents will be fetched
+
     :return:
         A tuple containing two elements:
             next_run (``Dict[str, str]``): Contains the timestamp that will be
@@ -250,12 +255,12 @@ def fetch_incidents(client: Client,
     last_run_dict = demisto.getLastRun()
     if 'last_fetch' in last_run_dict:
         last_fetch = last_run_dict['last_fetch']
-        demisto.debug('zzz last fetch: {}'.format(str(last_fetch)))
+        demisto.debug('last fetch: {}'.format(str(last_fetch)))
     else:
         demisto.debug('no previous data... this means this is the first time we are fetching incidents')
-        last_fetch = None
-    demisto.debug("Cyberpion fetch incidents last run time: {}".format(
-        str(last_fetch) if last_fetch else 'this is the first time'))
+        last_fetch = first_fetch
+    demisto.debug("Cyberpion fetch incidents last run time\\first fetch: {}".format(
+        str(last_fetch) if last_fetch else 'fetching all incidents, without time filter'))
     action_items = client.get_action_items(
         max_fetch=max_fetch,
         min_severity=min_severity,
@@ -368,7 +373,7 @@ def main() -> None:
     api_key = demisto.params()['apikey']
     min_severity = demisto.params()['minSeverity']  # mandatory
     alert_types = demisto.params()['categories']  # mandatory
-    show_only_active = demisto.params()['ShowOnlyActive']  # mandatory
+    show_only_active = demisto.params()['ShowOnlyOpen']  # mandatory
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
@@ -397,6 +402,10 @@ def main() -> None:
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
             max_fetch = demisto.params().get('maxFetch')
+            first_fetch: str = demisto.params().get('first_fetch')
+            if first_fetch:
+                months_back = datetime.now() - timedelta(days=30 * int(first_fetch))
+                first_fetch = datetime.strftime(months_back, DATE_FORMAT)
             if not max_fetch:
                 max_fetch = DEFAULT_MAX_INCIDENTS_TO_FETCH
             try:
@@ -413,7 +422,8 @@ def main() -> None:
                 max_fetch=max_fetch,
                 min_severity=min_severity,
                 show_only_active=show_only_active,
-                alert_types=alert_types
+                alert_types=alert_types,
+                first_fetch=first_fetch
             )
 
             # create incidents

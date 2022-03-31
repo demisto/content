@@ -2,7 +2,7 @@
     "name": "SplunkCIMFields",
     "description": "Convert Splunk CIM Dynamic Fields into their values.\n\nExample:\n\nBrute Force Attack On $src$ transformed into Brute Force Attack On 192.168.100.254",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Farrukh Ahmed",
     "url": "",
     "email": "",
@@ -13,5 +13,9 @@
     "keywords": [],
     "githubUser": [
         "linuxpakistan"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

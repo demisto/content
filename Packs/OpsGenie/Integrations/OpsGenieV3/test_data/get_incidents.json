@@ -1,0 +1,33 @@
+{
+    "totalCount": 83,
+    "data": [
+        {
+            "id": "2a1c07ea-b9bd-4922-afcc-edf406b46904",
+            "description": "",
+            "impactedServices": [],
+            "tinyId": "86",
+            "message": "test",
+            "status": "open",
+            "tags": [],
+            "createdAt": "2021-11-21T19:32:02.148Z",
+            "updatedAt": "2021-11-21T19:32:02.148Z",
+            "priority": "P3",
+            "ownerTeam": "",
+            "responders": [],
+            "extraProperties": {},
+            "links": {
+                "web": "https://demisto1.app.opsgenie.com/incident/detail/2a1c07ea-b9bd-4922-afcc-edf406b46904",
+                "api": "https://api.opsgenie.com/v1/incidents/2a1c07ea-b9bd-4922-afcc-edf406b46904"
+            },
+            "impactStartDate": "2021-11-21T19:32:02.148Z",
+            "actions": []
+        }
+    ],
+    "paging": {
+        "next": "https://api.opsgenie.com/v1/incidents?limit=1&sort=insertedAt&offset=1&order=desc",
+        "first": "https://api.opsgenie.com/v1/incidents?limit=1&sort=insertedAt&offset=0&order=desc",
+        "last": "https://api.opsgenie.com/v1/incidents?limit=1&sort=insertedAt&offset=83&order=desc"
+    },
+    "took": 0.024,
+    "requestId": "2c40afad-5f35-439b-96e2-d06588ccff5c"
+}

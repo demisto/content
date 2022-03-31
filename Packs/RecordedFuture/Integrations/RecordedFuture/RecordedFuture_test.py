@@ -1,7 +1,9 @@
 import os
 import unittest
 import json
+from datetime import datetime
 from pathlib import Path
+from unittest.mock import call
 from RecordedFuture import (
     Actions,
     Client,
@@ -83,7 +85,7 @@ class RFTest(unittest.TestCase):
         resp = self.actions.enrich_command("184.168.221.96", "ip", True, False, "Vulnerability Analyst")  # noqa
         self.assertIsInstance(resp[0], CommandResults)
         data = resp[0].raw_response['data']
-        list_of_lists = sorted([[*entry][0] for entry in data['relatedEntities']]) # noqa
+        list_of_lists = sorted([[*entry][0] for entry in data['relatedEntities']])  # noqa
         expected = ['RelatedMalwareCategory', 'RelatedMalware', 'RelatedThreatActor']  # noqa
         self.assertEqual(list_of_lists, sorted(expected))
 
@@ -181,6 +183,30 @@ class RFTest(unittest.TestCase):
         self.assertTrue(context.get('HumanReadable'))
         self.assertTrue(context.get('Contents'))
 
+    @vcr.use_cassette()
+    def test_get_alert_set_status_command(self):
+        """Set a status for alert"""
+        alert_status = 'no-action'
+        alert_id = 'jrhrfx'
+        resp = self.actions.alert_set_status(alert_id, alert_status)
+        context = resp.to_context()
+        self.assertIsInstance(resp, CommandResults)
+        self.assertTrue(context.get('HumanReadable'))
+        self.assertTrue(context.get('Contents'))
+        self.assertEqual(context['Contents']['status'], alert_status)
+
+    @vcr.use_cassette()
+    def test_get_alert_set_note(self):
+        """Set a note for alert"""
+        note_text = 'note unittest'
+        alert_id = 'jrhrfx'
+        resp = self.actions.alert_set_note(alert_id, note_text)
+        context = resp.to_context()
+        self.assertIsInstance(resp, CommandResults)
+        self.assertTrue(context.get('HumanReadable'))
+        self.assertTrue(context.get('Contents'))
+        self.assertEqual(context['Contents']['note']['text'], note_text)
+
 
 def create_client():
     base_url = "https://api.recordedfuture.com/gw/xsoar/"
@@ -239,3 +265,71 @@ def test_entity_enrich_no_related_entities(mocker):
     returned_data = client.entity_enrich('184.168.221.96', 'ip', False, False, 'Vulnerability Analyst')
     assert expected_entity_data == returned_data
     assert 'relatedEntities' not in returned_data.get('data').keys()
+
+
+def test_fetch_incidents(mocker):
+    """Fetch alerts from Recorded Future"""
+    first_fetch = "72 hours"
+    rule_names = "Global Trends, Trending Vulnerabilities;Global Trends, Trending Attackers"
+    max_fetch = 3
+    client = create_client()
+    actions = Actions(client)
+    incidents_mock = mocker.patch('demistomock.incidents')
+    set_last_run_mock = mocker.patch('demistomock.setLastRun')
+    get_last_run_mock = mocker.patch(
+        'demistomock.getLastRun',
+        return_value={"time": "2018-10-24T14:13:20.000001Z"}
+    )
+
+    rules_response = util_load_json('./cassettes/alert_rules_response.json')
+    client.get_alert_rules = mocker.Mock(return_value=rules_response)
+    alerts_response = util_load_json('./cassettes/alerts_response.json')
+    client.get_alerts = mocker.Mock(return_value=alerts_response)
+    client.update_alerts = mocker.Mock()
+    client.get_single_alert = mocker.Mock()
+    single_alerts_responses = util_load_json('./cassettes/responses_for_single_alerts.json')
+
+    def get_single_alert_response(alert_id):
+        for alert_response in single_alerts_responses:
+            if alert_response['data']['id'] == alert_id:
+                return alert_response
+
+    client.get_single_alert.side_effect = lambda alert_id: get_single_alert_response(alert_id)
+
+    actions.fetch_incidents(rule_names, first_fetch, max_fetch)
+    get_last_run_mock.assert_called_once_with()
+    client.get_alert_rules.assert_has_calls([
+        call("Global Trends, Trending Vulnerabilities"),
+        call("Global Trends, Trending Attackers"),
+    ])
+    client.get_alerts.assert_has_calls([
+        call({
+            'triggered': '[2018-10-24 14:13:20,)', 'orderby': 'triggered',
+            'direction': 'asc', 'status': 'no-action', 'limit': 3, 'alertRule': 'biQXYk'
+        }),
+        call({
+            'triggered': '[2018-10-24 14:13:20,)', 'orderby': 'triggered',
+            'direction': 'asc', 'status': 'no-action', 'limit': 3, 'alertRule': 'biQXYk'
+        }),
+    ])
+    incidents = []
+    for _ in rule_names.split(';'):
+        for alert_data in single_alerts_responses:
+            alert = alert_data['data']
+            alert_time = datetime.strptime(alert['triggered'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            incidents.append({
+                "name": "Recorded Future Alert - " + alert['title'],
+                "occurred": datetime.strftime(alert_time, "%Y-%m-%dT%H:%M:%SZ"),
+                "rawJSON": json.dumps(alert),
+            })
+    incidents.reverse()
+    incidents_mock.assert_called_once_with(incidents)
+    client.update_alerts.assert_called_once_with([
+        {'id': 'jy5xRA', 'status': 'pending'},
+        {'id': 'jzj0f5', 'status': 'pending'},
+        {'id': 'j0MSf6', 'status': 'pending'},
+        {'id': 'jy5xRA', 'status': 'pending'},
+        {'id': 'jzj0f5', 'status': 'pending'},
+        {'id': 'j0MSf6', 'status': 'pending'}
+    ])
+    set_last_run_mock.assert_called_once_with({'start_time': '2021-09-13T04:04:10.720000Z'})
