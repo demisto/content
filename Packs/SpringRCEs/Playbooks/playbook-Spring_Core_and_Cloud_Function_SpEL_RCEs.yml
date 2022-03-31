@@ -230,8 +230,7 @@ tasks:
                 value:
                   simple: '"No Indicators"'
       countTotalIndicators:
-        complex:
-          root: ExtractedIndicators
+        simple: "0"
       playbookDescription:
         complex:
           root: inputs.PlaybookDescription
@@ -564,11 +563,24 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "No":
-      - "18"
-      "Yes":
+      '#default#':
       - "17"
+      "yes":
+      - "18"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCloseIncident
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
     view: |-
       {
         "position": {
@@ -579,22 +591,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    message:
-      to:
-      subject:
-      body:
-        simple: Do you need to continue with the investigation?
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-      replyOptions:
-      - "Yes"
-      - "No"
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -853,11 +849,11 @@ tasks:
       InputEnrichment:
         simple: "False"
       RuleDirection:
-        simple: outbound
+        simple: inbound
       RuleName:
         simple: XSOAR - Block IP playbook - ${incident.id}
       UserVerification:
-        simple: "True"
+        simple: "False"
     separatecontext: true
     loop:
       iscommand: false
@@ -966,7 +962,8 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "15_18_No": 0.61,
+      "15_17_#default#": 0.64,
+      "15_18_yes": 0.61,
       "21_22_#default#": 0.62,
       "21_23_yes": 0.37
     },
@@ -1004,6 +1001,18 @@ inputs:
       * 3.2.3
   required: false
   description: The playbook description. Will be used in the Rapid Breach Response - Set Incident Info sub-playbook.
+  playbookInputQuery:
+- key: AutoCloseIncident
+  value:
+    simple: "true"
+  required: false
+  description: Whether to close the incident automatically or continue with manual investigation.
+  playbookInputQuery:
+- key: BlockIndicatorsAutomatically
+  value:
+    simple: "true"
+  required: false
+  description: Whether to block the indicators automatically.
   playbookInputQuery:
 outputs: []
 tests:
