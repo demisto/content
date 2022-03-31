@@ -9006,9 +9006,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_counter_global(
-            topology: Topology, device_filter_str: Optional[str] = None
-    ) -> ShowCounterGlobalCommmandResult:
+    def get_counter_global(topology: Topology, device_filter_str: Optional[str] = None) -> ShowCounterGlobalCommmandResult:
         """
         Gets the global counter details
         :param topology: `Topology` instance.
@@ -9246,69 +9244,44 @@ def get_template_stacks(
     return PanoramaCommand.get_template_stacks(topology, device_filter_string)
 
 
-def get_global_counters(topology: Topology, device_filter_string: str = None) -> ShowCounterGlobalCommmandResult:
+def get_global_counters(topology: Topology, device_filter_string: Optional[str] = None) -> ShowCounterGlobalCommmandResult:
     """
     Gets global counter information from all the PAN-OS firewalls in the topology
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: ShowCounterGlobalCommmandResult = FirewallCommand.get_counter_global(topology, device_filter_string)
-    return result
+    return FirewallCommand.get_counter_global(topology, device_filter_string)
 
 
-def get_bgp_peers(topology: Topology, device_filter_string: str = None) -> ShowRoutingProtocolBGPCommandResult:
+def get_bgp_peers(topology: Topology, device_filter_string: Optional[str] = None) -> ShowRoutingProtocolBGPCommandResult:
     """
     Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: ShowRoutingProtocolBGPCommandResult = FirewallCommand.get_bgp_peers(topology, device_filter_string)
-    return result
+    return FirewallCommand.get_bgp_peers(topology, device_filter_string)
 
 
-def get_device_connectivity(topology: Topology, hostid: str) -> GetDeviceConnectivityCommandResult:
-    """
-    Search the topology for a given hostid. If it's not found, the device is not connected or unreachable.
-    :param topology: `Topology` instance !no-auto-argument
-    :param hostid: ID (serial or hostname) of host to search for.
-    :return:
-    """
-    if not topology.get_by_filter_str(hostid):
-        result = GetDeviceConnectivityResultData(
-            hostid=hostid,
-            connected=False
-        )
-        return GetDeviceConnectivityCommandResult(summary_data=[result])
-    else:
-        result = GetDeviceConnectivityResultData(
-            hostid=hostid,
-            connected=True
-        )
-        return GetDeviceConnectivityCommandResult(summary_data=[result])
-
-
-def get_available_software(topology: Topology, device_filter_string: str = None) -> SoftwareVersionCommandResult:
+def get_available_software(topology: Topology, device_filter_string: Optional[str] = None) -> SoftwareVersionCommandResult:
     """
     Check the devices for software that is available to be installed.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: SoftwareVersionCommandResult = UniversalCommand.get_available_software(topology, device_filter_string)
-    return result
+    return UniversalCommand.get_available_software(topology, device_filter_string)
 
 
-def get_ha_state(topology: Topology, device_filter_string: str = None) -> List[ShowHAState]:
+def get_ha_state(topology: Topology, device_filter_string: Optional[str] = None) -> List[ShowHAState]:
     """
     Get the HA state and associated details from the given device and any other details.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: List[ShowHAState] = FirewallCommand.get_ha_status(topology, device_filter_string)
-    return result
+    return FirewallCommand.get_ha_status(topology, device_filter_string)
 
 
-def get_jobs(topology: Topology, device_filter_string: str = None, status: str = None, job_type: str = None,
-             id: int = None) -> List[ShowJobsAllResultData]:
+def get_jobs(topology: Topology, device_filter_string: Optional[str] = None, status: Optional[str] = None,
+             job_type: Optional[str] = None, id: Optional[str] = None) -> List[ShowJobsAllResultData]:
     """
     Get all the jobs from the devices in the environment, or a single job when ID is specified.
 
@@ -9319,17 +9292,15 @@ def get_jobs(topology: Topology, device_filter_string: str = None, status: str =
     :param job_type: Filter returned jobs by type
     :param id: Filter by ID
     """
-    if id:
-        id = int(id)
+    _id = arg_to_number(id)
 
-    result: List[ShowJobsAllResultData] = UniversalCommand.show_jobs(
+    return UniversalCommand.show_jobs(
         topology,
         device_filter_string,
         job_type=job_type,
         status=status,
-        id=id
+        id=_id
     )
-    return result
 
 
 def download_software(topology: Topology, version: str,
@@ -9344,11 +9315,7 @@ def download_software(topology: Topology, version: str,
     if sync == "false":
         sync = False
 
-    result: DownloadSoftwareCommandResult = UniversalCommand.download_software(topology, version,
-                                                                               device_filter_str=device_filter_string,
-                                                                               sync=sync)
-
-    return result
+    return UniversalCommand.download_software(topology, version, device_filter_str=device_filter_string, sync=sync)
 
 
 def get_topology() -> Topology:
@@ -9812,7 +9779,7 @@ def main():
                     empty_result_message="No ARP entries."
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-route-summary':
+        elif command == 'pan-os-platform-get-route-summary':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -9820,7 +9787,7 @@ def main():
                     empty_result_message="Empty route summary result."
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-routes':
+        elif command == 'pan-os-platform-get-routes':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -9828,10 +9795,10 @@ def main():
                     empty_result_message="Empty route summary result."
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-system-info':
+        elif command == 'pan-os-platform-get-system-info':
             topology = get_topology()
             return_results(dataclasses_to_command_results(get_system_info(topology, **demisto.args())))
-        elif demisto.command() == 'pan-os-platform-get-device-groups':
+        elif command == 'pan-os-platform-get-device-groups':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -9839,7 +9806,7 @@ def main():
                     empty_result_message="No device groups found."
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-template-stacks':
+        elif command == 'pan-os-platform-get-template-stacks':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -9847,7 +9814,7 @@ def main():
                     empty_result_message="No template stacks found."
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-global-counters':
+        elif command == 'pan-os-platform-get-global-counters':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -9855,7 +9822,7 @@ def main():
                     empty_result_message="No Global Counters Found"
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-bgp-peers':
+        elif command == 'pan-os-platform-get-bgp-peers':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -9863,7 +9830,7 @@ def main():
                     empty_result_message="No BGP Peers found."
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-available-software':
+        elif command == 'pan-os-platform-get-available-software':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -9871,7 +9838,7 @@ def main():
                     empty_result_message="No Available software images found"
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-ha-state':
+        elif command == 'pan-os-platform-get-ha-state':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -9879,7 +9846,7 @@ def main():
                     empty_result_message="No HA information available"
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-jobs':
+        elif command == 'pan-os-platform-get-jobs':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -9887,7 +9854,7 @@ def main():
                     empty_result_message="No jobs returned"
                 )
             )
-        elif demisto.command() == 'pan-os-platform-download-software':
+        elif command == 'pan-os-platform-download-software':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
