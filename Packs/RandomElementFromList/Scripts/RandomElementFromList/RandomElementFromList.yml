@@ -1,0 +1,36 @@
+args:
+- description: List to pick elements from
+  isArray: true
+  name: value
+  required: true
+  type: textArea
+- description: Number of elements to select
+  name: count
+  required: true
+comment: randomly select elements from a list in Python
+commonfields:
+  id: 655a8341-8449-497f-8024-4ee41fd70ca9
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 1c388f48-7d60-430f-8e88-5a7e536f8f69
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.4.27798
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: RandomElementFromList
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+type: python
