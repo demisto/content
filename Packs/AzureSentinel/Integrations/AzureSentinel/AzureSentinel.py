@@ -950,18 +950,21 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
         incident_severity = severity_to_level(incident.get('Severity'))
         demisto.debug(f"{incident.get('ID')=}, {incident_severity=}, {incident.get('IncidentNumber')=}")
 
-        # fetch only incidents that weren't fetched in the last run and their severity is at least min_severity
-        if incident.get('ID') not in last_fetch_ids and incident_severity >= min_severity:
+        # create incident only for incidents that weren't fetched in the last run and their severity is at least min_severity
+        if incident.get('ID') not in last_fetch_ids:
             incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
-            xsoar_incident = {
-                'name': '[Azure Sentinel] ' + incident.get('Title'),
-                'occurred': incident.get('CreatedTimeUTC'),
-                'severity': incident_severity,
-                'rawJSON': json.dumps(incident)
-            }
-
-            incidents.append(xsoar_incident)
             current_fetch_ids.append(incident.get('ID'))
+            if incident_severity >= min_severity:
+                xsoar_incident = {
+                    'name': '[Azure Sentinel] ' + incident.get('Title'),
+                    'occurred': incident.get('CreatedTimeUTC'),
+                    'severity': incident_severity,
+                    'rawJSON': json.dumps(incident)
+                }
+                incidents.append(xsoar_incident)
+            else:
+                demisto.debug(f"drop creation of {incident.get('IncidentNumber')=} "
+                              "due to the {incident_severity=} is lower then {min_severity=}")
 
             # Update last run to the latest fetch time
             assert incident_created_time is not None, f"incident.get('CreatedTimeUTC') : " \
