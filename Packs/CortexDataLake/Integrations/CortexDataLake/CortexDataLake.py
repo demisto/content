@@ -41,7 +41,7 @@ FETCH_TABLE_HR_NAME = {
     "firewall.traffic": "Cortex Firewall Traffic",
     "firewall.url": "Cortex Firewall URL",
     "firewall.userid": "Cortex Firewall UserID",
-    "log.system": "Cortex Common System",
+    # "log.system": "Cortex Common System",
     "log.config": "Cortex Common Config"
 }
 BAD_REQUEST_REGEX = r'^Error in API call \[400\].*'
@@ -865,29 +865,40 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
     Returns:
         SQL query that matches the arguments
     """
+    if fetch_filter and (fetch_subtype or fetch_severity):
+        raise DemistoException(f'Fetch Filter parameter cannot be used with Subtype/Severity parameters.')
     query = f'SELECT {fetch_fields} FROM `{fetch_table}` '  # guardrails-disable-line
     time_filter = 'event_time' if 'log' in fetch_table else 'time_generated'
     query += f'WHERE {time_filter} Between TIMESTAMP("{fetch_timestamp}") ' \
              f'AND CURRENT_TIMESTAMP'
     if fetch_filter:
         query += f' AND {fetch_filter}'
-    else:
-        if fetch_subtype and 'all' not in fetch_subtype:
-            sub_types = [f'sub_type.value = "{sub_type}"' for sub_type in fetch_subtype]
-            query += f' AND ({" OR ".join(sub_types)})'
-        if fetch_severity and 'all' not in fetch_severity:
-            severities = [f'vendor_severity.value = "{severity}"' for severity in fetch_severity]
-            query += f' AND ({" OR ".join(severities)})'
+    if fetch_subtype and 'all' not in fetch_subtype:
+        sub_types = [f'sub_type.value = "{sub_type}"' for sub_type in fetch_subtype]
+        query += f' AND ({" OR ".join(sub_types)})'
+    if fetch_severity and 'all' not in fetch_severity:
+        severities = [f'vendor_severity.value = "{severity}"' for severity in fetch_severity]
+        query += f' AND ({" OR ".join(severities)})'
     query += f' ORDER BY {time_filter} ASC LIMIT {fetch_limit}'
     return query
+
+
+def convert_log_to_hr_name(fetch_table):
+    if isinstance(fetch_table, STRING_OBJ_TYPES):
+        return "Cortex " + " ".join(word.capitalize() for word in fetch_table.split('.'))
+    else:
+        raise Exception(f'Failed to convert fetch table to context key: {fetch_table}')
 
 
 def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
     time_filter = 'event_time' if 'log' in fetch_table else 'time_generated'
     time_generated = log.get(time_filter, 0)
     occurred = human_readable_time_from_epoch_time(time_generated, utc_time=True)
+    fetch_name = FETCH_TABLE_HR_NAME.get(fetch_table)
+    if not fetch_name:
+        fetch_name = convert_log_to_hr_name(fetch_table)
     incident = {
-        'name': FETCH_TABLE_HR_NAME[fetch_table],
+        'name': fetch_name,
         'rawJSON': json.dumps(log, ensure_ascii=False),
         'occurred': occurred
     }
