@@ -5,7 +5,7 @@
     "name": "DS Mitigation",
     "ownerOnly": false,
     "description": "Instructions to mitigate the identified risk",
-    "cliName": "dsMitigation",
+    "cliName": "dsmitigation",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

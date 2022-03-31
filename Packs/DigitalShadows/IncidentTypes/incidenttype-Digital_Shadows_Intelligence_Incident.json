@@ -6,10 +6,6 @@
     "default": false,
     "detached": false,
     "disabled": false,
-    "extractSettings": {
-        "fieldCliNameToExtractSettings": {},
-        "mode": "Specific"
-    },
     "hours": 0,
     "hoursR": 0,
     "id": "Digital Shadows Intelligence Incident",

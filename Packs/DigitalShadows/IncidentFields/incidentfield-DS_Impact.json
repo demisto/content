@@ -5,7 +5,7 @@
     "name": "DS Impact",
     "ownerOnly": false,
     "description": "The potential impact of the identified risk",
-    "cliName": "dsImpact",
+    "cliName": "dsimpact",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
