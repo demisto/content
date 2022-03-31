@@ -2,7 +2,7 @@ id: 5a524514-cb58-46c6-892a-521a7794a58d
 version: 38
 vcShouldKeepItemLegacyProdMachine: false
 name: ACTI Create Report-Indicator Associations
-description: Helps in creating associations between indicators and reports.
+description: Creates associations between indicators and reports.
 starttaskid: "0"
 tasks:
   "0":
