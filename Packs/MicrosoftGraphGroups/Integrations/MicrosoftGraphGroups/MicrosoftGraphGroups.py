@@ -67,10 +67,11 @@ class MsGraphClient:
       """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
+                 handle_error, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
                                          certificate_thumbprint=certificate_thumbprint, private_key=private_key)
+        self.handle_error = handle_error
 
     def test_function(self):
         """Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -193,6 +194,18 @@ class MsGraphClient:
             url_suffix=f'groups/{group_id}/members/{user_id}/$ref', resp_type="text")
 
 
+def suppress_errors_with_404_code(func):
+    def wrapper(client: MsGraphClient, args: Dict):
+        try:
+            return func(client, args)
+        except NotFoundError:
+            if client.handle_error:
+                human_readable = f'#### Group id -> {args.get("group_id")} does not exist'
+                return human_readable, None, None
+            raise
+    return wrapper
+
+
 def test_function_command(client: MsGraphClient, args: Dict):
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
@@ -241,6 +254,7 @@ def list_groups_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, D
     return human_readable, entry_context, groups
 
 
+@suppress_errors_with_404_code
 def get_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Get a group by group id and return outputs in Demisto's format.
 
@@ -294,6 +308,7 @@ def create_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
     return human_readable, entry_context, group
 
 
+@suppress_errors_with_404_code
 def delete_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Delete a group by group id and return outputs in Demisto's format
 
@@ -320,6 +335,7 @@ def delete_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
     return human_readable, entry_context, NO_OUTPUTS
 
 
+@suppress_errors_with_404_code
 def list_members_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """List a group members by group id. return outputs in Demisto's format.
 
@@ -369,6 +385,7 @@ def list_members_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
     return human_readable, entry_context, members
 
 
+@suppress_errors_with_404_code
 def add_member_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Add a member to a group by group id and user id. return outputs in Demisto's format.
 
@@ -389,6 +406,7 @@ def add_member_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Di
     return human_readable, NO_OUTPUTS, NO_OUTPUTS
 
 
+@suppress_errors_with_404_code
 def remove_member_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Remove a member from a group by group id and user id. return outputs in Demisto's format.
 
@@ -419,6 +437,7 @@ def main():
     verify = not params.get('insecure', False)
     proxy = params.get('proxy')
     self_deployed: bool = params.get('self_deployed', False)
+    handle_error: bool = argToBoolean(params.get('handle_error', 'true'))
     certificate_thumbprint = params.get('certificate_thumbprint')
     private_key = params.get('private_key')
 
@@ -448,7 +467,7 @@ def main():
     try:
         client = MsGraphClient(base_url=base_url, tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                app_name=APP_NAME, verify=verify, proxy=proxy, self_deployed=self_deployed,
-                               certificate_thumbprint=certificate_thumbprint, private_key=private_key)
+                               handle_error=handle_error, certificate_thumbprint=certificate_thumbprint, private_key=private_key)
         # Run the command
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())
         # create a war room entry

@@ -54,6 +54,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Suppress Errors for Non Found Users
+  name: handle_error
+  required: false
+  defaultvalue: true
+  type: 8
 description: Unified gateway to security insights - all from a unified Microsoft Graph
   User API.
 display: Azure Active Directory Users
