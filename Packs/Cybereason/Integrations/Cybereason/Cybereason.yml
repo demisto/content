@@ -786,6 +786,30 @@ script:
       required: true
     description: Aborts a file download operation that is in progress
     name: cybereason-close-file-batch-id
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop
+      name: malop
+      required: true
+    - description: Machine name to be quarantine
+      name: machine
+      required: true
+    - description: The complete Cybereason user name string for the user performing the request
+      name: userName
+      required: true
+    description: Quarantine the detected malicious file in a secure location
+    name: cybereason-quarantine-file
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop
+      name: malop
+      required: true
+    - description: Machine name to block a file
+      name: machine
+      required: true
+    - description: The complete Cybereason user name string for the user performing the request
+      name: userName
+      required: true
+    description: Block a file only in particular machine
+    name: cybereason-block-file
   isfetch: true
   runonce: false
   script: '-'
