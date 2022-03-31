@@ -194,7 +194,7 @@ class MsGraphClient:
             url_suffix=f'groups/{group_id}/members/{user_id}/$ref', resp_type="text")
 
 
-def suprress_errors_with_404_code(func):
+def suppress_errors_with_404_code(func):
     def wrapper(client: MsGraphClient, args: Dict):
         try:
             return func(client, args)
@@ -254,7 +254,7 @@ def list_groups_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, D
     return human_readable, entry_context, groups
 
 
-@suprress_errors_with_404_code
+@suppress_errors_with_404_code
 def get_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Get a group by group id and return outputs in Demisto's format.
 
@@ -308,7 +308,7 @@ def create_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
     return human_readable, entry_context, group
 
 
-@suprress_errors_with_404_code
+@suppress_errors_with_404_code
 def delete_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Delete a group by group id and return outputs in Demisto's format
 
@@ -335,7 +335,7 @@ def delete_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
     return human_readable, entry_context, NO_OUTPUTS
 
 
-@suprress_errors_with_404_code
+@suppress_errors_with_404_code
 def list_members_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """List a group members by group id. return outputs in Demisto's format.
 
@@ -385,7 +385,7 @@ def list_members_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
     return human_readable, entry_context, members
 
 
-@suprress_errors_with_404_code
+@suppress_errors_with_404_code
 def add_member_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Add a member to a group by group id and user id. return outputs in Demisto's format.
 
@@ -406,7 +406,7 @@ def add_member_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Di
     return human_readable, NO_OUTPUTS, NO_OUTPUTS
 
 
-@suprress_errors_with_404_code
+@suppress_errors_with_404_code
 def remove_member_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Remove a member from a group by group id and user id. return outputs in Demisto's format.
 

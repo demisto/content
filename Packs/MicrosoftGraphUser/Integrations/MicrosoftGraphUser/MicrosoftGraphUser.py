@@ -209,7 +209,7 @@ class MsGraphClient:
         )
 
 
-def suprress_errors_with_404_code(func):
+def suppress_errors_with_404_code(func):
     def wrapper(client: MsGraphClient, args: Dict):
         try:
             return func(client, args)
@@ -243,7 +243,7 @@ def test_function(client, _):
     return response, None, None
 
 
-@suprress_errors_with_404_code
+@suppress_errors_with_404_code
 def disable_user_account_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.disable_user_account_session(user)
@@ -251,7 +251,7 @@ def disable_user_account_command(client: MsGraphClient, args: Dict):
     return human_readable, None, None
 
 
-@suprress_errors_with_404_code
+@suppress_errors_with_404_code
 def unblock_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.unblock_user(user)
@@ -260,7 +260,7 @@ def unblock_user_command(client: MsGraphClient, args: Dict):
     return human_readable, None, None
 
 
-@suprress_errors_with_404_code
+@suppress_errors_with_404_code
 def delete_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.delete_user(user)
@@ -300,7 +300,7 @@ def create_user_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, user_data
 
 
-@suprress_errors_with_404_code
+@suppress_errors_with_404_code
 def update_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     updated_fields = args.get('updated_fields')
@@ -309,7 +309,7 @@ def update_user_command(client: MsGraphClient, args: Dict):
     return get_user_command(client, args)
 
 
-@suprress_errors_with_404_code
+@suppress_errors_with_404_code
 def change_password_user_command(client: MsGraphClient, args: Dict):
     user = str(args.get('user'))
     password = str(args.get('password'))
@@ -376,7 +376,7 @@ def list_users_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, users_data
 
 
-@suprress_errors_with_404_code
+@suppress_errors_with_404_code
 def get_direct_reports_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
 
@@ -394,7 +394,7 @@ def get_direct_reports_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, raw_reports
 
 
-@suprress_errors_with_404_code
+@suppress_errors_with_404_code
 def get_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     manager_data = client.get_manager(user)
@@ -409,7 +409,7 @@ def get_manager_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, manager_data
 
 
-@suprress_errors_with_404_code
+@suppress_errors_with_404_code
 def assign_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     manager = args.get('manager')
@@ -419,7 +419,7 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
     return human_readable, None, None
 
 
-@suprress_errors_with_404_code
+@suppress_errors_with_404_code
 def revoke_user_session_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.revoke_user_session(user)
