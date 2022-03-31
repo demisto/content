@@ -2,7 +2,7 @@ id: abc440b6-9182-406a-8625-a851ce58025f
 version: 23
 vcShouldKeepItemLegacyProdMachine: false
 name: ACTI Block Indicators | severity >= 5
-description: Block Indicators with indicators with severity with 5 or more
+description: Block Indicators with severity 5 or more
 starttaskid: "0"
 tasks:
   "0":
