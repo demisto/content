@@ -1329,7 +1329,7 @@ def add_url_object(demisto_args: dict):
     url = demisto_args.get('url')
     url_parse = urlparse(url)
     url_obj = [{'url': url}]
-    url_obj.extend({'scheme': url_parse.scheme}) if url_parse.scheme else None
+    url_obj.append({'scheme': url_parse.scheme}) if url_parse.scheme else None
     url_obj.append({'resource_path': url_parse.path}) if url_parse.path else None
     url_obj.append({'query_string': url_parse.query}) if url_parse.query else None
     url_obj.append({'domain': url_parse.netloc}) if url_parse.netloc else None
