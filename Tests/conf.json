@@ -1816,10 +1816,6 @@
             "playbookID": "remedy_sr_test_pb"
         },
         {
-            "integrations": "Netskope",
-            "playbookID": "Netskope Test"
-        },
-        {
             "integrations": "Cylance Protect v2",
             "playbookID": "Cylance Protect v2 Test"
         },
@@ -5303,7 +5299,6 @@
         "ArcSight ESM v2": "Issue #18328",
         "AlienVault USM Anywhere": "Issue #18273",
         "Dell Secureworks": "No instance",
-        "Netskope": "instance is down",
         "Service Manager": "Expired license",
         "carbonblackprotection": "License expired",
         "icebrg": "Issue 14312",
