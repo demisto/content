@@ -365,6 +365,9 @@ def scan_value_command(client: Client, args: Dict[str, Any], api_key) -> List[Co
 
 
 def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
+    """
+    Scan result command
+    """
     qids = argToList(args.get('qid'))
     if len(qids) == 0:
         raise ValueError('QID(s) not specified')
