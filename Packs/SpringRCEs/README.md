@@ -6,10 +6,18 @@ Spring Framework is an extremely popular framework used by Java developers to bu
 
 Later, it was discovered that these are two separate vulnerabilities, one in Spring Core and the other in Spring Cloud Function:
 
-* RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell.
-* RCE in "Spring Cloud Function", aka CVE-2022-22963.
+**CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell.**
+**CVE-2022-22963 - RCE in "Spring Cloud Function SpEL".**
 
-Spring Cloud Function unaffected versions:
+**Spring Core vulnerability requirements:**
+
+* JDK 9 or higher
+* Apache Tomcat as the Servlet container
+* Packaged as WAR
+* spring-webmvc or spring-webflux dependency
+* Spring Framework versions 5.3.0 to 5.3.17, 5.2.0 to 5.2.19, and older versions
+
+**Spring Cloud Function unaffected versions:**
 
 * 3.1.7
 * 3.2.3
@@ -25,4 +33,4 @@ More information about the vulnerability:
 
 Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
-![Spring Core and Cloud Function SpEL RCEs](https://raw.githubusercontent.com/demisto/content/3066f91bb206526bdfb7535af33db1603a8d5b5f/Packs/SpringRCEs/doc_files/Spring_Core_and_Cloud_Function_SpEL_RCEs.png)
+![Spring Core and Cloud Function SpEL RCEs](https://raw.githubusercontent.com/demisto/content/cd6c5e03f5733cd642536f7e973c75a0b4798e87/Packs/SpringRCEs/doc_files/Spring_Core_and_Cloud_Function_SpEL_RCEs.png)
