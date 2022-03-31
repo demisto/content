@@ -501,7 +501,8 @@ def remove_device_freeze_request_command(args, client) -> CommandResults:
 
     client.api_request_absolute('PUT', '/v2/device-freeze/requests', body=json.dumps(payload),
                                 success_status_code=[204])
-    return CommandResults(readable_output=f"Successfully removed freeze request for devices: {device_ids}.")
+    return CommandResults(
+        readable_output=f"Successfully removed freeze request for devices ids: {args.get('device_ids')}.")
 
 
 def parse_get_device_freeze_response(response: List):
