@@ -81,6 +81,6 @@
 	},
 	"fileHashesPriority": null,
 	"expiration": 0,
-	"layout": "ACTI Intelligence Report"
+	"layout": "ACTI Intelligence Report",
 	"description": "An Intelligence Report is a longer-form security intelligence analysis report authored by iDefense analysts and covers a wider scope of the cyber-threat landscape."
 }
