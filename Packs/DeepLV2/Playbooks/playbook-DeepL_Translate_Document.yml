@@ -6,28 +6,27 @@ contentitemexportablefields:
     packID: 4507f943-3e14-4476-86da-835f775c57a3
     propagationLabels:
     - all
-    toServerVersion: ""
-id: 69560f28-d59f-4bd9-8a72-7026bb7fda1e
+id: DeepL Translate Document
 inputs:
 - description: EntryID of the File to be translated
   key: entry_id
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: BG,CS,DA,DE,EL,EN,ES,ET,FI,FR,HU,IT,JA,LT,LV,NL,PL,PT,RO,RU,SK,SL,SV,ZH
   key: source_lang
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: BG,CS,DA,DE,EL,EN-GB,EN-US,EN,ES,ET,FI,FR,HU,IT,JA,LT,LV,NL,PL,PT-PT,PT-BR,PT,RO,RU,SK,SL,SV,ZH
   key: target_lang
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The name of the uploaded file. Can be used as an alternative to including
     the file name in the file part's content disposition.
   key: filename
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -35,19 +34,19 @@ inputs:
 
     values: default,more,less
   key: formality
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: 'Specify the glossary to use for the document translation. Important:
     This requires the source_lang parameter to be set and the language pair of the
     glossary has to match the language pair of the request.'
   key: glossary_id
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: 'filename (Default is: ''TranslatedFile'')'
   key: translated_filename
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: DeepL Translate Document
@@ -55,7 +54,6 @@ outputs:
 - contextPath: TranslatedFile.EntryID
   description: Translated File EntryID
   type: unknown
-sourceplaybookid: 9d7faf0e-eae3-4f94-8cd4-047c68ef8631
 starttaskid: "0"
 tasks:
   "0":
@@ -76,6 +74,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 12683762-dac1-4a70-808d-ba8886b6ee49
     timertriggers: []
     type: start
@@ -169,6 +168,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: c3e62761-de62-4fdb-828b-dc5e672baa37
     timertriggers: []
     type: title
@@ -380,3 +380,7 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
+description: ''
