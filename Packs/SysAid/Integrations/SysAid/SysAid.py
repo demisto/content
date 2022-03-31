@@ -216,8 +216,7 @@ def service_record_handler(response):
             if info['key'] in ['status', 'update_time', 'sr_type']:
                 response_entry[info['keyCaption']] = info['valueCaption']
 
-        if len(response_entry) in [5, 6]:
-            return response_entry
+        return response_entry
 
     return None
 
@@ -278,6 +277,13 @@ def paging_heading(page_size: str = None, page_number: str = None):
     return ''
 
 
+def set_returned_fields(fields: str = None) -> Optional[str]:
+    # "all" was added for debugging purposes as we set the "fields" argument to be mandatory, and is not sent in the request
+    if 'all' in fields or fields == []:
+        return None
+    return fields
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -287,7 +293,7 @@ def table_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     entity_type = arg_to_number(args.get('entity_type'))
     key = args.get('key')
     list_id = args.get('list_id')
-    fields = argToList(args.get('fields'))
+    fields = args.get('fields')
 
     if list_id:
         response = client.table_list_with_id_request(list_id, entity, entity_id, entity_type, fields, key)
@@ -311,7 +317,7 @@ def table_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     asset_id = args.get('asset_id')
-    fields = argToList(args.get('fields'))
+    fields = set_returned_fields(args.get('fields'))
 
     limit = arg_to_number(args.get('page_size', '100'))
     page_number = arg_to_number(args.get('page_number', '1'))
@@ -341,7 +347,7 @@ def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get('query')
-    fields = argToList(args.get('fields'))
+    fields = set_returned_fields(args.get('fields'))
 
     limit = arg_to_number(args.get('page_size', '100'))
     page_number = arg_to_number(args.get('page_number', '1'))
@@ -366,7 +372,7 @@ def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
 
 def filter_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    fields = argToList(args.get('fields'))
+    fields = set_returned_fields(args.get('fields'))
 
     response = client.filter_list_request(fields)
     headers = ['id', 'caption', 'type', 'values']
@@ -387,7 +393,7 @@ def filter_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    fields = argToList(args.get('fields'))
+    fields = set_returned_fields(args.get('fields'))
     type_ = args.get('type')
 
     limit = arg_to_number(args.get('page_size', '100'))
@@ -412,7 +418,7 @@ def user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get('query')
-    fields = argToList(args.get('fields'))
+    fields = set_returned_fields(args.get('fields'))
     type_ = args.get('type')
 
     limit = arg_to_number(args.get('page_size', '100'))
@@ -437,8 +443,8 @@ def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def service_record_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type')
-    fields = argToList(args.get('fields'))
-    ids = argToList(args.get('ids'))
+    fields = set_returned_fields(args.get('fields'))
+    ids = args.get('ids')
     archive = arg_to_number(args.get('archive'))
 
     limit = arg_to_number(args.get('page_size', '100'))
@@ -470,7 +476,7 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
 def service_record_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get('query')
     type_ = args.get('type')
-    fields = argToList(args.get('fields'))
+    fields = set_returned_fields(args.get('fields'))
     archive = arg_to_number(args.get('archive'))
 
     limit = arg_to_number(args.get('page_size', '100'))
@@ -536,7 +542,7 @@ def service_record_close_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def service_record_template_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    fields = argToList(args.get('fields'))
+    fields = set_returned_fields(args.get('fields'))
     type_ = args.get('type')
     template_id = args.get('template_id')
 
@@ -558,7 +564,7 @@ def service_record_template_get_command(client: Client, args: Dict[str, Any]) ->
 
 
 def service_record_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    fields = argToList(args.get('fields'))
+    fields = set_returned_fields(args.get('fields'))
     type_ = args.get('type')
     template_id = args.get('template_id')
     info = set_service_record_info(args)
@@ -582,7 +588,7 @@ def service_record_create_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def service_record_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    ids = argToList(args.get('ids'))
+    ids = args.get('ids')
     solution = args.get('solution')
 
     response = client.service_record_delete_request(ids, solution)

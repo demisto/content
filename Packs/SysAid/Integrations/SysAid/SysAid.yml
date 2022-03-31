@@ -134,7 +134,7 @@ script:
       description: 'A comma separated list of fields to return. Available fields to
         return are: id (always returned), caption, and values.'
       required: false
-      isArray: true
+      isArray: false
     outputs:
     - type: String
       contextPath: SysAid.List.id
@@ -146,16 +146,17 @@ script:
       contextPath: SysAid.List.values
       description: 'The values of the list.'
   - name: sysaid-asset-list
-    description: 'List all assets or get a specific asset by ID.'
+    description: 'List all assets or get a specific asset by ID. It is recommended to filter the results by the wanted fields.'
     arguments:
     - name: asset_id
       description: 'The ID of the asset to return.'
       required: false
       isArray: false
     - name: fields
-      description: 'List of fields to return. Comma separated.'
-      required: false
-      isArray: true
+      description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the
+       "sysaid-table-list" command with the "entity=asset" argument. You can send "all" for debugging purposes.'
+      required: true
+      isArray: false
     - name: page_number
       description: 'Index of the page of results to retrieve. Default is 1.'
       required: false
@@ -175,16 +176,17 @@ script:
       contextPath: SysAid.Asset.info
       description: 'The info of the asset.'
   - name: sysaid-asset-search
-    description: 'Get information about a specific asset.'
+    description: 'Get information about a specific asset. It is recommended to filter the results by the wanted fields.'
     arguments:
     - name: query
       description: 'The search criteria.'
       required: true
       isArray: false
     - name: fields
-      description: 'List of fields to return. Comma separated.'
-      required: false
-      isArray: true
+      description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the
+       "sysaid-table-list" command with the "entity=asset" argument. You can send "all" for debugging purposes.'
+      required: true
+      isArray: false
     - name: page_size
       description: 'The number of assets to return on a page. Default is 100.'
       required: false
@@ -204,12 +206,12 @@ script:
       contextPath: SysAid.Asset.info
       description: 'The info of the asset.'
   - name: sysaid-filter-list
-    description: 'List all filters'
+    description: 'List all filters. It is recommended to filter the results by the wanted fields.'
     arguments:
     - name: fields
-      description: 'List of fields to return. Comma separated.'
-      required: false
-      isArray: true
+      description: 'Comma separated list of fields to return to context data. You can send "all" for debugging purposes.'
+      required: true
+      isArray: false
     outputs:
     - type: String
       contextPath: SysAid.Filter.id
@@ -224,12 +226,13 @@ script:
       contextPath: SysAid.Filter.values
       description: 'The values of the filter.'
   - name: sysaid-user-list
-    description: 'Get list of users in SysAid'
+    description: 'Get list of users in SysAid. It is recommended to filter the results by the wanted fields.'
     arguments:
     - name: fields
-      description: 'List of fields to return. Comma separated.'
-      required: false
-      isArray: true
+      description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the
+       "sysaid-table-list" command with the "entity=user" argument. You can send "all" for debugging purposes.'
+      required: true
+      isArray: false
     - name: type
       description: 'The users type to retrieve. Defaults to all user type if not specified.'
       required: false
@@ -267,16 +270,17 @@ script:
       contextPath: SysAid.User.isGuest
       description: 'Whether the SysAid user is a guest or not.'
   - name: sysaid-user-search
-    description: 'Get information about a specific asset'
+    description: 'Get information about a specific asset. It is recommended to filter the results by the wanted fields.'
     arguments:
     - name: query
       description: 'The search criteria'
       required: true
       isArray: false
     - name: fields
-      description: 'List of fields to return. Comma separated.'
-      required: false
-      isArray: true
+      description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the
+       "sysaid-table-list" command with the "entity=user" argument. You can send "all" for debugging purposes.'
+      required: true
+      isArray: false
     - name: type
       description: 'The users type to retrieve. Defaults to all user type if not specified.'
       required: false
@@ -314,7 +318,7 @@ script:
       contextPath: SysAid.User.isGuest
       description: 'Whether the SysAid user is a guest or not.'
   - name: sysaid-service-record-list
-    description: 'List all service requests'
+    description: 'List all service requests. It is recommended to filter the results by the wanted fields.'
     arguments:
     - name: type
       description: 'The requested service record type.'
@@ -328,9 +332,9 @@ script:
       - change
       - all
     - name: fields
-      description: 'List of fields to return. Comma separated.'
-      required: false
-      isArray: true
+      description: 'Comma separated list of fields to return to context data. You can send "all" for debugging purposes.'
+      required: true
+      isArray: false
     - name: page_number
       description: 'Index of the page of results to retrieve. Default is 1.'
       required: false
@@ -342,7 +346,7 @@ script:
     - name: ids
       description: 'The list of service records IDs to return, comma separated'
       required: false
-      isArray: true
+      isArray: false
     - name: archive
       description: 'Whether to return archived service records. Value can be 1 or 0'
       required: false
@@ -379,7 +383,7 @@ script:
       contextPath: SysAid.ServiceRecord.notes
       description: 'The notes of the service record.'
   - name: sysaid-service-record-search
-    description: 'Search by a query among all service records'
+    description: 'Search by a query among all service records. It is recommended to filter the results by the wanted fields.'
     arguments:
     - name: type
       description: 'The requested service record type.'
@@ -393,9 +397,9 @@ script:
       - change
       - all
     - name: fields
-      description: 'List of fields to return. Comma separated.'
-      required: false
-      isArray: true
+      description: 'Comma separated list of fields to return to context data. You can send "all" for debugging purposes.'
+      required: true
+      isArray: false
     - name: page_number
       description: 'Index of the page of results to retrieve. Default is 1.'
       required: false
@@ -575,12 +579,13 @@ script:
       required: false
       isArray: false
   - name: sysaid-service-record-template-get
-    description: ''
+    description: 'Gets the template of a service record. It is recommended to filter the results by the wanted fields.'
     arguments:
     - name: fields
-      description: 'List of fields to return. Comma separated.'
-      required: false
-      isArray: true
+      description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the
+       "sysaid-table-list" command with the "entity=sr" argument. You can send "all" for debugging purposes.'
+      required: true
+      isArray: false
     - name: type
       description: 'The requested service record type.'
       required: true
@@ -620,12 +625,14 @@ script:
       description: 'The key caption of the service record template entry.'
   - name: sysaid-service-record-create
     description: 'Create a new service record and return the newly created service
-      record. The valid statuses can be retrieved using the "sysaid-table-list" command.'
+       record. The valid statuses can be retrieved using the "sysaid-table-list" command.
+       It is recommended to filter the results by the wanted fields.'
     arguments:
     - name: fields
-      description: 'List of fields to return. Comma separated.'
-      required: false
-      isArray: true
+      description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the
+       "sysaid-table-list" command with the "entity=sr" argument. You can send "all" for debugging purposes.'
+      required: true
+      isArray: false
     - name: type
       description: 'The requested service record type.'
       required: true
@@ -778,7 +785,7 @@ script:
     - name: ids
       description: 'The service record ID'
       required: true
-      isArray: true
+      isArray: false
     - name: solution
       description: 'The solution for deleting the service record.'
       required: false

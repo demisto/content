@@ -15,10 +15,11 @@ This integration was integrated and tested with version 21.4.44 of SysAid.
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Incident type |  | False |
-    | Maximum number of incidents to fetch |  | False |
+    | Maximum number of incidents to fetch | Maximum is limited to 200. | False |
     | Fetch incidents |  | False |
     | First fetch time interval |  | False |
     | Fetch types | Choose what service record type to fetch - incidents, requests, problems, changes, or all. | False |
+    | Included statuses | A comma separated list of statuses to return. Default value is including "open classes". You may add/remove statuses according to your needs. Can be found by running the "sysaid-table-list" command with the "list_id=status" argument. | False |
     | Include Archived |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -37,13 +38,11 @@ Allows to retrieve all lists (tables) related to a specific entity, or to return
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity | A SysAid entity by which to retrieve the available lists. Defaults to SR. The options are: sr - Service record related lists, asset - Asset related lists, user - User related lists, ci - CI related lists, company - Company related lists, action_item - Action item related lists, project - Service record Sub Tabs lists, task - Task related lists, catalog - Catalog related lists, software - Software related lists, sr_activity - Service Record activity related lists, supplier - Supplier related lists, task_activity - Task activity related lists, user_groups - User Group related lists. Possible values are: sr, asset, user, ci, company, action_item, project, task, catalog, software, sr_activity, supplier, task_activity, user_groups. | Optional | 
-| entity_id | The entity's ID. For example, in SR Form lists, send the SR ID to populate additional filters on the lists. e.g. the responsibility list may be filtered by the admin group of the SR. | Optional | 
+| entity | A SysAid entity by which to retrieve the available lists. Defaults to service record. The options are: sr - Service record related lists, asset - Asset related lists, user - User related lists, ci - CI related lists, company - Company related lists, action_item - Action item related lists, project - Service record Sub Tabs lists, task - Task related lists, catalog - Catalog related lists, software - Software related lists, sr_activity - Service Record activity related lists, supplier - Supplier related lists, task_activity - Task activity related lists, user_groups - User Group related lists. Possible values are: sr, asset, user, ci, company, action_item, project, task, catalog, software, sr_activity, supplier, task_activity, user_groups. | Optional | 
+| entity_id | The entity's ID. For example, in service record Form lists, send the service record ID to populate additional filters on the lists. e.g. the responsibility list may be filtered by the admin group of the service record. | Optional | 
 | entity_type | Numeric. For example: in sr entity, send the sr_type id, for ci entity, send the ci type id (e.g. for getting the list of CI sub types). | Optional | 
 | list_id | Desired list id. | Optional | 
 | key | Relevant for users/groups related fields. Defines whether to use the id or the name as the key for each value in the result. Available values are "name" or "id". Defaults to id. Possible values are: id, name. | Optional | 
-| offset | Retrieved values count is limited. This parameter specifies the offset (start point) from which to retrieve values (e.g. 25). Defaults to 0. Zero base. | Optional | 
-| limit | The maximum number of list values to retrieve per request. Defaults to 500 (configurable). | Optional | 
 | fields | A comma separated list of fields to return. Available fields to return are: id (always returned), caption, and values. | Optional | 
 
 
@@ -51,9 +50,9 @@ Allows to retrieve all lists (tables) related to a specific entity, or to return
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SysAid.List.id | String |  | 
-| SysAid.List.caption | String |  | 
-| SysAid.List.values | String |  | 
+| SysAid.List.id | String | The ID of the list. | 
+| SysAid.List.caption | String | The caption of the list. | 
+| SysAid.List.values | String | The values of the list. | 
 
 #### Command example
 ```!sysaid-table-list list_id=known_error```
@@ -93,7 +92,7 @@ Allows to retrieve all lists (tables) related to a specific entity, or to return
 
 ### sysaid-asset-list
 ***
-List all assets or get a specific asset by ID.
+List all assets or get a specific asset by ID. It is recommended to filter the results by the wanted fields.
 
 
 #### Base Command
@@ -103,22 +102,22 @@ List all assets or get a specific asset by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | . | Optional | 
-| fields | List of fields to return. Comma separated. | Optional | 
-| offset | . | Optional | 
-| limit | . | Optional | 
+| asset_id | The ID of the asset to return. | Optional | 
+| fields | Comma separated list of fields to return to context data. The valid fields can be retrieved using the "sysaid-table-list" command with the "entity=asset" argument. You can send "all" for debugging purposes. | Required | 
+| page_number | Index of the page of results to retrieve. Default is 1. | Optional | 
+| page_size | The number of assets to return on a page. Default is 100. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SysAid.Asset.id | String |  | 
-| SysAid.Asset.name | String |  | 
-| SysAid.Asset.info | String |  | 
+| SysAid.Asset.id | String | The ID of the asset. | 
+| SysAid.Asset.name | String | The name of the asset. | 
+| SysAid.Asset.info | String | The info of the asset. | 
 
 #### Command example
-```!sysaid-asset-list```
+```!sysaid-asset-list fields=all```
 #### Context Example
 ```json
 {
@@ -3071,6 +3070,7 @@ List all assets or get a specific asset by ID.
 
 #### Human Readable Output
 
+>Showing 100 results from page 1:
 >### Asset Results:
 >|Id|Name|Info|
 >|---|---|---|
@@ -3081,7 +3081,7 @@ List all assets or get a specific asset by ID.
 
 ### sysaid-asset-search
 ***
-Get information about a specific asset.
+Get information about a specific asset. It is recommended to filter the results by the wanted fields.
 
 
 #### Base Command
@@ -3091,22 +3091,22 @@ Get information about a specific asset.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | . | Required | 
-| fields | List of fields to return. Comma separated. | Optional | 
-| limit | . | Optional | 
-| offset | . | Optional | 
+| query | The search criteria. | Required | 
+| fields | Comma separated list of fields to return to context data. The valid fields can be retrieved using the "sysaid-table-list" command with the "entity=asset" argument. You can send "all" for debugging purposes. | Required | 
+| page_size | The number of assets to return on a page. Default is 100. | Optional | 
+| page_number | Index of the page of results to retrieve. Default is 1. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SysAid.Asset.id | String |  | 
-| SysAid.Asset.name | String |  | 
-| SysAid.Asset.info | String |  | 
+| SysAid.Asset.id | String | The ID of the asset. | 
+| SysAid.Asset.name | String | The name of the asset. | 
+| SysAid.Asset.info | String | The info of the asset. | 
 
 #### Command example
-```!sysaid-asset-search query=Test```
+```!sysaid-asset-search query=Test fields=all```
 #### Context Example
 ```json
 {
@@ -5079,6 +5079,7 @@ Get information about a specific asset.
 
 #### Human Readable Output
 
+>Showing 100 results from page 1:
 >### Asset Results:
 >|Id|Name|Info|
 >|---|---|---|
@@ -5088,7 +5089,7 @@ Get information about a specific asset.
 
 ### sysaid-filter-list
 ***
-List all assets
+List all filters. It is recommended to filter the results by the wanted fields.
 
 
 #### Base Command
@@ -5098,22 +5099,20 @@ List all assets
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fields | List of fields to return. Comma separated. | Optional | 
-| offset | . | Optional | 
-| limit | . | Optional | 
+| fields | Comma separated list of fields to return to context data. You can send "all" for debugging purposes. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SysAid.Filter.id | String |  | 
-| SysAid.Filter.type | String |  | 
-| SysAid.Filter.caption | String |  | 
-| SysAid.Filter.values | String |  | 
+| SysAid.Filter.id | String | The ID of the filter. | 
+| SysAid.Filter.type | String | The type of the filter. | 
+| SysAid.Filter.caption | String | The caption of the filter. | 
+| SysAid.Filter.values | String | The values of the filter. | 
 
 #### Command example
-```!sysaid-filter-list```
+```!sysaid-filter-list fields=all```
 #### Context Example
 ```json
 {
@@ -6688,7 +6687,7 @@ List all assets
 
 ### sysaid-user-list
 ***
-
+Get list of users in SysAid. It is recommended to filter the results by the wanted fields.
 
 
 #### Base Command
@@ -6698,25 +6697,25 @@ List all assets
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fields | List of fields to return. Comma separated. | Optional | 
-| type | Defaults to all user type if not specified. Possible values are: admin, user, manager. | Optional | 
-| offset | . | Optional | 
-| limit | . | Optional | 
+| fields | Comma separated list of fields to return to context data. The valid fields can be retrieved using the "sysaid-table-list" command with the "entity=user" argument. You can send "all" for debugging purposes. | Required | 
+| type | The users type to retrieve. Defaults to all user type if not specified. Possible values are: admin, user, manager. | Optional | 
+| page_number | Index of the page of results to retrieve. Default is 1. | Optional | 
+| page_size | The number of users to return on a page. Default is 100. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SysAid.User.id | String |  | 
-| SysAid.User.name | String |  | 
-| SysAid.User.isAdmin | Boolean |  | 
-| SysAid.User.isSysAidAdmin | Boolean |  | 
-| SysAid.User.isManager | Boolean |  | 
-| SysAid.User.isGuest | Boolean |  | 
+| SysAid.User.id | String | The ID of the user. | 
+| SysAid.User.name | String | The name of the user. | 
+| SysAid.User.isAdmin | Boolean | Whether the SysAid user is an admin or not. | 
+| SysAid.User.isSysAidAdmin | Boolean | Whether the SysAid user is a SysAid admin or not. | 
+| SysAid.User.isManager | Boolean | Whether the SysAid user is a manager or not. | 
+| SysAid.User.isGuest | Boolean | Whether the SysAid user is a guest or not. | 
 
 #### Command example
-```!sysaid-user-list```
+```!sysaid-user-list fields=all```
 #### Context Example
 ```json
 {
@@ -7746,6 +7745,7 @@ List all assets
 
 #### Human Readable Output
 
+>Showing 100 results from page 1:
 >### Filter Results:
 >|id|name|isAdmin|isManager|isSysAidAdmin|isGuest|
 >|---|---|---|---|---|---|
@@ -7756,7 +7756,7 @@ List all assets
 
 ### sysaid-user-search
 ***
-Get information about a specific asset
+Get information about a specific asset. It is recommended to filter the results by the wanted fields.
 
 
 #### Base Command
@@ -7766,26 +7766,26 @@ Get information about a specific asset
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | . | Required | 
-| fields | List of fields to return. Comma separated. | Optional | 
-| type | Defaults to all user type if not specified. Possible values are: admin, user, manager. | Optional | 
-| offset | . | Optional | 
-| limit | . | Optional | 
+| query | The search criteria. | Required | 
+| fields | Comma separated list of fields to return to context data. The valid fields can be retrieved using the "sysaid-table-list" command with the "entity=user" argument. You can send "all" for debugging purposes. | Required | 
+| type | The users type to retrieve. Defaults to all user type if not specified. Possible values are: admin, user, manager. | Optional | 
+| page_number | Index of the page of results to retrieve. Default is 1. | Optional | 
+| page_size | The number of users to return on a page. Default is 100. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SysAid.User.id | String |  | 
-| SysAid.User.name | String |  | 
-| SysAid.User.isAdmin | Boolean |  | 
-| SysAid.User.isSysAidAdmin | Boolean |  | 
-| SysAid.User.isManager | Boolean |  | 
-| SysAid.User.isGuest | Boolean |  | 
+| SysAid.User.id | String | The ID of the user. | 
+| SysAid.User.name | String | The name of the user. | 
+| SysAid.User.isAdmin | Boolean | Whether the SysAid user is an admin or not. | 
+| SysAid.User.isSysAidAdmin | Boolean | Whether the SysAid user is a SysAid admin or not. | 
+| SysAid.User.isManager | Boolean | Whether the SysAid user is a manager or not. | 
+| SysAid.User.isGuest | Boolean | Whether the SysAid user is a guest or not. | 
 
 #### Command example
-```!sysaid-user-search query=dmst```
+```!sysaid-user-search query=dmst fields=all```
 #### Context Example
 ```json
 {
@@ -8476,6 +8476,7 @@ Get information about a specific asset
 
 #### Human Readable Output
 
+>Showing 100 results from page 1:
 >### User Results:
 >|id|name|isAdmin|isManager|isSysAidAdmin|isGuest|
 >|---|---|---|---|---|---|
@@ -8485,7 +8486,7 @@ Get information about a specific asset
 
 ### sysaid-service-record-list
 ***
-List all service requests
+List all service requests. It is recommended to filter the results by the wanted fields.
 
 
 #### Base Command
@@ -8495,26 +8496,29 @@ List all service requests
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | . Possible values are: incident, request, problem, change, all. | Required | 
-| fields | List of fields to return. Comma separated. | Optional | 
-| offset | . | Optional | 
-| limit | . | Optional | 
-| ids | The list of SR IDs to return, comma separated. | Optional | 
-| archive | Whether to return archived SRs. Value can be 1 or 0. Possible values are: 0, 1. | Optional | 
-| custom_fields_keys | . | Optional | 
-| custom_fields_values | . | Optional | 
+| type | The requested service record type. Possible values are: incident, request, problem, change, all. | Required | 
+| fields | Comma separated list of fields to return to context data. You can send "all" for debugging purposes. | Required | 
+| page_number | Index of the page of results to retrieve. Default is 1. | Optional | 
+| page_size | The number of service records to return on a page. Default is 100. | Optional | 
+| ids | The list of service records IDs to return, comma separated. | Optional | 
+| archive | Whether to return archived service records. Value can be 1 or 0. Possible values are: 0, 1. | Optional | 
+| custom_fields_keys | Comma separated list of filters ids. | Optional | 
+| custom_fields_values | Comma separated list of filters values, each corresponding to the filter key at the same place. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SysAid.ServiceRecord.id | String |  | 
-| SysAid.ServiceRecord.title | String |  | 
-| SysAid.ServiceRecord.status | String |  | 
+| SysAid.ServiceRecord.id | String | The ID of the service record. | 
+| SysAid.ServiceRecord.title | String | The title of the service record. | 
+| SysAid.ServiceRecord.status | String | The status of the service record. | 
+| SysAid.ServiceRecord.update_time | Date | The modify time of the service record. | 
+| SysAid.ServiceRecord.sr_type | String | The type of the service record. | 
+| SysAid.ServiceRecord.notes | String | The notes of the service record. | 
 
 #### Command example
-```!sysaid-service-record-list type=all```
+```!sysaid-service-record-list type=all fields=all```
 #### Context Example
 ```json
 {
@@ -13396,23 +13400,28 @@ List all service requests
 
 #### Human Readable Output
 
+>Showing 100 results from page 1:
 >### Service Record Results:
->|Id|Title|Status|
->|---|---|---|
->| 25 | Cannot access email - Test  | 1 |
->| 28 | Cannot connect to a Wi-Fi network | 1 |
->| 33 | Try Test | 1 |
->| 26 | Paper jam - Test | 2 |
->| 6 | Welcome to SysAid! | 3 |
->| 30 | Standard Change Process | 1 |
->| 27 | Install Adobe Acrobat Reader - Test | 1 |
->| 29 | Permissions to use printer | 1 |
->| 31 | Reset my password | 1 |
+>|Id|Title|Status|Modify Time|Service Record Type|
+>|---|---|---|---|---|
+>| 25 | Cannot access email - Test  | New | 03/15/2022 04:53:20 AM | Incident |
+>| 28 | Cannot connect to a Wi-Fi network | New | 03/07/2022 09:08:01 AM | Incident |
+>| 33 | Try Test | New | 03/20/2022 11:08:56 AM | Incident |
+>| 34 | try arc | New | 03/22/2022 05:05:28 AM | Incident |
+>| 26 | Paper jam - Test | Open | 03/20/2022 07:56:41 AM | Incident |
+>| 6 | Welcome to SysAid! | Closed | 03/31/2022 10:16:10 AM | Incident |
+>| 30 | Standard Change Process | New | 03/07/2022 09:12:25 AM | Change |
+>| 36 | Minor Problem try | New | 03/27/2022 09:24:29 AM | Problem |
+>| 27 | Install Adobe Acrobat Reader - Test | New | 03/07/2022 08:59:23 AM | Request |
+>| 29 | Permissions to use printer | New | 03/07/2022 09:08:36 AM | Request |
+>| 31 | Reset my password | New | 03/07/2022 09:13:39 AM | Request |
+>| 35 | Advanced Request Process try | New | 03/27/2022 09:23:57 AM | Request |
+>| 37 | Basic Request Process2 | New | 03/30/2022 01:56:47 AM | Request |
 
 
 ### sysaid-service-record-search
 ***
-Search by a query among all SRs
+Search by a query among all service records. It is recommended to filter the results by the wanted fields.
 
 
 #### Base Command
@@ -13422,26 +13431,29 @@ Search by a query among all SRs
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | . Possible values are: incident, request, problem, change, all. | Required | 
-| fields | List of fields to return. Comma separated. | Optional | 
-| offset | . | Optional | 
-| limit | . | Optional | 
-| query | . | Required | 
-| archive | Whether to return archived SRs. Value can be 1 or 0. Possible values are: 0, 1. | Optional | 
-| custom_fields_keys | . | Optional | 
-| custom_fields_values | . | Optional | 
+| type | The requested service record type. Possible values are: incident, request, problem, change, all. | Required | 
+| fields | Comma separated list of fields to return to context data. You can send "all" for debugging purposes. | Required | 
+| page_number | Index of the page of results to retrieve. Default is 1. | Optional | 
+| page_size | The number of service records to return on a page. Default is 100. | Optional | 
+| query | The search criteria. | Required | 
+| archive | Whether to return archived service records. Value can be 1 or 0. Possible values are: 0, 1. | Optional | 
+| custom_fields_keys | Comma separated list of filters ids. | Optional | 
+| custom_fields_values | Comma separated list of filters values, each corresponding to the filter key at the same place. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SysAid.ServiceRecord.id | String |  | 
-| SysAid.ServiceRecord.title | String |  | 
-| SysAid.ServiceRecord.status | String |  | 
+| SysAid.ServiceRecord.id | String | The ID of the service record. | 
+| SysAid.ServiceRecord.title | String | The title of the service record. | 
+| SysAid.ServiceRecord.status | String | The status of the service record. | 
+| SysAid.ServiceRecord.update_time | Date | The modify time of the service record. | 
+| SysAid.ServiceRecord.sr_type | String | The type of the service record. | 
+| SysAid.ServiceRecord.notes | String | The notes of the service record. | 
 
 #### Command example
-```!sysaid-service-record-search type=all query=test```
+```!sysaid-service-record-search type=all query=test fields=all```
 #### Context Example
 ```json
 {
@@ -17782,17 +17794,19 @@ Search by a query among all SRs
 
 #### Human Readable Output
 
+>Showing 100 results from page 1:
 >### Service Record Results:
->|Id|Title|Status|
->|---|---|---|
->| 25 | Cannot access email - Test  | 1 |
->| 28 | Cannot connect to a Wi-Fi network | 1 |
->| 33 | Try Test | 1 |
->| 26 | Paper jam - Test | 2 |
->| 30 | Standard Change Process | 1 |
->| 27 | Install Adobe Acrobat Reader - Test | 1 |
->| 29 | Permissions to use printer | 1 |
->| 31 | Reset my password | 1 |
+>|Id|Title|Status|Modify Time|Service Record Type|
+>|---|---|---|---|---|
+>| 25 | Cannot access email - Test  | New | 03/15/2022 04:53:20 AM | Incident |
+>| 28 | Cannot connect to a Wi-Fi network | New | 03/07/2022 09:08:01 AM | Incident |
+>| 33 | Try Test | New | 03/20/2022 11:08:56 AM | Incident |
+>| 26 | Paper jam - Test | Open | 03/20/2022 07:56:41 AM | Incident |
+>| 30 | Standard Change Process | New | 03/07/2022 09:12:25 AM | Change |
+>| 27 | Install Adobe Acrobat Reader - Test | New | 03/07/2022 08:59:23 AM | Request |
+>| 29 | Permissions to use printer | New | 03/07/2022 09:08:36 AM | Request |
+>| 31 | Reset my password | New | 03/07/2022 09:13:39 AM | Request |
+>| 37 | Basic Request Process2 | New | 03/30/2022 01:56:47 AM | Request |
 
 
 ### sysaid-service-record-update
@@ -17808,34 +17822,34 @@ The valid statuses can be retrieved using the "sysaid-table-list" command.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The service record ID. | Required | 
-| impact | . | Optional | 
-| priority | . | Optional | 
-| status | . | Optional | 
-| description | . | Optional | 
-| solution | . | Optional | 
-| problem_type | . | Optional | 
-| problem_sub_type | . | Optional | 
-| third_level_category | . | Optional | 
-| sr_type | . | Optional | 
-| sub_type | . | Optional | 
-| agreement | . | Optional | 
-| title | . | Optional | 
-| followup_user | . | Optional | 
-| followup_text | . | Optional | 
-| cust_notes | . | Optional | 
-| email_account | . | Optional | 
-| responsibility | . | Optional | 
-| urgency | . | Optional | 
-| company | . | Optional | 
-| department | . | Optional | 
-| computer_id | . | Optional | 
-| due_date | . | Optional | 
-| escalation | . | Optional | 
-| change_category | . | Optional | 
-| assigned_group | . | Optional | 
-| location | . | Optional | 
-| custom_fields_keys | . | Optional | 
-| custom_fields_values | . | Optional | 
+| impact | The new impact of the service record. | Optional | 
+| priority | The new priority of the service record. | Optional | 
+| status | The new status of the service record. | Optional | 
+| description | The new description of the service record. | Optional | 
+| solution | The new solution of the service record. | Optional | 
+| problem_type | The new problem type of the service record. | Optional | 
+| problem_sub_type | The new problem sub type of the service record. | Optional | 
+| third_level_category | The new third level category of the service record. | Optional | 
+| sr_type | The new service record type of the service record. | Optional | 
+| sub_type | The new sub type of the service record. | Optional | 
+| agreement | The new agreement of the service record. | Optional | 
+| title | The new title of the service record. | Optional | 
+| followup_user | The new followup user of the service record. | Optional | 
+| followup_text | The new followup text of the service record. | Optional | 
+| cust_notes | The new cust notes of the service record. | Optional | 
+| email_account | The new email account of the service record. | Optional | 
+| responsibility | The new responsibility of the service record. | Optional | 
+| urgency | The new urgency of the service record. | Optional | 
+| company | The new company of the service record. | Optional | 
+| department | The new department of the service record. | Optional | 
+| computer_id | The new computer id of the service record. | Optional | 
+| due_date | The new due date of the service record. | Optional | 
+| escalation | The new escalation of the service record. | Optional | 
+| change_category | The new change category of the service record. | Optional | 
+| assigned_group | The new assigned group of the service record. | Optional | 
+| location | The new location of the service record. | Optional | 
+| custom_fields_keys | Comma separated list of filters ids. | Optional | 
+| custom_fields_values | Comma separated list of filters values, each corresponding to the filter key at the same place. | Optional | 
 
 
 #### Context Output
@@ -17860,7 +17874,7 @@ Close a service record. Sets the service record status to the default Close stat
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The service record ID. | Required | 
-| solution | . | Optional | 
+| solution | The solution for closing the service record. | Optional | 
 
 
 #### Context Output
@@ -17874,7 +17888,7 @@ There is no context output for this command.
 
 ### sysaid-service-record-template-get
 ***
-
+Gets the template of a service record. It is recommended to filter the results by the wanted fields.
 
 
 #### Base Command
@@ -17884,25 +17898,25 @@ There is no context output for this command.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fields | List of fields to return. Comma separated. | Optional | 
-| type | . Possible values are: incident, request, problem, change. | Required | 
-| template_id | The service record template ID, according to SR type. Defaults to the first/default template. | Optional | 
+| fields | Comma separated list of fields to return to context data. The valid fields can be retrieved using the "sysaid-table-list" command with the "entity=sr" argument. You can send "all" for debugging purposes. | Required | 
+| type | The requested service record type. Possible values are: incident, request, problem, change. | Required | 
+| template_id | The service record template ID, according to service record type. Defaults to the first/default template. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SysAid.ServiceRecordTemplate.key | String |  | 
-| SysAid.ServiceRecordTemplate.value | String |  | 
-| SysAid.ServiceRecordTemplate.mandatory | String |  | 
-| SysAid.ServiceRecordTemplate.editable | Boolean |  | 
-| SysAid.ServiceRecordTemplate.type | Boolean |  | 
-| SysAid.ServiceRecordTemplate.defaultValue | String |  | 
-| SysAid.ServiceRecordTemplate.keyCaption | String |  | 
+| SysAid.ServiceRecordTemplate.key | String | The key of the service record template entry. | 
+| SysAid.ServiceRecordTemplate.value | String | The value of the service record template entry. | 
+| SysAid.ServiceRecordTemplate.mandatory | String | Whether the template entry is mandatory or not. | 
+| SysAid.ServiceRecordTemplate.editable | Boolean | Whether the template entry is editable or not. | 
+| SysAid.ServiceRecordTemplate.type | Boolean | The type of the service record template entry. | 
+| SysAid.ServiceRecordTemplate.defaultValue | String | The default value of the service record template entry. | 
+| SysAid.ServiceRecordTemplate.keyCaption | String | The key caption of the service record template entry. | 
 
 #### Command example
-```!sysaid-service-record-template-get type=incident```
+```!sysaid-service-record-template-get type=incident fields=all```
 #### Context Example
 ```json
 {
@@ -18703,7 +18717,7 @@ There is no context output for this command.
 
 ### sysaid-service-record-create
 ***
-Create a new service record and return the newly created service record. The valid statuses can be retrieved using the "sysaid-table-list" command.
+Create a new service record and return the newly created service record. The valid statuses can be retrieved using the "sysaid-table-list" command. It is recommended to filter the results by the wanted fields.
 
 
 #### Base Command
@@ -18713,49 +18727,52 @@ Create a new service record and return the newly created service record. The val
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fields | List of fields to return. Comma separated. | Optional | 
-| type | . Possible values are: incident, request, problem, change. | Required | 
-| template_id | The service record template ID, according to SR type. Defaults to the first/default template. | Optional | 
-| description | . | Required | 
-| title | . | Required | 
-| impact | . | Optional | 
-| priority | . | Optional | 
-| status | . | Optional | 
-| solution | . | Optional | 
-| problem_type | . | Optional | 
-| problem_sub_type | . | Optional | 
-| third_level_category | . | Optional | 
-| sr_type | . | Optional | 
-| sub_type | . | Optional | 
-| agreement | . | Optional | 
-| followup_user | . | Optional | 
-| followup_text | . | Optional | 
-| cust_notes | . | Optional | 
-| email_account | . | Optional | 
-| responsibility | . | Optional | 
-| urgency | . | Optional | 
-| company | . | Optional | 
-| department | . | Optional | 
-| computer_id | . | Optional | 
-| due_date | . | Optional | 
-| escalation | . | Optional | 
-| change_category | . | Optional | 
-| assigned_group | . | Optional | 
-| location | . | Optional | 
-| custom_fields_keys | . | Optional | 
-| custom_fields_values | . | Optional | 
+| fields | Comma separated list of fields to return to context data. The valid fields can be retrieved using the "sysaid-table-list" command with the "entity=sr" argument. You can send "all" for debugging purposes. | Required | 
+| type | The requested service record type. Possible values are: incident, request, problem, change. | Required | 
+| template_id | The service record template ID, according to service record type. Defaults to the first/default template. | Optional | 
+| description | The new description of the service record. | Required | 
+| title | The new title of the service record. | Required | 
+| impact | The new impact of the service record. | Optional | 
+| priority | The new priority of the service record. | Optional | 
+| status | The new status of the service record. | Optional | 
+| solution | The new solution of the service record. | Optional | 
+| problem_type | The new problem type of the service record. | Optional | 
+| problem_sub_type | The new problem sub type of the service record. | Optional | 
+| third_level_category | The new third level category of the service record. | Optional | 
+| sr_type | The new service record type of the service record. | Optional | 
+| sub_type | The new sub type of the service record. | Optional | 
+| agreement | The new agreement of the service record. | Optional | 
+| followup_user | The new followup user of the service record. | Optional | 
+| followup_text | The new followup text of the service record. | Optional | 
+| cust_notes | The new cust notes of the service record. | Optional | 
+| email_account | The new email account of the service record. | Optional | 
+| responsibility | The new responsibility of the service record. | Optional | 
+| urgency | The new urgency of the service record. | Optional | 
+| company | The new company of the service record. | Optional | 
+| department | The new department of the service record. | Optional | 
+| computer_id | The new computer id of the service record. | Optional | 
+| due_date | The new due date of the service record. | Optional | 
+| escalation | The new escalation of the service record. | Optional | 
+| change_category | The new change category of the service record. | Optional | 
+| assigned_group | The new assigned group of the service record. | Optional | 
+| location | The new location of the service record. | Optional | 
+| custom_fields_keys | Comma separated list of filters ids. | Optional | 
+| custom_fields_values | Comma separated list of filters values, each corresponding to the filter key at the same place. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SysAid.ServiceRecord.id | String |  | 
-| SysAid.ServiceRecord.title | String |  | 
-| SysAid.ServiceRecord.status | String |  | 
+| SysAid.ServiceRecord.id | String | The ID of the service record. | 
+| SysAid.ServiceRecord.title | String | The title of the service record. | 
+| SysAid.ServiceRecord.status | String | The status of the service record. | 
+| SysAid.ServiceRecord.update_time | Date | The modify time of the service record. | 
+| SysAid.ServiceRecord.sr_type | String | The type of the service record. | 
+| SysAid.ServiceRecord.notes | String | The notes of the service record. | 
 
 #### Command example
-```!sysaid-service-record-create type=request description="This is a test" title="Test SR from API" sr_type=6```
+```!sysaid-service-record-create type=request description="This is a test" title="Test SR from API" sr_type=6 fields=all```
 #### Context Example
 ```json
 {
@@ -19481,9 +19498,9 @@ Create a new service record and return the newly created service record. The val
 #### Human Readable Output
 
 >### Service Record Results:
->|Id|Title|Status|
->|---|---|---|
->| 0 | Basic Request Process | 1 |
+>|Id|Title|Status|Service Record Type|Notes|
+>|---|---|---|---|---|
+>| 0 | Basic Request Process | New | Request Template | If relevant, add this Request details to the Knowledge base. Close the Request. |
 
 
 ### sysaid-service-record-delete
@@ -19499,7 +19516,7 @@ Delete one or more service records.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | The service record ID. | Required | 
-| solution | . | Optional | 
+| solution | The solution for deleting the service record. | Optional | 
 
 
 #### Context Output
@@ -19509,4 +19526,4 @@ There is no context output for this command.
 ```!sysaid-service-record-delete ids=2,32```
 #### Human Readable Output
 
->Service Records ['2', '32'] Deleted Successfully.
+>Service Records 2,32 Deleted Successfully.
