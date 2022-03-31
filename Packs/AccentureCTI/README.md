@@ -1,5 +1,5 @@
 <p align="center">
-<img width="382" alt="Accenture Security" src="https://user-images.githubusercontent.com/40510780/161063093-37b8bc69-5584-4239-b145-d3eb3d72ce56.png"/> 
+<img alt="Accenture Security" src="https://user-images.githubusercontent.com/40510780/161063093-37b8bc69-5584-4239-b145-d3eb3d72ce56.png"/> 
 </p>
 
 
