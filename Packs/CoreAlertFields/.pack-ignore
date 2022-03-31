@@ -3,3 +3,6 @@ ignore=PA129
 
 [file:incidentfield-Category.json]
 ignore=IF106
+
+[file:incidentfield-Event_Type.json]
+ignore=IF100
