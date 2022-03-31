@@ -25,4 +25,4 @@ More information about the vulnerability:
 
 Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
-![Spring Core and Cloud Function SpEL RCEs](https://raw.githubusercontent.com/demisto/content/82fc619a71e34c599be6c5a75f458abfa2f4c6f2/Packs/SpringRCEs/doc_files/Spring_Core_and_Cloud_Function_SpEL_RCEs.png)
+![Spring Core and Cloud Function SpEL RCEs](https://raw.githubusercontent.com/demisto/content/3066f91bb206526bdfb7535af33db1603a8d5b5f/Packs/SpringRCEs/doc_files/Spring_Core_and_Cloud_Function_SpEL_RCEs.png)
