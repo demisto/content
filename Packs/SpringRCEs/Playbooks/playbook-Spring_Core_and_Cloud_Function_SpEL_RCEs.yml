@@ -33,6 +33,7 @@ tasks:
       '#none#':
       - "1"
       - "4"
+      - "26"
     separatecontext: false
     view: |-
       {
@@ -67,7 +68,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 330,
+          "x": -350,
           "y": -40
         }
       }
@@ -110,7 +111,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 330,
+          "x": -350,
           "y": 90
         }
       }
@@ -140,7 +141,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
+          "x": 110,
           "y": -40
         }
       }
@@ -190,7 +191,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
+          "x": 110,
           "y": 90
         }
       }
@@ -411,6 +412,7 @@ tasks:
       '#none#':
       - "11"
       - "12"
+      - "29"
     separatecontext: false
     view: |-
       {
@@ -445,7 +447,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
+          "x": 110,
           "y": 1630
         }
       }
@@ -475,7 +477,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 340,
+          "x": 570,
           "y": 1630
         }
       }
@@ -509,7 +511,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 340,
+          "x": 570,
           "y": 1750
         }
       }
@@ -539,7 +541,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
+          "x": 110,
           "y": 1750
         }
       }
@@ -908,7 +910,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
+          "x": 110,
           "y": 250
         }
       }
@@ -959,6 +961,138 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 0a39cfcf-8912-464e-82b7-834890be6014
+    type: title
+    task:
+      id: 0a39cfcf-8912-464e-82b7-834890be6014
+      version: -1
+      name: Spring4Shell Scanner
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 52eb3b78-ad21-4ebc-8503-df04631dca42
+    type: regular
+    task:
+      id: 52eb3b78-ad21-4ebc-8503-df04631dca42
+      version: -1
+      name: Download Spring scanner
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      filename:
+        simple: scan_spring.py
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: https://github.com/jfrog/jfrog-spring-tools/blob/main/scan_spring.py
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 775f9f96-74f2-433d-85d7-b4fcd133cb52
+    type: regular
+    task:
+      id: 775f9f96-74f2-433d-85d7-b4fcd133cb52
+      version: -1
+      name: Scan your applications
+      description: |-
+        Use the scan_spring.py tool provided by JFrog to locate vulnerable applications.
+        The tool is available for direct download via XSOAR.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 0fbce8b7-9248-4497-8af8-a365f7642436
+    type: title
+    task:
+      id: 0fbce8b7-9248-4497-8af8-a365f7642436
+      version: -1
+      name: Spring Scanner
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -970,8 +1104,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2695,
-        "width": 1060,
-        "x": -340,
+        "width": 1300,
+        "x": -350,
         "y": -180
       }
     }

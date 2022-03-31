@@ -19,10 +19,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Block IP - Generic v3
-* CVE Enrichment - Generic v2
 * Panorama Query Logs
 * Rapid Breach Response - Set Incident Info
 * Search Endpoint by CVE - Generic
+* CVE Enrichment - Generic v2
 
 ### Integrations
 This playbook does not use any integrations.
@@ -31,8 +31,8 @@ This playbook does not use any integrations.
 * http
 
 ### Commands
-* createNewIndicator
 * closeInvestigation
+* createNewIndicator
 
 ## Playbook Inputs
 ---
@@ -50,4 +50,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Spring Core and Cloud Function SpEL RCEs](https://raw.githubusercontent.com/demisto/content/4df6e954d7f725c577ac37fc5aa070e3851d2015/Packs/SpringRCEs/doc_files/Spring_Core_and_Cloud_Function_SpEL_RCEs.png)
+![Spring Core and Cloud Function SpEL RCEs](Insert the link to your image here)
