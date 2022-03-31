@@ -40,7 +40,7 @@ class Client(BaseClient):
         :param params: parameters to be used as part of request
         :return: event types along with alias as a JSON
         """
-        eventTypeAlias = None
+        event_type_alias = None
 
         payload = {}
         headers = {
@@ -52,14 +52,15 @@ class Client(BaseClient):
         try:
             resp = response.json()
 
-            if 'success' in resp.keys() and resp['success'] is True:
-                eventTypeAlias = resp['data']
+            if resp.get('success') or False:
+                event_type_alias = resp['data']
             else:
                 demisto.error("Error trying to Fetch EventTypess {}".format(resp))
         except Exception as e:
             demisto.error("Exception with Fetch EventTypes [{}]".format(e))
+            raise e
 
-        return eventTypeAlias
+        return event_type_alias
 
     def get_iocs(self, method, iocurl, params):
         """
@@ -73,8 +74,8 @@ class Client(BaseClient):
         token = params.get('token', '')
         payload = {
             'token': '{}'.format(token),
-            'from': int(params.get('from', '')),
-            'limit': int(params.get('limit', '50')),
+            'from': arg_to_number(params.get('from', '0')),
+            'limit': arg_to_number(params.get('limit', '50')),
             'start_date': '{}'.format(params.get('start_date')),
             'end_date': '{}'.format(params.get('end_date')),
             'type': '{}'.format(params.get('type')),
@@ -90,13 +91,14 @@ class Client(BaseClient):
 
         try:
             resp = response.json()
-            if 'count' in resp.keys():
+            if resp.get('count'):
                 ioc_data = resp
             else:
                 ioc_data = {"error": "Failed to Fetch Taxiis !!"}
                 demisto.error("Error trying to Fetch IOC's {}".format(resp))
         except Exception as e:
             demisto.error("Error: [{}] for response [{}]".format(e, resp))
+            raise e
 
         return ioc_data
 
@@ -134,6 +136,7 @@ class Client(BaseClient):
                 demisto.error("Error trying to Fetch Events {}".format(resp))
         except Exception as e:
             demisto.error("Exception with Fetch Events [{}]".format(e))
+            raise e
 
         return events_data
 
@@ -166,9 +169,9 @@ class Client(BaseClient):
         except Exception as e:
             demisto.error('Exception while fetching the event details {}'.format(e))
 
-        if response.status_code == 200 and 'success' in resp.keys() and (resp.get('success') or False):
+        if response.status_code == 200 and (resp.get('success') or False):
             events_data.extend(resp.get('events', []))
-            if resp['total_count'] != len(events_data) and len(events_data) <= MAX_EVENT_ITEMS:
+            if resp.get('total_count') != len(events_data) and len(events_data) <= MAX_EVENT_ITEMS:
                 params['from'] += params.get('limit', '50')
                 self.get_event_details(method, eventurl, params, events_data)
         else:
@@ -376,7 +379,7 @@ def fetch_incidents(client, method, token, maxResults):
 
     params = {
         'token': token,
-        'from': int(last_run.get('fetched_alert_count', '0')),
+        'from': arg_to_number(last_run.get('fetched_alert_count', '0')),
         'limit': int(MAX_EVENT_ITEMS) if maxResults > 50 else int(maxResults),
         'start_date': last_run.get('event_pull_start_date', '0'),
         'end_date': date.today().strftime("%Y/%m/%d"),
@@ -463,20 +466,20 @@ def main():
 
         elif demisto.command() == 'cyble-vision-fetch-iocs':
             # This is the call made when cyble-fetch-iocs command.
-            if 'start_date' not in args.keys():
-                args['start_date'] = datetime.today().strftime('%Y-%m-%d')
-            if 'end_date' not in args.keys():
-                args['end_date'] = datetime.today().strftime('%Y-%m-%d')
+            if not args.get('start_date'):
+                args['start_date'] = datetime.today().strftime('%Y/%m/%d')
+            if not args.get('end_date'):
+                args['end_date'] = datetime.today().strftime('%Y/%m/%d')
 
             return_results(cyble_fetch_iocs(client, 'POST', args))
 
         elif demisto.command() == 'cyble-vision-fetch-events':
             # This is the call made when cyble-fetch-events command.
-            args['order_by'] = str(args['order_by']).title()
-            if 'start_date' not in args.keys():
-                args['start_date'] = datetime.today().strftime('%Y/%m/%d')
-            if 'end_date' not in args.keys():
-                args['end_date'] = datetime.today().strftime('%Y/%m/%d')
+            args['order_by'] = (args.get('order_by') or '').title()
+            if not args.get('start_date'):
+            args['start_date'] = datetime.today().strftime('%Y-%m-%d')
+            if not args.get('end_date'):
+                args['end_date'] = datetime.today().strftime('%Y-%m-%d')
 
             return_results(cyble_fetch_events(client, 'POST', args))
 

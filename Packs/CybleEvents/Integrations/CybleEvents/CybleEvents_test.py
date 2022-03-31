@@ -8,10 +8,8 @@ def load_json_file(filename):
     :param filename:
     :return:
     """
-    content = None
     with open("test_data/{0}".format(filename), 'r') as f:
-        content = json.load(f)
-    return content
+        return json.load(f)
 
 
 def test_module():
