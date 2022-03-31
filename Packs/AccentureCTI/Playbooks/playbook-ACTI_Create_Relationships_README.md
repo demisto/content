@@ -34,4 +34,6 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![ACTI Create Relationships](Insert the link to your image here)
+![ACTI Create Relationships](https://user-images.githubusercontent.com/40510780/161067875-ec2a5c31-f6b8-4cc7-90ce-9404e0cff36c.png)
+![image](https://user-images.githubusercontent.com/40510780/161068348-1cfedccc-0497-470d-b59c-c1e4b67fbdbf.png)
+![image](https://user-images.githubusercontent.com/40510780/161068641-12906d7b-d74e-49ac-ba62-a94911143577.png)
