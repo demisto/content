@@ -589,9 +589,8 @@ def create_device_freeze_message_command(args, client) -> CommandResults:
 
     res = client.api_request_absolute('POST', '/v2/device-freeze/messages', body=json.dumps(payload),
                                       success_status_code=(200, 201))
-    outputs = {'ID': res.get('id')}
-    human_readable = tableToMarkdown(f'{INTEGRATION} New freeze message was created:', outputs)
-    return CommandResults(outputs=outputs, outputs_prefix="Absolute.FreezeMessage", outputs_key_field='ID',
+    human_readable = f"{INTEGRATION} New freeze message was created with ID: {res.get('id')}"
+    return CommandResults(outputs={'ID': res.get('id')}, outputs_prefix="Absolute.FreezeMessage", outputs_key_field='ID',
                           readable_output=human_readable, raw_response=res)
 
 
