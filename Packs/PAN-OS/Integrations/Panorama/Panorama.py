@@ -9304,7 +9304,7 @@ def get_jobs(topology: Topology, device_filter_string: Optional[str] = None, sta
 
 
 def download_software(topology: Topology, version: str,
-                      device_filter_string: Optional[str] = None, sync: Optional[bool] = False) -> DownloadSoftwareCommandResult:
+                      device_filter_string: Optional[str] = None, sync: Optional[bool] = None) -> DownloadSoftwareCommandResult:
     """
     Download The provided software version onto the device.
     :param topology: `Topology` instance !no-auto-argument
@@ -9312,10 +9312,9 @@ def download_software(topology: Topology, version: str,
     :param version: software version to upgrade to, ex. 9.1.2
     :param sync: If provided, runs the download synchronously - make sure 'execution-timeout' is increased.
     """
-    if sync == "false":
-        sync = False
-
-    return UniversalCommand.download_software(topology, version, device_filter_str=device_filter_string, sync=sync)
+    _sync == argToBoolean(sync)
+       
+    return UniversalCommand.download_software(topology, version, device_filter_str=device_filter_string, sync=_sync)
 
 
 def get_topology() -> Topology:
