@@ -2222,6 +2222,26 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     else:
         demisto.debug(f'ticket is updated: {ticket}')
 
+    # Parse user dict to email
+    assigned_to = ticket.get('assigned_to', {})
+    caller = ticket.get('caller_id', {})
+    assignment_group = ticket.get('assignment_group', {})
+
+    if assignment_group:
+        group_result = client.get('sys_user_group', assignment_group.get('value'))
+        group = group_result.get('result', {})
+        group_name = group.get('name')
+        ticket['assignment_group'] = group_name
+
+    user_assigned = check_assigned_to_field(client, assigned_to)
+    ticket['assigned_to'] = user_assigned
+
+    if caller:
+        user_result = client.get('sys_user', caller.get('value'))
+        user = user_result.get('result', {})
+        user_email = user.get('email')
+        ticket['caller_id'] = user_email
+
     # get latest comments and files
     entries = []
     file_entries = client.get_ticket_attachment_entries(ticket_id, datetime.fromtimestamp(last_update))  # type: ignore
@@ -2249,33 +2269,14 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
             entries.append({
                 'Type': note.get('type'),
                 'Category': note.get('category'),
-                'Contents': note.get('value'),
+                'Contents': f"Type: {note.get('element')}\n\n{note.get('value')}",
                 'ContentsFormat': note.get('format'),
                 'Tags': note.get('tags'),
                 'Note': True,
                 'EntryContext': comments_context
             })
-    # Parse user dict to email
-    assigned_to = ticket.get('assigned_to', {})
-    caller = ticket.get('caller_id', {})
-    assignment_group = ticket.get('assignment_group', {})
 
-    if assignment_group:
-        group_result = client.get('sys_user_group', assignment_group.get('value'))
-        group = group_result.get('result', {})
-        group_name = group.get('name')
-        ticket['assignment_group'] = group_name
-
-    user_assigned = check_assigned_to_field(client, assigned_to)
-    ticket['assigned_to'] = user_assigned
-
-    if caller:
-        user_result = client.get('sys_user', caller.get('value'))
-        user = user_result.get('result', {})
-        user_email = user.get('email')
-        ticket['caller_id'] = user_email
-
-    if ticket.get('resolved_by') or ticket.get('closed_at'):
+    if ticket.get('closed_at'):
         if params.get('close_incident'):
             demisto.debug(f'ticket is closed: {ticket}')
             entries.append({
