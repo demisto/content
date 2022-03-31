@@ -1,6 +1,7 @@
 <p align="center">
-<img src="https://user-images.githubusercontent.com/40510780/154049555-33c436c4-ad95-4d66-bc3d-69b91d6b7c92.png"/>
+<img width="382" alt="Accenture Security" src="https://user-images.githubusercontent.com/40510780/161063093-37b8bc69-5584-4239-b145-d3eb3d72ce56.png"/> 
 </p>
+
 
 # **Accenture CTI v2**
  
