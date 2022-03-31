@@ -212,7 +212,7 @@ class MsGraphClient:
 def suprress_errors_with_404_code(func):
     def wrapper(client: MsGraphClient, args: Dict):
         try:
-            func(client, args)
+            return func(client, args)
         except NotFoundError as e:
             if client.handle_error:
                 if (user := args.get("user", '___')) in str(e):

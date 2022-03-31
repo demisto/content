@@ -197,7 +197,7 @@ class MsGraphClient:
 def suprress_errors_with_404_code(func):
     def wrapper(client: MsGraphClient, args: Dict):
         try:
-            func(client, args)
+            return func(client, args)
         except NotFoundError:
             if client.handle_error:
                 human_readable = f'#### Group id -> {args.get("group_id")} does not exist'
