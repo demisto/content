@@ -68,20 +68,6 @@ script:
       description: The name of this CVE
       type: Unknown
     - contextPath: PANSecurityAdvisory.Advisory.affects_vendor_name
-      description: The Vendor of the product, in this case Palo Alto Networks
-      type: Unknown
-    - contextPath: PANSecurityAdvisory.Advisory.affects_product_name
-      description: The name of the product this affects, such as PAN-OS
-      type: Unknown
-    - contextPath: PANSecurityAdvisory.Advisory.affects_version_name
-      description: The string name of the major version affected
-      type: Unknown
-    - contextPath: PANSecurityAdvisory.Advisory.affects_version_affected
-      description: The operator for affected version, such as > < ! >= etc.
-      type: Unknown
-    - contextPath: PANSecurityAdvisory.Advisory.affects_version_value
-      description: The more specific version affected for to compare against with
-        affects_version_value operator
       type: Unknown
     - contextPath: PANSecurityAdvisory.Advisory.description
       description: Human readable description of Advisory
@@ -91,6 +77,9 @@ script:
     - contextPath: PANSecurityAdvisory.Advisory.cvss_severity
       type: Unknown
     - contextPath: PANSecurityAdvisory.Advisory.cvss_vector_string
+      type: Unknown
+    - contextPath: PANSecurityAdvisory.Advisory.affected_version_list
+      description: List of affected versions strings
       type: Unknown
   dockerimage: demisto/python3:3.10.1.25933
   feed: false

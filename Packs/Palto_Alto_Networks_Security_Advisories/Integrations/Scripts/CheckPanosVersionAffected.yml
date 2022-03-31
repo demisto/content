@@ -1,0 +1,50 @@
+args:
+- default: false
+  description: The PAN-OS version - ex 9.1.0
+  isArray: false
+  name: version
+  required: true
+  secret: false
+- default: false
+  description: The list of advisories, produced by pan-advisories-get-advisories
+  isArray: true
+  name: advisories
+  required: true
+  secret: false
+comment: 'Checks if the given PAN-OS version number is affected by the given list
+  of vulnerabilties. '
+commonfields:
+  id: 072efb11-d549-442a-afba-11f43947a25b
+  version: -1
+enabled: false
+name: CheckPanosVersionAffected
+outputs:
+- contextPath: MatchingSecurityAdvisory.data_type
+  description: The type of advisory this is
+  type: String
+- contextPath: data_format
+  description: The format of the advisory, such as MITRE
+  type: String
+- contextPath: cve_id
+  description: The ID of the CVE described by this advisory
+  type: String
+- contextPath: cve_date_public
+  description: The date this CVE was released
+  type: String
+- contextPath: cve_title
+  description: The name of this CVE
+  type: String
+- contextPath: affects_product_name
+  description: The name of the product this affects, such as PAN-OS
+  type: String
+- contextPath: description
+  description: Human readable description of Advisory
+  type: String
+- contextPath: affected_version_list
+  description: List of PAN-OS affected versions exactly
+  type: String
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python

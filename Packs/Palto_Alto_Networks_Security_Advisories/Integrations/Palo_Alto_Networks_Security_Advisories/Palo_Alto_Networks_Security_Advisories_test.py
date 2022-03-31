@@ -22,12 +22,11 @@ def test_client_get_products():
     result = test_client.get_products()
     assert result.get("success") == True
     assert isinstance(result.get("data"), list)
-    print(json.dumps(result))
 
 
 def test_client_get_pan_os_advisories():
     """Integration test; /api/v1/products"""
-    #if not RUN_INTEGRATION_TESTS:
+    # if not RUN_INTEGRATION_TESTS:
     #    pytest.skip("Integration tests disabled.")
 
     from Palo_Alto_Networks_Security_Advisories import Client
@@ -41,6 +40,7 @@ def test_client_get_pan_os_advisories():
 
     result = test_client.get_advisories("PAN-OS", {"q": "\"CVE-2021-3056\""})
     assert len(result.get("data")) == 1
+
 
 def test_locals_to_dict():
     """Unit test: Tests locals_to_dict"""
@@ -60,9 +60,10 @@ def test_get_advisories_command(patched_get_advisories):
     patched_get_advisories.return_value = json.load(open("test_data" + os.sep + "advisories.json"))
     from Palo_Alto_Networks_Security_Advisories import Client, COMMANDS, get_advisories
     test_client = Client(base_url=BASE_URL)
-    #COMMANDS.run_command(client=test_client, command_name="pan-advisories-get-advisories", demisto_args={})
+    # COMMANDS.run_command(client=test_client, command_name="pan-advisories-get-advisories", demisto_args={})
     result = get_advisories(test_client, "PANOS")
     assert len(result) == 3
     for result_object in result:
+        #print(result_object)
         for value in result_object.__dict__.values():
             assert value
