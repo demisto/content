@@ -34,5 +34,5 @@ Note: If you close this dialog before downloading or copying the secret key, you
 
 #### Notes:
 1. On the API Token Management page, the new token is added to your list of tokens.
-2. If a 401 error causes the API authentication to fail, you can enable authentication debugging from this page.
+2. If a 401 error causes the API authentication to fail, you can enable authentication debugging from the Absolute console.
 3. The secret key is comparable to a password. Keep it secure, and do not share it with anyone.

@@ -362,10 +362,13 @@ def parse_device_field_list_response(response: dict) -> Dict[str, Any]:
 
 
 def parse_device_field_list_response_human_readable(outputs):
-    human_readable = {'DeviceUID': outputs.get('DeviceUID'), 'ESN': outputs.get('ESN'), 'CDFValues': []}
+    human_readable = []
     for cdf_values in outputs.get('CDFValues', []):
-        human_readable['CDFValues'].append(
-            {"FieldName": cdf_values.get('FieldName'), "FieldValue": cdf_values.get('FieldValue')})
+        human_readable.append({
+            'Filed Name': cdf_values.get('FieldName'),
+            'CDF ID': cdf_values.get('CDFUID'),
+            'Field Value': cdf_values.get('FieldName'),
+        })
     return human_readable
 
 
