@@ -7,7 +7,8 @@ configuration:
   name: client_id
   required: true
   type: 9
-  hiddenpassword: true
+  hiddenusername: true
+  displaypassword: Client ID
 - display: Use system proxy settings
   name: proxy
   required: false
