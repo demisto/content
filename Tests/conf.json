@@ -5065,7 +5065,7 @@
             ]
         },
         {
-            "playbookID": "DBotPredictURLPhishing_test"
+            "playbookID": "DBotUpdateLogoURLPhishing_test"
         },
         {
             "playbookID": "TAXII2 Server Performance Test",
