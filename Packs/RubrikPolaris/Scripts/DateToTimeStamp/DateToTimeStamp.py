@@ -4,7 +4,7 @@ import dateparser
 
 def date_to_time_stamp(date: str) -> int:
     date_obj = dateparser.parse(date)
-    return int(date_obj.timestamp())
+    return int(date_obj.timestamp())  # type: ignore
 
 
 def main():

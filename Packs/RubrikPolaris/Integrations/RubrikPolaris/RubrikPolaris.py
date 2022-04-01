@@ -1320,7 +1320,7 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> Tupl
             if params.get(f'radar_{severity.lower()}_severity_mapping') is None:
                 severity_mapping = 'XSOAR LOW'
             else:
-                severity_mapping = params.get(f'radar_{severity.lower()}_severity_mapping')
+                severity_mapping = params.get(f'radar_{severity.lower()}_severity_mapping', "")
 
             processed_incident["severity"] = convert_to_demisto_severity(severity_mapping)
 
