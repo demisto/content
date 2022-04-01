@@ -1,7 +1,5 @@
 from typing import Union
 from CommonServerPython import *
-import json
-import os
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -447,7 +445,6 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
     """
     """
     threat_types = Res.get('threat_types', '')
-    threattypes = ''
     uuid = Res.get('uuid', '')
     context = {
         'created_on': Res.get('created_on', 'NA'),

@@ -1,6 +1,6 @@
 Fetches indicators from an Accenture CTI feed. You can filter returned indicators by indicator type, indicator severity, threat type, confidence, and malware family (each of these are an integration parameter).
 Ingesting the indicator is being done in an incremental manner.
-This feed integration was integrated and tested with version v2.88.0 of ACTI.
+This feed integration was integrated and tested with version v2.93.0 of ACTI.
 
 ## Configure ACTI Indicator Feed on Cortex XSOAR
 
