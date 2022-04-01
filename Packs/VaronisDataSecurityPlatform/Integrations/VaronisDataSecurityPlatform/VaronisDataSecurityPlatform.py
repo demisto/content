@@ -955,7 +955,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     if outputs:
         outputs = enrich_with_pagination(outputs, page, page_size)
 
-    readable_output = tableToMarkdown('Varonis Alerted Events', outputs['Alert'])
+    readable_output = tableToMarkdown('Varonis Alerted Events', outputs['Alert'], headers=['Name', 'Severity', 'Time', 'Category', 'UserName', 'Status'])
 
     return CommandResults(
         readable_output=readable_output,
