@@ -187,16 +187,19 @@ def main():
             results_return('CompletedCampaign', client._http_request(
                 'GET', 'campaigns/' + str(demisto.args().get('id')) + '/complete'))
         elif demisto.command() == 'gophish-create-campaign':
+            launch_date = dateparser.parse(demisto.args().get('launch_date'))
+            assert launch_date is not None, f"could not parse {demisto.args().get('launch_date')}"
             payload = {'name': demisto.args().get('name'),
                        'template': {'name': demisto.args().get('template')},
                        'url': demisto.args().get('url'),
                        'page': {'name': demisto.args().get('page')},
                        'smtp': {'name': demisto.args().get('smtp')},
-                       'launch_date': dateparser.parse(demisto.args().get('launch_date')).strftime('%Y-%m-%dT%H:%M:%S+00:00'),
+                       'launch_date': launch_date.strftime('%Y-%m-%dT%H:%M:%S+00:00'),
                        'groups': generate_groups(demisto.args().get('groups'))}
             if demisto.args().get('send_by_date'):
-                payload.update({'send_by_date': dateparser.parse(
-                    demisto.args().get('send_by_date')).strftime('%Y-%m-%dT%H:%M:%S+00:00')})
+                send_by_date = dateparser.parse(demisto.args().get('send_by_date'))
+                assert send_by_date is not None
+                payload.update({'send_by_date': send_by_date.strftime('%Y-%m-%dT%H:%M:%S+00:00')})
             results_return('CreatedCampaign', client._http_request('POST', 'campaigns/', json_data=payload))
 
         # User Groups related commands
