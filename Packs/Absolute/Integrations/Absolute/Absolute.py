@@ -1,6 +1,5 @@
 import copy
 import hashlib
-import json
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
