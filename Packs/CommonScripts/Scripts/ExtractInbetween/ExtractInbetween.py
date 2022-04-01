@@ -4,9 +4,8 @@ import re
 
 
 def iter_value(value: str, character: str, incr: bool) -> list:
-
-    """Iterate through characters in the 'value' string and match
-    against the 'chraracter'
+    """
+    Iterate through characters in the 'value' string and match against the 'character'
 
     Args:
         value (str): The value to iterate through (each character)
@@ -27,11 +26,11 @@ def iter_value(value: str, character: str, incr: bool) -> list:
 
 
 def extract_inbetween(value: str, start: str, end: str) -> str:
-
-    """Use regex to extract the value from 'value' using 'start' as
-    the starting point and 'end' as the ending point. The 'start' will 
-    be used as a regex match and will match the FIRST instance. The 'end' 
-    will be used as a regex macth and will match the LAST instance.
+    """
+    Use regex to extract the value from 'value' using 'start' as
+    the starting point and 'end' as the ending point. The 'start' will
+    be used as a regex match and will match the FIRST instance. The 'end'
+    will be used as a regex match and will match the LAST instance.
 
     Args:
         value (str): The string to search for regex matches in
@@ -40,7 +39,6 @@ def extract_inbetween(value: str, start: str, end: str) -> str:
 
     Returns:
         str: The extracted string from 'value'.
-
     """
 
     if isinstance(value, str):
