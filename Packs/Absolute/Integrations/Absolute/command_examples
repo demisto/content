@@ -1,7 +1,7 @@
 !absolute-custom-device-field-list device_id=e93f2464-2766-4a6b-8f00-66c8fb13e23a
 !absolute-custom-device-field-update device_id=e93f2464-2766-4a6b-8f00-66c8fb13e23a cdf_uid=4m9fUCZqTYec1bJgDStNg value="test22"
 
-!absolute-device-freeze-request device_ids=c62aaac3-e698-4c0e-9ce7-31ab3fa09fea device_freeze_type=Scheduled html_message="test" message_name="new name" request_name="name1" scheduled_freeze_date=2022-03-29T13:30:00.000Z. passcode_type=RandomForEach passcode_length=5
+!absolute-device-freeze-request device_ids=c62aaac3-e698-4c0e-9ce7-31ab3fa09fea device_freeze_type=Scheduled html_message="test" message_name="new name" request_name="name1" scheduled_freeze_date=2022-03-29T13:30:00.000Z passcode_type=RandomForEach passcode_length=5
 !absolute-device-remove-freeze-request device_ids=c62aaac3-e698-4c0e-9ce7-31ab3fa09fea remove_scheduled=true
 !absolute-device-freeze-request-get request_uid=c638c2dc-1dd1-4cfa-8708-46f368012398
 !absolute-device-freeze-message-list

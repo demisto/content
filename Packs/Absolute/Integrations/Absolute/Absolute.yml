@@ -925,4 +925,4 @@ script:
   dockerimage: demisto/python3:3.10.4.27798
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- Absolute_TestPlaybook
