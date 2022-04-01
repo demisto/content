@@ -2660,8 +2660,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "60"
       - "66"
+      "yes":
+      - "60"
     separatecontext: false
     conditions:
     - label: "yes"
