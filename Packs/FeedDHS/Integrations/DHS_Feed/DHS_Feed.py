@@ -349,7 +349,9 @@ def get_indicators(client: TaxiiClient, tlp_color: Optional[str] = None,
 
 def get_first_fetch(first_fetch_string: str) -> str:
     try:
-        return dateparser.parse(first_fetch_string, settings={'TIMEZONE': 'UTC'}).strftime(TIME_FORMAT)
+        first_fetch_date = dateparser.parse(first_fetch_string, settings={'TIMEZONE': 'UTC'})
+        assert first_fetch_date is not None, f'could not parse {first_fetch_string}'
+        return first_fetch_date.strftime(TIME_FORMAT)
     except ValueError:
         raise DemistoException('first_fetch is not in the correct format (e.g. <number> <time unit>).')
 

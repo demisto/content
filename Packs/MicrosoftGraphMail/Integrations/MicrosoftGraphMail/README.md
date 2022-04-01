@@ -29,7 +29,9 @@ The query parameter '$filter' is not supported when using the 'search' parameter
 | url | The server URL. | True |
 | auth_id | The ID (received from the admin consent - see the Detailed Instructions (?) section). | True |
 | tenant_id | The token (received from the admin consent - see the Detailed Instructions (?) section). | True |
-| enc_key | The Key (received from the admin consent - see the Detailed Instructions (?) section). | True |
+| enc_key | The key (received from the admin consent - see the Detailed Instructions (?) section). | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | isFetch | The fetched incidents. | False |
 | mailbox_to_fetch | The email address from which to fetch incidents (e.g. "example<span\>>@demisto.com"). | False |
 | folder_to_fetch | The name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing). | False |
