@@ -128,52 +128,6 @@ EXPECTED_GMAIL_CONTEXT = {
 }
 
 
-EXPECTED_LIST_LABELS = {
-    "ContentsFormat": "json",
-    "Type": 1,
-    "Contents": [
-        {
-            "UserID": "me",
-            "Name": "CHAT",
-            "ID": "CHAT",
-            "Type": "system",
-            "MessageListVisibility": "labelHide",
-            "LabelListVisibility": "hide"
-        },
-        {
-            "UserID": "me",
-            "Name": "SENT",
-            "ID": "SENT",
-            "Type": "system",
-            "MessageListVisibility": "labelHide",
-            "LabelListVisibility": "hide"
-        }
-    ],
-    "ReadableContentsFormat": 'markdown',
-    "HumanReadable": "### Labels for UserID me:\\n|Name|ID|Type|MessageListVisibility|LabelListVisibility|\\n|---|---|---|---|---|\\n| CHAT | CHAT | system | hide | labelHide |\\n| SENT | SENT | system |  |  |\\n",
-    "EntryContext": {
-        "GmailLabel(val.ID == obj.ID && val.Name == obj.Name && val.UserID == obj.UserID)": [
-            {
-                "ID": "CHAT",
-                "LabelListVisibility": "labelHide",
-                "MessageListVisibility": "hide",
-                "Name": "CHAT",
-                "Type": "system",
-                "UserID": "me"
-            },
-            {
-                "ID": "SENT",
-                "LabelListVisibility": "labelHide",
-                "MessageListVisibility": "hide",
-                "Name": "SENT",
-                "Type": "system",
-                "UserID": "me"
-            }
-        ]
-    }
-}
-
-
 def test_timestamp_to_date():
     from Gmail import create_base_time
     valid_timestamp = '1566819604000'
@@ -242,4 +196,29 @@ def test_labels_to_entry():
             "type": "system"
         }
     ]
-    assert labels_to_entry("test", labels, "me") == EXPECTED_LIST_LABELS
+    expected_human_readable = '### test\n|Name|ID|Type|MessageListVisibility|LabelListVisibility|' \
+                              '\n|---|---|---|---|---|\n| CHAT | CHAT | system | hide | labelHide ' \
+                              '|\n| SENT | SENT | system | hide | labelHide |\n'
+    expected_context_output = [
+        {
+            "ID": "CHAT",
+            "LabelListVisibility": "labelHide",
+            "MessageListVisibility": "hide",
+            "Name": "CHAT",
+            "Type": "system",
+            "UserID": "me"
+        },
+        {
+            "ID": "SENT",
+            "LabelListVisibility": "labelHide",
+            "MessageListVisibility": "hide",
+            "Name": "SENT",
+            "Type": "system",
+            "UserID": "me"
+        }
+    ]
+
+    context_key = 'GmailLabel(val.ID == obj.ID && val.Name == obj.Name && val.UserID == obj.UserID)'
+    a = labels_to_entry("test", labels, "me")
+    assert a.get('EntryContext').get(context_key) == expected_context_output
+    assert a.get('HumanReadable') == expected_human_readable
