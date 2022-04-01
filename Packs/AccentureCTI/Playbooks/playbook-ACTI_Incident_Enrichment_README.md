@@ -4,8 +4,8 @@ This playbook automatically queries Accenture's IntelGraph API to pull context f
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Create Relationships
-* ACTI Reports Enrichment
+* ACTI Create Report-Indicator Associations
+* ACTI Report Enrichment
 * ACTI Indicator Enrichment
 
 ### Integrations

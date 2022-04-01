@@ -25,4 +25,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![ACTI Block Indicators from Incident](https://user-images.githubusercontent.com/40510780/161066115-8a67ee45-60ae-4447-bdc3-f3f327547038.png)
+![ACTI Block Indicators from an Incident](https://user-images.githubusercontent.com/40510780/161066115-8a67ee45-60ae-4447-bdc3-f3f327547038.png)

@@ -75,8 +75,8 @@ tasks:
       id: 41100fc5-c396-41f6-8c93-ac4041e2e3b9
       version: -1
       name: ACTI Block Indicators with severity greater than equal to 5
-      description: Block Indicators with indicators with severity with 5 or more
-      playbookName: ACTI Block Indicators | severity >= 5
+      description: Block Indicators with indicators with severity 5 or more
+      playbookName: ACTI Block High Severity Indicators
       type: playbook
       iscommand: false
       brand: ""

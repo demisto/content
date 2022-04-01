@@ -34,4 +34,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![ACTI Block Indicators | severity >= 5](https://user-images.githubusercontent.com/40510780/161066854-5d791c5f-661d-41e0-bdec-163f61a4a615.png)
+![ACTI Block High Severity Indicators](https://user-images.githubusercontent.com/40510780/161066854-5d791c5f-661d-41e0-bdec-163f61a4a615.png)
