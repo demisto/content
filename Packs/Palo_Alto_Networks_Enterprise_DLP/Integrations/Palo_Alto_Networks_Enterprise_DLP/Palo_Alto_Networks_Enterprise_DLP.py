@@ -101,7 +101,8 @@ class Client(BaseClient):
             count += 1
 
         if res.status_code < 200 or res.status_code >= 300:
-            raise DemistoException("Request to {} failed with status code {}".format(url_suffix, res.status_code))
+            print_debug_msg(f"Get request to {self._base_url}{url_suffix} failed with status code {res.status_code}")
+            raise DemistoException(f"Request to  {self._base_url}{url_suffix} failed with status code {res.status_code}")
 
         result_json = {} if res.status_code == 204 else res.json()
         return result_json, res.status_code
@@ -131,8 +132,8 @@ class Client(BaseClient):
             count += 1
 
         if res.status_code < 200 or res.status_code >= 300:
-            print_debug_msg(f"Request to {url_suffix} failed with status code {res.status_code}")
-            raise DemistoException(f"Request to {url_suffix} failed with status code {res.status_code}")
+            print_debug_msg(f"Post request to {self._base_url}{url_suffix} failed with status code {res.status_code}")
+            raise DemistoException(f"Request to  {self._base_url}{url_suffix} failed with status code {res.status_code}")
 
         result_json = {}
         if res.status_code != 204:
