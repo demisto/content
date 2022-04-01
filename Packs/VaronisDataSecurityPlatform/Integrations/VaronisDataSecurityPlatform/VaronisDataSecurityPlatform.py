@@ -106,7 +106,7 @@ EVENT_COLUMNS = [
     'Event.EventBy.IsLockout',
     'Event.IP',
     'Event.Device.IsMaliciousExternalIP',
-    'Event.Device.ExternalIPReputationID',
+    'Event.Device.ExternalIPReputationName',
     'Event.Device.ExternalIPThreatTypesName',
     'Event.EventOnObjectName',
     'Event.EventOnResource.ObjectType.Name',
