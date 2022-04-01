@@ -28,13 +28,13 @@ def test_extract_inbetween():
 def test_extract_inbetween_on_invalid_input_types(mocker, value):
     """
     Given:
-        A string with specific characters
+        a value which is not a string type
 
     When:
         Execute command extract_inbetween
 
     Then:
-        Validate the right output returns.
+        Validate that return error is raised.
     """
     mocker.patch('CommonServerPython.return_error', return_value=Exception("ERROR: The input value must be a string"))
     with pytest.raises(Exception, match="ERROR: The input value must be a string"):
