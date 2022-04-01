@@ -45,7 +45,6 @@ def extract_inbetween(value: str, start: str, end: str) -> str:
 
     if isinstance(value, str):
         if start in value and end in value:
-            start_indicies = []
             if len(start) == 1:
                 start_indicies = iter_value(value, start, True)
             else:
