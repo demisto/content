@@ -19,7 +19,7 @@ DATE_FIELDS_LIST = ["creationdate", "firstseenbysource", "lastseenbysource", "gi
 IP_COMMON_FIELD_TYPES = ['asn', 'geocountry', 'geolocation']
 
 EVALUATION_FIELDS = ['evaluation.reliability', 'evaluation.credibility',
-                     'evaluation.admiraltyCode',  'evaluation.severity']
+                     'evaluation.admiraltyCode', 'evaluation.severity']
 EVALUATION_FIELD_TYPES = ['gibreliability', 'gibcredibility', 'gibadmiraltycode', 'gibseverity']
 
 MALWARE_FIELDS = ['malware.name']
@@ -590,8 +590,9 @@ def unpack_iocs(iocs, ioc_type, fields, fields_names, collection_name):
                 fields_dict[date_field] = dateparser.parse(fields_dict.get(date_field)).strftime('%Y-%m-%dT%H:%M:%SZ')
 
         fields_dict.update({'gibcollection': collection_name})
-        unpacked.append({'value': iocs, 'type': ioc_type,
-                         'rawJSON': {'value': iocs, 'type': ioc_type, **fields_dict}, 'fields': fields_dict})
+
+        raw_json = {'value': iocs, 'type': ioc_type, **fields_dict}
+        unpacked.append({'value': iocs, 'type': ioc_type, 'rawJSON': raw_json, 'fields': fields_dict})
 
     return unpacked
 
@@ -653,6 +654,24 @@ def format_result_for_manual(indicators: List) -> Dict:
     return formatted_indicators
 
 
+def handle_first_time_fetch(last_run, collection_name, first_fetch_time):
+    last_fetch = last_run.get('last_fetch', {}).get(collection_name)
+
+    # Handle first time fetch
+    date_from = None
+    seq_update = None
+    if not last_fetch:
+        date_from = dateparser.parse(first_fetch_time)
+        if date_from is None:
+            raise DemistoException('Inappropriate indicators_first_fetch format, '
+                                   'please use something like this: 2020-01-01 or January 1 2020 or 3 days')
+        date_from = date_from.strftime('%Y-%m-%d')
+    else:
+        seq_update = last_fetch
+
+    return date_from, seq_update
+
+
 """ Commands """
 
 
@@ -675,24 +694,13 @@ def fetch_indicators_command(client: Client, last_run: Dict, first_fetch_time: s
     next_run: Dict[str, Dict[str, Union[int, Any]]] = {"last_fetch": {}}
     tags = common_fields.pop("tags", [])
     for collection_name in indicator_collections:
-        last_fetch = last_run.get('last_fetch', {}).get(collection_name)
+        date_from, seq_update = handle_first_time_fetch(last_run=last_run, collection_name=collection_name,
+                                                        first_fetch_time=first_fetch_time)
 
-        # Handle first time fetch
-        date_from = None
-        seq_update = None
-        if not last_fetch:
-            date_from = dateparser.parse(first_fetch_time)
-            if date_from is None:
-                raise DemistoException('Inappropriate indicators_first_fetch format, '
-                                       'please use something like this: 2020-01-01 or January 1 2020 or 3 days')
-            date_from = date_from.strftime('%Y-%m-%d')
-        else:
-            seq_update = last_fetch
-
-        portions = client.create_update_generator(collection_name=collection_name,
-                                                  date_from=date_from, seq_update=seq_update)
+        generator = client.create_update_generator(collection_name=collection_name,
+                                                   date_from=date_from, seq_update=seq_update)
         k = 0
-        for portion in portions:
+        for portion in generator:
             for feed in portion:
                 seq_update = feed.get('seqUpdate')
                 indicators.extend(find_iocs_in_feed(feed, collection_name, common_fields))
@@ -732,8 +740,8 @@ def get_indicators_command(client: Client, args: Dict[str, str]):
         raise Exception('Incorrect collection name. Please, choose one of the displayed options.')
 
     if not id_:
-        portions = client.create_search_generator(collection_name=collection_name, limit=limit)
-        for portion in portions:
+        generator = client.create_search_generator(collection_name=collection_name, limit=limit)
+        for portion in generator:
             for feed in portion:
                 indicators.extend(find_iocs_in_feed(feed, collection_name, {}))
                 if len(indicators) >= limit:
@@ -816,4 +824,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
