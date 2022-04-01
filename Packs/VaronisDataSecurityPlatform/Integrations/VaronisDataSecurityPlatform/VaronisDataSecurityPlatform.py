@@ -16,7 +16,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-MAX_INCIDENTS_TO_FETCH_PER_RUN = 5000
+MAX_INCIDENTS_TO_FETCH_PER_RUN = 1000
 MAX_INCIDENTS_TO_FETCH = 200
 SEARCH_RESULT_RETRIES = 10
 BACKOFF_FACTOR = 5
@@ -859,14 +859,15 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
                                                  threat_model=threat_model,
                                                  severity=severity)
 
-        alert_guids: List[str] = alert_ids['AlertGuids']
         last_fetched_id = alert_ids['LatestAlertId']
         if last_fetched_id != 0:
             next_run['last_fetched_id'] = last_fetched_id
-
-        if len(alert_guids) == 0:
+        else:
             demisto.debug('API returned no alerts')
             return next_run, incidents
+
+        alert_id_to_datetime = alert_ids['AlertIdToOccuredTime']
+        alert_guids: List[str] = alert_id_to_datetime.keys()
 
         result = varonis_get_alerts(client, None, None, None, None, MAX_INCIDENTS_TO_FETCH_PER_RUN, 1, alert_guids)
         alerts_output = create_output(ALERT_OUTPUT, result['rows'])
@@ -879,7 +880,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
 
         for alert in alerts:
             guid = alert['ID']
-            alert_time = alert['Time']
+            alert_time = alert_id_to_datetime[guid]
             incident = {
                 'name': f'Varonis alert {guid}',
                 'occurred': f'{alert_time}Z',
