@@ -69,7 +69,7 @@ class TextExtractHtmlParser(HTMLParser):
         if data and not self._ignore:
             stripped = data.strip()
             if stripped:
-                self._texts.append(re.sub(r'\s+', ' ', stripped))
+                self._texts.append(re.sub(r'\s+', ' ', stripped))  # pylint: disable=E1101
 
     def handle_entityref(self, name):
         if not self._ignore and name in name2codepoint:
@@ -307,7 +307,7 @@ def get_email_context(email_data, mailbox):
     return context_gmail, headers, context_email
 
 
-TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')  # NOSONAR
+TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')  # pylint: disable=E1101
 
 
 def move_to_gmt(t):
@@ -654,7 +654,7 @@ def dict_keys_snake_to_camelcase(dictionary):
     :param dictionary: Dictionary which may contain keys in snake_case
     :return: Dictionary with snake_case keys converted to lowerCamelCase
     """
-    underscore_pattern = re.compile(r'_([a-z])')
+    underscore_pattern = re.compile(r'_([a-z])')  # pylint: disable=E1101
     return {underscore_pattern.sub(lambda i: i.group(1).upper(), key.lower()): value for (key, value) in
             dictionary.items()}
 
@@ -1607,8 +1607,12 @@ def handle_html(htmlBody):
     cleanBody = ''
     lastIndex = 0
     for i, m in enumerate(
-            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody,  # NOSONAR
-                        re.I)):
+        re.finditer(  # pylint: disable=E1101
+            r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"',
+            htmlBody,
+            re.I  # pylint: disable=E1101
+        )
+    ):
         maintype, subtype = m.group(2).split('/', 1)
         att = {
             'maintype': maintype,
