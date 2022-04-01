@@ -183,9 +183,6 @@ script:
     - contextPath: Absolute.FreezeRequest.SucceededDeviceUIDs
       description: An array of the unique devices identifiers that succeeded in creating a Freeze request.
       type: Unknown
-    - contextPath: Absolute.FreezeRequest.FailedDeviceUIDs
-      description: An array of the unique devices identifiers that failed in creating a Freeze request.
-      type: Unknown
     - contextPath: Absolute.FreezeRequest.Errors.detail.deviceUids
       description: An array of the unique identifiers of devices for the Freeze request error.
       type: Unknown

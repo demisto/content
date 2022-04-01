@@ -1,5 +1,6 @@
 import copy
 import hashlib
+import json
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -440,9 +441,9 @@ def parse_freeze_device_response(response: dict):
     if errors:
         human_readable_errors = []
         for error in errors:
-            human_readable_errors.append({
+            human_readable_errors.append(str({
                 ','.join(error.get('detail', []).get('deviceUids')): error.get('message', '')
-            })
+            }).replace('{', '').replace('}', ''))  # we want to convert the dict to str for readability reasons
         outputs['FailedDeviceUIDs'] = human_readable_errors
         outputs['Errors'] = errors
     return outputs
@@ -456,6 +457,7 @@ def device_freeze_request_command(args, client) -> CommandResults:
     human_readable = tableToMarkdown(f"{INTEGRATION} device freeze requests results", outputs,
                                      headers=['RequestUID', 'SucceededDeviceUIDs', 'FailedDeviceUIDs'],
                                      removeNull=True)
+    outputs.pop('FailedDeviceUIDs', None)  # if exists, don't include it in context data
     return CommandResults(readable_output=human_readable, outputs=outputs, outputs_prefix="Absolute.FreezeRequest",
                           outputs_key_field="RequestUID", raw_response=res)
 
