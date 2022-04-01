@@ -17,6 +17,16 @@
         "ml",
         "machine learning"
     ],
+    "dependencies": {
+        "rasterize": {
+            "mandatory": true,
+            "display_name": "Rasterize"
+        },
+        "whois": {
+            "mandatory": true,
+            "display_name": "WHOIS"
+        }
+    },
     "marketplaces": [
         "xsoar",
         "marketplacev2"
