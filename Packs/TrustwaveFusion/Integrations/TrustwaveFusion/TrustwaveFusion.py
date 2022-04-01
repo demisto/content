@@ -373,6 +373,7 @@ def fetch_incidents(client, max_results, first_fetch):
                 "rawJSON": json.dumps(tkt),
             }
             dt = dateparser.parse(tkt["createdOn"], settings={"TIMEZONE": "UTC"})
+            assert dt is not None, f'could not parse {tkt["createdOn"]}'
             latest_timestamp = max(dt.timestamp(), latest_timestamp)
             incidents.append(incident)
 
