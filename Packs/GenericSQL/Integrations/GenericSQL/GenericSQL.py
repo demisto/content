@@ -11,6 +11,7 @@ import logging
 from sqlalchemy.sql import text
 from sqlalchemy.engine.url import URL
 from urllib.parse import parse_qsl
+
 try:
     # if integration is using an older image (4.5 Server) we don't have expiringdict
     from expiringdict import ExpiringDict  # pylint: disable=E0401
@@ -144,7 +145,7 @@ class Client:
         headers = []
         if results:
             # if the table isn't empty
-            headers = results[0].keys()
+            headers = list(results[0].keys() if results[0].keys() else '')
         return results, headers
 
 
@@ -213,9 +214,10 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers,
                                          removeNull=True)
         context = {
-            'Result': table,
-            'Query': sql_query,
-            'InstanceName': f'{client.dialect}_{client.dbname}'
+            "Result": table,
+            "Headers": headers,
+            "Query": sql_query,
+            "InstanceName": f"{client.dialect}_{client.dbname}",
         }
         entry_context: Dict = {'GenericSQL(val.Query && val.Query === obj.Query)': {'GenericSQL': context}}
         return human_readable, entry_context, table
