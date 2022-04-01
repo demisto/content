@@ -2,7 +2,7 @@
     "defaultIncidentType": "Digital Shadows Intelligence Incident",
     "description": "Classifier for Digital Shadows Incidents",
     "feed": false,
-    "id": "4e29a410-c41f-4045-8e74-99a2fb57b90c",
+    "id": "Digital Shadows Incident Classifier",
     "keyTypeMap": {
         "GLOBAL": "Digital Shadows Intelligence Incident",
         "ORGANIZATION": "Digital Shadows Client Incident"
