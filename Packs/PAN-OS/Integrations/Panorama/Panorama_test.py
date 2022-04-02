@@ -1486,7 +1486,6 @@ class TestFirewallCommand:
         result = FirewallCommand.get_ha_status(mock_topology)
         # Check all attributes of result data have values
         for result_dataclass in result:
-            print(result_dataclass)
             for value in result_dataclass.__dict__.values():
                 # Attribute may be int 0
                 assert value is not None
