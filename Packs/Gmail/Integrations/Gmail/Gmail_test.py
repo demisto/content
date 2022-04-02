@@ -179,6 +179,16 @@ def test_dict_keys_snake_to_camelcase():
 
 
 def test_labels_to_entry():
+    """
+    Given:
+        gmail label api response
+
+    When:
+        executing labels_to_entry function
+
+    Then:
+        the context and human readable are valid
+    """
     from Gmail import labels_to_entry
     labels = [
         {
@@ -219,6 +229,6 @@ def test_labels_to_entry():
     ]
 
     context_key = 'GmailLabel(val.ID == obj.ID && val.Name == obj.Name && val.UserID == obj.UserID)'
-    a = labels_to_entry("test", labels, "me")
-    assert a.get('EntryContext').get(context_key) == expected_context_output
-    assert a.get('HumanReadable') == expected_human_readable
+    result = labels_to_entry("test", labels, "me")
+    assert result.get('EntryContext').get(context_key) == expected_context_output
+    assert result.get('HumanReadable') == expected_human_readable
