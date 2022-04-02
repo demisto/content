@@ -7466,8 +7466,6 @@ script:
       - contextPath: PANOS.DownloadStatus.Summary.started
         description: Whether the download process started.
         type: String
-  deprecated: false
-  description: Get all the jobs from the devices in the environment, or a single job when the ID is specified.
   dockerimage: demisto/pan-os-python:1.0.0.27793
   feed: false
   isfetch: false
