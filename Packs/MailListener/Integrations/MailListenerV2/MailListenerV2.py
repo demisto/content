@@ -30,7 +30,6 @@ class Email(object):
 
             message_bytes = self.handle_message_slashes(message_bytes)
             email_object = parse_from_bytes(message_bytes)
-
         self.id = id_
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
         self.cc = [mail_addresses for _, mail_addresses in email_object.cc]
@@ -45,8 +44,7 @@ class Email(object):
         self.raw_body = email_object.body if include_raw_body else None
         # According to the mailparser documentation the datetime object is in utc
         self.date = email_object.date.replace(tzinfo=timezone.utc) if email_object.date else None
-        if not email_object.date:
-            demisto.debug(f"email object date is none")
+        demisto.debug(f"email object date is {email_object.date}, email object is :{email_object}")
         self.raw_json = self.generate_raw_json()
         self.save_eml_file = save_file
         self.labels = self._generate_labels()
@@ -288,7 +286,6 @@ def fetch_mails(client: IMAPClient,
         messages_fetched: A list of the ids of the messages fetched
         last_message_in_current_batch: The UID of the last message fetchedd
     """
-    LOG('in fetch mails')
     if message_id:
         messages_uids = [message_id]
     else:
@@ -312,9 +309,9 @@ def fetch_mails(client: IMAPClient,
 
         if not message_bytes:
             continue
-        LOG('about to create email object')
+        demisto.debug('about to create email object')
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
-        if (not time_to_fetch_from or time_to_fetch_from < email_message_object.date) and \
+        if (not time_to_fetch_from or (email_message_object.date and time_to_fetch_from < email_message_object.date)) and \
                 int(email_message_object.id) > int(uid_to_fetch_from):
             mails_fetched.append(email_message_object)
             messages_fetched.append(email_message_object.id)

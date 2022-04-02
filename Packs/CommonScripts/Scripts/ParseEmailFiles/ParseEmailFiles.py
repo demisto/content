@@ -3763,6 +3763,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 or ('multipart/signed' in eml.get_content_type()
                     and (extract_address_eml(eml, 'to') or extract_address_eml(eml, 'from') or eml.get('subject'))):
             email_data = {
+                'Date': extract_address_eml(eml, 'date'),
                 'To': extract_address_eml(eml, 'to'),
                 'CC': extract_address_eml(eml, 'cc'),
                 'From': extract_address_eml(eml, 'from'),
@@ -3784,6 +3785,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 'Format': eml.get_content_type(),
                 'Depth': MAX_DEPTH_CONST - max_depth
             }
+        LOG(email_data.get("Date"))
         return email_data, attached_emails
 
 
