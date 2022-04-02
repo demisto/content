@@ -7466,7 +7466,7 @@ script:
       - contextPath: PANOS.DownloadStatus.Summary.started
         description: Whether the download process started.
         type: String
-  dockerimage: demisto/pan-os-python:1.0.0.27793
+  dockerimage: demisto/pan-os-python:1.0.0.27970
   feed: false
   isfetch: false
   longRunning: false
