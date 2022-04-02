@@ -1,11 +1,12 @@
 import demistomock as demisto
-
+import pytest
 import json
 
-from Palo_Alto_Networks_Enterprise_DLP import Client, FeedbackStatus, fetch_incidents, \
-    exemption_eligible, slack_bot_message, reset_last_run_command, parse_incident_details, parse_dlp_report
+from Palo_Alto_Networks_Enterprise_DLP import Client, fetch_incidents, \
+    exemption_eligible, slack_bot_message, reset_last_run_command, parse_incident_details, \
+    parse_dlp_report, update_incident, main
 
-DLP_URL = 'https://api.dlp.paloaltonetworks.com'
+DLP_URL = 'https://api.dlp.paloaltonetworks.com/v1'
 
 REPORT_DATA = {
     'txn_id': '2573778324',
@@ -67,27 +68,59 @@ REPORT_DATA = {
     }
 }
 
+INCIDENT_JSON = {
+    "incidentId": "1fd24b1e-05ff-46c1-b638-a79d284dc727",
+    "userId": None,
+    "tenantId": "1128505801991063552",
+    "reportId": "2573778324",
+    "dataProfileId": 11995149,
+    "dataProfileVersion": 1,
+    "action": "block",
+    "channel": "ngfw",
+    "filename": "Test_file.txt",
+    "checksum": "9093980f84a22659207d6a7194fc10e22416c833044a4d23f292b3a666ee66d9",
+    "source": "ngfw",
+    "scanDate": "2022-Apr-01 20:21:50 UTC",
+    "createdAt": "2022-Apr-01 20:21:50 UTC",
+    "incidentDetails": "QlpoOTFBWSZTWVnl2RYAAKIfgFAFfBBEAoAKv+ffqjAA2CIpoZGjEDTIZBpgGGRpppkYTIwTQGBiSp/pTZGqe1T8qMQaaeo9Nqm3YdNAidgNoZcFEJmTIP+V1xQohhqNsWERYRnKAc3TlogFoteml94kUR+lVJzjB9uhEqOgfBMrQh34ox8qYCCQo2n9WoNceFBvtSCAfMeY7sIAvtXhGQZ7UToozWEQwedzu/MRtoFMK8+ucpSbK4O7zRnPU82E9etuWR5AtmDQF5muuAczVDMFREJd+AEsRAKqdBdyRThQkFnl2RY="  # noqa: E501
+}
 
-def test_update_incident(requests_mock):
+
+def test_update_incident(requests_mock, mocker):
     incident_id = 'abcdefg12345'
     user_id = 'someone@somewhere.com'
     requests_mock.post(f'{DLP_URL}/public/incident-feedback/{incident_id}?feedback_type=CONFIRMED_SENSITIVE&region=us')
     client = Client(DLP_URL, "", "", False, None)
-    result, status = client.update_dlp_incident(incident_id, FeedbackStatus.CONFIRMED_SENSITIVE, user_id, 'us',
-                                                'A12345', 'ngfw')
+    mocker.patch.object(demisto, 'results')
+
+    update_incident(client, incident_id, 'CONFIRMED_SENSITIVE', user_id, 'us', 'A12345', 'ngfw')
+
+    results = demisto.results.call_args_list[0][0]
     request = requests_mock.last_request
-    assert status == 200
-    assert result == {}
+
+    assert results[0]['Contents'] == {'feedback': 'CONFIRMED_SENSITIVE', 'success': True}
     assert request.text == json.dumps({"user_id": user_id, "report_id": "A12345", "service_name": 'ngfw'})
 
 
-def test_get_dlp_report(requests_mock):
+def test_get_dlp_report(requests_mock, mocker):
     report_id = 12345
-    requests_mock.get(f'{DLP_URL}/public/report/{report_id}', json={'id': 'test'})
-    client = Client(DLP_URL, "", "", False, None)
-    result, status = client.get_dlp_report(report_id, fetch_snippets=True)
-    assert result == {'id': 'test'}
-    assert status == 200
+    requests_mock.get(f'{DLP_URL}/public/report/{report_id}?fetchSnippets=true', json={'id': 'test'})
+    mocker.patch.object(demisto, 'command', return_value='pan-dlp-get-report')
+    args = {
+        'report_id': report_id,
+        'fetch_snippets': 'true'
+    }
+    params = {
+        'access_token': 'abcd',
+        'refresh_token': 'xyz',
+        'env': 'prod'
+    }
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'results')
+    main()
+    results = demisto.results.call_args_list[0][0]
+    assert results[0]['Contents'] == {'id': 'test'}
 
 
 def test_parse_dlp_report(mocker):
@@ -105,11 +138,32 @@ def test_get_dlp_incidents(requests_mock):
     assert result == {'us': []}
 
 
+def test_refresh_token(requests_mock, mocker):
+    with pytest.raises(Exception):
+        report_id = 12345
+        headers1 = {
+            "Authorization": "Bearer 123",
+            "Content-Type": "application/json"
+        }
+        requests_mock.get(f'{DLP_URL}/public/report/{report_id}?fetchSnippets=true', headers=headers1, status_code=403)
+
+        requests_mock.post(f'{DLP_URL}/public/oauth/refreshToken', json={'access_token': 'abc'})
+        client = Client(DLP_URL, "", "123", False, None)
+
+        client.get_dlp_report(report_id, True)
+
+        assert client.access_token == 'abc'
+
+
 def test_fetch_incidents(requests_mock, mocker):
-    requests_mock.get(f'{DLP_URL}/public/incident-notifications?regions=us', json={'us': []})
+    requests_mock.get(f'{DLP_URL}/public/incident-notifications?regions=us', json={'us': [
+        {
+            'incident': INCIDENT_JSON,
+            'previous_notifications': []
+        }]})
     client = Client(DLP_URL, "", "", False, None)
     incidents = fetch_incidents(client=client, regions='us')
-    assert incidents == []
+    assert len(incidents) == 1
 
 
 def test_exemption_eligible(mocker):
