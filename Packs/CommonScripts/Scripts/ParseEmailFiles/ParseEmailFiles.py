@@ -23,7 +23,7 @@ from email.parser import HeaderParser
 from email.utils import getaddresses
 from struct import unpack
 
-import chardet
+import chardet  # type: ignore
 from olefile import OleFileIO, isOleFile
 
 import demistomock as demisto  # noqa: F401

@@ -1235,8 +1235,9 @@ def fetch_incidents(client: Client,
         else:
             raise Exception("Could not find last fetch time.")
     else:
-        last_fetch_datetime = dateparser.parse(last_fetch)
+        last_fetch_datetime = dateparser.parse(last_fetch)  # type: ignore
 
+    assert last_fetch_datetime is not None
     latest_created_time = last_fetch_datetime
     incidents: List[Dict[str, Any]] = []
 
@@ -1253,6 +1254,7 @@ def fetch_incidents(client: Client,
             incident_created_time = creation_datetime
         else:
             incident_created_time = last_fetch_datetime
+        assert incident_created_time is not None
         if float(last_fetch_datetime.timestamp()) < float(incident_created_time.timestamp()):
 
             incident = {
