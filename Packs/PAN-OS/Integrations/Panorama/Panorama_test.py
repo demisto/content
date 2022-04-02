@@ -1462,7 +1462,10 @@ class TestFirewallCommand:
 
     @patch("Panorama.run_op_command")
     def test_get_bgp_peers(self, patched_run_op_command, mock_topology):
-        """Given the output XML for show routing protocol bgp peers, assert it is parsed into the dataclasses correctly."""
+        """
+        Given the output XML for show routing protocol bgp peers,
+        assert it is parsed into the dataclasses correctly.
+        """
         from Panorama import FirewallCommand
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_BGP_PEERS_XML)
         result = FirewallCommand.get_bgp_peers(mock_topology)
