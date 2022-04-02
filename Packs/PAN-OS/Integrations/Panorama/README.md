@@ -5230,8 +5230,7 @@ Gets the operational information of the template stacks in the topology.
 >|---|---|---|---|---|---|
 >| yes | 1.1.1.1 | vm-lab-fw1 | commit succeeded with warnings | LAB-STACK | 0111112222333444 |
 >| no | 1.1.1.1 | vm-lab-fw02 | commit succeeded with warnings | LAB-STACK | 0111112222333455 |
-Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
-This integration was integrated and tested with version xx of Panorama_dev_platform
+
 
 ### pan-os-platform-get-global-counters
 ***
