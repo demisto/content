@@ -1,0 +1,17 @@
+{
+    "name": "PowerShell Utilities",
+    "description": "Collection of automation scripts which wraps various built-in Powershell cmdlets for use in XSOAR.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Oliver Li",
+    "url": "",
+    "email": "",
+    "created": "2022-04-02T16:49:18Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "Oliver-Lii"
+    ]
+}
