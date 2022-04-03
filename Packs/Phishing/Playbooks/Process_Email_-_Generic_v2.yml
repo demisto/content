@@ -56,11 +56,7 @@ tasks:
       id: aa7ddce2-5a85-46fe-8e35-6c4ebbe62059
       version: -1
       name: Do we have original emails attached?
-      description: Identifies whether the incident includes an email message attached
-        as an EML or MSG file and returns the answer to playbook. Also saves the identified
-        entry ID to context for use for later. Commonly used in automated playbooks
-        that handle phishing reports sent to a special phishing mailbox set up by
-        the security team.
+      description: Identifies whether the incident includes an email message attached as an EML or MSG file and returns the answer to playbook. Also saves the identified entry ID to context for use for later. Commonly used in automated playbooks that handle phishing reports sent to a special phishing mailbox set up by the security team.
       scriptName: IdentifyAttachedEmail
       type: condition
       iscommand: false
@@ -99,8 +95,7 @@ tasks:
       id: e3ec2c1b-89ab-44ba-8ad8-147373cce0ce
       version: -1
       name: Add original email details to context
-      description: Sets the details of the email that was forwarded under the email
-        context key.
+      description: Sets the details of the email that was forwarded under the email context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -112,9 +107,7 @@ tasks:
       key:
         simple: Email
       value:
-        simple: '${inputs={To: val[''Email''], CC: val[''EmailCC''], From: val[''EmailFrom''],
-          Subject: val[''EmailSubject''], Text: val[''EmailText''], HTML: val[''EmailHtml''],
-          Headers: val[''EmailHeaders''], Format: val[''EmailFormat'']}}'
+        simple: '${inputs={To: val[''Email''], CC: val[''EmailCC''], From: val[''EmailFrom''], Subject: val[''EmailSubject''], Text: val[''EmailText''], HTML: val[''EmailHtml''], Headers: val[''EmailHeaders''], Format: val[''EmailFormat'']}}'
     separatecontext: false
     view: |-
       {
@@ -138,12 +131,7 @@ tasks:
       id: 5802b254-fac3-4c94-8b2d-89038b4239e5
       version: -1
       name: Extract email artifacts and attachments
-      description: Parse an email from an eml or msg file and populate all relevant
-        context data to investigate the email. Also extracts inner attachments and
-        returns them to the war room. The incident labels themselves are preserved
-        and not modified - only the "Label/x" context items that originated from the
-        labels, and the best practice is to rely on these for the remainder of the
-        playbook.
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
@@ -183,8 +171,7 @@ tasks:
       id: d6c5b273-5d28-487a-8ccf-aefb1759d1f5
       version: -1
       name: Can an image of the email be rendered?
-      description: Checks whether the email is HTML-formatted, and whether the Rasterize
-        integration is enabled.
+      description: Checks whether the email is HTML-formatted, and whether the Rasterize integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -458,8 +445,7 @@ tasks:
       id: 1610c1bd-a25b-4596-8cf6-d1a8f81decad
       version: -1
       name: Display email information in layout
-      description: Updates Cortex XSOAR incident fields using data from the email
-        object.
+      description: Updates Cortex XSOAR incident fields using data from the email object.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -706,8 +692,7 @@ tasks:
       id: 293d898d-dc20-44ff-81bd-81ebb1056023
       version: -1
       name: Display email headers in layout - Email.Headers
-      description: Fills the "Email Headers" field in the incident layout with the
-        retrieved email headers.
+      description: Fills the "Email Headers" field in the incident layout with the retrieved email headers.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -753,8 +738,7 @@ tasks:
       id: 0388326d-fb71-4386-8a1f-b9e33eb70242
       version: -1
       name: Were email headers extracted successfully?
-      description: Checks whether the email headers were extracted from the original
-        email that was either attached or retrieved using available email integrations.
+      description: Checks whether the email headers were extracted from the original email that was either attached or retrieved using available email integrations.
       type: condition
       iscommand: false
       brand: ""
@@ -878,9 +862,7 @@ tasks:
       id: 73335578-482c-4f91-8d4c-dde807dbd8cf
       version: -1
       name: Save incident files separately from email attachments
-      description: Saves the files that were initially involved with the incident
-        in a separate context key so they are available separate from email attachment
-        files.
+      description: Saves the files that were initially involved with the incident in a separate context key so they are available separate from email attachment files.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -946,10 +928,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 5fdea373-d3ff-48d0-8e24-33ba59e846c3
+    taskid: fc7c93bd-a76d-4329-804e-9e36a56e6d0f
     type: regular
     task:
-      id: 5fdea373-d3ff-48d0-8e24-33ba59e846c3
+      id: fc7c93bd-a76d-4329-804e-9e36a56e6d0f
       version: -1
       name: Save number of attachments
       description: Saves the number of attachments in the email.
@@ -976,6 +958,11 @@ tasks:
                 value:
                   simple: IncidentFiles.EntryID
                 iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: File.EntryID
+                iscontext: true
           transformers:
           - operator: count
     reputationcalc: 1
@@ -996,10 +983,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: be4f7845-94af-4b1d-8c44-b210eb7c982b
+    taskid: cb1897a4-77db-478e-83de-5cfd82749846
     type: regular
     task:
-      id: be4f7845-94af-4b1d-8c44-b210eb7c982b
+      id: cb1897a4-77db-478e-83de-5cfd82749846
       version: -1
       name: Save attachment extensions
       description: Saves the email attachment extensions.
@@ -1026,6 +1013,11 @@ tasks:
                 value:
                   simple: IncidentFiles.EntryID
                 iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: File.EntryID
+                iscontext: true
           accessor: Extension
           transformers:
           - operator: join
@@ -1051,10 +1043,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: bcc8f056-b982-4112-8513-ef271cb56b65
+    taskid: fd5a4fa8-7edb-4342-88fe-b842a41906f8
     type: regular
     task:
-      id: bcc8f056-b982-4112-8513-ef271cb56b65
+      id: fd5a4fa8-7edb-4342-88fe-b842a41906f8
       version: -1
       name: Save attachment MD5 hashes
       description: Saves the email attachment MD5 hashes.
@@ -1081,6 +1073,11 @@ tasks:
                 value:
                   simple: IncidentFiles.EntryID
                 iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: File.EntryID
+                iscontext: true
           accessor: MD5
           transformers:
           - operator: join
@@ -1106,10 +1103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: e6f16664-5007-49f2-8d29-ff89937020eb
+    taskid: 48d7ce37-ace0-433c-86d9-5ec0e75982a5
     type: regular
     task:
-      id: e6f16664-5007-49f2-8d29-ff89937020eb
+      id: 48d7ce37-ace0-433c-86d9-5ec0e75982a5
       version: -1
       name: Save attachment names
       description: Saves the email attachment names.
@@ -1136,6 +1133,11 @@ tasks:
                 value:
                   simple: IncidentFiles.EntryID
                 iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: File.EntryID
+                iscontext: true
           accessor: Name
           transformers:
           - operator: join
@@ -1161,10 +1163,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: c4b72949-93b4-4057-8c08-98576b77779b
+    taskid: e3200e4e-7fbe-45cd-89c8-6f76b32cf65f
     type: regular
     task:
-      id: c4b72949-93b4-4057-8c08-98576b77779b
+      id: e3200e4e-7fbe-45cd-89c8-6f76b32cf65f
       version: -1
       name: Save attachment sizes
       description: Saves the email attachment sizes.
@@ -1191,6 +1193,11 @@ tasks:
                 value:
                   simple: IncidentFiles.EntryID
                 iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: File.EntryID
+                iscontext: true
           accessor: Size
           transformers:
           - operator: join
@@ -1216,10 +1223,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 3f6f8bd6-b352-450f-8663-7007b2b252eb
+    taskid: 5c020da7-dd25-41dd-8208-c24d0c28c941
     type: regular
     task:
-      id: 3f6f8bd6-b352-450f-8663-7007b2b252eb
+      id: 5c020da7-dd25-41dd-8208-c24d0c28c941
       version: -1
       name: Save attachment types
       description: Saves the email attachment types.
@@ -1245,6 +1252,11 @@ tasks:
               right:
                 value:
                   simple: IncidentFiles.EntryID
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: File.EntryID
                 iscontext: true
           accessor: Type
           transformers:
@@ -1277,9 +1289,7 @@ tasks:
       id: b01edbd3-8f20-4abf-8344-7b28dddc35f9
       version: -1
       name: Normalize Reporter Email Headers
-      description: Normalizes the keys names of the headers, which are different with
-        each client. This facilitates extracting the relevant values for the next
-        tasks.
+      description: Normalizes the keys names of the headers, which are different with each client. This facilitates extracting the relevant values for the next tasks.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -1324,8 +1334,7 @@ tasks:
       id: 06309202-bd36-411d-85fb-026d39e3767c
       version: -1
       name: Extract Reporter Email Headers
-      description: Preserves the original state of the reporter's email headers, which
-        are stored in the context.
+      description: Preserves the original state of the reporter's email headers, which are stored in the context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1424,11 +1433,7 @@ tasks:
       id: efef13c9-b8f6-49e4-8fd8-a51c5c664481
       version: -1
       name: Do we have original emails attached?
-      description: Identifies whether the incident includes an email message attached
-        as an EML or MSG file and returns the answer to playbook. Also saves the identified
-        entry ID to context for later use. Commonly used in automated playbooks that
-        handle phishing reports sent to a special phishing mailbox set up by the security
-        team.
+      description: Identifies whether the incident includes an email message attached as an EML or MSG file and returns the answer to playbook. Also saves the identified entry ID to context for later use. Commonly used in automated playbooks that handle phishing reports sent to a special phishing mailbox set up by the security team.
       scriptName: IdentifyAttachedEmail
       type: condition
       iscommand: false
@@ -1467,8 +1472,7 @@ tasks:
       id: 5ce226b3-dafb-4503-867a-453e0326b7d4
       version: -1
       name: Display email headers in layout - Email.HeadersMap
-      description: Fills the "Email Headers" field in the incident layout with the
-        retrieved email headers.
+      description: Fills the "Email Headers" field in the incident layout with the retrieved email headers.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -1596,8 +1600,7 @@ tasks:
       id: 9f007781-ed52-47a4-8ee6-4714d5be06ca
       version: -1
       name: Check if attachments were found in eml file
-      description: Checks if attachments were found in an EML file to display their
-        details in the layout.
+      description: Checks if attachments were found in an EML file to display their details in the layout.
       type: condition
       iscommand: false
       brand: ""
@@ -1682,8 +1685,7 @@ tasks:
       id: b0f67d11-6da9-4d36-8d1c-6ad107972fbe
       version: -1
       name: Did the automation find more than one email?
-      description: Checks if the Get Original Email - Generic v2 playbook found more
-        than one EML file.
+      description: Checks if the Get Original Email - Generic v2 playbook found more than one EML file.
       type: condition
       iscommand: false
       brand: ""
@@ -1821,8 +1823,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Handling multiple email files
-      description: Please review the email files retrieved using the Get Original
-        Email - Generic v2 playbook and insert the relevant entry ID to process.
+      description: Please review the email files retrieved using the Get Original Email - Generic v2 playbook and insert the relevant entry ID to process.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -2212,9 +2213,7 @@ inputs:
       root: incident
       accessor: emailmessageid
   required: false
-  description: The original email message ID to retrieve. Holds the value of the "Message-ID"
-    header of the original email. This value is passed as an input to the "Get Original
-    Email - Generic v2" playbook.
+  description: The original email message ID to retrieve. Holds the value of the "Message-ID" header of the original email. This value is passed as an input to the "Get Original Email - Generic v2" playbook.
   playbookInputQuery:
 - key: UserID
   value:
@@ -2231,8 +2230,7 @@ inputs:
             value:
               simple: $1
   required: false
-  description: The user's email address to retrieve the original email. This value
-    is passed as an input to the "Get Original Email - Generic v2" playbook.
+  description: The user's email address to retrieve the original email. This value is passed as an input to the "Get Original Email - Generic v2" playbook.
   playbookInputQuery:
 - key: Thread-Topic
   value:
@@ -2240,9 +2238,7 @@ inputs:
       root: incident
       accessor: emailsubject
   required: false
-  description: The value of the "Thread-Topic" header which holds the original email
-    subject, needed for forwarded email scenarios. It is passed as an input to the
-    "Get Original Email - Generic v2" playbook to use in the relevant sub-playbooks.
+  description: The value of the "Thread-Topic" header which holds the original email subject, needed for forwarded email scenarios. It is passed as an input to the "Get Original Email - Generic v2" playbook to use in the relevant sub-playbooks.
   playbookInputQuery:
 - key: EmailBrand
   value: {}
@@ -2263,11 +2259,11 @@ inputs:
   description: |-
     Reported emails and emails retrieved during playbook execution can contain multiple nested email files. For example, an EML nested inside another EML file.
     If multiple level files are detected, this field determines which file represents the phishing email.
-    
+
     For example:
     User1 receives an email from Attacker. User1 attaches the email as an EML file and sends the email to User2.
     User2 also attaches that email as a file, and reports it as phishing. In this case, the phishing email would be the "inner file" (as opposed to "outer file").
-    
+
     Possible values are: Inner file, Outer file, All files.
     Inner file: The file at the deepest level is parsed. If there is only one file, that file is parsed.
     Outer file: The file at the first level is parsed.
