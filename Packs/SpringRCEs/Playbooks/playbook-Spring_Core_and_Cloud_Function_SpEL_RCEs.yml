@@ -9,6 +9,7 @@ description: |
   Later, it was discovered that these are two separate vulnerabilities, one in Spring Core and the other in Spring Cloud Function:
 
   **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell.**
+
   **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL".**
 
   **Spring Core vulnerability requirements:**
@@ -29,8 +30,9 @@ description: |
   **Additional resources:**
 
   [Spring Framework RCE](https://spring.io/blog/2022/03/31/spring-framework-rce-early-announcement)
-  [CVE-2022-22963: Remote code execution in Spring Cloud Function by malicious Spring Expression
-  ](https://tanzu.vmware.com/security/cve-2022-22963)
+
+  [CVE-2022-22965: Spring Core Remote Code Execution Vulnerability Exploited In the Wild
+  ](https://unit42.paloaltonetworks.com/cve-2022-22965-springshell/)
 starttaskid: "0"
 tasks:
   "0":
@@ -54,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": -180
+          "y": -850
         }
       }
     note: false
@@ -84,7 +86,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": -40
+          "y": -710
         }
       }
     note: false
@@ -127,7 +129,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": 90
+          "y": -580
         }
       }
     note: false
@@ -157,7 +159,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": -40
+          "y": -710
         }
       }
     note: false
@@ -207,7 +209,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 90
+          "y": -580
         }
       }
     note: false
@@ -299,7 +301,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 545
+          "y": -125
         }
       }
     note: false
@@ -329,7 +331,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 420
+          "y": -250
         }
       }
     note: false
@@ -353,14 +355,15 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "9"
-      - "25"
+      - "36"
+      - "31"
+      - "37"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 110,
-          "y": 700
+          "y": 30
         }
       }
     note: false
@@ -400,8 +403,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 340,
-          "y": 840
+          "x": 110,
+          "y": 320
         }
       }
     note: false
@@ -927,7 +930,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 250
+          "y": -420
         }
       }
     note: false
@@ -966,8 +969,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
-          "y": 840
+          "x": -350,
+          "y": 320
         }
       }
     note: false
@@ -997,7 +1000,7 @@ tasks:
       {
         "position": {
           "x": 570,
-          "y": -40
+          "y": -710
         }
       }
     note: false
@@ -1037,7 +1040,7 @@ tasks:
       {
         "position": {
           "x": 570,
-          "y": 90
+          "y": -580
         }
       }
     note: false
@@ -1149,6 +1152,260 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: f2c60bc6-03ad-4990-8604-af27053ea8f0
+    type: title
+    task:
+      id: f2c60bc6-03ad-4990-8604-af27053ea8f0
+      version: -1
+      name: Prisma Cloud
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: b6299b9a-a471-4fd8-8370-b39dce7c0bde
+    type: condition
+    task:
+      id: b6299b9a-a471-4fd8-8370-b39dce7c0bde
+      version: -1
+      name: Is Prisma Cloud enabled?
+      description: Checks if Prisma Cloud instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RedLock
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: e1b1bbb6-17e7-4cb5-8206-e70fbb85ece3
+    type: regular
+    task:
+      id: e1b1bbb6-17e7-4cb5-8206-e70fbb85ece3
+      version: -1
+      name: Search for possible vulnerable servers using Prisma Cloud
+      description: Runs an RQL query on the Prisma Cloud.
+      script: '|||redlock-get-rql-response'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      limit:
+        simple: "10"
+      rql:
+        simple: config from cloud.resource where finding.type = 'Host Vulnerability' AND protection.finding.name IN ('CVE-2022-22963​', 'CVE-2022-22965')
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: d9d5009c-bd8f-4533-8941-175e0965207f
+    type: regular
+    task:
+      id: d9d5009c-bd8f-4533-8941-175e0965207f
+      version: -1
+      name: 'Review possible vulnerable servers '
+      description: "In this case users can utilize the Prisma platform's capabilities to isolate assets with vulnerabilities and also prioritize it further by looking for internet exposed assets receiving traffic. \n\nKnow the hosts in your cloud that has the specific vulnerability CVE-2021-44228:\n${Redlock.RQL.Response.Data.NetworkInterfaces.PrivateIpAddress}"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 03757630-f1b8-4671-8809-5fcb9a0f10c1
+    type: condition
+    task:
+      id: 03757630-f1b8-4671-8809-5fcb9a0f10c1
+      version: -1
+      name: Found servers using Prisma Cloud?
+      description: Checks if Prisma Clooud found vulnerable server
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Redlock.RQL.Response.Data.NetworkInterfaces
+                accessor: PrivateIpAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 923e1935-f60f-4d62-8612-be3a556db633
+    type: title
+    task:
+      id: 923e1935-f60f-4d62-8612-be3a556db633
+      version: -1
+      name: Palo Alto Networks Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 1c805064-2b3f-4875-8830-0c5723b19ede
+    type: title
+    task:
+      id: 1c805064-2b3f-4875-8830-0c5723b19ede
+      version: -1
+      name: CVE Hunt
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1183,6 +1440,7 @@ inputs:
       Later, it was discovered that these are two separate vulnerabilities, one in Spring Core and the other in Spring Cloud Function:
 
       **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell.**
+
       **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL".**
 
       **Spring Core vulnerability requirements:**
@@ -1200,11 +1458,6 @@ inputs:
 
       **Note:** You can execute this playbook using the Incidents view by creating a new incident or by using a dedicated job to schedule the playbook execution.
 
-      **Additional resources:**
-
-      [Spring Framework RCE](https://spring.io/blog/2022/03/31/spring-framework-rce-early-announcement)
-      [CVE-2022-22963: Remote code execution in Spring Cloud Function by malicious Spring Expression
-      ](https://tanzu.vmware.com/security/cve-2022-22963)
   required: false
   description: The playbook description. Will be used in the Rapid Breach Response - Set Incident Info sub-playbook.
   playbookInputQuery:
