@@ -258,3 +258,20 @@ slack-notify-nightly-build:
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
     SLACK_JOB: 'true'
+
+
+eyal-test:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    KUBERNETES_CPU_REQUEST: 1000m
+    XSIAM_CHOSEN_MACHINE_ID: "qa2-test-9994443226862"
+  needs: []
+  stage: create-instances
+  script:
+    - !reference [.download-demisto-conf]
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket.sh
+
