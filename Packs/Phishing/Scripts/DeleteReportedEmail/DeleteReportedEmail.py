@@ -299,7 +299,7 @@ def delete_from_brand_handler(incident_info, args):
     """
     Handle the delete_from_brand argument in the following logic:
     1. If the source brand exists in the 'deleteemailfrombrand' field, use it.
-    2. If the field is empty, use the script's argumnt.
+    2. If the field is empty, use the script's argument.
     3. If there is no argument given, use the incident's source brand.
     2. If the value is given (in any of the above ways) but it is not of a suitable integration, raise an error.
     Otherwise, use it.
@@ -326,11 +326,11 @@ def main():
     args = demisto.args()
     search_args = get_search_args(args)
     result, deletion_failure_reason, scheduled_command = '', '', ''
+    delete_from_brand = search_args['using-brand']
     try:
 
-
         if delete_from_brand == 'SecurityAndCompliance':
-            security_and_compliance_args = {k.replace('-', '_'): v for k, v in search_args.items() if k != 'message-id'} # TODO: fix to kebab case
+            security_and_compliance_args = {k.replace('-', '_'): v for k, v in search_args.items() if k != 'message-id'}
             result, scheduled_command = security_and_compliance_delete_mail(args, **security_and_compliance_args)
 
         else:
