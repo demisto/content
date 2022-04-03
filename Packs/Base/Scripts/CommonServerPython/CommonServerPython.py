@@ -9679,6 +9679,12 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
 
 # YML metadata collector mocked classes.
 class OutputArgument:
+    """YML output argument.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the commands README.md.
+    """
     def __init__(self,
                  name,
                  output_type=dict,
@@ -9688,6 +9694,12 @@ class OutputArgument:
 
 
 class InputArgument:
+    """YML input argument for a command.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the commands README.md.
+    """
     def __init__(self,
                  name=None,
                  description=None,
@@ -9702,6 +9714,12 @@ class InputArgument:
 
 
 class ConfKey:
+    """YML configuration key fields.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the commands README.md.
+    """
     def __init__(self,
                  name,
                  display=None,
@@ -9715,6 +9733,13 @@ class ConfKey:
 
 
 class YMLMetadataCollector:
+    """The YMLMetadataCollector class provides decorators for integration
+    functions which contain details relevant to yml generation.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the commands README.md.
+    """
     def __init__(self, integration_name, docker_image="demisto/python3:latest",
                  description=None, category="Utilities", conf=None,
                  is_feed=False, is_fetch=False, is_runonce=False,
