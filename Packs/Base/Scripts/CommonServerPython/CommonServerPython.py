@@ -18,6 +18,7 @@ import time
 import traceback
 import types
 import urllib
+import weakref
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -467,16 +468,22 @@ INDICATOR_TYPE_TO_CONTEXT_KEY = {
 }
 
 
-class ErrorTypes(object):
+class MetricTypes(object):
     """
     Enum: contains all the available error types
     :return: None
     :rtype: ``None``
     """
+    SUCCESS = 'Successful'
     QUOTA_ERROR = 'QuotaError'
     GENERAL_ERROR = 'GeneralError'
     AUTH_ERROR = 'AuthError'
     SERVICE_ERROR = 'ServiceError'
+    CONNECTION_ERROR = 'ConnectionError'
+    PROXY_ERROR = 'ProxyError'
+    SSL_ERROR = 'SSLError'
+    TIMEOUT_ERROR = 'TimeoutError'
+
 
 
 class FeedIndicatorType(object):
@@ -6111,7 +6118,7 @@ class CommandResults:
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
                  mark_as_note=False, scheduled_command=None, relationships=None, entry_type=None, execution_metrics=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, ExectionMetrics) -> None  # noqa: E501
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, ExecutionMetrics) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -6338,7 +6345,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
     demisto.results(return_entry)
 
 
-def return_error(message, error='', outputs=None, error_type=ErrorTypes.GENERAL):
+def return_error(message, error='', outputs=None):
     """
         Returns error entry with given message and exits the script
 
@@ -6377,13 +6384,11 @@ def return_error(message, error='', outputs=None, error_type=ErrorTypes.GENERAL)
     if is_server_handled:
         raise Exception(message)
     else:
-        # TODO Do we want to add error types here?
         demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
             'Contents': message,
-            'EntryContext': outputs,
-            'ErrorType': error_type
+            'EntryContext': outputs
         })
         sys.exit(0)
 
@@ -6425,54 +6430,115 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
     if exit:
         sys.exit(0)
 
-class ExecutionMetrics:
-    def __init__(self):
-        self.execution_metrics = []
-        self.general_errors = 0
-        self.quota_errors = 0
-        self.auth_errors = 0
-        self.service_errors = 0
-        self.custom_error = None
-        self.custom_error_count = 0
+class ExecutionMetrics(object):
+    def __init__(self, success=0, quota_error=0, general_error=0, auth_error=0, service_error=0, connection_error=0,
+                 proxy_error=0, ssl_error=0, timeout_error=0):
+        self._metrics = []
+        self.metrics = None
+        self.success = success
+        self.quota_error = quota_error
+        self.general_error = general_error
+        self.auth_error = auth_error
+        self.service_error = service_error
+        self.connection_error = connection_error
+        self.proxy_error = proxy_error
+        self.ssl_error = ssl_error
+        self.timeout_error = timeout_error
 
-    def increment_error(self, error_type, call_count=0):
-        self._add_value_to_metric(error_type, call_count)
 
-    @staticmethod
-    def _add_value_to_metric(value, error_type):
-        _current_error_count = getattr(ExecutionMetrics, error_type)
-        setattr(ExecutionMetrics, error_type, _current_error_count + value)
+    @property
+    def success(self):
+        return self._success
 
-    def dispatch_report(self):
-        if self.general_errors:
-            self.execution_metrics.append({
-                'ErrorType': ErrorTypes.GENERAL_ERROR,
-                'ApiCalls': self.general_errors
-            })
-        if self.quota_errors:
-            self.execution_metrics.append({
-                'ErrorType': ErrorTypes.QUOTA_ERROR,
-                'ApiCalls': self.quota_errors
-            })
-        if self.auth_errors:
-            self.execution_metrics.append({
-                'ErrorType': ErrorTypes.AUTH_ERROR,
-                'ApiCalls': self.auth_errors
-            })
-        if self.service_errors:
-            self.execution_metrics.append({
-                'ErrorType': ErrorTypes.SERVICE_ERROR,
-                'ApiCalls': self.service_errors
-            })
-        if self.custom_error:
-            self.execution_metrics.append({
-                'ErrorType': self.custom_error,
-                'ApiCalls': self.custom_error_count
-            })
-        if len(self.execution_metrics) > 0:
-            return_results(results=CommandResults(execution_metrics=self.execution_metrics).to_context())
-        else:
-            demisto.debug('No metrics to report.')
+    @success.setter
+    def success(self, value):
+        self._success = value
+        self.update_metrics(MetricTypes.SUCCESS, self._success)
+
+    @property
+    def quota_error(self):
+        return self._quota_error
+
+    @quota_error.setter
+    def quota_error(self, value):
+        self._quota_error = value
+        self.update_metrics(MetricTypes.QUOTA_ERROR, self._quota_error)
+
+    @property
+    def general_error(self):
+        return self._general_error
+
+    @general_error.setter
+    def general_error(self, value):
+        self._general_error = value
+        self.update_metrics(MetricTypes.GENERAL_ERROR, self._general_error)
+
+    @property
+    def auth_error(self):
+        return self._auth_error
+
+    @auth_error.setter
+    def auth_error(self, value):
+        self._auth_error = value
+        self.update_metrics(MetricTypes.AUTH_ERROR, self._auth_error)
+
+    @property
+    def service_error(self):
+        return self._service_error
+
+    @service_error.setter
+    def service_error(self, value):
+        self._service_error = value
+        self.update_metrics(MetricTypes.SERVICE_ERROR, self._service_error)
+
+    @property
+    def connection_error(self):
+        return self._connection_error
+
+    @connection_error.setter
+    def connection_error(self, value):
+        self._connection_error = value
+        self.update_metrics(MetricTypes.CONNECTION_ERROR, self._connection_error)
+
+    @property
+    def proxy_error(self):
+        return self._proxy_error
+
+    @proxy_error.setter
+    def proxy_error(self, value):
+        self._proxy_error = value
+        self.update_metrics(MetricTypes.PROXY_ERROR, self._proxy_error)
+
+    @property
+    def ssl_error(self):
+        return self._ssl_error
+
+    @ssl_error.setter
+    def ssl_error(self, value):
+        self._ssl_error = value
+        self.update_metrics(MetricTypes.SSL_ERROR, self._ssl_error)
+
+    @property
+    def timeout_error(self):
+        return self._timeout_error
+
+    @timeout_error.setter
+    def timeout_error(self, value):
+        self._timeout_error = value
+        self.update_metrics(MetricTypes.TIMEOUT_ERROR, self._timeout_error)
+
+    def update_metrics(self, metric_type, metric_value):
+        if metric_value > 0:
+            if len(self._metrics) == 0:
+                self._metrics.append({'MetricType': metric_type, 'ApiCalls': metric_value})
+            else:
+                for metric in self._metrics:
+                    if metric['MetricType'] == metric_type:
+                        metric['ApiCalls'] = metric_value
+                        break
+                else:
+                    self._metrics.append({'MetricType': metric_type, 'ApiCalls': metric_value})
+            self.metrics = CommandResults(execution_metrics=self._metrics)
 
 
 def execute_command(command, args, extract_contents=True, fail_on_error=True):

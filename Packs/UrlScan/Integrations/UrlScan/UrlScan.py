@@ -11,7 +11,7 @@ import time
 
 import requests
 from requests.utils import quote  # type: ignore
-from urlparse import urlparse
+# from urlparse import urlparse
 
 """ POLLING FUNCTIONS"""
 try:
@@ -27,7 +27,6 @@ BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
                                 'For your own safety we did not perform this scan...'
 BRAND = 'urlscan.io'
 SCHEDULING_SUPPORTED = False
-EXECUTION_METRICS = ExecutionMetrics()
 
 """ RELATIONSHIP TYPE"""
 RELATIONSHIP_TYPE = {
@@ -93,7 +92,6 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
     demisto.debug(
         'requesting https request with method: {}, url: {}, data: {}'.format(method, client.base_url + url_suffix,
                                                                              json))
-    retry_url = False
     r = requests.request(
         method,
         client.base_url + url_suffix,
@@ -110,10 +108,7 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
     if r.status_code != 200:
         if r.status_code == 429:
             try:
-                ScheduledCommand.raise_error_if_not_supported()
-                retry_url = True
-                EXECUTION_METRICS.increment_error(error_type=ErrorTypes.QUOTA_ERROR, call_count=1)
-                return {}, retry_url
+                return {}, MetricTypes.QUOTA_ERROR
             except DemistoException:
                 if retries <= 0:
                     # Error in API call to URLScan.io [429] - Too Many Requests
@@ -121,9 +116,8 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
                                  ' multiple URls' % (r.status_code, r.reason))
                 else:
                     time.sleep(wait)  # pylint: disable=sleep-exists
-                    return http_request(method, url_suffix, json, wait, retries - 1), retry_url
+                    return http_request(method, url_suffix, json, wait, retries - 1)
 
-        EXECUTION_METRICS.increment_error(error_type=ErrorTypes.GENERAL_ERROR, call_count=1)
         response_json = r.json()
         error_description = response_json.get('description')
         should_continue_on_blacklisted_urls = argToBoolean(demisto.args().get('continue_on_blacklisted_urls', False))
@@ -132,11 +126,11 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
             requested_url = JSON.loads(json)['url']
             blacklisted_message = 'The URL {} is blacklisted, no results will be returned for it.'.format(requested_url)
             demisto.results(blacklisted_message)
-            return response_json, retry_url
+            return response_json, MetricTypes.GENERAL_ERROR
 
         return_error('Error in API call to URLScan.io [%d] - %s: %s' % (r.status_code, r.reason, error_description))
 
-    return r.json(), retry_url
+    return r.json(), MetricTypes.SUCCESS
 
 
 # Allows nested keys to be accessible
@@ -233,8 +227,8 @@ def urlscan_submit_url(client, url):
     sub_json = json.dumps(submission_dict)
     wait = int(demisto.args().get('wait', 5))
     retries = int(demisto.args().get('retries', 0))
-    r, retry_url = http_request(client, 'POST', 'scan/', sub_json, wait, retries)
-    return r, retry_url
+    r, metric_response = http_request(client, 'POST', 'scan/', sub_json, wait, retries)
+    return r, metric_response
 
 
 def create_relationship(scan_type, field, entity_a, entity_a_type, entity_b, entity_b_type, reliability):
@@ -278,6 +272,7 @@ def create_list_relationships(scans_dict, url, reliability):
 
 
 def format_results(client, uuid):
+    command_results = []
     # Scan Lists sometimes returns empty
     num_of_attempts = 0
     relationships = []
@@ -465,40 +460,31 @@ def format_results(client, uuid):
         response_img = requests.request("GET", screen_path, verify=client.use_ssl)
         stored_img = fileResult('screenshot.png', response_img.content)
 
-    dbot_score = Common.DBotScore(indicator=dbot_score.get('Indicator'), indicator_type=dbot_score.get('Type'),
-                                  integration_name=BRAND, score=dbot_score.get('Score'),
-                                  reliability=dbot_score.get('Reliability'))
+    # dbot_score = Common.DBotScore(indicator=dbot_score.get('Indicator'), indicator_type=dbot_score.get('Type'),
+    #                               integration_name=BRAND, score=dbot_score.get('Score'),
+    #                               reliability=dbot_score.get('Reliability'))
 
-    url = Common.URL(url=url_cont.get('Data'), dbot_score=dbot_score, relationships=relationships,
-                     feed_related_indicators=url_cont.get('FeedRelatedIndicators'))
+    # url = Common.URL(url=url_cont.get('Data'), dbot_score=dbot_score, relationships=relationships,
+    #                  feed_related_indicators=url_cont.get('FeedRelatedIndicators'))
 
     command_result = CommandResults(
         readable_output=tableToMarkdown('{} - Scan Results'.format(url_query), human_readable),
         outputs=outputs,
-        indicator=url,
         raw_response=response,
         relationships=relationships,
     )
 
-    demisto.results(command_result.to_context())
-
+    command_results.append(command_result)
     if len(cert_md) > 0:
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': tableToMarkdown('Certificates', cert_md, CERT_HEADERS),
-            'HumanReadable': tableToMarkdown('Certificates', cert_md, CERT_HEADERS)
-        })
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown('Certificates', cert_md, CERT_HEADERS)
+        ))
     if 'ips' in scan_lists:
         if isinstance(scan_lists.get('ips'), list):
             feed_related_indicators += scan_lists.get('ips')
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': tableToMarkdown('Related IPs and ASNs', ip_asn_MD, IP_HEADERS),
-            'HumanReadable': tableToMarkdown('Related IPs and ASNs', ip_asn_MD, IP_HEADERS)
-        })
-
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown('Related IPs and ASNs', ip_asn_MD, IP_HEADERS)
+        ))
     if 'screenshotURL' in scan_tasks:
         demisto.results({
             'Type': entryTypes['image'],
@@ -507,48 +493,63 @@ def format_results(client, uuid):
             'FileID': stored_img['FileID'],
             'Contents': ''
         })
+    return command_results
 
 
 def urlscan_submit_request(client, uuid):
-    response = http_request(client, 'GET', 'result/{}'.format(uuid))
+    response, _ = http_request(client, 'GET', 'result/{}'.format(uuid))
     return response
 
 
 def get_urlscan_submit_results_polling(client, uuid):
+    if SCHEDULING_SUPPORTED:
+        return
     ready = polling(client, uuid)
     if ready is True:
-        format_results(client, uuid)
+        return format_results(client, uuid)
 
 
 def urlscan_submit_command(client, args):
     urls = argToList(args.get('url'))
     remaining_urls = deepcopy(urls)
+    execution_metrics = ExecutionMetrics()
+    command_results = []
     for url in urls:
         demisto.results("Starting search for {}".format(url))
-        response, retry_url = urlscan_submit_url(client, url)
+        response, metric_response = urlscan_submit_url(client, url)
+        if metric_response == MetricTypes.SUCCESS:
+            remaining_urls.remove(url)
+            execution_metrics.success = 1
+        elif metric_response == MetricTypes.QUOTA_ERROR:
+            execution_metrics.quota_error = 1
+            continue
+        elif metric_response == MetricTypes.GENERAL_ERROR:
+            execution_metrics.general_error = 1
+            continue
         if response.get('url_is_blacklisted'):
             pass
-        elif response.get('failed', False):
-            continue
         uuid = response.get('uuid')
-        get_urlscan_submit_results_polling(client, uuid)
-        if not retry_url:
-            remaining_urls.pop(url)
+        command_results.extend(get_urlscan_submit_results_polling(client, uuid))
+
     items_remaining = len(remaining_urls)
+    demisto.results("remaining {} results".format(items_remaining))
     if (items_remaining > 0) and SCHEDULING_SUPPORTED:
         polling_args = {
             'polling': True,
-            'url': remaining_urls,
-            **args
+            'url': remaining_urls
         }
+        polling_args.update(args)
         scheduled_command = ScheduledCommand(
             command=demisto.command(),
-            next_run_in_seconds=5,
+            next_run_in_seconds=20,
             args=polling_args,
             timeout_in_seconds=600,
             items_remaining=items_remaining
         )
-        demisto.results(scheduled_command.to_results())
+        command_results.append(scheduled_command.to_results())
+    # demisto.results(execution_metrics.metrics)
+    command_results.append(execution_metrics.metrics)
+    return_results(command_results)
 
 
 def urlscan_search(client, search_type, query):
@@ -588,7 +589,8 @@ def urlscan_search_command(client):
             search_type = 'ip'
         else:
             # Parsing query to see if it's a url
-            parsed = urlparse(raw_query)
+            # parsed = urlparse(raw_query)
+            parsed = ''
             # Checks to see if Netloc is present. If it's not a url, Netloc will not exist
             if parsed[1] == '' and len(raw_query) == 64:
                 search_type = 'hash'
