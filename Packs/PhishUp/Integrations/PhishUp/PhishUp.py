@@ -63,14 +63,12 @@ def investigate_url_command(client: Client, args, apikey):
         else:
             raise Exception(f"""PhishUp Exception: {phishup_result["Status"]["Message"]}""")
 
-        d_bot_score_reliability = DBotScoreReliability[0]
-
         dbot_score = Common.DBotScore(
             indicator=url,
             integration_name="PhishUp",
             indicator_type=DBotScoreType.URL,
             score=score,
-            reliability=d_bot_score_reliability
+            reliability=demisto.params().get('reliability', 'B - Usually reliable')
         )
 
         url_standard_context = Common.URL(
