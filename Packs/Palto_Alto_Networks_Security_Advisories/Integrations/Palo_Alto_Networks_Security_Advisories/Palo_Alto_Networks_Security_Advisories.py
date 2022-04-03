@@ -140,16 +140,16 @@ def flatten_advisory_dict(advisory_dict: dict) -> Optional[Advisory]:
         affects_dict["affects_vendor_name"] = vendor_data_dict.get("vendor_name")
 
     return Advisory(
-        data_type=advisory_dict.get("data_type"),
-        data_format=advisory_dict.get("data_format"),
-        cve_id=advisory_dict.get("CVE_data_meta").get("ID"),
-        cve_title=advisory_dict.get("CVE_data_meta").get("TITLE"),
-        cve_date_public=advisory_dict.get("CVE_data_meta").get("DATE_PUBLIC"),
-        description=advisory_dict.get("description").get("description_data")[0].get("value"),
-        cvss_score=advisory_dict.get("impact").get("cvss").get("baseScore"),
-        cvss_severity=advisory_dict.get("impact").get("cvss").get("baseSeverity"),
-        cvss_vector_string=advisory_dict.get("impact").get("cvss").get("vectorString"),
-        affected_version_list=advisory_dict.get("x_affectedList"),
+        data_type=advisory_dict.get("data_type", ""),
+        data_format=advisory_dict.get("data_format", ""),
+        cve_id=advisory_dict.get("CVE_data_meta", {}).get("ID", ""),
+        cve_title=advisory_dict.get("CVE_data_meta", {}).get("TITLE", ""),
+        cve_date_public=advisory_dict.get("CVE_data_meta", {}).get("DATE_PUBLIC", ""),
+        description=advisory_dict.get("description", {}).get("description_data", [])[0].get("value", ""),
+        cvss_score=advisory_dict.get("impact", {}).get("cvss", {}).get("baseScore", ""),
+        cvss_severity=advisory_dict.get("impact", {}).get("cvss", {}).get("baseSeverity", ""),
+        cvss_vector_string=advisory_dict.get("impact", {}).get("cvss", {}).get("vectorString", ""),
+        affected_version_list=advisory_dict.get("x_affectedList", ""),
         **affects_dict
     )
 
