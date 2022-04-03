@@ -1,7 +1,7 @@
 id: Command-Line Analysis
 version: -1
 name: Command-Line Analysis
-description: "This playbook takes the command-line from the alert and perform the following action:\n- Checks and decode base64\n- Extracts and enrich indicators from the command line\n- Checks specific arguments for malicious usage \nAt the end, the playbook will set a possible verdict for the command-line based on the finding."
+description: "This playbook takes the command line from the alert and performs the following actions:\n- Checks and decodes base64\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding."
 starttaskid: "0"
 tasks:
   "0":
@@ -41,7 +41,7 @@ tasks:
       id: c6467231-495b-4883-88a7-eab2f5e70aea
       version: -1
       name: Command-Line Indicator Extraction
-      description: commands.local.cmd.extract.indicators
+      description: Extracts indicators from the command line.
       type: title
       iscommand: false
       brand: Builtin
@@ -71,7 +71,7 @@ tasks:
       id: f84a9239-5e9d-4197-8bfa-61bc6ad6ba32
       version: -1
       name: Enrich indicators
-      description: commands.local.cmd.enrich.indicators
+      description: Enriches indicators from the command line.
       script: Builtin|||enrichIndicators
       type: regular
       iscommand: true
@@ -130,7 +130,7 @@ tasks:
       id: abf4d3c5-a76e-45d9-8a43-c789c3fb0c84
       version: -1
       name: Found additional indicators?
-      description: Checks if indicators exists in the command-line to enrich them
+      description: Checks if indicators exist in the command line for which to enrich.
       type: condition
       iscommand: false
       brand: ""
@@ -173,7 +173,7 @@ tasks:
       id: 64c37561-ee82-4492-8753-fbc0bc04ab73
       version: -1
       name: Is there a base64 string in the command-line?
-      description: Checks for base64 string in the command-line
+      description: Checks for a base64 string in the command line.
       type: condition
       iscommand: false
       brand: ""
@@ -353,7 +353,7 @@ tasks:
       id: 2825e2f3-3419-48f2-841e-246f6cd42a32
       version: -1
       name: 'Set command line verdict '
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context from the key entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -389,7 +389,7 @@ tasks:
       id: 86109946-90f2-44e2-8635-0523946837f3
       version: -1
       name: Check for suspicious parameters usage
-      description: Check for suspicious parameters usage
+      description: Checks for suspicious parameters usage.
       type: condition
       iscommand: false
       brand: ""
@@ -681,7 +681,7 @@ tasks:
       id: b93fd559-a570-41ce-8a67-5dafc2716ccb
       version: -1
       name: Check for encoded command parameters
-      description: Checks for encoded command parameters
+      description: Checks for encoded command parameters.
       type: condition
       iscommand: false
       brand: ""
@@ -746,7 +746,7 @@ tasks:
       id: 5b0e524a-d35d-40fc-89e0-35ac7dc81c09
       version: -1
       name: Check for network activity parameters
-      description: Check for network activity parameters
+      description: Checks for network activity parameters.
       type: condition
       iscommand: false
       brand: ""
@@ -835,7 +835,7 @@ tasks:
       id: b536f7b5-4bcf-4f23-8cf4-849bf362f171
       version: -1
       name: Check for malicious tools usage
-      description: Check for malicious tools usage
+      description: Checks for malicious tools usage.
       type: condition
       iscommand: false
       brand: ""
@@ -1023,7 +1023,7 @@ tasks:
       id: 33d8e75f-a6e3-4cab-81c8-3ed455a8c9da
       version: -1
       name: Check for AMSI evasion techniques
-      description: Check for AMSI evasion techniques
+      description: Checks for AMSI evasion techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -1162,7 +1162,7 @@ tasks:
       id: 94771ae1-1989-46ff-84b6-01818aa5e5f8
       version: -1
       name: Extract indicators from command-line
-      description: commands.local.cmd.extract.indicators
+      description: Extracts indicators from the command line.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
@@ -1205,7 +1205,7 @@ tasks:
       id: ca776607-663c-494b-84ed-5c7a8261becc
       version: -1
       name: Set decoded commandline
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context from the key entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1254,7 +1254,7 @@ tasks:
       id: 1c334f65-0945-4e2c-8c20-40dd318bcf0f
       version: -1
       name: Set Commandline
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context from the key entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1292,7 +1292,7 @@ tasks:
       id: 7eb9f44c-1edd-49f0-8bb1-0ce5919dbfd0
       version: -1
       name: 'Set command line verdict '
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context from the key entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1328,7 +1328,7 @@ tasks:
       id: 10da2438-5014-4993-837e-f896930f496d
       version: -1
       name: 'Set command line verdict '
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context from the key entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1364,7 +1364,7 @@ tasks:
       id: 30fb28c1-e121-4e3d-8755-1956e2d16102
       version: -1
       name: 'Set command line verdict '
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context from the key entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1400,7 +1400,7 @@ tasks:
       id: e95b2465-7187-4d72-8fd5-9a09c93e6759
       version: -1
       name: 'Set command line verdict '
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context from the key entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1436,7 +1436,7 @@ tasks:
       id: 75cbfc1f-45b8-483b-85d3-d4ae9ac01d79
       version: -1
       name: Found indicators in the command-line?
-      description: Checks if indicators exists in the command-line
+      description: Checks if indicators exist in the command line.
       type: condition
       iscommand: false
       brand: ""
@@ -1480,7 +1480,7 @@ tasks:
       id: 242c58db-c947-4ce7-8eb8-8baebd1bd323
       version: -1
       name: 'Set command line verdict '
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context from the key entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1516,7 +1516,7 @@ tasks:
       id: deb2ef37-e798-455d-8917-ea15485c8cc4
       version: -1
       name: Get commandline
-      description: Returns dynamic analysis of each alert ID.
+      description: Returns a dynamic analysis of each alert ID.
       script: '|||core-get-dynamic-analysis'
       type: regular
       iscommand: true
