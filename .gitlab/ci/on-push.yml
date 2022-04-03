@@ -60,10 +60,10 @@ run-validations:
       else
         # replace slashes ('/') in the branch name, if exist, with underscores ('_')
         UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
-        RESP=$(curl --location --request GET 'https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH' --header 'PRIVATE-TOKEN: ${CI_JOB_TOKEN}')
+        RESP=$(curl --location --request GET 'https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH' --header 'PRIVATE-TOKEN: ${GITLAB_STATUS_TOKEN}')
         if [ "$RESP" != "[]" ]; then
             echo "$RESP"
-            echo >&2 "Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\\n Merge it in order to merge the current branch into content repo."
+            echo "Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\\n Merge it in order to merge the current branch into content repo."
             exit 1
         fi
       fi
