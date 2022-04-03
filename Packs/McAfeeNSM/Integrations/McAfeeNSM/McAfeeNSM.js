@@ -172,7 +172,7 @@ function alert_to_entry(title, alert) {
         Comments : alert.description.comments.comments,
     };
     var links = []
-    if (!(alert.description.reference.additionInfo === undefined)) {
+    if (alert.description.reference.additionInfo !== undefined) {
         links = alert.description.reference.additionInfo.split('<BR>');
     }
 
