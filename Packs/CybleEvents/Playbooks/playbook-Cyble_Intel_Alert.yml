@@ -2,6 +2,8 @@ id: 2dc45112-1445-4fcf-8e4d-ab0c65c28f2f
 version: 45
 vcShouldKeepItemLegacyProdMachine: false
 name: Cyble Intel Alert
+description: This is a playbook which will handle the alerts coming from the Cyble Events service
+fromversion: 6.0.0
 starttaskid: "0"
 tasks:
   "0":
