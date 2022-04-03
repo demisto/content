@@ -64,7 +64,7 @@ def test_fetch_incidents(requests_mock):
 
     assert response[0]['name'] == 'Cyble Intel Alert on some_alias_2'
     assert response[0]['severity'] == 3
-    assert response[0]['rawJSON'] == '{"name": "Cyble Intel Alert on some_alias_2", "cybleeventtype": "service_type_2", "severity": 3, "occurred": "2022-03-07T00:01:24.242000Z", "cybleeventid": "some_alert_id_1", "cybleeventname": "Incident of some_alias_2 type", "cybleeventbucket": "some_keywords_1", "cybleeventkeyword": "some_tag_1", "cybleeventalias": "some_alias_2"}'
+    assert response[0]['rawJSON'] == '{"name": "Cyble Intel Alert on some_alias_2", "cybleeventstype": "service_type_2", "severity": 3, "occurred": "2022-03-07T00:01:24.242000Z", "cybleeventsid": "some_alert_id_1", "cybleeventsname": "Incident of some_alias_2 type", "cybleeventsbucket": "some_keywords_1", "cybleeventskeyword": "some_tag_1", "cybleeventsalias": "some_alias_2"}'
 
 
 def test_cyble_vision_fetch_iocs(requests_mock):
@@ -156,14 +156,14 @@ def test_cyble_vision_fetch_events(requests_mock):
     assert isinstance(response[0], dict)
 
     assert response[0]['name'] == 'Cyble Intel Alert on some_alias_2'
-    assert response[0]['cybleeventtype'] == 'service_type_2'
+    assert response[0]['cybleeventstype'] == 'service_type_2'
     assert response[0]['severity'] == 3
     assert response[0]['occurred'] == '2022-03-07T00:01:24.242000Z'
-    assert response[0]['cybleeventid'] == 'some_alert_id_1'
-    assert response[0]['cybleeventname'] == 'Incident of some_alias_2 type'
-    assert response[0]['cybleeventbucket'] == 'some_keywords_1'
-    assert response[0]['cybleeventkeyword'] == 'some_tag_1'
-    assert response[0]['cybleeventalias'] == 'some_alias_2'
+    assert response[0]['cybleeventsid'] == 'some_alert_id_1'
+    assert response[0]['cybleeventsname'] == 'Incident of some_alias_2 type'
+    assert response[0]['cybleeventsbucket'] == 'some_keywords_1'
+    assert response[0]['cybleeventskeyword'] == 'some_tag_1'
+    assert response[0]['cybleeventsalias'] == 'some_alias_2'
 
 
 def test_cyble_vision_fetch_detail(requests_mock):

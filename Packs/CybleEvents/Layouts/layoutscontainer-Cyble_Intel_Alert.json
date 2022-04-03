@@ -89,7 +89,7 @@
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "cybleeventid",
+                                "fieldId": "cybleeventsid",
                                 "height": 22,
                                 "id": "8c5b2990-9472-11ec-af74-b99c3314384a",
                                 "index": 4,
@@ -98,7 +98,7 @@
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "cybleeventtype",
+                                "fieldId": "cybleeventstype",
                                 "height": 22,
                                 "id": "915c7160-9472-11ec-af74-b99c3314384a",
                                 "index": 5,
@@ -108,7 +108,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "cybleeventalias",
+                                "fieldId": "cybleeventsalias",
                                 "height": 22,
                                 "id": "e4bc78d0-94d3-11ec-a8f8-1199ffeed5b7",
                                 "index": 6,
@@ -118,7 +118,7 @@
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "cybleeventname",
+                                "fieldId": "cybleeventsname",
                                 "height": 22,
                                 "id": "901dd6e0-9472-11ec-af74-b99c3314384a",
                                 "index": 7,
@@ -127,7 +127,7 @@
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "cybleeventbucket",
+                                "fieldId": "cybleeventsbucket",
                                 "height": 22,
                                 "id": "3287e840-9468-11ec-8438-a1dfaaea420b",
                                 "index": 8,
@@ -136,7 +136,7 @@
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "cybleeventkeyword",
+                                "fieldId": "cybleeventskeyword",
                                 "height": 22,
                                 "id": "33bb3820-9468-11ec-8438-a1dfaaea420b",
                                 "index": 9,
@@ -1667,27 +1667,27 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_cybleeventid",
+                        "fieldId": "incident_cybleeventsid",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_cybleeventtype",
+                        "fieldId": "incident_cybleeventstype",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_cybleeventalias",
+                        "fieldId": "incident_cybleeventsalias",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_cybleeventname",
+                        "fieldId": "incident_cybleeventsname",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_cybleeventbucket",
+                        "fieldId": "incident_cybleeventsbucket",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_cybleeventkeyword",
+                        "fieldId": "incident_cybleeventskeyword",
                         "isVisible": true
                     }
                 ],

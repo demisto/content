@@ -6,56 +6,47 @@
         "Cyble Intel Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Cyble Event Bucket": {
+                "Cyble Events Bucket": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventbucket",
+                        "root": "cybleeventsbucket",
                         "transformers": []
                     },
                     "simple": ""
                 },
-                "Cyble Event Details": {
+                "Cyble Events ID": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventdetails",
+                        "root": "cybleeventsid",
                         "transformers": []
                     },
                     "simple": ""
                 },
-                "Cyble Event ID": {
+                "Cyble Events Keyword": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventid",
+                        "root": "cybleeventskeyword",
                         "transformers": []
                     },
                     "simple": ""
                 },
-                "Cyble Event Keyword": {
+                "Cyble Events Name": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventkeyword",
+                        "root": "cybleeventsname",
                         "transformers": []
                     },
                     "simple": ""
                 },
-                "Cyble Event Name": {
+                "Cyble Events Type": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventname",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Cyble Event Type": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "cybleeventtype",
+                        "root": "cybleeventstype",
                         "transformers": []
                     },
                     "simple": ""
@@ -92,65 +83,56 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Cyble Event Alias": {
+                "Cyble Events Alias": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventalias",
+                        "root": "cybleeventsalias",
                         "transformers": []
                     },
                     "simple": ""
                 },
-                "Cyble Event Bucket": {
+                "Cyble Events Bucket": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventbucket",
+                        "root": "cybleeventsbucket",
                         "transformers": []
                     },
                     "simple": ""
                 },
-                "Cyble Event Details": {
+                "Cyble Events ID": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventdetails",
+                        "root": "cybleeventsid",
                         "transformers": []
                     },
                     "simple": ""
                 },
-                "Cyble Event ID": {
+                "Cyble Events Keyword": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventid",
+                        "root": "cybleeventskeyword",
                         "transformers": []
                     },
                     "simple": ""
                 },
-                "Cyble Event Keyword": {
+                "Cyble Events Name": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventkeyword",
+                        "root": "cybleeventsname",
                         "transformers": []
                     },
                     "simple": ""
                 },
-                "Cyble Event Name": {
+                "Cyble Events Type": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventname",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Cyble Event Type": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "cybleeventtype",
+                        "root": "cybleeventstype",
                         "transformers": []
                     },
                     "simple": ""

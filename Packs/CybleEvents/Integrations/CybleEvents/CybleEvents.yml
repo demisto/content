@@ -102,10 +102,10 @@ script:
       description: Sorting order for alert fetch either Ascending or Descending
       defaultValue: Ascending
     outputs:
-    - contextPath: CybleEvents.Events.cybleeventid
+    - contextPath: CybleEvents.Events.cybleeventsid
       description: Returns the event ID
       type: String
-    - contextPath: CybleEvents.Events.cybleeventtype
+    - contextPath: CybleEvents.Events.cybleeventstype
       description: Returns the event type
       type: String
     - contextPath: CybleEvents.Events.severity
@@ -117,16 +117,16 @@ script:
     - contextPath: CybleEvents.Events.name
       description: Returns the alert title
       type: String
-    - contextPath: CybleEvents.Events.cybleeventname
+    - contextPath: CybleEvents.Events.cybleeventsname
       description: Returns the event name
       type: String
-    - contextPath: CybleEvents.Events.cybleeventbucket
+    - contextPath: CybleEvents.Events.cybleeventsbucket
       description: Returns the event bucket name
       type: String
-    - contextPath: CybleEvents.Events.cybleeventkeyword
+    - contextPath: CybleEvents.Events.cybleeventskeyword
       description: Returns the event keyword
       type: String
-    - contextPath: CybleEvents.Events.cybleeventalias
+    - contextPath: CybleEvents.Events.cybleeventsalias
       description: Returns the event type alias name
       type: String
     description: Fetch Incident event alerts based on the given parameters
@@ -143,7 +143,7 @@ script:
       description: Returns details for given event of specific type
       type: String
     description: Fetch Incident detail based on event type and event ID
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.4.27798
   isfetch: true
   runonce: false
   subtype: python3
