@@ -59,6 +59,21 @@ script:
     - contextPath: PhishUp.Score
       description: Phishup Engine Url Score
       type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: URL.Data
+      description: The URL
+      type: String
   - deprecated: false
     description: Get chosen action from PhishUp instance
     execution: false
