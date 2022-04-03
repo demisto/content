@@ -168,6 +168,17 @@ class Client(BaseClient):
 
 def create_readable_response(responses: Union[dict, List[dict], str], handle_one_response: Callable, remove_if_null: str = None) \
         -> Union[str, List[Dict[str, str]]]:
+    """
+    Creates a readable response for responses that have fields in the form of:
+        {
+        'key': 'The Wanted Key',
+        'value': 'The Wanted Value'
+        }
+
+    :param responses: The response to turn to human readable
+    :param handle_one_response: The function to operate on one response to turn it to human readable
+    :param remove_if_null: Field name that if it has no value- the whole response will be ignored
+    """
     readable_response = []
 
     if isinstance(responses, dict):
@@ -189,6 +200,12 @@ def create_readable_response(responses: Union[dict, List[dict], str], handle_one
 
 
 def asset_list_handler(response: Dict[str, Any], remove_if_null: str):
+    """
+    Creates a readable response for one asset response. Is sent as **handle_one_response** to *create_readable_response*.
+
+    :param response: The response to turn to human readable
+    :param remove_if_null: Field name that if it has no value- the whole response will be ignored
+    """
     new_info = []
     response_entry = {key: response[key] for key in ['id', 'name'] if key in response}
     if 'info' in response:
@@ -201,6 +218,11 @@ def asset_list_handler(response: Dict[str, Any], remove_if_null: str):
 
 
 def filter_list_handler(response: Dict[str, Any]):
+    """
+    Creates a readable response for one filter response. Is sent as **handle_one_response** to *create_readable_response*.
+
+    :param response: The response to turn to human readable
+    """
     new_info = []
     response_entry = {key: response[key] for key in ['id', 'type', 'caption'] if key in response}
     if 'values' in response:
@@ -212,6 +234,11 @@ def filter_list_handler(response: Dict[str, Any]):
 
 
 def service_record_handler(response: Dict[str, Any]):
+    """
+    Creates a readable response for one service record response. Is sent as **handle_one_response** to *create_readable_response*.
+
+    :param response: The response to turn to human readable
+    """
     response_entry = {'id': response['id']}
     if 'info' in response:
         for info in response['info']:
@@ -226,6 +253,11 @@ def service_record_handler(response: Dict[str, Any]):
 
 
 def extract_filters(custom_fields_keys: List[str], custom_fields_values: List[str]) -> Dict[str, Any]:
+    """
+    Additional filters are sent in a request in a form of:
+        {filter1}={filter1_value}&{filter2}={filter2_value}
+    This function organizes them in a form similar to regular arguments given.
+    """
     filters = {}
     for key, value in zip(custom_fields_keys, custom_fields_values):
         filters[key] = value
@@ -233,6 +265,10 @@ def extract_filters(custom_fields_keys: List[str], custom_fields_values: List[st
 
 
 def set_service_record_info(args: Dict[str, Any]) -> List[Dict[str, str]]:
+    """
+    Update and create service record commands have many arguments, this function organizes the arguments in the form they need to
+    appear in the body of the request.
+    """
     info = []
 
     for arg_name in SERVICE_RECORD_ARGS:
@@ -249,6 +285,20 @@ def set_service_record_info(args: Dict[str, Any]) -> List[Dict[str, str]]:
 
 
 def template_readable_response(responses: Union[dict, List[dict], str]) -> Union[str, List[Dict[str, Any]]]:
+    """
+    Creates a readable response for responses that have fields in the form of:
+        {
+            'defaultValue': null,
+            'editable': true,
+            'key': 'sr_type',
+            'keyCaption': 'Service Record Type',
+            'mandatory': false,
+            'type': 'list',
+            'value': 2
+        }
+
+    :param responses: The response to turn to human readable
+    """
     readable_response = []
 
     if isinstance(responses, dict):
@@ -286,6 +336,100 @@ def set_returned_fields(fields: str = None) -> Optional[str]:
     if fields and 'all' in fields:
         return None
     return fields
+
+
+''' FETCH HELPER FUNCTIONS '''
+
+
+def filter_service_records_by_time(service_records: List[Dict[str, Any]], fetch_start_timestamp: datetime) \
+        -> List[Dict[str, Any]]:
+    filtered_service_records = []
+    for service_record in service_records:
+        update_time = get_service_record_update_time(service_record)
+        if update_time and update_time >= fetch_start_timestamp:
+            filtered_service_records.append(service_record)
+
+    return filtered_service_records
+
+
+def filter_service_records_by_id(service_records: List[Dict[str, Any]], fetch_start_timestamp: datetime, last_id_fetched: int):
+    # only for service_records with the same update_time as fetch_start_timestamp
+    return [service_record for service_record in service_records
+            if get_service_record_update_time(service_record) != fetch_start_timestamp
+            or service_record['id'] > last_id_fetched]
+
+
+def reduce_service_records_to_limit(service_records: List[Dict[str, Any]], limit: int, last_fetch: datetime,
+                                    last_id_fetched: int) -> Tuple[datetime, int, List[Dict[str, Any]]]:
+    incidents_count = min(limit, len(service_records))
+    # limit can't be 0 or less, but there could be no service_records at the wanted time
+    if incidents_count > 0:
+        service_records = service_records[:limit]
+        last_fetched_service_record = service_records[incidents_count - 1]
+        last_fetch = get_service_record_update_time(last_fetched_service_record)  # type: ignore
+        last_id_fetched = last_fetched_service_record['id']
+    return last_fetch, last_id_fetched, service_records
+
+
+def parse_service_records(service_records: List[Dict[str, Any]], limit: int, fetch_start_timestamp: datetime,
+                          last_id_fetched: int) -> Tuple[datetime, int, List[Dict[str, Any]]]:
+    service_records = filter_service_records_by_time(service_records, fetch_start_timestamp)
+    service_records = filter_service_records_by_id(service_records, fetch_start_timestamp, last_id_fetched)
+
+    # sorting service_records by date and then by id
+    service_records.sort(key=lambda service_record: (get_service_record_update_time(service_record), service_record['id']))
+
+    last_fetch, last_id_fetched, service_records = reduce_service_records_to_limit(service_records, limit, fetch_start_timestamp,
+                                                                                   last_id_fetched)
+
+    incidents: List[Dict[str, Any]] = [service_record_to_incident_context(service_record) for service_record in service_records]
+    return last_fetch, last_id_fetched, incidents
+
+
+def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str) -> datetime:
+    first_fetch_datetime = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
+    if last_fetch is None:
+        return first_fetch_datetime
+
+    last_fetch_datetime = dateparser.parse(last_fetch, settings={'TIMEZONE': 'UTC'})
+    return max(last_fetch_datetime, first_fetch_datetime)
+
+
+def get_service_record_update_time(service_record: Dict[str, Any]) -> Optional[datetime]:
+    for i in service_record['info']:
+        if i['key'] == 'update_time':
+            # We are using 'valueCaption' and not 'value' as they hold different values
+            occurred = str(i['valueCaption'])
+            return dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'})
+
+    demisto.debug(f'The service record with ID {service_record["id"]} does not have a modify time (update_time).')
+    return None
+
+
+def service_record_to_incident_context(service_record: Dict[str, Any]):
+    title, type_ = '', ''
+    for i in service_record['info']:
+        if i['key'] == 'sr_type':
+            type_ = str(i['valueCaption'])
+        elif i['key'] == 'title':
+            title = i['valueCaption']
+
+    occurred = get_service_record_update_time(service_record)
+
+    if not occurred:
+        demisto.debug(f'The service record {type_} with ID {service_record["id"]} does not have a modify time (update_time) '
+                      f'and therefore can\'t be fetched.')
+        return None
+
+    incident_context = {
+        'name': title,
+        'occurred': occurred.strftime(DATE_FORMAT),
+        'rawJSON': json.dumps(service_record),
+        'type': f'SysAid {type_}'
+    }
+    demisto.debug(f'New service record {type_} is: name: {incident_context["name"]}, occurred: {incident_context["occurred"]}, '
+                  f'type: {incident_context["type"]}.')
+    return incident_context
 
 
 ''' COMMAND FUNCTIONS '''
@@ -635,97 +779,6 @@ def fetch_request(client: Client, fetch_types: str = None, include_archived: boo
     responses = [response] if isinstance(response, dict) else response
     demisto.debug(f'The request returned {len(response)} service records.')
     return responses
-
-
-def filter_service_records_by_time(service_records: List[Dict[str, Any]], fetch_start_timestamp: datetime) \
-        -> List[Dict[str, Any]]:
-    filtered_service_records = []
-    for service_record in service_records:
-        update_time = get_service_record_update_time(service_record)
-        if update_time and update_time >= fetch_start_timestamp:
-            filtered_service_records.append(service_record)
-
-    return filtered_service_records
-
-
-def filter_service_records_by_id(service_records: List[Dict[str, Any]], fetch_start_timestamp: datetime, last_id_fetched: int):
-    # only for service_records with the same update_time as fetch_start_timestamp
-    return [service_record for service_record in service_records
-            if get_service_record_update_time(service_record) != fetch_start_timestamp
-            or service_record['id'] > last_id_fetched]
-
-
-def reduce_service_records_to_limit(service_records: List[Dict[str, Any]], limit: int, last_fetch: datetime,
-                                    last_id_fetched: int) -> Tuple[datetime, int, List[Dict[str, Any]]]:
-    incidents_count = min(limit, len(service_records))
-    # limit can't be 0 or less, but there could be no service_records at the wanted time
-    if incidents_count > 0:
-        service_records = service_records[:limit]
-        last_fetched_service_record = service_records[incidents_count - 1]
-        last_fetch = get_service_record_update_time(last_fetched_service_record)  # type: ignore
-        last_id_fetched = last_fetched_service_record['id']
-    return last_fetch, last_id_fetched, service_records
-
-
-def parse_service_records(service_records: List[Dict[str, Any]], limit: int, fetch_start_timestamp: datetime,
-                          last_id_fetched: int) -> Tuple[datetime, int, List[Dict[str, Any]]]:
-    service_records = filter_service_records_by_time(service_records, fetch_start_timestamp)
-    service_records = filter_service_records_by_id(service_records, fetch_start_timestamp, last_id_fetched)
-
-    # sorting service_records by date and then by id
-    service_records.sort(key=lambda service_record: (get_service_record_update_time(service_record), service_record['id']))
-
-    last_fetch, last_id_fetched, service_records = reduce_service_records_to_limit(service_records, limit, fetch_start_timestamp,
-                                                                                   last_id_fetched)
-
-    incidents: List[Dict[str, Any]] = [service_record_to_incident_context(service_record) for service_record in service_records]
-    return last_fetch, last_id_fetched, incidents
-
-
-def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str) -> datetime:
-    first_fetch_datetime = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
-    if last_fetch is None:
-        return first_fetch_datetime
-
-    last_fetch_datetime = dateparser.parse(last_fetch, settings={'TIMEZONE': 'UTC'})
-    return max(last_fetch_datetime, first_fetch_datetime)
-
-
-def get_service_record_update_time(service_record: Dict[str, Any]) -> Optional[datetime]:
-    for i in service_record['info']:
-        if i['key'] == 'update_time':
-            # We are using 'valueCaption' and not 'value' as they hold different values
-            occurred = str(i['valueCaption'])
-            return dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'})
-
-    demisto.debug(f'The service record with ID {service_record["id"]} does not have a modify time (update_time).')
-    return None
-
-
-def service_record_to_incident_context(service_record: Dict[str, Any]):
-    title, type_ = '', ''
-    for i in service_record['info']:
-        if i['key'] == 'sr_type':
-            type_ = str(i['valueCaption'])
-        if i['key'] == 'title':
-            title = i['valueCaption']
-
-    occurred = get_service_record_update_time(service_record)
-
-    if not occurred:
-        demisto.debug(f'The service record {type_} with ID {service_record["id"]} does not have a modify time (update_time) '
-                      f'and therefore can\'t be fetched.')
-        return None
-
-    incident_context = {
-        'name': title,
-        'occurred': occurred.strftime(DATE_FORMAT),
-        'rawJSON': json.dumps(service_record),
-        'type': f'SysAid {type_}'
-    }
-    demisto.debug(f'New service record {type_} is: name: {incident_context["name"]}, occurred: {incident_context["occurred"]}, '
-                  f'type: {incident_context["type"]}.')
-    return incident_context
 
 
 def test_module(client: Client, params: dict) -> None:
