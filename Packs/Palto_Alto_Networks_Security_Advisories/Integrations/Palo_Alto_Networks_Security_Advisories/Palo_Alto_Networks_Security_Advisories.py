@@ -176,7 +176,7 @@ def get_advisories(client: Client, product: str, sort: str = "-date", severity: 
         # oh, what fun
         params_dict["q"] = f"\"{params_dict.get('q')}\""
 
-    advisory_data = client.get_advisories(product, params_dict).get("data")
+    advisory_data = client.get_advisories(product, params_dict).get("data", {})
 
     advisory_object_list: List[Advisory] = []
     advisory_dict: dict

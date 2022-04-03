@@ -6,8 +6,8 @@ configuration:
 - defaultvalue: https://security.paloaltonetworks.com/api/v1
   display: Default URL for PAN-OS advisories website
   name: url
+  required: false
   type: 0
-description: null
 display: Palo Alto Networks Security Advisories
 name: Palo_Alto_Networks_Security_Advisories
 script:
@@ -29,7 +29,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: null
       description: Filter advisories to this severity level only.
       isArray: false
       name: severity
@@ -42,7 +41,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: ''
       description: Text search query
       isArray: false
       name: q
@@ -50,6 +48,7 @@ script:
       secret: false
     deprecated: false
     description: Gets all the advisories for the given product.
+    execution: false
     name: pan-advisories-get-advisories
     outputs:
     - contextPath: PANSecurityAdvisory.Advisory.data_type
@@ -83,7 +82,9 @@ script:
       type: Unknown
   dockerimage: demisto/python3:3.10.1.25933
   feed: false
-  fetch: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
