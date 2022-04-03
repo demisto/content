@@ -339,8 +339,8 @@ def change_password_user_command(client: MsGraphClient, args: Dict):
 
 
 def change_password_user_on_premise_command(client: MsGraphClient, args: Dict):
-    user = args.get('user')
-    password = args.get('password')
+    user = str(args.get('user', ''))
+    password = str(args.get('password', ''))
 
     if not all((user, password)):
         raise DemistoException('Username and password cannot be empty.')
