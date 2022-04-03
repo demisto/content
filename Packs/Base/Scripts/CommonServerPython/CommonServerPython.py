@@ -178,7 +178,7 @@ try:
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set
 
-    import dateparser
+    import dateparser  # type: ignore
     from datetime import timezone  # type: ignore
 except Exception:
     if sys.version_info[0] < 3:
@@ -5275,7 +5275,7 @@ class Common(object):
             if (
                 extensions
                 and not isinstance(extensions, list)
-                and any(isinstance(e, Common.CertificateExtension) for e in extensions)
+                and any(isinstance(e, Common.CertificateExtension) for e in extensions)  # type: ignore
             ):
                 raise TypeError('extensions must be of type List[Common.CertificateExtension]')
             self.extensions = extensions
@@ -7426,6 +7426,8 @@ if 'requests' in sys.modules:
             """
                 A wrapper used for https communication to enable ciphers that are commonly used
                 and are not enabled by default
+                :return: No data returned
+                :rtype: ``None``
             """
 
             def init_poolmanager(self, *args, **kwargs):
@@ -9248,7 +9250,7 @@ def get_pack_version(pack_name=''):
     def _load_response(_response):
         try:
             return json.loads(_response)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError:  # type: ignore[attr-defined]
             demisto.debug('Unable to load response {response}'.format(response=_response))
             return {}
 
