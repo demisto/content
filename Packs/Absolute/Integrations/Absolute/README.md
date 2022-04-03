@@ -741,8 +741,8 @@ Gets a list of device records and their corresponding data that meets the requir
             "FullSystemName": "ABSOLUTE-ASSET-.WORKGROUP",
             "Id": "123456",
             "LastConnectedUtc": 1648971645189,
-            "LocalIp": "10.128.0.30",
-            "PublicIp": "35.224.136.145",
+            "LocalIp": "127.0.0.1",
+            "PublicIp": "127.0.0.1",
             "Serial": "GoogleCloud-B8736A4405BF0E968020BCBC46EDA096",
             "SystemManufacturer": "Google",
             "SystemModel": "GOOGLE COMPUTE ENGINE",
@@ -759,7 +759,7 @@ Gets a list of device records and their corresponding data that meets the requir
 >### Absolute devices list:
 >|AgentStatus|Esn|FullSystemName|Id|LastConnectedUtc|LocalIp|PublicIp|Serial|SystemManufacturer|SystemModel|SystemName|SystemType|osName|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| A | D0001 | ABSOLUTE-ASSET-.WORKGROUP | 123456 | 1648971645189 | 10.128.0.30 | 35.224.136.145 | GoogleCloud-B8736A4405BF0E968020BCBC46EDA096 | Google | GOOGLE COMPUTE ENGINE | ABSOLUTE-ASSET- | x64-based PC | Microsoft Windows Server 2019 Datacenter |
+>| A | D0001 | ABSOLUTE-ASSET-.WORKGROUP | 123456 | 1648971645189 | 127.0.0.1 | 127.0.0.1 | GoogleCloud-B8736A4405BF0E968020BCBC46EDA096 | Google | GOOGLE COMPUTE ENGINE | ABSOLUTE-ASSET- | x64-based PC | Microsoft Windows Server 2019 Datacenter |
 >Above results are with page number: 0 and with size: 50.
 
 ### absolute-device-get
@@ -841,7 +841,7 @@ Gets a list of device records and their corresponding data that meets the requir
                 "FullSystemName": "ABSOLUTE-ASSET-.WORKGROUP",
                 "Id": "123456",
                 "LastConnectedUtc": 1648971645189,
-                "LocalIp": "10.128.0.30",
+                "LocalIp": "127.0.0.1",
                 "NetworkAdapters": [
                     {},
                     {}
@@ -857,7 +857,7 @@ Gets a list of device records and their corresponding data that meets the requir
                     "version": "10.0.17763"
                 },
                 "PolicyGroupName": "Global Policy Group",
-                "PublicIp": "35.224.136.145",
+                "PublicIp": "127.0.0.1",
                 "Serial": "GoogleCloud-B8736A4405BF0E968020BCBC46EDA096",
                 "SystemManufacturer": "Google",
                 "SystemModel": "GOOGLE COMPUTE ENGINE",
@@ -879,7 +879,7 @@ Gets a list of device records and their corresponding data that meets the requir
                 "FullSystemName": "ABSOLUTE-ASSET-.WORKGROUP",
                 "Id": "1234",
                 "LastConnectedUtc": 1648971873079,
-                "LocalIp": "10.128.0.36",
+                "LocalIp": "127.0.0.1",
                 "NetworkAdapters": [
                     {},
                     {}
@@ -895,7 +895,7 @@ Gets a list of device records and their corresponding data that meets the requir
                     "version": "10.0.20348"
                 },
                 "PolicyGroupName": "Global Policy Group",
-                "PublicIp": "35.224.136.145",
+                "PublicIp": "127.0.0.1",
                 "Serial": "GoogleCloud-6420CF930DEE84DE8497CF40F0D56AFA",
                 "SystemManufacturer": "Google",
                 "SystemModel": "GOOGLE COMPUTE ENGINE",
@@ -913,8 +913,8 @@ Gets a list of device records and their corresponding data that meets the requir
 >### Absolute devices list:
 >|AgentStatus|Bios|Domain|Esn|FullSystemName|Id|LastConnectedUtc|LocalIp|NetworkAdapters|Os|PolicyGroupName|PublicIp|Serial|SystemManufacturer|SystemModel|SystemName|SystemType|Username|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| A | id: Google - 1 Google <br/>serialNumber: GoogleCloud-B8736A4405BF0E968020BCBC46EDA096<br/>version: Google - 1 Google <br/>versionDate: Google Google, 01/01/2011<br/>smBiosVersion: 2.4 | WORKGROUP | D0001 | ABSOLUTE-ASSET-.WORKGROUP | 123456 | 1648971645189 | 10.128.0.30 | {},<br/>{} | architecture: 64-bit<br/>installDate: 1643800616000<br/>lastBootTime: 1646884562500<br/>name: Microsoft Windows Server 2019 Datacenter<br/>productKey: WMDGN-G9PQG-XVVXX-R3X43-63DFG<br/>serialNumber: 00430-00000-00000-AA691<br/>version: 10.0.17763<br/>currentBuild: 17763 | Global Policy Group | 35.224.136.145 | GoogleCloud-B8736A4405BF0E968020BCBC46EDA096 | Google | GOOGLE COMPUTE ENGINE | ABSOLUTE-ASSET- | x64-based PC | Administrator |
->| A | id: Google - 1 Google <br/>serialNumber: GoogleCloud-6420CF930DEE84DE8497CF40F0D56AFA<br/>version: Google - 1 Google <br/>versionDate: Google Google, 01/01/2011<br/>smBiosVersion: 2.4 | WORKGROUP | D0004 | ABSOLUTE-ASSET-.WORKGROUP | 1234 | 1648971873079 | 10.128.0.36 | {},<br/>{} | architecture: 64-bit<br/>installDate: 1648025097000<br/>lastBootTime: 1648025060499<br/>name: Microsoft Windows Server 2022 Datacenter<br/>productKey: WX4NM-KYWYW-QJJR4-XV3QB-6VM33<br/>serialNumber: 00454-60000-00001-AA937<br/>version: 10.0.20348<br/>currentBuild: 20348 | Global Policy Group | 35.224.136.145 | GoogleCloud-6420CF930DEE84DE8497CF40F0D56AFA | Google | GOOGLE COMPUTE ENGINE | ABSOLUTE-ASSET- | x64-based PC | Administrator |
+>| A | id: Google - 1 Google <br/>serialNumber: GoogleCloud-B8736A4405BF0E968020BCBC46EDA096<br/>version: Google - 1 Google <br/>versionDate: Google Google, 01/01/2011<br/>smBiosVersion: 2.4 | WORKGROUP | D0001 | ABSOLUTE-ASSET-.WORKGROUP | 123456 | 1648971645189 | 127.0.0.1 | {},<br/>{} | architecture: 64-bit<br/>installDate: 1643800616000<br/>lastBootTime: 1646884562500<br/>name: Microsoft Windows Server 2019 Datacenter<br/>productKey: WMDGN-G9PQG-XVVXX-R3X43-63DFG<br/>serialNumber: 00430-00000-00000-AA691<br/>version: 10.0.17763<br/>currentBuild: 17763 | Global Policy Group | 127.0.0.1 | GoogleCloud-B8736A4405BF0E968020BCBC46EDA096 | Google | GOOGLE COMPUTE ENGINE | ABSOLUTE-ASSET- | x64-based PC | Administrator |
+>| A | id: Google - 1 Google <br/>serialNumber: GoogleCloud-6420CF930DEE84DE8497CF40F0D56AFA<br/>version: Google - 1 Google <br/>versionDate: Google Google, 01/01/2011<br/>smBiosVersion: 2.4 | WORKGROUP | D0004 | ABSOLUTE-ASSET-.WORKGROUP | 1234 | 1648971873079 | 127.0.0.1 | {},<br/>{} | architecture: 64-bit<br/>installDate: 1648025097000<br/>lastBootTime: 1648025060499<br/>name: Microsoft Windows Server 2022 Datacenter<br/>productKey: WX4NM-KYWYW-QJJR4-XV3QB-6VM33<br/>serialNumber: 00454-60000-00001-AA937<br/>version: 10.0.20348<br/>currentBuild: 20348 | Global Policy Group | 127.0.0.1 | GoogleCloud-6420CF930DEE84DE8497CF40F0D56AFA | Google | GOOGLE COMPUTE ENGINE | ABSOLUTE-ASSET- | x64-based PC | Administrator |
 
 
 ### absolute-device-location-get
