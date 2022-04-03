@@ -1822,6 +1822,9 @@
             "playbookID": "DemistoLockTest"
         },
         {
+            "integrations": "Core Lock"
+        },
+        {
             "playbookID": "test-domain-indicator",
             "timeout": 400
         },

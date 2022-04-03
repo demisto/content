@@ -20,11 +20,6 @@ configuration:
   name: insecure
   type: 8
   required: false
-- display: Core Server API Key
-  name: apikey
-  type: 4
-  required: false
-  hidden: true
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -163,5 +158,5 @@ script:
     execution: true
   runonce: false
 tests:
-- DemistoUploadFileV2 Test
+- No tests
 fromversion: 5.0.0
