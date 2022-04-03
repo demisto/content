@@ -1352,7 +1352,7 @@ class TestHappyPath:
 
         # validate
 
-        assert "'https://test.com'" in output.get('pattern')
+        assert " '1.1.1.1'" in output.get('pattern')
         assert output.get('patternType') == 'ipv4-addr'
 
 
