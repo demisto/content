@@ -204,6 +204,8 @@ def get_status_and_file_path_from_line_in_git_diff(line):
 
 
 def get_artifact_type(file_path: str):
+    if len(file_path.split('/')) < 2:
+        return None
     artifact_type = file_path.split('/')[2]
     if artifact_type in ['Scripts', 'Playbooks', 'Integrations']:
         artifact_type = artifact_type.lower()
