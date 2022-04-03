@@ -1,4 +1,4 @@
-# register_module_line('APIMetricsVaalidation', 'start', __line__())
+register_module_line('APIMetricsValidation', 'start', __line__())
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -86,12 +86,12 @@ def scenario_three():
     urls = argToList(TEST_BANK_SCENARIO_FIVE_ITEMS)
     items_to_schedule = []
     for idx, url in enumerate(urls):
+        items_to_schedule.append(url)
         # All 5 items fail on retry here, and it's expected that all 5 iterations are previously scheduled
         if has_ran_before:
             continue
         else:
             execution_metrics.quota_error += 1
-        items_to_schedule.append(url)
 
     scheduled_command = ScheduledCommand(
         command='test-scenario-three',
@@ -291,59 +291,60 @@ def scenario_ten():
 
 
 def main():
-    demisto.debug(f'Command being called is {demisto.command()}')
-    if demisto.args().get('polling') and demisto.command() != 'test-scenario-four':
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
+    if demisto.args().get('polling') and command != 'test-scenario-four':
         # This is to isolate a scenario where the command is run in polling mode
         sys.exit(0)
     try:
 
-        if demisto.command() == 'test-scenario-one':
+        if command == 'test-scenario-one':
             results = scenario_one()
             return_results(results)
 
-        elif demisto.command() == 'test-scenario-two':
+        elif command == 'test-scenario-two':
             results = scenario_two()
             return_results(results)
 
-        elif demisto.command() == 'test-scenario-three':
+        elif command == 'test-scenario-three':
             results = scenario_three()
             return_results(results)
 
-        elif demisto.command() == 'test-scenario-four':
+        elif command == 'test-scenario-four':
             results = scenario_four()
             return_results(results)
 
-        elif demisto.command() == 'test-scenario-five':
+        elif command == 'test-scenario-five':
             results = scenario_five()
             return_results(results)
 
-        elif demisto.command() == 'test-scenario-six':
+        elif command == 'test-scenario-six':
             results = scenario_six()
             return_results(results)
 
-        elif demisto.command() == 'test-scenario-seven':
+        elif command == 'test-scenario-seven':
             results = scenario_seven()
             return_results(results)
 
-        elif demisto.command() == 'test-scenario-eight':
+        elif command == 'test-scenario-eight':
             results = scenario_eight()
             return_results(results)
 
-        elif demisto.command() == 'test-scenario-nine':
+        elif command == 'test-scenario-nine':
             results = scenario_nine()
             return_results(results)
             return_error("This is an error")
 
-        elif demisto.command() == 'test-scenario-ten':
+        elif command == 'test-scenario-ten':
             results = scenario_ten()
             return_results(results)
         else:
-            return_error("Command not found")
+            raise NotImplementedError(f'{command} command is not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
@@ -351,4 +352,4 @@ def main():
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
 
-# register_module_line('APIMetricsVaalidation', 'end', __line__())
+register_module_line('APIMetricsValidation', 'end', __line__())
