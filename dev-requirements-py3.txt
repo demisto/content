@@ -1,7 +1,7 @@
 flake8==4.0.1
 bandit==1.7.2
 demisto-py>=3.1.1
-git+https://github.com/demisto/demisto-sdk.git@eli/docker_helper_improve
+git+https://github.com/demisto/demisto-sdk.git@0a719d307a0505603e1c9f4dd6823e94906c68b1#egg=demisto-sdk
 pytest==7.0.1
 pytest-mock==3.7.0
 requests-mock==1.9.3
