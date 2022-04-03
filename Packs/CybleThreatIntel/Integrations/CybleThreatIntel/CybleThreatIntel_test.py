@@ -1,5 +1,6 @@
-from datetime import datetime
+
 import json
+
 
 def load_json_file(filename):
     """
@@ -12,12 +13,14 @@ def load_json_file(filename):
         content = json.load(f)
     return content
 
+
 def test_module():
     """
     Test the basic test command for Cyble Events
     :return:
     """
     pass
+
 
 def test_cyble_vision_fetch_taxii(requests_mock):
     """

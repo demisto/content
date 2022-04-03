@@ -4,12 +4,12 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import requests
-from datetime import date, timedelta
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
+
 
 class Client(BaseClient):
     """
