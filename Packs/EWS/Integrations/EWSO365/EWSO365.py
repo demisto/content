@@ -2256,6 +2256,7 @@ def fetch_last_emails(
     else:
         tz = EWSTimeZone('UTC')
         first_fetch_datetime = dateparser.parse(FETCH_TIME)
+        assert first_fetch_datetime is not None
         first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
         qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])

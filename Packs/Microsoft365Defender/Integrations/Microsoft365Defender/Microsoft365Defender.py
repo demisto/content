@@ -246,8 +246,10 @@ def _get_meta_data_for_incident(raw_incident: Dict) -> Dict:
         'Active alerts': f'{alerts_status.count("Active") + alerts_status.count("New")} / {len(alerts_status)}',
         'Service sources': list({alert.get('serviceSource', '') for alert in alerts_list}),
         'Detection sources': list({alert.get('detectionSource', '') for alert in alerts_list}),
-        'First activity': str(min(first_activity_list, key=lambda x: dateparser.parse(x))) if alerts_list else '',
-        'Last activity': str(max(last_activity_list, key=lambda x: dateparser.parse(x))) if alerts_list else '',
+        'First activity': str(min(first_activity_list,
+                                  key=lambda x: dateparser.parse(x))) if alerts_list else '',  # type: ignore
+        'Last activity': str(max(last_activity_list,
+                                 key=lambda x: dateparser.parse(x))) if alerts_list else '',  # type: ignore
         'Devices': [{'device name': device.get('deviceDnsName', ''),
                      'risk level': device.get('riskScore', ''),
                      'tags': ','.join(device.get('tags', []))
@@ -404,7 +406,9 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
 
     last_run = last_run_dict.get('last_run')
     if not last_run:  # this is the first run
-        last_run = dateparser.parse(first_fetch_time).strftime(DATE_FORMAT)
+        first_fetch_date_time = dateparser.parse(first_fetch_time)
+        assert first_fetch_date_time is not None, f'could not parse {first_fetch_time}'
+        last_run = first_fetch_date_time.strftime(DATE_FORMAT)
 
     # creates incidents queue
     incidents_queue = last_run_dict.get('incidents_queue', [])
@@ -445,7 +449,8 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
                 break
             offset += int(MAX_ENTRIES)
 
-        incidents.sort(key=lambda x: dateparser.parse(x['occurred']))  # sort the incidents by the creation time
+        # sort the incidents by the creation time
+        incidents.sort(key=lambda x: dateparser.parse(x['occurred']))  # type: ignore
         incidents_queue += incidents
 
     oldest_incidents = incidents_queue[:fetch_limit]

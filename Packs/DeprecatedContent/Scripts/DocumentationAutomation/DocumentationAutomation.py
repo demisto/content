@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import yaml
+import yaml  # type: ignore
 import sys
 
 reload(sys)
