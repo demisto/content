@@ -3228,9 +3228,9 @@ class Common(object):
                 'description': self.description
             }
 
-    class ExternalReferences(object):
+    class ExternalReference(object):
         """
-        ExternalReferences class
+        ExternalReference class
         Class to represent a single instance of an external reference for an indicator type.
 
         :type source_name: ``str``
