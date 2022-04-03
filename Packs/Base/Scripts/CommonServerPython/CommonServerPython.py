@@ -2998,8 +2998,10 @@ class Common(object):
                      malware_family=None, relationships=None, blocked=None, description=None, stix_id=None,
                      whois_records=None):
 
+            # Main value of the indicator
             self.ip = ip
 
+            # Core custom fields - IP
             self.blocked = blocked
             self.community_notes = community_notes
             self.description = description
@@ -3013,19 +3015,18 @@ class Common(object):
             self.traffic_light_protocol = traffic_light_protocol
             self.whois_records = whois_records
 
+            # Other custom fields
             self.asn = asn
             self.as_owner = as_owner
             self.region = region
             self.port = port
             self.updated_date = updated_date
-
             self.registrar_abuse_name = registrar_abuse_name
             self.registrar_abuse_address = registrar_abuse_address
             self.registrar_abuse_country = registrar_abuse_country
             self.registrar_abuse_network = registrar_abuse_network
             self.registrar_abuse_phone = registrar_abuse_phone
             self.registrar_abuse_email = registrar_abuse_email
-
             self.campaign = campaign
             self.publications = publications
             self.threat_types = threat_types
@@ -3296,9 +3297,9 @@ class Common(object):
                 'validto': self.valid_to
             }
 
-    class Hashes(object):
+    class Hash(object):
         """
-        Hashes class
+        Hash class
         Class to represent a single instance of a hash for an indicator type.
 
         :type hash_type: ``str``
@@ -3435,9 +3436,9 @@ class Common(object):
                 'threatcategoryconfidence': self.threat_category_confidence,
             }
 
-    class WhoisRecords(object):
+    class WhoisRecord(object):
         """
-        WhoisRecords class
+        WhoisRecord class
         Class to represent a single instance of a record for an indicator type.
 
         :type whois_record_type: ``str``
@@ -3580,6 +3581,7 @@ class Common(object):
                      publications=None, threat_types=None, behaviors=None, relationships=None,
                      creation_date=None, description=None, hashes=None, stix_id=None):
 
+            # Main value of a file (Hashes)
             self.md5 = md5
             self.imphash = imphash
             self.sha1 = sha1
@@ -3588,6 +3590,7 @@ class Common(object):
             self.ssdeep = ssdeep
             self.hashes = hashes
 
+            # Core custom fields for File type
             self.associated_file_names = associated_file_names
             self.community_notes = community_notes
             self.creation_date = creation_date
@@ -3601,29 +3604,29 @@ class Common(object):
             self.tags = tags
             self.traffic_light_protocol = traffic_light_protocol
 
+            # Other custom fields
             self.name = name
             self.entry_id = entry_id
             self.hostname = hostname
-
             self.company = company
             self.product_name = product_name
             self.digital_signature__publisher = digital_signature__publisher
             self.signature = signature
             self.actor = actor
             self.organization = organization
-
             self.feed_related_indicators = feed_related_indicators
             self.malware_family = malware_family
             self.campaign = campaign
             self.publications = publications
             self.threat_types = threat_types
             self.behaviors = behaviors
-            self.relationships = relationships
 
+            # XSOAR Fields
+            self.relationships = relationships
             self.dbot_score = dbot_score
 
         def to_context(self):
-            file_context = {'Hashes': []}  # type: dict
+            file_context = {}  # type: dict
 
             if self.name:
                 file_context['Name'] = self.name
@@ -3777,8 +3780,10 @@ class Common(object):
                      traffic_light_protocol=None, relationships=None):
             # type (str, str, str, str, str) -> None
 
+            # Main indicator value
             self.id = id
 
+            # Core custom fields
             self.community_notes = community_notes
             self.cvss = cvss
             self.cvss_version = cvss_version
@@ -3789,16 +3794,17 @@ class Common(object):
             self.modified = modified
             self.published = published
             self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+
+            # XSOAR Fields
+            self.relationships = relationships
             self.dbot_score = Common.DBotScore(
                 indicator=id,
                 indicator_type=DBotScoreType.CVE,
                 integration_name=None,
                 score=Common.DBotScore.NONE
             )
-
-            self.tags = tags
-            self.traffic_light_protocol = traffic_light_protocol
-            self.relationships = relationships
 
         def to_context(self):
             cve_context = {
@@ -3876,8 +3882,10 @@ class Common(object):
                      internal=None, stix_id=None, tags=None, traffic_light_protocol=None):
             # type (str, str, bool) -> None
 
+            # Main indicator value
             self.address = address
 
+            # Core custom fields
             self.blocked = blocked
             self.description = description
             self.internal = internal
@@ -3885,8 +3893,10 @@ class Common(object):
             self.tags = tags
             self.traffic_light_protocol = traffic_light_protocol
 
+            # Deprecated
             self.domain = domain
 
+            # XSOAR Fields
             self.dbot_score = dbot_score
             self.relationships = relationships
 
@@ -4002,8 +4012,10 @@ class Common(object):
                      geo_country=None, organization=None, community_notes=None, publications=None, relationships=None,
                      blocked=None, certificates=None, description=None, stix_id=None):
 
+            # Main indicator value
             self.url = url
 
+            # Core custom fields
             self.blocked = blocked
             self.certificates = certificates
             self.community_notes = community_notes
@@ -4013,6 +4025,7 @@ class Common(object):
             self.tags = tags
             self.traffic_light_protocol = traffic_light_protocol
 
+            # Additional custom fields
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
             self.category = category
@@ -4026,8 +4039,9 @@ class Common(object):
             self.geo_country = geo_country
             self.organization = organization
             self.publications = publications
-            self.relationships = relationships
 
+            # XSOAR Fields
+            self.relationships = relationships
             self.dbot_score = dbot_score
 
         def to_context(self):
@@ -4124,20 +4138,23 @@ class Common(object):
         """
         CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
-        def __init__(self, domain, dbot_score, blocked=None, certificates=None, dns_records=None, dns=None,
-                     detection_engines=None, positive_detections=None, organization=None, sub_domains=None,
-                     creation_date=None, updated_date=None, expiration_date=None, domain_status=None, name_servers=None,
-                     feed_related_indicators=None, malware_family=None, registrar_name=None, registrar_abuse_email=None,
-                     registrar_abuse_phone=None, registrant_name=None, registrant_email=None, registrant_phone=None,
-                     registrant_country=None, admin_name=None, admin_email=None, admin_phone=None, admin_country=None,
-                     tags=None, domain_idn_name=None, port=None, internal=None, category=None, campaign=None,
-                     traffic_light_protocol=None, threat_types=None, community_notes=None, publications=None,
-                     geo_location=None, geo_country=None, geo_description=None, tech_country=None, tech_name=None,
-                     tech_email=None, tech_organization=None, billing=None, whois_records=None, relationships=None,
-                     description=None, stix_id=None):
+        def __init__(self, domain, dbot_score, dns=None, detection_engines=None, positive_detections=None,
+                     organization=None, sub_domains=None, creation_date=None, updated_date=None, expiration_date=None,
+                     domain_status=None, name_servers=None, feed_related_indicators=None, malware_family=None,
+                     registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
+                     registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
+                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None,
+                     domain_idn_name=None, port=None,
+                     internal=None, category=None, campaign=None, traffic_light_protocol=None, threat_types=None,
+                     community_notes=None, publications=None, geo_location=None, geo_country=None, geo_description=None,
+                     tech_country=None, tech_name=None, tech_email=None, tech_organization=None, billing=None,
+                     whois_records=None, relationships=None, description=None, stix_id=None, blocked=None,
+                     certificates=None, dns_records=None,):
 
+            # Main indicator value
             self.domain = domain
 
+            # Core custom fields
             self.blocked = blocked
             self.certificates = certificates
             self.community_notes = community_notes
@@ -4151,6 +4168,7 @@ class Common(object):
             self.traffic_light_protocol = traffic_light_protocol
             self.whois_records = whois_records
 
+            # Additional custom fields
             self.dns = dns
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
@@ -4158,6 +4176,7 @@ class Common(object):
             self.sub_domains = sub_domains
             self.updated_date = updated_date
 
+            # Whois related records - Registrar
             self.registrar_name = registrar_name
             self.registrar_abuse_email = registrar_abuse_email
             self.registrar_abuse_phone = registrar_abuse_phone
@@ -4172,6 +4191,13 @@ class Common(object):
             self.admin_phone = admin_phone
             self.admin_country = admin_country
 
+            self.tech_country = tech_country
+            self.tech_name = tech_name
+            self.tech_organization = tech_organization
+            self.tech_email = tech_email
+            self.billing = billing
+
+            # Additional custom records (none core)
             self.domain_status = domain_status
             self.name_servers = name_servers
             self.feed_related_indicators = feed_related_indicators
@@ -4185,13 +4211,9 @@ class Common(object):
             self.geo_location = geo_location
             self.geo_country = geo_country
             self.geo_description = geo_description
-            self.tech_country = tech_country
-            self.tech_name = tech_name
-            self.tech_organization = tech_organization
-            self.tech_email = tech_email
-            self.billing = billing
-            self.relationships = relationships
 
+            # XSOAR Fields
+            self.relationships = relationships
             self.dbot_score = dbot_score
 
         def to_context(self):
@@ -4452,11 +4474,11 @@ class Common(object):
         """
         CONTEXT_PATH = 'Account(val.id && val.id == obj.id)'
 
-        def __init__(self, id, type=None, blocked=None, community_notes=None, creation_date=None, description=None,
-                     stix_id=None, username=None, tags=None, traffic_light_protocol=None, user_id=None,
-                     display_name=None, groups=None, domain=None, email_address=None, telephone_number=None,
-                     office=None, job_title=None, department=None, country=None, state=None, city=None, street=None,
-                     is_enabled=None, dbot_score=None, relationships=None):
+        def __init__(self, id, type=None, username=None, display_name=None, groups=None,
+                     domain=None, email_address=None, telephone_number=None, office=None, job_title=None,
+                     department=None, country=None, state=None, city=None, street=None, is_enabled=None,
+                     dbot_score=None, relationships=None, blocked=None, community_notes=None, creation_date=None,
+                     description=None, stix_id=None, tags=None, traffic_light_protocol=None, user_id=None):
 
             self.id = id
             self.type = type
@@ -4603,9 +4625,9 @@ class Common(object):
         """
         CONTEXT_PATH = 'AttackPattern(val.value && val.value == obj.value)'
 
-        def __init__(self, stix_id, community_notes=None, external_references=None, kill_chain_phases=None,
-                     first_seen_by_source=None, description=None, operating_system_refs=None, publications=None,
-                     mitre_id=None, tags=None, traffic_light_protocol=None, dbot_score=None):
+        def __init__(self, stix_id, kill_chain_phases=None, first_seen_by_source=None, description=None,
+                     operating_system_refs=None, publications=None, mitre_id=None, tags=None,
+                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None,):
 
             self.community_notes = community_notes
             self.description = description
