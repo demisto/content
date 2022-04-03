@@ -194,7 +194,7 @@ def main():
     )
     command_name = demisto.command()
     if command_name == "test-module":
-        test_module(client)
+        return_results(test_module(client))
     elif command_name == "pan-advisories-get-advisories":
         return_results(get_advisories(client, **demisto.args()))
 
