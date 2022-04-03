@@ -172,14 +172,15 @@ def test_change_on_premise_password_success(requests_mock):
     # authenticate
     requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
 
-    requests_mock.get('https://base_url/users/user/authentication/passwordMethods', json={'value': [{'id': id_}]})
+    base_url = 'https://example.com'
+    requests_mock.get(f'{base_url}/users/user/authentication/passwordMethods', json={'value': [{'id': id_}]})
     mocked_password_change_request = requests_mock.post(
-        f'https://base_url/users/user/authentication/passwordMethods/{id_}/resetPassword',
+        f'{base_url}/users/user/authentication/passwordMethods/{id_}/resetPassword',
         json={},
         status_code=202
     )
 
-    client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'https://base_url', 'verify', 'proxy',
+    client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', base_url, 'verify', 'proxy',
                            'self_deployed', 'redirect_uri', 'auth_code', True)
     output, _, _ = change_password_user_on_premise_command(client=client, args={'user': 'user', 'password': password})
     assert mocked_password_change_request.call_count == 1
@@ -202,7 +203,7 @@ def test_change_on_premise_password_missing_arg(requests_mock, user: str, passwo
     from MicrosoftGraphUser import (change_password_user_on_premise_command, MsGraphClient, DemistoException)
     requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
 
-    client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'https://base_url', 'verify', 'proxy',
+    client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'https://1.1.1.1', 'verify', 'proxy',
                            'self_deployed', 'redirect_uri', 'auth_code', True)
 
     with pytest.raises(DemistoException):
