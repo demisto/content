@@ -109,8 +109,9 @@ def test_get_fetch_start_time(mocker):
             - Validate the result are correct (the same as of the getLastRun obj).
         """
     expected_start_detected_time = "2018-10-24T14:13:20Z"
-    mocker.patch.object(demisto, 'getLastRun', return_value={"lastRun": expected_start_detected_time})
-    start_detected_time = get_fetch_start_time({})
+    last_run_obj = {"lastRun": expected_start_detected_time}
+    mocker.patch.object(demisto, 'getLastRun', return_value=last_run_obj)
+    start_detected_time = get_fetch_start_time({}, last_run_obj)
     assert start_detected_time == expected_start_detected_time
 
 

@@ -401,10 +401,10 @@ def fetch_incidents(client: Client, max_results: int, params: dict) -> Tuple[Dic
 
     :rtype: ``Tuple[Dict[str, int], List[dict]]``
     """
+    last_run_obj = demisto.getLastRun()
+    start_detected_time = get_fetch_start_time(params, last_run_obj)
 
-    start_detected_time = get_fetch_start_time(params)
-
-    page_start = int(demisto.getLastRun().get('page_start', 0))
+    page_start = int(last_run_obj.get('page_start', 0))
     fetch_args = {
         'start_detected_time': start_detected_time,
         'limit': max_results,
@@ -417,7 +417,7 @@ def fetch_incidents(client: Client, max_results: int, params: dict) -> Tuple[Dic
 
     # This is necessary for making sure there are no duplicate incidents. The reason for it is as the api returns
     # the versions that occurred from the given time including and this causes duplicates.
-    last_fetched_ids: List[str] = demisto.getLastRun().get('fetched_ids', [])
+    last_fetched_ids: List[str] = last_run_obj.get('fetched_ids', [])
     current_fetched_ids: List[str] = []
 
     max_incident_created_time: datetime = datetime.strptime(start_detected_time, DATE_FORMAT)
@@ -449,13 +449,13 @@ def fetch_incidents(client: Client, max_results: int, params: dict) -> Tuple[Dic
         'page_start': page_start,
         'fetched_ids': current_fetched_ids or last_fetched_ids
     }
-    demisto.debug(f'{next_start_detected_time=}')
-    demisto.debug(f'{page_start=}')
+    demisto.debug(f'{next_run=}')
+    demisto.debug(f'fetched {len(incidents)} incidents')
     return next_run, incidents
 
 
-def get_fetch_start_time(params):
-    start_detected_time = demisto.getLastRun().get('lastRun', '')
+def get_fetch_start_time(params, last_run_obj):
+    start_detected_time = last_run_obj.get('lastRun', '')
     if not start_detected_time:
         start_detected_time = parse_date_range(params.get('first_fetch', ''), date_format=DATE_FORMAT)[0]
     return start_detected_time
