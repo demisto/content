@@ -68,4 +68,9 @@ def test_compare_version_with_advisories(advisories_list):
     assert match[0].cve_id == "CVE-2019-17440"
 
     # Match multiple advisories
-    match = compare_version_with_advisories(panos_version="9.0.5", advisories_list=advisories_list)
+    match = compare_version_with_advisories(panos_version="8.1.11", advisories_list=advisories_list)
+    assert len(match) == 2
+
+    # Match no advisories
+    match = compare_version_with_advisories(panos_version="7.1.11", advisories_list=advisories_list)
+    assert len(match) == 0

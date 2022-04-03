@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import Callable, List, Dict
+from typing import List, Dict
 from dataclasses import dataclass
 import enum
 
@@ -43,94 +43,38 @@ class Client(BaseClient):
         )
 
 
-class CommandRegister:
-    commands: dict[str, Callable] = {}
-    file_commands: dict[str, Callable] = {}
-
-    def command(self, command_name: str):
-        """
-        Register a normal Command for this Integration. Commands always return CommandResults.
-
-        :param command_name: The XSOAR integration command
-        """
-
-        def _decorator(func):
-            self.commands[command_name] = func
-
-            def _wrapper(topology, demisto_args=None):
-                return func(topology, demisto_args)
-
-            return _wrapper
-
-        return _decorator
-
-    def run_command_result_command(self, client: Client, command_name: str, func: Callable,
-                                   demisto_args: dict) -> CommandResults:
-        """
-        Runs the normal XSOAR command and converts the returned dataclas instance into a CommandResults
-        object.
-        """
-        result = func(client, **demisto_args)
-        if command_name == "test-module":
-            return_results(result)
-            return
-
-        if not result:
-            command_result = CommandResults(
-                readable_output="No results.",
-            )
-            return command_result
-
-        if type(result) is list:
-            outputs = [vars(x) for x in result]
-            summary_list = [vars(x) for x in result]
-            title = result[0]._title
-            output_prefix = result[0]._output_prefix
-        else:
-            outputs = vars(result)
-            summary_list = [vars(result)]
-            title = result._title
-            output_prefix = result._output_prefix
-
-        extra_args = {}
-        if hasattr(result, "_outputs_key_field"):
-            extra_args["outputs_key_field"] = getattr(result, "_outputs_key_field")
-
-        readable_output = tableToMarkdown(title, summary_list)
+def dataclass_to_command_results(result: Any, raw_response: Union[List, Dict]) -> CommandResults:
+    """Takes a list, or a single, dataclass instance and converts it to a CommandResult instance."""
+    if not result:
         command_result = CommandResults(
-            outputs_prefix=output_prefix,
-            outputs=outputs,
-            readable_output=readable_output,
-            **extra_args
+            readable_output="No results.",
         )
         return command_result
 
-    def is_command(self, command_name: str) -> bool:
-        if command_name in self.commands or command_name in self.file_commands:
-            return True
+    if type(result) is list:
+        outputs = [vars(x) for x in result]
+        summary_list = [vars(x) for x in result]
+        title = result[0]._title
+        output_prefix = result[0]._output_prefix
+    else:
+        outputs = vars(result)
+        summary_list = [vars(result)]
+        title = result._title
+        output_prefix = result._output_prefix
 
-        return False
+    extra_args = {}
+    if hasattr(result, "_outputs_key_field"):
+        extra_args["outputs_key_field"] = getattr(result, "_outputs_key_field")
 
-    def run_command(
-            self,
-            client: Client,
-            command_name: str,
-            demisto_args: dict
-    ) -> Union[CommandResults, dict]:
-        """
-        Runs the given XSOAR command.
-        :param command_name: The name of the decorated XSOAR command.
-        :param demisto_args: Result of demisto.args()
-        """
-        if command_name in self.commands:
-            func = self.commands.get(command_name)
-            return self.run_command_result_command(client, command_name, func, demisto_args)  # type: ignore
-
-        raise DemistoException("Command not found.")
-
-
-# This is the store of all the commands available to this integration
-COMMANDS = CommandRegister()
+    readable_output = tableToMarkdown(title, summary_list)
+    command_result = CommandResults(
+        outputs_prefix=output_prefix,
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=raw_response,
+        **extra_args
+    )
+    return command_result
 
 
 @dataclass
@@ -210,7 +154,6 @@ def flatten_advisory_dict(advisory_dict: dict) -> Optional[Advisory]:
     )
 
 
-@COMMANDS.command("test-module")
 def test_module(client: Client):
     """Test the connectivity to the advisory API by checking for products"""
     request_result = client.get_products()
@@ -218,9 +161,8 @@ def test_module(client: Client):
         return "ok"
 
 
-@COMMANDS.command("pan-advisories-get-advisories")
 def get_advisories(client: Client, product: str, sort: str = "-date", severity: SeverityEnum = None, q: str = "") \
-        -> list[Advisory]:
+        -> CommandResults:
     """
     Gets all the advisories for the given product.
     :param client: HTTP Client !no-auto-argument
@@ -241,7 +183,7 @@ def get_advisories(client: Client, product: str, sort: str = "-date", severity: 
     for advisory_dict in advisory_data:
         advisory_object_list.append(flatten_advisory_dict(advisory_dict))
 
-    return advisory_object_list
+    return dataclass_to_command_results(advisory_object_list, raw_response=advisory_data)
 
 
 def main():
@@ -250,7 +192,11 @@ def main():
     client = Client(
         base_url=demisto_params.url
     )
-    return_results(COMMANDS.run_command(client, demisto.command(), demisto.args()))
+    command_name = demisto.command()
+    if command_name == "test-module":
+        test_module(client)
+    elif command_name == "pan-advisories-get-advisories":
+        return_results(get_advisories(client, **demisto.args()))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
