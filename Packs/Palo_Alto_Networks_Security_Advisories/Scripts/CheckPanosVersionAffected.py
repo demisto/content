@@ -93,7 +93,7 @@ def main():
     advisories_objects: List[Advisory] = [Advisory(**advisory_dict) for advisory_dict in advisories_list]
     panos_version: str = demisto.args().get("version")
     matched_advisories = compare_version_with_advisories(panos_version, advisories_list=advisories_objects)
-    return_results(matched_advisories)
+    return_results(return_result_dataclass(matched_advisories))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
