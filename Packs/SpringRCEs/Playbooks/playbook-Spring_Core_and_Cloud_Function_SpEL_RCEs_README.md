@@ -81,4 +81,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Spring Core and Cloud Function SpEL RCEs](Insert the link to your image here)
+![Spring Core and Cloud Function SpEL RCEs](https://raw.githubusercontent.com/demisto/content/e313e396bca29fade31d9d942eeddef0a8ab9488/Packs/SpringRCEs/doc_files/Spring_Core_and_Cloud_Function_SpEL_RCEs.png)
