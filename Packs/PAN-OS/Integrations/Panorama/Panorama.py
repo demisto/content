@@ -9770,7 +9770,7 @@ def main():
 
         elif command == 'panorama-install-file-content-update' or command == 'pan-os-install-file-content-update':
             panorama_install_file_content_update_command(args)
-        elif demisto.command() == 'pan-os-platform-get-arp-tables':
+        elif command == 'pan-os-platform-get-arp-tables':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
