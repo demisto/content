@@ -9,6 +9,7 @@ configuration:
   required: false
   type: 0
 display: Palo Alto Networks Security Advisories
+description: Queries the public repository of PAN-OS CVEs.
 name: Palo_Alto_Networks_Security_Advisories
 script:
   commands:
@@ -67,15 +68,19 @@ script:
       description: The name of this CVE
       type: Unknown
     - contextPath: PANSecurityAdvisory.Advisory.affects_vendor_name
+      description: The list of Vendors this CVE affects 
       type: Unknown
     - contextPath: PANSecurityAdvisory.Advisory.description
       description: Human readable description of Advisory
       type: Unknown
     - contextPath: PANSecurityAdvisory.Advisory.cvss_score
+      description: The CVSS Score
       type: Unknown
     - contextPath: PANSecurityAdvisory.Advisory.cvss_severity
+      description: The CVSS Severity
       type: Unknown
     - contextPath: PANSecurityAdvisory.Advisory.cvss_vector_string
+      description: The CVSS Vector string 
       type: Unknown
     - contextPath: PANSecurityAdvisory.Advisory.affected_version_list
       description: List of affected versions strings
