@@ -36,9 +36,7 @@ Later, it was discovered that these are two separate vulnerabilities, one in Spr
 
 [Spring Framework RCE](https://spring.io/blog/2022/03/31/spring-framework-rce-early-announcement)
 
-[CVE-2022-22965: Spring Core Remote Code Execution Vulnerability Exploited In the Wild
-](https://unit42.paloaltonetworks.com/cve-2022-22965-springshell/)
-
+[CVE-2022-22965: Spring Core Remote Code Execution Vulnerability Exploited In the Wild](https://unit42.paloaltonetworks.com/cve-2022-22965-springshell/)
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
