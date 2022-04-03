@@ -65,7 +65,7 @@ def test_get_user_command_404_response(mocker):
     from requests.models import Response
 
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'base_url', 'verify', 'proxy',
-                           'self_deployed', 'redirect_uri', 'auth_code', True)
+                           'self_deployed', 'redirect_uri', 'auth_code')
     error_404 = Response()
     error_404._content = b'{"error": {"code": "Request_ResourceNotFound", "message": "Resource ' \
                          b'"NotExistingUser does not exist."}}'
@@ -114,7 +114,6 @@ def test_get_unsupported_chars_in_user():
 
 
 def test_suppress_errors(mocker):
-
     from MicrosoftGraphUser import unblock_user_command, disable_user_account_command, \
         update_user_command, change_password_user_command, delete_user_command, \
         get_direct_reports_command, get_manager_command, assign_manager_command, \
@@ -170,11 +169,11 @@ OUTPUT_PASSWORD_CHANGED_LOCATION = 'The password of user user has been changed t
 OUTPUT_PASSWORD_CHANGED_NO_LOCATION = 'The password of user user has been changed successfully.'
 
 
-@pytest.mark.parametrize('password,password_response,expected_output', (
-        ('new_password', {}, OUTPUT_PASSWORD_CHANGED_NO_LOCATION),
-        (None, RESPONSE_WITH_LOCATION, OUTPUT_PASSWORD_CHANGED_LOCATION),
-        ('', RESPONSE_WITH_LOCATION, OUTPUT_PASSWORD_CHANGED_LOCATION)
-))
+@pytest.mark.parametrize('password,password_response,expected_output',
+                         (('new_password', {}, OUTPUT_PASSWORD_CHANGED_NO_LOCATION),
+                          (None, RESPONSE_WITH_LOCATION, OUTPUT_PASSWORD_CHANGED_LOCATION),
+                          ('', RESPONSE_WITH_LOCATION, OUTPUT_PASSWORD_CHANGED_LOCATION)
+                          ))
 def test_change_on_premise_password(requests_mock, password: str, password_response: dict, expected_output: str):
     from MicrosoftGraphUser import (change_password_user_on_premise_command, MsGraphClient)
 
