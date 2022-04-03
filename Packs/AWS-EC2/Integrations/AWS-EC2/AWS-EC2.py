@@ -1643,6 +1643,8 @@ def revoke_security_group_egress_command(args, aws_client):
 
     response = client.revoke_security_group_egress(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
+        if 'UnknownIpPermissions' in response:
+            return_error("Security Group egress rule not found.")
         return_results("The Security Group egress rule was revoked")
     else:
         demisto.debug(response.message)
