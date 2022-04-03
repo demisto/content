@@ -5584,6 +5584,17 @@
         }
     },
     "test_marketplacev2": [
-      "Phishing v2 - Test - Incident Starter"
+        "Create Phishing Classifier V2 ML Test",
+        "Phishing v2 - Test - Incident Starter",
+        "Phishing - Core - Test - Incident Starter",
+        "Phishing - Core - Test - Actual Incident",
+        "SlashNextPhishingIncidentResponse-Test",
+        "DBotCreatePhishingClassifierV2FromFile-Test",
+        "DBot Build Phishing Classifier Test - Multiple Algorithms",
+        "AgariPhishingDefense-Test",
+        "Phishing - Core - Test - Actual Incident",
+        "Phishing v2 - Test - Actual Incident",
+        "Phishing Investigation - Generic v2 - Campaign Test",
+        "DBotPredictURLPhishing_test"
     ]
 }
