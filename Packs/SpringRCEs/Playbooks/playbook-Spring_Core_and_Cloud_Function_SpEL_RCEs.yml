@@ -25,6 +25,15 @@ description: |
   * 3.1.7
   * 3.2.3
 
+  **This playbook will provide you with a first response kit which includes:**
+
+  * Hunting
+      * Panorama
+      * Prisma Cloud Compute
+      * XDR XQL queries - set the playbook input **RunXQLHuntingQueries** to 'True' if you would like the XQL to be executed via the playbook.
+  * Remediation
+  * Mitigations
+
   **Note:** You can execute this playbook using the Incidents view by creating a new incident or by using a dedicated job to schedule the playbook execution.
 
   **Additional resources:**
@@ -56,7 +65,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": -850
+          "y": -880
         }
       }
     note: false
@@ -86,7 +95,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": -710
+          "y": -740
         }
       }
     note: false
@@ -129,7 +138,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": -580
+          "y": -610
         }
       }
     note: false
@@ -159,7 +168,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": -710
+          "y": -740
         }
       }
     note: false
@@ -209,7 +218,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": -580
+          "y": -610
         }
       }
     note: false
@@ -301,7 +310,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": -125
+          "y": -155
         }
       }
     note: false
@@ -331,7 +340,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": -250
+          "y": -280
         }
       }
     note: false
@@ -358,12 +367,13 @@ tasks:
       - "36"
       - "31"
       - "37"
+      - "38"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 110,
-          "y": 30
+          "y": 0
         }
       }
     note: false
@@ -403,7 +413,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 110,
+          "x": -110,
           "y": 320
         }
       }
@@ -930,7 +940,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": -420
+          "y": -450
         }
       }
     note: false
@@ -969,7 +979,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -350,
+          "x": 330,
           "y": 320
         }
       }
@@ -1000,7 +1010,7 @@ tasks:
       {
         "position": {
           "x": 570,
-          "y": -710
+          "y": -740
         }
       }
     note: false
@@ -1040,7 +1050,7 @@ tasks:
       {
         "position": {
           "x": 570,
-          "y": -580
+          "y": -610
         }
       }
     note: false
@@ -1171,7 +1181,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
+          "x": 790,
           "y": 180
         }
       }
@@ -1227,7 +1237,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
+          "x": 790,
           "y": 320
         }
       }
@@ -1263,8 +1273,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 500
+          "x": 980,
+          "y": 490
         }
       }
     note: false
@@ -1293,7 +1303,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
+          "x": 1160,
           "y": 830
         }
       }
@@ -1335,8 +1345,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 650
+          "x": 980,
+          "y": 645
         }
       }
     note: false
@@ -1365,7 +1375,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 110,
+          "x": -110,
           "y": 180
         }
       }
@@ -1395,8 +1405,211 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -350,
+          "x": 330,
           "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: acbc1584-64cc-49e1-874a-2830f351a593
+    type: title
+    task:
+      id: acbc1584-64cc-49e1-874a-2830f351a593
+      version: -1
+      name: 'Cortex XDR - XQL Hunting Queries '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 3bcddcb6-3c9e-40c3-8b80-71a0f91d7e67
+    type: condition
+    task:
+      id: 3bcddcb6-3c9e-40c3-8b80-71a0f91d7e67
+      version: -1
+      name: Should run XQL hunting queries?
+      description: Checks whether to execute XDR shell script for exploitation hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.RunXQLHuntingQueries
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: eb222ab5-23e6-4644-83ee-900182d81ed9
+    type: condition
+    task:
+      id: eb222ab5-23e6-4644-83ee-900182d81ed9
+      version: -1
+      name: Check if Cortex XDR - XQL Query Engine is Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "20"
+      "yes":
+      - "41"
+      - "42"
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - XQL Query Engine
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: bfde7236-f58f-4f37-8a64-56aac1469cab
+    type: regular
+    task:
+      id: bfde7236-f58f-4f37-8a64-56aac1469cab
+      version: -1
+      name: Detect Spring4shell POC usage
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      query:
+        simple: |-
+          dataset = xdr_data
+          | filter event_type = ENUM.FILE and event_sub_type in (ENUM.FILE_CREATE_NEW, ENUM.FILE_WRITE) and (lowercase(action_file_name) contains “tomcatwar” or lowercase(action_file_name) contains “shell”) and
+                  action_file_extension = “jsp” and
+                  (action_file_path contains “webapps” or action_file_path contains “localhost”)
+          | fields agent_hostname, actor_process_image_name, actor_effective_username, actor_process_command_line, action_file_path, action_file_name, action_file_extension, action_file_sha256, event_type, event_sub_type
+      query_name:
+        simple: Spring4shell_POC_Usage
+      time_frame:
+        complex:
+          root: inputs.XQLTimeFrame
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -820,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 476f1992-c2b1-4b43-8203-069c5c69679c
+    type: regular
+    task:
+      id: 476f1992-c2b1-4b43-8203-069c5c69679c
+      version: -1
+      name: Detect suspicious processes spawned by Java or Apache
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      query:
+        simple: "config case_sensitive = false |\ndataset = xdr_data \n| alter ct = current_time() \n| alter diff = timestamp_diff(ct, _time, \"DAY\")\n| filter event_type = PROCESS\nand (\nactor_process_image_name contains \"apache\" \nor actor_process_image_name contains \"java\"\n)\n//and diff < 2\n| dedup action_process_image_command_line, agent_hostname, actor_process_image_name \n| fields action_process_image_name ,action_process_image_command_line, agent_hostname, actor_process_image_name\n\n\n| join conflict_strategy = left type = left \n    (\n        dataset = xdr_data\n           | filter event_type = PROCESS                      \n            and (\nactor_process_image_name contains \"apache\" \nor actor_process_image_name contains \"java\"\n)            \n            | comp count(action_process_image_name) as Action_Proc_Days_count by actor_process_image_name   \n    )  as Three_Months_Action_Process (Three_Months_Action_Process.actor_process_image_name = actor_process_image_name)\n\n| join conflict_strategy = left type = left \n    (\n        dataset = xdr_data\n           | filter event_type = PROCESS        \n            and (\nactor_process_image_name contains \"apache\" \nor actor_process_image_name contains \"java\"\n)        \n            | comp count(action_process_image_command_line) as Commandline_Days_count by  actor_process_image_name, action_process_image_command_line \n    )  as Three_Months_CommandLine (Three_Months_CommandLine.action_process_image_command_line = action_process_image_command_line )\n\n| dedup agent_hostname ,actor_process_image_name , action_process_image_name\n| sort asc Commandline_Days_count , asc Action_Proc_Days_count \n| filter Commandline_Days_count < 5 and Action_Proc_Days_count < 5"
+      query_name:
+        simple: Spring4shell_POC_Usage
+      time_frame:
+        complex:
+          root: inputs.XQLTimeFrame
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 830
         }
       }
     note: false
@@ -1412,14 +1625,21 @@ view: |-
       "15_17_#default#": 0.64,
       "15_18_yes": 0.61,
       "21_22_#default#": 0.62,
-      "21_23_yes": 0.37
+      "21_23_yes": 0.37,
+      "32_20_#default#": 0.27,
+      "32_33_yes": 0.44,
+      "35_20_#default#": 0.4,
+      "35_34_yes": 0.48,
+      "39_20_#default#": 0.38,
+      "39_40_yes": 0.53,
+      "40_20_no": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 2705,
-        "width": 1740,
-        "x": -570,
-        "y": -180
+        "height": 3405,
+        "width": 2360,
+        "x": -820,
+        "y": -880
       }
     }
   }
@@ -1456,8 +1676,16 @@ inputs:
       * 3.1.7
       * 3.2.3
 
-      **Note:** You can execute this playbook using the Incidents view by creating a new incident or by using a dedicated job to schedule the playbook execution.
+      **This playbook will provide you with a first response kit which includes:**
 
+      * Hunting
+          * Panorama
+          * Prisma Cloud Compute
+          * XDR XQL queries - set the playbook input **RunXQLHuntingQueries** to 'True' if you would like the XQL to be executed via the playbook.
+      * Remediation
+      * Mitigations
+
+      **Note:** You can execute this playbook using the Incidents view by creating a new incident or by using a dedicated job to schedule the playbook execution.
   required: false
   description: The playbook description. Will be used in the Rapid Breach Response - Set Incident Info sub-playbook.
   playbookInputQuery:
@@ -1472,6 +1700,21 @@ inputs:
     simple: "true"
   required: false
   description: Whether to block the indicators automatically.
+  playbookInputQuery:
+- key: RunXQLHuntingQueries
+  value:
+    simple: "false"
+  required: false
+  description: Whether to hunt using XQL queries.
+  playbookInputQuery:
+- key: XQLTimeFrame
+  value:
+    simple: 7 days
+  required: false
+  description: |-
+    The XQL search time frame.
+
+    Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
   playbookInputQuery:
 outputs: []
 tests:
