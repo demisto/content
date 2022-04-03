@@ -1,5 +1,3 @@
-register_module_line('APIMetricsValidation', 'start', __line__())
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -351,5 +349,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-register_module_line('APIMetricsValidation', 'end', __line__())

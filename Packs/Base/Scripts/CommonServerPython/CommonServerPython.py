@@ -18,7 +18,6 @@ import time
 import traceback
 import types
 import urllib
-import weakref
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -6227,11 +6226,6 @@ class CommandResults:
         if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
             content_format = EntryFormat.TEXT
 
-        if self.execution_metrics:
-            self.entry_type = EntryType.EXECUTION_METRICS
-            raw_response = 'Metrics reported successfully.'
-            execution_metrics = self.execution_metrics
-
         return_entry = {
             'Type': self.entry_type,
             'ContentsFormat': content_format,
@@ -6241,11 +6235,15 @@ class CommandResults:
             'IndicatorTimeline': indicators_timeline,
             'IgnoreAutoExtract': True if ignore_auto_extract else False,
             'Note': mark_as_note,
-            'Relationships': relationships,
-            'ExecutionMetrics': execution_metrics
+            'Relationships': relationships
         }
         if self.scheduled_command:
             return_entry.update(self.scheduled_command.to_results())
+
+        if self.execution_metrics:
+            return_entry['Type'] = EntryType.EXECUTION_METRICS
+            return_entry['Contents'] = 'Metrics reported successfully.'
+            return_entry['ExecutionMetrics'] = self.execution_metrics
 
         return return_entry
 
