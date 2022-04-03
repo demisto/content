@@ -115,7 +115,7 @@ def test_get_unsupported_chars_in_user():
 
 def test_suppress_errors(mocker):
     from MicrosoftGraphUser import unblock_user_command, disable_user_account_command, \
-        update_user_command, change_password_user_command, delete_user_command, \
+        update_user_command, change_password_user_saas_command, delete_user_command, \
         get_direct_reports_command, get_manager_command, assign_manager_command, \
         revoke_user_session_command, MsGraphClient
     from MicrosoftApiModule import NotFoundError
@@ -130,7 +130,7 @@ def test_suppress_errors(mocker):
         {'fun': update_user_command, 'mock_fun': 'update_user',
          'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
          'expected_result': '#### User -> 123456789 does not exist'},
-        {'fun': change_password_user_command, 'mock_fun': 'password_change_user_saas',
+        {'fun': change_password_user_saas_command, 'mock_fun': 'password_change_user_saas',
          'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
          'expected_result': '#### User -> 123456789 does not exist'},
         {'fun': delete_user_command, 'mock_fun': 'delete_user',
