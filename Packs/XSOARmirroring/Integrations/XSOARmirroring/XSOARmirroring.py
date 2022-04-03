@@ -237,7 +237,7 @@ def test_module(client: Client, first_fetch_time: str) -> str:
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, str],
-                    first_fetch_time: Optional[str], query: Optional[str], mirror_direction: str,
+                    first_fetch_time: str, query: Optional[str], mirror_direction: str,
                     mirror_tag: List[str]) -> Tuple[Dict[str, str], List[dict]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
@@ -335,7 +335,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, str],
 
         incident_result['attachment'] = file_attachments
         incidents_result.append(incident_result)
-        incident_created_time = dateparser.parse(incident.get('created'))
+        incident_created_time = dateparser.parse(incident.get('created', ''))
 
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time > latest_created_time:
