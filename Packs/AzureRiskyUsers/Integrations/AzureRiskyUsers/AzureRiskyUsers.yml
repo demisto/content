@@ -35,7 +35,7 @@ script:
     execution: false
     name: azure-risky-users-auth-complete
   - deprecated: false
-    description: Reruns the authentication. process.
+    description: Reruns the authentication process.
     execution: false
     name: azure-risky-users-auth-reset
   - arguments:
