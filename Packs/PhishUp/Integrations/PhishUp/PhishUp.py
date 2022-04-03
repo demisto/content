@@ -50,6 +50,8 @@ def investigate_url_command(client: Client, args, apikey):
     for url in urls:
         phishup_result = client.investigate_url_http_request(apikey, url)
 
+        demisto.debug(f'This is the result: {phishup_result}')
+
         score = 0
         if phishup_result["Status"]["Result"] == "Success":
             if phishup_result["Result"]["PhishUpStatus"] == "Phish":
@@ -61,11 +63,14 @@ def investigate_url_command(client: Client, args, apikey):
         else:
             raise Exception(f"""PhishUp Exception: {phishup_result["Status"]["Message"]}""")
 
+        d_bot_score_reliability = DBotScoreReliability[0]
+
         dbot_score = Common.DBotScore(
             indicator=url,
             integration_name="PhishUp",
             indicator_type=DBotScoreType.URL,
-            score=score
+            score=score,
+            reliability=d_bot_score_reliability
         )
 
         url_standard_context = Common.URL(
