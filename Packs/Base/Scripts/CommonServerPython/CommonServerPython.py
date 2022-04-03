@@ -176,7 +176,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union, Set, Callable
+    from typing import Optional, Dict, List, Any, Union, Set
 
     import dateparser  # type: ignore
     from datetime import timezone  # type: ignore
