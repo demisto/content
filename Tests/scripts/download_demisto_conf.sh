@@ -10,6 +10,9 @@ echo "Getting conf from branch $UNDERSCORE_BRANCH (fallback to master)"
 SECRET_CONF_PATH="./conf_secret.json"
 echo ${SECRET_CONF_PATH} > secret_conf_path
 
+XSIAM_SERVERS_PATH="./xsiam_servers.json"
+echo ${XSIAM_SERVERS_PATH} > xsiam_servers_path
+
 DEMISTO_LIC_PATH="./demisto.lic"
 echo ${DEMISTO_LIC_PATH} > demisto_lic_path
 
