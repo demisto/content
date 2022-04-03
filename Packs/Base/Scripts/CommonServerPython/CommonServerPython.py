@@ -3631,7 +3631,7 @@ class Common(object):
 
             if self.md5:
                 file_context['MD5'] = self.md5
-                file_context['Hashes'].append({'type': 'MD5',
+                file_context.setdefault('Hashes', []).append({'type': 'MD5',
                                                'value': self.md5})
 
             if self.sha1:
