@@ -44,6 +44,7 @@ configuration:
   - taskCompleted
   - incidentStatusChanged
   - externalFormSubmit
+  - failedFetchIncidents
 - defaultvalue: Unclassified
   display: Type of incidents created in Slack
   name: incidentType
