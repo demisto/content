@@ -1836,7 +1836,8 @@
             "playbookID": "DemistoLockTest"
         },
         {
-            "integrations": "Core Lock"
+            "integrations": "Core Lock",
+            "playbookID": "CoreLockTest"
         },
         {
             "playbookID": "test-domain-indicator",
