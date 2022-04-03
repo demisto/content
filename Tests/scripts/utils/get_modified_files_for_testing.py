@@ -135,12 +135,7 @@ def create_type_to_file(files_string: str) -> Dict[FileType, Set[str]]:
     types_to_files: Dict[FileType, Set[str]] = dict()
     for line in files_string.split("\n"):
         if line:
-            file_status, file_path = line.split(maxsplit=1)
-            file_status = file_status.lower()
-            # Get to right file_path on renamed
-            if file_status.startswith("r"):
-                _, file_path = file_path.split(maxsplit=1)
-            file_status = file_status.lower()
+            file_status, file_path = get_status_and_file_path_from_line_in_git_diff(line)
             # ignoring deleted files.
             # also, ignore files in ".circle", ".github" and ".hooks" directories and .
             if file_path:
@@ -171,28 +166,41 @@ def filter_modified_files_for_specific_marketplace_version(files_string: str, id
     out_files_string = ''
     for line in files_string.split("\n"):
         if line:
-            file_status, file_path = line.split(maxsplit=1)
-            file_status = file_status.lower()
-            # Get to right file_path on renamed
-            if file_status.startswith("r"):
-                _, file_path = file_path.split(maxsplit=1)
+            file_status, file_path = get_status_and_file_path_from_line_in_git_diff(line)
             # ignoring deleted files.
-            # also, ignore files in ".circle", ".github" and ".hooks" directories and .
+            # also, ignore all files that are not in a pack
             if file_path:
                 if (file_status in ("m", "a") or file_status.startswith("r")) and file_path.startswith("Packs/"):
-                    if file_path.endswith('.py'):
-                        file_path = file_path.rstrip('py')
-                    elif file_path.endswith('_description.md'):
-                        file_path = file_path.rstrip('_description.md')
-                    file_data = file_path.split('/')
-                    obj_repo_name = replace_to_id_set_name(file_data[2])
-                    for test_obj in id_set.get(obj_repo_name, []):
-                        for data in test_obj.values():
-                            if file_path in data.get('file_path') and \
-                                    data.get('marketplaces') == [marketplace_version]:
+                    file_path = strip_file_path(file_path)
+                    artifact_repo_name = replace_to_id_set_name(file_path.split('/')[2])
+                    for artifacts in id_set.get(artifact_repo_name, []):
+                        for artifact_value in artifacts.values():
+                            if file_path in artifact_value.get('file_path') and \
+                                    artifact_value.get('marketplaces') == [marketplace_version]:
                                 out_files_string += f'{line}\n'
                                 break
     return out_files_string
+
+
+def strip_file_path(file_path):
+    if file_path.endswith('.py'):
+        return file_path.rstrip('py')
+    elif file_path.endswith('_description.md'):
+        return file_path.rstrip('_description.md')
+    elif file_path.endswith('_image.png'):
+        return file_path.rstrip('_image.png')
+    elif file_path.endswith('xif'):
+        return file_path.rstrip('xif')
+    return file_path
+
+
+def get_status_and_file_path_from_line_in_git_diff(line):
+    file_status, file_path = line.split(maxsplit=1)
+    file_status = file_status.lower()
+    # Get to right file_path on renamed
+    if file_status.startswith("r"):
+        _, file_path = file_path.split(maxsplit=1)
+    return file_status, file_path
 
 
 def replace_to_id_set_name(name: str):

@@ -1325,7 +1325,7 @@ def get_all_packs_with_artifacts_for_specific_marketplace(id_set: dict, marketpl
     for artifacts in id_set.values():
         # Ignore the Packs list in the ID set
         if isinstance(artifacts, dict):
-            break
+            continue
         for artifact_dict in artifacts:
             for artifact_details in artifact_dict.values():
                 if artifact_details.get('marketplaces', []) == [marketplace_version]:
@@ -1471,11 +1471,14 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
             # we are adding to the nightly on marketplacev2 few tests that are supported in both marketplacees
             # see https://github.com/demisto/etc/issues/44350
             tests = set(CONF.get_marketplacev2_tests())
+
+            # collect tests that are compatible only with marketplacev2
+            tests.update(get_test_playbooks_for_specific_marketplace(ID_SET, marketplace_version))
+
             packs_to_install = CONF.get_packs_of_tested_integrations(tests, ID_SET)
             packs_to_install.update(get_content_pack_name_of_test(tests, ID_SET))
 
             # collect all packs and tests that are compatible only with marketplacev2
-            tests.update(get_test_playbooks_for_specific_marketplace(ID_SET, marketplace_version))
             packs_to_install.update(get_all_packs_with_artifacts_for_specific_marketplace(ID_SET, marketplace_version))
 
         else:
