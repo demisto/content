@@ -41,8 +41,6 @@ DATE_FORMAT = '%Y-%m-%d'  # sample - 2020-08-23
 
 ''' HELPER FUNCTIONS '''
 
-# some change
-
 
 class TextExtractHtmlParser(HTMLParser):
     def __init__(self):
