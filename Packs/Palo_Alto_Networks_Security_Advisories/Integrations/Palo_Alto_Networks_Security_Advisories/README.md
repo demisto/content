@@ -1,5 +1,5 @@
 Queries the public repository of PAN-OS CVEs.
-This integration was integrated and tested with version xx of Palo_Alto_Networks_Security_Advisories
+This integration was integrated and tested with version 1 of the Palo Alto Networks Security Advisories API 
 
 ## Configure Palo Alto Networks Security Advisories on Cortex XSOAR
 
