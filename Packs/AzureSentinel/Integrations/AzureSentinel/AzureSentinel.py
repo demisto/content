@@ -1073,7 +1073,6 @@ def build_threat_indicator_data(args):
     value = args.get('value')
 
     data = {
-        'patternType': value,
         'displayName': args.get('display_name'),
         'description': args.get('description'),
         'revoked': args.get('revoked', ''),
@@ -1089,20 +1088,20 @@ def build_threat_indicator_data(args):
 
     indicator_type = args.get('indicator_type')
     if indicator_type == 'ipv4':
-        indicator_type = 'ipv4-address'
+        indicator_type = 'ipv4-addr'
     elif indicator_type == 'ipv6':
-        indicator_type = 'ipv6-address'
+        indicator_type = 'ipv6-addr'
     elif indicator_type == 'domain':
         indicator_type = 'domain-name'
 
-    data['patternTypes'] = indicator_type
+    data['patternType'] = indicator_type
 
     if indicator_type == 'file':
         hash_type = args.get('hash_type')
         data['hashType'] = hash_type
-        data['pattern'] = f"[file:hashes.'{hash_type}' = {value}]"
+        data['pattern'] = f"[file:hashes.'{hash_type}' = '{value}']"
     else:
-        data['pattern'] = f'[{indicator_type}:value = {value}]'
+        data['pattern'] = f"[{indicator_type}:value = '{value}']"
 
     data['killChainPhases'] = []
 

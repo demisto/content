@@ -1341,10 +1341,11 @@ class TestHappyPath:
                 - Ensure the results holds the expected outcomes.
         """
         # prepare
-        args = {'value': '1.1.1.1',
-                'display_name': 'displaytest',
-                'indicator_types': 'ipv4',
-                'threat_types': ["malicious-activity"]
+        args = {'display_name': 'displayname',
+                'indicator_type': 'ipv4',
+                'revoked': 'false',
+                'threat_types': 'compromised',
+                'value': '1.1.1.1',
                 }
 
         # run
