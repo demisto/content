@@ -22,6 +22,7 @@ INDICATOR_TYPE = {
     'url': FeedIndicatorType.URL
 }
 
+
 """ RELATIONSHIP TYPE"""
 RELATIONSHIP_TYPE = {
     'file': {
@@ -1207,8 +1208,7 @@ def build_domain_output(
         ),
         outputs=data,
         raw_response=raw_response,
-        relationships=relationships_list,
-        execution_count=1
+        relationships=relationships_list
     )
 
 
@@ -1278,8 +1278,7 @@ def build_url_output(
         ),
         outputs=data,
         raw_response=raw_response,
-        relationships=relationships_list,
-        execution_count=1
+        relationships=relationships_list
     )
 
 
@@ -1334,8 +1333,7 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
         ),
         outputs=data,
         raw_response=raw_response,
-        relationships=relationships_list,
-        execution_count=1
+        relationships=relationships_list
     )
 
 
@@ -1415,8 +1413,7 @@ def build_file_output(
         ),
         outputs=data,
         raw_response=raw_response,
-        relationships=relationships_list,
-        execution_count=1
+        relationships=relationships_list
     )
 
 
@@ -1531,15 +1528,14 @@ def encode_url_to_base64(url: str) -> str:
 # region Reputation commands
 
 
-def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[
-    CommandResults]:
+def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
     """
-    execution_metrics = ExecutionMetrics()
     ips = argToList(args['ip'])
-    results: List[CommandResults] = [execution_metrics.metrics]
+    results: List[CommandResults] = list()
+    execution_metrics = ExecutionMetrics()
     for ip in ips:
         raise_if_ip_not_valid(ip)
         try:
@@ -1556,6 +1552,7 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
         results.append(
             build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data')))
         )
+    results.append(CommandResults(execution_metrics=execution_metrics.metrics))
     return results
 
 
@@ -1563,11 +1560,11 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
     """
     1 API Call
     """
-    execution_metrics = ExecutionMetrics()
     files = argToList(args['file'])
     extended_data = argToBoolean(args.get('extended_data'))
-    results: List[CommandResults] = [execution_metrics.metrics]
-    items_remaining = len(files)
+    results: List[CommandResults] = list()
+    execution_metrics = ExecutionMetrics()
+
     for file in files:
         raise_if_hash_not_valid(file)
         try:
@@ -1577,25 +1574,23 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
                 continue
             results.append(build_file_output(client, score_calculator, file, raw_response, extended_data))
             execution_metrics.success += 1
-            items_remaining = items_remaining - 1
         except Exception as exc:
             # If anything happens, just keep going
             execution_metrics.general_error += 1
             results.append(CommandResults(readable_output=f'Could not process file: "{file}"\n {str(exc)}'))
-
+    results.append(CommandResults(execution_metrics=execution_metrics.metrics))
     return results
 
 
-def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[
-    CommandResults]:
+def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
     """
-    execution_metrics = ExecutionMetrics()
     urls = argToList(args['url'])
     extended_data = argToBoolean(args.get('extended_data'))
-    results: List[CommandResults] = [execution_metrics.metrics]
+    results: List[CommandResults] = list()
+    execution_metrics = ExecutionMetrics()
     for url in urls:
         try:
             raw_response = client.url(
@@ -1612,18 +1607,18 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
             continue
         execution_metrics.success += 1
         results.append(build_url_output(client, score_calculator, url, raw_response, extended_data))
+    results.append(CommandResults(execution_metrics=execution_metrics.metrics))
     return results
 
 
-def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[
-    CommandResults]:
+def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
     """
     execution_metrics = ExecutionMetrics()
     domains = argToList(args['domain'])
-    results: List[CommandResults] = [execution_metrics.metrics]
+    results: List[CommandResults] = list()
     for domain in domains:
         try:
             raw_response = client.domain(domain, relationships)
@@ -1639,6 +1634,7 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
         results.append(
             build_domain_output(client, score_calculator, domain, raw_response, argToBoolean(args.get('extended_data')))
         )
+    results.append(CommandResults(execution_metrics=execution_metrics.metrics))
     return results
 
 
