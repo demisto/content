@@ -304,7 +304,8 @@ class Client(BaseClient):
         if method == 'GET':
             if query_string:
                 url_suffix = f'{url_suffix}?{self.prepare_query_string_for_canonical_request(query_string)}'
-            return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers)
+            return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers,
+                                      return_empty_response=True)
 
         elif method == 'DELETE':
             return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers,
@@ -573,12 +574,16 @@ def list_device_freeze_message_command(args, client) -> CommandResults:
     else:
         res = client.api_request_absolute('GET', '/v2/device-freeze/messages', success_status_code=(200, 204))
 
-    outputs = parse_device_freeze_message_response(res)
-    human_readable = tableToMarkdown(f'{INTEGRATION} Device freeze message details:', outputs,
-                                     headers=['ID', 'Name', 'CreatedUTC', 'ChangedUTC', 'ChangedBy', 'CreatedBy'],
-                                     removeNull=True)
-    return CommandResults(outputs=outputs, outputs_prefix="Absolute.FreezeMessage", outputs_key_field='ID',
-                          readable_output=human_readable, raw_response=res)
+    if isinstance(res, list):
+        outputs = parse_device_freeze_message_response(res)
+        human_readable = tableToMarkdown(f'{INTEGRATION} Device freeze message details:', outputs,
+                                         headers=['ID', 'Name', 'CreatedUTC', 'ChangedUTC', 'ChangedBy', 'CreatedBy'],
+                                         removeNull=True)
+        return CommandResults(outputs=outputs, outputs_prefix="Absolute.FreezeMessage", outputs_key_field='ID',
+                              readable_output=human_readable, raw_response=res)
+    else:
+        # in this case the response is empty, no content in response, no messages found
+        return CommandResults(readable_output=f'{INTEGRATION}: your account has no existing Freeze messages.')
 
 
 def create_device_freeze_message_command(args, client) -> CommandResults:
