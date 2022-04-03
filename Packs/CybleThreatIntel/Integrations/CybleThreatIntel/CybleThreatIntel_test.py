@@ -50,7 +50,7 @@ def test_cyble_vision_fetch_taxii(requests_mock):
         "end_date": "2022-02-22"
     }
 
-    response = cyble_fetch_taxii(client=client, method='POST', args=args)
+    response = cyble_fetch_taxii(client=client, method='POST', args=args).outputs
     # assert the response object
 
     # check if the response object is a dict
