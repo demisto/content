@@ -1,8 +1,8 @@
-This playbook takes the command-line from the alert and perform the following action:
-- Checks and decode base64
-- Extracts and enrich indicators from the command line
+This playbook takes the command-line from the alert and performs the following actions:
+- Checks and decodes base64
+- Extracts and enriches indicators from the command line
 - Checks specific arguments for malicious usage 
-At the end, the playbook will set a possible verdict for the command-line based on the finding.
+At the end of the playbook, it sets a possible verdict for the command line based on the finding.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -34,8 +34,8 @@ There are no inputs for this playbook.
 | --- | --- | --- |
 | MatchRegex | The value matched by the regex | unknown |
 | Indicators | Extracted indicators from the command-line | unknown |
-| commandline | The command-line | unknown |
-| CommandlineVerdict | The verdict of the command-line | unknown |
+| commandline | The command line | unknown |
+| CommandlineVerdict | The verdict of the command line | unknown |
 
 ## Playbook Image
 ---
