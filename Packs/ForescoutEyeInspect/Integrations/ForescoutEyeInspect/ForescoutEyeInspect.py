@@ -1,12 +1,13 @@
 # type: ignore
 from copy import deepcopy
 from typing import Any, Dict, Tuple, Type
+from urllib.parse import urljoin
 
 import urllib3
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from urllib.parse import urljoin
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -17,10 +18,17 @@ CUSTOM_TABLE_HEADERS = {
     'Mac': 'MAC',
     'Src': 'Source',
     'Dst': 'Destination',
-    'Proto': 'Protocol'
+    'Proto': 'Protocol',
 }
 
-XSOAR_SEVERITY_MAPPING = {1: 0.5, 2: 1, 3: 2, 4: 3, 5: 4}
+XSOAR_SEVERITY_MAPPING = {
+    0: IncidentSeverity.UNKNOWN,
+    1: IncidentSeverity.INFO,
+    2: IncidentSeverity.LOW,
+    3: IncidentSeverity.MEDIUM,
+    4: IncidentSeverity.HIGH,
+    5: IncidentSeverity.CRITICAL,
+}
 
 DEFAULT_PAGE = 1
 DEFAULT_LIMIT = 50
@@ -761,12 +769,11 @@ def arg_to_datetime_string(arg: Optional[str]) -> Optional[str]:
     return date.astimezone().isoformat() if date else None
 
 
-def get_pagination_readable_message(header: str, page: int, limit: int) -> str:
+def get_pagination_readable_message(page: int, limit: int) -> str:
     """
     Gets a readable output message for commands with pagination.
 
     Args:
-        header (str): The original header for the command outputs.
         page (int): The page used in the command.
         limit (int): The limit used in the command.
 
@@ -774,7 +781,7 @@ def get_pagination_readable_message(header: str, page: int, limit: int) -> str:
         str: The message that describes the pagination.
     """
 
-    return f'{header}\n Current page size: {limit}\n Showing page {page} out of others that may exist.'
+    return f'Current page size: {limit}\n Showing page {page} out of others that may exist.'
 
 
 def to_table_header(string: str) -> str:
@@ -870,7 +877,7 @@ def get_pagination_arguments(args: Dict[str, Any]) -> Tuple[int, int, int]:
         args (Dict[str, Any]): The command arguments (page and limit).
 
     Returns:
-        Tuple[int, int]: The page, calculated offset and limit after validation.
+        Tuple[int, int, int]: The page, calculated offset, and limit after validation.
     """
 
     page = arg_to_number(args.get('page', DEFAULT_PAGE))
@@ -927,7 +934,7 @@ def list_hosts_command(client: Client, args: Dict[str, str]) -> CommandResults:
                                          id_min=id_min,
                                          sort_field=sort_field,
                                          sort_ascending=sort_ascending)
-    outputs = deepcopy(response['results'])
+    outputs = response['results']
 
     ip_addresses = argToList(args.get('ip'))
     vlan_ids = argToList(args.get('vlan_id'))
@@ -940,11 +947,12 @@ def list_hosts_command(client: Client, args: Dict[str, str]) -> CommandResults:
                              sensor_ids=sensor_ids)
 
     readable_output = tableToMarkdown(
-        get_pagination_readable_message('Hosts List:', page, limit),
+        'Hosts List:',
         outputs,
         removeNull=True,
         headers=['id', 'main_name', 'description', 'os_version', 'ip', 'mac_addresses'],
-        headerTransform=to_table_header)
+        headerTransform=to_table_header,
+        metadata=get_pagination_readable_message(page, limit))
 
     return CommandResults(outputs_prefix='ForescoutEyeInspect.Host',
                           outputs_key_field='id',
@@ -985,14 +993,14 @@ def list_links_command(client: Client, args: Dict[str, str]) -> CommandResults:
                                          id_min=id_min,
                                          sort_field=sort_field,
                                          sort_ascending=sort_ascending)
-    outputs = deepcopy(response['results'])
+    outputs = response['results']
 
-    readable_header = get_pagination_readable_message('Host Links List:', page, limit)
-    readable_output = tableToMarkdown(readable_header,
+    readable_output = tableToMarkdown('Host Links List:',
                                       outputs,
                                       removeNull=True,
                                       headers=['id', 'src_host_id', 'dst_host_id', 'proto'],
-                                      headerTransform=to_table_header)
+                                      headerTransform=to_table_header,
+                                      metadata=get_pagination_readable_message(page, limit))
 
     return CommandResults(outputs_prefix='ForescoutEyeInspect.Link',
                           outputs_key_field='id',
@@ -1062,7 +1070,7 @@ def list_alerts_command(client: Client, args: Dict[str, str]) -> CommandResults:
                                           src_ip=src_ip,
                                           dst_ip=dst_ip,
                                           ip=ip)
-    outputs = deepcopy(response['results'])
+    outputs = response['results']
 
     sensor_names = argToList(args.get('sensor_name'))
     vlan_ids = argToList(args.get('vlan_id'))
@@ -1076,11 +1084,12 @@ def list_alerts_command(client: Client, args: Dict[str, str]) -> CommandResults:
     add_alerts_fields(client, outputs)
 
     readable_output = tableToMarkdown(
-        get_pagination_readable_message('Alerts List:', page, limit),
+        'Alerts List:',
         outputs,
         removeNull=True,
         headers=['alert_id', 'description', 'timestamp', 'src_ip', 'dst_ip'],
-        headerTransform=to_table_header)
+        headerTransform=to_table_header,
+        metadata=get_pagination_readable_message(page, limit))
 
     return CommandResults(outputs_prefix='ForescoutEyeInspect.Alert',
                           outputs_key_field='alert_id',
@@ -1125,7 +1134,7 @@ def list_sensors_command(client: Client, args: Dict[str, str]) -> CommandResults
     all_sensors = arg_to_boolean(args.get('all_sensors'))
 
     response = client.list_sensors_request(offset=offset, limit=limit, all_sensors=all_sensors)
-    outputs = deepcopy(response['results'])
+    outputs = response['results']
 
     names = argToList(args.get('name'))
     addresses = argToList(args.get('address'))
@@ -1139,11 +1148,12 @@ def list_sensors_command(client: Client, args: Dict[str, str]) -> CommandResults
                              type=sensor_types,
                              state=states)
 
-    readable_output = tableToMarkdown(get_pagination_readable_message('Sensors List:', page, limit),
+    readable_output = tableToMarkdown('Sensors List:',
                                       outputs,
                                       removeNull=True,
                                       headers=['id', 'name', 'address', 'port', 'type'],
-                                      headerTransform=to_table_header)
+                                      headerTransform=to_table_header,
+                                      metadata=get_pagination_readable_message(page, limit))
 
     return CommandResults(outputs_prefix='ForescoutEyeInspect.Sensor',
                           outputs_key_field='id',
@@ -1168,15 +1178,14 @@ def list_sensor_modules_command(client: Client, args: Dict[str, str]) -> Command
     page, offset, limit = get_pagination_arguments(args)
 
     response = client.list_sensor_modules_request(sensor_id=sensor_id, offset=offset, limit=limit)
-    outputs = deepcopy(response['results'])
+    outputs = response['results']
 
-    readable_header = get_pagination_readable_message(f'Sensor {sensor_id} Modules List:', page,
-                                                      limit)
-    readable_output = tableToMarkdown(readable_header,
+    readable_output = tableToMarkdown(f'Sensor {sensor_id} Modules List:',
                                       outputs,
                                       removeNull=True,
                                       headers=['id', 'name', 'description', 'engine', 'started'],
-                                      headerTransform=to_table_header)
+                                      headerTransform=to_table_header,
+                                      metadata=get_pagination_readable_message(page, limit))
 
     return CommandResults(outputs_prefix='ForescoutEyeInspect.SensorModule',
                           outputs_key_field='id',
@@ -1265,13 +1274,12 @@ def get_ip_blacklist_command(client: Client, args: Dict[str, str]) -> CommandRes
     for entry in outputs:
         entry['sensor_id'] = sensor_id
 
-    readable_header = get_pagination_readable_message(f'IP Blacklist of Sensor {sensor_id}:', page,
-                                                      limit)
-    readable_output = tableToMarkdown(readable_header,
+    readable_output = tableToMarkdown(f'IP Blacklist of Sensor {sensor_id}:',
                                       outputs,
                                       removeNull=True,
                                       headers=['address', 'comment'],
-                                      headerTransform=to_table_header)
+                                      headerTransform=to_table_header,
+                                      metadata=get_pagination_readable_message(page, limit))
 
     return CommandResults(outputs_prefix='ForescoutEyeInspect.IPBlacklist',
                           outputs_key_field='address',
@@ -1324,17 +1332,17 @@ def get_domain_blacklist_command(client: Client, args: Dict[str, str]) -> Comman
     page, offset, limit = get_pagination_arguments(args)
 
     response = client.get_domain_blacklist_request(sensor_id=sensor_id, offset=offset, limit=limit)
+
     outputs = deepcopy(response['results'])
     for entry in outputs:
         entry['sensor_id'] = sensor_id
 
-    readable_header = get_pagination_readable_message(f'Domain Blacklist of Sensor {sensor_id}:',
-                                                      page, limit)
-    readable_output = tableToMarkdown(readable_header,
+    readable_output = tableToMarkdown(f'Domain Blacklist of Sensor {sensor_id}:',
                                       outputs,
                                       removeNull=True,
                                       headers=['domain_name', 'comment'],
-                                      headerTransform=to_table_header)
+                                      headerTransform=to_table_header,
+                                      metadata=get_pagination_readable_message(page, limit))
 
     return CommandResults(outputs_prefix='ForescoutEyeInspect.DomainBlacklist',
                           outputs_key_field='domain_name',
@@ -1391,17 +1399,17 @@ def get_ssl_client_blacklist_command(client: Client, args: Dict[str, str]) -> Co
     response = client.get_ssl_client_blacklist_request(sensor_id=sensor_id,
                                                        offset=offset,
                                                        limit=limit)
+
     outputs = deepcopy(response['results'])
     for entry in outputs:
         entry['sensor_id'] = sensor_id
 
-    readable_header = get_pagination_readable_message(
-        f'SSL Client Applications Blacklist of Sensor {sensor_id}:', page, limit)
-    readable_output = tableToMarkdown(readable_header,
+    readable_output = tableToMarkdown(f'SSL Client Applications Blacklist of Sensor {sensor_id}:',
                                       outputs,
                                       removeNull=True,
                                       headers=['application_name', 'ja3_hash', 'comment'],
-                                      headerTransform=to_table_header)
+                                      headerTransform=to_table_header,
+                                      metadata=get_pagination_readable_message(page, limit))
 
     return CommandResults(outputs_prefix='ForescoutEyeInspect.SSLClientBlacklist',
                           outputs_key_field='ja3_hash',
@@ -1464,18 +1472,18 @@ def get_file_operation_blacklist_command(client: Client, args: Dict[str, str]) -
     response = client.get_file_operation_blacklist_request(sensor_id=sensor_id,
                                                            offset=offset,
                                                            limit=limit)
+
     outputs = deepcopy(response['results'])
     for entry in outputs:
         entry['sensor_id'] = sensor_id
 
-    readable_header = get_pagination_readable_message(
-        f'File Operation Blacklist of Sensor {sensor_id}:', page, limit)
     readable_output = tableToMarkdown(
-        readable_header,
+        f'File Operation Blacklist of Sensor {sensor_id}:',
         outputs,
         removeNull=True,
         headers=['matching_type', 'file_or_folder', 'operation', 'comment'],
-        headerTransform=to_table_header)
+        headerTransform=to_table_header,
+        metadata=get_pagination_readable_message(page, limit))
 
     return CommandResults(outputs_prefix='ForescoutEyeInspect.FileOperationBlacklist',
                           outputs_key_field='file_or_folder',
@@ -1587,14 +1595,14 @@ def list_group_policies_command(client: Client, args: Dict[str, str]) -> Command
     page, offset, limit = get_pagination_arguments(args)
 
     response = client.list_group_policies_request(offset=offset, limit=limit)
-    outputs = deepcopy(response['results'])
+    outputs = response['results']
 
-    readable_header = get_pagination_readable_message('Group Policies List:', page, limit)
-    readable_output = tableToMarkdown(readable_header,
+    readable_output = tableToMarkdown('Group Policies List:',
                                       outputs,
                                       removeNull=True,
                                       headers=['id', 'name', 'description'],
-                                      headerTransform=to_table_header)
+                                      headerTransform=to_table_header,
+                                      metadata=get_pagination_readable_message(page, limit))
 
     return CommandResults(
         outputs_prefix='ForescoutEyeInspect.GroupPolicy',
@@ -1775,12 +1783,12 @@ def list_ip_reuse_domains_command(client: Client, args: Dict[str, str]) -> Comma
     response = client.list_ip_reuse_domains_request(offset=offset, limit=limit)
     outputs = response['results']
 
-    readable_header = get_pagination_readable_message('IP Reuse Domains List:', page, limit)
-    readable_output = tableToMarkdown(readable_header,
+    readable_output = tableToMarkdown('IP Reuse Domains List:',
                                       outputs,
                                       removeNull=True,
                                       headers=['id', 'name', 'description', 'address'],
-                                      headerTransform=to_table_header)
+                                      headerTransform=to_table_header,
+                                      metadata=get_pagination_readable_message(page, limit))
 
     return CommandResults(outputs_prefix='ForescoutEyeInspect.IPReuseDomain',
                           outputs_key_field='id',
@@ -1831,12 +1839,13 @@ def list_hosts_changelog_command(client: Client, args: Dict[str, str]) -> Comman
                           raw_response=response)
 
 
-def test_module(client: Client, first_fetch: str, max_fetch: int) -> str:
+def test_module(client: Client, should_fetch: bool, first_fetch: str, max_fetch: int) -> str:
     """
     Validates integration parameters and tests connection to Forescout EyeInspect.
 
     Args:
         client (Client): The Forescout EyeInspect client.
+        should_fetch (str): Whether the integration should fetch incidents or not.
         first_fetch (str): The initial time to fetch the alerts as incidents.
         max_fetch (int): The maximum amount of incidents per execution.
 
@@ -1844,7 +1853,9 @@ def test_module(client: Client, first_fetch: str, max_fetch: int) -> str:
         str: ok for success, or anything else for failure.
     """
 
-    validate_fetch_params(max_fetch=max_fetch, first_fetch=first_fetch)
+    if should_fetch:
+        validate_fetch_params(max_fetch=max_fetch, first_fetch=first_fetch)
+
     try:
         client.list_hosts_request(offset=0, limit=1)
     except DemistoException as e:
@@ -1853,7 +1864,7 @@ def test_module(client: Client, first_fetch: str, max_fetch: int) -> str:
                 'The provided credentials are invalid. Please check you entered the right username and password.'
             )
         else:
-            raise e
+            raise
 
     return 'ok'
 
@@ -1983,13 +1994,14 @@ def main():
         if command == 'fetch-incidents':
             fetch_incidents(client, first_fetch, max_fetch)
         elif command == 'test-module':
-            return_results(test_module(client, first_fetch, max_fetch))
+            should_fetch = arg_to_boolean(params.get('isFetch'))
+            return_results(test_module(client, should_fetch, first_fetch, max_fetch))
         elif command in commands:
             return_results(commands[command](client, demisto.args()))
         else:
             raise NotImplementedError(f'The command {command} does not exist!')
     except Exception as e:
-        demisto.error(traceback.format_exc())
+        demisto.error(fix_traceback_line_numbers(traceback.format_exc()))
 
         if 'Error in API call [401]' in str(e):
             return_error(
