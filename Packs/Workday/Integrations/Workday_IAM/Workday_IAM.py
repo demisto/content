@@ -39,7 +39,6 @@ ACTIVATE_AD_EVENT_TYPE = 'IAM - AD User Activation'
 DEACTIVATE_AD_EVENT_TYPE = 'IAM - AD User Deactivation'
 DEFAULT_INCIDENT_TYPE = 'IAM - Sync User'
 
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -49,6 +48,7 @@ class Client(BaseClient):
     Client will implement the service API, should not contain Cortex XSOAR logic.
     Should do requests and return data
     """
+
     # Getting Workday Full User Report with a given report URL. This uses RaaS
     def get_full_report(self, report_url):
         res = self._http_request(method="GET", full_url=report_url, url_suffix="",
@@ -125,7 +125,9 @@ def has_reached_threshold_date(num_of_days_before_hire, workday_user):
     if not num_of_days_before_hire and num_of_days_before_hire != 0:
         return True
 
-    hire_date = dateparser.parse(workday_user.get(HIRE_DATE_FIELD)).date()
+    hire_date = dateparser.parse(workday_user.get(HIRE_DATE_FIELD))
+    assert hire_date is not None
+    hire_date = hire_date.date()
     today = datetime.today().date()
     delta = (hire_date - today).days
     if delta > num_of_days_before_hire:
@@ -422,7 +424,7 @@ def get_event_details(entry, workday_user, demisto_user, days_before_hire_to_syn
     """
     user_email = workday_user.get(EMAIL_ADDRESS_FIELD)
     changed_fields = get_profile_changed_fields_str(demisto_user, workday_user)
-    demisto.debug(f'{changed_fields=}')
+    demisto.debug(f'{changed_fields=}')  # type: ignore
 
     if not has_reached_threshold_date(days_before_hire_to_sync, workday_user) \
             or new_hire_email_already_taken(workday_user, demisto_user, email_to_user_profile) \
