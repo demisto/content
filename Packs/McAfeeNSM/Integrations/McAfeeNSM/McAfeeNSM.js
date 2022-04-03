@@ -131,6 +131,8 @@ function alerts_to_entry(title, alerts) {
 }
 
 function alert_to_entry(title, alert) {
+    log("title is: " + title)
+    log("Alert is: " + alert)
     /// single alert object has different structure than the alerts of alerts_to_entry.
     var context = {
         ID : alert.summary.event.alertId,
@@ -169,7 +171,11 @@ function alert_to_entry(title, alert) {
         'Attack SubCategory' : alert.description.attackSubCategory,
         Comments : alert.description.comments.comments,
     };
-    var links = alert.description.reference.additionInfo.split('<BR>');
+    var links = []
+    if (!(alert.description.reference.additionInfo === undefined)) {
+        links = alert.description.reference.additionInfo.split('<BR>');
+    }
+
     for (var i in links) {
         links[i] = '[{0}]({0})'.format(links[i]);
     }
@@ -356,6 +362,7 @@ function get_alert_details(alert_id, sensor_id) {
     var query_params = {
         'sensorId': sensor_id
     };
+    log("cmd_url is: " + cmd_url)
     var res = sendRequest('GET', cmd_url, {}, '', query_params);
     return alert_to_entry('Alert ' + res.name, res);
 }
