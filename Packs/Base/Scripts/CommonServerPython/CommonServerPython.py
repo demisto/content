@@ -9701,14 +9701,23 @@ def send_events_to_xsiam(events: Union[str, list], vendor: str, product: str, da
 
     """
     data = events
+    amount_of_events = 0
     # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
     if isinstance(events, list):
+        amount_of_events = len(list)
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         if isinstance(events[0], dict):
             events = [json.dumps(event) for event in events]
             data_format = 'json'
         # Separating each event with a new line
         data = '\n'.join(events)
+
+    elif isinstance(events, str):
+        amount_of_events = len(events.split('\n'))
+
+    else:
+        raise DemistoException(f'Unsupported type: {type(events)} for the "events" parameter. '
+                               f'Should be a string or dict.')
 
     if not data_format:
         data_format = 'text'
@@ -9754,6 +9763,8 @@ def send_events_to_xsiam(events: Union[str, list], vendor: str, product: str, da
                                error_handler=events_error_handler)
     if xsiam_server_err_msg := res.get('error').lower == 'false':
         raise DemistoException(header_msg + xsiam_server_err_msg)
+
+    demisto.updateModuleHealth({'eventsPulled': amount_of_events})
 
 
 ###########################################
