@@ -1,0 +1,38 @@
+args:
+- description: Version number to compare against right side
+  name: left
+  required: true
+- description: Version number to compare against left side
+  name: right
+  required: true
+comment: |-
+  Tests whether left side version number is greater than right side version number.
+
+  Version numbers need to have at least a major and minor version component to be considered valid. E.g. 1.0
+commonfields:
+  id: 8e170b9d-ee8b-470a-8bd8-aa0593173403
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: e1330af1-ea4d-4098-8eeb-7bdb81075dc8
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/powershell:7.2.1.26295
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: VersionGreaterThan
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags:
+- Utilities
+- filter
+type: powershell
+fromversion: 5.5.0
