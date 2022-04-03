@@ -1,5 +1,5 @@
 {
-    "name": "CybleThreatIntel",
+    "name": "Cyble Threat Intel",
     "description": "Cyble Threat Intelligence for Vision Users. Must have access to Vision Taxii feed to access the threat intelligence.",
     "support": "partner",
     "currentVersion": "1.0.0",
