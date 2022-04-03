@@ -77,11 +77,14 @@ def test_was_email_already_deleted(mocker, delete_email_context, result):
     """
     delete_email_from_context_was_not_deleted = []
     delete_email_from_context_was_deleted = [{'message_id': 'message-id', 'result': 'Success'}]
-    mocker.patch.object(demisto, 'get', return_value=INCIDENT_IDS)
-    mocker.patch.object(demisto, 'executeCommand', return_value=incident_created)
+    # mocker.patch.object(demisto, 'get', return_value=INCIDENT_IDS)
+    # mocker.patch.object(demisto, 'executeCommand', return_value=incident_created)
+
 
 def test_was_email_found_security_and_compliance():
-    pass
+    success_results_dict = [{'SuccessResults': '{Location: sr-test01@demistodev.onmicrosoft.com, Item count: 1, Total size: 55543}'}]
+    assert was_email_found_security_and_compliance(success_results_dict)
+
 
 def test_security_and_compliance_delete_mail():
     pass

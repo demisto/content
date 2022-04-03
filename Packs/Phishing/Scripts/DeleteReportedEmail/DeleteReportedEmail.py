@@ -121,13 +121,13 @@ def schedule_next_command(args: dict):
         ScheduleCommand object that will cal this script again.
     """
     polling_args = {
-        'interval_in_seconds': 120,
+        'interval_in_seconds': 60,
         'polling': True,
         **args,
     }
     return ScheduledCommand(
         command='DeleteReportedEmail',
-        next_run_in_seconds=120,
+        next_run_in_seconds=60,
         args=polling_args,
         timeout_in_seconds=600,
     )
@@ -146,20 +146,21 @@ def was_email_already_deleted(search_args: dict, e: Exception):
 
     """
     delete_email_from_context = demisto.get(demisto.context(), 'DeleteReportedEmail')
-    if not isinstance(delete_email_from_context, list):
-        delete_email_from_context = [delete_email_from_context]
-    for item in delete_email_from_context:
-        message_id = item.get('message_id')
-        if message_id == search_args.get('message_id') and item.get('result') == 'Success':
-            return 'Success', ''
+    if delete_email_from_context:
+        if not isinstance(delete_email_from_context, list):
+            delete_email_from_context = [delete_email_from_context]
+        for item in delete_email_from_context:
+            message_id = item.get('message_id')
+            if message_id == search_args.get('message_id') and item.get('result') == 'Success':
+                return 'Success', ''
     return 'Skipped', str(e)
 
 
-def was_email_found_security_and_compliance(search_results: dict):
+def was_email_found_security_and_compliance(search_results: list):
     """
     Checks if the search command using the Security & Compliance integration has found the email of interest.
     Args:
-        search_results: The results retrived from the search preformed priorly.
+        search_results: The results retrieved from the search preformed priorly.
     Returns:
         True if the email was found, False otherwise
 
@@ -167,12 +168,12 @@ def was_email_found_security_and_compliance(search_results: dict):
     success_results = search_results[0].get('SuccessResults').split(', ')
     for item in success_results:
         if item.startswith(('Item count', 'Total size')):
-            if int(item.split(': ')) > 0:
+            if int(item.split(': ')[1]) > 0:
                 return True
     return False
 
 
-def security_and_compliance_delete_mail(args: dict, to_user_id:str, from_user_id: str, email_subject: str, using_brand: str,
+def security_and_compliance_delete_mail(args: dict, to_user_id: str, from_user_id: str, email_subject: str, using_brand: str,
                                         delete_type: str):
     """
     Search and delete the email using the Security & Compliance integration, preformed by the genric polling flow.
@@ -202,12 +203,12 @@ def security_and_compliance_delete_mail(args: dict, to_user_id:str, from_user_id
     # check the search status
     results = execute_command('o365-sc-get-search', {'search_name': search_name, 'using-brand': using_brand})
 
-    if not was_email_found_security_and_compliance(results):
-        raise MissingEmailException()
-
     # check if the search is complete
     if results[0].get('Status') != 'Completed':
         return 'In Progress', schedule_next_command(args)
+
+    if not was_email_found_security_and_compliance(results):
+        raise MissingEmailException()
 
     # the email was found, start deletion
     search_action_name = f'{search_name}_Purge'
@@ -274,7 +275,7 @@ def get_search_args(args: dict):
     message_id = custom_fields.get('reportedemailmessageid')
     user_id = custom_fields.get('reportedemailto')
     delete_type = custom_fields.get('emaildeletetype', args.get('delete_type'))
-    delete_from_brand = custom_fields.get('deleteemailfrombrand')
+    delete_from_brand = delete_from_brand_handler(incident_info, args)
 
     search_args = {
         'delete-type': delete_type,
@@ -294,15 +295,39 @@ def get_search_args(args: dict):
     return search_args
 
 
+def delete_from_brand_handler(incident_info, args):
+    """
+    Handle the delete_from_brand argument in the following logic:
+    1. If the source brand exists in the 'deleteemailfrombrand' field, use it.
+    2. If the field is empty, use the script's argumnt.
+    3. If there is no argument given, use the incident's source brand.
+    2. If the value is given (in any of the above ways) but it is not of a suitable integration, raise an error.
+    Otherwise, use it.
+
+    Args:
+        incident_info: Incident info from the context data.
+        args: the args of this script
+
+    Returns:
+        The suitable delete brand
+
+    """
+    delete_from_brand = incident_info.get('CustomFields').get('deleteemailfrombrand')
+    if not delete_from_brand or delete_from_brand == 'Unspecified':
+        delete_from_brand = args.get('delete_from_brand', incident_info.get('sourceBrand'))
+
+    elif delete_from_brand not in EMAIL_INTEGRATIONS:
+        raise DemistoException(
+            f'Can not delete email using the chosen brand. The possible brands are: {EMAIL_INTEGRATIONS}')
+    return delete_from_brand
+
+
 def main():
     args = demisto.args()
     search_args = get_search_args(args)
-    result, deletion_failure_reason, scheduled_command = None, None, None
-    delete_from_brand = search_args['using-brand']
+    result, deletion_failure_reason, scheduled_command = '', '', ''
     try:
-        if delete_from_brand not in EMAIL_INTEGRATIONS:
-            raise DemistoException(
-                f'Can not delete email using the chosen brand. The possible brands are: {EMAIL_INTEGRATIONS}')
+
 
         if delete_from_brand == 'SecurityAndCompliance':
             security_and_compliance_args = {k.replace('-', '_'): v for k, v in search_args.items() if k != 'message-id'} # TODO: fix to kebab case
