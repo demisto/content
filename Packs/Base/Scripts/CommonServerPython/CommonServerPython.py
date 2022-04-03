@@ -3253,9 +3253,9 @@ class Common(object):
                 'sourceid': self.source_id,
             }
 
-    class Certificates(object):
+    class Certificate(object):
         """
-        Certificates class
+        Certificate class
         Class to represent a single instance of a certificate for an indicator type.
 
         :type issued_to: ``str``
