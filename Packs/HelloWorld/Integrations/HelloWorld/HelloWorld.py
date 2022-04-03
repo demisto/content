@@ -1466,7 +1466,6 @@ def main() -> None:
         elif demisto.command() == 'helloworld-scan-results':
             return_results(scan_results_command(client, demisto.args()))
 
-    # hello wolld
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
