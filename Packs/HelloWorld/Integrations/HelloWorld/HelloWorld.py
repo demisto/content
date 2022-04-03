@@ -262,6 +262,7 @@ HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 ''' CLIENT CLASS '''
 
 
+# hello world
 class Client(BaseClient):
     """Client class to interact with the service API
 
