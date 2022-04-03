@@ -951,3 +951,27 @@ Gets a list of devices geo locations records and their corresponding data that m
 #### Human Readable Output
 
 >No device locations found in Absolute for the given filters: {'device_ids': '1234'}
+
+
+#### Creating a filtering and sorting query
+The following commands has the option to insert a **filter** arg:
+1. **absolute-device-application-list**.
+2. **absolute-device-list**.
+
+Absolute uses a subset of query options from Open Data Protocol (OData) for filtering and sorting. 
+OData version 1 and 2 are supported. OData query parameters must be alphabetized and URI encoded.
+For more information about OData, see: https://www.odata.org/documentation.
+
+A few examples of creating a query (i.e passing a filter arg):
+1. Using the eq operator
+   1. Get a list of all devices with an active status: agentStatus eq 'A'
+   2. Get a list of all devices that are currently frozen: dfStatus.statusCode eq 'FRZN'
+   3. Get a list of all devices that have 1734 in their ESN (Identifier): substringof('1734',esn) eq true
+2. Using the ne operator
+   1. Get a list of all devices that are not active: agentStatus ne 'A'
+3. Using the gt operator
+   1. Get a list of all devices with greater than 1 GB (1073741824 bytes) of available physical: availablePhysicalRamBytes gt 1073741824
+4. Using the or operator:
+   1. Get a list of all devices with less than 1 GB (1073741824 bytes) of available physical ram or less than 1 GB (1073741824 bytes) of available virtual raml: availablePhysicalMemroyBytes lt 1073741824 or availableVirtualMemoryBytes lt 1073741824
+
+For more examples and explains please read the Absolute docs (from page 10): https://www.absolute.com/media/2221/abt-api-working-with-absolute.pdf .
