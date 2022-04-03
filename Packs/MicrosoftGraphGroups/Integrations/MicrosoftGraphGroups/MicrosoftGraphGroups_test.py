@@ -125,27 +125,3 @@ def test_suppress_errors(mocker, fun, mock_fun, mock_value, args, expected_resul
     mocker.patch.object(client, mock_fun, side_effect=mock_value)
     results, _, _ = fun(client, args)
     assert results == expected_result
-
-
-TEST_SUPPRESS_ERRORS = [
-    (delete_group_command, 'delete_group', NotFoundError('404'), {'group_id': '123456789'},
-     '#### Group id -> 123456789 does not exist'),
-    (list_members_command, 'list_members', NotFoundError('404'), {'group_id': '123456789'},
-     '#### Group id -> 123456789 does not exist'),
-    (add_member_command, 'add_member', NotFoundError('404'), {'group_id': '123456789'},
-     '#### Group id -> 123456789 does not exist'),
-    (remove_member_command, 'remove_member', NotFoundError('404'), {'group_id': '123456789'},
-     '#### Group id -> 123456789 does not exist')
-]
-
-
-@pytest.mark.parametrize('fun, mock_fun, mock_value, args, expected_result',
-                         TEST_SUPPRESS_ERRORS)
-def test_suppress_errors(mocker, fun, mock_fun, mock_value, args, expected_result):
-
-    client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
-                           auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
-                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed', handle_error=True)
-    mocker.patch.object(client, mock_fun, side_effect=mock_value)
-    results, _, _ = fun(client, args)
-    assert results == expected_result
