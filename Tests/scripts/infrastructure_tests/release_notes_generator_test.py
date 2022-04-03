@@ -594,21 +594,10 @@ class TestMergeVersionBlocks:
         assert '### Indicator Types' in rn
         assert '- **accountRep**' in rn
 
-    @pytest.mark.parametrize('Pack_name, versions_ls, expected_results, expected_version', [
-        ("FakePack7", ["1_0_1.md", "1_0_2.md"],
-         "#### Integrations\n***Breaking Change*** some change\n\n##### entity1\n- Fixed something\n\n#### Scripts\n"
-         "***Breaking Change*** some change\n***Breaking Changes*** some changes\n\n##### entity1\n- Fixed something", "1.0.2"),
-        ("FakePack8", ["1_13_44.md", "1_14_0.md"],
-         "#### Scripts\n***Breaking Change*** The following breaking change applies for organizations"
-         " that implement pre-set roles on their incidents:\nDBotRole has been removed from these automations. This"
-         " change will affect any playbook that is dependent on, or runs, these automations.\nThese automations will"
-         " now run using the default Limited User role, unless you explicitly change the permissions.\n"
-         "For more information, see the section about permissions here:\n"
-         "[https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html\n"
-         "](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html)\n"
-         "- ##### GetIncidentsByQuery\n- ##### FindSimilarIncidentsByText\n\n##### CommonServerPython\n"
-         "- Fixed a typo in the error message when trying to create an indicator with an unsupported score value.", '1.14.0')])
-    def test_merge_rns_with_gerneral_announcment(self, Pack_name, versions_ls, expected_results, expected_version):
+    @pytest.mark.parametrize('Pack_name, versions_ls, expected_version', [
+        ("FakePack7", ["1_0_1.md", "1_0_2.md"], "1.0.2"),
+        ("FakePack8", ["1_13_44.md", "1_14_0.md"], '1.14.0')])
+    def test_merge_rns_with_gerneral_announcment(self, Pack_name, versions_ls, expected_version):
         """
             Given:
                 - Case 1: two consecutive versions of RN, both containing scripts with changes announcments,
@@ -626,11 +615,15 @@ class TestMergeVersionBlocks:
                 including the two related entities, and under entity with descrition under the anouncment.
         """
         release_notes_paths = [os.path.join(TEST_DATA_PATH, Pack_name, 'ReleaseNotes', ver) for ver in versions_ls]
+        expected_results_paths = os.path.join(TEST_DATA_PATH, Pack_name, 'expected_results.md')
 
         pack_versions_dict = {}
         for path in release_notes_paths:
-            with open(path) as file_:
-                pack_versions_dict[get_pack_version_from_path(path)] = file_.read()
+            with open(path) as file:
+                pack_versions_dict[get_pack_version_from_path(path)] = file.read()
+
+            with open(expected_results_paths) as file:
+                expected_results = file.read()
 
         rn_block, latest_version = merge_version_blocks(pack_versions_dict)
         assert latest_version == expected_version
