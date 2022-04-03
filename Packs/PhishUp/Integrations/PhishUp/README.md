@@ -44,6 +44,11 @@ PhishUp Url investigation
 | PhishUp.Url | String | Incoming Url |
 | PhishUp.Result | String | response types "Clean", "Phish" | 
 | PhishUp.Score | Number | Phishup Engine Url Score | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| URL.Data | String | The URL | 
 
 
 #### Base Command
