@@ -5,7 +5,7 @@ import requests
 import traceback
 import dateparser
 from datetime import timedelta
-from typing import Any, Dict, Tuple, List, Optional, cast, Set
+from typing import Any, Dict, Tuple, List, Optional, Set
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -236,9 +236,9 @@ def test_module(client: Client, first_fetch_time: str) -> str:
             raise e
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
+def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, str],
                     first_fetch_time: Optional[str], query: Optional[str], mirror_direction: str,
-                    mirror_tag: List[str]) -> Tuple[Dict[str, int], List[dict]]:
+                    mirror_tag: List[str]) -> Tuple[Dict[str, str], List[dict]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -247,7 +247,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     :type max_results: ``int``
     :param max_results: Maximum numbers of incidents per fetch
 
-    :type last_run: ``Optional[Dict[str, int]]``
+    :type last_run: ``Optional[Dict[str, str]]``
     :param last_run:
         A dict with a key containing the latest incident created time we got
         from last fetch
@@ -278,7 +278,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     :rtype: ``Tuple[Dict[str, int], List[dict]]``
     """
 
-    last_fetch: str = last_run.get('last_fetch')
+    last_fetch = last_run.get('last_fetch')
     if not last_fetch:
         last_fetch = first_fetch_time  # type: ignore
 
