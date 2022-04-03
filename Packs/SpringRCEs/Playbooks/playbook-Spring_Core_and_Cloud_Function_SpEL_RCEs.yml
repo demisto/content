@@ -1282,7 +1282,7 @@ tasks:
       id: d9d5009c-bd8f-4533-8941-175e0965207f
       version: -1
       name: 'Review possible vulnerable servers '
-      description: "In this case users can utilize the Prisma platform's capabilities to isolate assets with vulnerabilities and also prioritize it further by looking for internet exposed assets receiving traffic. \n\nKnow the hosts in your cloud that has the specific vulnerability CVE-2021-44228:\n${Redlock.RQL.Response.Data.NetworkInterfaces.PrivateIpAddress}"
+      description: "In this case users can utilize the Prisma platform's capabilities to isolate assets with vulnerabilities and also prioritize it further by looking for internet exposed assets receiving traffic. \n\nThe hosts in your cloud that has one of the Spring framework vulnerabilities are:\n${Redlock.RQL.Response.Data.NetworkInterfaces.PrivateIpAddress}"
       type: regular
       iscommand: false
       brand: ""
