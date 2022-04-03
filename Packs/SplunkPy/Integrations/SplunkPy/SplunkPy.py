@@ -86,9 +86,10 @@ OCCURRED = 'occurred'
 INDEX_TIME = 'index_time'
 TIME_IS_MISSING = 'time_is_missing'
 
+
 # =========== Enrich User Mechanism ============
 class UserMappingObject:
-    def __init__(self, service, should_map_user,table_name='splunk_xsoar_users', xsoar_user_column_name='xsoar_user',
+    def __init__(self, service, should_map_user, table_name='splunk_xsoar_users', xsoar_user_column_name='xsoar_user',
                  splunk_user_column_name='splunk_user'):
         self.service = service
         self.should_map = should_map_user
@@ -105,7 +106,9 @@ class UserMappingObject:
         record = self._get_record(self.splunk_user_column_name, splunk_user)
 
         if not record:
-            demisto.error("Could not find xsoar user matching splunk's {0}. Consider adding it to the {1} lookup.".format(splunk_user, self.table_name))
+            demisto.error(
+                "Could not find xsoar user matching splunk's {0}. Consider adding it to the {1} lookup.".format(
+                    splunk_user, self.table_name))
             return ''
 
         # assuming username is unique, so only one record is returned.
@@ -139,6 +142,7 @@ class UserMappingObject:
             return 'unassigned'
 
         return splunk_user
+
 
 # =========== Regular Fetch Mechanism ===========
 def splunk_time_to_datetime(incident_ocurred_time):
@@ -563,17 +567,17 @@ class Notable:
     def submitted(self):
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
         return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and \
-            len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
 
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
         return all(enrichment.status == Enrichment.FAILED for enrichment in self.enrichments) and \
-            len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
 
     def handled(self):
         """ Returns an indicator on whether all notable's enrichments were handled or not """
         return all(enrichment.status in Enrichment.HANDLED for enrichment in self.enrichments) or \
-            any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
+               any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
 
     def get_submitted_enrichments(self):
         """ Returns indicators on whether each enrichment was submitted/failed or not initiated """
@@ -1236,7 +1240,7 @@ def get_remote_data_command(service, args, close_incident, mapper):
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
         updated_notable["owner"] = mapper.get_xsoar_user_by_splunk(
-                updated_notable["owner"]) if mapper.should_map else updated_notable["owner"]
+            updated_notable["owner"]) if mapper.should_map else updated_notable["owner"]
     delta = {field: updated_notable.get(field) for field in INCOMING_MIRRORED_FIELDS if updated_notable.get(field)}
 
     if delta:
@@ -1311,7 +1315,7 @@ def update_remote_system_command(args, params, service, auth_token, mapper):
                 changed_data[field] = delta[field]
 
         changed_data['owner'] = mapper.get_splunk_user_by_xsoar(
-                delta["owner"]) if mapper.should_map else delta["owner"]
+            delta["owner"]) if mapper.should_map else delta["owner"]
 
         # Close notable if relevant
         if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_notable'):
