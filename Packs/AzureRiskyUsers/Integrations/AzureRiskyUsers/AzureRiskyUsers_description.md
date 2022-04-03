@@ -16,7 +16,7 @@ In order to connect to Microsoft Risky User using either Cortex XSOAR App or the
 #### Cortex XSOAR App
 
 In order to use the Cortex XSOAR Azure application, 
-use the application ID (***ec854987-95fa-4c8f-8056-768dd0f409ac***).
+use the Client ID - (application_id) (***ec854987-95fa-4c8f-8056-768dd0f409ac***).
 
 #### Self-Deployed App
 
