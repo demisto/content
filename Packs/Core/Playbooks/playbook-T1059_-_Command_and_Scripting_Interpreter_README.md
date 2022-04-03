@@ -1,36 +1,34 @@
-This playbook handles Command and Scripting Interpreter alerts based on MITRE T1059 technique.
+This playbook handles command and scripting interpreter alerts based on the MITRE T1059 technique.
 An attacker might abuse command and script interpreters to execute commands, scripts, or binaries.
-Most systems come with some built-in command-line interface and scripting capabilities, for example, macOS and Linux distributions include some flavor of Unix Shell while Windows installations include the Windows Command Shell and PowerShell.
+Most systems come with some built-in command-line interface and scripting capabilities. For example, macOS and Linux distributions include some form of a Unix Shell while Windows installations include the Windows Command Shell and PowerShell.
 
 
 **Attacker's Goals:**
 
-An attacker can abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in Initial Access payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. attacker may also execute commands through interactive terminals/shells, as well as utilize various Remote Services in order to achieve remote Execution.
+An attacker can abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in initial access payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. An attacker may also execute commands through interactive terminals/shells, as well as utilize various remote services to achieve remote execution.
 
 **Analysis**
 
-Due to the nature of this technique and the usage of built-in command-line interfaces, the first step of the playbook is to analyze the command-line. 
-The command-line analysis will:
-- Checks and decode base64
-- Extracts and enrich indicators from the command line
+Due to the nature of this technique and the usage of built-in command-line interfaces, the first step of the playbook is to analyze the command line. 
+The command line analysis does the following:
+- Checks and decodes base64
+- Extracts and enriches indicators from the command line
 - Checks specific arguments for malicious usage 
 
 **Investigative Actions:**
-The playbook checks for additional activity using the 'Endpoint Investigation Plan' playbook and utilizes the power of the insight alerts.
+The playbook checks for additional activity using the 'Endpoint Investigation Plan' playbook and utilizes the power of insight alerts.
 
 **Response Actions**
 
-The playbook's first response actions is to contain the threat based on the initial data provided within the alert and after analyzing the data. In that phase, the playbook will execute:
+After analyzing the data, the playbook's first response action is to contain the threat based on the initial data provided within the alert. In this phase, the playbook:
 
-* Isolate the endpoint based on playbook inputs.
+* Isolates the endpoint based on playbook inputs.
 
-When the playbook proceeds, it checks for additional activity using the 'Endpoint Investigation Plan' playbook, and another phase, which includes containment and eradication, is executed.
+When the playbook proceeds, it checks for additional activity using the 'Endpoint Investigation Plan' playbook. It then continues with the next stage, which includes containment and eradication. This phase executes the following containment actions:
 
-This phase will execute the following containment actions:
+* Automatically isolates the endpoint
 
-* Automatically isolate the endpoint
-
-And the following eradication actions:
+It then continues with the following eradication actions:
 
 * process termination
 
@@ -52,16 +50,16 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ### Commands
-* closeInvestigation
+*closeInvestigation*
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| CloseAlertAfterEradication | Whether to automatically close the alert after investigation and remediation are finished. True/False. | False | Optional |
-| AutoRestoreEndpoint | Whether to execute the Recovery playbook. | False | Optional |
-| AutoContainment | Whether to execute automatically or manually the containment plan tasks:<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user  |  | Optional |
+| CloseAlertAfterEradication | Whether to automatically close the alert after investigation and remediation has finished. True/False. | False | Optional |
+| AutoRestoreEndpoint | Whether to execute the Recovery Plan playbook. | False | Optional |
+| AutoContainment | Whether to execute automatically or manually the Containment Plan tasks:<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user  |  | Optional |
 
 ## Playbook Outputs
 ---
