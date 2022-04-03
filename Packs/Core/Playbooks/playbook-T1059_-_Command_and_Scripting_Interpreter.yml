@@ -1,7 +1,7 @@
 id: T1059 - Command and Scripting Interpreter
 version: -1
 name: T1059 - Command and Scripting Interpreter
-description: "This playbook handles Command and Scripting Interpreter alerts based on MITRE T1059 technique.\nAn attacker might abuse command and script interpreters to execute commands, scripts, or binaries.\nMost systems come with some built-in command-line interface and scripting capabilities, for example, macOS and Linux distributions include some flavor of Unix Shell while Windows installations include the Windows Command Shell and PowerShell.\n\n\n**Attacker's Goals:**\n\nAn attacker can abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in Initial Access payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. attacker may also execute commands through interactive terminals/shells, as well as utilize various Remote Services in order to achieve remote Execution.\n\n**Analysis**\n\nDue to the nature of this technique and the usage of built-in command-line interfaces, the first step of the playbook is to analyze the command-line. \nThe command-line analysis will:\n- Checks and decode base64\n- Extracts and enrich indicators from the command line\n- Checks specific arguments for malicious usage \n\n**Investigative Actions:**\nThe playbook checks for additional activity using the 'Endpoint Investigation Plan' playbook and utilizes the power of the insight alerts.\n\n**Response Actions**\n\nThe playbook's first response actions is to contain the threat based on the initial data provided within the alert and after analyzing the data. In that phase, the playbook will execute:\n\n* Isolate the endpoint based on playbook inputs.\n\nWhen the playbook proceeds, it checks for additional activity using the 'Endpoint Investigation Plan' playbook, and another phase, which includes containment and eradication, is executed.\n\nThis phase will execute the following containment actions:\n\n* Automatically isolate the endpoint\n\nAnd the following eradication actions:\n\n* process termination"
+description: "This playbook handles command and scripting interpreter alerts based on the MITRE T1059 technique.\nAn attacker might abuse command and script interpreters to execute commands, scripts, or binaries.\nMost systems come with some kind of built-in command line interface and scripting capabilities. For example, macOS and Linux distributions include some form of Unix Shell while Windows installations include the Windows Command Shell and PowerShell.\n\n\n**Attacker's Goals:**\n\nAn attacker can abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in initial access payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. An attacker may also execute commands through interactive terminals/shells, as well as utilize various remote services to achieve remote execution.\n\n**Analysis**\n\nDue to the nature of this technique and the usage of built-in command line interfaces, the first step of the playbook is to analyze the command line. \nThe command line analysis does the following:\n- Checks and decodes base64\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\n**Investigative Actions:**\nThe playbook checks for additional activity using the 'Endpoint Investigation Plan' playbook and utilizes the power of insight alerts.\n\n**Response Actions**\n\nAfter analyzing the data, the playbook's first response action is to contain the threat based on the initial data provided within the alert. In this phase, the playbook will:\n\n* Isolate the endpoint based on playbook inputs.\n\nWhen the playbook proceeds, it checks for additional activity using the 'Endpoint Investigation Plan' playbook. It then continues with the next stage, which includes, containment and eradication.\n\nThis phase executes the following containment actions:\n\n* Automatically isolates the endpoint\n\nIt then continues with the following eradication actions:\n\n* process termination"
 starttaskid: "0"
 tasks:
   "0":
@@ -133,7 +133,7 @@ tasks:
       name: Manual review - was it your security vendor?
       description: |+
         Check the script that ran and verify:
-        Was it your security vendor? or a script from your IT? known file?
+        Was it your security vendor? Was it a script from your IT, or a known file?
 
 
       type: condition
@@ -167,7 +167,7 @@ tasks:
       id: 4ddb3c79-cf4a-4ab8-8e26-dc5cd72e8c04
       version: -1
       name: close alert
-      description: commands.local.cmd.close.inv
+      description: Closes the alert in Cortex XSIAM
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -261,7 +261,7 @@ tasks:
       id: e16a8da7-de95-4894-83f9-c9bc38ff52e2
       version: -1
       name: Should restore affected endpoint?
-      description: Checks if should release the affected endpoint from isolation
+      description: Checks if it should release the affected endpoint from isolation.
       type: condition
       iscommand: false
       brand: ""
@@ -333,7 +333,7 @@ tasks:
       id: 78ae536b-f1b8-4494-86cb-a2ba5a9df31a
       version: -1
       name: Should close alert automatically?
-      description: Whether to close the alert automatically or manually
+      description: Whether to close the alert automatically or manually.
       type: condition
       iscommand: false
       brand: ""
@@ -377,8 +377,8 @@ tasks:
     task:
       id: 7e128208-4a6e-4e8f-81b5-d9998af64a8a
       version: -1
-      name: 'Found any malicious behaviour? '
-      description: Checks if found malicious behaviour
+      name: 'Found any malicious behavior? '
+      description: Checks if found malicious behavior.
       type: condition
       iscommand: false
       brand: ""
@@ -422,7 +422,7 @@ tasks:
       version: -1
       name: Containment Plan
       description: |-
-        This playbook handles all the containment actions available with XSIAM.
+        This playbook handles all the containment actions available with Cortex XSIAM.
         The playbook allows to contain the incident with one of the following tasks:
         * Isolate endpoint
         * Disable account
@@ -484,11 +484,11 @@ tasks:
       version: -1
       name: Eradication Plan
       description: |-
-        This playbook handles all the eradication actions available with XSIAM.
-        The playbook allows to eradicate the incident with one of the following tasks:
+        This playbook handles all the eradication actions available with Cortex XSIAM.
+        The playbook allows you to eradicate the incident with one of the following tasks:
         * Reset user password
         * Delete file
-        * Kill process (currently, the playbook supports terminating a process by name)
+        * Kill process (currently, the playbook supports terminating a process by name).
 
         The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
       playbookName: Eradication Plan
@@ -544,7 +544,7 @@ tasks:
       version: -1
       name: Recovery Plan
       description: |-
-        This playbook handles all the recovery actions available with XSIAM.
+        This playbook handles all the recovery actions available with Cortex XSIAM.
         The playbook allows to recover  from the incident with one of the following tasks:
         * Unisolate endpoint
         * Restore quarantined file
@@ -691,7 +691,7 @@ tasks:
       id: 59741944-c3f6-4930-8594-53cec6875f48
       version: -1
       name: Found relevant information?
-      description: Checks if relevent information found
+      description: Checks whether relevant information is found.
       type: condition
       iscommand: false
       brand: ""
@@ -763,8 +763,8 @@ tasks:
       version: -1
       name: Endpoint Investigation Plan
       description: |-
-        This playbook handles all the endpoint investigation actions available with XSIAM.
-        The playbook allows to investigate and hunt for more information using one of the following tasks:
+        This playbook handles all the endpoint investigation actions available with Cortex XSIAM.
+        The playbook allows you to investigate and hunt for more information using one of the following tasks:
         * Pre-defined MITRE Tactics
         * Host fields (Host ID)
         * Attacker fields (Attacker IP, External host)
