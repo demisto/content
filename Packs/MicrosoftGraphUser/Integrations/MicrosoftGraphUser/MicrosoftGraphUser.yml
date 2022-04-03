@@ -599,7 +599,8 @@ script:
       secret: true
     deprecated: false
     description: |-
-      Changes the password of an on-premise user. Requires the UserAuthenticationMethod.Read.All permission.
+      Changes the password of an on-premise user. Requires the UserAuthenticationMethod.Read.All permission. 
+      Providing a password is required (password auto-generation is not supported).
     execution: true
     name: msgraph-user-change-password-on-premise
   - deprecated: false

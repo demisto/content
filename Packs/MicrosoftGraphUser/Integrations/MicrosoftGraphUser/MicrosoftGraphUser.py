@@ -142,6 +142,7 @@ class MsGraphClient:
     def password_change_user_on_premise(self, user: str, password: str):
         password_id_response = None
         try:
+            # fetches the password ID, to be used later. See API docs for reference.
             password_id_response = self.ms_client.http_request(
                 method='GET',
                 url_suffix=f'users/{quote(user)}/authentication/passwordMethods'
@@ -150,14 +151,11 @@ class MsGraphClient:
         except (IndexError, KeyError) as e:
             raise DemistoException("Failed getting passwordMethod id", exception=e, res=password_id_response)
 
-        json_data = {"newPassword": password} if password else None
-
-        password_change_response = self.ms_client.http_request(
+        return self.ms_client.http_request(
             method='POST',
             url_suffix=f'users/{quote(user)}/authentication/passwordMethods/{password_id}/resetPassword',
-            ok_codes=(202,), json_data=json_data
+            ok_codes=(202,), json_data={"newPassword": password}
         )
-        return password_change_response
 
     def get_delta(self, properties):
         users = self.ms_client.http_request(
@@ -240,6 +238,7 @@ def suppress_errors_with_404_code(func):
                     human_readable = f'#### Manager -> {manager} does not exist'
                     return human_readable, None, None
             raise
+
     return wrapper
 
 
@@ -340,17 +339,15 @@ def change_password_user_command(client: MsGraphClient, args: Dict):
 
 
 def change_password_user_on_premise_command(client: MsGraphClient, args: Dict):
-    user = str(args.get('user'))
-    password = str(args.get('password'))
+    user = args.get('user')
+    password = args.get('password')
 
-    res = client.password_change_user_on_premise(user, password)
-    if location := res.get('Location'):
-        human_readable = f'The password of user {user} has been changed to an auto-generated one. ' \
-                         f'Check the change status on {location}'
-    else:
-        human_readable = f"The password of user {user} has been changed successfully."
+    if not all((user, password)):
+        raise DemistoException('Username and password cannot be empty.')
 
-    return human_readable, {}, {}
+    client.password_change_user_on_premise(user, password)
+
+    return f"The password of user {user} has been changed successfully.", {}, {}
 
 
 def get_delta_command(client: MsGraphClient, args: Dict):

@@ -163,32 +163,47 @@ def test_suppress_errors(mocker):
         assert results == test['expected_result']
 
 
-RESPONSE_WITH_LOCATION = {'Location': 'https://example-location.com'}
-OUTPUT_PASSWORD_CHANGED_LOCATION = 'The password of user user has been changed to an auto-generated one. ' \
-                                   'Check the change status on https://example-location.com'
-OUTPUT_PASSWORD_CHANGED_NO_LOCATION = 'The password of user user has been changed successfully.'
-
-
-@pytest.mark.parametrize('password,password_response,expected_output',
-                         (('new_password', {}, OUTPUT_PASSWORD_CHANGED_NO_LOCATION),
-                          (None, RESPONSE_WITH_LOCATION, OUTPUT_PASSWORD_CHANGED_LOCATION),
-                          ('', RESPONSE_WITH_LOCATION, OUTPUT_PASSWORD_CHANGED_LOCATION)
-                          ))
-def test_change_on_premise_password(requests_mock, password: str, password_response: dict, expected_output: str):
+def test_change_on_premise_password_success(requests_mock):
     from MicrosoftGraphUser import (change_password_user_on_premise_command, MsGraphClient)
+    password = 'new_password'
+    expected_output = 'The password of user user has been changed successfully.'
+    id_ = 'id'
 
+    # authenticate
     requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
-    id_ = 'the_id'
 
     requests_mock.get('https://base_url/users/user/authentication/passwordMethods', json={'value': [{'id': id_}]})
     mocked_password_change_request = requests_mock.post(
         f'https://base_url/users/user/authentication/passwordMethods/{id_}/resetPassword',
-        json=password_response,
+        json={},
         status_code=202
     )
 
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'https://base_url', 'verify', 'proxy',
-                           'self_deployed', 'redirect_uri', 'auth_code')
-    output, _, _ = change_password_user_on_premise_command(client=client, args=dict(user='user', password=password))
+                           'self_deployed', 'redirect_uri', 'auth_code', True)
+    output, _, _ = change_password_user_on_premise_command(client=client, args={'user': 'user', 'password': password})
     assert mocked_password_change_request.call_count == 1
     assert output == expected_output
+
+
+@pytest.mark.parametrize('user,password', [('', ''),
+                                           ('user', ''),
+                                           ('', 'password'),
+                                           ])
+def test_change_on_premise_password_missing_arg(requests_mock, user: str, password: str):
+    """
+    Given
+            a MSGraphClient
+    When
+            calling change_password_user_on_premise
+    Then
+            make sure the user and password are not empty
+    """
+    from MicrosoftGraphUser import (change_password_user_on_premise_command, MsGraphClient, DemistoException)
+    requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
+
+    client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'https://base_url', 'verify', 'proxy',
+                           'self_deployed', 'redirect_uri', 'auth_code', True)
+
+    with pytest.raises(DemistoException):
+        change_password_user_on_premise_command(client=client, args={'user': user, 'password': password})
