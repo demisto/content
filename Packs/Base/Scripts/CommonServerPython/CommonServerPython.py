@@ -3236,9 +3236,9 @@ class Common(object):
                 'description': self.description
             }
 
-    class ExternalReferences(object):
+    class ExternalReference(object):
         """
-        ExternalReferences class
+        ExternalReference class
         Class to represent a single instance of an external reference for an indicator type.
 
         :type source_name: ``str``
@@ -3261,9 +3261,9 @@ class Common(object):
                 'sourceid': self.source_id,
             }
 
-    class Certificates(object):
+    class Certificate(object):
         """
-        Certificates class
+        Certificate class
         Class to represent a single instance of a certificate for an indicator type.
 
         :type issued_to: ``str``
@@ -3639,7 +3639,7 @@ class Common(object):
 
             if self.md5:
                 file_context['MD5'] = self.md5
-                file_context['Hashes'].append({'type': 'MD5',
+                file_context.setdefault('Hashes', []).append({'type': 'MD5',
                                                'value': self.md5})
 
             if self.sha1:
