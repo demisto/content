@@ -22,6 +22,10 @@ TEMPLATE_OUTPUTS = ['key', 'value', 'mandatory', 'editable', 'type', 'defaultVal
 STATUSES = {'1', '2', '3', '4', '5', '6', '7', '8', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30',
             '31', '32', '33', '34', '35', '36', '39', '40', 'OPEN_CLASSES'}
 
+DEFAULT_PAGE_SIZE = 100
+
+DEFAULT_PAGE_NUMBER = 1
+
 MAX_INCIDENTS_TO_FETCH = 200
 
 FETCH_DEFAULT_TIME = '3 days'
@@ -42,7 +46,7 @@ class Client(BaseClient):
 
         return response.cookies
 
-    def table_list_request(self, entity: str = None, fields: List[str] = None):
+    def table_list_request(self, entity: str = None, fields: str = None):
         params = assign_params(entity=entity, fields=fields)
 
         response = self._http_request('GET', 'list', params=params, cookies=self._cookies)
@@ -50,56 +54,56 @@ class Client(BaseClient):
         return response
 
     def table_list_with_id_request(self, list_id: str, entity: str = None, entity_id: str = None, entity_type: int = None,
-                                   fields: List[str] = None, key: str = None):
+                                   fields: str = None, key: str = None):
         params = assign_params(entity=entity, fields=fields, entityId=entity_id, entityType=entity_type, key=key)
 
         response = self._http_request('GET', f'list/{list_id}', params=params, cookies=self._cookies)
 
         return response
 
-    def asset_list_request(self, fields: List[str] = None, offset: int = None, limit: int = None):
+    def asset_list_request(self, fields: str = None, offset: int = None, limit: int = None):
         params = assign_params(fields=fields, offset=offset, limit=limit)
 
         response = self._http_request('GET', 'asset', params=params, cookies=self._cookies)
 
         return response
 
-    def asset_list_with_id_request(self, asset_id: str, fields: List[str] = None):
+    def asset_list_with_id_request(self, asset_id: str, fields: str = None):
         params = assign_params(fields=fields)
 
         response = self._http_request('GET', f'asset/{asset_id}', params=params, cookies=self._cookies)
 
         return response
 
-    def asset_search_request(self, query: str, fields: List[str] = None, limit: int = None, offset: int = None):
+    def asset_search_request(self, query: str, fields: str = None, limit: int = None, offset: int = None):
         params = assign_params(query=query, fields=fields, limit=limit, offset=offset)
 
         response = self._http_request('GET', 'asset/search', params=params, cookies=self._cookies)
 
         return response
 
-    def filter_list_request(self, fields: List[str] = None):
+    def filter_list_request(self, fields: str = None):
         params = assign_params(fields=fields)
 
         response = self._http_request('GET', 'filters', params=params, cookies=self._cookies)
 
         return response
 
-    def user_list_request(self, fields: List[str] = None, type_: str = None, offset: int = None, limit: int = None):
+    def user_list_request(self, fields: str = None, type_: str = None, offset: int = None, limit: int = None):
         params = assign_params(fields=fields, type=type_, offset=offset, limit=limit)
 
         response = self._http_request('GET', 'users', params=params, cookies=self._cookies)
 
         return response
 
-    def user_search_request(self, query: str, fields: List[str] = None, type_: str = None, offset: int = None, limit: int = None):
+    def user_search_request(self, query: str, fields: str = None, type_: str = None, offset: int = None, limit: int = None):
         params = assign_params(query=query, fields=fields, type=type_, offset=offset, limit=limit)
 
         response = self._http_request('GET', 'users/search', params=params, cookies=self._cookies)
 
         return response
 
-    def service_record_list_request(self, type_: str, fields: List[str] = None, offset: int = None, limit: int = None,
+    def service_record_list_request(self, type_: str, fields: str = None, offset: int = None, limit: int = None,
                                     ids: List[str] = None, archive: int = None, filters: Dict[str, Any] = None):
         params = assign_params(type=type_, fields=fields, offset=offset, limit=limit, ids=ids, archive=archive)
         params.update(filters or {})
@@ -108,7 +112,7 @@ class Client(BaseClient):
 
         return response
 
-    def service_record_search_request(self, type_: str, query: str, fields: List[str] = None, offset: int = None,
+    def service_record_search_request(self, type_: str, query: str, fields: str = None, offset: int = None,
                                       limit: int = None, archive: int = None, filters: Dict[str, Any] = None):
         params = assign_params(type=type_, fields=fields, offset=offset, limit=limit, query=query, archive=archive)
         params.update(filters)
@@ -133,14 +137,14 @@ class Client(BaseClient):
 
         return response
 
-    def service_record_template_get_request(self, type_: str, fields: List[str] = None, template_id: str = None):
+    def service_record_template_get_request(self, type_: str, fields: str = None, template_id: str = None):
         params = assign_params(fields=fields, type=type_, template=template_id)
 
         response = self._http_request('GET', 'sr/template', params=params, cookies=self._cookies)
 
         return response
 
-    def service_record_create_request(self, type_: str, info: List[Dict[str, str]], fields: List[str] = None,
+    def service_record_create_request(self, type_: str, info: List[Dict[str, str]], fields: str = None,
                                       template_id: str = None):
         params = assign_params(fields=fields, type=type_, template=template_id)
         data = {"info": info}
@@ -149,7 +153,7 @@ class Client(BaseClient):
 
         return response
 
-    def service_record_delete_request(self, ids: List[str], solution: str = None):
+    def service_record_delete_request(self, ids: str, solution: str = None):
         params = assign_params(ids=ids)
         data = {"solution": solution}
 
@@ -184,7 +188,7 @@ def create_readable_response(responses: Union[dict, List[dict], str], handle_one
     return readable_response
 
 
-def asset_list_handler(response, remove_if_null):
+def asset_list_handler(response: Dict[str, Any], remove_if_null: str):
     new_info = []
     response_entry = {key: response[key] for key in ['id', 'name'] if key in response}
     if 'info' in response:
@@ -196,7 +200,7 @@ def asset_list_handler(response, remove_if_null):
     return response_entry
 
 
-def filter_list_handler(response):
+def filter_list_handler(response: Dict[str, Any]):
     new_info = []
     response_entry = {key: response[key] for key in ['id', 'type', 'caption'] if key in response}
     if 'values' in response:
@@ -207,7 +211,7 @@ def filter_list_handler(response):
     return response_entry
 
 
-def service_record_handler(response):
+def service_record_handler(response: Dict[str, Any]):
     response_entry = {'id': response['id']}
     if 'info' in response:
         for info in response['info']:
@@ -270,7 +274,7 @@ def calculate_offset(page_size: int, page_number: int) -> int:
     return page_size * (page_number - 1)
 
 
-def paging_heading(page_size: str = None, page_number: str = None):
+def paging_heading(page_size: Union[str, int] = None, page_number: Union[str, int] = None):
     if page_number or page_size:
         return 'Showing' + (f' {page_size}' if page_size else '') + ' results' + \
                (f' from page {page_number}' if page_number else '') + ':\n'
@@ -279,7 +283,7 @@ def paging_heading(page_size: str = None, page_number: str = None):
 
 def set_returned_fields(fields: str = None) -> Optional[str]:
     # "all" was added for debugging purposes as we set the "fields" argument to be mandatory, and is not sent in the request
-    if 'all' in fields or fields == []:
+    if fields and 'all' in fields:
         return None
     return fields
 
@@ -319,8 +323,8 @@ def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     asset_id = args.get('asset_id')
     fields = set_returned_fields(args.get('fields'))
 
-    limit = arg_to_number(args.get('page_size', '100'))
-    page_number = arg_to_number(args.get('page_number', '1'))
+    limit = arg_to_number(args.get('page_size')) or DEFAULT_PAGE_SIZE
+    page_number = arg_to_number(args.get('page_number')) or DEFAULT_PAGE_NUMBER
     offset = calculate_offset(limit, page_number)
 
     if asset_id:
@@ -349,8 +353,8 @@ def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
     query = args.get('query')
     fields = set_returned_fields(args.get('fields'))
 
-    limit = arg_to_number(args.get('page_size', '100'))
-    page_number = arg_to_number(args.get('page_number', '1'))
+    limit = arg_to_number(args.get('page_size')) or DEFAULT_PAGE_SIZE
+    page_number = arg_to_number(args.get('page_number')) or DEFAULT_PAGE_NUMBER
     offset = calculate_offset(limit, page_number)
 
     response = client.asset_search_request(str(query), fields, limit, offset)
@@ -396,8 +400,8 @@ def user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     fields = set_returned_fields(args.get('fields'))
     type_ = args.get('type')
 
-    limit = arg_to_number(args.get('page_size', '100'))
-    page_number = arg_to_number(args.get('page_number', '1'))
+    limit = arg_to_number(args.get('page_size')) or DEFAULT_PAGE_SIZE
+    page_number = arg_to_number(args.get('page_number')) or DEFAULT_PAGE_NUMBER
     offset = calculate_offset(limit, page_number)
 
     response = client.user_list_request(fields, type_, offset, limit)
@@ -421,8 +425,8 @@ def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     fields = set_returned_fields(args.get('fields'))
     type_ = args.get('type')
 
-    limit = arg_to_number(args.get('page_size', '100'))
-    page_number = arg_to_number(args.get('page_number', '1'))
+    limit = arg_to_number(args.get('page_size')) or DEFAULT_PAGE_SIZE
+    page_number = arg_to_number(args.get('page_number')) or DEFAULT_PAGE_NUMBER
     offset = calculate_offset(limit, page_number)
 
     response = client.user_search_request(str(query), fields, type_, offset, limit)
@@ -447,8 +451,8 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
     ids = args.get('ids')
     archive = arg_to_number(args.get('archive'))
 
-    limit = arg_to_number(args.get('page_size', '100'))
-    page_number = arg_to_number(args.get('page_number', '1'))
+    limit = arg_to_number(args.get('page_size')) or DEFAULT_PAGE_SIZE
+    page_number = arg_to_number(args.get('page_number')) or DEFAULT_PAGE_NUMBER
     offset = calculate_offset(limit, page_number)
 
     custom_fields_keys = argToList(args.get('custom_fields_keys'))
@@ -479,8 +483,8 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
     fields = set_returned_fields(args.get('fields'))
     archive = arg_to_number(args.get('archive'))
 
-    limit = arg_to_number(args.get('page_size', '100'))
-    page_number = arg_to_number(args.get('page_number', '1'))
+    limit = arg_to_number(args.get('page_size')) or DEFAULT_PAGE_SIZE
+    page_number = arg_to_number(args.get('page_number')) or DEFAULT_PAGE_NUMBER
     offset = calculate_offset(limit, page_number)
 
     custom_fields_keys = argToList(args.get('custom_fields_keys'))
@@ -588,7 +592,7 @@ def service_record_create_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def service_record_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    ids = args.get('ids')
+    ids = str(args.get('ids'))
     solution = args.get('solution')
 
     response = client.service_record_delete_request(ids, solution)
