@@ -1,9 +1,9 @@
 commonfields:
-  id: APIMetricsVaalidation
+  id: APIMetricsValidation
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: APIMetricsVaalidation
-display: APIMetricsVaalidation
+name: APIMetricsValidation
+display: APIMetricsValidation
 category: Utilities
 description: This integration runs through all scenarios as defined in the API Metrics
   expected results guide.
