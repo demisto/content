@@ -63,7 +63,7 @@ run-validations:
         RESP=$(curl --location --request GET 'https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH' \
         --header 'PRIVATE-TOKEN: $CI_JOB_TOKEN')
         if [ $RESP != "[]" ]; then
-            echo >&2 "Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
+            echo "Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
             exit 1
         fi
       fi
