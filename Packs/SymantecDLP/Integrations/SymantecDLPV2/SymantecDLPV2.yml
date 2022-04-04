@@ -16,7 +16,8 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: '10'
+- additionalinfo: Max fetch limit is 50
+  defaultvalue: '10'
   display: Fetch limit
   name: max_fetch
   required: false
@@ -30,8 +31,8 @@ configuration:
   - Endpoint
   required: false
   type: 16
-- additionalinfo: The status ID of the incidents. To get status IDs, 
-    run the `symantec-dlp-list-incident-status` command.
+- additionalinfo: The status ID of the incidents. To get status IDs, run the `symantec-dlp-list-incident-status`
+    command.
   display: Incident Status ID
   hidden: false
   name: incidentStatusId
@@ -75,8 +76,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The status ID of the incidents. To get status IDs, 
-        run the `symantec-dlp-list-incident-status` command.
+      description: The status ID of the incidents. To get status IDs, run the `symantec-dlp-list-incident-status`
+        command.
       isArray: true
       name: status_id
       required: false
@@ -182,11 +183,11 @@ script:
       defaultValue: none
       description: "This argument can get the following values:\nall - All custom\
         \ attributes are needed \nnone - None of the custom attributes are needed\n\
-        specific attributes - A comma separated list of custom attributes names.\
-        \ For example: ca1,ca2,ca3\ncustom attribute group name - A comma separated list of custom\
-        \ attributes group names. For example: cag1, cag2, cag3.\n\
-        This value retrieves all custom attributes in the mentioned group. The\
-        \ value \"none\" is default."
+        specific attributes - A comma separated list of custom attributes names. For\
+        \ example: ca1,ca2,ca3\ncustom attribute group name - A comma separated list\
+        \ of custom attributes group names. For example: cag1, cag2, cag3.\nThis value\
+        \ retrieves all custom attributes in the mentioned group. The value \"none\"\
+        \ is default."
       isArray: false
       name: custom_attributes
       predefined:
@@ -197,8 +198,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma separated list of custom attributes names or custom attribute group names.
-        For example: item1,item2,item3'
+      description: 'A comma separated list of custom attributes names or custom attribute
+        group names. For example: item1,item2,item3'
       isArray: true
       name: custom_data
       required: false
@@ -300,8 +301,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The status ID for which to update. Run the `symantec-dlp-list-incident-status` command
-        to get the status ID.
+      description: The status ID for which to update. Run the `symantec-dlp-list-incident-status`
+        command to get the status ID.
       isArray: false
       name: incident_status_id
       required: false

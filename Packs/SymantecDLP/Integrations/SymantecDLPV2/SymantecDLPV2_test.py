@@ -442,8 +442,7 @@ def test_fetch_incidents_last_run(requests_mock):
     """
     from SymantecDLPV2 import Client, fetch_incidents
 
-    last_run = {'last_incident_creation_time': '2022-03-06T15:23:53Z',
-                'last_incident_id': 3620}
+    last_run = {'last_incident_id': 3620}
     # mock responses
     requests_mock.post(
         'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents', json=MULTIPLE_INCIDENTS_MOCK_RESPONSE)
@@ -479,8 +478,7 @@ def test_fetch_incidents_last_run_no_fetch(requests_mock):
     """
     from SymantecDLPV2 import Client, fetch_incidents
 
-    last_run = {'last_incident_creation_time': '2022-03-07T07:00:00Z',
-                'last_incident_id': 3629}
+    last_run = {'last_incident_id': 3629}
     # mock responses
     requests_mock.post(
         'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents', json=MULTIPLE_INCIDENTS_MOCK_RESPONSE)
@@ -529,48 +527,6 @@ def test_get_incident_details_fetch(mocker):
 
 
 @freeze_time("2022-03-05T13:34:14Z")
-def test_fetch_incidents_same_time(requests_mock):
-    """Tests the fetch-incidents function where the last run date is equal to the new incidents date
-    """
-    from SymantecDLPV2 import Client, fetch_incidents
-
-    # mock responses
-    requests_mock.post(
-        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents',
-        json=MULTIPLE_INCIDENTS_SAME_TIME_MOCK_RESPONSE)
-    requests_mock.get(
-        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3620/staticAttributes',
-        json=FIRST_STATIC_ATT_MOCK_RESPONSE)
-    requests_mock.get(
-        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3620/editableAttributes',
-        json=FIRST_EDITABLE_ATT_MOCK_RESPONSE)
-    requests_mock.get(
-        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3629/staticAttributes',
-        json=SECOND_STATIC_ATT_MOCK_RESPONSE)
-    requests_mock.get(
-        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3629/editableAttributes',
-        json=SECOND_EDITABLE_ATT_MOCK_RESPONSE)
-    requests_mock.get(
-        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3630/staticAttributes',
-        json=THIRD_STATIC_ATT_MOCK_RESPONSE)
-    requests_mock.get(
-        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3630/editableAttributes',
-        json=THIRD_EDITABLE_ATT_MOCK_RESPONSE)
-
-    last_run = {'last_incident_creation_time': '2022-03-06T15:23:53Z',
-                'last_incident_id': 3619}
-
-    client = Client(base_url="https://SymantecDLPV2.com", auth=("test", "pass"), verify=False, proxy=False,
-                    headers={"Content-type": "application/json"})
-
-    incidents = fetch_incidents(client, fetch_time='1 hour', fetch_limit='1', last_run=last_run)
-    assert len(incidents) == 3
-    assert incidents[0].get('rawJSON') == FIRST_INCIDENT_DETAILS
-    assert incidents[1].get('rawJSON') == SECOND_INCIDENT_DETAILS
-    assert incidents[2].get('rawJSON') == THIRD_INCIDENT_DETAILS
-
-
-@freeze_time("2022-03-05T13:34:14Z")
 def test_fetch_incidents_same_time_skip_incident(requests_mock):
     """Tests the fetch-incidents function when one of the incident in the list was already fetched.
     """
@@ -599,8 +555,7 @@ def test_fetch_incidents_same_time_skip_incident(requests_mock):
         'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/3630/editableAttributes',
         json=THIRD_EDITABLE_ATT_MOCK_RESPONSE)
 
-    last_run = {'last_incident_creation_time': '2022-03-06T15:23:53Z',
-                'last_incident_id': 3620}
+    last_run = {'last_incident_id': 3620}
 
     client = Client(base_url="https://SymantecDLPV2.com", auth=("test", "pass"), verify=False, proxy=False,
                     headers={"Content-type": "application/json"})
