@@ -34,6 +34,27 @@ def test_module(requests_mock):
     assert response == 'ok'
 
 
+def test_get_event_types(requests_mock):
+    '''
+    Test the module get_event_types
+    :param requests_mock:
+    :return:
+    '''
+    from CybleEvents import Client, get_event_types
+
+    mock_response_1 = load_json_file("dummy_fetch_incidents_types.json")
+    requests_mock.post('https://test.com/api/v2/events/types', json=mock_response_1)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+    response = get_event_types(client=client, method='POST', token='some_random_token')
+
+    assert isinstance(response, dict)
+    assert len(response) == 3
+
+
 def test_fetch_incidents(requests_mock):
     """
     Tests the fetch incident command
