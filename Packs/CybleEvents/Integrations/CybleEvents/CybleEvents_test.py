@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+import pytest
 
 
 def load_json_file(filename):
@@ -12,12 +13,25 @@ def load_json_file(filename):
         return json.load(f)
 
 
-def test_module():
+def test_module(requests_mock):
     """
     Test the basic test command for Cyble Events
     :return:
     """
-    pass
+    from CybleEvents import Client, get_test_response
+
+    mock_response_1 = load_json_file("dummy_event_types.json")
+    requests_mock.post('https://test.com/api/v2/events/types', json=mock_response_1)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    response = get_test_response(client=client, method='POST', token="some_random_token")
+
+    assert isinstance(response, str)
+    assert response == 'ok'
 
 
 def test_fetch_incidents(requests_mock):
@@ -170,7 +184,8 @@ def test_cyble_vision_fetch_events(requests_mock):
     assert response[0]['cybleeventsalias'] == 'some_alias_2'
 
 
-def test_cyble_vision_fetch_detail(requests_mock):
+@pytest.mark.parametrize("eID,eType", [('some_event_type', 'some_event_id'), ('new_event_type', 'new_event_id')])
+def test_cyble_vision_fetch_detail(requests_mock, eID, eType):
     """
     Tests the cyble_vision_fetch_detail command
 
@@ -186,7 +201,7 @@ def test_cyble_vision_fetch_detail(requests_mock):
 
     mock_response_1 = load_json_file("dummy_fetch_detail.json")
 
-    requests_mock.post('https://test.com/api/v2/events/some_event_type/some_event_id', json=mock_response_1)
+    requests_mock.post('https://test.com/api/v2/events/{}/{}'.format(eType, eID), json=mock_response_1)
 
     client = Client(
         base_url='https://test.com',
@@ -195,8 +210,8 @@ def test_cyble_vision_fetch_detail(requests_mock):
 
     args = {
         'token': 'some_random_token',
-        'event_type': 'some_event_type',
-        'event_id': 'some_event_id'
+        'event_type': eType,
+        'event_id': eID
     }
 
     response = fetch_alert_details(client=client, args=args).outputs
