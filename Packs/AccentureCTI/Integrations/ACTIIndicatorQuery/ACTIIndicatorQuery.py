@@ -410,6 +410,7 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
 
     return intelligence_alerts, intelligence_reports
 
+
 def markdown_postprocessing(md_text: str) -> str:
     ''' Applies post processing steps to fix markdown content for XSOAR viewing
     Arg: md_text, markdown text to work on
@@ -419,6 +420,7 @@ def markdown_postprocessing(md_text: str) -> str:
     result = addBaseUrlToPartialPaths(result)
     result = convert_inline_image_to_encoded(result)
     return result
+
 
 def fix_markdown(text: str) -> str:
     '''Fix markdown formatting issues
@@ -430,41 +432,42 @@ def fix_markdown(text: str) -> str:
     result = re.sub(regex_header, subst_header, text, 0)
     return result
 
+
 def addBaseUrlToPartialPaths(content: str) -> str:
-        '''append intelgraph's base URL to partial markdown links
-        e.g. '/rest/files/download/...' => 'https://intelgraph.idefense.com/rest/files/download/...'
-        e.g. '/#/node/region/view/...' => 'https://intelgraph.idefense.com/#/node/region/view/...'''
+    '''
+    append intelgraph's base URL to partial markdown links
+    e.g. '/rest/files/download/...' => 'https://intelgraph.idefense.com/rest/files/download/...'
+    e.g. '/#/node/region/view/...' => 'https://intelgraph.idefense.com/#/node/region/view/...
+    '''
 
-        files = r"\(\s?(\/rest\/.*?)\)"
+    files = r"\(\s?(\/rest\/.*?)\)"
+    relative_links = r"\((\s?(/#.*?|#.*?))\)"
 
-        relative_links = r"\((\s?(/#.*?|#.*?))\)"
-                # data[f'analysis_{count}'] = item['analysis']
-        def add_ig(match):
-            match = match.group(1)
-            if match[0] == " ":
-                match = match[1: ]
-            if match[0] == '/':
-                match = match[1: ]
-            #print(f'(https://intelgraph.idefense.com/{match})')
-            return f'(https://intelgraph.idefense.com/{match})'
+    def add_ig(match):
+        match = match.group(1)
+        if match[0] == " ":
+            match = match[1:]
+        if match[0] == '/':
+            match = match[1:]
+        return f'(https://intelgraph.idefense.com/{match})'
 
-        # replacing all relative links that start with # or /#
-        content = re.sub(relative_links, add_ig, content)
-        # replacing all relative links that start with /rest
-        content = re.sub(files, add_ig, content)
-        return content
+    content = re.sub(relative_links, add_ig, content)
+    content = re.sub(files, add_ig, content)
+    return content
+
 
 def convert_inline_image_to_encoded(md_text: str) -> str:
     ''' Converts inline images in markdown to base64 encoded images
     arg: md_text, markdown text
     return: result updated markdown text'''
     regex = r'(!\[[^\]]+\])\((https?://[^\)]+)\)'
-    matches = re.findall(regex,md_text)
+    matches = re.findall(regex, md_text)
     encoded_images = []
     for single_match in matches:
         single_image_link = single_match[1]
         single_image_name = single_match[0]
-        response = requests.get(single_image_link, headers={"auth-token": demisto.params().get('api_token').get('password')}).content
+        response = requests.get(single_image_link,
+                                headers={"auth-token": demisto.params().get('api_token').get('password')}).content
         data = base64.b64encode(response).decode('ascii')
         image_type = single_image_link.split(".")[-1]
         encoded_images.append(f'{single_image_name}(data:image/{image_type};base64,{data})')
@@ -496,7 +499,7 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
     """
     threat_types = Res.get('threat_types', '')
     uuid = Res.get('uuid', '')
-    
+
     context = {
         'created_on': Res.get('created_on', 'NA'),
         'display_text': Res.get('display_text', 'NA'),
