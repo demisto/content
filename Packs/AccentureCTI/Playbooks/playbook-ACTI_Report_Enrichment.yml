@@ -1,6 +1,5 @@
-id: 36f12448-299e-4484-8d51-e72a08e9436d
-version: 19
-vcShouldKeepItemLegacyProdMachine: false
+id: ACTI Report Enrichment
+version: -1
 name: ACTI Report Enrichment
 description: This playbook enriches Intelligence Alerts & Intelligence Reports.
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -79,6 +79,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -115,7 +116,7 @@ inputs:
       - operator: uniq
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ir_uuid
   value:
     complex:
@@ -124,33 +125,41 @@ inputs:
       - operator: uniq
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Domain
   value:
     simple: ${Domain}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IP
   value:
     simple: ${IP}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: URL
   value:
     simple: ${URL}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: IAIR
   type: unknown
+  description: ''
 - contextPath: DBotScore
   type: unknown
+  description: ''
 - contextPath: Domain
   type: unknown
+  description: ''
 - contextPath: IP
   type: unknown
+  description: ''
 - contextPath: URL
   type: unknown
+  description: ''
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
