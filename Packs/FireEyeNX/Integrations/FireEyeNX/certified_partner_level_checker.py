@@ -1,0 +1,1 @@
+/Users/bhochman/dev/demisto/demisto-sdk/demisto_sdk/commands/lint/resources/pylint_plugins/certified_partner_level_checker.py
