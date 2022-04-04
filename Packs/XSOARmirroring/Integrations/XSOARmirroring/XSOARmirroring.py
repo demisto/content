@@ -281,6 +281,12 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, str],
     last_fetch = last_run.get('last_fetch')
     if not last_fetch:
         last_fetch = first_fetch_time  # type: ignore
+    else:
+        try:
+            last_fetch = int(last_fetch)
+            last_fetch = datetime.fromtimestamp(last_fetch).strftime(XSOAR_DATE_FORMAT)
+        except:
+            pass
 
     latest_created_time = dateparser.parse(last_fetch)
     incidents_result: List[Dict[str, Any]] = []
@@ -335,14 +341,14 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, str],
 
         incident_result['attachment'] = file_attachments
         incidents_result.append(incident_result)
-        incident_created_time = dateparser.parse(incident.get('created'))  # type: ignore
+        incident_created_time = dateparser.parse(incident.get('created'))  # type: ignore[arg-type]
 
         # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > latest_created_time:  # type: ignore
+        if incident_created_time > latest_created_time:  # type: ignore[operator]
             latest_created_time = incident_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': (latest_created_time + timedelta(microseconds=1)).strftime(XSOAR_DATE_FORMAT)}  # type: ignore
+    next_run = {'last_fetch': (latest_created_time + timedelta(microseconds=1)).strftime(XSOAR_DATE_FORMAT)}  # type: ignore[union-attr,operator]
 
     return next_run, incidents_result
 
@@ -369,7 +375,7 @@ def search_incidents_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """
 
     query = args.get('query')
-    start_date = dateparser.parse(args.get('start_time', '3 days')).strftime(XSOAR_DATE_FORMAT)  # type: ignore
+    start_date = dateparser.parse(args.get('start_time', '3 days')).strftime(XSOAR_DATE_FORMAT)  # type: ignore[union-attr]
     max_results = arg_to_number(
         arg=args.get('max_results'),
         arg_name='max_results',
@@ -730,7 +736,7 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = dateparser.parse(demisto.params().get('first_fetch', '3 days')).strftime(XSOAR_DATE_FORMAT)  # type: ignore
+    first_fetch_time = dateparser.parse(demisto.params().get('first_fetch', '3 days')).strftime(XSOAR_DATE_FORMAT)  # type: ignore[union-attr]
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     mirror_tags = set(demisto.params().get('mirror_tag', '').split(',')) \
