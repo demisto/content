@@ -75,8 +75,8 @@ class Client(BaseClient):
         self.api_token = self.headers['X-RFToken'] = api_token
         self.services = services
         self.indicator_type = indicator_type
-        self.threshold = int(threshold)
-        self.risk_score_threshold = int(risk_score_threshold)
+        self.threshold = int(threshold) if threshold else threshold
+        self.risk_score_threshold = int(risk_score_threshold) if risk_score_threshold else risk_score_threshold
         self.tags = tags
         self.tlp_color = tlp_color
         super().__init__(self.BASE_URL, proxy=proxy, verify=not insecure)
@@ -157,7 +157,8 @@ class Client(BaseClient):
                              " requests made to Recorded Future. ")
             else:
                 return_error(
-                    '{} - exception in request: {} {}'.format(self.SOURCE_NAME, response.status_code, response.content))
+                    '{} - exception in request: {} {}'
+                    .format(self.SOURCE_NAME, response.status_code, response.content))  # type: ignore
 
         if service == 'connectApi':
             response_content = gzip.decompress(response.content)
@@ -498,8 +499,7 @@ def main():
     client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], params.get('api_token'), params.get('services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
-                    params.get('risk_score_threshold'), argToList(params.get('feedTags'), params.get('tlp_color'))
-                    )
+                    params.get('risk_score_threshold'), argToList(params.get('feedTags')), params.get('tlp_color'))
     command = demisto.command()
     demisto.info('Command being called is {}'.format(command))
     # Switch case
