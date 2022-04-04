@@ -24,8 +24,6 @@ jobs:
       - name: Install Demisto SDK
         run: pip install demisto-sdk
       - name: Review Release Notes
-        with:
-          ref: add_more_names_to_ignore
         run: |
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           delim=';'
