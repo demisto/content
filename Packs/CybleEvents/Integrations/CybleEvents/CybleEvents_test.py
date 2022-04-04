@@ -85,7 +85,8 @@ def test_fetch_incidents(requests_mock):
                                      '"cybleeventsalias": "some_alias_2"}'
 
 
-def test_cyble_vision_fetch_iocs(requests_mock):
+@pytest.mark.parametrize("offset", [0, 11, 21])
+def test_cyble_vision_fetch_iocs(requests_mock, offset):
     """
     Tests the cyble_vision_fetch_iocs command
 
@@ -113,7 +114,7 @@ def test_cyble_vision_fetch_iocs(requests_mock):
         'max_fetch': 1,
         'start_date': datetime.today().strftime('%Y-%m-%d'),
         'end_date': datetime.today().strftime('%Y-%m-%d'),
-        'from': '0',
+        'from': offset,
         'limit': '10'
     }
 
