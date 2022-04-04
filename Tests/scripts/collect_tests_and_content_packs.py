@@ -1304,6 +1304,12 @@ def get_test_list_and_content_packs_to_install(files_string,
                 "Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' uses it"
             )
             packs_to_install.update(["HelloWorld", "Gmail"])
+    else:
+        tests = set(CONF.get_marketplacev2_tests())
+        packs_to_install = CONF.get_packs_of_tested_integrations(tests, ID_SET)
+        packs_to_install.update(get_content_pack_name_of_test(tests, ID_SET))
+        packs_to_install = filter_installed_packs(packs_to_install, marketplace_version, id_set)
+        tests = filter_tests(tests, id_set, modified_packs, marketplace_version, False)
 
     # We add Base and DeveloperTools packs for every build
     if tests or packs_to_install:

@@ -5585,10 +5585,12 @@
     },
     "test_marketplacev2": [
         "Create Phishing Classifier V2 ML Test",
-        "Phishing v2 - Test - Incident Starter",
-        "Phishing - Core - Test - Incident Starter",
         "DBotCreatePhishingClassifierV2FromFile-Test",
         "DBot Build Phishing Classifier Test - Multiple Algorithms",
-        "DBotPredictURLPhishing_test"
+        "DBotPredictURLPhishing_test",
+        "EWS Mail Sender Test 2",
+        "CVE Search v2 - Test",
+        "Slack Test Playbook",
+        "SplunkPySearch_Test_default_handler"
     ]
 }
