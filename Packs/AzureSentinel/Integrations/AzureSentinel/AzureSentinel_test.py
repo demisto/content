@@ -13,7 +13,7 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents
+    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents, build_threat_indicator_data
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -1330,6 +1330,31 @@ class TestHappyPath:
         assert next_run.get('last_fetch_ids') == ['inc_ID', 'inc_ID_3']
         assert next_run.get('last_incident_number') == 3
         assert len(incidents) == expected_incident_num
+
+    def test_build_threat_indicator_data(self):
+        """
+            Given:
+                - Args with values.
+            When:
+                - Calling function build_threat_indicator_data.
+            Then:
+                - Ensure the results holds the expected outcomes.
+        """
+        # prepare
+        args = {'display_name': 'displayname',
+                'indicator_type': 'ipv4',
+                'revoked': 'false',
+                'threat_types': 'compromised',
+                'value': '1.1.1.1',
+                }
+
+        # run
+        output = build_threat_indicator_data(args)
+
+        # validate
+
+        assert " '1.1.1.1'" in output.get('pattern')
+        assert output.get('patternType') == 'ipv4-addr'
 
 
 class TestEdgeCases:
