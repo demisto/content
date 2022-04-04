@@ -22,25 +22,25 @@ outputs:
 - contextPath: MatchingSecurityAdvisory.data_type
   description: The type of advisory this is
   type: String
-- contextPath: data_format
+- contextPath: MatchingSecurityAdvisory.data_format
   description: The format of the advisory, such as MITRE
   type: String
-- contextPath: cve_id
+- contextPath: MatchingSecurityAdvisory.cve_id
   description: The ID of the CVE described by this advisory
   type: String
-- contextPath: cve_date_public
+- contextPath: MatchingSecurityAdvisory.cve_date_public
   description: The date this CVE was released
   type: String
-- contextPath: cve_title
+- contextPath: MatchingSecurityAdvisory.cve_title
   description: The name of this CVE
   type: String
-- contextPath: affects_product_name
+- contextPath: MatchingSecurityAdvisory.affects_product_name
   description: The name of the product this affects, such as PAN-OS
   type: String
-- contextPath: description
+- contextPath: MatchingSecurityAdvisory.description
   description: Human readable description of Advisory
   type: String
-- contextPath: affected_version_list
+- contextPath: MatchingSecurityAdvisory.affected_version_list
   description: List of PAN-OS affected versions exactly
   type: String
 script: '-'
