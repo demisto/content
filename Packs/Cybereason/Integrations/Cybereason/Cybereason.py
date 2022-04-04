@@ -863,11 +863,11 @@ def kill_process_command():
             status = item["status"]
             target_Id = item["targetId"]
             if status == "SUCCESS":
-                success_status.append({"On the target ID": target_Id})
+                success_status.append({"Target ID": target_Id})
             elif status == "FAILURE":
                 reason = item["error"]["message"]
                 error_type = item["error"]["errorType"]
-                failure_status.append({"On the target ID": target_Id, "Message": reason, "Error Type": error_type})
+                failure_status.append({"Target ID": target_Id, "Message": reason, "Error Type": error_type})
             else:
                 pending_status.append({"Timeout while fetching progress for kill process operation on target ID: ": target_Id})
         demisto.results("Success responses (if any):" + "\n{}".format(success_status) + "\n\n" + "Failure responses (if any):" + "\n{}".format(failure_status) + "\n\n" + "Pending responses (if any):" + "\n{}".format(pending_status))
@@ -1036,11 +1036,11 @@ def delete_registry_key_command():
             status = item["status"]
             target_Id = item["targetId"]
             if status == "SUCCESS":
-                success_status.append({"On the target ID": target_Id})
+                success_status.append({"Target ID": target_Id})
             elif status == "FAILURE":
                 reason = item["error"]["message"]
                 error_type = item["error"]["errorType"]
-                failure_status.append({"On the target ID": target_Id, "Message": reason, "Error Type": error_type})
+                failure_status.append({"Target ID": target_Id, "Message": reason, "Error Type": error_type})
             else:
                 pending_status.append({"Timeout while fetching progress for delete registry key operation on target ID: ": target_Id})
         demisto.results("Success responses (if any):" + "\n{}".format(success_status) + "\n\n" + "Failure responses (if any):" + "\n{}".format(failure_status) + "\n\n" + "Pending responses (if any):" + "\n{}".format(pending_status))
