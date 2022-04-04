@@ -1,1 +1,0 @@
-/Users/bhochman/dev/demisto/demisto-sdk/demisto_sdk/commands/lint/resources/pylint_plugins/base_checker.py
