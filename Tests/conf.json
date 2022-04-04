@@ -5099,6 +5099,11 @@
             ],
             "playbookID": "GoogleSheets-Test",
             "fromversion": "6.1.0"
+        },
+        {
+            "integrations": "BitSight for Security Performance Management",
+            "playbookID": "BitSight for Security Performance Management-Test",
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
