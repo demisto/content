@@ -290,14 +290,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: ebf7548c-9d17-46a6-8b6f-b1173ec41da4
+    taskid: d774e4da-b30e-4bbb-8d9a-1d6213650012
     type: regular
     task:
-      id: ebf7548c-9d17-46a6-8b6f-b1173ec41da4
+      id: d774e4da-b30e-4bbb-8d9a-1d6213650012
       version: -1
       name: azure-risky-users-risk-detections-list
-      description: Reads the properties and relationships of a riskDetection object.
-      script: AzureRiskyUsers|||azure-risky-users-risk-detection-get
+      description: Returns a comma separated list of the Risk Detection objects and
+        their properties.
+      script: AzureRiskyUsers|||azure-risky-users-risk-detections-list
       type: regular
       iscommand: true
       brand: AzureRiskyUsers
