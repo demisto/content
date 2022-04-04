@@ -1,7 +1,5 @@
-from CommonServerUserPython import *
 from datetime import datetime
 import json
-import demistomock as demisto
 
 
 def load_json_file(filename):
@@ -201,13 +199,11 @@ def test_cyble_vision_fetch_detail(requests_mock):
     assert isinstance(response[0], dict)
 
     for i, el in enumerate(response):
-        assert el['id'] == i+1
-        assert el['eventtitle'] == 'some_event_title_{0}'.format(i+1)
+        assert el['id'] == i + 1
+        assert el['eventtitle'] == 'some_event_title_{0}'.format(i + 1)
         assert el['createdat'] == '2020-06-15T07:34:20.062000'
         assert el['modified'] == 'Mar 01 2022'
         assert el['type'] == 'some_type_{0}'.format(i + 1)
         assert el['indicator'] == 'some_indicator_{0}'.format(i + 1)
         assert el['references'] == ''
         assert el['lastseenon'] == '2022-03-02'
-
-

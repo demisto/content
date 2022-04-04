@@ -44,7 +44,7 @@ class Client(BaseClient):
 
         payload: Dict[str, Any] = {}
         headers = {
-            'X-API-KEY': '{}'.format(params.get('token',''))
+            'X-API-KEY': '{}'.format(params.get('token', ''))
         }
         url = urljoin(self._base_url, etypeurl)
 
@@ -155,7 +155,7 @@ class Client(BaseClient):
             'limit': params.get('limit', '50')
         })
         headers = {
-            'X-API-KEY': '{}'.format(params.get('token')    ),
+            'X-API-KEY': '{}'.format(params.get('token')),
             'Content-Type': 'application/json'
         }
 
@@ -286,7 +286,7 @@ def format_incidents(resp, eventTypes):
                 events.append(alert_details)
         return events
     except Exception as e:
-        demisto.debug('Unable to format incidents, error: {e}')
+        demisto.debug('Unable to format incidents, error: {}'.format(e))
         return []
 
 
@@ -359,12 +359,13 @@ def fetch_alert_details(client, args):
 
     return command_results
 
+
 def fetch_incidents(client, method, token, maxResults):
     """
     Fetch alert details from server for creating incidents in XSOAR
     :param client: instace of client to communicate with server
     :param method: Requests method to be used
-    :param token: server access token 
+    :param token: server access token
     :param maxResults: limit for single fetch from server
     :return: incidents from server
     """""
