@@ -55,6 +55,37 @@ def test_get_event_types(requests_mock):
     assert len(response) == 3
 
 
+def test_format_incidents(requests_mock):
+    '''
+    Test the format_incident module
+    :param requests_mock:
+    :return:
+    '''
+    from CybleEvents import Client, format_incidents, get_event_types
+
+    mock_response_1 = load_json_file("dummy_fetch_incidents.json")
+    mock_response_2 = load_json_file("dummy_fetch_incidents_types.json")
+
+    requests_mock.post('https://test.com/api/v2/events/all', json=mock_response_1)
+    requests_mock.get('https://test.com/api/v2/events/types', json=mock_response_2)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    eTypes = get_event_types(client, 'GET', mock_response_2)
+    response = format_incidents(mock_response_1.get('data', {}).get('results'), eTypes)
+
+    assert isinstance(response, list)
+    assert isinstance(response[0], dict)
+    assert response[0]['cybleeventstype'] == 'service_type_2'
+    assert response[0]['cybleeventsid'] == 'some_alert_id_1'
+    assert response[0]['cybleeventsbucket'] == 'some_keywords_1'
+    assert response[0]['cybleeventskeyword'] == 'some_tag_1'
+    assert response[0]['cybleeventsalias'] == 'some_alias_2'
+
+
 def test_fetch_incidents(requests_mock):
     """
     Tests the fetch incident command
@@ -206,7 +237,7 @@ def test_cyble_vision_fetch_events(requests_mock):
     assert response[0]['cybleeventsalias'] == 'some_alias_2'
 
 
-@pytest.mark.parametrize("eID,eType", [('some_event_type', 'some_event_id'), ('new_event_type', 'new_event_id')])
+@pytest.mark.parametrize("eID,eType", [('type1', 'id1'), ('type2', 'id2'), ('some_event_type', 'some_event_id'), ('new_event_type', 'new_event_id')])
 def test_cyble_vision_fetch_detail(requests_mock, eID, eType):
     """
     Tests the cyble_vision_fetch_detail command
