@@ -470,11 +470,13 @@ def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     limit = arg_to_number(args.get('page_size')) or DEFAULT_PAGE_SIZE
     page_number = arg_to_number(args.get('page_number')) or DEFAULT_PAGE_NUMBER
     offset = calculate_offset(limit, page_number)
+    heading = ''
 
     if asset_id:
         response = client.asset_list_with_id_request(asset_id, fields)
     else:
         response = client.asset_list_request(fields, offset, limit)
+        heading = paging_heading(limit, page_number)
     headers = ['id', 'name', 'info']
     readable_response = create_readable_response(response, asset_list_handler, 'valueCaption')
     command_results = CommandResults(
@@ -482,7 +484,7 @@ def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=paging_heading(limit, page_number) + tableToMarkdown(
+        readable_output=heading + tableToMarkdown(
             f'Asset {asset_id + " " if asset_id else ""}Results:',
             readable_response,
             headers=headers,
