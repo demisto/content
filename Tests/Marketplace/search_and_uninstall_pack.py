@@ -158,7 +158,6 @@ def reset_base_pack_version(client: demisto_client):
                 pack_data = {
                     'id': result_object.get('id'),
                     'version': result_object.get('currentVersion')
-                    # 'version': '1.18.18'
                 }
                 # install latest version of Base pack
                 return install_packs(client, host, [pack_data], False)
@@ -189,7 +188,7 @@ def main():
                                       verify_ssl=False,
                                       api_key=api_key,
                                       auth_id=xdr_auth_id)
-    success = uninstall_all_packs(client) and reset_base_pack_version(client)
+    success = reset_base_pack_version(client) and uninstall_all_packs(client)
 
     if not success:
         sys.exit(2)
