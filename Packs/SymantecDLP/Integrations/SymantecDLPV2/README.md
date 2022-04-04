@@ -66,7 +66,7 @@ Returns a list of incidents.
 | SymantecDLP.Incident.policyId | Number | The ID of the policy. | 
 | SymantecDLP.Incident.creationDate | Date | The creation date of the incident. | 
 | SymantecDLP.Incident.detectionDate | Date | The detection date of the incident. | 
-| SymantecDLP.Incident.severity | string | The severity of the incident. | 
+| SymantecDLP.Incident.severity | String | The severity of the incident. | 
 | SymantecDLP.Incident.messageTypeId | Number | The ID of the Message Type. | 
 | SymantecDLP.Incident.incidentStatusId | Number | The status ID of the incident. | 
 
@@ -228,11 +228,11 @@ Updates the details of a specific incident.
 | data_owner_email | The data owner email. | Optional | 
 | data_owner_name | The data owner name. | Optional | 
 | note | The note to be added. | Optional | 
-| incident_status_id | The status ID to update to. Run `symantec-dlp-list-incident-status` to get the status ID. | Optional | 
+| incident_status_id | The status ID for which to update. Run the `symantec-dlp-list-incident-status` command to get the status ID. | Optional | 
 | remediation_status_name | Represents the remediation status name of an incident. | Optional | 
 | remediation_location | Represents the remediation location of the incident. Values can be user-defined. | Optional | 
 | severity | Represents the severity level of the incident. Can be: "High", "Medium", "Low", and "Info". Possible values are: Info, Low, Medium, High. | Optional | 
-| custom_attributes | The custom attributes to update. In order to get the custom attributes details, run `symantec-dlp-get-incident-details` command with `custom_attributes=all`<br/>Format:<br/>`{columnIndex}:{newValue}`<br/>For example, `1:update, 4:att`. | Optional | 
+| custom_attributes | The custom attributes to update. To get the custom attributes details, run the `symantec-dlp-get-incident-details` command with the `custom_attributes=all` command.<br/>Format:<br/>{columnIndex}:{newValue}<br/>For example, 1:update, 4:att. | Optional | 
 
 
 #### Context Output
@@ -330,7 +330,7 @@ Returns the history of the specified incident.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
-| limit | The limit of the incident history list per page. Default is 50. | Optional | 
+| limit | The limit of the incident history list per page. Default is 50. Default is 50. | Optional | 
 
 
 #### Context Output
