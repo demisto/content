@@ -795,7 +795,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
     :param incident_severities: The incident severities to filter.
     :return: A list of Cortex XSOAR incidents
     """
-    if last_run and last_run.get('last_incident_creation_time'):
+    if last_run:
         last_update_time = last_run.get('last_incident_creation_time')
         last_incident_id = last_run.get('last_incident_id', '')
     else:

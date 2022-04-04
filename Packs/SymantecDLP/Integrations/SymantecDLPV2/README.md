@@ -131,9 +131,9 @@ Returns the details of the specified incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The incident ID for which to get details. | Required | 
-| custom_attributes | This argument can get the following values:<br/>**all** - All custom attributes are required. <br/>**none** - None of the custom attributes are required.<br/>**specific attributes** - A comma separated list of custom attributes names. For example, ca1,ca2,ca3<br/>**custom attribute group name** - A comma separated list of custom attributes group names. For example, cag1, cag2, cag3.<br/>This value retrieves all custom attributes in the mentioned group. The value "none" is default. Possible values are: all, none, specific attributes, custom attribute group name. Default is none. | Optional | 
-| custom_data | A comma separated list of custom attributes names, or custom attribute group names. For example, item1,item2,item3. | Optional | 
+| incident_id | Incident ID for which to retrieve details. | Required | 
+| custom_attributes | This argument can get the following values:<br/>all - All custom attributes are needed <br/>none - None of the custom attributes are needed<br/>specific attributes - A comma separated list of custom attributes names. For example: ca1,ca2,ca3<br/>custom attribute group name - A comma separated list of custom attributes group names. For example: cag1, cag2, cag3.<br/>This value retrieves all custom attributes in the mentioned group. The value "none" is default. Possible values are: all, none, specific attributes, custom attribute group name. Default is none. | Optional | 
+| custom_data | A comma separated list of custom attributes names or custom attribute group names. For example: item1,item2,item3. | Optional | 
 
 
 #### Context Output
@@ -147,18 +147,18 @@ Returns the details of the specified incident.
 | SymantecDLP.Incident.messageSource | String | The localized label that corresponds to the Symantec DLP product that generated the incident. | 
 | SymantecDLP.Incident.messageType | String | Indicates the Symantec DLP product that generated the incident. Can be: "NETWORK", "DISCOVER", "ENDPOINT". | 
 | SymantecDLP.Incident.incidentStatusId | Number | The status ID of the incident. | 
-| SymantecDLP.Incident.senderIPAddress | String | The sender IP address. | 
+| SymantecDLP.Incident.senderIPAddress | String | The IP address of the sender. | 
 | SymantecDLP.Incident.policyName | String | The name of the policy. | 
 | SymantecDLP.Incident.policyId | Number | The ID of the policy. | 
 | SymantecDLP.Incident.endpointMachineIpAddress | String | The IP address of the endpoint machine. | 
-| SymantecDLP.Incident.CustomAttribute.Name | String | The custom attribute name. | 
-| SymantecDLP.Incident.CustomAttribute.Value | String | The custom attribute value. | 
-| SymantecDLP.Incident.CustomAttribute.Index | Number | The custom attribute index. | 
+| SymantecDLP.Incident.CustomAttribute.Name | String | The name of the custom attribute. | 
+| SymantecDLP.Incident.CustomAttribute.Value | String | The value of the custom attribute. | 
+| SymantecDLP.Incident.CustomAttribute.Index | Number | The index of the custom attribute. | 
 | SymantecDLP.Incident.policyVersion | String | The version of the policy. | 
 | SymantecDLP.Incident.detectionServerName | String | The name of the detection server that created the incident. | 
-| SymantecDLP.Incident.policyGroupName | String | The policy group name. | 
-| SymantecDLP.Incident.dataOwnerName | String | The name of the data owner. | 
+| SymantecDLP.Incident.policyGroupName | String | The name of the policy group. | 
 | SymantecDLP.Incident.dataOwnerEmail | String | The email of the data owner. | 
+| SymantecDLP.Incident.dataOwnerName | String | The name of the data owner. | 
 | SymantecDLP.Incident.preventOrProtectStatusId | Number | The remediation status ID. | 
 | SymantecDLP.Incident.matchCount | Number | The total number of policy violation matches produced by policies for this incident. | 
 
@@ -338,15 +338,15 @@ Returns the history of the specified incident.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SymantecDLP.IncidentHistory.incidentHistoryDate | String | The date of the incident history. | 
-| SymantecDLP.IncidentHistory.dlpUserName | String | The user name. | 
+| SymantecDLP.IncidentHistory.dlpUserName | String | The name of the user. | 
 | SymantecDLP.IncidentHistory.incidentHistoryAction | String | The action of the incident history. | 
 | SymantecDLP.IncidentHistory.incidentHistoryDetail | String | The incident history detail. | 
-| SymantecDLP.IncidentHistory.policyGroupId | Number | The policy group ID. | 
+| SymantecDLP.IncidentHistory.policyGroupId | Number | The ID of the policy group. | 
 | SymantecDLP.IncidentHistory.detectionServerName | String | The name of the detection server that created the incident. | 
-| SymantecDLP.IncidentHistory.incidentHistoryId | Number | The incident history ID. | 
+| SymantecDLP.IncidentHistory.incidentHistoryId | Number | The ID of the incident history. | 
 | SymantecDLP.IncidentHistory.messageSource | String | The localized label that corresponds to the Symantec DLP product that generated the incident. | 
 | SymantecDLP.IncidentHistory.messageDate | String | The date of the message. | 
-| SymantecDLP.IncidentHistory.ID | Number | The ID of the incident | 
+| SymantecDLP.IncidentHistory.ID | Number | The ID of the incident. | 
 
 #### Command example
 ```!symantec-dlp-get-incident-history limit=6 incident_id=2```
@@ -428,8 +428,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SymantecDLP.IncidentRemediationStatus.id | Number | The remediation status ID. | 
-| SymantecDLP.IncidentRemediationStatus.name | String | The remediation status name. | 
+| SymantecDLP.IncidentRemediationStatus.id | Number | The ID of the remediation status. | 
+| SymantecDLP.IncidentRemediationStatus.name | String | The name of the remediation status. | 
 
 #### Command example
 ```!symantec-dlp-list-remediation-status```
