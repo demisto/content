@@ -6,21 +6,20 @@ import traceback
 from typing import Any, Dict
 
 
-def get_entry_context(domains, isSingle) -> Dict[str, Any]:
+def get_entry_context(domains, is_single) -> Dict[str, Any]:
     urls_to_return = []
-    if isSingle:
-        if domains.startswith('http://') or domains.startswith('https://'):
+    if is_single:
+        if domains.startswith('http://') or domains.startswith('https://'):  # NOSONAR
             urls_to_return.append(domains)
         else:
-            urls_to_return.append("http://{}".format(domains))
+            urls_to_return.append("http://{}".format(domains))  # NOSONAR
             urls_to_return.append("https://{}".format(domains))
     else:
         for domain in domains:
-            if domain.startswith('http://') or domain.startswith('https://'):
+            if domain.startswith('http://') or domain.startswith('https://'):  # NOSONAR
                 urls_to_return.append(domain)
-                continue
             else:
-                urls_to_return.append("http://{}".format(domain))
+                urls_to_return.append("http://{}".format(domain))  # NOSONAR
                 urls_to_return.append("https://{}".format(domain))
     ec = {"DomainToURL": urls_to_return}
     return ec
