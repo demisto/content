@@ -42,7 +42,7 @@ def main():
         # verify the two lists are identical - we receive two lists (and not one) for BC reasons
         if not set(src_coords_list) == set(dest_coords_list):
             raise ValueError('The source coordination list and the destination coordination list '
-                                   'should be identical.')
+                             'should be identical.')
 
         return_results(get_distances_list(src_coords_list, events_dict))
 

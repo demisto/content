@@ -1,7 +1,6 @@
 from impossibleTravelerGetDistance import *
-import pytest
 
-COORDS="[\"32.0123, 34.7705\",\"50.8847, 4.5049\"]"
+COORDS = "[\"32.0123, 34.7705\",\"50.8847, 4.5049\"]"
 BAD_DEST_COORDS = "[\"32.0123, 34.7705\"]"
 
 EXISTING_MOCK = [
