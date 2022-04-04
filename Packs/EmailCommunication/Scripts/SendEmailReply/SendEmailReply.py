@@ -156,6 +156,9 @@ def get_reply_body(notes, incident_id, attachments):
             user_fullname = dict_safe_get(note_userdata[0], ['Contents', 'name']) or "DBot"
             reply_body += f"{user_fullname}: \n{note['Contents']}\n\n"
 
+        if isinstance(attachments, str):
+            attachments = argToList(attachments)
+
         if attachments:
             attachment_names = [attachment.get('name') for attachment in attachments]
             reply_body += f'Attachments: {attachment_names}\n\n'
