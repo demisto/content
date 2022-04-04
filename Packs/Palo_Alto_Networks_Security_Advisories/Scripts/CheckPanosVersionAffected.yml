@@ -34,7 +34,7 @@ outputs:
 - contextPath: MatchingSecurityAdvisory.cve_title
   description: The name of this CVE
   type: String
-- contextPath: MatchingSecurityAdvisory.affects_product_name
+- contextPath: MatchingSecurityAdvisory.affects_vendor_name
   description: The name of the product this affects, such as PAN-OS
   type: String
 - contextPath: MatchingSecurityAdvisory.description
@@ -43,6 +43,12 @@ outputs:
 - contextPath: MatchingSecurityAdvisory.affected_version_list
   description: List of PAN-OS affected versions exactly
   type: String
+- contextPath: MatchingSecurityAdvisory.cvss_score
+  description: CVSS Score of matched vulnerability
+  type: Unknown
+- contextPath: MatchingSecurityAdvisory.cvss_severity
+  description: CVSS Severity of matched vulnerability
+  type: Unknown
 script: '-'
 subtype: python3
 system: false
