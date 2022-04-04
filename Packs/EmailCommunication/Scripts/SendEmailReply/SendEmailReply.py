@@ -246,7 +246,7 @@ def main():
     email_code = custom_fields.get('emailgeneratedcode')
     email_to_str = get_email_recipients(email_to, email_from, service_mail, mailbox)
     files = args.get('files', {})
-    attachments = args.get('attachment', {})
+    attachments = argToList(args.get('attachment', []))
     notes = demisto.executeCommand("getEntries", {'filter': {'categories': ['notes']}})
 
     try:

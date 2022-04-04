@@ -92,12 +92,7 @@ def test_get_email_recipients(email_to, email_from, service_mail, mailbox, excep
             [{'Metadata': {'user': 'DBot'}, 'Contents': 'note1'}, {'Metadata': {'user': 'DBot'}, 'Contents': 'note2'}],
             [],
             "DBot: \nnote1\n\nDBot: \nnote2\n\n"
-        ),
-        (
-            [{'Metadata': {'user': 'DBot'}, 'Contents': 'note1'}, {'Metadata': {'user': 'DBot'}, 'Contents': 'note2'}],
-            "[]",
-            "DBot: \nnote1\n\nDBot: \nnote2\n\n"
-        ),
+        )
     ]
 )
 def test_get_reply_body(mocker, notes, attachments, expected_results):
