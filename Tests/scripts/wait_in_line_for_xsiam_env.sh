@@ -26,7 +26,7 @@ export QUEUE_SELF_LOCK=$GCS_QUEUE_FILE-$LOCK_IDENTIFIER-$CI_PIPELINE_ID
 #==================================
 
 function get_build_job_statuses() {
-	export BUILD_STATUSES=`echo $1 | tr ' ' '\n' | xargs -I {} curl --header "PRIVATE-TOKEN: $GITLAB_STATUS_TOKEN" $BUILD_STATUS_API/{}/jobs -s | jq -c '.[] | select(.name=="test:xsiam-system-tests") | .status' | sed 's/"//g' | tr ' ' '\n' | sort | uniq`
+	export BUILD_STATUSES=`echo $1 | tr ' ' '\n' | xargs -I {} curl --header "PRIVATE-TOKEN: $GITLAB_STATUS_TOKEN" $BUILD_STATUS_API/{}/jobs -s | jq -c '.[] | select(.name=="test:xsiam_server_master") | .status' | sed 's/"//g' | tr ' ' '\n' | sort | uniq`
 }
 
 function is_status_exists() {
