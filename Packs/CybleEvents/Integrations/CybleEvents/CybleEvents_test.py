@@ -20,7 +20,7 @@ def test_module(requests_mock):
     """
     from CybleEvents import Client, get_test_response
 
-    mock_response_1 = load_json_file("dummy_event_types.json")
+    mock_response_1 = load_json_file("dummy_fetch_incidents_types.json")
     requests_mock.post('https://test.com/api/v2/events/types', json=mock_response_1)
 
     client = Client(
