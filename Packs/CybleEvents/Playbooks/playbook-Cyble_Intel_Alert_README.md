@@ -25,4 +25,3 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cyble Intel Alert](Insert the link to your image here)
