@@ -3626,7 +3626,7 @@ class Common(object):
             self.dbot_score = dbot_score
 
         def to_context(self):
-            file_context = {"Hashes" = []}  # type: dict
+            file_context = {"Hashes": []}  # type: dict
 
             if self.name:
                 file_context['Name'] = self.name
