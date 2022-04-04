@@ -160,6 +160,7 @@ def reset_base_pack_version(client: demisto_client):
                     'version': result_object.get('currentVersion')
                 }
                 # install latest version of Base pack
+                logging.info(f'updating base pack to version {result_object.get("currentVersion")}')
                 return install_packs(client, host, [pack_data], False)
 
             else:
