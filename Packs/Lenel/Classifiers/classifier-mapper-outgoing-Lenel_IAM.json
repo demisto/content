@@ -1,0 +1,165 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a User Profile data to the Lenel IAM user data.",
+	"id": "User Profile - IAM Lenel (Outgoing)",
+	"mapping": {
+		"User Profile - Create": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"USERNAME": {
+					"complex": null,
+					"simple": "username"
+				},
+				"FIRSTNAME": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"LASTNAME": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"EMAIL": {
+					"complex": null,
+					"simple": "email"
+				},
+				"TITLE": {
+					"complex": null,
+					"simple": "title"
+				},
+				"CITY": {
+					"complex": null,
+					"simple": "city"
+				},
+				"MOBILEPHONE": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"OPHONE": {
+					"complex": null,
+					"simple": "workphone"
+				},
+				"STATE": {
+					"complex": null,
+					"simple": "state"
+				},
+				"ADDRESS": {
+					"complex": null,
+					"simple": "streetaddress"
+				},
+				"ZIPCODE": {
+					"complex": null,
+					"simple": "zipcode"
+				},
+				"COUNTRYCODE__XR": {
+					"complex": null,
+					"simple": "country"
+				},
+				"COUNTRY__XR": {
+					"complex": null,
+					"simple": "countryname"
+				},
+				"DEPARTMENT": {
+					"complex": null,
+					"simple": "department"
+				},
+				"SSNO": {
+					"complex": null,
+					"simple": "employeeid"
+				},
+				"TYPE__XR": {
+					"complex": null,
+					"simple": "employeetype"
+				},
+				"HIREDATE": {
+					"complex": null,
+					"simple": "hiredate"
+				},
+				"ACTIVE__XR": {
+					"complex": null,
+					"simple": "isactive"
+				}
+			}
+		},
+		"User Profile - Update": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"USERNAME": {
+					"complex": null,
+					"simple": "username"
+				},
+				"FIRSTNAME": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"LASTNAME": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"EMAIL": {
+					"complex": null,
+					"simple": "email"
+				},
+				"TITLE": {
+					"complex": null,
+					"simple": "title"
+				},
+				"CITY": {
+					"complex": null,
+					"simple": "city"
+				},
+				"MOBILEPHONE": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"OPHONE": {
+					"complex": null,
+					"simple": "workphone"
+				},
+				"STATE": {
+					"complex": null,
+					"simple": "state"
+				},
+				"ADDRESS": {
+					"complex": null,
+					"simple": "streetaddress"
+				},
+				"ZIPCODE": {
+					"complex": null,
+					"simple": "zipcode"
+				},
+				"COUNTRYCODE__XR": {
+					"complex": null,
+					"simple": "countrycode"
+				},
+				"COUNTRY__XR": {
+					"complex": null,
+					"simple": "countryname"
+				},
+				"DEPARTMENT": {
+					"complex": null,
+					"simple": "department"
+				},
+				"SSNO": {
+					"complex": null,
+					"simple": "employeeid"
+				},
+				"TYPE__XR": {
+					"complex": null,
+					"simple": "employeetype"
+				},
+				"HIREDATE": {
+					"complex": null,
+					"simple": "hiredate"
+				},
+				"ACTIVE__XR": {
+					"complex": null,
+					"simple": "isactive"
+				}
+			}
+		}
+	},
+	"name": "User Profile - IAM Lenel (Outgoing)",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}
