@@ -265,7 +265,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
 
-    last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
+    last_run_fetched_ids = last_run_data.get(' ', {})
 
     incidents = []
     notables = []

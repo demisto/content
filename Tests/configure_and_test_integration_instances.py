@@ -1304,7 +1304,7 @@ def set_marketplace_url(servers, branch_name, ci_build_number):
         server.add_server_configuration(config, 'failed to configure marketplace custom url ', True)
     logging.success('Updated marketplace url and restarted servers')
     logging.info('sleeping for 120 seconds')
-    sleep(120)
+    sleep(121)
 
 
 @run_with_proxy_configured
