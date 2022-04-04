@@ -338,7 +338,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, str],
         incident_created_time = dateparser.parse(incident.get('created'))  # type: ignore
 
         # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > latest_created_time:
+        if incident_created_time > latest_created_time:  # type: ignore
             latest_created_time = incident_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
