@@ -62,7 +62,13 @@ def test_fetch_incidents(requests_mock):
 
     assert response[0]['name'] == 'Cyble Intel Alert on some_alias_2'
     assert response[0]['severity'] == 3
-    assert response[0]['rawJSON'] == '{"name": "Cyble Intel Alert on some_alias_2", "cybleeventstype": "service_type_2", "severity": 3, "occurred": "2022-03-07T00:01:24.242000Z", "cybleeventsid": "some_alert_id_1", "cybleeventsname": "Incident of some_alias_2 type", "cybleeventsbucket": "some_keywords_1", "cybleeventskeyword": "some_tag_1", "cybleeventsalias": "some_alias_2"}'
+    assert response[0]['rawJSON'] == '{"name": "Cyble Intel Alert on some_alias_2", ' \
+                                     '"cybleeventstype": "service_type_2", "severity": 3, ' \
+                                     '"occurred": "2022-03-07T00:01:24.242000Z", ' \
+                                     '"cybleeventsid": "some_alert_id_1", "cybleeventsname": ' \
+                                     '"Incident of some_alias_2 type", "cybleeventsbucket": ' \
+                                     '"some_keywords_1", "cybleeventskeyword": "some_tag_1", ' \
+                                     '"cybleeventsalias": "some_alias_2"}'
 
 
 def test_cyble_vision_fetch_iocs(requests_mock):
