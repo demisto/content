@@ -14,7 +14,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Enforce Server (e.g. https://192.168.0.1) | True |
+    | Enforce Server (For example, `https://192.168.0.1`) | True |
     | Username | True |
     | Password | True |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
@@ -44,12 +44,12 @@ Returns a list of incidents.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| creation_date | The earliest time from which to get incidents.. Supports ISO (e.g 2021-12-28T00:00:00Z) and free text (e.g. '2 days'). | Optional | 
-| status_id | The status ID of the incidents. In order to get status IDs, you should run the command `symantec-dlp-list-incident-status`. | Optional | 
+| creation_date | The earliest time from which to get incidents. Supports ISO (For example, 2021-12-28T00:00:00Z) and free text (For example, '2 days'). | Optional | 
+| status_id | The status ID of the incidents. To get status IDs, you should run the command `symantec-dlp-list-incident-status`. | Optional | 
 | severity | The severity of the incidents. Can be: "High", "Medium", "Low", and "Info". Possible values are: Info, Low, Medium, High. | Optional | 
-| incident_type | The incidents type. Can be: "Network", "Endpoint" and "Discover". Possible values are: Network, Discover, Endpoint. | Optional | 
-| limit | The limit of the incidents list per page. Default is 50. Default is 50. | Optional | 
-| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size.<br/>Default is 1. Default is 1. | Optional | 
+| incident_type | The incident type. Can be: "Network", "Endpoint" and "Discover". Possible values are: Network, Discover, Endpoint. | Optional | 
+| limit | The limit of the incidents list per page. Default is 50. | Optional | 
+| page | The page number you would like to view. Each page contains page_size values. Must be used along with page_size.<br/>Default is 1. | Optional | 
 | page_size | Number of results per page to display. | Optional | 
 
 
@@ -131,9 +131,9 @@ Returns the details of the specified incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Incident ID to get details of. | Required | 
-| custom_attributes | This argument can get the following values:<br/>all - If all custom attributes are needed <br/>none - If none of the custom attributes are needed<br/>specific attributes - A list of custom attributes names, seperated by comma. For example: ca1,ca2,ca3<br/>custom attribute group name - A list of custom attributes group names, seperated by comma. For example: cag1, cag2, cag3.<br/>This value will retrive all custom attributes in the mentioned group. The value "none" is default. Possible values are: all, none, specific attributes, custom attribute group name. Default is none. | Optional | 
-| custom_data | A list of custom attributes names / custom attribute group names. List should be comma seperated. For example: item1,item2,item3. | Optional | 
+| incident_id | The incident ID for which to get details. | Required | 
+| custom_attributes | This argument can get the following values:<br/>**all** - All custom attributes are required. <br/>**none** - None of the custom attributes are required.<br/>**specific attributes** - A comma separated list of custom attributes names. For example, ca1,ca2,ca3<br/>**custom attribute group name** - A comma separated list of custom attributes group names. For example, cag1, cag2, cag3.<br/>This value retrieves all custom attributes in the mentioned group. The value "none" is default. Possible values are: all, none, specific attributes, custom attribute group name. Default is none. | Optional | 
+| custom_data | A comma separated list of custom attributes names, or custom attribute group names. For example, item1,item2,item3. | Optional | 
 
 
 #### Context Output
@@ -224,7 +224,7 @@ Updates the details of a specific incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Incident ID to update. | Required | 
+| incident_id | The incident ID to update. | Required | 
 | data_owner_email | The data owner email. | Optional | 
 | data_owner_name | The data owner name. | Optional | 
 | note | The note to be added. | Optional | 
@@ -232,7 +232,7 @@ Updates the details of a specific incident.
 | remediation_status_name | Represents the remediation status name of an incident. | Optional | 
 | remediation_location | Represents the remediation location of the incident. Values can be user-defined. | Optional | 
 | severity | Represents the severity level of the incident. Can be: "High", "Medium", "Low", and "Info". Possible values are: Info, Low, Medium, High. | Optional | 
-| custom_attributes | The custom attributes to update. In order to get the custom attributes details, run `symantec-dlp-get-incident-details` command with `custom_attributes=all`<br/>Format:<br/>{columnIndex}:{newValue}<br/>E.g: 1:update, 4:att. | Optional | 
+| custom_attributes | The custom attributes to update. In order to get the custom attributes details, run `symantec-dlp-get-incident-details` command with `custom_attributes=all`<br/>Format:<br/>`{columnIndex}:{newValue}`<br/>For example, `1:update, 4:att`. | Optional | 
 
 
 #### Context Output
@@ -330,7 +330,7 @@ Returns the history of the specified incident.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
-| limit | The limit of the incident history list per page. Default is 50. Default is 50. | Optional | 
+| limit | The limit of the incident history list per page. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -781,7 +781,7 @@ In the *symantec-dlp-update-incident* command:
 #### The behavior of the following arguments was changed:
 
 In the *symantec-dlp-update-incident* command:
-* custom_attribute_name and custom_attribute_value * - are now used in *custom_attributes*.
+  *custom_attribute_name* and *custom_attribute_value* are now used in *custom_attributes*.
 
 ### Outputs
 #### The following outputs were removed in this version:
@@ -817,6 +817,5 @@ In the *commandName* command:
 
 
 ## Additional Considerations for this version
-There is an issue with DLP API where some incidents get 401 error.
-For these incidents we will return missing data and in the network layout 
-you will be able to see the description field that indicates about this issue.
+There is an issue with DLP API where some incidents get a 401 error.
+For these incidents, the missing data is returned. From the Network incident layout, in the description field you can see information about this issue.
