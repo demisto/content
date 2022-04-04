@@ -1,19 +1,19 @@
 id: AzureRiskyUsers
-version: -1
+version: 0
+vcShouldKeepItemLegacyProdMachine: false
 name: AzureRiskyUsers
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1c252f31-2c6b-437e-8bf9-dcb549089da5
+    taskid: 2a2712af-77e8-4dfd-88ad-39489ae2f68c
     type: start
     task:
-      id: 1c252f31-2c6b-437e-8bf9-dcb549089da5
+      id: 2a2712af-77e8-4dfd-88ad-39489ae2f68c
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -30,12 +30,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 1ab34700-c4aa-49fa-8d52-f2f93ee6ee0b
+    taskid: 780e309e-066f-4aca-8fe6-c385aaff35ce
     type: regular
     task:
-      id: 1ab34700-c4aa-49fa-8d52-f2f93ee6ee0b
+      id: 780e309e-066f-4aca-8fe6-c385aaff35ce
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -61,18 +63,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 979bca7a-64e2-4f75-8507-6d0dd54c629b
+    taskid: 673c14f0-de7f-4599-896c-4317f4b99ce0
     type: regular
     task:
-      id: 979bca7a-64e2-4f75-8507-6d0dd54c629b
+      id: 673c14f0-de7f-4599-896c-4317f4b99ce0
       version: -1
       name: azure-risky-users-list
+      description: Returns a comma separated list of all risky users and their properties.
       script: AzureRiskyUsers|||azure-risky-users-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: AzureRiskyUsers
     nexttasks:
       '#none#':
       - "7"
@@ -89,12 +94,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: bb93b08b-3a98-4e73-8af3-c7a8d51164ff
+    taskid: 53063de9-c7ba-4f16-8e5a-a2935d74ae18
     type: condition
     task:
-      id: bb93b08b-3a98-4e73-8af3-c7a8d51164ff
+      id: 53063de9-c7ba-4f16-8e5a-a2935d74ae18
       version: -1
       name: Verify Outputs
       type: condition
@@ -164,14 +171,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 49f3cce5-4ba2-4177-833c-4eaf0e6bdcb0
+    taskid: 4c4e90da-2dae-4865-853e-0914b1697728
     type: regular
     task:
-      id: 49f3cce5-4ba2-4177-833c-4eaf0e6bdcb0
+      id: 4c4e90da-2dae-4865-853e-0914b1697728
       version: -1
       name: azure-risky-user-get
+      description: Retrieves properties and relationships of a Risky User.
       script: AzureRiskyUsers|||azure-risky-user-get
       type: regular
       iscommand: true
@@ -181,7 +191,11 @@ tasks:
       - "9"
     scriptarguments:
       id:
-        simple: 64bff056-fd02-48a4-b7de-abc8ee054c0a
+        complex:
+          root: AzureRiskyUsers.RiskyUser
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -195,12 +209,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 14685474-18a0-4c85-8636-a566a847abff
+    taskid: 067d6d73-e1be-4569-8f31-33abdc38c284
     type: condition
     task:
-      id: 14685474-18a0-4c85-8636-a566a847abff
+      id: 067d6d73-e1be-4569-8f31-33abdc38c284
       version: -1
       name: Verify Outputs
       type: condition
@@ -270,18 +286,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 350c41c0-6c26-4c45-8b4e-dd621679886d
+    taskid: ebf7548c-9d17-46a6-8b6f-b1173ec41da4
     type: regular
     task:
-      id: 350c41c0-6c26-4c45-8b4e-dd621679886d
+      id: ebf7548c-9d17-46a6-8b6f-b1173ec41da4
       version: -1
       name: azure-risky-users-risk-detections-list
-      script: AzureRiskyUsers|||azure-risky-users-risk-detections-list
+      description: Reads the properties and relationships of a riskDetection object.
+      script: AzureRiskyUsers|||azure-risky-users-risk-detection-get
       type: regular
       iscommand: true
-      brand: ""
+      brand: AzureRiskyUsers
     nexttasks:
       '#none#':
       - "11"
@@ -298,12 +317,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: aa2b615b-9e40-469d-81f0-e6c96f0b56f5
+    taskid: 888333f1-d60a-4c78-8a04-c2d159b0c17f
     type: condition
     task:
-      id: aa2b615b-9e40-469d-81f0-e6c96f0b56f5
+      id: 888333f1-d60a-4c78-8a04-c2d159b0c17f
       version: -1
       name: Verify Outputs
       type: condition
@@ -428,14 +449,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 38ee3635-ed50-448d-86e3-62b2f694b56f
+    taskid: b0e60ac1-8595-48b2-8b36-a5d3a48262c7
     type: regular
     task:
-      id: 38ee3635-ed50-448d-86e3-62b2f694b56f
+      id: b0e60ac1-8595-48b2-8b36-a5d3a48262c7
       version: -1
       name: azure-risky-users-risk-detection-get
+      description: Reads the properties and relationships of a riskDetection object.
       script: AzureRiskyUsers|||azure-risky-users-risk-detection-get
       type: regular
       iscommand: true
@@ -445,7 +469,11 @@ tasks:
       - "13"
     scriptarguments:
       id:
-        simple: ea7e66fc91a9de9fd37bc2f3e0e165d1bb93a4ddeeb743f50f5429acc59e5b29
+        complex:
+          root: AzureRiskyUsers.RiskDetection
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -459,12 +487,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: ec65b0cd-3ed0-4f25-8522-f2a938a66e4b
+    taskid: a8358a26-a04f-4e9d-8f12-7ccc66cd178c
     type: condition
     task:
-      id: ec65b0cd-3ed0-4f25-8522-f2a938a66e4b
+      id: a8358a26-a04f-4e9d-8f12-7ccc66cd178c
       version: -1
       name: Verify Outputs
       type: condition
@@ -589,18 +619,19 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: c6547ae8-e04a-44be-8596-82070e557452
+    taskid: 77074911-65ad-4420-8436-53c03134d327
     type: title
     task:
-      id: c6547ae8-e04a-44be-8596-82070e557452
+      id: 77074911-65ad-4420-8436-53c03134d327
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -614,6 +645,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
