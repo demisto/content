@@ -387,13 +387,15 @@ def parse_service_records(service_records: List[Dict[str, Any]], limit: int, fet
 
 
 def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str):
-    first_fetch_datetime = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})  # type: ignore
+    first_fetch_datetime = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
     if last_fetch is None:
         return first_fetch_datetime
 
-    last_fetch_datetime = dateparser.parse(last_fetch, settings={'TIMEZONE': 'UTC'})  # type: ignore
+    last_fetch_datetime = dateparser.parse(last_fetch, settings={'TIMEZONE': 'UTC'})
     if last_fetch_datetime is None:
         raise DemistoException(f'Could not parse {last_fetch}')
+    if first_fetch_datetime is None:
+        return last_fetch_datetime
     return max(last_fetch_datetime, first_fetch_datetime)
 
 
