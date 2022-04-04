@@ -52,7 +52,7 @@ def unicode_dict_reader(csv_data, **kwargs):
                 # if the key is None it means there are fields in the row which has no column name
                 # so we create NO_NAME_COLUMN_{} column
                 if not isinstance(value, list):
-                    value = [value]
+                    value = [value]  # type: ignore
 
                 counter = 0
                 for val in value:
