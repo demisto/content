@@ -1,6 +1,7 @@
 import ast
 import json
 import argparse
+import os
 import sys
 
 import demisto_client
@@ -176,6 +177,10 @@ def reset_base_pack_version(client: demisto_client):
 
 def main():
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
+
+    # in xsiam we dont use demisto username
+    os.environ.pop('DEMISTO_USERNAME', None)
+
     options = options_handler()
     xsiam_servers = get_json_file(options.xsiam_servers_path)
     api_key, base_url, xdr_auth_id = get_xsiam_configuration(options.xsiam_machine, xsiam_servers)
