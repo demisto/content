@@ -41,7 +41,7 @@ FETCH_TABLE_HR_NAME = {
     "firewall.traffic": "Cortex Firewall Traffic",
     "firewall.url": "Cortex Firewall URL",
     "firewall.userid": "Cortex Firewall UserID",
-    # "log.system": "Cortex Common System",
+    "log.system": "Cortex Common System",
     "log.config": "Cortex Common Config"
 }
 BAD_REQUEST_REGEX = r'^Error in API call \[400\].*'
@@ -883,22 +883,12 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
     return query
 
 
-def convert_log_to_hr_name(fetch_table):
-    if isinstance(fetch_table, STRING_OBJ_TYPES):
-        return "Cortex " + " ".join(word.capitalize() for word in fetch_table.split('.'))
-    else:
-        raise Exception(f'Failed to convert fetch table to context key: {fetch_table}')
-
-
 def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
     time_filter = 'event_time' if 'log' in fetch_table else 'time_generated'
     time_generated = log.get(time_filter, 0)
     occurred = human_readable_time_from_epoch_time(time_generated, utc_time=True)
-    fetch_name = FETCH_TABLE_HR_NAME.get(fetch_table)
-    if not fetch_name:
-        fetch_name = convert_log_to_hr_name(fetch_table)
     incident = {
-        'name': fetch_name,
+        'name': FETCH_TABLE_HR_NAME[fetch_table],
         'rawJSON': json.dumps(log, ensure_ascii=False),
         'occurred': occurred
     }
@@ -908,12 +898,17 @@ def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
 ''' COMMANDS FUNCTIONS '''
 
 
-def test_module(client: Client, fetch_table, fetch_fields, is_fetch):
-    if not is_fetch:
+def test_module(client: Client, fetch_table, fetch_fields, is_fetch, fetch_query, fetch_subtype, fetch_severity, first_fetch):
+    if is_fetch:
+        fetch_time, _ = parse_date_range(first_fetch)
+        fetch_time = fetch_time.replace(microsecond=0)
+        query = prepare_fetch_incidents_query(fetch_time, fetch_severity, fetch_table,
+                                              fetch_subtype, fetch_fields, "1", fetch_query)
+    else:
         # fetch params not to be tested (won't be used)
         fetch_fields = '*'
         fetch_table = 'firewall.traffic'
-    query = f'SELECT {fetch_fields} FROM `{fetch_table}` limit 1'
+        query = f'SELECT {fetch_fields} FROM `{fetch_table}` limit 1'
     client.query_loggings(query)
     return_outputs('ok')
 
@@ -1178,7 +1173,8 @@ def main():
 
     try:
         if command == 'test-module':
-            test_module(client, fetch_table, fetch_fields, params.get('isFetch'))
+            test_module(client, fetch_table, fetch_fields, params.get('isFetch'), params.get('filter_query', ''),
+                        params.get('firewall_subtype'), params.get('firewall_severity'), params.get('first_fetch_timestamp', '24 hours').strip())
         elif command == 'cdl-query-logs':
             return_outputs(*query_logs_command(args, client))
         elif command == 'cdl-get-critical-threat-logs':
