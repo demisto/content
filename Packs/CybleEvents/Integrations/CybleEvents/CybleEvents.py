@@ -42,7 +42,7 @@ class Client(BaseClient):
         """
         event_type_alias = None
 
-        payload = {}
+        payload: Dict[str, Any] = {}
         headers = {
             'X-API-KEY': '{}'.format(params.get('token',''))
         }
@@ -81,7 +81,7 @@ class Client(BaseClient):
             'type': '{}'.format(params.get('type')),
             'keyword': '{}'.format(params.get('keyword'))
         }
-        files = []
+        files: List[Any] = []
         headers = {
             "Cookie": "XSRF-TOKEN={}".format(token)
         }
@@ -342,7 +342,7 @@ def fetch_alert_details(client, args):
     if not eventid:
         raise ValueError('Event ID not specified')
     events_url = r'/api/v2/events/{}/{}'.format(eventtype, eventid)
-    results = []
+    results: List[Any] = []
     params = {
         'token': args.get('token', None),
         'from': fetch_from,
