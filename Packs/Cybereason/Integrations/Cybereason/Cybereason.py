@@ -852,31 +852,47 @@ def kill_process_command():
     machine_name = demisto.getArg('machine')
     file_content = demisto.getArg('file')
     malop_guid = demisto.getArg('malop')
-
+    user_name = demisto.getArg('userName')
     is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
-    if not is_machine_conntected:
-        raise Exception('Machine must be connected to Cybereason in order to perform this action.')
+    if is_machine_conntected == True:
+        operation_status = get_kill_process_status(malop_guid, machine_name, file_content, user_name)
+        success_status = []
+        failure_status = []
+        pending_status = []
+        for item in operation_status:
+            status = item["status"]
+            target_Id = item["targetId"]
+            if status == "SUCCESS":
+                success_status.append({"On the target ID": target_Id})
+            elif status == "FAILURE":
+                reason = item["error"]["message"]
+                error_type = item["error"]["errorType"]
+                failure_status.append({"On the target ID": target_Id, "Message": reason, "Error Type": error_type})
+            else:
+                pending_status.append({"Timeout while fetching progress for kill process operation on target ID: ": target_Id})
+        demisto.results("Success responses (if any):" + "\n{}".format(success_status) + "\n\n" + "Failure responses (if any):" + "\n{}".format(failure_status) + "\n\n" + "Pending responses (if any):" + "\n{}".format(pending_status))
+    else:
+        demisto.results('Machine must be connected to Cybereason in order to perform this action.')
 
+
+def get_kill_process_status(malop_guid, machine_name, file_content, user_name):
     machine_guid = get_machine_guid(machine_name)
+    all_machine_guid = []
     procceses = query_processes(machine_name, file_content)
-    process_data = dict_safe_get(procceses, ['data', 'resultIdToElementDataMap'], default_return_value={},
-                                 return_type=dict)
+    process_data = dict_safe_get(procceses, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
     for process_guid in process_data.keys():
-        response = kill_process(malop_guid, machine_guid, process_guid)
-        status = dict_safe_get(response, ['statusLog', 0, 'status'])
-        # response
-        demisto.results('Request to kill process {0} was sent successfully and now in status {1}'.format(process_guid,
-                                                                                                         status))
+        all_machine_guid.append({"targetId": process_guid, "actionType": 'KILL_PROCESS'})
+    response = kill_process(malop_guid, machine_guid, all_machine_guid)
+    remediation_Id = dict_safe_get(response, ['remediationId'])
+    progress_api_response = get_remediation_action_progress(user_name, malop_guid, remediation_Id)
+    return progress_api_response['statusLog']
 
 
 def kill_process(malop_guid, machine_guid, process_guid):
     json_body = {
         'malopId': malop_guid,
         'actionsByMachine': {
-            machine_guid: [{
-                'targetId': process_guid,
-                'actionType': 'KILL_PROCESS'
-            }]
+            machine_guid: process_guid
         }
     }
 
@@ -1009,26 +1025,47 @@ def delete_registry_key_command():
     machine_name = demisto.getArg('machine')
     file_content = demisto.getArg('file')
     malop_guid = demisto.getArg('malop')
+    user_name = demisto.getArg('userName')
+    is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
+    if is_machine_conntected == True:
+        operation_status = get_delete_registry_key_status(malop_guid, machine_name, file_content, user_name)
+        success_status = []
+        failure_status = []
+        pending_status = []
+        for item in operation_status:
+            status = item["status"]
+            target_Id = item["targetId"]
+            if status == "SUCCESS":
+                success_status.append({"On the target ID": target_Id})
+            elif status == "FAILURE":
+                reason = item["error"]["message"]
+                error_type = item["error"]["errorType"]
+                failure_status.append({"On the target ID": target_Id, "Message": reason, "Error Type": error_type})
+            else:
+                pending_status.append({"Timeout while fetching progress for delete registry key operation on target ID: ": target_Id})
+        demisto.results("Success responses (if any):" + "\n{}".format(success_status) + "\n\n" + "Failure responses (if any):" + "\n{}".format(failure_status) + "\n\n" + "Pending responses (if any):" + "\n{}".format(pending_status))
+    else:
+        demisto.results('Machine must be connected to Cybereason in order to perform this action.')
 
+
+def get_delete_registry_key_status(malop_guid, machine_name, file_content, user_name):
     machine_guid = get_machine_guid(machine_name)
+    all_machine_guid = []
     procceses = query_processes(machine_name, file_content)
-    process_data = dict_safe_get(procceses, ['data', 'resultIdToElementDataMap'], default_return_value={},
-                                 return_type=dict)
-
+    process_data = dict_safe_get(procceses, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
     for process_guid in process_data.keys():
-        response = delete_registry_key(malop_guid, machine_guid, process_guid)
-        status = dict_safe_get(response, ['statusLog', 0, 'status'])
-        demisto.results(status)
+        all_machine_guid.append({"targetId": process_guid, "actionType": 'DELETE_REGISTRY_KEY'})
+    response = delete_registry_key(malop_guid, machine_guid, all_machine_guid)
+    remediation_Id = dict_safe_get(response, ['remediationId'])
+    progress_api_response = get_remediation_action_progress(user_name, malop_guid, remediation_Id)
+    return progress_api_response['statusLog']
 
 
 def delete_registry_key(malop_guid, machine_guid, process_guid):
     json_body = {
         'malopId': malop_guid,
         'actionsByMachine': {
-            machine_guid: [{
-                'targetId': process_guid,
-                'actionType': 'DELETE_REGISTRY_KEY'
-            }]
+            machine_guid: process_guid
         }
     }
 
@@ -1786,13 +1823,13 @@ def main():
         elif demisto.command() == 'cybereason-unprevent-file':
             unprevent_file_command()
 
-        elif demisto.command() == 'cybereason-kill-process':  # To be added as a command in the future
+        elif demisto.command() == 'cybereason-kill-process':
             kill_process_command()
 
         elif demisto.command() == 'cybereason-quarantine-file':
             quarantine_file_command()
 
-        elif demisto.command() == 'cybereason-delete-registry-key':  # To be added as a command in the future
+        elif demisto.command() == 'cybereason-delete-registry-key':
             delete_registry_key_command()
 
         elif demisto.command() == 'cybereason-block-file':

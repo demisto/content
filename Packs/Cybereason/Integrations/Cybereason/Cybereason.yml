@@ -790,6 +790,36 @@ script:
     - description: The unique ID assigned by the Cybereason platform for the Malop
       name: malop
       required: true
+    - description: Machine name to kill the process
+      name: machine
+      required: true
+    - description: File to kill the process
+      name: file
+      required: true
+    - description: The complete Cybereason user name string for the user performing the request
+      name: userName
+      required: true
+    description: Kill all processes for that malicious file
+    name: cybereason-kill-process
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop
+      name: malop
+      required: true
+    - description: Machine name to delete the registry key
+      name: machine
+      required: true
+    - description: File to delete the registry key
+      name: file
+      required: true
+    - description: The complete Cybereason user name string for the user performing the request
+      name: userName
+      required: true
+    description: Delete a registry entry associated with a malicious process
+    name: cybereason-delete-registry-key
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop
+      name: malop
+      required: true
     - description: Machine name whose files needs to be quarantined
       name: machine
       required: true
