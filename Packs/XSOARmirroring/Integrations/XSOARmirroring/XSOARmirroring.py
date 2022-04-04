@@ -35,7 +35,7 @@ XSOAR_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 class Client(BaseClient):
     def search_incidents(self, query: Optional[str], max_results: Optional[int],
-                         start_time: Optional[str]) -> List[Dict[str, Any]]:
+                         start_time: Union[str, int]) -> List[Dict[str, Any]]:
         data = {
             "filter": {
                 "query": query,
@@ -236,8 +236,8 @@ def test_module(client: Client, first_fetch_time: str) -> str:
             raise e
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, str],
-                    first_fetch_time: str, query: Optional[str], mirror_direction: str,
+def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[str, int]],
+                    first_fetch_time: Union[int, str], query: Optional[str], mirror_direction: str,
                     mirror_tag: List[str]) -> Tuple[Dict[str, str], List[dict]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
@@ -252,7 +252,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, str],
         A dict with a key containing the latest incident created time we got
         from last fetch
 
-    :type first_fetch_time: ``Optional[str]``
+    :type first_fetch_time: ``Optional[int, str]``
     :param first_fetch_time:
         If last_run is None (first time we are fetching), it contains
         the timestamp in milliseconds on when to start fetching incidents
@@ -285,7 +285,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, str],
         try:
             last_fetch = int(last_fetch)
             last_fetch = datetime.fromtimestamp(last_fetch).strftime(XSOAR_DATE_FORMAT)
-        except:
+        except Exception:
             pass
 
     latest_created_time = dateparser.parse(last_fetch)
@@ -348,7 +348,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, str],
             latest_created_time = incident_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': (latest_created_time + timedelta(microseconds=1)).strftime(XSOAR_DATE_FORMAT)}  # type: ignore[union-attr,operator]
+    next_run = {'last_fetch': (latest_created_time + timedelta(microseconds=1))
+                .strftime(XSOAR_DATE_FORMAT)}  # type: ignore[union-attr,operator]
 
     return next_run, incidents_result
 
@@ -736,7 +737,8 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = dateparser.parse(demisto.params().get('first_fetch', '3 days')).strftime(XSOAR_DATE_FORMAT)  # type: ignore[union-attr]
+    first_fetch_time = dateparser.parse(demisto.params().get('first_fetch', '3 days')) \
+        .strftime(XSOAR_DATE_FORMAT)  # type: ignore[union-attr]
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     mirror_tags = set(demisto.params().get('mirror_tag', '').split(',')) \
