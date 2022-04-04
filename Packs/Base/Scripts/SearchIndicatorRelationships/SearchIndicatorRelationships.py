@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import re
+
 import traceback
 
 
@@ -96,9 +97,9 @@ def search_relationships(args: dict) -> Optional[List[dict]]:
         'size': limit,
         'query': query
     }
-    # if get_demisto_version()['version'] == '6.6.0':
-    return search_relationships_6_6_0(args)
-    # return search_relationships_non_6_6_0(args)
+    if get_demisto_version()['version'] == '6.6.0':
+        return search_relationships_6_6_0(args)
+    return search_relationships_non_6_6_0(args)
 
 
 ''' MAIN FUNCTION '''
