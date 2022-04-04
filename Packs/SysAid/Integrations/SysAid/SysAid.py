@@ -392,6 +392,8 @@ def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str) -> datetim
         return first_fetch_datetime
 
     last_fetch_datetime = dateparser.parse(last_fetch, settings={'TIMEZONE': 'UTC'})
+    if last_fetch_datetime is None:
+        raise DemistoException(f'Could not parse {last_fetch}')
     return max(last_fetch_datetime, first_fetch_datetime)
 
 
