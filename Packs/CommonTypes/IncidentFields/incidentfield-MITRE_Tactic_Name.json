@@ -1,16 +1,16 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "techniquename",
+    "cliName": "mitretacticname",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_techniquename",
+    "id": "incident_mitretacticname",
     "isReadOnly": false,
     "locked": false,
-    "name": "Technique Name",
+    "name": "MITRE Tactic Name",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
@@ -23,5 +23,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.2.0"
 }
