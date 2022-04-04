@@ -231,7 +231,6 @@ def get_severity_name_by_id(severity: Optional[int]):
     for severity_name, severity_num in INCIDENT_SEVERITY_MAPPING.items():
         if severity_num == severity:
             return severity_name
-    return ''
 
 
 def parse_creation_date(creation_date: str):
