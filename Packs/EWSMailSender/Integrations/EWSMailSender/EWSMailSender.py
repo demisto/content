@@ -60,8 +60,6 @@ from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2,
 from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, Credentials, Configuration, NTLM, \
     BASIC, DIGEST, Version, DELEGATE  # noqa: E402
 from exchangelib.errors import ErrorItemNotFound, UnauthorizedError  # noqa: E402
-from exchangelib.autodiscover import _autodiscover_cache
-
 
 IS_TEST_MODULE = False
 
@@ -110,7 +108,6 @@ def exchangelib_cleanup():
 
 
 def get_account(account_email):
-    _autodiscover_cache.clear()
     for i in range(1, 4):
         response = Account(
             primary_smtp_address=account_email, autodiscover=False, config=config, access_type=ACCESS_TYPE,
