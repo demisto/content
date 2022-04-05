@@ -35,11 +35,11 @@ def test_module(requests_mock):
 
 
 def test_get_event_types(requests_mock):
-    '''
+    """
     Test the module get_event_types
     :param requests_mock:
     :return:
-    '''
+    """
     from CybleEvents import Client, get_event_types
 
     mock_response_1 = load_json_file("dummy_fetch_incidents_types.json")
@@ -56,11 +56,11 @@ def test_get_event_types(requests_mock):
 
 
 def test_format_incidents(requests_mock):
-    '''
+    """
     Test the format_incident module
     :param requests_mock:
     :return:
-    '''
+    """
     from CybleEvents import Client, format_incidents, get_event_types
 
     mock_response_1 = load_json_file("dummy_fetch_incidents.json")
@@ -98,7 +98,6 @@ def test_fetch_incidents(requests_mock):
     :param requests_mock:
     :return:
     """
-
     from CybleEvents import Client, fetch_incidents
 
     mock_response_1 = load_json_file("dummy_fetch_incidents.json")
@@ -137,7 +136,7 @@ def test_fetch_incidents(requests_mock):
                                      '"cybleeventsalias": "some_alias_2"}'
 
 
-@pytest.mark.parametrize("offset", [0, 11, 21])
+@pytest.mark.parametrize("offset", [0, 6, 7, 9, 11, 15, 21])
 def test_cyble_vision_fetch_iocs(requests_mock, offset):
     """
     Tests the cyble_vision_fetch_iocs command
@@ -150,7 +149,6 @@ def test_cyble_vision_fetch_iocs(requests_mock, offset):
     :param requests_mock:
     :return:
     """
-
     from CybleEvents import Client, cyble_fetch_iocs
 
     mock_response_1 = load_json_file("dummy_fetch_iocs.json")
@@ -237,7 +235,11 @@ def test_cyble_vision_fetch_events(requests_mock):
     assert response[0]['cybleeventsalias'] == 'some_alias_2'
 
 
-@pytest.mark.parametrize("eID,eType", [('type1', 'id1'), ('type2', 'id2'), ('some_event_type', 'some_event_id'), ('new_event_type', 'new_event_id')])
+@pytest.mark.parametrize(
+    "eID,eType", [
+        ('type1', 'id1'), ('type2', 'id2'), ('some_event_type', 'some_event_id'), ('new_event_type', 'new_event_id')
+    ]
+)
 def test_cyble_vision_fetch_detail(requests_mock, eID, eType):
     """
     Tests the cyble_vision_fetch_detail command
@@ -249,7 +251,6 @@ def test_cyble_vision_fetch_detail(requests_mock, eID, eType):
     :param requests_mock:
     :return:
     """
-
     from CybleEvents import Client, fetch_alert_details
 
     mock_response_1 = load_json_file("dummy_fetch_detail.json")

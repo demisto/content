@@ -130,7 +130,7 @@ class Client(BaseClient):
         try:
             resp = response.json()
 
-            if (resp.get('success') or False):
+            if resp.get('success') or False:
                 events_data = resp.get('data', {}).get('results')
             else:
                 demisto.error("Error trying to Fetch Events {}".format(resp))
@@ -445,7 +445,7 @@ def main():
 
         if demisto.command() == 'test-module':
             resp = get_test_response(client, 'GET', token)
-            # request was succesful
+            # request was successful
             return_results(resp)
 
         elif demisto.command() == 'fetch-incidents':
