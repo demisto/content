@@ -1174,7 +1174,8 @@ def main():
     try:
         if command == 'test-module':
             test_module(client, fetch_table, fetch_fields, params.get('isFetch'), params.get('filter_query', ''),
-                        params.get('firewall_subtype'), params.get('firewall_severity'), params.get('first_fetch_timestamp', '24 hours').strip())
+                        params.get('firewall_subtype'), params.get('firewall_severity'),
+                        params.get('first_fetch_timestamp', '24 hours').strip())
         elif command == 'cdl-query-logs':
             return_outputs(*query_logs_command(args, client))
         elif command == 'cdl-get-critical-threat-logs':
