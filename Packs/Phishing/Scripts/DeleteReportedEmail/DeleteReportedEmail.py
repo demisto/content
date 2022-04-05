@@ -167,7 +167,7 @@ def was_email_found_security_and_compliance(search_results: list):
     """
     success_results = search_results[0].get('SuccessResults').split(', ')
     for item in success_results:
-        if item.startswith(('Item count', 'Total size')):
+        if item.startswith('Item count'):
             if int(item.split(': ')[1]) > 0:
                 return True
     return False
