@@ -24,7 +24,10 @@ GET_REPORT_SUMMARY_CONTEXT = {
          'Signature': {'Authentihash': '', 'Copyright': 'Microsoft Corporation. All rights reserved.',
                        'Description': 'Microsoft Smartcard Certificate Propagation Service',
                        'FileVersion': '10.0.19041.844 (WinBuild.160101.0800)', 'InternalName': 'certprop.dll',
-                       'OriginalName': 'certprop.dll'}}],
+                       'OriginalName': 'certprop.dll'},
+         'Hashes': [{'type': 'SHA256', 'value': 'sha256'}]
+         }
+    ],
     'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
         {'Indicator': 'sha256', 'Type': 'file', 'Vendor': '', 'Score': 2, 'Reliability': 'B - Usually reliable'}],
     'csfalconx.resource(val.id && val.id == obj.id)': {
@@ -83,6 +86,7 @@ FIND_SUBMISSION_ID_CONTEXT = {
 
 GET_FULL_REPORT_CONTEXT_EXTENDED = {'environment_description': 'Windows 10 64 bit', 'environment_id': 160,
                                     'sha256': 'sha256', 'submission_type': 'page_url',
+                                    'Hashes': [{'type': 'SHA256', 'value': 'sha256'}],
                                     'submit_url': 'hxxps://www.google.com', 'threat_score': 13,
                                     'architecture': 'WINDOWS', 'classification': ['91.6% (.URL) Windows URL shortcut',
                                                                                   '8.3% (.INI) Generic INI configuration'],
