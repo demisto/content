@@ -63,7 +63,7 @@ def get_test_response(client, method, params):
     taxii_url = r'/taxii/stix-data/v21/get'
     if params.get('token'):
         result = client.get_taxii(method, taxii_url, payload)
-        if result:
+        if not result.get('error'):
             ret_val = 'ok'
     else:
         demisto.error("Failed to connect")

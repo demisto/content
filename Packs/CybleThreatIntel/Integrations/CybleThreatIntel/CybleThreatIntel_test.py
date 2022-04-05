@@ -1,5 +1,5 @@
-
 import json
+import pytest
 
 
 def load_json_file(filename):
@@ -14,15 +14,66 @@ def load_json_file(filename):
     return content
 
 
-def test_module():
+def test_module(requests_mock):
     """
     Test the basic test command for Cyble Events
     :return:
     """
-    pass
+    from CybleThreatIntel import Client, get_test_response
+    mock_response = load_json_file("cyble_threat_intel.json")
+    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json=mock_response)
+
+    args = {
+        'token': 'some_random_token',
+        "page": 1,
+        "limit": 1,
+        "start_date": "2022-02-22",
+        "end_date": "2022-02-22"
+    }
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    response = get_test_response(client=client, method='POST', params=args)
+
+    assert isinstance(response, str)
+    assert response == 'ok'
 
 
-def test_cyble_vision_fetch_taxii(requests_mock):
+def test_module_failure(requests_mock):
+    """
+    Test the basic test-module command in case of a failure.
+    """
+    from CybleThreatIntel import Client, get_test_response
+    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json={})
+
+    args = {
+        'token': 'some_random_token',
+        "page": 1,
+        "limit": 1,
+        "start_date": "2022-02-22",
+        "end_date": "2022-02-22"
+    }
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    response = get_test_response(client=client, method='POST', params=args)
+
+    assert isinstance(response, str)
+    assert response == 'fail'
+
+
+@pytest.mark.parametrize(
+    "page,limit", [
+        (1, 1), (5, 5), (9, 15), (15, 7)
+    ]
+)
+def test_cyble_vision_fetch_taxii(requests_mock, page, limit):
     """
     Tests the cyble_vision_fetch_taxii command
 
@@ -47,8 +98,8 @@ def test_cyble_vision_fetch_taxii(requests_mock):
 
     args = {
         'token': 'some_random_token',
-        "page": 1,
-        "limit": 1,
+        "page": page,
+        "limit": limit,
         "start_date": "2022-02-22",
         "end_date": "2022-02-22"
     }
@@ -76,3 +127,43 @@ def test_cyble_vision_fetch_taxii(requests_mock):
     assert response['result'][0]['indicator']['indicator_types'] == 'some_indicator_type'
     assert response['result'][0]['indicator']['pattern'] == 'some_pattern'
     assert response['result'][0]['indicator']['pattern_type'] == 'some_pattern_type'
+
+
+def test_failure_cyble_vision_fetch_taxii(requests_mock):
+    """
+    Tests the cyble_vision_fetch_taxii command failure case
+
+    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_taxii
+    API response when the correct cyble_vision_fetch_taxii API request is performed. Checks
+    the output of the command function with the expected output.
+
+    Uses
+    :param requests_mock:
+    :return:
+    """
+
+    from CybleThreatIntel import Client, cyble_fetch_taxii
+
+    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json={})
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    args = {
+        'token': 'some_random_token',
+        "page": 1,
+        "limit": 1,
+        "start_date": "2022-02-22",
+        "end_date": "2022-02-22"
+    }
+
+    response = cyble_fetch_taxii(client=client, method='POST', args=args).outputs
+    # assert the response object
+
+    # check if the response object is a dict
+    assert isinstance(response, dict)
+
+    # each result entry is a list
+    assert response['error'] == 'Failed to fetch feed!!'
