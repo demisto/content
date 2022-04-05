@@ -1,5 +1,5 @@
 import requests_mock
-from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths                          # noqa: E501
+from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, convert_inline_image_to_encoded                          # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import *
 import demistomock as demisto
@@ -343,6 +343,62 @@ def test_ip_not_found():
         assert expected_output in output
 
 
+def test_url_not_found():
+    """
+    Given:
+        - an URL
+
+    When:
+        - running url command and validate whether the url is malicious
+
+    Then:
+        - return command results with context indicate that no results were found
+
+    """
+
+    url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
+    status_code = 200
+    json_data = {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False}
+    expected_output = "No results were found for url http://www.malware.com"
+
+    url_to_check = {'url': 'http://www.malware.com'}
+    with requests_mock.Mocker() as m:
+        m.get(url, status_code=status_code, json=json_data)
+        client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
+        doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
+        results = url_command(client, url_to_check, DBotScoreReliability.B, doc_search_client)
+        output = results[0].to_context().get('HumanReadable')
+        assert expected_output in output
+
+
+def test_domain_not_found():
+    """
+    Given:
+        - an Domain
+
+    When:
+        - running domain command and validate whether the domain is malicious
+
+    Then:
+        - return command results with context indicate that no results were found
+
+    """
+
+    url = 'https://test.com/rest/threatindicator/v0/domain?key.values=mydomain.com'
+    status_code = 200
+    json_data = {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False}
+    expected_output = "No results were found for Domain mydomain.com"
+
+    domain_to_check = {'domain': 'mydomain.com'}
+    with requests_mock.Mocker() as m:
+        m.get(url, status_code=status_code, json=json_data)
+        client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
+        doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
+        results = domain_command(client, domain_to_check, DBotScoreReliability.B, doc_search_client)
+        output = results[0].to_context().get('HumanReadable')
+        assert expected_output in output
+
+
 def test_wrong_ip():
     """
     Given:
@@ -602,3 +658,11 @@ def test_addBaseUrlToPartialPaths():
 
     assert ialink_output == IA_link_expected_output
     assert imagelink_output == image_link_expected_output
+
+def _test_convert_inline_image_to_encoded():
+    md_text = ""
+    expected_output = ""
+    output = convert_inline_image_to_encoded(md_text)
+    print(output)
+    print("test--------------------->")
+    assert output == expected_output
