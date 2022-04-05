@@ -3626,7 +3626,7 @@ class Common(object):
             self.dbot_score = dbot_score
 
         def to_context(self):
-            file_context = {}  # type: dict
+            file_context = {"Hashes": []}  # type: dict
 
             if self.name:
                 file_context['Name'] = self.name
@@ -3642,8 +3642,8 @@ class Common(object):
 
             if self.md5:
                 file_context['MD5'] = self.md5
-                file_context.setdefault('Hashes', []).append({'type': 'MD5',
-                                                              'value': self.md5})
+                file_context['Hashes'].append({'type': 'MD5',
+                                               'value': self.md5})
 
             if self.sha1:
                 file_context['SHA1'] = self.sha1
