@@ -115,7 +115,7 @@ class Client(BaseClient):
             verify (bool): Whether to check for SSL certificate validity.
             proxy (bool): Whether the client should use proxies.
             headers (dict): Headers to set when doing a http request.
-            x_abs_date (str):
+            x_abs_date (str): The automatically generated header that indicates the time (in UTC) the request was made.
         """
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._payload = None
@@ -329,7 +329,7 @@ def sign(key, msg):
 
 def validate_absolute_api_url(base_url):
     if base_url not in ABSOLUTE_URL_TO_API_URL.keys():
-        raise_error_on_missing_args(
+        raise_demisto_exception(
             f"The Absolute server url {base_url} in not a valid url. "
             f"Possible options: {list(ABSOLUTE_URL_TO_API_URL.keys())}")
     return ABSOLUTE_URL_TO_API_URL[base_url]
@@ -378,8 +378,11 @@ def get_custom_device_field_list_command(args, client) -> CommandResults:
     res = client.api_request_absolute('GET', f'/v2/devices/{device_id}/cdf')
     outputs = parse_device_field_list_response(res)
     human_readable = tableToMarkdown(f'{INTEGRATION} Custom device field list',
-                                     parse_device_field_list_response_human_readable(outputs), removeNull=True)
-    return CommandResults(outputs=outputs, outputs_prefix="Absolute.CustomDeviceField", outputs_key_field='DeviceUID',
+                                     parse_device_field_list_response_human_readable(outputs),
+                                     removeNull=True)
+    return CommandResults(outputs=outputs,
+                          outputs_prefix="Absolute.CustomDeviceField",
+                          outputs_key_field='DeviceUID',
                           readable_output=human_readable, raw_response=res)
 
 
@@ -401,35 +404,34 @@ def validate_device_freeze_type_offline(offline_time_seconds):
         # must be between 1200 seconds (20 minutes) and 172800000 seconds (2000 days)
         offline_time_seconds_valid = 1200 <= offline_time_seconds <= 172800000
         if not offline_time_seconds_valid:
-            raise_error_on_missing_args("the offline_time_seconds arg is not valid. Must be between 1200 seconds"
-                                        " (20 minutes) and 172800000 seconds (2000 days).")
+            raise_demisto_exception("the offline_time_seconds arg is not valid. Must be between 1200 seconds"
+                                    " (20 minutes) and 172800000 seconds (2000 days).")
     return offline_time_seconds
 
 
-def raise_error_on_missing_args(msg):
-    raise DemistoException(
-        f'{INTEGRATION} error: {msg}')
+def raise_demisto_exception(msg):
+    raise DemistoException(f'{INTEGRATION} error: {msg}')
 
 
 def validate_device_freeze_type_scheduled(scheduled_freeze_date):
     if not scheduled_freeze_date:
-        raise_error_on_missing_args('When setting device_freeze_type to be Scheduled, you must specify the scheduled_'
-                                    'freeze_date arg.')
+        raise_demisto_exception('When setting device_freeze_type to be Scheduled, you must specify the scheduled_'
+                                'freeze_date arg.')
     return scheduled_freeze_date
 
 
 def validate_passcode_type_args(passcode_type, passcode, passcode_length, payload):
     if passcode_type == "UserDefined":
         if not passcode:
-            raise_error_on_missing_args(
+            raise_demisto_exception(
                 'when setting passcode_type to be UserDefined, you must specify the passcode arg.')
         payload["passcodeDefinition"].update({"passcode": passcode})
 
     elif passcode_type == "RandomForEach" or passcode_type == "RandomForAl":
         not_valid_passcode_length = not passcode_length or passcode_length > 8 or passcode_length < 4
         if not_valid_passcode_length:
-            raise_error_on_missing_args('when setting passcode_type to be RandomForEach or RandomForAl, '
-                                        'you must specify the passcode_length arg to be between 4 to 8.')
+            raise_demisto_exception('when setting passcode_type to be RandomForEach or RandomForAl, '
+                                    'you must specify the passcode_length arg to be between 4 to 8.')
         payload["passcodeDefinition"].update({"length": passcode_length})
 
     return payload
@@ -471,9 +473,21 @@ def prepare_payload_to_freeze_request(args):
     device_freeze_type = args.get('device_freeze_type')
     passcode_type = args.get('passcode_type')
 
-    payload = {"name": request_name, "message": html_message, "messageName": message_name,
-               "freezeDefinition": {"deviceFreezeType": device_freeze_type}, "deviceUids": device_ids,
-               "notificationEmails": notification_emails, "passcodeDefinition": {"option": passcode_type}}
+    payload = {
+        "name": request_name,
+        "message": html_message,
+        "messageName": message_name,
+        "freezeDefinition":
+            {
+                "deviceFreezeType": device_freeze_type
+            },
+        "deviceUids": device_ids,
+        "notificationEmails": notification_emails,
+        "passcodeDefinition":
+            {
+                "option": passcode_type
+            }
+    }
 
     scheduled_freeze_date = args.get('scheduled_freeze_date')
     offline_time_seconds = arg_to_number(args.get('offline_time_seconds'), required=False)
@@ -635,7 +649,9 @@ def device_unenroll_command(args, client) -> CommandResults:
     res = client.api_request_absolute('POST', '/v2/device-unenrollment/unenroll', body=json.dumps(payload))
     outputs = parse_device_unenroll_response(res)
     human_readable = tableToMarkdown(f'{INTEGRATION} unenroll devices:', outputs, removeNull=True)
-    return CommandResults(outputs_prefix='Absolute.DeviceUnenroll', outputs=outputs, readable_output=human_readable,
+    return CommandResults(outputs_prefix='Absolute.DeviceUnenroll',
+                          outputs=outputs,
+                          readable_output=human_readable,
                           raw_response=res)
 
 
@@ -663,44 +679,33 @@ def add_value_to_filter_string(field_name, value, query):
     return f"{field_name} eq '{value}'"
 
 
+def create_filter_query_from_args_helper(args, arg_name, source_name, query):
+    list_no_duplicates = remove_duplicates_from_list_arg(args, arg_name)
+    query = add_list_to_filter_string(source_name, list_no_duplicates, query)
+    return query
+
+
 def create_filter_query_from_args(args: dict, change_device_name_to_system=False):
     custom_filter = args.get('filter')
     if custom_filter:
         return f"$filter={custom_filter}"
     query = ""
 
-    account_uids = remove_duplicates_from_list_arg(args, 'account_uids')
-    query = add_list_to_filter_string("accountUid", account_uids, query)
-
-    device_ids = remove_duplicates_from_list_arg(args, 'device_ids')
-    query = add_list_to_filter_string("deviceUid", device_ids, query)
+    query = create_filter_query_from_args_helper(args, 'account_uids', "accountUid", query)
+    query = create_filter_query_from_args_helper(args, 'device_ids', "deviceUid", query)
+    query = create_filter_query_from_args_helper(args, 'app_names', "appName", query)
+    query = create_filter_query_from_args_helper(args, 'app_publishers', "appPublisher", query)
+    query = create_filter_query_from_args_helper(args, 'user_names', "userName", query)
+    query = create_filter_query_from_args_helper(args, 'os', "osName", query)
+    query = create_filter_query_from_args_helper(args, 'esn', "esn", query)
+    query = create_filter_query_from_args_helper(args, 'local_ips', "localIp", query)
+    query = create_filter_query_from_args_helper(args, 'public_ips', "publicIp", query)
 
     device_names = remove_duplicates_from_list_arg(args, 'device_names')
     if device_names and change_device_name_to_system:
         query = add_list_to_filter_string("systemName", device_names, query)
     else:
         query = add_list_to_filter_string("deviceName", device_names, query)
-
-    app_names = remove_duplicates_from_list_arg(args, 'app_names')
-    query = add_list_to_filter_string("appName", app_names, query)
-
-    app_publishers = remove_duplicates_from_list_arg(args, 'app_publishers')
-    query = add_list_to_filter_string("appPublisher", app_publishers, query)
-
-    user_names = remove_duplicates_from_list_arg(args, 'user_names')
-    query = add_list_to_filter_string("userName", user_names, query)
-
-    operating_systems = remove_duplicates_from_list_arg(args, 'os')
-    query = add_list_to_filter_string("osName", operating_systems, query)
-
-    devices_esn = remove_duplicates_from_list_arg(args, 'esn')
-    query = add_list_to_filter_string("esn", devices_esn, query)
-
-    local_ips = remove_duplicates_from_list_arg(args, 'local_ips')
-    query = add_list_to_filter_string("localIp", local_ips, query)
-
-    public_ips = remove_duplicates_from_list_arg(args, 'public_ips')
-    query = add_list_to_filter_string("publicIp", public_ips, query)
 
     if args.get('agent_status'):
         agent_status = ABSOLUTE_AGET_STATUS[args.get('agent_status')]  # type: ignore
@@ -797,8 +802,11 @@ def get_device_application_list_command(args, client) -> CommandResults:
         outputs = parse_device_list_response(res)
         human_readable = tableToMarkdown(f'{INTEGRATION} device applications list:', outputs, removeNull=True)
         human_readable += f"Above results are with page number: {page} and with size: {limit}."
-        return CommandResults(outputs_prefix='Absolute.DeviceApplication', outputs=outputs, outputs_key_field='Appid',
-                              readable_output=human_readable, raw_response=res)
+        return CommandResults(outputs_prefix='Absolute.DeviceApplication',
+                              outputs=outputs,
+                              outputs_key_field='Appid',
+                              readable_output=human_readable,
+                              raw_response=res)
     else:
         return CommandResults(readable_output=f"No applications found in {INTEGRATION} for the given filters: {args}")
 
@@ -816,17 +824,19 @@ def device_list_command(args, client) -> CommandResults:
         outputs = parse_device_list_response(copy.deepcopy(res), keep_os_in_list=False)
         human_readable = tableToMarkdown(f'{INTEGRATION} devices list:', outputs, removeNull=True)
         human_readable += f"Above results are with page number: {page} and with size: {limit}."
-        return CommandResults(outputs_prefix='Absolute.Device', outputs=outputs, outputs_key_field="Id",
-                              readable_output=human_readable, raw_response=res)
+        return CommandResults(outputs_prefix='Absolute.Device',
+                              outputs=outputs,
+                              outputs_key_field="Id",
+                              readable_output=human_readable,
+                              raw_response=res)
     else:
         return CommandResults(readable_output=f"No devices found in {INTEGRATION} for the given filters: {args}")
 
 
 def get_device_command(args, client) -> CommandResults:
     if not ('device_ids' in args or 'device_names' in args or 'local_ips' in args or 'public_ips' in args):
-        raise DemistoException(
-            f"{INTEGRATION} at least one of the commands args (device_ids, device_names, local_ips, public_ips) "
-            f"must be provided.")
+        raise_demisto_exception(
+            "at least one of the commands args (device_ids, device_names, local_ips, public_ips must be provided.")
 
     query_string = create_filter_query_from_args(args, change_device_name_to_system=True)
     custom_fields_to_return = remove_duplicates_from_list_arg(args, 'fields')
@@ -840,8 +850,11 @@ def get_device_command(args, client) -> CommandResults:
     if res:
         outputs = parse_device_list_response(copy.deepcopy(res))
         human_readable = tableToMarkdown(f'{INTEGRATION} devices list:', outputs, removeNull=True)
-        return CommandResults(outputs_prefix='Absolute.Device', outputs=outputs, outputs_key_field="Id",
-                              readable_output=human_readable, raw_response=res)
+        return CommandResults(outputs_prefix='Absolute.Device',
+                              outputs=outputs,
+                              outputs_key_field="Id",
+                              readable_output=human_readable,
+                              raw_response=res)
     else:
         return CommandResults(readable_output=f"No devices found in {INTEGRATION} for the given filters: {args}")
 
@@ -854,8 +867,10 @@ def get_device_location_command(args, client) -> CommandResults:
     if res:
         outputs = parse_geo_location_outputs(copy.deepcopy(res))
         human_readable = tableToMarkdown(f'{INTEGRATION} devices location:', outputs, removeNull=True)
-        return CommandResults(outputs_prefix='Absolute.LocationReport', outputs=outputs,
-                              readable_output=human_readable, raw_response=res)
+        return CommandResults(outputs_prefix='Absolute.LocationReport',
+                              outputs=outputs,
+                              readable_output=human_readable,
+                              raw_response=res)
     else:
         return CommandResults(
             readable_output=f"No device locations found in {INTEGRATION} for the given filters: {args}")
