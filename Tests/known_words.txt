@@ -151,3 +151,4 @@ IsIncidentPartOfCampaign
 unsearchable
 ChronicleAsset
 Reforamtted
+ipstack
