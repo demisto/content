@@ -120,6 +120,7 @@ def check_base_pack_version(client: demisto_client):
         logging.exception(f'The request to fetch installed packs has failed. Additional info: {str(e)}')
         return None
 
+
 def reset_base_pack_version(client: demisto_client):
     """
     Resets base pack version to prod version.
@@ -144,7 +145,8 @@ def reset_base_pack_version(client: demisto_client):
                 logging.debug('Found Base pack in bucket!')
 
                 current_installed_base_version = check_base_pack_version(client)
-                if current_installed_base_version is not None and current_installed_base_version == result_object.get('currentVersion'):
+                if current_installed_base_version is not None and current_installed_base_version == result_object.get(
+                        'currentVersion'):
                     logging.debug('Installed Base pack is at the same version as the pack in the bucket.')
                     return True
 
@@ -171,8 +173,13 @@ def reset_base_pack_version(client: demisto_client):
 
 def wait_for_uninstalling_to_over(client: demisto_client):
     try:
-        while len(get_all_installed_packs(client)) > 1:
+        installed_packs = get_all_installed_packs(client)
+        while len(installed_packs) > 1:
+            logging.debug(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
+                          f'packs installed. Sleeping for 5 seconds.')
             sleep(5)
+            installed_packs = get_all_installed_packs(client)
+
     except Exception as e:
         logging.exception(f'Exception while waiting for the packs to be uninstalled. The error is {e}')
         return False
