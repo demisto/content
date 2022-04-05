@@ -282,13 +282,15 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
     if not last_fetch:
         last_fetch = first_fetch_time  # type: ignore
     else:
+        demisto.debug('Trying to convert the last_fetch to int, and convert it to date string if succeed. '
+                      'This is for preventing backward compatibility breakage.')
         try:
             last_fetch = int(last_fetch)
             last_fetch = datetime.fromtimestamp(last_fetch).strftime(XSOAR_DATE_FORMAT)
         except Exception:
             pass
 
-    latest_created_time = dateparser.parse(last_fetch)
+    latest_created_time = dateparser.parse(last_fetch)  # type: ignore[arg-type]
     incidents_result: List[Dict[str, Any]] = []
     if query:
         query += f' and created:>="{last_fetch}"'
@@ -348,7 +350,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
             latest_created_time = incident_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': (latest_created_time + timedelta(microseconds=1))
+    next_run = {'last_fetch': (latest_created_time + timedelta(microseconds=1))  # type: ignore[operator]
                 .strftime(XSOAR_DATE_FORMAT)}  # type: ignore[union-attr,operator]
 
     return next_run, incidents_result
