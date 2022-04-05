@@ -17,7 +17,7 @@ requests.packages.urllib3.disable_warnings()
 
 class Client(BaseClient):
     def __init__(self, base_url, username, password, client_id, client_secret, object_name, key_field, query_filter,
-                 fields, history, verify, proxy, feedReputation, ok_codes=[], headers=None, auth=None):
+                 fields, history, use_last_modified, verify, proxy, feedReputation, ok_codes=[], headers=None, auth=None):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers, auth=auth)
         self.username = username
         self.password = password
@@ -35,6 +35,7 @@ class Client(BaseClient):
         self.key_field = key_field
         self.query_filter = query_filter
         self.fields = fields
+        self.use_last_modified = use_last_modified
         self.history = history
         self.feedReputation = feedReputation
         self.score = 1 if self.feedReputation == 'Good'\
@@ -114,13 +115,14 @@ def fetch_indicators_command(client, params, manual_run=False):
 
     if client.query_filter:
         search_criteria = f"{client.query_filter}"
-        if last_run:
+        if last_run and client.use_last_modified:
             search_criteria = f"{search_criteria} AND LastModifiedDate >= {last_run}"
     else:
-        if last_run:
-            search_criteria = f"LastModifiedDate >= {last_run}"
-        else:
-            search_criteria = f"LastModifiedDate > {date_filter}"
+        if client.use_last_modified:
+            if last_run:
+                search_criteria = f"LastModifiedDate >= {last_run}"
+            else:
+                search_criteria = f"LastModifiedDate > {date_filter}"
     indicators_raw = client.query_object(object_fields, client.object_name, search_criteria)
     if indicators_raw.get('totalSize', 0) > 0:
         for indicator in indicators_raw.get('records', []):
@@ -184,6 +186,7 @@ def main():
     object_name = params.get('object')
     key_field = params.get('key_field')
     query_filter = params.get('filter', None)
+    use_last_modified = params.get('use_last_modified')
     fields = params.get('fields', None)
     history = params.get('indicator_history', 365)
     reputation = params.get('feedReputation', 'None')
@@ -191,7 +194,7 @@ def main():
     command = demisto.command()
 
     client = Client(url, username, password, client_id, client_secret, object_name, key_field,
-                    query_filter, fields, history, verify_certificate, proxies, reputation)
+                    query_filter, fields, history, use_last_modified, verify_certificate, proxies, reputation)
 
     if command == 'test-module':
         test_module(client)
