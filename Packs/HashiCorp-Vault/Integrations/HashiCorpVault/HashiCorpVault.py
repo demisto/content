@@ -92,6 +92,8 @@ def login():
 def send_request(path, method='get', body=None, params=None, headers=None):
     body = body if body is not None else {}
     params = params if params is not None else {}
+    if demisto.command() == 'test-module':
+        params['perfstandbyok'] = True
 
     url = '{}/{}'.format(SERVER_URL, path)
 
