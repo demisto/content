@@ -9678,6 +9678,29 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
 
 
 # YML metadata collector mocked classes.
+class ParameterTypes:
+    """YML ConfKey key_type type.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The ParameterTypes enum
+    :rtype: ``ParameterTypes``
+    """
+    STRING = 0
+    NUMBER = 1
+    ENCRYPTED = 4
+    BOOLEAN = 8
+    AUTH = 9
+    DOWNLOAD_LINK = 11
+    TEXT_AREA = 12
+    INCIDENT_TYPE = 13
+    TEXT_AREA_ENCRYPTED = 14
+    SINGLE_SELECT = 15
+    MULTI_SELECT = 16
+
+
 class OutputArgument:
     """YML output argument.
 
