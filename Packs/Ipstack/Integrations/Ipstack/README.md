@@ -1,6 +1,5 @@
 One of the leading IP to geolocation 
 APIs and global IP database services.
-This integration was integrated and tested with version xx of Ipstack
 
 ## Configure ipstack on Cortex XSOAR
 
