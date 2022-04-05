@@ -3820,13 +3820,14 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Union[
         return CommandResults(readable_output='No indicators found')
 
 
-def lateral_movement_evidence_command(client, args):
+def lateral_movement_evidence_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     query_purpose = args.pop('query_purpose')
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.LateralMovementEvidence(**args)
     query_options = {
         'network_connections': query_builder.build_network_connections_query,
@@ -3847,6 +3848,8 @@ def lateral_movement_evidence_command(client, args):
                                       results,
                                       removeNull=True
                                       )
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'MicrosoftATP.HuntLateralMovementEvidence.Result.{query_purpose}',
@@ -3854,11 +3857,12 @@ def lateral_movement_evidence_command(client, args):
     )
 
 
-def persistence_evidence_command(client, args):
+def persistence_evidence_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.PersistenceEvidence(**args)
     query_options = {
         'scheduled_job': query_builder.build_scheduled_job_query,
@@ -3881,6 +3885,8 @@ def persistence_evidence_command(client, args):
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
     readable_output = tableToMarkdown(f'Persistence EvidenceHunt Hunt ({query_purpose}) Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'MicrosoftATP.HuntPersistenceEvidence.Result.{query_purpose}',
@@ -3888,12 +3894,13 @@ def persistence_evidence_command(client, args):
     )
 
 
-def file_origin_command(client, args):
+def file_origin_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.FileOrigin(**args)
     query = query_builder.build_file_origin_query()
 
@@ -3903,6 +3910,8 @@ def file_origin_command(client, args):
     if isinstance(results, list) and page > 1:
         results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown('File Origin Hunt Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='MicrosoftATP.HuntFileOrigin.Result',
@@ -3910,13 +3919,14 @@ def file_origin_command(client, args):
     )
 
 
-def process_details_command(client, args):
+def process_details_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.ProcessDetails(**args)
     query_options = {
         'parent_process': query_builder.build_parent_process_query,
@@ -3936,6 +3946,8 @@ def process_details_command(client, args):
     if isinstance(results, list) and page > 1:
         results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown(f'Process Details Hunt ({query_purpose}) Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'MicrosoftATP.HuntProcessDetails.Result.{query_purpose}',
@@ -3943,13 +3955,14 @@ def process_details_command(client, args):
     )
 
 
-def network_connections_command(client, args):
+def network_connections_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.NetworkConnections(**args)
     query_options = {
         'external_addresses': query_builder.build_external_addresses_query,
@@ -3966,6 +3979,8 @@ def network_connections_command(client, args):
     if isinstance(results, list) and page > 1:
         results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown(f'Network Connections Hunt ({query_purpose}) Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'MicrosoftATP.HuntNetworkConnections.Result.{query_purpose}',
@@ -3973,12 +3988,13 @@ def network_connections_command(client, args):
     )
 
 
-def privilege_escalation_command(client, args):
+def privilege_escalation_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.PrivilegeEscalation(**args)
     query = query_builder.build_query()
 
@@ -3988,6 +4004,8 @@ def privilege_escalation_command(client, args):
     if isinstance(results, list) and page > 1:
         results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown('Privilege Escalation Hunt Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='MicrosoftATP.HuntPrivilegeEscalation.Result',
@@ -3995,12 +4013,13 @@ def privilege_escalation_command(client, args):
     )
 
 
-def tampering_command(client, args):
+def tampering_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.Tampering(**args)
     query = query_builder.build_query()
 
@@ -4010,6 +4029,8 @@ def tampering_command(client, args):
     if isinstance(results, list) and page > 1:
         results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown('Tampering Hunt Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='MicrosoftATP.HuntTampering.Result',
@@ -4017,13 +4038,14 @@ def tampering_command(client, args):
     )
 
 
-def cover_up_command(client, args):
+def cover_up_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.CoverUp(**args)
     query_options = {
         'file_deleted': query_builder.build_file_deleted_query,
@@ -4043,6 +4065,8 @@ def cover_up_command(client, args):
     if isinstance(results, list) and page > 1:
         results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown(f'Cover Up Hunt ({query_purpose}) Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'MicrosoftATP.HuntCoverUp.Result.{query_purpose}',
@@ -4590,7 +4614,7 @@ def put_file_get_successful_action_results(client, res):
     )
 
 
-def main():
+def main():  # pragma: no cover
     params: dict = demisto.params()
     base_url: str = params.get('url', '').rstrip('/') + '/api'
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')

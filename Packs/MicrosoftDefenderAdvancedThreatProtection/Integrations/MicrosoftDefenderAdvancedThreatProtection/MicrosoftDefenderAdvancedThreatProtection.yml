@@ -5389,6 +5389,13 @@ script:
       name: page
       required: false
       secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
     outputs:
     - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections
       description: The query results for network_connections query_purpose.
@@ -5499,6 +5506,13 @@ script:
       description: The page number from which to start a search. Default is 1.
       isArray: false
       name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
       required: false
       secret: false
     - default: false
@@ -5614,6 +5628,13 @@ script:
       name: page
       required: false
       secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
     outputs:
     - contextPath: MicrosoftATP.HuntFileOrigin.Result
       description: The query results.
@@ -5706,6 +5727,13 @@ script:
       description: The page number from which to start a search. Default is 1.
       isArray: false
       name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
       required: false
       secret: false
     outputs:
@@ -5813,6 +5841,13 @@ script:
       name: page
       required: false
       secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
     outputs:
     - contextPath: MicrosoftATP.HuntNetworkConnections.Result.external_addresses
       description: The query results for external_addresses query_purpose.
@@ -5871,6 +5906,13 @@ script:
       name: page
       required: false
       secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
     outputs:
     - contextPath: MicrosoftATP.HuntPrivilegeEscalation.Result
       description: The query results.
@@ -5921,6 +5963,13 @@ script:
       description: The page number from which to start a search. Default is 1.
       isArray: false
       name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
       required: false
       secret: false
     outputs:
