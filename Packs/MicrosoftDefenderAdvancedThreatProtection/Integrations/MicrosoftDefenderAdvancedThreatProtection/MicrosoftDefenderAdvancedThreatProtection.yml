@@ -5833,7 +5833,7 @@ script:
     - contextPath: MicrosoftATP.HuntPrivilegeEscalation.Result
       description: The query results.
       type: String
-  - name: microsoft-atp-advanced-hunting-tampering
+  - name: aviya
     description: Detects evidence of MSDE agent/sensor manipulation.
     deprecated: false
     arguments:
