@@ -7,10 +7,7 @@ import dateparser
 def check_date(value, relative_date):
     v = dateparser.parse(value)
     da = dateparser.parse(relative_date)
-    if v > da:
-        return True
-    else:
-        return False
+    return v > da  # type: ignore
 
 
 def main():
