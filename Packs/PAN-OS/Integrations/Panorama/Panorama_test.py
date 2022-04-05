@@ -782,6 +782,31 @@ class TestPanoramaEditRuleCommand:
         with pytest.raises(DemistoException):
             Panorama.panorama_edit_rule_command(args)
 
+    @staticmethod
+    def test_edit_rule_to_disabled(mocker):
+        """
+        Given - connection to snapshot.
+
+
+        When -
+            Running create_snapshot function.
+
+        Then -
+            The Task_id should be returned.
+        """
+        from Panorama import panorama_edit_rule_command
+        args = {
+            "rulename": "test",
+            "element_to_change": "disabled",
+            "element_value": "no",
+            "behaviour": "replace",
+            "pre_post": "pre-rulebase"
+        }
+        mocker.patch("Panorama.http_request", return_value=TestPanoramaEditRuleCommand.EDIT_SUCCESS_RESPONSE)
+        results_mocker = mocker.patch.object(demisto, "results")
+        panorama_edit_rule_command(args)
+        assert results_mocker.called
+
 
 class MockedResponse:
     def __init__(self, text, status_code, reason):
