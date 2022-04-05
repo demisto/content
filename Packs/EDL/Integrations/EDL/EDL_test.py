@@ -205,11 +205,12 @@ class TestHelperFunctions:
         requests_mock.get('https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat', text=tld)
         requests_mock.get('https://publicsuffix.org/list/public_suffix_list.dat', text=tld)
 
-        indicators = [{'value': '1.1.1.1/7', 'indicator_type': 'CIDR'},
-                      {"value": "1.1.1.1/12", "indicator_type": "CIDR"},
-                      {"value": "*.com", "indicator_type": "Domain"},
-                      {"value": "*.co.uk", "indicator_type": "Domain"},
-                      {"value": "*.google.com", "indicator_type": "Domain"}]
+        indicators = [{'value': '1.1.1.1/7', 'indicator_type': 'CIDR'},  # prefix=7
+                      {"value": "1.1.1.1/12", "indicator_type": "CIDR"},  # prefix=12
+                      {"value": "*.com", "indicator_type": "Domain"},  # tld
+                      {"value": "*.co.uk", "indicator_type": "Domain"},  # tld
+                      {"value": "*.google.com", "indicator_type": "Domain"},  # no tld
+                      {"value": "aא.com", "indicator_type": "URL"}]  # no ascii
         f = '\n'.join((json.dumps(indicator) for indicator in indicators))
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, block_cidr_prefix_threshold=2)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
@@ -225,12 +226,13 @@ class TestHelperFunctions:
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, block_cidr_prefix_threshold=8)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
         edl_v = edl.create_new_edl(request_args)
-        assert set(edl_v.split('\n')) == {"1.1.1.1/12", "*.com", "com", "*.co.uk", "co.uk", "*.google.com", "google.com"}
+        assert set(edl_v.split('\n')) == {"1.1.1.1/12", "*.com", "com", "*.co.uk",
+                                          "co.uk", "*.google.com", "google.com", "aא.com"}
 
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, block_tld=True, block_cidr_prefix_threshold=13)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
         edl_v = edl.create_new_edl(request_args)
-        assert set(edl_v.split('\n')) == {"*.google.com", "google.com"}
+        assert set(edl_v.split('\n')) == {"*.google.com", "google.com", "aא.com"}
 
     def test_create_json_out_format(self):
         """
