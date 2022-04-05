@@ -5989,6 +5989,87 @@ script:
       - contextPath: MicrosoftATP.HuntCoverUp.Result.common_files
         description: The query results for common_files query_purpose.
         type: String
+  - arguments:
+    - default: true
+      description: A machine ID to be used for getting logged on users
+      isArray: true
+      name: machine_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a collection of logged on users on a specific device.
+    execution: false
+    name: microsoft-atp-get-machine-users
+    outputs:
+    - contextPath: MicrosoftATP.MachineUser.ID
+      description: The user ID.
+      type: String
+    - contextPath: MicrosoftATP.MachineUser.AccountName
+      description: The user account name.
+      type: String
+    - contextPath: MicrosoftATP.MachineUser.AccountDomain
+      description: The domain of the user account.
+      type: String
+    - contextPath: MicrosoftATP.MachineUser.FirstSeen
+      description: The first date and time the user has logged on the machine.
+      type: Date
+    - contextPath: MicrosoftATP.MachineUser.LastSeen
+      description: The last date and time the user has logged on the machine.
+      type: Date
+    - contextPath: MicrosoftATP.MachineUser.LogonTypes
+      description: The logon types of the user on the machine.
+      type: String
+    - contextPath: MicrosoftATP.MachineUser.DomainAdmin
+      description: True if user is Domain Admin, False otherwise.
+      type: Boolean
+    - contextPath: MicrosoftATP.MachineUser.NetworkUser
+      description: True if user is network user, False otherwise.
+      type: Boolean
+    - contextPath: MicrosoftATP.MachineUser.MachineID
+      description: The machine ID.
+      type: String
+  - arguments:
+    - default: true
+      description: A machine ID to be used for getting machine related alerts
+      isArray: true
+      name: machine_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a collection of logged on users on a specific device.
+    execution: false
+    name: microsoft-atp-get-machine-users
+    outputs:
+    - contextPath: MicrosoftATP.MachineAlerts.ID
+      description: The alert ID.
+      type: String
+    - contextPath: MicrosoftATP.MachineAlerts.Title
+      description: The alert title.
+      type: String
+    - contextPath: MicrosoftATP.MachineAlerts.Description
+      description: The alert description.
+      type: String
+    - contextPath: MicrosoftATP.MachineAlerts.IncidentID
+      description: The incident ID, if alert belongs to one.
+      type: String
+    - contextPath: MicrosoftATP.MachineAlerts.Severity
+      description: The alert severtiy.
+      type: String
+    - contextPath: MicrosoftATP.MachineAlerts.Status
+      description: The alert status.
+      type: String
+    - contextPath: MicrosoftATP.MachineAlerts.Classification
+      description: The alert classification.
+      type: String
+    - contextPath: MicrosoftATP.MachineAlerts.Category
+      description: The alert category.
+      type: String
+    - contextPath: MicrosoftATP.MachineAlerts.ThreatFamilyName
+      description: The alert threat family name.
+      type: String
+    - contextPath: MicrosoftATP.MachineAlerts.MachineID
+      description: The alerts machine ID.
+      type: String
   dockerimage: demisto/crypto:1.0.0.27590
   feed: false
   isfetch: true
