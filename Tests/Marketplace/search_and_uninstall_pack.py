@@ -30,8 +30,9 @@ def get_all_installed_packs(client: demisto_client):
         if 200 <= status_code < 300:
             installed_packs = ast.literal_eval(response_data)
             installed_packs_ids = [pack.get('id') for pack in installed_packs]
-            logging.success('Successfully fetched all installed packs ')
-            logging.debug(f'The following packs were are installed:\n{installed_packs_ids}')
+            logging.success('Successfully fetched all installed packs.')
+            installed_packs_ids_str = ', '.join(installed_packs_ids)
+            logging.debug(f'The following packs are currently installed from a previous build run:\n{installed_packs_ids_str}')
         else:
             result_object = ast.literal_eval(response_data)
             message = result_object.get('message', '')
@@ -70,7 +71,7 @@ def uninstall_packs(client: demisto_client, pack_ids: list):
         else:
             result_object = ast.literal_eval(response_data)
             message = result_object.get('message', '')
-            raise Exception(f'Failed to uninstall packs - with status code {status_code}\n{message}')
+            raise Exception(f'[{status_code}] {message}')
     except Exception as e:
         logging.exception(f'The request to uninstall packs has failed. Additional info: {str(e)}')
         return False
@@ -91,7 +92,10 @@ def uninstall_all_packs(client: demisto_client):
     logging.info(f'Starting to search and uninstall packs in server: {host}')
 
     packs_to_uninstall: list = get_all_installed_packs(client)
-    return uninstall_packs(client, packs_to_uninstall)
+    if packs_to_uninstall:
+        return uninstall_packs(client, packs_to_uninstall)
+    logging.debug('Skipping packs uninstallation - nothing to uninstall')
+    return True
 
 
 def options_handler():
@@ -176,7 +180,7 @@ def reset_base_pack_version(client: demisto_client):
 
 
 def main():
-    install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
+    install_logging('cleanup_xsiam_instance.log', logger=logging)
 
     # in xsiam we dont use demisto username
     os.environ.pop('DEMISTO_USERNAME', None)
@@ -184,6 +188,7 @@ def main():
     options = options_handler()
     xsiam_servers = get_json_file(options.xsiam_servers_path)
     api_key, base_url, xdr_auth_id = get_xsiam_configuration(options.xsiam_machine, xsiam_servers)
+    logging.info(f'Starting cleanup for XSIAM server {base_url}')
 
     client = demisto_client.configure(base_url=base_url,
                                       verify_ssl=False,
