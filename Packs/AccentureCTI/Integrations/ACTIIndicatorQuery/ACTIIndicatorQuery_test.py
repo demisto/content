@@ -586,3 +586,19 @@ def test_getThreatReport_not_found():
         results = getThreatReport_command(doc_search_client, uuid_to_check, DBotScoreReliability.B)
         output = results.to_context().get('HumanReadable')
         assert expected_output in output
+
+
+def test_addBaseUrlToPartialPaths():
+    IA_link_in_content = " BELUGASTURGEON activity, including a [2020 campaign against the Cypriot"\
+        " government](#/node/intelligence_alert/view/6cc805d7-cb77-443d-afea-d052916fa602)"
+    image_link_in_content = "as China has.\n\n ![Arctic Map](/rest/files/download/0f/6c"\
+        "/6f/91de9ef8d8d38345dc270f8915d9faa496a00b5babe2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg)"
+    IA_link_expected_output = " BELUGASTURGEON activity, including a [2020 campaign against the Cypriot"\
+        " government](https://intelgraph.idefense.com/#/node/intelligence_alert/view/6cc805d7-cb77-443d-afea-d052916fa602)"
+    image_link_expected_output = "as China has.\n\n ![Arctic Map](https://intelgraph.idefense.com/rest/files/download/0f/6c"\
+        "/6f/91de9ef8d8d38345dc270f8915d9faa496a00b5babe2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg)"
+    ialink_output = addBaseUrlToPartialPaths(IA_link_in_content)
+    imagelink_output = addBaseUrlToPartialPaths(image_link_in_content)
+
+    assert ialink_output == IA_link_expected_output
+    assert imagelink_output == image_link_expected_output
