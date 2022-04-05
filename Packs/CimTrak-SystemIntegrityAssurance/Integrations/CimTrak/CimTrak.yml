@@ -189,7 +189,7 @@ script:
       description: Forensic Data
       type: string
     - contextPath: CimTrak.Event.dtmdeleted
-      description: Deteled Date Time
+      description: Deleted Date Time
       type: string
     - contextPath: CimTrak.Event.ltickcount
       description: Tick Count
@@ -326,7 +326,7 @@ script:
   - arguments:
     - description: Array of object detail IDs of file to check IE:42,43
       name: ObjectDetaildIds
-    description: This function removes a file (or list of files) from being the authoritaive baseline.
+    description: This function removes a file (or list of files) from being the authoritative baseline.
     name: demote-authoritative-baseline-files
     outputs:
     - contextPath: CommandStatus.status
@@ -529,13 +529,13 @@ script:
       description: Ticket creation date
       type: string
     - contextPath: CimTrak.TicketTask.ticketCreatedByUserId
-      description: Ticket vreated by user Id
+      description: Ticket created by user Id
       type: string
     - contextPath: CimTrak.TicketTask.ticketModificationDate
       description: Ticket modification date
       type: string
     - contextPath: CimTrak.TicketTask.requiresAcknowledgement
-      description: Ticket requires acknowlegment
+      description: Ticket requires acknowledgment
       type: string
     - contextPath: CimTrak.TicketTask.requiresConfirmation
       description: Ticket requires confirmation
@@ -989,7 +989,7 @@ script:
       description: Agent Object Id
       type: number
     - contextPath: CimTrak.SubGenerations.subGenerationId
-      description: SubgenerationId
+      description: Subgeneration Id
       type: number
     - contextPath: CimTrak.SubGenerations.objectId
       description: Object Id
@@ -1379,7 +1379,7 @@ script:
     - defaultValue: "-1"
       description: 'The record ID of the compliance scan. '
       name: ComplianceScanId
-    description: This function returns the benchmarks and/or compliance mappings for the complance policy specified by the object ID.
+    description: This function returns the benchmarks and/or compliance mappings for the compliance policy specified by the object ID.
     name: get-current-compliance-items
     outputs:
     - contextPath: CommandStatus.status
@@ -1410,7 +1410,7 @@ script:
       description: Scan End Time
       type: string
     - contextPath: CimTrak.ComplianceItems.scanid
-      description: Scanid
+      description: Scan id
       type: number
     - contextPath: CimTrak.ComplianceItems.compliancemappingid
       description: Compliance Mapping id
@@ -1709,7 +1709,7 @@ script:
       description: Comment
       type: string
     - contextPath: CimTrak.Compliance.controlversion
-      description: Controlversion
+      description: Control version
       type: string
     - contextPath: CimTrak.Compliance.controlnumber
       description: Control number
