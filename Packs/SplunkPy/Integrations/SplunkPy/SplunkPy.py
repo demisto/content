@@ -44,7 +44,7 @@ MIRROR_DIRECTION = {
     'Incoming And Outgoing': 'Both'
 }
 OUTGOING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency']
-INCOMING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'status_label']
+# INCOMING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'status_label']
 
 # =========== Enrichment Mechanism Globals ===========
 ENABLED_ENRICHMENTS = params.get('enabled_enrichments', [])
@@ -1179,11 +1179,9 @@ def get_remote_data_command(service, args, close_incident):
 
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
-    delta = {field: updated_notable.get(field) for field in INCOMING_MIRRORED_FIELDS if updated_notable.get(field)}
-
-    if delta:
-        demisto.debug('notable {} delta: {}'.format(notable_id, delta))
-        if delta.get('status') == '5' and close_incident:
+    if updated_notable:
+        demisto.debug('notable {} data: {}'.format(notable_id, updated_notable))
+        if updated_notable.get('status') == '5' and close_incident:
             demisto.info('Closing incident related to notable {}'.format(notable_id))
             entries = [{
                 'Type': EntryType.NOTE,
@@ -1198,7 +1196,7 @@ def get_remote_data_command(service, args, close_incident):
     else:
         demisto.debug('no delta was found for notable {}'.format(notable_id))
 
-    return_results(GetRemoteDataResponse(mirrored_object=delta, entries=entries))
+    return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
 
 
 def get_modified_remote_data_command(service, args):
