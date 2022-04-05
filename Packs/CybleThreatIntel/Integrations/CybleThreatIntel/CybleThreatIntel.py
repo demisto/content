@@ -32,7 +32,9 @@ class Client(BaseClient):
             'page': arg_to_number(args.get('page', 1)),
             'limit': arg_to_number(args.get('limit', 1)),
             'start_date': args.get('start_date', ''),
-            'end_date': args.get('end_date', '')
+            'end_date': args.get('end_date', ''),
+            'start_time': args.get('start_time', '00:00:00'),
+            'end_time': args.get('end_time', '00:00:00'),
         }
 
         url = urljoin(self._base_url, taxiiurl)
@@ -85,8 +87,8 @@ def cyble_fetch_taxii(client, method, args):
         'limit': arg_to_number(args.get('limit', 1)),
         'start_date': args.get('start_date', ''),
         'end_date': args.get('end_date', ''),
-        'start_time': args.get('start_time', ''),
-        'end_time': args.get('end_time', ''),
+        'start_time': args.get('start_time', '00:00:00'),
+        'end_time': args.get('end_time', '00:00:00'),
     }
 
     taxii_url = r'/taxii/stix-data/v21/get'
