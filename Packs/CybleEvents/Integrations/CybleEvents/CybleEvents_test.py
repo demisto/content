@@ -33,6 +33,23 @@ def test_module(requests_mock):
     assert isinstance(response, str)
     assert response == 'ok'
 
+    
+def test_module_failure(requests_mock):
+    """
+    Test the basic test-module command in case of a failure.
+    """
+    from CybleEvents import Client, get_test_response
+    requests_mock.post('https://test.com/api/v2/events/types', json={})
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    response = get_test_response(client=client, method='POST', token="some_random_token")
+
+    assert isinstance(response, str)
+    assert response == 'fail'
 
 def test_get_event_types(requests_mock):
     """
