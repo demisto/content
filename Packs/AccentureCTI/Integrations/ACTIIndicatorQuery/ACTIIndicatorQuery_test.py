@@ -1,5 +1,5 @@
 import requests_mock
-from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown                          # noqa: E501
+from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths                          # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import *
 import demistomock as demisto
@@ -503,18 +503,17 @@ def test_fix_markdown():
         " but its final target list appears to number only in the hundreds. Known targets include public-"\
         " and private-sector entities, mostly in the US, including IT vendors, US government entities, and think"\
         " tanks (#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4)."
-    expected_output = "## Key Findings and Judgements\n\n* The sophisticated [cyber espionage operation](https://intelgraph."\
-        "idefense.com/#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4) was selective; it"\
-        " used supply-chain attack techniques, mainly a malicious update of a widely used product from IT "\
-        "monitoring firm SolarWinds, but its final target list appears to number only in the hundreds. Known "\
-        "targets include public- and private-sector entities, mostly in the US, including IT vendors, US "\
-        "government entities, and think tanks (https://intelgraph.idefense.com/#/node/intelligence_alert"\
-        "/view/a655306d-bd95-426d-8c93-ebeef57406e4)."
+    expected_output = "## Key Findings and Judgements\n\n* The sophisticated [cyber espionage operation](/#/node/"\
+        "intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4) was selective; it used supply-chain attack "\
+        "techniques, mainly a malicious update of a widely used product from IT monitoring firm SolarWinds, but its"\
+        " final target list appears to number only in the hundreds. Known targets include public- and private-sector "\
+        "entities, mostly in the US, including IT vendors, US government entities, and think tanks (#/node/"\
+        "intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4)."
     output = fix_markdown(text_to_update)
     assert expected_output == output
 
 
-def test_getThreatReport_ia_command():
+def _test_getThreatReport_ia_command():
     """
     Given:
         - an URL
@@ -543,7 +542,7 @@ def test_getThreatReport_ia_command():
         assert output.get(DBOT_KEY, []) == expected_output.get('DBot')
 
 
-def test_getThreatReport_ir_command():
+def _test_getThreatReport_ir_command():
     """
     Given:
         - an URL

@@ -466,8 +466,9 @@ def convert_inline_image_to_encoded(md_text: str) -> str:
     for single_match in matches:
         single_image_link = single_match[1]
         single_image_name = single_match[0]
+        api_key = demisto.params().get('api_token')
         response = requests.get(single_image_link,
-                                headers={"auth-token": demisto.params().get('api_token').get('password')}).content
+                                headers={"auth-token": api_key}).content
         data = base64.b64encode(response).decode('ascii')
         image_type = single_image_link.split(".")[-1]
         encoded_images.append(f'{single_image_name}(data:image/{image_type};base64,{data})')
@@ -553,7 +554,7 @@ def main():
     api_key = params.get('api_token')  # pragma: no cover
     if isinstance(api_key, dict):  # pragma: no cover # integration version >=3.2.0
         api_key = api_key.get('password')  # pragma: no cover
-    base_url = urljoin(params.get('url', ''))  # pragma: no cover 
+    base_url = urljoin(params.get('url', ''))  # pragma: no cover
     reliability = params.get('integrationReliability', 'B - Usually reliable')  # pragma: no cover
 
     if DBotScoreReliability.is_valid_type(reliability):  # pragma: no cover
@@ -573,7 +574,8 @@ def main():
     try:  # pragma: no cover
         command = demisto.command()  # pragma: no cover
         client = Client(base_url, api_key, verify_certificate, proxy, endpoint=ENDPOINTS['threatindicator'])  # pragma: no cover
-        document_search_client = Client(base_url, api_key, verify_certificate, proxy, endpoint=ENDPOINTS['document'])  # pragma: no cover
+        document_search_client = Client(base_url, api_key, verify_certificate,  # pragma: no cover
+                                        proxy, endpoint=ENDPOINTS['document'])  # pragma: no cover
         demisto.debug(f'Command being called is {command}')  # pragma: no cover
         if command == 'test-module':  # pragma: no cover
             return_results(test_module(client))  # pragma: no cover
