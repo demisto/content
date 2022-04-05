@@ -286,6 +286,7 @@ slack-notify-nightly-build:
     # todo: uncomment it:
 #    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     # todo: delete next 3 lines
+    - echo "CI job name = $CI_JOB_NAME"
     - echo -e "Phishing v2 - Test - Incident Starter\nCreate Phishing Classifier V2 ML Test\nDBot Build Phishing Classifier Test - Multiple Algorithms\nDBotPredictURLPhishing_test\nDBotCreatePhishingClassifierV2FromFile-Test\nPhishing - Core - Test - Incident Starter" > "$ARTIFACTS_FOLDER/filter_file.txt"
     - echo -e "Phishing v2 - Test - Incident Starter\nCreate Phishing Classifier V2 ML Test\nDBot Build Phishing Classifier Test - Multiple Algorithms\nDBotPredictURLPhishing_test\nDBotCreatePhishingClassifierV2FromFile-Test\nPhishing - Core - Test - Incident Starter" > "/builds/xsoar/content/artifacts/filter_file.txt"
     - echo -e "Base\nPhishingURL\nCortexAttackSurfaceManagement\nDemistoLocking\nSlashNextPhishingIncidentResponse\nrasterize\nDemistoRESTAPI\nEWSMailSender\nAzureWAF\nWhois\nML\nPhishing\nCoreAlertFields\nAgariPhishingDefense\nCommonPlaybooks\nCore" > "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
