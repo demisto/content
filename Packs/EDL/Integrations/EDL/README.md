@@ -12,6 +12,10 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 6. If you have a deployment with 100 firewalls or more, we recommend using your Panorama device and creating an EDL object there, which will be populated from the `PAN-OS EDL Service`. Then push the EDL object to the respective firewalls.
 7. Follow the instructions in the rest of this guide to make sure that the PAN-OS device is connected to the EDL service.
 
+***Important Note:***
+EDL is designed to spawn on two processes: nginx and python. Nginx is the process that listens on the configured port, while the python process listens on the configured port + 1. This means that if an integration was configured for port 9009, the nginx process will listen on port 9009 and python on port 9010.
+When running without --network=host the python port is not exposed to the machine.
+
 ## Use Cases
 ---
 1. Export a list of malicious IPs to block via a firewall.
