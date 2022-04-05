@@ -342,6 +342,30 @@ def parse_incident_details(compressed_details: str):
     return details_obj
 
 
+def create_incident(notification: dict, region: str):
+    raw_incident = notification['incident']
+    previous_notifications = notification['previous_notifications']
+    raw_incident['region'] = region
+    raw_incident['previousNotification'] = previous_notifications[0] if len(previous_notifications) > 0 else None
+    incident_creation_time = dateparser.parse(raw_incident['createdAt'])
+    parsed_details = parse_incident_details(raw_incident['incidentDetails'])
+    raw_incident['incidentDetails'] = parsed_details
+    if not raw_incident['userId']:
+        for header in parsed_details['headers']:
+            if header['attribute_name'] == 'username':
+                raw_incident['userId'] = header['attribute_value']
+
+    event_dump = json.dumps(raw_incident)
+    incident = {
+        'name': f'Palo Alto Networks DLP Incident {raw_incident["incidentId"]}',
+        'type': 'Data Loss Prevention',
+        'occurred': incident_creation_time.isoformat(),  # type: ignore
+        'rawJSON': event_dump,
+        'details': event_dump
+    }
+    return incident
+
+
 def fetch_incidents(client: Client, regions: str, start_time: int = None, end_time: int = None):
     if start_time and end_time:
         print_debug_msg(f'Start fetching incidents between {start_time} and {end_time}.')
@@ -353,26 +377,7 @@ def fetch_incidents(client: Client, regions: str, start_time: int = None, end_ti
     for region in notification_map:
         notifications = notification_map[region]
         for notification in notifications:
-            raw_incident = notification['incident']
-            previous_notifications = notification['previous_notifications']
-            raw_incident['region'] = region
-            raw_incident['previousNotification'] = previous_notifications[0] if len(previous_notifications) > 0 else None
-            incident_creation_time = dateparser.parse(raw_incident['createdAt'])
-            parsed_details = parse_incident_details(raw_incident['incidentDetails'])
-            raw_incident['incidentDetails'] = parsed_details
-            if not raw_incident['userId']:
-                for header in parsed_details['headers']:
-                    if header['attribute_name'] == 'username':
-                        raw_incident['userId'] = header['attribute_value']
-
-            event_dump = json.dumps(raw_incident)
-            incident = {
-                'name': f'Palo Alto Networks DLP Incident {raw_incident["incidentId"]}',
-                'type': 'Data Loss Prevention',
-                'occurred': incident_creation_time.isoformat(),  # type: ignore
-                'rawJSON': event_dump,
-                'details': event_dump
-            }
+            incident = create_incident(notification, region)
             incidents.append(incident)
     return incidents
 
