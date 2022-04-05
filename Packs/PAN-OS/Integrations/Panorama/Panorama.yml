@@ -7466,6 +7466,156 @@ script:
       - contextPath: PANOS.DownloadStatus.Summary.started
         description: Whether the download process started.
         type: String
+  - arguments:
+    - default: false
+      description: ID of host (serial or hostname) to reboot
+      isArray: false
+      name: hostid
+      required: true
+      secret: false
+    deprecated: false
+    description: Reboot the given host.
+    name: pan-os-platform-reboot
+    outputs:
+    - contextPath: PANOS.RestartStatus.Summary.hostid
+      type: Unknown
+    - contextPath: PANOS.RestartStatus.Summary.started
+      description: Whether download process has started.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: ID of host (serial or hostname) to check.
+      isArray: false
+      name: hostid
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks the status of the given device, checking whether it's up or
+      down and the operational mode normal
+    name: pan-os-platform-get-system-status
+    outputs:
+    - contextPath: PANOS.SystemStatus.hostid
+      type: Unknown
+    - contextPath: PANOS.SystemStatus.up
+      description: Whether the host device is up or still unavailable.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: ID of host (serial or hostname) to update the state.
+      isArray: false
+      name: hostid
+      required: true
+      secret: false
+    - default: false
+      description: New state.
+      isArray: false
+      name: state
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks the status of the given device, checking whether it's up or
+      down and the operational mode normal
+    name: pan-os-platform-update-ha-state
+    outputs:
+    - contextPath: PANOS.HAStateUpdate.hostid
+      type: Unknown
+    - contextPath: PANOS.HAStateUpdate.state
+      description: New HA State
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only check given device
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: null
+    name: pan-os-hygiene-check-log-forwarding
+    outputs:
+    - contextPath: PANOS.ConfigurationHygiene.Summary.description
+      description: The description of the check
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
+      description: The shorthand code for this hygiene check
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Summary.result
+      description: Whether the check passed or failed
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
+      description: Total number of matching issues
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Result.hostid
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Result.container_name
+      description: What parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Result.issue_code
+      description: The shorthand code for the issue
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Result.description
+      description: Human readable description of issue
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Result.name
+      description: The affected object name
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only check given device
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    - default: false
+      defaultValue: critical,high
+      description: csv list of severities that must be in drop/reset/block-ip mode.
+      isArray: false
+      name: minimum_block_severities
+      required: false
+      secret: false
+    - default: false
+      defaultValue: medium,low
+      description: csv list of severities that must be in alert/default or higher
+        mode.
+      isArray: false
+      name: minimum_alert_severities
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks the configured Vulnerability profiles to ensure at least one
+      meets best practices.
+    name: pan-os-hygiene-check-vulnerability-profiles
+    outputs:
+    - contextPath: PANOS.ConfigurationHygiene.Summary.description
+      description: The description of the check
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
+      description: The shorthand code for this hygiene check
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Summary.result
+      description: Whether the check passed or failed
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
+      description: Total number of matching issues
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Result.hostid
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Result.container_name
+      description: What parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Result.issue_code
+      description: The shorthand code for the issue
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Result.description
+      description: Human readable description of issue
+      type: Unknown
+    - contextPath: PANOS.ConfigurationHygiene.Result.name
+      description: The affected object name
+      type: Unknown
   dockerimage: demisto/pan-os-python:1.0.0.27970
   feed: false
   isfetch: false
