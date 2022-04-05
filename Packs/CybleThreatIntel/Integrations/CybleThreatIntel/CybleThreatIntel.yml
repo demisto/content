@@ -55,14 +55,14 @@ script:
       required: true
       secret: false
     - default: true
-      defaultValue: ' 00:00:00'
+      defaultValue: '00:00:00'
       description: 'Returns records starting with given time value (Format: HH:mm:ss)'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: true
-      defaultValue: ' 00:00:00'
+      defaultValue: '00:00:00'
       description: 'Returns records till given time value (Format: HH:mm:ss)'
       isArray: false
       name: end_time
