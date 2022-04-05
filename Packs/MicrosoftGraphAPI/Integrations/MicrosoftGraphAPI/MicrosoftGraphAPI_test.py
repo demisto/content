@@ -51,6 +51,28 @@ def test_generic_command_positive_value_key(requests_mock, client):
     assert res.outputs == applications_res.get('value')
 
 
+def test_generic_command_with_boolean_value(requests_mock, client):
+    """
+    Given:
+        - API resource /users/testUser/revokeSignInSessions
+    When:
+        - Running the generic command
+    Then:
+        - Ensure Human readable returns
+    """
+    response = load_test_data('booleanResults.json')
+    requests_mock.get(
+        'https://graph.microsoft.com/v1.0/users/testUser/revokeSignInSessions',
+        json=response,
+    )
+    args = {
+        'resource': '/users/testUser/revokeSignInSessions',
+
+    }
+    res = generic_command(client, args)
+    assert res == 'The API query ran successfully and returned no content.'
+
+
 def test_generic_command_positive_other_key(requests_mock, client):
     """
     Given:

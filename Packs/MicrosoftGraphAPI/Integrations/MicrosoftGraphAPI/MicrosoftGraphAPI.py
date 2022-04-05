@@ -86,7 +86,7 @@ def test_command(client: MsGraphClient) -> CommandResults:  # pragma: no cover
     return CommandResults(readable_output='```✅ Success!```')
 
 
-def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResults:
+def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> Union[CommandResults, str]:
     request_body = args.get('request_body')
     results: dict
     if request_body and isinstance(request_body, str):
@@ -113,6 +113,8 @@ def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResul
 
         if argToBoolean(args.get('populate_context', 'true')):
             results['outputs'] = get_response_outputs(response)
+            if results['outputs'] is True:
+                return 'The API query ran successfully and returned no content.'
             results['outputs_prefix'] = 'MicrosoftGraph'
 
     return CommandResults(**results)  # type: ignore[arg-type]
