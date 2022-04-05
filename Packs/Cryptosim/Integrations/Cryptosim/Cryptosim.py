@@ -5,6 +5,7 @@ import traceback
 import json
 import base64
 import requests
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -17,19 +18,21 @@ class Client(BaseClient):
     def correlation_alerts(self, last_fetch_time=None):
         args = demisto.args()
 
-        end_time = datetime.utcnow() + timedelta(hours=int(demisto.params().get("time_zone_difference",3)))
+        end_time = datetime.utcnow() + timedelta(hours=int(demisto.params().get("time_zone_difference", 3)))
         interval_time = end_time - timedelta(minutes=int(demisto.params().get('incidentFetchInterval', 360)))
 
-        formatted_start_time = datetime.strptime(last_fetch_time, DATE_FORMAT) + timedelta(hours=int(demisto.params().get("time_zone_difference",3))) if last_fetch_time is not None else None
+        formatted_start_time = datetime.strptime(last_fetch_time, DATE_FORMAT) + timedelta(
+            hours=int(demisto.params().get("time_zone_difference", 3))) if last_fetch_time is not None else None
 
-        if last_fetch_time is None or formatted_start_time < interval_time:
+        if last_fetch_time is None or formatted_start_time < interval_time:  # type: ignore
             formatted_start_time = interval_time
 
-        if formatted_start_time >= end_time:
-            formatted_start_time = formatted_start_time - timedelta(minutes=int(demisto.params().get('incidentFetchInterval', 360)))
+        if formatted_start_time >= end_time:    # type: ignore
+            formatted_start_time = formatted_start_time - timedelta(  # type: ignore
+                minutes=int(demisto.params().get('incidentFetchInterval', 360)))
 
         parameters = {
-            'startDate': args.get('startDate', formatted_start_time.isoformat()),
+            'startDate': args.get('startDate', formatted_start_time.isoformat()),  # type: ignore
             'endDate': args.get('endDate', end_time.isoformat()),
             'showSolved': args.get('showSolved', False),
             'crrPluginId': args.get('crrPluginId', -1),
@@ -40,7 +43,7 @@ class Client(BaseClient):
             'srcPort': args.get('srcPort', None),
             'destPort': args.get('destPort', None),
             'riskOperatorID': args.get('riskOperatorID', "equal"),
-            "limit": int(args.get("limit",'100')),
+            "limit": int(args.get("limit", '100')),
             "isJsonLog": True
         }
 
@@ -53,7 +56,7 @@ class Client(BaseClient):
         limit = str(args.get("limit", '100'))
         limit_url = "limit=" + limit
 
-        sort_type = str(args.get("sortType","asc"))
+        sort_type = str(args.get("sortType", "asc"))
         sort_type_url = "sortType=" + sort_type
 
         base_url = "correlations?"
@@ -68,7 +71,6 @@ class Client(BaseClient):
 
 
 def correlation_alerts_command(client: Client):
-
     # Call the Client function and get the raw response
     result = client.correlation_alerts()
     readable_data = []
@@ -76,10 +78,11 @@ def correlation_alerts_command(client: Client):
         res = res["CorrelationAlert"]
         readable_data.append(
             {"ID": res.get('ID', ""), "CORRELATIONID": res.get('CORRELATIONID', ""),
-            "RULEID": res.get('RULEID', ""), "NAME": res.get('NAME', ""),
-            "Severity": res.get('RISK', ""),
+             "RULEID": res.get('RULEID', ""), "NAME": res.get('NAME', ""),
+             "Severity": res.get('RISK', ""),
              "Created At": res.get('EVENTSTARTDATE', "")})
-    markdown = tableToMarkdown('Messages', readable_data, headers=['ID', 'CORRELATIONID', 'NAME', 'RULEID', 'Severity', 'Created At'])
+    markdown = tableToMarkdown('Messages', readable_data,
+                               headers=['ID', 'CORRELATIONID', 'NAME', 'RULEID', 'Severity', 'Created At'])
     return CommandResults(
         outputs_prefix='CorrelationAlerts',
         outputs_key_field='',
@@ -88,24 +91,21 @@ def correlation_alerts_command(client: Client):
     )
 
 
-
 def correlations_command(client: Client):
     result = client.correlations()
 
     readable_data = []
     for res in result["Data"]:
-
         readable_data.append(
             {"Correlation ID": res.get('CorrelationId', ""), "Correlation Name": res.get('Name', "")})
     markdown = tableToMarkdown('Messages', readable_data, headers=['Correlation ID', 'Correlation Name'])
-    
+
     return CommandResults(
         outputs_prefix='Correlations',
         outputs_key_field='',
         readable_output=markdown,
         outputs=result,
     )
-
 
 
 def test_module(client: Client) -> str:
@@ -139,28 +139,27 @@ def test_module(client: Client) -> str:
 ''' INCIDENT '''
 
 
-def fetch_incidents(client: Client,params):
+def fetch_incidents(client: Client, params):
+    max_results = arg_to_number(arg=params.get('max_fetch', 20), arg_name='max_fetch', required=False)
 
-    max_results = arg_to_number(arg=params.get('max_fetch'), arg_name='max_fetch', required=False)
-
-    first_fetch_time = arg_to_datetime(params.get('first_fetch'), "1 hour").strftime(DATE_FORMAT)
+    first_fetch_time = arg_to_datetime(params.get('first_fetch'), "1 hour").strftime(DATE_FORMAT)  # type: ignore
 
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('last_fetch', first_fetch_time)
 
     incidentsList = []
     alert_response = client.correlation_alerts(last_fetch_time=last_fetch)
-    incident_data = alert_response.get("Data",[])
+    incident_data = alert_response.get("Data", [])
 
-    for inc in incident_data:
+    for i, inc in enumerate(incident_data):
 
-        if len(incidentsList) > max_results:
+        if i >= max_results:  # type: ignore
             break
 
-        incident_name = inc['CorrelationAlert']['NAME']
-        time_stamp = inc['CorrelationAlert']['CREATEDATE'] + "Z"
+        incident_name = demisto.get(inc, 'CorrelationAlert.NAME')
+        time_stamp = demisto.get(inc, 'CorrelationAlert.CREATEDATE') + "Z"
 
-        severity_level = int(inc['CorrelationAlert']['RISK'])
+        severity_level = int(demisto.get(inc, 'CorrelationAlert.RISK', -1))
         if severity_level >= 0 and severity_level <= 5:
             severity = 1
         elif severity_level > 5 and severity_level <= 7:
@@ -173,7 +172,7 @@ def fetch_incidents(client: Client,params):
             severity = 0
 
         # "log" column is stringfyed 'Log' data.
-        inc['Log'].pop("log")
+        demisto.get(inc, 'Log').pop("log", None)
 
         incident_object = {**inc['Log'], **inc['CorrelationAlert']}
 
@@ -189,10 +188,10 @@ def fetch_incidents(client: Client,params):
 
         created_incident = datetime.strptime(time_stamp, DATE_FORMAT)
         last_fetch = datetime.strptime(last_fetch, DATE_FORMAT) if isinstance(last_fetch, str) else last_fetch
-        if created_incident > last_fetch + timedelta(hours=int(demisto.params().get("time_zone_difference",3))):
+        if created_incident > last_fetch + timedelta(hours=int(demisto.params().get("time_zone_difference", 3))):
             last_fetch = created_incident + timedelta(milliseconds=10)
 
-    last_fetch = last_fetch.strftime(DATE_FORMAT) if not isinstance(last_fetch,str) else last_fetch
+    last_fetch = last_fetch.strftime(DATE_FORMAT) if not isinstance(last_fetch, str) else last_fetch
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': last_fetch}
 
@@ -268,7 +267,6 @@ command.\nError:\n{str(e)}""")
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
