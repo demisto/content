@@ -29,25 +29,33 @@ def get_distances_list(src_coords_list: list, events_dict: dict):
     return distance_list
 
 
+def verify_coords(args):
+    """
+    Verify the two given coords lists are identical - we receive two lists (and not one) for BC reasons
+    Args:
+        args: the script's arguments
+    """
+
+    if not set(argToList(args['src_coords'])) == set(argToList(args['dest_coords'])):
+        raise ValueError('The source coordination list and the destination coordination list '
+                         'should be identical.')
+
+
+def generate_evetns_dict():
+    existing = demisto.get(demisto.context(), "ImpossibleTraveler.Events")
+    return {o['location']: o for o in existing}
+
+
 def main():
     try:
-        existing = demisto.get(demisto.context(), "ImpossibleTraveler.Events")
-        events_dict = {}
-        for o in existing:
-            events_dict[o["location"]] = o
+        events_dict = generate_evetns_dict()
         args = demisto.args()
-        src_coords_list = argToList(args['src_coords'])
-        dest_coords_list = argToList(args['dest_coords'])
-
-        # verify the two lists are identical - we receive two lists (and not one) for BC reasons
-        if not set(src_coords_list) == set(dest_coords_list):
-            raise ValueError('The source coordination list and the destination coordination list '
-                             'should be identical.')
-
-        return_results(get_distances_list(src_coords_list, events_dict))
+        verify_coords(args)
+        return_results(get_distances_list(argToList(args['src_coords']), events_dict))
 
     except Exception as e:
         return_error('Error occurred while parsing output from command. Exception info:\n' + str(e))
+        raise
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
