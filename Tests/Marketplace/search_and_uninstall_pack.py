@@ -33,17 +33,15 @@ def get_all_installed_packs(client: demisto_client):
             logging.success('Successfully fetched all installed packs.')
             installed_packs_ids_str = ', '.join(installed_packs_ids)
             logging.debug(f'The following packs are currently installed from a previous build run:\n{installed_packs_ids_str}')
+            if 'Base' in installed_packs_ids:
+                installed_packs_ids.remove('Base')
+            return installed_packs_ids
         else:
             result_object = ast.literal_eval(response_data)
             message = result_object.get('message', '')
             raise Exception(f'Failed to fetch installed packs - with status code {status_code}\n{message}')
     except Exception as e:
         logging.exception(f'The request to fetch installed packs has failed. Additional info: {str(e)}')
-
-    finally:
-        if 'Base' in installed_packs_ids:
-            installed_packs_ids.remove('Base')
-        return installed_packs_ids
 
 
 def uninstall_packs(client: demisto_client, pack_ids: list):
@@ -66,12 +64,6 @@ def uninstall_packs(client: demisto_client, pack_ids: list):
                                                                             body=body,
                                                                             accept='application/json',
                                                                             _request_timeout=None)
-        if 200 <= status_code < 300:
-            logging.success('Successfully uninstalled installed packs ')
-        else:
-            result_object = ast.literal_eval(response_data)
-            message = result_object.get('message', '')
-            raise Exception(f'[{status_code}] {message}')
     except Exception as e:
         logging.exception(f'The request to uninstall packs has failed. Additional info: {str(e)}')
         return False
