@@ -12,6 +12,7 @@ you are implementing with your integration
 
 import json
 import io
+import ast
 
 
 def util_load_json(path):
@@ -21,7 +22,8 @@ def util_load_json(path):
 
 def util_load_mock(path):
     with open(path, 'r') as f:
-        return f.readlines()
+        data = f.read()
+    return ast.literal_eval(data)
 
 
 MOCK_PARAMETERS = {
@@ -274,7 +276,7 @@ def test_opnsense_fw_rule_get(requests_mock):
     client = Client(MOCK_PARAMETERS)
     response = fw_rule_get_command(client, mock_args)
     assert response[0].outputs_prefix == 'OPNSense.Rule'
-    assert response[0].outputs == util_load_json('test_data/opnsense_fw_rule_get.res.mock')
+    assert response[0].outputs == util_load_mock('test_data/opnsense_fw_rule_get.res.mock')
 
 
 def test_opnsense_fw_rule_del(requests_mock):
