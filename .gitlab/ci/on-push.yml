@@ -277,18 +277,18 @@ slack-notify-nightly-build:
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
     SERVER_TYPE: "XSIAM"
-  needs: ["prepare-testing-bucket-mpv2"]
-#  needs: []
+#  needs: ["prepare-testing-bucket-mpv2"]
+  needs: []
   stage: run-instances
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     # todo: uncomment it:
-    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
+#    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     # todo: delete next 3 lines
-#    - echo -e "Phishing v2 - Test - Incident Starter\nCreate Phishing Classifier V2 ML Test\nDBot Build Phishing Classifier Test - Multiple Algorithms\nDBotPredictURLPhishing_test\nDBotCreatePhishingClassifierV2FromFile-Test\nPhishing - Core - Test - Incident Starter" > "$ARTIFACTS_FOLDER/filter_file.txt"
-#    - echo -e "Phishing v2 - Test - Incident Starter\nCreate Phishing Classifier V2 ML Test\nDBot Build Phishing Classifier Test - Multiple Algorithms\nDBotPredictURLPhishing_test\nDBotCreatePhishingClassifierV2FromFile-Test\nPhishing - Core - Test - Incident Starter" > "/builds/xsoar/content/artifacts/filter_file.txt"
-#    - echo -e "Base\nPhishingURL\nCortexAttackSurfaceManagement\nDemistoLocking\nSlashNextPhishingIncidentResponse\nrasterize\nDemistoRESTAPI\nEWSMailSender\nAzureWAF\nWhois\nML\nPhishing\nCoreAlertFields\nAgariPhishingDefense\nCommonPlaybooks\nCore" > "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+    - echo -e "" > "$ARTIFACTS_FOLDER/filter_file.txt"
+    - echo -e "" > "/builds/xsoar/content/artifacts/filter_file.txt"
+    - echo -e "Base\nPhishingURL\nCortexAttackSurfaceManagement\nDemistoLocking\nSlashNextPhishingIncidentResponse\nrasterize\nDemistoRESTAPI\nEWSMailSender\nAzureWAF\nWhois\nML\nPhishing\nCoreAlertFields\nAgariPhishingDefense\nCommonPlaybooks\nCore" > "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
     - echo "Authing to GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
     - echo "Auth done successfully"
@@ -301,7 +301,7 @@ slack-notify-nightly-build:
 
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
     # todo: delete first line
-#    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
 
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
