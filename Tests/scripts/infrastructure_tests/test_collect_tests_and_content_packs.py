@@ -1238,7 +1238,7 @@ def test_get_from_version_and_to_version_bounderies_modified_metadata(monkeypatc
 
     with tempfile.TemporaryDirectory() as temp_dir:
         monkeypatch.chdir(temp_dir)
-        pack = Path(temp_dir) / 'Packs' / 'Pack1' 
+        pack = Path(temp_dir) / 'Packs' / 'Pack1'
         pack.mkdir(parents=True)
         metadata = pack / 'pack_metadata.json'
         with metadata.open('w+') as stream:
