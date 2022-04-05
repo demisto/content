@@ -190,16 +190,16 @@ configuration:
   name: use_legacy_query
   required: false
   type: 8
-- additionalinfo: 'Large CIDR is considered a CIDR smaller than 8.'
-  defaultvalue: 'true'
-  display: 'Auto Block Large CIDRs'
+- additionalinfo: 'CIDRs with prefix len smaller than this value will not be included.'
+  defaultvalue: 8
+  display: 'Block CIDRs Prefix Len Threshold'
   hidden: false
-  name: auto_block_large_cidrs
+  name: block_cidr_prefix_threshold
   required: true
   type: 8
-- additionalinfo: 'Should block top level domains'
+- additionalinfo: 'Check if not include top Level Domain.'
   defaultvalue: 'false'
-  display: 'Auto Block top level domains'
+  display: 'Auto Block Top Level Domains'
   hidden: false
   name: auto_block_tld
   required: true

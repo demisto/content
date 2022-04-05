@@ -111,7 +111,7 @@ class RequestArguments:
                  csv_text: bool = False,
                  url_protocol_stripping: bool = False,
                  url_truncate: bool = False,
-                 auto_block_large_cidrs: bool = True,
+                 block_cidr_prefix_threshold: int = 8,
                  auto_block_tld: bool = False,
                  ):
 
@@ -130,7 +130,7 @@ class RequestArguments:
         self.fields_to_present = self.get_fields_to_present(fields_to_present)
         self.csv_text = csv_text
         self.url_truncate = url_truncate
-        self.auto_block_large_cidrs = auto_block_large_cidrs
+        self.block_cidr_prefix_threshold = block_cidr_prefix_threshold
         self.auto_block_tld = auto_block_tld
 
         if category_attribute is not None:
@@ -248,7 +248,7 @@ def create_new_edl(request_args: RequestArguments) -> str:
         if request_args.drop_invalids or request_args.collapse_ips != "Don't Collapse":
             # Because there may be illegal indicators or they may turn into cider, the limit is increased
             indicator_searcher.limit = int(limit * INCREASE_LIMIT)
-        new_iocs_file, num_iocs = get_indicators_to_format(indicator_searcher, request_args)
+        new_iocs_file = get_indicators_to_format(indicator_searcher, request_args)
         # we collect first all indicators because we ned all ips to collapse_ips
         new_iocs_file = create_text_out_format(new_iocs_file, request_args)
         new_iocs_file.seek(0)
@@ -259,11 +259,9 @@ def create_new_edl(request_args: RequestArguments) -> str:
             else:
                 formatted_indicators += line
     else:
-        new_iocs_file, num_iocs = get_indicators_to_format(indicator_searcher, request_args)
+        new_iocs_file = get_indicators_to_format(indicator_searcher, request_args)
         new_iocs_file.seek(0)
         formatted_indicators = new_iocs_file.read()
-    if request_args.out_format == FORMAT_TEXT and (edl_size := new_iocs_file.read().count('\n') + 1 > num_iocs):
-        raise DemistoException(f'EDL size is {edl_size} and it cannot be larger than ioc size which is {num_iocs}')
     new_iocs_file.close()
     return formatted_indicators
 
@@ -332,7 +330,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
         f.write(']')
     elif request_args.out_format == FORMAT_PROXYSG:
         f = create_proxysg_all_category_out_format(f, files_by_category)
-    return f, ioc_counter
+    return f
 
 
 def create_json_out_format(list_fields: List, indicator: Dict, request_args: RequestArguments, not_first_call=True) -> str:
@@ -530,13 +528,12 @@ def ip_groups_to_ranges(ip_range_groups: Iterable):
     return ip_ranges
 
 
-def ips_to_ranges(ips: Iterable, collapse_ips: str, auto_block_large_cidrs: bool):
+def ips_to_ranges(ips: Iterable, collapse_ips: str):
     """Collapse IPs to Ranges or CIDRs.
 
     Args:
         ips (Iterable): a group of IP strings.
         collapse_ips (str): Whether to collapse to Ranges or CIDRs.
-        auto_block_large_cidrs: Whether to block large cidrs
 
     Returns:
         Set. a list to Ranges or CIDRs.
@@ -545,7 +542,7 @@ def ips_to_ranges(ips: Iterable, collapse_ips: str, auto_block_large_cidrs: bool
     valid_ips = []
 
     for ip_or_cidr in ips:
-        if is_valid_cidr(ip_or_cidr, auto_block_large_cidrs) or is_valid_ip(ip_or_cidr):
+        if is_valid_cidr(ip_or_cidr) or is_valid_ip(ip_or_cidr):
             valid_ips.append(ip_or_cidr)
         else:
             invalid_ips.append(ip_or_cidr)
@@ -578,25 +575,27 @@ def is_valid_ip(ip: str) -> bool:
             return False
 
 
-def is_valid_cidr(cidr: str, auto_block_large_cidrs: bool) -> bool:
+def is_large_cidr(cidr: str, prefix_threshold: int):
+    try:
+        return IPNetwork(cidr).prefixlen < prefix_threshold
+    except Exception:
+        return False
+
+
+def is_valid_cidr(cidr: str) -> bool:
     """
     Args:
         cidr: CIDR string
-        auto_block_large_cidrs: should block large cidrs
     Returns: True if the string represents an IPv4 network or an IPv6 network, false otherwise.
     """
     if '/' not in cidr:
         return False
     try:
-        ip = ipaddress.IPv4Network(cidr, strict=False)
-        if auto_block_large_cidrs:
-            return ip.prefixlen >= 8
+        ipaddress.IPv4Network(cidr, strict=False)
         return True
     except ValueError:
         try:
-            ip = ipaddress.IPv6Network(cidr, strict=False)
-            if auto_block_large_cidrs:
-                return ip.prefixlen >= 8
+            ipaddress.IPv6Network(cidr, strict=False)
             return True
         except ValueError:
             return False
@@ -662,10 +661,14 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             # this could generate more than num entries according to PAGE_SIZE
             if indicator.startswith('*.'):
                 domain = str(indicator.lstrip('*.'))
-                if tldextract.extract(domain).suffix == domain:
+                # if we should ignore TLDs and the domain is a TLD
+                if request_args.auto_block_tld and tldextract.extract(domain).suffix == domain:
                     continue
-                formatted_indicators.write(new_line + str(indicator.lstrip('*.')))
+                formatted_indicators.write(new_line + domain)
                 new_line = '\n'
+
+        if ioc_type == FeedIndicatorType.CIDR and is_large_cidr(indicator, request_args.block_cidr_prefix_threshold):
+            continue
 
         if request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IP, FeedIndicatorType.CIDR):
             ipv4_formatted_indicators.add(indicator)
@@ -678,13 +681,13 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             new_line = '\n'
     iocs.close()
     if len(ipv4_formatted_indicators) > 0:
-        ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips, request_args.auto_block_large_cidrs)
+        ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
         for ip in ipv4_formatted_indicators:
             formatted_indicators.write(new_line + str(ip))
             new_line = '\n'
 
     if len(ipv6_formatted_indicators) > 0:
-        ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips, request_args.auto_block_large_cidrs)
+        ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
         for ip in ipv6_formatted_indicators:
             formatted_indicators.write(new_line + str(ip))
             new_line = '\n'
@@ -972,7 +975,7 @@ def update_edl_command(args: Dict, params: Dict):
     out_format = args.get('format', FORMAT_TEXT)
     csv_text = get_bool_arg_or_param(args, params, 'csv_text') == 'True'
     url_truncate = get_bool_arg_or_param(args, params, 'url_truncate')
-    auto_block_large_cidrs = get_bool_arg_or_param(args, params, 'auto_block_large_cidrs')
+    block_cidr_prefix_threshold = arg_to_number(args, 'block_cidr_prefix_threshold')
     auto_block_tld = get_bool_arg_or_param(args, params, 'auto_block_tld')
 
     if params.get('use_legacy_query'):
@@ -994,7 +997,7 @@ def update_edl_command(args: Dict, params: Dict):
                                     csv_text,
                                     strip_protocol,
                                     url_truncate,
-                                    auto_block_large_cidrs,
+                                    block_cidr_prefix_threshold,
                                     auto_block_tld)
 
     ctx = request_args.to_context_json()
@@ -1020,6 +1023,8 @@ def initialize_edl_context(params: dict):
     out_format = params.get('format', FORMAT_TEXT)
     csv_text = argToBoolean(params.get('csv_text', False))
     url_truncate = params.get('url_truncate', False)
+    block_cidr_prefix_threshold = arg_to_number(args, 'block_cidr_prefix_threshold')
+    auto_block_tld = get_bool_arg_or_param(args, params, 'auto_block_tld')
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
@@ -1039,7 +1044,9 @@ def initialize_edl_context(params: dict):
                                     fields_to_present,
                                     csv_text,
                                     url_protocol_stripping,
-                                    url_truncate)
+                                    url_truncate,
+                                    block_cidr_prefix_threshold,
+                                    auto_block_tld)
 
     EDL_ON_DEMAND_CACHE_PATH = demisto.uniqueFile()
     ctx = request_args.to_context_json()

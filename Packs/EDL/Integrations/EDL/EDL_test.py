@@ -1,4 +1,5 @@
 """Imports"""
+import io
 import json
 import tempfile
 
@@ -195,8 +196,41 @@ class TestHelperFunctions:
                         'iopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopyuioplkjhgfdsa' \
                         'zxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert' \
                         'yuiopqwertyuiopqwertyuiopqwertyuiop", "indicator_type": "URL"}\n' \
-                        '{"value": "demisto.com", "indicator_type": "URL"}' \
+                        '{"value": "demisto.com", "indicator_type": "URL"}'
 
+    def test_create_new_edl_edge_cases(self, mocker, requests_mock):
+        import EDL as edl
+        with open('test_data/tld_domains.txt') as f:
+            tld = f.read()
+        requests_mock.get('https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat', text=tld)
+        requests_mock.get('https://publicsuffix.org/list/public_suffix_list.dat', text=tld)
+
+        indicators = [{'value': '1.1.1.1/7', 'indicator_type': 'CIDR'},
+                      {"value": "1.1.1.1/12", "indicator_type": "CIDR"},
+                      {"value": "*.com", "indicator_type": "Domain"},
+                      {"value": "*.co.uk", "indicator_type": "Domain"},
+                      {"value": "*.google.com", "indicator_type": "Domain"}]
+        f = '\n'.join((json.dumps(indicator) for indicator in indicators))
+        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, block_cidr_prefix_threshold=2)
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
+        edl_v = edl.create_new_edl(request_args)
+        expected_values = set()
+        for indicator in indicators:
+            value = indicator.get('value')
+            if value.startswith('*.'):
+                expected_values.add(value.lstrip('*.'))
+            expected_values.add(value)
+        assert set(edl_v.split('\n')) == expected_values
+
+        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, block_cidr_prefix_threshold=8)
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
+        edl_v = edl.create_new_edl(request_args)
+        assert set(edl_v.split('\n')) == {"1.1.1.1/12", "*.com", "com", "*.co.uk", "co.uk", "*.google.com", "google.com"}
+
+        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, auto_block_tld=True, block_cidr_prefix_threshold=13)
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
+        edl_v = edl.create_new_edl(request_args)
+        assert set(edl_v.split('\n')) == {"*.google.com", "google.com"}
 
     def test_create_json_out_format(self):
         """
@@ -424,6 +458,33 @@ class TestHelperFunctions:
         from EDL import is_valid_cidr
         cidr = 'This is not a CIDR / this is just a String'
         assert not is_valid_cidr(cidr)
+
+    def test_is_large_cidr(self):
+        """
+        Given:
+            large CIDR (large cidr is with prefix smaller than 8
+        When:
+            - Calling `is_valid_cidr` with `auto_block_large_cidrs=False`
+            - Calling `is_valid_cidr` with `auto_block_large_cidrs=True`
+         Then:
+            - Should be valid if `auto_block_large_cidrs=False`
+            - Should be invalid if `auto_block_large_cidrs=False`
+        """
+        from EDL import is_large_cidr
+        ipv4_large_cidr = '1.2.3.5/7'
+        ipv6_large_cide = '2001:0db8:85a3:0000:0000:8a2e:0370:7334/8'
+        assert is_large_cidr(ipv4_large_cidr, 9)
+        assert is_large_cidr(ipv6_large_cide, 9)
+
+        ipv4_small_cidr = '1.2.3.5/12'
+        ipv6_small_cidr = '2001:0db8:85a3:0000:0000:8a2e:0370:7334/23'
+        assert not is_large_cidr(ipv6_small_cidr, 11)
+        assert not is_large_cidr(ipv4_small_cidr, 11)
+
+    def test_is_large_cidr_not_valid(self):
+        from EDL import is_large_cidr
+        not_valid = "doesntwork/oh"
+        assert not is_large_cidr(not_valid, 7)
 
     def test_get_bool_arg_or_param(self):
         """
