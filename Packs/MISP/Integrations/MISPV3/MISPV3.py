@@ -1074,8 +1074,6 @@ def search_events(demisto_args: dict) -> CommandResults:
     limit = arg_to_number(demisto_args.get('limit', 50), "limit", required=True)
     pagination_args_validation(page, limit)
 
-
-
     response = PYMISP.search(**args)
     if response:
         response_for_context = build_events_search_response(response, demisto_args)

@@ -12,11 +12,6 @@ INDICATOR_FIELDS_TO_MS_DEFENDER_IOC = {
     "firstSeen": "creationTimeDateTimeUtc",
     "expiration": "expirationTime",
     "lastSeen": "lastUpdateTime",
-
-
-
-
-
     "score": "Severity",
     "title": "title",
     "description": "description",
