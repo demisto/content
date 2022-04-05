@@ -1029,3 +1029,14 @@ Queries a URL in AlienVault OTX.
 
 ## Additional Information
  - AlienVault considers non lowercased URL protocol as invalid, e.g, HTTP://www.google.com. Hence such submissions will be lowercased to ensure a seamless usage of the integration.
+
+
+## Dbot score calculation method
+First, the DbotScore return *Good* if the false_positive.assessment is “accepted”.
+Else, 
+    if there's no validation in the response then the DbotScore will return score based on the pulase_info length:
+        *Bad* if the length is larger / equal than the default threshold given by the user, 
+        *SUSPICIOUS* if it's between 0 and the default threshold,
+        *None* if the length is zero.
+    Else, if there's one validation, DbotScore will return *SUSPICIOUS*
+    Otherwise, will return Good.
