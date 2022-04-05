@@ -551,11 +551,9 @@ def main():
             test(client)
 
     except Exception as e:
-        LOG(e)
-        return_error(str(e))
-    finally:
-        demisto.info(
-            f'{demisto.command()} completed.')
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
