@@ -14,8 +14,8 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
+    fromServerVersion: 6.5.0
+    itemVersion: 1.0.0
     packID: 1c388f48-7d60-430f-8e88-5a7e536f8f69
     propagationLabels:
     - all
