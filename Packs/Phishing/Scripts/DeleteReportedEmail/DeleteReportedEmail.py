@@ -295,7 +295,7 @@ def get_search_args(args: dict):
     return search_args
 
 
-def delete_from_brand_handler(incident_info, args):
+def delete_from_brand_handler(incident_info: dict, args: dict):
     """
     Handle the delete_from_brand argument in the following logic:
     1. If the source brand exists in the 'deleteemailfrombrand' field, use it.
@@ -337,12 +337,12 @@ def main():
             integrations_dict = {
                 'Gmail': ('gmail-search', DeletionArgs.gmail, 'gmail-delete-mail'),
                 'EWSO365': ('ews-search-mailbox', DeletionArgs.ews, 'ews-delete-items',
-                             lambda x: not isinstance(x, list)),
-                'EWS v2': ('ews-search-mailbox', DeletionArgs.ews, 'ews-delete-items',
                             lambda x: not isinstance(x, list)),
+                'EWS v2': ('ews-search-mailbox', DeletionArgs.ews, 'ews-delete-items',
+                           lambda x: not isinstance(x, list)),
                 'Agari Phishing Defense': (None, DeletionArgs.agari, 'apd-remediate-message'),
                 'MicrosoftGraphMail': ('msgraph-mail-list-emails', DeletionArgs.msgraph, 'msgraph-mail-delete-email'),
-                                 }
+            }
             result = delete_email(search_args, *integrations_dict[delete_from_brand])
 
     except MissingEmailException as e:
@@ -370,8 +370,8 @@ def main():
                 outputs_key_field='message_id',
                 raw_response='',
                 outputs=search_args,
-                scheduled_command=scheduled_command,
-                ))
+                scheduled_command=scheduled_command
+            ))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

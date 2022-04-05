@@ -1,6 +1,5 @@
-import json
-import io
 from DeleteReportedEmail import *
+import DeleteReportedEmail
 import pytest
 
 from CommonServerPython import *
@@ -8,31 +7,50 @@ from CommonServerPython import *
 TEST_DATA = 'test_data'
 SEARCH_RESPONSE_SUFFIX = '_search_response.json'
 
-EXPECTED_DELETION_ARGS_RESULTS = {'gmail': {
-            'user-id': 'user_id',
-            'message-id': 'message_id',
-            'permanent': False,
-            'using-brand': 'brand',
-        },
+EXPECTED_DELETION_ARGS_RESULTS = {
+    'gmail': {
+        'user-id': 'user_id',
+        'message-id': 'message_id',
+        'permanent': False,
+        'using-brand': 'brand'
+    },
     'MSGraph': {
-            'user_id': 'user_id',
-            'message_id': 'message_id',
-            'using-brand': 'brand',
-        },
+        'user_id': 'user_id',
+        'message_id': 'message_id',
+        'using-brand': 'brand',
+    },
 
     'EWSv2': {
-            'item-ids': 'item_id',
-            'delete-type': 'soft',
-            'using-brand': 'brand',
-        },
+        'item-ids': 'item_id',
+        'delete-type': 'soft',
+        'using-brand': 'brand',
+        'target-mailbox': 'user_id'
+    },
     'EWS365': {
-    'item-ids': 'item_id',
-    'delete-type': 'soft',
-    'using-brand': 'brand',
+        'item-ids': 'item_id',
+        'delete-type': 'soft',
+        'using-brand': 'brand',
+        'target-mailbox': 'user_id'
     }
 }
 
+ARGS_FUNC = {'EWS365': DeletionArgs.ews, 'EWSv2': DeletionArgs.ews,
+             'gmail': DeletionArgs.gmail, 'MSGraph': DeletionArgs.msgraph}
+
+SEARCH_ARGS = {
+    'delete-type': 'soft',
+    'using-brand': 'brand',
+    'email_subject': 'subject',
+    'message-id': 'message_id',
+    'query': 'query',
+    'target-mailbox': 'user_id',
+    'user_id': 'user_id',
+    'odata': 'odata',
+    'user-id': 'user_id'
+}
+
 MISSING_EMAIL_ERROR_MSG = 'Email was not found in mailbox. It is possible that the email was already deleted manually.'
+
 
 @pytest.mark.parametrize('integration_name', ['EWS365', 'EWSv2', 'gmail', 'MSGraph'])
 def test_get_deletion_args(integration_name):
@@ -45,23 +63,26 @@ def test_get_deletion_args(integration_name):
     Then:
     return the suitable deletion args
     """
-    args_func = {'EWS365': DeletionArgs.ews, 'EWSv2': DeletionArgs.ews,
-                                     'gmail': DeletionArgs.gmail, 'MSGraph': DeletionArgs.msgraph}
 
-    search_args = {
-        'delete-type': 'soft',
-        'using-brand': 'brand',
-        'email_subject': 'subject',
-        'message-id': 'message_id',
-        'query': 'query',
-        'target-mailbox': 'user_id',
-        'user_id': 'user_id',
-        'odata': 'odata',
-        'user-id': 'user_id'
-        }
     with open(os.path.join(TEST_DATA, f'{integration_name}{SEARCH_RESPONSE_SUFFIX}'), 'r') as file:
         search_results = json.load(file)
-    assert EXPECTED_DELETION_ARGS_RESULTS[integration_name] == args_func[integration_name](search_results, search_args)
+    assert EXPECTED_DELETION_ARGS_RESULTS[integration_name] == ARGS_FUNC[integration_name](search_results, SEARCH_ARGS)
+
+
+@pytest.mark.parametrize('integration_name', ['EWS365', 'EWSv2', 'gmail', 'MSGraph'])
+def test_delete_email(mocker, integration_name):
+    """
+    Given:
+        Search arguments to use for the search operation
+    When:
+        Initiating a delete
+    Then:
+        delete the email
+    """
+    with open(os.path.join(TEST_DATA, f'{integration_name}{SEARCH_RESPONSE_SUFFIX}'), 'r') as file:
+        search_results = json.load(file)
+    mocker.patch.object(DeleteReportedEmail, 'execute_command', return_value=search_results)
+    assert delete_email(SEARCH_ARGS, 'func', ARGS_FUNC[integration_name], 'func', lambda x: False) == 'Success'
 
 
 @pytest.mark.parametrize('delete_email_context, result', [([], ('Skipped', MISSING_EMAIL_ERROR_MSG)),
@@ -93,11 +114,35 @@ def test_was_email_found_security_and_compliance():
     Then:
         Return true if the email was found, and false otherwise
     """
-    success_results_dict = [{'SuccessResults': '{Location: sr-test01@demistodev.onmicrosoft.com, Item count: 1, Total size: 55543}'}]
-    success_results_dict_not_found = [{'SuccessResults': '{Location: sr-test01@demistodev.onmicrosoft.com, Item count: 0, Total size: 55543}'}]
+    success_results_dict = [{
+        'SuccessResults': '{Location: sr-test01@demistodev.onmicrosoft.com, Item count: 1, Total size: 55543}'}]
+    success_results_dict_not_found = [{
+        'SuccessResults': '{Location: sr-test01@demistodev.onmicrosoft.com, Item count: 0, Total size: 55543}'}]
 
     assert was_email_found_security_and_compliance(success_results_dict)
     assert not was_email_found_security_and_compliance(success_results_dict_not_found)
+
+
+def execute_command_seacrh_and_compliance_not_deleted_yet(command, args):
+    if command == 'o365-sc-get-search' and args:
+        return [{'Status': 'Completed'}]
+    elif command == 'o365-sc-list-search-action':
+        return []
+    elif command == 'o365-sc-new-search-action':
+        return None
+    elif command == 'o365-sc-get-search-action':
+        return {'Status': 'Starting'}
+
+
+def execute_command_seacrh_and_compliance_deleted_successfully(command, args):
+    if command == 'o365-sc-get-search' and args:
+        return [{'Status': 'Completed'}]
+    elif command == 'o365-sc-list-search-action':
+        return [{'Name': 'search_name_Purge'}]
+    elif command == 'o365-sc-new-search-action':
+        return None
+    elif command == 'o365-sc-get-search-action':
+        return {'Status': 'Completed'}
 
 
 class TestSecurityAndCompliance:
@@ -124,49 +169,65 @@ class TestSecurityAndCompliance:
         When:
             Initiating a delete via security and compliance
         Then:
-            Return a polling result that initiates the polling flow
+            Return that the status is in progress
         """
 
-        mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': {'Status': 'Starting'}, 'Type': 'entry'}, {'Contents': {'Status': 'Starting'}, 'Type': 'entry'}])
+        mocker.patch.object(demisto, 'executeCommand',
+                            return_value=[{'Contents': {'Status': 'Starting'}, 'Type': 'entry'},
+                                          {'Contents': {'Status': 'Starting'}, 'Type': 'entry'}])
         result = security_and_compliance_delete_mail(self.args, **self.search_args)[0]
         assert result == 'In Progress'
 
-    def test_polled_call(self, mocker):
+    def test_polled_call_create_deletion(self, mocker):
         """
         Given:
             Search arguments to use for the search operation, including the search_name
         When:
             Initiating a delete via security and compliance
         Then:
-            Return a polling result that initiates the polling flow
+            Return that the status is in progress
         """
-        mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': {'Status': 'Complete'}, 'Type': 'entry'}, {'Contents': {'Status': 'Starting'}, 'Type': 'entry'}])
+        mocker.patch.object(DeleteReportedEmail, 'execute_command',
+                            side_effect=execute_command_seacrh_and_compliance_not_deleted_yet)
         self.args['search_name'] = 'search_name'
+        result = security_and_compliance_delete_mail(self.args, **self.search_args)[0]
+        assert result == 'In Progress'
 
+    def test_polled_call_deletion_success(self, mocker):
+        """
+        Given:
+            Search arguments to use for the search operation, including the search_name
+        When:
+            Initiating a delete via security and compliance
+        Then:
+            Return Success
+        """
+        mocker.patch.object(DeleteReportedEmail, 'execute_command',
+                            side_effect=execute_command_seacrh_and_compliance_deleted_successfully)
+        self.args['search_name'] = 'search_name'
+        result = security_and_compliance_delete_mail(self.args, **self.search_args)[0]
+        assert result == 'Success'
 
-def test_delete_email():
-    pass
 
 GENERAL_SEARCH_ARGS = {
-        'delete-type': 'emaildeletetype',
-        'email_subject': 'reportedemailsubject',
-        'message-id': 'reportedemailmessageid',
+    'delete-type': 'emaildeletetype',
+    'email_subject': 'reportedemailsubject',
+    'message-id': 'reportedemailmessageid',
     }
 
 
 ADDED_SEARCH_ARGS = {
-     'Gmail': {'query': f'Rfc822msgid:reportedemailmessageid', 'user-id': 'reportedemailto'},
-     'EWSO365': {'target-mailbox': 'reportedemailto'},
-     'EWS v2': {'target-mailbox': 'reportedemailto'},
-     'MicrosoftGraphMail': {'user_id': 'reportedemailto',
-                            'odata': f'"$filter=internetMessageId eq \'reportedemailmessageid\'"'},
-     'SecurityAndCompliance': {'to_user_id': 'reportedemailto',
-                               'from_user_id': 'reportedemailfrom'},
+    'Gmail': {'query': 'Rfc822msgid:reportedemailmessageid', 'user-id': 'reportedemailto'},
+    'EWSO365': {'target-mailbox': 'reportedemailto'},
+    'EWS v2': {'target-mailbox': 'reportedemailto'},
+    'MicrosoftGraphMail': {'user_id': 'reportedemailto',
+                           'odata': '"$filter=internetMessageId eq \'reportedemailmessageid\'"'},
+    'SecurityAndCompliance': {'to_user_id': 'reportedemailto', 'from_user_id': 'reportedemailfrom'},
                     }
 
 
 @pytest.mark.parametrize('brand', ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'MicrosoftGraphMail',
-                      'SecurityAndCompliance'])
+                                   'SecurityAndCompliance'])
 def test_search_args(mocker, brand):
     """
 
@@ -182,7 +243,7 @@ def test_search_args(mocker, brand):
     INCIDENT_INFO = {
         'CustomFields':
             {
-               'reportedemailmessageid': 'reportedemailmessageid',
+                'reportedemailmessageid': 'reportedemailmessageid',
                 'reportedemailto': 'reportedemailto',
                 'emaildeletetype': 'emaildeletetype',
                 'reportedemailfrom': 'reportedemailfrom',
@@ -192,8 +253,6 @@ def test_search_args(mocker, brand):
     mocker.patch.object(DeleteReportedEmail, 'delete_from_brand_handler', return_value=brand)
     mocker.patch.object(demisto, 'incident', return_value=INCIDENT_INFO)
     GENERAL_SEARCH_ARGS['using-brand'] = brand
-    GENERAL_SEARCH_ARGS.update(ADDED_SEARCH_ARGS[brand])
-    assert get_search_args({}) == GENERAL_SEARCH_ARGS
-
-
-
+    current_search_args = GENERAL_SEARCH_ARGS.copy()
+    current_search_args.update(ADDED_SEARCH_ARGS.get(brand, {}))
+    assert get_search_args({}) == current_search_args
