@@ -7,7 +7,7 @@ import sys
 import demisto_client
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
-from search_and_install_packs import install_packs
+from Tests.Marketplace.search_and_install_packs import install_packs
 
 
 def get_all_installed_packs(client: demisto_client):
@@ -26,13 +26,13 @@ def get_all_installed_packs(client: demisto_client):
                                                                             method='GET',
                                                                             accept='application/json',
                                                                             _request_timeout=None)
-        installed_packs_ids = []
         if 200 <= status_code < 300:
             installed_packs = ast.literal_eval(response_data)
             installed_packs_ids = [pack.get('id') for pack in installed_packs]
             logging.success('Successfully fetched all installed packs.')
             installed_packs_ids_str = ', '.join(installed_packs_ids)
-            logging.debug(f'The following packs are currently installed from a previous build run:\n{installed_packs_ids_str}')
+            logging.debug(
+                f'The following packs are currently installed from a previous build run:\n{installed_packs_ids_str}')
             if 'Base' in installed_packs_ids:
                 installed_packs_ids.remove('Base')
             return installed_packs_ids
@@ -42,6 +42,7 @@ def get_all_installed_packs(client: demisto_client):
             raise Exception(f'Failed to fetch installed packs - with status code {status_code}\n{message}')
     except Exception as e:
         logging.exception(f'The request to fetch installed packs has failed. Additional info: {str(e)}')
+        return None
 
 
 def uninstall_packs(client: demisto_client, pack_ids: list):
@@ -90,43 +91,6 @@ def uninstall_all_packs(client: demisto_client):
     return True
 
 
-def options_handler():
-    """
-
-    Returns: options parsed from input arguments.
-
-    """
-    parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
-    parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
-    parser.add_argument('--xsiam_servers_path', help='Path to secret xsiam server metadata file.')
-
-    # disable-secrets-detection-end
-    options = parser.parse_args()
-
-    return options
-
-
-def get_json_file(path):
-    """
-
-    Args:
-        path: path to retrieve file from.
-
-    Returns: json object loaded from the path.
-
-    """
-    with open(path, 'r') as json_file:
-        return json.loads(json_file.read())
-
-
-def get_xsiam_configuration(xsiam_machine, xsiam_servers):
-    """
-        Parses conf params from servers list.
-    """
-    conf = xsiam_servers.get(xsiam_machine)
-    return conf.get('api_key'), conf.get('base_url'), conf.get('x-xdr-auth-id')
-
-
 def reset_base_pack_version(client: demisto_client):
     """
     Resets base pack version to prod version.
@@ -169,6 +133,44 @@ def reset_base_pack_version(client: demisto_client):
             raise Exception(err_msg)
     except Exception:
         logging.exception(f'Search request Base pack has failed.')
+        return False
+
+
+def options_handler():
+    """
+
+    Returns: options parsed from input arguments.
+
+    """
+    parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
+    parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
+    parser.add_argument('--xsiam_servers_path', help='Path to secret xsiam server metadata file.')
+
+    # disable-secrets-detection-end
+    options = parser.parse_args()
+
+    return options
+
+
+def get_json_file(path):
+    """
+
+    Args:
+        path: path to retrieve file from.
+
+    Returns: json object loaded from the path.
+
+    """
+    with open(path, 'r') as json_file:
+        return json.loads(json_file.read())
+
+
+def get_xsiam_configuration(xsiam_machine, xsiam_servers):
+    """
+        Parses conf params from servers list.
+    """
+    conf = xsiam_servers.get(xsiam_machine)
+    return conf.get('api_key'), conf.get('base_url'), conf.get('x-xdr-auth-id')
 
 
 def main():
