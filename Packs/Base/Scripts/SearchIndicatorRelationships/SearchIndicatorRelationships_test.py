@@ -23,7 +23,6 @@ def test_to_context_verbose_false():
     Then:
     - Ensure that the context is as expected.
     """
-
     mock_response = util_load_json('test_data/searchRelationships-response.json')
     response = to_context(mock_response, False)
     expected = util_load_json('test_data/verbose_false_expected.json')
@@ -41,7 +40,6 @@ def test_to_context_verbose_true():
     Then:
     - Ensure that the context is as expected.
     """
-
     mock_response = util_load_json('test_data/searchRelationships-response.json')
     response = to_context(mock_response, True)
     expected = util_load_json('test_data/verbose_true_expected.json')
