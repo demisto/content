@@ -113,12 +113,12 @@ def test_get_indicator_relationships():
                                       EntityRelationship.Relationships.RELATED_TO,
                                       EntityRelationship.Relationships.RELATED_TO)
     assert len(res) == 1
-    assert res[0]._entity_a == 'value_a'
-    assert res[0]._entity_a_type == 'entity_a_type'
-    assert res[0]._entity_b == 'value_b'
-    assert res[0]._entity_b_type == 'entity_b_type'
-    assert res[0]._name == 'related-to'
-    assert res[0]._reverse_name == 'related-to'
+    assert res[0]['entityA'] == 'value_a'
+    assert res[0]['entityAType'] == 'entity_a_type'
+    assert res[0]['entityB'] == 'value_b'
+    assert res[0]['entityBType'] == 'entity_b_type'
+    assert res[0]['name'] == 'related-to'
+    assert res[0]['reverseName'] == 'related-to'
 
 
 BASIC_INDICATOR = {
