@@ -9684,6 +9684,9 @@ class OutputArgument:
     This is an empty class, used for code autocompletion when using
     demisto-sdk generate_yml_from_python command syntax. For more information,
     visit the command's README.md.
+
+    :return: The OutputArgument object
+    :rtype: ``OutputArgument``
     """
     def __init__(self,
                  name,
@@ -9699,6 +9702,9 @@ class InputArgument:
     This is an empty class, used for code autocompletion when using
     demisto-sdk generate_yml_from_python command syntax. For more information,
     visit the command's README.md.
+
+    :return: The InputArgument object
+    :rtype: ``InputArgument``
     """
     def __init__(self,
                  name=None,
@@ -9719,6 +9725,9 @@ class ConfKey:
     This is an empty class, used for code autocompletion when using
     demisto-sdk generate_yml_from_python command syntax. For more information,
     visit the command's README.md.
+
+    :return: The ConfKey object
+    :rtype: ``ConfKey``
     """
     def __init__(self,
                  name,
@@ -9739,6 +9748,9 @@ class YMLMetadataCollector:
     This is an empty class, used for code autocompletion when using
     demisto-sdk generate_yml_from_python command syntax. For more information,
     visit the command's README.md.
+
+    :return: The YMLMetadataCollector object
+    :rtype: ``YMLMetadataCollector``
     """
     def __init__(self, integration_name, docker_image="demisto/python3:latest",
                  description=None, category="Utilities", conf=None,
