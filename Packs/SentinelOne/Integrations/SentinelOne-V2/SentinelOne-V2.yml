@@ -1490,7 +1490,63 @@ script:
     description: Sends an uninstall command to all agents that match the input filter.
     execution: false
     name: sentinelone-uninstall-agent
-  dockerimage: demisto/python3:3.10.1.26972
+  - arguments:
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - undefined
+      - true_positive
+      - false_positive
+      - suspicious
+      description: Analyst verdict action. Can be "undefined", "true_positive", "false_positive",
+        "suspicious"
+    - name: threat_ids
+      required: true
+      description: A comma-separated list of threat IDs.
+      isArray: true
+    description: Updates the analyst verdict to a group of threats that match
+      the specified input filter.
+    name: sentinelone-update-threats-verdict
+    outputs:
+    - contextPath: SentinelOne.Threat.ID
+      description: The threat ID.
+      type: String
+    - contextPath: SentinelOne.Threat.Updated
+      description: Whether the threat was successfully updated the analyst verdict.
+      type: Boolean
+    - contextPath: SentinelOne.Threat.Updation.Action
+      description: Name of the analyst verdict action performed on the threats.
+      type: String
+  - arguments:
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - undefined
+      - true_positive
+      - false_positive
+      - suspicious
+      description: Analyst verdict action. Can be "undefined", "true_positive", "false_positive",
+        "suspicious"
+    - name: alert_ids
+      required: true
+      description: A comma-separated list of alert IDs.
+      isArray: true
+    description: Updates the analyst verdict to a group of alerts that match
+      the specified input filter.
+    name: sentinelone-update-alerts-verdict
+    outputs:
+    - contextPath: SentinelOne.Alert.ID
+      description: The alert ID.
+      type: String
+    - contextPath: SentinelOne.Alert.Updated
+      description: Whether the alert was successfully updated the analyst verdict.
+      type: Boolean
+    - contextPath: SentinelOne.Alert.Updation.Action
+      description: Name of the analyst verdict action performed on the alerts.
+      type: String
+  dockerimage: demisto/python3:3.10.4.27798
   isfetch: true
   longRunning: false
   longRunningPort: false

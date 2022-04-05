@@ -392,7 +392,36 @@ class Client(BaseClient):
         if 'data' in response:
             return response.get('data')[0]
         return {}
+    
+    def update_threat_analyst_verdict_request(self, threat_ids, action):
+        endpoint_url = 'threats/analyst-verdict'
 
+        payload = {
+            "data": {
+                        "analystVerdict": action
+                    },
+            "filter": {
+                        "ids": threat_ids,
+                        "tenant": "true"
+                    }
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def update_alert_analyst_verdict_request(self, alert_ids, action):
+        endpoint_url = 'cloud-detection/alerts/analyst-verdict'
+
+        payload = {
+            "data": {
+                        "analystVerdict": action
+                    },
+            "filter": {
+                        "ids": alert_ids,
+                        "tenant": "true"
+                    }
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -674,6 +703,92 @@ def mitigate_threat_command(client: Client, args: dict) -> CommandResults:
         outputs_key_field='ID',
         outputs=context_entries,
         raw_response=mitigated_threats)
+
+
+def update_threat_analyst_verdict(client: Client, args: dict) -> CommandResults:
+    """
+    Apply a update analyst verdict action to a group of threats. Relevant for API version 2.1
+    """
+    contents = []
+    context_entries = []
+
+    # Get arguments
+    threat_ids = argToList(args.get('threat_ids'))
+    action = args.get('action')
+    
+    # Make request and get raw response
+    updated_threats = client.update_threat_analyst_verdict_request(threat_ids, action)
+    
+    # Parse response into context & content entries
+    if updated_threats.get('affected') and int(updated_threats.get('affected')) > 0:
+        updated = True
+        meta = f'Total of {updated_threats.get("affected")} provided threats analyst verdict were updated successfully'
+    else:
+        updated = False
+        meta = 'No threats were updated'
+    for threat_id in threat_ids:
+        contents.append({
+            'Updated': updated,
+            'ID': threat_id,
+            'Analyst Verdict Action': action,
+        })
+        context_entries.append({
+            'Updated': updated,
+            'ID': threat_id,
+            'Updation': {
+                'Action': action
+            },
+        })
+    
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Update threats analyst verdict', contents, metadata=meta, removeNull=True),
+        outputs_prefix='SentinelOne.Threat',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=updated_threats)
+   
+
+def update_alert_analyst_verdict(client: Client, args: dict) -> CommandResults:
+    """
+    Apply a update analyst verdict action to a group of aleerts. Relevant for API version 2.1
+    """
+    contents = []
+    context_entries = []
+
+    # Get arguments
+    alert_ids = argToList(args.get('alert_ids'))
+    action = args.get('action')
+    
+    # Make request and get raw response
+    updated_alerts = client.update_alert_analyst_verdict_request(alert_ids, action)
+    
+    # Parse response into context & content entries
+    if updated_alerts.get('affected') and int(updated_alerts.get('affected')) > 0:
+        updated = True
+        meta = f'Total of {updated_alerts.get("affected")} provided alerts analyst verdict were updated successfully'
+    else:
+        updated = False
+        meta = 'No alerts were updated'
+    for alert_id in alert_ids:
+        contents.append({
+            'Updated': updated,
+            'ID': alert_id,
+            'Analyst Verdict Action': action,
+        })
+        context_entries.append({
+            'Updated': updated,
+            'ID': alert_id,
+            'Updation': {
+                'Action': action
+            },
+        })
+    
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Update alerts analyst verdict', contents, metadata=meta, removeNull=True),
+        outputs_prefix='SentinelOne.Alert',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=updated_alerts)
 
 
 def resolve_threat_command(client: Client, args: dict) -> CommandResults:
@@ -1343,6 +1458,8 @@ def main():
         },
         '2.1': {
             'sentinelone-threat-summary': get_threat_summary_command,
+            'sentinelone-update-threats-verdict': update_threat_analyst_verdict,
+            'sentinelone-update-alerts-verdict': update_alert_analyst_verdict
         },
     }
 
@@ -1378,3 +1495,4 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
+   
