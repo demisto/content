@@ -1,4 +1,5 @@
 from datetime import datetime
+import demistomock as demisto
 import json
 import pytest
 
@@ -33,13 +34,15 @@ def test_module(requests_mock):
     assert isinstance(response, str)
     assert response == 'ok'
 
-    
-def test_module_failure(requests_mock):
+
+def test_module_failure(mocker, requests_mock):
     """
     Test the basic test-module command in case of a failure.
     """
     from CybleEvents import Client, get_test_response
+
     requests_mock.post('https://test.com/api/v2/events/types', json={})
+    mocker.patch.object(demisto, 'error')
 
     client = Client(
         base_url='https://test.com',
@@ -50,6 +53,7 @@ def test_module_failure(requests_mock):
 
     assert isinstance(response, str)
     assert response == 'fail'
+
 
 def test_get_event_types(requests_mock):
     """
