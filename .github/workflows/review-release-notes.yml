@@ -22,7 +22,7 @@ jobs:
       - name: Install Python Dependencies
         run: python -m pip install --upgrade pip
       - name: Install Demisto SDK
-        run: pip install git+https://github.com/demisto/demisto-sdk.git@c6ec84a40263fd99c0fe09bf121886e0de98051f
+        run: pip install git+https://github.com/demisto/demisto-sdk.git@d6ed80332a00da406a0b022197ceb0dccf8d8e53
 #        run: pip install demisto-sdk
       - name: Review Release Notes
         run: |
