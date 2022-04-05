@@ -59,8 +59,8 @@ The integration can fetch incidents from the following tables:
 - firewall.traffic
 - firewall.url
 - firewall.userid
-- common.system
-- common.config
+- log.system
+- log.config
 
 
 ## CDL Server - API Calls Caching Mechanism
