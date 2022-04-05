@@ -16,7 +16,7 @@ def load_json_file(filename):
 
 def test_module(requests_mock):
     """
-    Test the basic test command for Cyble Events
+    Test the basic test command for Cyble Threat Intel
     :return:
     """
     from CybleThreatIntel import Client, get_test_response
