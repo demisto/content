@@ -65,7 +65,7 @@ def login():
             'secret_id': PASSWORD,
         }
     else:
-        path = 'auth/userpass/login/' + USERNAME  # type: ignore
+        path = demisto.params().get('path', 'auth/userpass/login/') + USERNAME  # type: ignore
         body = {
             'password': PASSWORD
         }

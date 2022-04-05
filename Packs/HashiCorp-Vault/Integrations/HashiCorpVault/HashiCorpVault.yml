@@ -11,6 +11,11 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+- display: The apth where to authorized 'auth/userpass/login/' by default
+  name: path
+  defaultvalue: "auth/userpass/login/"
+  type: 0
+  required: false
 - display: Use AppRole Auth Method
   name: use_approle
   type: 8
