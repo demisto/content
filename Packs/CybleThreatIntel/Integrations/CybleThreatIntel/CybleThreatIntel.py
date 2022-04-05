@@ -44,7 +44,6 @@ class Client(BaseClient):
                 taxii_data = resp
             else:
                 taxii_data = {"error": "Failed to fetch feed!!"}
-                demisto.error("Error trying to Fetch Taxii's {}".format(resp))
         except Exception as e:
             demisto.error("[{}] exception seen for response [{}]".format(e, resp))
         return taxii_data
