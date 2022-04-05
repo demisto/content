@@ -130,7 +130,7 @@ class Client(BaseClient):
         try:
             resp = response.json()
 
-            if 'success' in resp.keys() and (resp.get('success') or False):
+            if (resp.get('success') or False):
                 events_data = resp.get('data', {}).get('results')
             else:
                 demisto.error("Error trying to Fetch Events {}".format(resp))
