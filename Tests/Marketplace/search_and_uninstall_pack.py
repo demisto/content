@@ -8,7 +8,7 @@ import demisto_client
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.search_and_install_packs import install_packs
-
+from time import sleep
 
 def get_all_installed_packs(client: demisto_client):
     """
@@ -136,6 +136,16 @@ def reset_base_pack_version(client: demisto_client):
         return False
 
 
+def wait_for_uninstalling_to_over(client: demisto_client):
+    try:
+        while get_all_installed_packs(client) > 1:
+            sleep(5)
+    except Exception:
+            return False
+    return True
+
+
+
 def options_handler():
     """
 
@@ -188,10 +198,12 @@ def main():
                                       verify_ssl=False,
                                       api_key=api_key,
                                       auth_id=xdr_auth_id)
-    success = reset_base_pack_version(client) and uninstall_all_packs(client)
+    success = reset_base_pack_version(client) and uninstall_all_packs(client) and wait_for_uninstalling_to_over(client)
 
     if not success:
         sys.exit(2)
+
+
 
 
 if __name__ == '__main__':
