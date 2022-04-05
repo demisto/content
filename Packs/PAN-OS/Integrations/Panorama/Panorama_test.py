@@ -783,16 +783,16 @@ class TestPanoramaEditRuleCommand:
             Panorama.panorama_edit_rule_command(args)
 
     @staticmethod
-    def test_edit_rule_to_disabled(mocker):
+    def test_edit_rule_to_disabled_flow(mocker):
         """
-        Given - connection to snapshot.
-
+        Given -
+            arguments to change a pre-rule to 'disabled'
 
         When -
-            Running create_snapshot function.
+            running panorama_edit_rule_command function.
 
         Then -
-            The Task_id should be returned.
+            make sure the entire command flow succeeds.
         """
         from Panorama import panorama_edit_rule_command
         args = {
@@ -806,6 +806,32 @@ class TestPanoramaEditRuleCommand:
         results_mocker = mocker.patch.object(demisto, "results")
         panorama_edit_rule_command(args)
         assert results_mocker.called
+
+    @staticmethod
+    def test_edit_rule_to_disabled_with_no_element_value(mocker):
+        """
+        Given -
+            arguments to change a pre-rule to 'disabled' when the element value should be set to 'no'
+
+        When -
+            running panorama_edit_rule_command function.
+
+        Then -
+            make sure that the `params['element']` contains the 'no' element value.
+        """
+        from Panorama import panorama_edit_rule_command
+        args = {
+            "rulename": "test",
+            "element_to_change": "disabled",
+            "element_value": "no",
+            "behaviour": "replace",
+            "pre_post": "pre-rulebase"
+        }
+        http_req_mocker = mocker.patch(
+            "Panorama.http_request", return_value=TestPanoramaEditRuleCommand.EDIT_SUCCESS_RESPONSE
+        )
+        panorama_edit_rule_command(args)
+        assert http_req_mocker.call_args.kwargs.get('body').get('element') == '<disabled>no</disabled>'
 
 
 class MockedResponse:
