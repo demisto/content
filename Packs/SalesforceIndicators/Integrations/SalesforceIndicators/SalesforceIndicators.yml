@@ -112,7 +112,7 @@ configuration:
 - additionalinfo: If this option is selected the
     last modified date will be used to only pull 
     the latest objects.
-  default: true
+  default: 'true'
   display: Use Last Modified Date
   name: use_last_modified
   required: false

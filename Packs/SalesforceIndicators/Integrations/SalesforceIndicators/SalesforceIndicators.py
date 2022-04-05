@@ -92,7 +92,7 @@ class Client(BaseClient):
         return res
 
 
-def fetch_indicators_command(client, params, manual_run=False):
+def fetch_indicators_command(client, manual_run=False):
 
     indicators_unparsed = list()
     indicators = list()
@@ -101,18 +101,21 @@ def fetch_indicators_command(client, params, manual_run=False):
     assert history_date is not None, f'could not parse {client.history} days ago'
     date_filter = history_date.strftime("%Y-%m-%dT%H:%M:%S.000+0000")
     integration_context = get_integration_context()
+    
     if integration_context:
         last_run = integration_context.get('lastRun')
     else:
         last_run = None
     object_fields = None
+    
     if client.fields:
         object_fields = client.fields.split(",")
     else:
         object_fields = sorted([x['name'] for x in client.get_object_description()['fields']])
+    
     if "id" not in object_fields and "Id" not in object_fields:
         object_fields.append("id")
-
+    
     if client.query_filter:
         search_criteria = f"{client.query_filter}"
         if last_run and client.use_last_modified:
@@ -200,10 +203,10 @@ def main():
         test_module(client)
 
     elif command == 'fetch-indicators':
-        fetch_indicators_command(client, params)
+        fetch_indicators_command(client)
 
     elif command == 'salesforce-get-indicators':
-        fetch_indicators_command(client, params, manual_run=True)
+        fetch_indicators_command(client, manual_run=True)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
