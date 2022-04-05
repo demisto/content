@@ -58,23 +58,14 @@ def handle_stix_types(entities_types: str) -> str:
     return ','.join(str(x) for x in entities_types).replace(', ', ',')
 
 
-def search_relationships_6_6_0(args: dict) -> Optional[List[dict]]:
-    """
-    XSOAR Version 6.6.0 requires quite different handling for the call to `searchRelationships` server command:
-    - The relationships args are provided under the 'filter' key.
-    - The 'entities', 'entityTypes' and 'relationshipNames' keys are given as a list of strings,
-      rather than a comma-separated list.
-    - An exception is raised in case of error.
-    - The returned value is the data directly, and not an entry.
-    """
-
+def search_relationships_fromversion_6_6_0(args: dict) -> Optional[List[dict]]:
     for list_arg in ['entities', 'entityTypes', 'relationshipNames']:
         args[list_arg] = argToList(args[list_arg]) if args[list_arg] else None
-    res = demisto.executeCommand("searchRelationships", {'filter': args})
+    res = demisto.searchRelationships({'filter': args})
     return res.get('data', [])
 
 
-def search_relationships_non_6_6_0(args: dict) -> Optional[List[dict]]:
+def search_relationships_toversion_6_5_0(args: dict) -> Optional[List[dict]]:
     res = demisto.executeCommand("searchRelationships", args)
     if is_error(res[0]):
         raise Exception("Error in searchRelationships command - {}".format(res[0]["Contents"]))
@@ -97,9 +88,9 @@ def search_relationships(args: dict) -> Optional[List[dict]]:
         'size': limit,
         'query': query
     }
-    if get_demisto_version()['version'] == '6.6.0':
-        return search_relationships_6_6_0(args)
-    return search_relationships_non_6_6_0(args)
+    if is_demisto_version_ge('6.6.0'):
+        return search_relationships_fromversion_6_6_0(args)
+    return search_relationships_toversion_6_5_0(args)
 
 
 ''' MAIN FUNCTION '''

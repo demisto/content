@@ -3,6 +3,9 @@ import io
 import demistomock as demisto
 import pytest
 
+from CommonServerPython import get_demisto_version
+from SearchIndicatorRelationships import to_context, handle_stix_types, search_relationships
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -20,7 +23,6 @@ def test_to_context_verbose_false():
     Then:
     - Ensure that the context is as expected.
     """
-    from SearchIndicatorRelationships import to_context
 
     mock_response = util_load_json('test_data/searchRelationships-response.json')
     response = to_context(mock_response, False)
@@ -39,7 +41,6 @@ def test_to_context_verbose_true():
     Then:
     - Ensure that the context is as expected.
     """
-    from SearchIndicatorRelationships import to_context
 
     mock_response = util_load_json('test_data/searchRelationships-response.json')
     response = to_context(mock_response, True)
@@ -48,8 +49,6 @@ def test_to_context_verbose_true():
 
 
 def test_handle_stix_types(mocker):
-    from SearchIndicatorRelationships import handle_stix_types
-
     mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.1.0'})
 
     entity_types = 'STIX Malware,STIX Attack Pattern,STIX Threat Actor,STIX Tool'
@@ -63,20 +62,23 @@ def test_handle_stix_types(mocker):
     ('7.0.0', ['mock_result_3'])
 ])
 def test_search_relationship_command_args_by_demisto_version(mocker, demisto_version, expected_result):
-    from SearchIndicatorRelationships import search_relationships
+    get_demisto_version._version = None  # clear cache between runs of the test
 
-    def execute_command(command_name, args):
+    def searchRelationships(args):
+        assert demisto_version >= '6.6.0'
+        assert 'filter' in args
+        assert isinstance(args['filter'].get('entities'), list)
+        return {'data': expected_result}
+
+    def executeCommand(command_name, args):
         assert command_name == 'searchRelationships'
-        if demisto_version != '6.6.0':
-            assert 'filter' not in args
-            assert isinstance(args.get('entities'), str)
-            return [{'Contents': {'data': expected_result}, 'Type': 'not_error'}]
-        else:
-            assert 'filter' in args
-            assert isinstance(args.get('entities'), list)
-            return {'data': expected_result}
+        assert demisto_version < '6.6.0'
+        assert 'filter' not in args
+        assert isinstance(args.get('entities'), str)
+        return [{'Contents': {'data': expected_result}, 'Type': 'not_error'}]
 
     mocker.patch.object(demisto, 'demistoVersion', return_value={'version': demisto_version})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'searchRelationships', side_effect=searchRelationships)
     result = search_relationships({'entities': '1.1.1.1,8.8.8.8'})
     assert result == expected_result
