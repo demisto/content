@@ -3775,9 +3775,9 @@ class Common(object):
         """
         CONTEXT_PATH = 'CVE(val.ID && val.ID == obj.ID)'
 
-        def __init__(self, id, stix_id=None, published=None, modified=None, description=None, cvss=None, cvss_version=None,
-                     cvss_score=None, cvss_vector=None, cvss_table=None, community_notes=None, tags=None,
-                     traffic_light_protocol=None, relationships=None):
+        def __init__(self, id, cvss, published, modified, description, relationships=None, stix_id=None,
+                     cvss_version=None, cvss_score=None, cvss_vector=None, cvss_table=None, community_notes=None,
+                     tags=None, traffic_light_protocol=None):
             # type (str, str, str, str, str) -> None
 
             # Main indicator value
