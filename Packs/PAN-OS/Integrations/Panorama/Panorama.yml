@@ -7478,10 +7478,11 @@ script:
     name: pan-os-platform-reboot
     outputs:
     - contextPath: PANOS.RestartStatus.Summary.hostid
-      type: Unknown
+      type: String
+      description: Host ID
     - contextPath: PANOS.RestartStatus.Summary.started
       description: Whether download process has started.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: ID of host (serial or hostname) to check.
@@ -7495,10 +7496,11 @@ script:
     name: pan-os-platform-get-system-status
     outputs:
     - contextPath: PANOS.SystemStatus.hostid
-      type: Unknown
+      type: String
+      description: Host ID
     - contextPath: PANOS.SystemStatus.up
       description: Whether the host device is up or still unavailable.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: ID of host (serial or hostname) to update the state.
@@ -7518,10 +7520,11 @@ script:
     name: pan-os-platform-update-ha-state
     outputs:
     - contextPath: PANOS.HAStateUpdate.hostid
-      type: Unknown
+      type: String
+      description: Host ID
     - contextPath: PANOS.HAStateUpdate.state
       description: New HA State
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       defaultValue: null
@@ -7536,31 +7539,31 @@ script:
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
       description: The description of the check
-      type: Unknown
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
       description: The shorthand code for this hygiene check
-      type: Unknown
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.result
       description: Whether the check passed or failed
-      type: Unknown
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
       description: Total number of matching issues
-      type: Unknown
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.hostid
-      type: Unknown
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.container_name
       description: What parent container (DG, Template, VSYS) this object belongs
         to.
-      type: Unknown
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.issue_code
       description: The shorthand code for the issue
-      type: Unknown
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.description
       description: Human readable description of issue
-      type: Unknown
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.name
       description: The affected object name
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       defaultValue: null
@@ -7591,31 +7594,32 @@ script:
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
       description: The description of the check
-      type: Unknown
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
       description: The shorthand code for this hygiene check
-      type: Unknown
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.result
       description: Whether the check passed or failed
-      type: Unknown
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
       description: Total number of matching issues
-      type: Unknown
+      type: Nunber
     - contextPath: PANOS.ConfigurationHygiene.Result.hostid
-      type: Unknown
+      type: String
+      description: Host ID
     - contextPath: PANOS.ConfigurationHygiene.Result.container_name
       description: What parent container (DG, Template, VSYS) this object belongs
         to.
-      type: Unknown
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.issue_code
       description: The shorthand code for the issue
-      type: Unknown
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.description
       description: Human readable description of issue
-      type: Unknown
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.name
       description: The affected object name
-      type: Unknown
+      type: String
   dockerimage: demisto/pan-os-python:1.0.0.27970
   feed: false
   isfetch: false
