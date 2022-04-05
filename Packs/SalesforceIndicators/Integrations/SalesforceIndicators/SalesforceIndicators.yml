@@ -109,6 +109,13 @@ configuration:
   name: indicator_history
   required: false
   type: 0
+- additionalinfo: If this option is selected the
+    last modified date will be used to only pull 
+    the latest objects.
+  display: Use Last Modified Date
+  name: use_last_modified
+  required: false
+  type: 8
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
