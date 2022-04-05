@@ -4,8 +4,7 @@ commonfields:
 name: CybleThreatIntel
 display: Cyble Threat Intel
 category: Data Enrichment & Threat Intelligence
-description: Cyble Threat Intelligence for Vision Users. Must have access to Vision
-  Taxii feed to access the threat intelligence.
+description: Cyble Threat Intelligence for Vision Users. Must have access to Vision Taxii feed to access the threat intelligence.
 configuration:
 - display: Server URL
   name: url
@@ -24,20 +23,18 @@ configuration:
   type: 4
   required: true
 script:
-  script: |-
+  script: |
   type: python
   commands:
   - name: cyble-vision-fetch-taxii
     arguments:
     - name: page
       required: true
-      description: Returns paginated records of the provided page considering the
-        limits
-      defaultValue: "1"
+      description: Returns paginated records of the provided page considering the limits
+      defaultValue: '1'
     - name: limit
-      description: Number of records to return per page(max 20). Using a smaller limit
-        will get faster responses.
-      defaultValue: "10"
+      description: Number of records to return per page(max 20). Using a smaller limit will get faster responses.
+      defaultValue: '10'
     - name: start_date
       required: true
       description: 'Returns records starting with given date value. (Format: YYYY-mm-dd)'
@@ -46,10 +43,10 @@ script:
       description: 'Returns records till the end date value. (Format: YYYY-mm-dd)'
     - name: start_time
       description: 'Returns records starting with given time value (Format: HH:mm:ss)'
-      defaultValue: '00:00:00'
+      defaultValue: 00:00:00
     - name: end_time
       description: 'Returns records till given time value (Format: HH:mm:ss)'
-      defaultValue: '00:00:00'
+      defaultValue: 00:00:00
     outputs:
     - contextPath: CybleIntel.Threat.details
       description: 'Returns the Threat Intel details from the Taxii service '
@@ -58,3 +55,6 @@ script:
   dockerimage: demisto/python3:3.10.4.27798
   runonce: false
   subtype: python3
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
