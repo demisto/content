@@ -483,7 +483,6 @@ def category_del_command(client, args):
 
 def category_get_command(client, args):
     uuid = args.get('uuid')
-    result = client.category_getItem({'uuid': uuid})
     result = client.category_getItem({'uuid': uuid})['category']
     output = output_format(result, 'Category', 'Category uuid : ' + uuid + ' description')
     return output
