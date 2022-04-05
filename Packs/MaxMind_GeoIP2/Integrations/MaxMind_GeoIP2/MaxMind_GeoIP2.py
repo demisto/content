@@ -45,13 +45,14 @@ HEADERS = {
 '''HELPER FUNCTIONS'''
 
 
-def http_request(query):
+def http_request(query, proxies=None):
     r = requests.request(
         'GET',
         BASE_URL + API_VERSION + '/' + MODE + '/' + query,
         headers=HEADERS,
         verify=USE_SSL,
-        auth=HTTPBasicAuth(ACCOUNT_ID, APIKEY)
+        auth=HTTPBasicAuth(ACCOUNT_ID, APIKEY),
+        proxies=proxies
     )
     if r.status_code != 200:
         return_error(
@@ -141,15 +142,15 @@ def format_results(res_json):
 ''' FUNCTIONS '''
 
 
-def get_geo_ip(query):
-    raw = http_request(query)
+def get_geo_ip(query, proxies=None):
+    raw = http_request(query, proxies=proxies)
     res_json = raw.json()
     return res_json
 
 
-def geo_ip_command():
+def geo_ip_command(proxies=None):
     ip_query = demisto.args().get('ip')
-    res_json = get_geo_ip(ip_query)
+    res_json = get_geo_ip(ip_query, proxies=proxies)
     hr, ip_ec, maxmind_ec = format_results(res_json)
     ec = ({
         'IP(val.Address && val.Address == obj.Address)': ip_ec,
@@ -167,11 +168,11 @@ def geo_ip_command():
 ''' EXECUTION CODE '''
 LOG('command is %s' % (demisto.command(),))
 try:
-    handle_proxy()
+    proxies = handle_proxy()
     if demisto.command() == 'ip':
-        geo_ip_command()
+        geo_ip_command(proxies=proxies)
     if demisto.command() == 'test-module':
-        raw = http_request('8.8.8.8')
+        raw = http_request('8.8.8.8', proxies=proxies)
         demisto.results('ok')
 except Exception as e:
     LOG(e)
