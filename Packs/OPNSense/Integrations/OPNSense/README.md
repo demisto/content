@@ -1,7 +1,7 @@
 Manage OPNsense Firewall. 
 For more information see OPNsense documentation.
 OPNsense is an open source, easy-to-use and easy-to-build HardenedBSD based firewall and routing platform.
-This integration was integrated and tested with version xx of OPNSense
+This integration was integrated and tested with version 22.1 of OPNSense
 
 ## Configure OPNSense on Cortex XSOAR
 
