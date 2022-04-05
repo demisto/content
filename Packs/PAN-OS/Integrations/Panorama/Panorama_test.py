@@ -798,7 +798,7 @@ class TestPanoramaEditRuleCommand:
         args = {
             "rulename": "test",
             "element_to_change": "disabled",
-            "element_value": "no",
+            "element_value": "yes",
             "behaviour": "replace",
             "pre_post": "pre-rulebase"
         }
