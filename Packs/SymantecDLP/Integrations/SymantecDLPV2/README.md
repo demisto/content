@@ -28,6 +28,10 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+## Fetch Incidents
+The integration fetches incidents ordered by the creation date of the incidents.
+Notice that due to creation time differences, some incidents may not be displayed in a sorted way.
+
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

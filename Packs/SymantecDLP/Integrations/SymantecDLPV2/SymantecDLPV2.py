@@ -86,7 +86,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
     def get_incidents_request(self, creation_date: str = None, status_id: List[str] = None, severity: List[int] = None,
-                              incident_type: List[str] = None, limit: int = MAX_PAGE_SIZE, incident_id: int = None):
+                              incident_type: List[str] = None, limit: int = MAX_PAGE_SIZE, order_by: bool = None):
         """Returns incidents list
         in the input (dummy).
 
@@ -95,12 +95,15 @@ class Client(BaseClient):
         :param severity: The severities to filter.
         :param incident_type: The incident types to filter.
         :param limit: The limit of the incidents.
-        :param incident_id: The minimum incident ID to start the search.
+        :param order_by: If order by according the creation date or not
 
         """
-        data = {"limit": limit, "select": INCIDENTS_LIST_BODY,
-                "orderBy": [{"order": "ASC", "field": {"name": "incidentId"}}]}
-        if creation_date or status_id or severity or incident_type or incident_id:
+        data = {"limit": limit, "select": INCIDENTS_LIST_BODY}
+        if order_by:
+
+            data["orderBy"] = [{"order": "ASC", "field": {"name": "creationDate"}}]
+
+        if creation_date or status_id or severity or incident_type:
 
             data['filter'] = {"booleanOperator": "AND", "filterType": "booleanLogic", "filters": []}
             if creation_date:
@@ -120,10 +123,6 @@ class Client(BaseClient):
                     create_filter_dict(filter_type="string", filter_by="messageSource",
                                        filter_value=incident_type, operator="IN"))
 
-            if incident_id:
-                data['filter']['filters'].append(  # type: ignore
-                    create_filter_dict(filter_type="long", filter_by="incidentId",
-                                       filter_value=[incident_id], operator="GT"))
         headers = self._headers
         response = self._http_request(method='POST', url_suffix='/ProtectManager/webservices/v2/incidents',
                                       json_data=data, headers=headers)
@@ -768,14 +767,14 @@ def get_list_remediation_status(client: Client) -> CommandResults:
     )
 
 
-def is_incident_already_fetched_in_previous_fetch(last_incident_id, incident_id):
+def is_incident_already_fetched_in_previous_fetch(last_update_time, incident_creation_date):
     """
     Checks if the incident was already fetched
-    :param last_incident_id: last_incident_id from last_run
-    :param incident_id: The current incident id
+    :param last_update_time: last_update_time from last_run
+    :param incident_creation_date: The current incident creation date
 
     """
-    return last_incident_id and int(last_incident_id) >= int(incident_id)
+    return last_update_time and last_update_time >= incident_creation_date
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run: dict, incident_types: List[str] = None,
@@ -803,32 +802,24 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
         incident_types = [INCIDENT_TYPE_MAPPING[incident_type] for incident_type in incident_types]
 
     if last_run:
-        last_incident_id = last_run.get('last_incident_id', '')
+        last_update_time = last_run.get('last_incident_creation_time')
 
     else:
         # In first run
         last_update_time = parse_creation_date(fetch_time)
 
-        incident_data_first_run = client.get_incidents_request(creation_date=last_update_time,
-                                                               status_id=incident_status_id,
-                                                               severity=incident_severities,  # type: ignore
-                                                               incident_type=incident_types, limit=1)
-        # Get the first incident we want to fetch from
-        last_incident_id = int(incident_data_first_run.get('incidents')[0].get('incidentId')) - 1
-
-    # Get the incidents that theirs ID is greater than last_incident_id
     incidents_data_res = client.get_incidents_request(status_id=incident_status_id,
                                                       severity=incident_severities,  # type: ignore
                                                       incident_type=incident_types, limit=fetch_limit,
-                                                      incident_id=last_incident_id)
+                                                      creation_date=last_update_time, order_by=True)
 
     incidents_data_list = incidents_data_res.get('incidents', [])
 
     for incident_data in incidents_data_list:
         incident_id = incident_data.get('incidentId')
-        incident_creation_time = parse_creation_date(incident_data.get('creationDate', ''))
+        incident_creation_time = incident_data.get('creationDate')
 
-        if is_incident_already_fetched_in_previous_fetch(last_incident_id, incident_id):
+        if is_incident_already_fetched_in_previous_fetch(last_update_time, incident_creation_time):
             # Skipping last incident from last cycle if fetched again
             continue
 
@@ -836,21 +827,23 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
         incident: dict = {
             'rawJSON': json.dumps(incident_details),
             'name': f'Symantec DLP Incident ID {incident_id}',
-            'occurred': incident_creation_time
+            'occurred': parse_creation_date(incident_creation_time)
         }
         incidents.append(incident)
-        if incident_id == incidents_data_list[-1].get('incidentId'):
-            last_incident_id = incident_id
+        if incident_creation_time == incidents_data_list[-1].get('creationDate'):
+            last_update_time = incident_creation_time
 
     if is_test:
         return None
 
     demisto.setLastRun(
         {
-            'last_incident_id': last_incident_id
+            'last_incident_creation_time': last_update_time
         }
     )
-    return incidents
+    # Sort the incidents list because the incident's ID and creation date are not synchronize
+    sorted_incidents = sorted(incidents, key=lambda d: d['name'])
+    return sorted_incidents
 
 
 ''' MAIN FUNCTION '''
