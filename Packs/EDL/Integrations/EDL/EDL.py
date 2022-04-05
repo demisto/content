@@ -112,7 +112,7 @@ class RequestArguments:
                  url_protocol_stripping: bool = False,
                  url_truncate: bool = False,
                  block_cidr_prefix_threshold: int = 8,
-                 auto_block_tld: bool = False,
+                 block_tld: bool = False,
                  ):
 
         self.query = query
@@ -131,7 +131,7 @@ class RequestArguments:
         self.csv_text = csv_text
         self.url_truncate = url_truncate
         self.block_cidr_prefix_threshold = block_cidr_prefix_threshold
-        self.auto_block_tld = auto_block_tld
+        self.block_tld = block_tld
 
         if category_attribute is not None:
             category_attribute_list = argToList(category_attribute)
@@ -662,7 +662,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             if indicator.startswith('*.'):
                 domain = str(indicator.lstrip('*.'))
                 # if we should ignore TLDs and the domain is a TLD
-                if request_args.auto_block_tld and tldextract.extract(domain).suffix == domain:
+                if request_args.block_tld and tldextract.extract(domain).suffix == domain:
                     continue
                 formatted_indicators.write(new_line + domain)
                 new_line = '\n'
@@ -976,7 +976,7 @@ def update_edl_command(args: Dict, params: Dict):
     csv_text = get_bool_arg_or_param(args, params, 'csv_text') == 'True'
     url_truncate = get_bool_arg_or_param(args, params, 'url_truncate')
     block_cidr_prefix_threshold = arg_to_number(args, 'block_cidr_prefix_threshold')
-    auto_block_tld = get_bool_arg_or_param(args, params, 'auto_block_tld')
+    block_tld = get_bool_arg_or_param(args, params, 'block_tld')
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
@@ -998,7 +998,7 @@ def update_edl_command(args: Dict, params: Dict):
                                     strip_protocol,
                                     url_truncate,
                                     block_cidr_prefix_threshold,
-                                    auto_block_tld)
+                                    block_tld)
 
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
@@ -1024,7 +1024,7 @@ def initialize_edl_context(params: dict):
     csv_text = argToBoolean(params.get('csv_text', False))
     url_truncate = params.get('url_truncate', False)
     block_cidr_prefix_threshold = arg_to_number(args, 'block_cidr_prefix_threshold')
-    auto_block_tld = get_bool_arg_or_param(args, params, 'auto_block_tld')
+    block_tld = get_bool_arg_or_param(args, params, 'block_tld')
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
@@ -1046,7 +1046,7 @@ def initialize_edl_context(params: dict):
                                     url_protocol_stripping,
                                     url_truncate,
                                     block_cidr_prefix_threshold,
-                                    auto_block_tld)
+                                    block_tld)
 
     EDL_ON_DEMAND_CACHE_PATH = demisto.uniqueFile()
     ctx = request_args.to_context_json()

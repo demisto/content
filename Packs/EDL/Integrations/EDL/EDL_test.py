@@ -227,7 +227,7 @@ class TestHelperFunctions:
         edl_v = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"1.1.1.1/12", "*.com", "com", "*.co.uk", "co.uk", "*.google.com", "google.com"}
 
-        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, auto_block_tld=True, block_cidr_prefix_threshold=13)
+        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, block_tld=True, block_cidr_prefix_threshold=13)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
         edl_v = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"*.google.com", "google.com"}

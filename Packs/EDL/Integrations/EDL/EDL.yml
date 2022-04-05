@@ -199,9 +199,9 @@ configuration:
   type: 8
 - additionalinfo: 'Check if not include top Level Domain.'
   defaultvalue: 'false'
-  display: 'Auto Block Top Level Domains'
+  display: 'Block Top Level Domains'
   hidden: false
-  name: auto_block_tld
+  name: block_tld
   required: true
   type: 8
 
