@@ -101,8 +101,8 @@ configuration:
   required: false
   type: 12
 - additionalinfo: 'Filter the fetched incidents according to the given query. Query
-    example: "source_ip.value LIKE `192.168.1.*` AND dst = `192.168.1.12`" Note: if
-    provided, the `Severity` and `Subtype` arguments will be ignored.'
+    example: "source_ip.value LIKE `192.168.1.*` AND dst = `192.168.1.12`" Note: can
+    not be used in combination with `Severity` and `Subtype` parameters.'
   display: Fetch Filter
   hidden: false
   name: filter_query
