@@ -17,7 +17,7 @@ Investigate IP addresses and identities involved in the detected activity, by us
 
 The playbook's first response actions are based on the data available within the alert. In this phase, the playbook executes the following:
 
-* Manually blocks indicators if the IP address found is malicious
+* Manually blocks indicators if the IP address is malicious
 * Manually disables the user
 * Manually clears the user’s sessions (Okta)
 
