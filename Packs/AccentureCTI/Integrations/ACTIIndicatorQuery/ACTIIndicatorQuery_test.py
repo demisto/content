@@ -1,5 +1,5 @@
 import requests_mock
-from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, convert_inline_image_to_encoded, markdown_postprocessing                          # noqa: E501
+from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, markdown_postprocessing                          # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import *
 import demistomock as demisto
@@ -662,8 +662,11 @@ def test_addBaseUrlToPartialPaths():
 
 def test_markdown_postprocessing():
     md_text = " BELUGASTURGEON activity, including a [2020 campaign against the Cypriot"\
-        " government](#/node/intelligence_alert/view/6cc805d7-cb77-443d-afea-d052916fa602) as China has.\n\n ![Arctic Map](/rest/files/download/0f/6c"\
+        " government](#/node/intelligence_alert/view/6cc805d7-cb77-443d-afea-d052916fa602)"\
+        " as China has.\n\n ![Arctic Map](/rest/files/download/0f/6c"\
         "/6f/91de9ef8d8d38345dc270f8915d9faa496a00b5babe2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg)"
-    expexted_output = " BELUGASTURGEON activity, including a [2020 campaign against the Cypriot government](https://intelgraph.idefense.com/#/node/intelligence_alert/view/6cc805d7-cb77-443d-afea-d052916fa602) as China has.\n\n ![Arctic Map](data:image/jpg;base64,)"
+    expexted_output = " BELUGASTURGEON activity, including a [2020 campaign against the Cypriot government]"\
+        "(https://intelgraph.idefense.com/#/node/intelligence_alert/view/6cc805d7-cb77-443d-afea-d052916fa602)"\
+        " as China has.\n\n ![Arctic Map](data:image/jpg;base64,)"
     output = markdown_postprocessing(md_text)
     assert output == expexted_output
