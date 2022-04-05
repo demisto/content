@@ -1,4 +1,6 @@
-Manage OPNsense Firewall. \nFor more information see OPNsense documentation.\nOPNsense is an open source, easy-to-use and easy-to-build HardenedBSD based firewall and routing platform.
+Manage OPNsense Firewall. 
+For more information see OPNsense documentation.
+OPNsense is an open source, easy-to-use and easy-to-build HardenedBSD based firewall and routing platform.
 This integration was integrated and tested with version xx of OPNSense
 
 ## Configure OPNSense on Cortex XSOAR
@@ -66,7 +68,7 @@ Create new alias
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OPNSense.Alias | unknown | Alias | 
+| OPNSense.Alias | unknown | Alias UUID created | 
 
 ### opnsense-alias-del
 ***
@@ -88,7 +90,7 @@ Delete alias with uuid
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OPNSense.Alias | unknown | Alias | 
+| OPNSense.Alias | unknown | Alias UUID deleted | 
 
 ### opnsense-alias-mod
 ***
@@ -118,7 +120,7 @@ Modify an existing alias
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OPNSense.Alias | unknown | Alias | 
+| OPNSense.Alias | unknown | Alias UUID modified | 
 
 ### opnsense-alias-mod-additem
 ***
@@ -141,7 +143,7 @@ Add item into existing alias
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OPNSense.Alias | unknown | Alias | 
+| OPNSense.Alias | unknown | Alias UUID modified | 
 
 ### opnsense-alias-mod-delitem
 ***
@@ -164,7 +166,7 @@ Del item into existing alias
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OPNSense.Alias | unknown | Modified alias | 
+| OPNSense.Alias | unknown | Alias UUID modified | 
 
 ### opnsense-alias-get
 ***
@@ -184,7 +186,14 @@ Get alias details
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Alias | Unknown | Alias details | 
+| OPNSense.Alias.name | Unknown | Alias name | 
+| OPNSense.Alias.content | Unknown | Alias content | 
+| OPNSense.Alias.description | Unknown | Alias description | 
+| OPNSense.Alias.enabled | Unknown | Alias enabled | 
+
 ### opnsense-alias-get-uuid
 ***
 Get alias UUID
@@ -202,7 +211,10 @@ Get alias UUID
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Alias | Unknown | Alias UUID | 
+
 ### opnsense-interfaces-list
 ***
 Get interfaces list
@@ -219,7 +231,10 @@ Get interfaces list
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Interfaces | Unknown | Interfaces list | 
+
 ### opnsense-category-list
 ***
 Get categories list
@@ -236,7 +251,10 @@ Get categories list
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Category | Unknown | Categories list | 
+
 ### opnsense-category-add
 ***
 Create new category
@@ -256,7 +274,10 @@ Create new category
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Category | Unknown | Category UUID | 
+
 ### opnsense-category-del
 ***
 Delete category with uuid
@@ -274,7 +295,10 @@ Delete category with uuid
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Category | Unknown | Category UUID | 
+
 ### opnsense-category-get
 ***
 Get category details
@@ -292,7 +316,10 @@ Get category details
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Category | Unknown | Category details | 
+
 ### opnsense-category-mod
 ***
 Modify an axisting category
@@ -313,7 +340,10 @@ Modify an axisting category
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| cef2c7d7-68d8-41aa-b6b8-1cac38554d58 | Unknown | Category UUID | 
+
 ### opnsense-rule-list
 ***
 Get rules list
@@ -330,7 +360,10 @@ Get rules list
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Rule | Unknown | Rules list | 
+
 ### opnsense-rule-get
 ***
 Get rule details
@@ -348,7 +381,15 @@ Get rule details
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Rule | Unknown | Rule details | 
+| OPNSense.Rule.description | Unknown | Rule description | 
+| OPNSense.Rule.enabled | Unknown | Rule enabled | 
+| OPNSense.Rule.source_net | Unknown | Source NET's rule | 
+| OPNSense.Rule.destination_net | Unknown | Destination NET's rule | 
+| OPNSense.Rule.interface | Unknown | Interface's rule | 
+
 ### opnsense-alias-apply
 ***
 Apply configuration
@@ -382,7 +423,10 @@ Reboot the device
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Device | Unknown | Reboot status | 
+
 ### opnsense-firmware-info
 ***
 Get firmware info
@@ -399,7 +443,10 @@ Get firmware info
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Firmware | Unknown | Firmware info | 
+
 ### opnsense-firmware-status
 ***
 Get firmware status
@@ -416,7 +463,10 @@ Get firmware status
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Firmware | Unknown | Firmware status | 
+
 ### opnsense-firmware-upgradestatus
 ***
 Get firmware upgrade status
@@ -433,7 +483,10 @@ Get firmware upgrade status
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Firmware | Unknown | Firmware upgrade status | 
+
 ### opnsense-firmware-update
 ***
 Do firmware update
@@ -450,7 +503,10 @@ Do firmware update
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Firmware | Unknown | Firmware update | 
+
 ### opnsense-firmware-upgrade
 ***
 Do firmware upgrade
@@ -467,7 +523,10 @@ Do firmware upgrade
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Firmware | Unknown | Firmware upgrade | 
+
 ### opnsense-rule-del
 ***
 Delete an existing rule
@@ -481,12 +540,15 @@ Delete an existing rule
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | uuid | Rule UUID. | Required | 
-| auto_commit | Apply automaticly aliases changes. Possible values are: False, True. Default is False. | Optional | 
+| auto_commit | Apply automaticly aliases changes. Possible values are: None, True. Default is None. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Rule | Unknown | Rule UUID | 
+
 ### opnsense-rule-add
 ***
 Create a new rule
@@ -504,7 +566,7 @@ Create a new rule
 | quick | Rule quick. Possible values are: 1, 0. Default is 1. | Optional | 
 | interface | Rule interface. | Optional | 
 | direction | Rule direction. Possible values are: in, out. Default is in. | Optional | 
-| ipprotocol | Rule IP Protocol. Possible values are: inet, inet6. | Required | 
+| ipprotocol | Rule IP Protocol. Possible values are: inet, inet6. Default is inet. | Optional | 
 | protocol | Rule protocol. Possible values are: any, ICMP, IGMP, GGP, IPENCAP, ST2, TCP, CBT, EGP, IGP, BBN-RCC, NVP, PUP, ARGUS, EMCON, XNET, CHAOS, UDP, MUX, DCN, HMP, PRM, XNS-IDP, TRUNK-1, TRUNK-2, LEAF-1, LEAF-2, RDP, ISO-TP4, NETBLT, MFE-NSP, MERIT-INP, DCCP, 3PC, IDPR, XTP, DDP, IDPR-CMTP, TP++, IL, IPV6, SDRP, IDRP, RSVP, GRE, DSR, BNA, ESP, AH, I-NLSP, SWIPE, NARP, MOBILE, TLSP, SKIP, IPV6-ICMP, CFTP, SAT-EXPAK, KRYPTOLAN, RVD, IPPC, SAT-MON, VISA, IPCV, CPNX, CPHB, WSN, PVP, BR-SAT-MON, SUN-ND, WB-MON, WB-EXPAK, ISO-IP, VMTP, SECURE-VMTP, VINES, TTP, NSFNET-IGP, DGP, TCF, EIGRP, OSPF, SPRITE-RPC, LARP, MTP, AX.25, IPIP, MICP, SCC-SP, ETHERIP, ENCAP, GMTP, IFMP, PNNI, PIM, ARIS, SCPS, QNX, A/N, IPCOMP, SNP, COMPAQ-PEER, IPX-IN-IP, CARP, PGM, L2TP, DDX, IATP, STP, SRP, UTI, SMP, SM, PTP, ISIS, CRTP, CRUDP, SPS, PIPE, SCTP, FC, RSVP-E2E-IGNORE, UDPLITE, MPLS-IN-IP, MANET, HIP, SHIM6, WESP, ROHC, PFSYNC, DIVERT. Default is any. | Optional | 
 | source_net | Source Net. Default is any. | Optional | 
 | source_not | Source NOT. Possible values are: 0, 1. Default is 0. | Optional | 
@@ -515,12 +577,15 @@ Create a new rule
 | log | Enable logging. Possible values are: 0, 1. Default is 0. | Optional | 
 | sequence | Provide a valid sequence for sorting (1 - 99999). Default is 1. | Optional | 
 | description | Rule description. | Optional | 
-| auto_commit | Apply automaticly aliases changes. Possible values are: False, True. Default is False. | Optional | 
+| auto_commit | Apply automaticly aliases changes. Possible values are: None, True. Default is None. | Required | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Rule | Unknown | Rule UUID | 
+
 ### opnsense-rule-mod
 ***
 Modify an existing rule
@@ -539,7 +604,7 @@ Modify an existing rule
 | quick | Rule quick. Possible values are: 1, 0. Default is 1. | Optional | 
 | interface | Rule interface. | Optional | 
 | direction | Rule description. Possible values are: in, out. Default is in. | Optional | 
-| ipprotocol | Rule IP protocol. Possible values are: inet, inet6. | Required | 
+| ipprotocol | Rule IP protocol. Possible values are: inet, inet6. Default is inet. | Optional | 
 | protocol | Rule protocol. Possible values are: any, ICMP, IGMP, GGP, IPENCAP, ST2, TCP, CBT, EGP, IGP, BBN-RCC, NVP, PUP, ARGUS, EMCON, XNET, CHAOS, UDP, MUX, DCN, HMP, PRM, XNS-IDP, TRUNK-1, TRUNK-2, LEAF-1, LEAF-2, RDP, ISO-TP4, NETBLT, MFE-NSP, MERIT-INP, DCCP, 3PC, IDPR, XTP, DDP, IDPR-CMTP, TP++, IL, IPV6, SDRP, IDRP, RSVP, GRE, DSR, BNA, ESP, AH, I-NLSP, SWIPE, NARP, MOBILE, TLSP, SKIP, IPV6-ICMP, CFTP, SAT-EXPAK, KRYPTOLAN, RVD, IPPC, SAT-MON, VISA, IPCV, CPNX, CPHB, WSN, PVP, BR-SAT-MON, SUN-ND, WB-MON, WB-EXPAK, ISO-IP, VMTP, SECURE-VMTP, VINES, TTP, NSFNET-IGP, DGP, TCF, EIGRP, OSPF, SPRITE-RPC, LARP, MTP, AX.25, IPIP, MICP, SCC-SP, ETHERIP, ENCAP, GMTP, IFMP, PNNI, PIM, ARIS, SCPS, QNX, A/N, IPCOMP, SNP, COMPAQ-PEER, IPX-IN-IP, CARP, PGM, L2TP, DDX, IATP, STP, SRP, UTI, SMP, SM, PTP, ISIS, CRTP, CRUDP, SPS, PIPE, SCTP, FC, RSVP-E2E-IGNORE, UDPLITE, MPLS-IN-IP, MANET, HIP, SHIM6, WESP, ROHC, PFSYNC, DIVERT. | Optional | 
 | source_net | Source Net. | Optional | 
 | source_not | Source NOT. Possible values are: 0, 1. Default is 0. | Optional | 
@@ -549,12 +614,15 @@ Modify an existing rule
 | destination_port | Destination port. | Optional | 
 | log | Enable log. Possible values are: 0, 1. Default is 0. | Optional | 
 | description | Rule description. | Optional | 
-| auto_commit | Apply automaticly aliases changes. Possible values are: False, True. Default is False. | Optional | 
+| auto_commit | Apply automaticly aliases changes. Possible values are: None, True. Default is None. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Rule | Unknown | Rule UUID | 
+
 ### opnsense-rule-apply
 ***
 Apply rules current configuration
@@ -572,7 +640,10 @@ Apply rules current configuration
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Rule | Unknown | Action status | 
+
 ### opnsense-rule-savepoint
 ***
 Save rules current configuration
@@ -589,7 +660,10 @@ Save rules current configuration
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Rule | Unknown | Action status | 
+
 ### opnsense-logs-search
 ***
 Search into firewall logs
@@ -609,7 +683,19 @@ Search into firewall logs
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.Logs | Unknown | OPNSense logs | 
+| OPNSense.Logs.interface | Unknown | interface in logs | 
+| OPNSense.Logs.src | Unknown | SRC in logs | 
+| OPNSense.Logs.srcport | Unknown | SRCPORT in logs | 
+| OPNSense.Logs.dst | Unknown | DST in logs | 
+| OPNSense.Logs.dstport | Unknown | DSTPORT in logs | 
+| OPNSense.Logs.action | Unknown | Action in logs | 
+| OPNSense.Logs.__timestamp__ | Unknown | timestamp in logs | 
+| OPNSense.Logs.label | Unknown | label in logs | 
+| OPNSense.Logs.protoname | Unknown | protoname in logs | 
+
 ### opnsense-states-search
 ***
 Query states
@@ -627,7 +713,17 @@ Query states
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OPNSense.States | Unknown | OPNSense States | 
+| OPNSense.States.label | Unknown | label in states | 
+| OPNSense.States.descr | Unknown | states description | 
+| OPNSense.States.nat_addr | Unknown | nat address in states | 
+| OPNSense.States.nat_port | Unknown | nat port in states | 
+| OPNSense.States.iface | Unknown | interface in states | 
+| OPNSense.States.ipproto | Unknown | IP Protocol in states | 
+| OPNSense.States.proto | Unknown | Protocol in states | 
+
 ### opnsense-state-del
 ***
 Delete state with ID
