@@ -86,7 +86,6 @@ FIND_SUBMISSION_ID_CONTEXT = {
 
 GET_FULL_REPORT_CONTEXT_EXTENDED = {'environment_description': 'Windows 10 64 bit', 'environment_id': 160,
                                     'sha256': 'sha256', 'submission_type': 'page_url',
-                                    'Hashes': [{'type': 'SHA256', 'value': 'sha256'}],
                                     'submit_url': 'hxxps://www.google.com', 'threat_score': 13,
                                     'architecture': 'WINDOWS', 'classification': ['91.6% (.URL) Windows URL shortcut',
                                                                                   '8.3% (.INI) Generic INI configuration'],
