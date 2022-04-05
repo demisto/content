@@ -77,14 +77,6 @@ def dataclass_to_command_results(result: Any, raw_response: Union[List, Dict]) -
     return command_result
 
 
-@dataclass
-class DemistoParameters:
-    """
-    Demisto Parameters
-    :param url: Default URL for PAN-OS advisories website
-    """
-    url: str = "https://security.paloaltonetworks.com/api/v1/"
-
 
 @dataclass
 class Advisory:
@@ -186,17 +178,49 @@ def get_advisories(client: Client, product: str, sort: str = "-date", severity: 
     return dataclass_to_command_results(advisory_object_list, raw_response=advisory_data)
 
 
+def advisory_to_indicator(advisory_dict: dict):
+    """Convert the advisory dictionary into an indicator dictionary"""
+    return {
+        "value": advisory_dict.get("CVE_data_meta", {}).get("ID", ""),
+        "type": FeedIndicatorType.CVE,
+        "rawJSON": advisory_dict,
+        "fields": {
+            "cvss": advisory_dict.get("impact", {}).get("cvss", {}).get("baseScore", ""),
+            "cvedescription": advisory_dict.get("description", {}).get("description_data", [])[0].get("value", ""),
+            "cvssvector": advisory_dict.get("impact", {}).get("cvss", {}).get("vectorString", ""),
+            "sourceoriginalseverity": advisory_dict.get("impact", {}).get("cvss", {}).get("baseSeverity", ""),
+            "published": advisory_dict.get("CVE_data_meta", {}).get("DATE_PUBLIC", ""),
+        }
+    }
+
+
+def fetch_indicators(client: Client, fetch_product_name="PAN-OS"):
+    """
+    Fetch Advisories as CVE indicators.
+    :param client: Client instance
+    :param fetch_product_name: The name of the product to fetch indicators for.
+    """
+    advisory_data = client.get_advisories(fetch_product_name, {}).get("data", {})
+    indicator_objects = []
+    for advisory_dict in advisory_data:
+        indicator_objects.append(advisory_to_indicator(advisory_dict))
+
+    return indicator_objects
+
+
 def main():
     """Main entrypoint for script"""
-    demisto_params = DemistoParameters(**demisto.params())
     client = Client(
-        base_url=demisto_params.url
+        base_url=demisto.params().get("url")
     )
     command_name = demisto.command()
     if command_name == "test-module":
         return_results(test_module(client))
     elif command_name == "pan-advisories-get-advisories":
         return_results(get_advisories(client, **demisto.args()))
+    elif command_name == "fetch-indicators":
+        for b in batch(fetch_indicators(client, demisto.params().get("fetch_product_name"))):
+            demisto.createIndicators(b)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

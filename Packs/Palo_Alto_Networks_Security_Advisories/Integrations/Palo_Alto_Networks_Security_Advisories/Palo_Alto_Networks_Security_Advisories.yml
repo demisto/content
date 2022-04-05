@@ -8,8 +8,16 @@ configuration:
   name: url
   required: false
   type: 0
-display: Palo Alto Networks Security Advisories
+- additionalinfo: The Palo Alto Networks product name to fetch indicators for, such
+    as "PAN-OS"
+  defaultvalue: PAN-OS
+  display: Fetch indicator product name
+  hidden: false
+  name: fetch_product_name
+  required: false
+  type: 0
 description: Queries the public repository of PAN-OS CVEs.
+display: Palo Alto Networks Security Advisories
 name: Palo_Alto_Networks_Security_Advisories
 script:
   commands:
@@ -68,7 +76,7 @@ script:
       description: The name of this CVE
       type: Unknown
     - contextPath: PANSecurityAdvisory.Advisory.affects_vendor_name
-      description: The list of Vendors this CVE affects 
+      description: The list of Vendors this CVE affects
       type: Unknown
     - contextPath: PANSecurityAdvisory.Advisory.description
       description: Human readable description of Advisory
@@ -80,13 +88,13 @@ script:
       description: The CVSS Severity
       type: Unknown
     - contextPath: PANSecurityAdvisory.Advisory.cvss_vector_string
-      description: The CVSS Vector string 
+      description: The CVSS Vector string
       type: Unknown
     - contextPath: PANSecurityAdvisory.Advisory.affected_version_list
       description: List of affected versions strings
       type: Unknown
   dockerimage: demisto/python3:3.10.1.25933
-  feed: false
+  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
