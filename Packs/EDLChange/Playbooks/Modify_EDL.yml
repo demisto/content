@@ -24,7 +24,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "30"
     separatecontext: false
     view: |-
       {
@@ -67,7 +67,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 545
+          "y": 895
         }
       }
     note: false
@@ -99,7 +99,7 @@ tasks:
       value:
         complex:
           root: incident
-          accessor: manualedlchangeindicatorslist
+          accessor: edlindicatorslist
           transformers:
           - operator: StripChars
             args:
@@ -127,7 +127,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 195
+          "y": 545
         }
       }
     note: false
@@ -154,7 +154,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1390
+          "y": 1740
         }
       }
     note: false
@@ -182,9 +182,9 @@ tasks:
       - "26"
     scriptarguments:
       tags:
-        simple: ${incident.manualedlchangetag}
+        simple: ${incident.edltag}
       type:
-        simple: ${incident.manualedlchangeindicatortype}
+        simple: ${incident.edlindicatortype}
       value:
         complex:
           root: InputIndicatorsArray
@@ -202,7 +202,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1040
+          "y": 1390
         }
       }
     note: true
@@ -233,7 +233,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 720
+          "y": 1070
         }
       }
     note: false
@@ -263,7 +263,7 @@ tasks:
       field:
         simple: tags
       fieldValue:
-        simple: ${incident.manualedlchangetag}
+        simple: ${incident.edltag}
       indicatorsValues:
         complex:
           root: InputIndicatorsArray
@@ -281,7 +281,7 @@ tasks:
       {
         "position": {
           "x": 612.5,
-          "y": 1040
+          "y": 1390
         }
       }
     note: true
@@ -333,7 +333,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 1215
         }
       }
     note: false
@@ -385,7 +385,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 865
+          "y": 1215
         }
       }
     note: false
@@ -416,7 +416,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1215
+          "y": 1565
         }
       }
     note: false
@@ -450,7 +450,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.manualedlchangeaction
+              simple: incident.edlaction
             iscontext: true
           right:
             value:
@@ -460,7 +460,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.manualedlchangeaction
+              simple: incident.edlaction
             iscontext: true
           right:
             value:
@@ -469,7 +469,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 370
+          "y": 720
         }
       }
     note: false
@@ -499,7 +499,7 @@ tasks:
       {
         "position": {
           "x": 1042.5,
-          "y": 880
+          "y": 1230
         }
       }
     note: false
@@ -531,7 +531,7 @@ tasks:
       fieldValue:
         complex:
           root: incident
-          accessor: manualedlchangetag
+          accessor: edltag
       indicatorsValues:
         simple: ${InputIndicatorsArray}
     separatecontext: false
@@ -539,10 +539,124 @@ tasks:
       {
         "position": {
           "x": 1042.5,
-          "y": 1040
+          "y": 1390
         }
       }
     note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: cb238dc6-b905-4e82-844b-42c29320cf24
+    type: condition
+    task:
+      id: cb238dc6-b905-4e82-844b-42c29320cf24
+      version: -1
+      name: Playbook inputs provided instead of incident fields?
+      description: Check if playbook is being run as a subplaybook (check if values were passed as playbook inputs instead of incident fields).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.EDL Action
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.EDL Tag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.EDL Indicators List
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: incident.edlaction
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: incident.edltag
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: incident.edlindicatorslist
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 4dccfd34-d082-419b-86df-5ffd31660d0d
+    type: regular
+    task:
+      id: 4dccfd34-d082-419b-86df-5ffd31660d0d
+      version: -1
+      name: Set inputs to indicator fields
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      edlaction:
+        simple: ${inputs.EDL Action}
+      edlindicatorslist:
+        complex:
+          root: inputs.EDL Indicators List
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      edlindicatortype:
+        simple: ${inputs.EDL Indicator Type}
+      edltag:
+        simple: ${inputs.EDL Tag}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 370
+        }
+      }
+    note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -554,15 +668,35 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1405,
+        "height": 1755,
         "width": 1372.5,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: EDL Action
+  value: {}
+  required: true
+  description: 'Action to perform on EDL (possible values: Add, Remove)'
+  playbookInputQuery:
+- key: EDL Tag
+  value: {}
+  required: true
+  description: Tag that adds indicators to EDL. Must match tag value used in EDL query in the instance configuration.
+  playbookInputQuery:
+- key: EDL Indicator Type
+  value: {}
+  required: false
+  description: Required only if adding to EDL. Type of indicators to add to EDL.
+  playbookInputQuery:
+- key: EDL Indicators List
+  value: {}
+  required: true
+  description: List of IOCs to add to/remove from EDL (according to value of EDL Action). May be newline- or comma-delimited.
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.2.0
+fromversion: 6.0.0
