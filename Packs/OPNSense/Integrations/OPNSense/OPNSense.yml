@@ -968,7 +968,7 @@ script:
           description: Rollback revision
       description: Revert config to given savepoint
       outputs: []
-  dockerimage: demisto/pyopnsense2:latest
+  dockerimage: demisto/opnsense:latest
   runonce: false
   subtype: python3
 sourcemoduleid: OPNSense
