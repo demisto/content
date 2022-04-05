@@ -1,5 +1,2 @@
 [file:CybleEvents.yml]
-ignore=IN126,IN134
-
-[file:incidenttype-Cyble_Intel_Alert.json]
-ignore=BA102
+ignore=IN126

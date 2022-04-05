@@ -1,21 +1,12 @@
 {
   "id": "Cyble Intel Alert",
-  "version": 6,
-  "modified": "2022-02-18T17:14:35.022490657Z",
-  "sortValues": null,
-  "packID": "",
-  "itemVersion": "",
-  "fromServerVersion": "",
-  "toServerVersion": "",
+  "version": -1,
   "vcShouldIgnore": false,
-  "vcShouldKeepItemLegacyProdMachine": false,
-  "commitMessage": "",
-  "shouldCommit": false,
   "locked": false,
   "name": "Cyble Intel Alert",
   "prevName": "Cyble Intel Alert",
   "color": "#F8E7A5",
-  "playbookId": "2dc45112-1445-4fcf-8e4d-ab0c65c28f2f",
+  "playbookId": "Cyble Intel Alert",
   "hours": 0,
   "days": 0,
   "weeks": 0,
@@ -26,8 +17,6 @@
   "readonly": false,
   "default": false,
   "autorun": true,
-  "preProcessingScript": "",
-  "closureScript": "",
   "disabled": false,
   "reputationCalc": 0,
   "onChangeRepAlg": 0,
@@ -36,5 +25,6 @@
   "extractSettings": {
     "mode": "All",
     "fieldCliNameToExtractSettings": {}
-  }
+  },
+  "fromVersion": "6.0.0"
 }
