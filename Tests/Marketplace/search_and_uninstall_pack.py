@@ -92,6 +92,34 @@ def uninstall_all_packs(client: demisto_client):
     return True
 
 
+def check_base_pack_version(client: demisto_client):
+    """
+
+        Args:
+            client (demisto_client): The client to connect to.
+
+        Returns:
+            list of installed python
+        """
+    try:
+        logging.info("Attempting to fetch installed Base pack.")
+        response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                            path='/contentpacks/installed/Base',
+                                                                            method='GET',
+                                                                            accept='application/json',
+                                                                            _request_timeout=None)
+        if 200 <= status_code < 300:
+            installed_base = ast.literal_eval(response_data)
+            logging.success(f'Successfully fetched Base pack with version {installed_base.get("currentVersion")}')
+            return installed_base.get("currentVersion")
+        else:
+            result_object = ast.literal_eval(response_data)
+            message = result_object.get('message', '')
+            raise Exception(f'Failed to fetch Base pack - with status code {status_code}\n{message}')
+    except Exception as e:
+        logging.exception(f'The request to fetch installed packs has failed. Additional info: {str(e)}')
+        return None
+
 def reset_base_pack_version(client: demisto_client):
     """
     Resets base pack version to prod version.
@@ -109,12 +137,16 @@ def reset_base_pack_version(client: demisto_client):
                                                                             method='GET',
                                                                             accept='application/json',
                                                                             _request_timeout=None)
-
         if 200 <= status_code < 300:
             result_object = ast.literal_eval(response_data)
 
             if result_object and result_object.get('currentVersion'):
                 logging.debug('Found Base pack in bucket!')
+
+                current_installed_base_version = check_base_pack_version(client)
+                if current_installed_base_version is not None and current_installed_base_version == result_object.get('currentVersion'):
+                    logging.debug('Installed Base pack is at the same version as the pack in the bucket.')
+                    return True
 
                 pack_data = {
                     'id': result_object.get('id'),
@@ -139,7 +171,7 @@ def reset_base_pack_version(client: demisto_client):
 
 def wait_for_uninstalling_to_over(client: demisto_client):
     try:
-        while get_all_installed_packs(client) > 1:
+        while len(get_all_installed_packs(client)) > 1:
             sleep(5)
     except Exception as e:
         logging.exception(f'Exception while waiting for the packs to be uninstalled. The error is {e}')
