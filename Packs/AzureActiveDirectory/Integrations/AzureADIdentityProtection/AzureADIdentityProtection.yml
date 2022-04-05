@@ -27,6 +27,19 @@ configuration:
   - https://login.chinacloudapi.cn
   required: true
   type: 15
+- additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
+  display: Use Client Credentials Authorization Flow
+  name: client_credentials
+  required: false
+  type: 8
+- display: Tenant ID (for Client Credentials mode)
+  name: _tenant_id
+  required: false
+  type: 0
+- display: Client Secret (for Client Credentials mode)
+  name: credentials
+  required: false
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
