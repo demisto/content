@@ -659,13 +659,6 @@ def test_addBaseUrlToPartialPaths():
     assert ialink_output == IA_link_expected_output
     assert imagelink_output == image_link_expected_output
 
-def _test_convert_inline_image_to_encoded():
-    md_text = ""
-    expected_output = ""
-    output = convert_inline_image_to_encoded(md_text)
-    print(output)
-    print("test--------------------->")
-    assert output == expected_output
 
 def test_markdown_postprocessing():
     md_text = " BELUGASTURGEON activity, including a [2020 campaign against the Cypriot"\
