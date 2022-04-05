@@ -28,7 +28,9 @@ def test_module(requests_mock):
         "page": 1,
         "limit": 1,
         "start_date": "2022-02-22",
-        "end_date": "2022-02-22"
+        "end_date": "2022-02-22",
+        "start_time": "00:00:00",
+        "end_time": "00:00:00",
     }
 
     client = Client(
@@ -40,6 +42,34 @@ def test_module(requests_mock):
 
     assert isinstance(response, str)
     assert response == 'ok'
+
+
+def test_response_failure(requests_mock):
+    """
+    Test the basic test-module command in case of a failure.
+    """
+    from CybleThreatIntel import Client, get_test_response
+    mock_response = load_json_file("cyble_threat_intel.json")
+    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json=mock_response)
+
+    args = {
+        "page": 1,
+        "limit": 1,
+        "start_date": "2022-02-22",
+        "end_date": "2022-02-22",
+        "start_time": "00:00:00",
+        "end_time": "00:00:00",
+    }
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    response = get_test_response(client=client, method='POST', params=args)
+
+    assert isinstance(response, str)
+    assert response == 'fail'
 
 
 def test_module_failure(requests_mock):
@@ -54,7 +84,9 @@ def test_module_failure(requests_mock):
         "page": 1,
         "limit": 1,
         "start_date": "2022-02-22",
-        "end_date": "2022-02-22"
+        "end_date": "2022-02-22",
+        "start_time": "00:00:00",
+        "end_time": "00:00:00",
     }
 
     client = Client(
@@ -156,7 +188,9 @@ def test_failure_cyble_vision_fetch_taxii(requests_mock):
         "page": 1,
         "limit": 1,
         "start_date": "2022-02-22",
-        "end_date": "2022-02-22"
+        "end_date": "2022-02-22",
+        "start_time": "00:00:00",
+        "end_time": "00:00:00",
     }
 
     response = cyble_fetch_taxii(client=client, method='POST', args=args).outputs

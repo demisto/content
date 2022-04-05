@@ -66,8 +66,6 @@ def get_test_response(client, method, params):
         result = client.get_taxii(method, taxii_url, payload)
         if not result.get('error'):
             ret_val = 'ok'
-    else:
-        demisto.error("Failed to connect")
 
     return ret_val
 
