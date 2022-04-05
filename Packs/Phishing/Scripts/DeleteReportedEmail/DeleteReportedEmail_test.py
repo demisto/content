@@ -213,7 +213,7 @@ GENERAL_SEARCH_ARGS = {
     'delete-type': 'emaildeletetype',
     'email_subject': 'reportedemailsubject',
     'message-id': 'reportedemailmessageid',
-    }
+}
 
 
 ADDED_SEARCH_ARGS = {
@@ -223,7 +223,7 @@ ADDED_SEARCH_ARGS = {
     'MicrosoftGraphMail': {'user_id': 'reportedemailto',
                            'odata': '"$filter=internetMessageId eq \'reportedemailmessageid\'"'},
     'SecurityAndCompliance': {'to_user_id': 'reportedemailto', 'from_user_id': 'reportedemailfrom'},
-                    }
+}
 
 
 @pytest.mark.parametrize('brand', ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'MicrosoftGraphMail',

@@ -17,7 +17,7 @@ INTEGRATION_INSTANCES = {
         {
             'name': 'NoMailIntegration_instance2',
             'brand': 'NoMailIntegration', 'enabled': 'false'}],
-     }}
+    }}
 
 
 def test_get_enabled_instances(mocker):
@@ -54,4 +54,3 @@ def test_get_enabled_instances_failure(mocker):
     """
     mocker.patch.object(demisto, 'internalHttpRequest', return_value={'statusCode': 400})
     assert get_enabled_instances() == []
-
