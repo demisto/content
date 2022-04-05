@@ -85,7 +85,3 @@ def test_generate_events_dict(mocker):
     """
     mocker.patch.object(demisto, 'get', return_value=EXISTING_MOCK)
     assert generate_evetns_dict() == EXPECTED_EVENTS_DICT
-
-
-
-

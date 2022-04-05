@@ -29,7 +29,7 @@ def get_distances_list(src_coords_list: list, events_dict: dict):
     return distance_list
 
 
-def verify_coords(args):
+def verify_coords(args: dict):
     """
     Verify the two given coords lists are identical - we receive two lists (and not one) for BC reasons
     Args:
@@ -55,7 +55,6 @@ def main():
 
     except Exception as e:
         return_error('Error occurred while parsing output from command. Exception info:\n' + str(e))
-        raise
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
