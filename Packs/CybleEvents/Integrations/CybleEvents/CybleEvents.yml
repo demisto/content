@@ -77,12 +77,10 @@ script:
     arguments:
     - name: from
       required: true
-      default: true
       description: Returns records for the timeline starting from given indice
       defaultValue: "0"
     - name: limit
       required: true
-      default: true
       description: Number of records to return (max 50). Using a smaller limit will
         get faster responses.
       defaultValue: "5"
@@ -94,7 +92,6 @@ script:
       description: Timeline end date in the format "YYYY/MM/DD"
     - name: order_by
       required: true
-      default: true
       auto: PREDEFINED
       predefined:
       - Ascending
