@@ -89,16 +89,24 @@ INCIDENT_JSON = {
 def test_update_incident(requests_mock, mocker):
     incident_id = 'abcdefg12345'
     user_id = 'someone@somewhere.com'
+    args = {
+        'incident_id': incident_id,
+        'feedback': 'CONFIRMED_SENSITIVE',
+        'user_id': user_id,
+        'region': 'us',
+        'report_id': 'A12345',
+        'dlp_channel': 'ngfw'
+    }
+
     requests_mock.post(f'{DLP_URL}/public/incident-feedback/{incident_id}?feedback_type=CONFIRMED_SENSITIVE&region=us')
     client = Client(DLP_URL, "", "", False, None)
     mocker.patch.object(demisto, 'results')
 
-    update_incident(client, incident_id, 'CONFIRMED_SENSITIVE', user_id, 'us', 'A12345', 'ngfw')
+    results = update_incident(client, args).to_context()
 
-    results = demisto.results.call_args_list[0][0]
     request = requests_mock.last_request
 
-    assert results[0]['Contents'] == {'feedback': 'CONFIRMED_SENSITIVE', 'success': True}
+    assert results['Contents'] == {'feedback': 'CONFIRMED_SENSITIVE', 'success': True}
     assert request.text == json.dumps({"user_id": user_id, "report_id": "A12345", "service_name": 'ngfw'})
 
 
@@ -125,9 +133,8 @@ def test_get_dlp_report(requests_mock, mocker):
 
 def test_parse_dlp_report(mocker):
     mocker.patch.object(demisto, 'results')
-    parse_dlp_report(REPORT_DATA)
-    results = demisto.results.call_args_list[0][0]
-    pattern_results = demisto.get(results[0]['Contents'], 'scanContentRawReport.data_pattern_rule_1_results', None)
+    results = parse_dlp_report(REPORT_DATA).to_context()
+    pattern_results = demisto.get(results['Contents'], 'scanContentRawReport.data_pattern_rule_1_results', None)
     assert pattern_results is not None
 
 
@@ -174,9 +181,20 @@ def test_exemption_eligible(mocker):
         'dlp_exemptible_list': 'abc,aaa,bbb'
     }
     mocker.patch.object(demisto, 'results')
-    exemption_eligible(args, params)
-    results = demisto.results.call_args_list[0][0]
-    assert results[0]['Contents'] == {'eligible': True}
+    results = exemption_eligible(args, params).to_context()
+    assert results['Contents'] == {'eligible': True}
+
+
+def test_exemption_eligible_wildcard(mocker):
+    args = {
+        'data_profile': 'abc'
+    }
+    params = {
+        'dlp_exemptible_list': '*'
+    }
+    mocker.patch.object(demisto, 'results')
+    results = exemption_eligible(args, params).to_context()
+    assert results['Contents'] == {'eligible': True}
 
 
 def test_slack_bot_message(mocker):
@@ -190,16 +208,13 @@ def test_slack_bot_message(mocker):
         'data_profile_name': 'PCI'
     }
     mocker.patch.object(demisto, 'results')
-    slack_bot_message(args, params)
-    results = demisto.results.call_args_list[0][0]
-    assert results[0]['Contents'] == {'message': 'Hello John Doe, your file secrets.doc on Google Drive violated PCI'}
+    results = slack_bot_message(args, params).to_context()
+    assert results['Contents'] == {'message': 'Hello John Doe, your file secrets.doc on Google Drive violated PCI'}
 
 
 def test_reset_last_run(mocker):
-    mocker.patch.object(demisto, 'results')
-    reset_last_run_command()
-    results = demisto.results.call_args_list[0][0]
-    assert results[0]['HumanReadable'] == 'fetch-incidents was reset successfully.'
+    results = reset_last_run_command()
+    assert results == 'fetch-incidents was reset successfully.'
 
 
 def test_parse_incident_details():

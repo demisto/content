@@ -100,10 +100,6 @@ class Client(BaseClient):
                 break
             count += 1
 
-        if res.status_code < 200 or res.status_code >= 300:
-            print_debug_msg(f"Get request to {self._base_url}{url_suffix} failed with status code {res.status_code}")
-            raise DemistoException(f"Request to  {self._base_url}{url_suffix} failed with status code {res.status_code}")
-
         result_json = {} if res.status_code == 204 else res.json()
         return result_json, res.status_code
 
@@ -130,10 +126,6 @@ class Client(BaseClient):
             if res.status_code != 403:
                 break
             count += 1
-
-        if res.status_code < 200 or res.status_code >= 300:
-            print_debug_msg(f"Post request to {self._base_url}{url_suffix} failed with status code {res.status_code}")
-            raise DemistoException(f"Request to  {self._base_url}{url_suffix} failed with status code {res.status_code}")
 
         result_json = {}
         if res.status_code != 204:
@@ -276,7 +268,7 @@ def convert_to_human_readable(data_patterns):
     return tableToMarkdown(title, matches, headers)
 
 
-def parse_dlp_report(report_json):
+def parse_dlp_report(report_json) -> CommandResults:
     """
     Parses DLP Report for display
     Args:
@@ -285,14 +277,13 @@ def parse_dlp_report(report_json):
     Returns: DLP report results
     """
     data_patterns = parse_data_patterns(report_json)
-    results = CommandResults(
+    return CommandResults(
         outputs_prefix='DLP.Report',
         outputs_key_field='DataPatternName',
         outputs=data_patterns,
         readable_output=convert_to_human_readable(data_patterns),
         raw_response=report_json
     )
-    return_results(results)
 
 
 def test(client):
@@ -314,8 +305,13 @@ def print_debug_msg(msg: str):
     demisto.debug(f'PAN-DLP-Msg - {msg}')
 
 
-def update_incident(client: Client, incident_id: str, feedback: str, user_id: str, region: str,
-                    report_id: str, dlp_channel: str):
+def update_incident(client: Client, args: dict) -> CommandResults:
+    incident_id = args.get('incident_id')
+    feedback = args.get('feedback')
+    user_id = args.get('user_id')
+    region = args.get('region')
+    report_id = args.get('report_id')
+    dlp_channel = args.get('dlp_channel')
     feedback_enum = FeedbackStatus[feedback.upper()]
     result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region, report_id, dlp_channel)
 
@@ -325,7 +321,8 @@ def update_incident(client: Client, incident_id: str, feedback: str, user_id: st
     }
     if feedback_enum == FeedbackStatus.EXCEPTION_GRANTED:
         minutes = result_json['expiration_duration_in_minutes']
-        output['duration'] = minutes / 60
+        if minutes:
+            output['duration'] = minutes / 60
         result = CommandResults(
             outputs_prefix="Exemption",
             outputs_key_field='duration',
@@ -335,7 +332,7 @@ def update_incident(client: Client, incident_id: str, feedback: str, user_id: st
             outputs_prefix="IncidentUpdate",
             outputs_key_field='feedback',
             outputs=output)
-    demisto.results(result.to_context())
+    return result
 
 
 def parse_incident_details(compressed_details: str):
@@ -451,19 +448,22 @@ def long_running_execution_command(params: Dict):
             time.sleep(FETCH_SLEEP)
 
 
-def exemption_eligible(args: dict, params: dict):
+def exemption_eligible(args: dict, params: dict) -> CommandResults:
     data_profile = args.get('data_profile')
     eligible_list = params.get('dlp_exemptible_list', '')
-    eligible = data_profile in eligible_list
+    if eligible_list == '*':
+        eligible = True
+    else:
+        eligible = data_profile in eligible_list
+
     result = {
         'eligible': eligible
     }
-    results = CommandResults(
+    return CommandResults(
         outputs_prefix='DLP.exemption',
         outputs_key_field='eligible',
         outputs=result
     )
-    demisto.results(results.to_context())
 
 
 def slack_bot_message(args: dict, params: dict):
@@ -478,12 +478,11 @@ def slack_bot_message(args: dict, params: dict):
     result = {
         'message': message
     }
-    results = CommandResults(
+    return CommandResults(
         outputs_prefix='DLP.slack_message',
         outputs_key_field='slack_message',
         outputs=result
     )
-    demisto.results(results.to_context())
 
 
 def fetch_incidents_command() -> List[Dict]:
@@ -498,7 +497,7 @@ def fetch_incidents_command() -> List[Dict]:
     return ctx.get('samples', [])
 
 
-def reset_last_run_command():
+def reset_last_run_command() -> str:
     """
     Puts the reset flag inside integration context.
     Returns:
@@ -507,11 +506,7 @@ def reset_last_run_command():
     ctx = get_integration_context()
     ctx[RESET_KEY] = 'true'
     set_to_integration_context_with_retries(ctx)
-    results = CommandResults(
-        outputs_prefix='DLP.resetLastRun',
-        readable_output='fetch-incidents was reset successfully.'
-    )
-    demisto.results(results.to_context())
+    return 'fetch-incidents was reset successfully.'
 
 
 def main():
@@ -528,32 +523,25 @@ def main():
             report_id = args.get('report_id')
             fetch_snippets = argToBoolean(args.get('fetch_snippets'))
             report_json, status_code = client.get_dlp_report(report_id, fetch_snippets)
-            parse_dlp_report(report_json)
+            return_results(parse_dlp_report(report_json))
         elif demisto.command() == 'fetch-incidents':
             demisto.incidents(fetch_incidents_command())
         elif demisto.command() == 'long-running-execution':
             long_running_execution_command(params)
         elif demisto.command() == 'pan-dlp-update-incident':
-            incident_id = args.get('incident_id')
-            feedback = args.get('feedback')
-            user_id = args.get('user_id')
-            region = args.get('region')
-            report_id = args.get('report_id')
-            dlp_channel = args.get('dlp_channel')
-            update_incident(client, incident_id, feedback, user_id, region, report_id, dlp_channel)
+            return_results(update_incident(client, args))
         elif demisto.command() == 'pan-dlp-exemption-eligible':
-            exemption_eligible(args, params)
+            return_results(exemption_eligible(args, params))
         elif demisto.command() == 'pan-dlp-slack-message':
-            slack_bot_message(args, params)
+            return_results(slack_bot_message(args, params))
         elif demisto.command() == 'pan-dlp-reset-last-run':
-            reset_last_run_command()
+            return_results(reset_last_run_command())
         elif demisto.command() == "test-module":
             test(client)
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
-
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
