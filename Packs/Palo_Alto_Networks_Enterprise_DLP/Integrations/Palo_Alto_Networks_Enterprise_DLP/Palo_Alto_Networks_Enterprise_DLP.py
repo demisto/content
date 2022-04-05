@@ -306,12 +306,12 @@ def print_debug_msg(msg: str):
 
 
 def update_incident(client: Client, args: dict) -> CommandResults:
-    incident_id = args.get('incident_id')
-    feedback = args.get('feedback')
-    user_id = args.get('user_id')
-    region = args.get('region')
-    report_id = args.get('report_id')
-    dlp_channel = args.get('dlp_channel')
+    incident_id = args.get('incident_id', '')
+    feedback = args.get('feedback', '')
+    user_id = args.get('user_id', '')
+    region = args.get('region', '')
+    report_id = args.get('report_id', '')
+    dlp_channel = args.get('dlp_channel', '')
     feedback_enum = FeedbackStatus[feedback.upper()]
     result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region, report_id, dlp_channel)
 
