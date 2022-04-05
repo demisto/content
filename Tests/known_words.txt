@@ -141,6 +141,11 @@ ShowCampaignSenders
 ShowCampaignRecipients
 GetCampaignIncidentsInfo
 IsIncidentPartOfCampaign
+automations
+DBotRole
+GetIncidentsByQuery
+FindSimilarIncidentsByText
+CommonServerPython
 markdown
 Rasterize
 GetCampaignLowSimilarityIncidentsInfo
