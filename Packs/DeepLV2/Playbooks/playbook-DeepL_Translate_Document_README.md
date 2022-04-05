@@ -36,7 +36,3 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | TranslatedFile.EntryID | Translated File EntryID | unknown |
-
-## Playbook Image
----
-![DeepL Translate Document](Insert the link to your image here)
