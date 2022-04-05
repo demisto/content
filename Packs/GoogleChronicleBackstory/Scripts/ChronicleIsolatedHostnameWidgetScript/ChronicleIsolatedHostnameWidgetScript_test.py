@@ -3,9 +3,9 @@ import demistomock as demisto
 
 import ChronicleIsolatedHostnameWidgetScript
 
+DUMMY_HOSTNAME = 'dummyhost.com'
 INDICATOR_DATA = {'indicator': {'CustomFields': {'chronicleassethostname': DUMMY_HOSTNAME,
                                                  'chronicleisolatedhostname': 'No'}}}
-DUMMY_HOSTNAME = 'dummyhost.com'
 
 
 def test_main_success(mocker):
