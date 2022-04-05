@@ -28,11 +28,11 @@ class Client(BaseClient):
 
         taxii_data = {}
         params = {
-            'token': args['token'],
-            'page': int(args['page'] if 'page' in args.keys() else 1),
-            'limit': int(args['limit'] if 'limit' in args.keys() else 1),
-            'start_date': args['start_date'] if 'start_date' in args.keys() else "",
-            'end_date': args['end_date'] if 'end_date' in args.keys() else ""
+            'token': args.get('token', ''),
+            'page': arg_to_number(args.get('page', 1)),
+            'limit': arg_to_number(args.get('limit', 1)),
+            'start_date': args.get('start_date', ''),
+            'end_date': args.get('end_date', '')
         }
 
         url = urljoin(self._base_url, taxiiurl)
@@ -80,13 +80,13 @@ def cyble_fetch_taxii(client, method, args):
     '''
 
     params = {
-        'token': args['token'],
-        'page': int(args['page'] if 'page' in args.keys() else 1),
-        'limit': int(args['limit'] if 'limit' in args.keys() else 1),
-        'start_date': args['start_date'] if 'start_date' in args.keys() else "",
-        'end_date': args['end_date'] if 'end_date' in args.keys() else "",
-        'start_time': args['start_time'] if 'start_time' in args.keys() else "",
-        'end_time': args['end_time'] if 'end_time' in args.keys() else ""
+        'token': args.get('token', ''),
+        'page': arg_to_number(args.get('page', 1)),
+        'limit': arg_to_number(args.get('limit', 1)),
+        'start_date': args.get('start_date', ''),
+        'end_date': args.get('end_date', ''),
+        'start_time': args.get('start_time', ''),
+        'end_time': args.get('end_time', ''),
     }
 
     taxii_url = r'/taxii/stix-data/v21/get'
