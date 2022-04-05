@@ -866,7 +866,7 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
         SQL query that matches the arguments
     """
     if fetch_filter and (fetch_subtype or fetch_severity):
-        raise DemistoException(f'Fetch Filter parameter cannot be used with Subtype/Severity parameters.')
+        raise DemistoException('Fetch Filter parameter cannot be used with Subtype/Severity parameters.')
     query = f'SELECT {fetch_fields} FROM `{fetch_table}` '  # guardrails-disable-line
     time_filter = 'event_time' if 'log' in fetch_table else 'time_generated'
     query += f'WHERE {time_filter} Between TIMESTAMP("{fetch_timestamp}") ' \
