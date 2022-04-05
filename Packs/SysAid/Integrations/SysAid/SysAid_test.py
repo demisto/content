@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch
 
 from SysAid import Client
+from test_data import input_data
 
 COOKIES = 'cookies'
 
@@ -260,3 +261,131 @@ def test_service_record_delete_command(mocker, sysaid_client):
     service_record_delete_command(sysaid_client, args)
     http_request.assert_called_with('DELETE', 'sr', params={'ids': '2,32'}, json_data={'solution': None}, cookies=COOKIES,
                                     resp_type='response', ok_codes=(200, 400))
+
+
+''' HELPER FUNCTIONS TESTS '''
+
+
+@pytest.mark.parametrize('response, remove_if_null, expected_output', input_data.asset_readable_response_args)
+def test_create_readable_response_for_asset(response, remove_if_null, expected_output):
+    """
+    Given:
+        - Response to a command that retrieves assets
+        - A value field that if it is null, the part of the response need not be shown
+    When:
+        - A command that retrieves assets is executed
+    Then:
+        - Returns the readable response for the command
+    """
+    from SysAid import create_readable_response, asset_list_handler
+    assert create_readable_response(response, asset_list_handler, remove_if_null) == expected_output
+
+
+def test_create_readable_response_for_filter():
+    """
+    Given:
+        - Response to a command that retrieves filters
+    When:
+        - A command that retrieves filters is executed
+    Then:
+        - Returns the readable response for the command
+    """
+    from SysAid import create_readable_response, filter_list_handler
+    assert create_readable_response(input_data.filter_response, filter_list_handler) == input_data.filter_expected_output
+
+
+def test_create_readable_response_for_service_record():
+    """
+    Given:
+        - Response to a command that retrieves service records
+    When:
+        - A command that retrieves service records is executed
+    Then:
+        - Returns the readable response for the command
+    """
+    from SysAid import create_readable_response, service_record_handler
+    assert create_readable_response(input_data.service_record_response,
+                                    service_record_handler) == input_data.service_record_expected_output
+
+
+@pytest.mark.parametrize('custom_fields_keys, custom_fields_values, expected_output', input_data.extract_filters_args)
+def test_extract_filters(custom_fields_keys, custom_fields_values, expected_output):
+    """
+    Given:
+        - 'custom_fields_keys' and 'custom_fields_values' arguments
+    When:
+        - A command that has custom fields is executed
+    Then:
+        - Returns the right form of the custom field that will be sent to the request
+    """
+    from SysAid import extract_filters
+    assert extract_filters(custom_fields_keys, custom_fields_values) == expected_output
+
+
+@pytest.mark.parametrize('args, info', input_data.service_record_args)
+def test_set_service_record_info(args, info):
+    """
+    Given:
+        - arguments are given to commands that has service record info
+    When:
+        - A command that has service record info is executed
+    Then:
+        - Returns the right info that will be sent to the request
+    """
+    from SysAid import set_service_record_info
+    assert set_service_record_info(args) == info
+
+
+def test_template_readable_response():
+    """
+    Given:
+        - Response to a command that retrieves templates
+    When:
+        - A command that retrieves templates is executed
+    Then:
+        - Returns the readable response for the command
+    """
+    from SysAid import template_readable_response
+    assert template_readable_response(input_data.get_template_response) == input_data.get_template_readable_response
+
+
+@pytest.mark.parametrize('page_size, page_number, offset', input_data.calculate_offset_args)
+def test_calculate_offset(page_size, page_number, offset):
+    """
+    Given:
+        - 'page_size' and 'page_number' arguments
+    When:
+        - A command that has paging is executed
+    Then:
+        - Returns the right offset that will be sent to the request
+    """
+    from SysAid import calculate_offset
+    assert calculate_offset(page_size, page_number) == offset
+
+
+@pytest.mark.parametrize('page_number, page_size, expected_output', input_data.paging_heading_args)
+def test_paging_heading(page_number, page_size, expected_output):
+    """
+    Given:
+        - 'page_number' and 'page_size' arguments are or aren't given to commands that have paging
+    When:
+        - A command that has paging is executed
+    Then:
+        - Returns the right sentence to write in the beginning of the readable output
+    """
+    from SysAid import paging_heading
+    assert paging_heading(page_size, page_number) == expected_output
+
+
+@pytest.mark.parametrize('fields_input, fields_output', input_data.set_returned_fields_args)
+def test_set_returned_fields(fields_input, fields_output):
+    """
+    Given:
+        - 'fields' arguments
+    When:
+        - A command that has an option to choose what 'fields' will be returned is executed
+    Then:
+        - Returns the right fields that will be sent to the request
+    """
+    from SysAid import set_returned_fields
+    assert set_returned_fields(fields_input) == fields_output
