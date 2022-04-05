@@ -102,7 +102,7 @@ def test_module_failure(requests_mock):
 
 @pytest.mark.parametrize(
     "page,limit", [
-        (1, 1), (5, 5), (9, 15), (15, 7)
+        (1, 1), (3, 5), (5, 15), (7, 7), (9, 20)
     ]
 )
 def test_cyble_vision_fetch_taxii(requests_mock, page, limit):
@@ -234,6 +234,70 @@ def test_failure_fetch_taxii(requests_mock):
     }
 
     response = cyble_fetch_taxii(client=client, method='POST', args=args).outputs
+    # assert the response object
+
+    # check if the response object is a dict
+    assert isinstance(response, dict)
+
+    # each result entry is a list
+    assert response['error'] == 'Invalid Token!!'
+
+
+def test_fail_fetch_taxii(requests_mock):
+    """
+    Tests the cyble_fetch_taxii command failure case
+
+    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_taxii
+    API response when the correct cyble_vision_fetch_taxii API request is performed. Checks
+    the output of the command function with the expected output.
+
+    Uses
+    :param requests_mock:
+    :return:
+    """
+
+    from CybleThreatIntel import Client, cyble_fetch_taxii
+
+    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json={})
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    response = cyble_fetch_taxii(client=client, method='POST', args={}).outputs
+    # assert the response object
+
+    # check if the response object is a dict
+    assert isinstance(response, dict)
+
+    # each result entry is a list
+    assert response['error'] == 'Invalid Token!!'
+
+
+def test_failure_cyble_fetch_taxii(requests_mock):
+    """
+    Tests the cyble_vision_fetch_taxii command failure case
+
+    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_taxii
+    API response when the correct cyble_vision_fetch_taxii API request is performed. Checks
+    the output of the command function with the expected output.
+
+    Uses
+    :param requests_mock:
+    :return:
+    """
+
+    from CybleThreatIntel import Client, cyble_fetch_taxii
+
+    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json={})
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    response = cyble_fetch_taxii(client=client, method='POST', args={}).outputs
     # assert the response object
 
     # check if the response object is a dict
