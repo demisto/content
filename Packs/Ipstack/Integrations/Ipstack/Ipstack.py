@@ -68,7 +68,7 @@ def do_ip_command():
         'IP(val.Address == obj.Address)': {
             'Address': raw_response.get('ip'),
             'Geo': {
-                'Location': "{},{}".format(raw_response.get('latitude'), raw_response.get('longitude')),
+                'Location': "{}:{}".format(raw_response.get('latitude'), raw_response.get('longitude')),
                 'Country': raw_response.get('country_name')
             }
         },
