@@ -123,6 +123,8 @@ SINGLE_LETTER_TLD = [
     ('www.test.com', False),
     ('a./b', True),
     ('goog./', True),
+    ('goog.l/', True),
+    ('goog.l', True),
     ('google.#/', False),
     ('ww.goo./com/', True),
     ('google.com/./', False),
