@@ -65,10 +65,10 @@ def do_ip_command():
         "Longitude": raw_response.get('longitude')
     }
 
-    # dbot_score=Common.DBotScore(indicator=ip,
-    #                                 indicator_type=DBotScoreType.IP,
-    #                                 integration_name=BRAND_NAME,
-    #                                 score=Common.DBotScore.NONE),
+    dbot_score=Common.DBotScore(indicator=ip,
+                                    indicator_type=DBotScoreType.IP,
+                                    integration_name=BRAND_NAME,
+                                    score=Common.DBotScore.NONE)
 
     outputs = {
         'IP(val.Address == obj.Address)': {
@@ -86,6 +86,8 @@ def do_ip_command():
             'longitude': raw_response.get('longitude'),
         }
     }
+
+    outputs.update(dbot_score.to_context())
 
     headers = ['Address', 'Country', 'Latitude', 'Longitude']
     human_readable = tableToMarkdown('Ipstack info on {}'.format(raw_response.get('ip')), human_readable_data, headers=headers)
