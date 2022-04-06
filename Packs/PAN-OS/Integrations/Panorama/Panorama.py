@@ -7707,6 +7707,18 @@ class Topology:
         for device in all_devices.values():
             yield device
 
+    def one(self, filter_string: str) -> Union[Firewall, Panorama]:
+        """
+        Returns JUST ONE device, based on the filter string, and errors if the filter returns more.
+        Safeguard for functions that should only ever operate on a single device.
+        :param filter_string: The exact ID of the device to return from the topology.
+        """
+        all_devices = {**self.firewall_objects, **self.panorama_objects}
+        if filter_string not in all_devices:
+            raise DemistoException(f"filter_str {filter_string} does not exactly match any devices known to this topology.")
+
+        return all_devices.get(filter_string)
+
     def get_by_filter_str(self, filter_string: Optional[str] = None) -> dict:
         """
         Filters all devices and returns a dictionary of matching.
@@ -9157,12 +9169,12 @@ class UniversalCommand:
         :param hostid: The host to reboot - this function will only ever reboot one device at a time.
         """
         result = []
-        for device in topology.all(filter_string=hostid):
-            device.restart()
-            result.append(GenericSoftwareStatus(
-                hostid=resolve_host_id(device),
-                started=True
-            ))
+        device = topology.one(filter_string=hostid)
+        device.restart()
+        result.append(GenericSoftwareStatus(
+            hostid=resolve_host_id(device),
+            started=True
+        ))
 
         return RestartSystemCommandResult(summary_data=result)
 

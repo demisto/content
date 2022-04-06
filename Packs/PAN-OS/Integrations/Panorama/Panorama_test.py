@@ -1064,6 +1064,9 @@ def mock_software_object():
         def download(self, *args, **kwargs):
             pass
 
+        def install(self, *args, **kwargs):
+            pass
+
     return MockSoftwareObject()
 
 
@@ -1382,6 +1385,31 @@ class TestUniversalCommand:
         for result_dataclass in result.summary_data:
             for value in result_dataclass.__dict__.values():
                 assert value
+
+    def test_reboot(self, mock_topology):
+        """
+        Test the reboot function returns the corect data
+        The pan-os-python reboot method actually doesn't return any output itself unless it errors, so we just check our
+        dataclass is set correctly within the function and returned by this function.
+        """
+        from Panorama import UniversalCommand
+
+        result = UniversalCommand.reboot(mock_topology, MOCK_PANORAMA_SERIAL)
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+        # We also want to check that if an empty string is passed, an error is returned
+        with pytest.raises(DemistoException, match="filter_str  does not exactly match any devices known to this topology"):
+            UniversalCommand.reboot(mock_topology, "")
+
+        # Lets also check that if an invalid hostid is given, we also raise.
+        with pytest.raises(
+                DemistoException,
+                match="filter_str badserialnumber does not exactly match any devices known to this topology"
+        ):
+            UniversalCommand.reboot(mock_topology, "badserialnumber")
 
 
 class TestFirewallCommand:
