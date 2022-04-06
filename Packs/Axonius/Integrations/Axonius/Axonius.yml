@@ -710,7 +710,7 @@ script:
     deprecated: false
     description: Get all saved query of a given asset type.
     execution: false
-    name: axonius-get-savedqueries
+    name: axonius-get-saved-queries
     outputs:
     - contextPath: Axonius.Devices.saved_queries
       description: Saved queries
