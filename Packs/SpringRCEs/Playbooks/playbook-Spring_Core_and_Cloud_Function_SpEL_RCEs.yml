@@ -404,7 +404,7 @@ tasks:
       log_type:
         simple: threat
       query:
-        simple: (threatid eq 92389) or (threatid eq 92393) or (threatid eq 92394)
+        simple: (threatid eq 92389) or (threatid eq 92393) or (threatid eq 92394) or (threatid eq 83239)
     separatecontext: true
     loop:
       iscommand: false
