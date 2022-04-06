@@ -1689,7 +1689,7 @@ tasks:
       id: 981cbeac-3edd-4f21-8c36-661a1fa48411
       version: -1
       name: Is Cortex XDR Investigation & Response enabled?
-      description: Checks if Prisma Cloud instance is enabled.
+      description: Checks if Cortex XDR Investigation & Response is enabled.
       type: condition
       iscommand: false
       brand: ""
