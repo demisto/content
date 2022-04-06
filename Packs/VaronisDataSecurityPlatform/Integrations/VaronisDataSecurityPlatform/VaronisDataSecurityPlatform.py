@@ -271,7 +271,7 @@ class Client(BaseClient):
             json_data=query)
 
     def varonis_get_alerts_id(self, first_fetch_time: Optional[datetime], from_alert_id: Optional[int], max_results: int,
-                              alert_status: Optional[str], threat_model: Optional[str], severity: Optional[str]
+                              alert_status: Optional[str], threat_models: Optional[List[str]], severity: Optional[str]
                               ) -> Dict[str, Any]:
         """Get alert ids to retrieve from search api.
 
@@ -290,8 +290,8 @@ class Client(BaseClient):
         :type alert_status: ``Optional[str]``
         :param alert_status: status of the alert to search for. Options are 'Open', 'Closed' or 'Under investigation'
 
-        :type threat_model: ``Optional[str]``
-        :param threat_model: Comma-separated list of threat model names of alerts to fetch
+        :type threat_models: ``Optional[List[str]]``
+        :param threat_model: List of threat model names of alerts to fetch
 
         :type severity: ``Optional[str]``
         :param severity: severity of the alert to search for. Options are 'High', 'Medium' or 'Low'
@@ -303,8 +303,8 @@ class Client(BaseClient):
 
         request_params: Dict[str, Any] = {}
 
-        if threat_model:
-            request_params['threatModels'] = argToList(threat_model)
+        if threat_models and len(threat_models) > 0:
+            request_params['threatModels'] = threat_models
 
         if severity:
             request_params['severity'] = severity
@@ -351,6 +351,25 @@ def convert_to_demisto_severity(severity: Optional[str]) -> int:
         'Medium': IncidentSeverity.MEDIUM,
         'High': IncidentSeverity.HIGH
     }[severity]
+
+
+def validate_threat_models(client: Client, threat_models: List[str]):
+    """ Validates if threat models exist in Varonis
+
+    :type client: ``Client``
+    :param client: Http client
+
+    :type threat_models: ``Optional[List[str]]``
+    :param threat_model: List of threat model names of alerts to fetch
+
+    """
+
+    rules_enum = client.varonis_get_enum(THREAT_MODEL_ENUM_ID)
+    for threat_model in threat_models:
+        rule = next((r for r in rules_enum if r['ruleName'] == threat_model), None)
+
+        if not rule:
+            raise ValueError(f'There is no threat model with name {threat_model}.')
 
 
 class SearchQueryBuilder(object):
@@ -814,7 +833,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
     """This function retrieves new alerts every interval (default is 1 minute).
 
     :type client: ``Client``
-    :param client: client to use
+    :param client: Http client
 
     :type last_run: ``Dict[str, int]``
     :param last_run:
@@ -845,6 +864,10 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
 
     """
 
+    threat_models = argToList(threat_model)
+    if threat_models and len(threat_models) > 0:
+        validate_threat_models(client, threat_models)
+
     last_fetched_id = last_run.get('last_fetched_id', None)
     incidents: List[Dict[str, Any]] = []
     next_run = {'last_fetched_id': last_fetched_id}
@@ -856,7 +879,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
 
         alert_ids = client.varonis_get_alerts_id(first_fetch_time=first_fetch_time, from_alert_id=last_fetched_id,
                                                  max_results=max_results, alert_status=alert_status,
-                                                 threat_model=threat_model,
+                                                 threat_models=threat_models,
                                                  severity=severity)
 
         last_fetched_id = alert_ids['LatestAlertId']

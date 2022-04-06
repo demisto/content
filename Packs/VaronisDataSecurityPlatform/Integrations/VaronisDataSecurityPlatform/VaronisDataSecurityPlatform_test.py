@@ -160,6 +160,12 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
 
     mocker.patch.object(
         client,
+        'varonis_get_enum',
+        return_value=util_load_json('test_data/varonis_get_enum_response.json')
+    )
+
+    mocker.patch.object(
+        client,
         'varonis_execute_search',
         return_value=util_load_json('test_data/search_alerts_response.json')
     )

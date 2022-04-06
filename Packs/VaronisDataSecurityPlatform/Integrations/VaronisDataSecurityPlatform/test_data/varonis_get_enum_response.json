@@ -37,5 +37,18 @@
     "displayField": "dns3",
     "severityClass": 0,
     "category": 1
+  },
+  {
+    "ruleID": 182,
+    "ruleName": "Suspicious",
+    "ruleIDForDisplay": 182,
+    "ruleType": "Standard",
+    "ruleArea": "Privilege Escalation",
+    "ruleSource": "User-defined",
+    "severity": "1 - Alert",
+    "dataField": 182,
+    "displayField": "Suspicious",
+    "severityClass": 0,
+    "category": 1
   }
 ]
