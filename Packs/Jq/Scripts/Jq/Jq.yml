@@ -1,0 +1,40 @@
+args:
+- description: JSON String
+  name: value
+  required: true
+- description: JQ compatible query
+  name: query
+  required: true
+comment: "Run JQ Query. \n\nCheck these links:\n- https://stedolan.github.io/jq/manual/#Invokingjq\n\
+  - https://jqplay.org/"
+commonfields:
+  id: d69ea43f-ce77-4a54-89a9-66dd8bbc0a5b
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 9a54840e-7e0f-4145-8713-9b20c1d9c6ad
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dependson:
+  must: []
+dockerimage: demisto/jq:1.0.0.24037
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: jq
+outputs:
+- contextPath: jq.result
+  type: unknown
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+type: python
