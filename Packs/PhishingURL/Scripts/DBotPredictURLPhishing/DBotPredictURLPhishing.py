@@ -95,6 +95,7 @@ KEY_CONTENT_IS_WHITELISTED = "TopMajesticDomain"
 KEY_CONTENT_DBOT_SCORE = 'DBotScore'
 
 KEY_HR_DOMAIN = "Domain"
+KEY_HR_URL = 'Url'
 KEY_HR_SEO = "Search engine optimisation"
 KEY_HR_LOGIN = "Is there a Login form ?"
 KEY_HR_LOGO = "Suspiscious use of company logo"
@@ -371,7 +372,7 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
     if pred_json and pred_json[DOMAIN_AGE_KEY] is not None:
         explain[KEY_CONTENT_AGE] = str(pred_json[DOMAIN_AGE_KEY])
     explain_hr = {
-        KEY_HR_DOMAIN: domain,
+        KEY_HR_URL: url,
         KEY_HR_SEO: str(pred_json_colored.get(MODEL_KEY_SEO, UNKNOWN)),
         KEY_HR_LOGIN: str(pred_json_colored.get(MODEL_KEY_LOGIN_FORM, UNKNOWN)),
         KEY_HR_LOGO: str(pred_json_colored.get(MODEL_KEY_LOGO_FOUND, UNKNOWN)),
@@ -426,7 +427,7 @@ def return_entry_white_list(url):
         KEY_CONTENT_SEO: MSG_WHITE_LIST
     }
     explain_hr = {
-        KEY_HR_DOMAIN: extract_domainv2(url),
+        KEY_HR_URL: url,
         KEY_HR_SEO: MSG_WHITE_LIST,
         DOMAIN_AGE_KEY: MSG_WHITE_LIST,
         KEY_HR_LOGIN: MSG_WHITE_LIST,
@@ -524,7 +525,7 @@ def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
                                                          })
     if is_error(res_rasterize):
         error = get_error(res_rasterize)
-        if 'disabled' or 'enabled' in error:
+        if 'disabled' in error or 'enabled' in error:
             raise DemistoException(MSG_NEED_TO_UPDATE_RASTERIZE)
         elif 'timeout' in error:
             return create_dict_context(url, url, MSG_FAILED_RASTERIZE_TIMEOUT, {}, SCORE_INVALID_URL, is_white_listed, {})

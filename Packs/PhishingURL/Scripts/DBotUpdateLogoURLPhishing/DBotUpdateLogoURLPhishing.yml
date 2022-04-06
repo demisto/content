@@ -49,5 +49,5 @@ dockerimage: demisto/mlurlphishing:1.0.0.27710
 runas: DBotRole
 runonce: false
 tests:
-- No tests (auto formatted)
+- DBotUpdateLogoURLPhishing_test
 fromversion: 6.0.0
