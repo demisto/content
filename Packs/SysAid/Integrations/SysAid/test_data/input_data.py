@@ -1,5 +1,6 @@
-from CommonServerPython import argToList
+import datetime
 
+from CommonServerPython import argToList
 
 ''' HELPER FUNCTIONS TESTS ARGUMENTS '''
 
@@ -63,18 +64,18 @@ asset_readable_response_valueCaption_null = ([{'group': '\\', 'id': '0A-3E-E9-13
                                              'valueCaption',
                                              [{'id': '0A-3E-E9-13-2B-E4', 'info': [], 'name': 'EC2AMAZ-S0GM752'}])
 asset_readable_response_valueCaption_not_null = ({'group': '\\', 'id': '0A-3E-E9-13-2B-E4',
-                                                   'info': [
-                                                       {'key': 'model', 'keyCaption': 'Model', 'value': 't3.large',
-                                                        'valueCaption': 't3.large', 'valueClass': ''},
-                                                       {'key': 'cpu_model', 'keyCaption': 'CPU Model',
-                                                        'value': 'Xeon Platinum 8175M',
-                                                        'valueCaption': 'Xeon Platinum 8175M',
-                                                        'valueClass': ''},
-                                                       {'key': 'description', 'keyCaption': 'Description', 'value': '',
-                                                        'valueCaption': '', 'valueClass': ''},
-                                                       {'key': 'storage', 'keyCaption': 'Storage', 'value': '100 Gb',
-                                                        'valueCaption': '100 Gb', 'valueClass': ''}],
-                                                   'name': 'EC2AMAZ-S0GM752'},
+                                                  'info': [
+                                                      {'key': 'model', 'keyCaption': 'Model', 'value': 't3.large',
+                                                       'valueCaption': 't3.large', 'valueClass': ''},
+                                                      {'key': 'cpu_model', 'keyCaption': 'CPU Model',
+                                                       'value': 'Xeon Platinum 8175M',
+                                                       'valueCaption': 'Xeon Platinum 8175M',
+                                                       'valueClass': ''},
+                                                      {'key': 'description', 'keyCaption': 'Description', 'value': '',
+                                                       'valueCaption': '', 'valueClass': ''},
+                                                      {'key': 'storage', 'keyCaption': 'Storage', 'value': '100 Gb',
+                                                       'valueCaption': '100 Gb', 'valueClass': ''}],
+                                                  'name': 'EC2AMAZ-S0GM752'},
                                                  'valueCaption',
                                                  [{'id': '0A-3E-E9-13-2B-E4', 'info': ['Model: t3.large'],
                                                    'name': 'EC2AMAZ-S0GM752'}])
@@ -266,3 +267,561 @@ set_returned_fields_args = [(None, None),
                             ('type,sr_type', 'type,sr_type'),
                             ('type', 'type'),
                             ]
+
+''' FETCH HELPER FUNCTIONS TESTS ARGUMENTS '''
+
+# fetch_types, include_archived, included_statuses, expected_params
+fetch_request_args = [('all', False, '1,2,5,6,8,18,19,22,23,24,25,26,27,30,31,32,33',
+                       {'archive': 0, 'status': '1,2,5,6,8,18,19,22,23,24,25,26,27,30,31,32,33', 'type': 'all'}),
+                      ('incident,request', True, None, {'archive': 1, 'type': 'incident,request'}),
+                      ('incident,request,all', False, '5', {'archive': 0, 'status': '5', 'type': 'all'}),
+                      ]
+
+# service_records, fetch_start_datetime, expected_result
+keep_all_alerts = ([
+                       {'id': '25',
+                        'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                  'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+                       {'id': '31',
+                        'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                  'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+                       {'id': '30',
+                        'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                  'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+                   ],
+                   datetime.datetime(2022, 2, 28, 10, 0, 0),
+                   [
+                       {'id': '25',
+                        'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                  'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+                       {'id': '31',
+                        'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                  'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+                       {'id': '30',
+                        'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                  'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+                   ])
+keep_some_alerts = ([
+                        {'id': '25',
+                         'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                   'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+                        {'id': '31',
+                         'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                   'valueCaption': '03/08/2022 09:13:39 AM', 'valueClass': ''}]},
+                        {'id': '30',
+                         'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                   'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+                    ],
+                    datetime.datetime(2022, 3, 7, 10, 0, 0),
+                    [
+                        {'id': '25',
+                         'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                   'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+                        {'id': '31',
+                         'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                   'valueCaption': '03/08/2022 09:13:39 AM', 'valueClass': ''}]}
+                    ])
+keep_alert_same_time = ([
+                            {'id': '25',
+                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                       'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+                            {'id': '31',
+                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                       'valueCaption': '03/08/2022 09:13:39 AM', 'valueClass': ''}]},
+                            {'id': '30',
+                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                       'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+                        ],
+                        datetime.datetime(2022, 3, 15, 4, 53, 20),
+                        [
+                            {'id': '25',
+                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                       'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]}
+                        ])
+
+filter_service_records_by_time_input = [keep_all_alerts, keep_some_alerts, keep_alert_same_time]
+
+# service_records, fetch_start_datetime, last_id_fetched, expected_result
+keep_all_service_records_first_fetch = ([
+                                            {'id': '25',
+                                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                                       'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+                                            {'id': '31',
+                                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                                       'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+                                            {'id': '30',
+                                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                                       'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+                                        ],
+                                        datetime.datetime(2022, 2, 28, 10, 0, 0),
+                                        '-1',
+                                        [
+                                            {'id': '25',
+                                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                                       'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+                                            {'id': '31',
+                                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                                       'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+                                            {'id': '30',
+                                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                                       'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+                                        ])
+keep_all_service_records_not_first = ([
+                                          {'id': '25',
+                                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                                     'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+                                          {'id': '31',
+                                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                                     'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+                                          {'id': '30',
+                                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                                     'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+                                      ],
+                                      datetime.datetime(2022, 2, 28, 10, 0, 0),
+                                      '31',
+                                      [
+                                          {'id': '25',
+                                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                                     'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+                                          {'id': '31',
+                                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                                     'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+                                          {'id': '30',
+                                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                                     'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+                                      ])
+keep_one_service_record_greater_id_same_time = ([{'id': '25',
+                                                  'info': [
+                                                      {'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                                       'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+                                                 {'id': '31',
+                                                  'info': [{'key': 'update_time', 'keyCaption': 'Modify time',
+                                                            'value': 1647338000987,
+                                                            'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+                                                 {'id': '30',
+                                                  'info': [{'key': 'update_time', 'keyCaption': 'Modify time',
+                                                            'value': 1647338000987,
+                                                            'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]}
+                                                 ],
+                                                datetime.datetime(2022, 3, 15, 4, 53, 20),
+                                                '30',
+                                                [
+                                                    {'id': '31',
+                                                     'info': [{'key': 'update_time', 'keyCaption': 'Modify time',
+                                                               'value': 1647338000987,
+                                                               'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]}
+                                                ])
+
+filter_service_records_by_id_input = [keep_all_service_records_first_fetch, keep_all_service_records_not_first,
+                                      keep_one_service_record_greater_id_same_time]
+
+# service_records, limit, last_fetch, last_id_fetched, returned_last_fetch, returned_last_id_fetched, returned_service_records
+keep_all_incidents = ([
+                          {'id': '30',
+                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                     'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]},
+                          {'id': '31',
+                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                     'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+                          {'id': '25',
+                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                     'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]}
+                      ],
+                      100,
+                      datetime.datetime(2022, 2, 28, 10, 0, 0),
+                      '-1',
+                      datetime.datetime(2022, 3, 15, 4, 53, 20),
+                      '25',
+                      [
+                          {'id': '30',
+                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                     'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]},
+                          {'id': '31',
+                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                     'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+                          {'id': '25',
+                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                     'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]}
+                      ])
+limit_to_two = ([
+                    {'id': '30',
+                     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]},
+                    {'id': '31',
+                     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                               'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+                    {'id': '25',
+                     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                               'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]}
+                ],
+                2,
+                datetime.datetime(2022, 2, 28, 10, 0, 0),
+                '31',
+                datetime.datetime(2022, 3, 7, 9, 13, 39),
+                '31',
+                [
+                    {'id': '30',
+                     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]},
+                    {'id': '31',
+                     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                               'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]}
+                ])
+no_alerts = ([],
+             150,
+             datetime.datetime(2022, 1, 16, 10, 0, 3),
+             '5',
+             datetime.datetime(2022, 1, 16, 10, 0, 3),
+             '5',
+             [])
+
+reduce_service_records_to_limit_input = [keep_all_incidents, limit_to_two, no_alerts]
+
+# service_records, limit, fetch_start_datetime, last_id_fetched,
+# expected_last_fetch, expected_last_id_fetched, expected_incidents_names
+first_fetch_high_limit = ([{'id': '25',
+                            'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                      'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''},
+                                     {'key': 'title', 'keyCaption': 'Title', 'value': 'Cannot access email - Test ',
+                                      'valueCaption': 'Cannot access email - Test ', 'valueClass': ''},
+                                     {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 1,
+                                      'valueCaption': 'Incident', 'valueClass': ''}
+                                     ]},
+                           {'id': '30',
+                            'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                      'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''},
+                                     {'key': 'title', 'keyCaption': 'Title', 'value': 'Reset my password',
+                                      'valueCaption': 'Reset my password', 'valueClass': ''},
+                                     {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 10,
+                                      'valueCaption': 'Request', 'valueClass': ''}
+                                     ]},
+                           {'id': '31',
+                            'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                      'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''},
+                                     {'key': 'title', 'keyCaption': 'Title', 'value': 'Standard Change Process',
+                                      'valueCaption': 'Standard Change Process', 'valueClass': ''},
+                                     {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 4,
+                                      'valueCaption': 'Change', 'valueClass': ''}
+                                     ]}
+                           ],
+                          100,
+                          datetime.datetime(2022, 2, 28, 10, 0, 0),
+                          '-1',
+                          datetime.datetime(2022, 3, 15, 4, 53, 20),
+                          '25',
+                          ['Standard Change Process', 'Reset my password', 'Cannot access email - Test '])
+first_fetch_low_limit = ([{'id': '25',
+                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                     'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''},
+                                    {'key': 'title', 'keyCaption': 'Title', 'value': 'Cannot access email - Test ',
+                                     'valueCaption': 'Cannot access email - Test ', 'valueClass': ''},
+                                    {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 1,
+                                     'valueCaption': 'Incident', 'valueClass': ''}
+                                    ]},
+                          {'id': '31',
+                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                     'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''},
+                                    {'key': 'title', 'keyCaption': 'Title', 'value': 'Reset my password',
+                                     'valueCaption': 'Reset my password', 'valueClass': ''},
+                                    {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 10,
+                                     'valueCaption': 'Request', 'valueClass': ''}
+                                    ]},
+                          {'id': '30',
+                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                     'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''},
+                                    {'key': 'title', 'keyCaption': 'Title', 'value': 'Standard Change Process',
+                                     'valueCaption': 'Standard Change Process', 'valueClass': ''},
+                                    {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 4,
+                                     'valueCaption': 'Change', 'valueClass': ''}
+                                    ]}
+                          ],
+                         2,
+                         datetime.datetime(2022, 2, 28, 10, 0, 0),
+                         '-1',
+                         datetime.datetime(2022, 3, 7, 9, 13, 39),
+                         '31',
+                         ['Standard Change Process', 'Reset my password'])
+limit_to_one_first_fetch = ([{'id': '25',
+                              'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                        'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''},
+                                       {'key': 'title', 'keyCaption': 'Title', 'value': 'Cannot access email - Test ',
+                                        'valueCaption': 'Cannot access email - Test ', 'valueClass': ''},
+                                       {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 1,
+                                        'valueCaption': 'Incident', 'valueClass': ''}
+                                       ]},
+                             {'id': '31',
+                              'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                        'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''},
+                                       {'key': 'title', 'keyCaption': 'Title', 'value': 'Reset my password',
+                                        'valueCaption': 'Reset my password', 'valueClass': ''},
+                                       {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 10,
+                                        'valueCaption': 'Request', 'valueClass': ''}
+                                       ]},
+                             {'id': '30',
+                              'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                        'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''},
+                                       {'key': 'title', 'keyCaption': 'Title', 'value': 'Standard Change Process',
+                                        'valueCaption': 'Standard Change Process', 'valueClass': ''},
+                                       {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 4,
+                                        'valueCaption': 'Change', 'valueClass': ''}
+                                       ]}
+                             ],
+                            1,
+                            datetime.datetime(2022, 2, 28, 10, 0, 0),
+                            '-1',
+                            datetime.datetime(2022, 3, 7, 9, 12, 25),
+                            '30',
+                            ['Standard Change Process'])
+limit_to_one_second_fetch = ([{'id': '25',
+                               'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                         'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''},
+                                        {'key': 'title', 'keyCaption': 'Title', 'value': 'Cannot access email - Test ',
+                                         'valueCaption': 'Cannot access email - Test ', 'valueClass': ''},
+                                        {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 1,
+                                         'valueCaption': 'Incident', 'valueClass': ''}
+                                        ]},
+                              {'id': '31',
+                               'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                         'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''},
+                                        {'key': 'title', 'keyCaption': 'Title', 'value': 'Reset my password',
+                                         'valueCaption': 'Reset my password', 'valueClass': ''},
+                                        {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 10,
+                                         'valueCaption': 'Request', 'valueClass': ''}
+                                        ]},
+                              {'id': '30',
+                               'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                         'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''},
+                                        {'key': 'title', 'keyCaption': 'Title', 'value': 'Standard Change Process',
+                                         'valueCaption': 'Standard Change Process', 'valueClass': ''},
+                                        {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 4,
+                                         'valueCaption': 'Change', 'valueClass': ''}
+                                        ]}
+                              ],
+                             1,
+                             datetime.datetime(2022, 3, 7, 9, 12, 25),
+                             '30',
+                             datetime.datetime(2022, 3, 7, 9, 13, 39),
+                             '31',
+                             ['Reset my password'])
+no_service_records_to_fetch = ([],
+                               5,
+                               datetime.datetime(2022, 2, 28, 10, 0, 0),
+                               '2',
+                               datetime.datetime(2022, 2, 28, 10, 0, 0),
+                               '2',
+                               [])
+after_one_service_record_was_fetched_high_limit = ([{'id': '25',
+                                                     'info': [{'key': 'update_time', 'keyCaption': 'Modify time',
+                                                               'value': 1647338000987, 'valueCaption': '03/15/2022 04:53:20 AM',
+                                                               'valueClass': ''},
+                                                              {'key': 'title', 'keyCaption': 'Title',
+                                                               'value': 'Cannot access email - Test ',
+                                                               'valueCaption': 'Cannot access email - Test ', 'valueClass': ''},
+                                                              {'key': 'sr_type', 'keyCaption': 'Service Record Type',
+                                                               'value': 1, 'valueCaption': 'Incident',
+                                                               'valueClass': ''}
+                                                              ]},
+                                                    {'id': '31',
+                                                     'info': [{'key': 'update_time', 'keyCaption': 'Modify time',
+                                                               'value': 1646662419673,
+                                                               'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''},
+                                                              {'key': 'title', 'keyCaption': 'Title',
+                                                               'value': 'Reset my password',
+                                                               'valueCaption': 'Reset my password', 'valueClass': ''},
+                                                              {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 10,
+                                                               'valueCaption': 'Request', 'valueClass': ''}
+                                                              ]},
+                                                    {'id': '30',
+                                                     'info': [{'key': 'update_time', 'keyCaption': 'Modify time',
+                                                               'value': 1646662345657,
+                                                               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''},
+                                                              {'key': 'title', 'keyCaption': 'Title',
+                                                               'value': 'Standard Change Process',
+                                                               'valueCaption': 'Standard Change Process', 'valueClass': ''},
+                                                              {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 4,
+                                                               'valueCaption': 'Change', 'valueClass': ''}
+                                                              ]}
+                                                    ],
+                                                   10,
+                                                   datetime.datetime(2022, 3, 6, 10, 0, 0),
+                                                   '45',
+                                                   datetime.datetime(2022, 3, 15, 4, 53, 20),
+                                                   '25',
+                                                   ['Standard Change Process', 'Reset my password',
+                                                    'Cannot access email - Test '])
+after_one_service_record_was_fetched_low_limit = ([{'id': '25',
+                                                    'info': [{'key': 'update_time', 'keyCaption': 'Modify time',
+                                                              'value': 1647338000987, 'valueCaption': '03/15/2022 04:53:20 AM',
+                                                              'valueClass': ''},
+                                                             {'key': 'title', 'keyCaption': 'Title',
+                                                              'value': 'Cannot access email - Test ',
+                                                              'valueCaption': 'Cannot access email - Test ', 'valueClass': ''},
+                                                             {'key': 'sr_type', 'keyCaption': 'Service Record Type',
+                                                              'value': 1, 'valueCaption': 'Incident', 'valueClass': ''}
+                                                             ]},
+                                                   {'id': '30',
+                                                    'info': [{'key': 'update_time', 'keyCaption': 'Modify time',
+                                                              'value': 1646662419673,
+                                                              'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''},
+                                                             {'key': 'title', 'keyCaption': 'Title',
+                                                              'value': 'Reset my password',
+                                                              'valueCaption': 'Reset my password', 'valueClass': ''},
+                                                             {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 10,
+                                                              'valueCaption': 'Request', 'valueClass': ''}
+                                                             ]},
+                                                   {'id': '31',
+                                                    'info': [{'key': 'update_time', 'keyCaption': 'Modify time',
+                                                              'value': 1646662345657,
+                                                              'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''},
+                                                             {'key': 'title', 'keyCaption': 'Title',
+                                                              'value': 'Standard Change Process',
+                                                              'valueCaption': 'Standard Change Process', 'valueClass': ''},
+                                                             {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 4,
+                                                              'valueCaption': 'Change', 'valueClass': ''}
+                                                             ]}
+                                                   ],
+                                                  1,
+                                                  datetime.datetime(2022, 3, 7, 9, 12, 50),
+                                                  '32',
+                                                  datetime.datetime(2022, 3, 7, 9, 13, 39),
+                                                  '30',
+                                                  ['Reset my password'])
+same_time_at_fetch_bigger_id = ([{'id': '31',
+                                  'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                            'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''},
+                                           {'key': 'title', 'keyCaption': 'Title', 'value': 'Standard Change Process',
+                                            'valueCaption': 'Standard Change Process', 'valueClass': ''},
+                                           {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 4,
+                                            'valueCaption': 'Change', 'valueClass': ''}
+                                           ]},
+                                 {'id': '25',
+                                  'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                            'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''},
+                                           {'key': 'title', 'keyCaption': 'Title', 'value': 'Cannot access email - Test ',
+                                            'valueCaption': 'Cannot access email - Test ', 'valueClass': ''},
+                                           {'key': 'sr_type', 'keyCaption': 'Service Record Type',
+                                            'value': 1, 'valueCaption': 'Incident', 'valueClass': ''}
+                                           ]},
+                                 {'id': '30',
+                                  'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                            'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''},
+                                           {'key': 'title', 'keyCaption': 'Title', 'value': 'Reset my password',
+                                            'valueCaption': 'Reset my password', 'valueClass': ''},
+                                           {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 10,
+                                            'valueCaption': 'Request', 'valueClass': ''}
+                                           ]}
+                                 ],
+                                2,
+                                datetime.datetime(2022, 3, 15, 4, 53, 20),
+                                '20',
+                                datetime.datetime(2022, 3, 15, 4, 53, 20),
+                                '30',
+                                ['Cannot access email - Test ', 'Reset my password'])
+
+parse_service_records_input = [first_fetch_high_limit, first_fetch_low_limit, limit_to_one_first_fetch, limit_to_one_second_fetch,
+                               no_service_records_to_fetch, after_one_service_record_was_fetched_high_limit,
+                               after_one_service_record_was_fetched_low_limit, same_time_at_fetch_bigger_id]
+
+# last_fetch, first_fetch, expected_datetime
+first_fetch_hour_ago = (None,
+                        '1 hour',  # equals to 2022-02-28T10:00:00
+                        datetime.datetime(2022, 2, 28, 10, 0, 0))
+first_fetch_day_ago = (None,
+                       '3 days',  # equals to 2022-02-25T11:00:00
+                       datetime.datetime(2022, 2, 25, 11, 0, 0))
+fetch_from_closer_time_last_fetched = ('2022-03-15T04:53:20',
+                                       '3 days',  # equals to 2022-02-25T11:00:00
+                                       datetime.datetime(2022, 3, 15, 4, 53, 20))
+fetch_from_closer_time_given_human = ('2022-02-15T04:53:20',
+                                      '2 hours',  # equals to 2022-02-28T09:00:00
+                                      datetime.datetime(2022, 2, 28, 9, 0, 0))
+fetch_from_closer_time_given_iso = ('2022-01-27T11:00:00',
+                                    '2022-01-29T9:00:00',
+                                    datetime.datetime(2022, 1, 29, 9, 0, 0))
+
+calculate_fetch_start_datetime_input = [first_fetch_hour_ago, first_fetch_day_ago, fetch_from_closer_time_last_fetched,
+                                        fetch_from_closer_time_given_human, fetch_from_closer_time_given_iso]
+
+# test_get_service_record_update_time
+service_record_update_time = {'id': '25', 'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                                    'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]}
+update_time = datetime.datetime(2022, 3, 15, 4, 53, 20)
+
+# raw_service_record, incident_context
+raw_service_record_incident = {'canArchive': True, 'canDelete': True, 'canUpdate': True, 'hasChildren': False, 'id': '25',
+                               'info': [
+                                   {'key': 'impact', 'keyCaption': 'Impact', 'value': 4, 'valueCaption': 'Low', 'valueClass': ''},
+                                   {'key': 'alertID', 'keyCaption': 'Alert', 'value': 25, 'valueCaption': 'green',
+                                    'valueClass': ''},
+                                   {'key': 'status', 'keyCaption': 'Status', 'value': 1, 'valueCaption': 'New', 'valueClass': 0},
+                                   {'key': 'insert_time', 'keyCaption': 'Request time', 'value': 1646661395760,
+                                    'valueCaption': '03/07/2022 08:56:35 AM', 'valueClass': ''},
+                                   {'key': 'title', 'keyCaption': 'Title', 'value': 'Cannot access email - Test ',
+                                    'valueCaption': 'Cannot access email - Test ', 'valueClass': ''},
+                                   {'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+                                    'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''},
+                                   {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 1, 'valueCaption': 'Incident',
+                                    'valueClass': ''}]}
+incident_context = {'name': 'Cannot access email - Test ',
+                    'occurred': '2022-03-15T04:53:20Z',
+                    'rawJSON': '{"canArchive": true, "canDelete": true, "canUpdate": true, "hasChildren": false, "id": "25", '
+                               '"info": [{"key": "impact", "keyCaption": "Impact", "value": 4, "valueCaption": "Low", '
+                               '"valueClass": ""}, {"key": "alertID", "keyCaption": "Alert", "value": 25, "valueCaption": '
+                               '"green", "valueClass": ""}, {"key": "status", "keyCaption": "Status", "value": 1, '
+                               '"valueCaption": "New", "valueClass": 0}, {"key": "insert_time", "keyCaption": "Request time", '
+                               '"value": 1646661395760, "valueCaption": "03/07/2022 08:56:35 AM", "valueClass": ""}, '
+                               '{"key": "title", "keyCaption": "Title", "value": "Cannot access email - Test ", '
+                               '"valueCaption": "Cannot access email - Test ", "valueClass": ""}, {"key": "update_time", '
+                               '"keyCaption": "Modify time", "value": 1647338000987, "valueCaption": "03/15/2022 04:53:20 AM", '
+                               '"valueClass": ""}, {"key": "sr_type", "keyCaption": "Service Record Type", "value": 1, '
+                               '"valueCaption": "Incident", "valueClass": ""}]}',
+                    'type': 'SysAid Incident'}
+
+raw_service_record_request = {'canArchive': True, 'canDelete': True, 'canUpdate': True, 'hasChildren': False, 'id': '31',
+                              'info': [
+                                  {'key': 'status', 'keyCaption': 'Status', 'value': 1, 'valueCaption': 'New', 'valueClass': 0},
+                                  {'key': 'description', 'keyCaption': 'Description', 'value': 'Reset my password',
+                                   'valueCaption': 'Reset my password', 'valueClass': ''},
+                                  {'key': 'title', 'keyCaption': 'Title', 'value': 'Reset my password',
+                                   'valueCaption': 'Reset my password', 'valueClass': ''},
+                                  {'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+                                   'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''},
+                                  {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 10, 'valueCaption': 'Request',
+                                   'valueClass': ''}]}
+request_context = {'name': 'Reset my password',
+                   'occurred': '2022-03-07T09:13:39Z',
+                   'rawJSON': '{"canArchive": true, "canDelete": true, "canUpdate": true, "hasChildren": false, "id": "31", '
+                              '"info": [{"key": "status", "keyCaption": "Status", "value": 1, "valueCaption": "New", '
+                              '"valueClass": 0}, {"key": "description", "keyCaption": "Description", '
+                              '"value": "Reset my password", "valueCaption": "Reset my password", "valueClass": ""}, '
+                              '{"key": "title", "keyCaption": "Title", "value": "Reset my password", '
+                              '"valueCaption": "Reset my password", "valueClass": ""}, {"key": "update_time", '
+                              '"keyCaption": "Modify time", "value": 1646662419673, "valueCaption": "03/07/2022 09:13:39 AM", '
+                              '"valueClass": ""}, {"key": "sr_type", "keyCaption": "Service Record Type", "value": 10, '
+                              '"valueCaption": "Request", "valueClass": ""}]}',
+                   'type': 'SysAid Request'}
+
+raw_service_record_change = {'canArchive': True, 'canDelete': True, 'canUpdate': True, 'hasChildren': False, 'id': '30',
+                             'info': [
+                                 {'key': 'status', 'keyCaption': 'Status', 'value': 1, 'valueCaption': 'New', 'valueClass': 0},
+                                 {'key': 'title', 'keyCaption': 'Title', 'value': 'Standard Change Process',
+                                  'valueCaption': 'Standard Change Process', 'valueClass': ''},
+                                 {'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+                                  'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''},
+                                 {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 4, 'valueCaption': 'Change',
+                                  'valueClass': ''}]}
+change_context = {'name': 'Standard Change Process',
+                  'occurred': '2022-03-07T09:12:25Z',
+                  'rawJSON': '{"canArchive": true, "canDelete": true, "canUpdate": true, "hasChildren": false, "id": "30", '
+                             '"info": [{"key": "status", "keyCaption": "Status", "value": 1, "valueCaption": "New", '
+                             '"valueClass": 0}, {"key": "title", "keyCaption": "Title", "value": "Standard Change Process", '
+                             '"valueCaption": "Standard Change Process", "valueClass": ""}, {"key": "update_time", '
+                             '"keyCaption": "Modify time", "value": 1646662345657, "valueCaption": "03/07/2022 09:12:25 AM", '
+                             '"valueClass": ""}, {"key": "sr_type", "keyCaption": "Service Record Type", "value": 4, '
+                             '"valueCaption": "Change", "valueClass": ""}]}',
+                  'type': 'SysAid Change'}
+
+service_record_to_incident_context_input = [(raw_service_record_incident, incident_context),
+                                            (raw_service_record_request, request_context),
+                                            (raw_service_record_change, change_context),
+                                            ]

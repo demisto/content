@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import patch
+from freezegun import freeze_time
 
 from SysAid import Client
 from test_data import input_data
@@ -389,3 +390,132 @@ def test_set_returned_fields(fields_input, fields_output):
     """
     from SysAid import set_returned_fields
     assert set_returned_fields(fields_input) == fields_output
+
+
+''' FETCH HELPER FUNCTIONS TESTS '''
+
+
+@pytest.mark.parametrize('fetch_types, include_archived, included_statuses, expected_params', input_data.fetch_request_args)
+def test_fetch_request(mocker, sysaid_client, fetch_types, include_archived, included_statuses, expected_params):
+    """
+    Given:
+        - Fetch parameters
+    When:
+        - Fetch incidents runs
+    Then:
+        - Returns the service records from SysAid
+    """
+    from SysAid import fetch_request
+    http_request = mocker.patch.object(sysaid_client, '_http_request')
+    fetch_request(sysaid_client, fetch_types, include_archived, included_statuses)
+    http_request.assert_called_with('GET', 'sr', params=expected_params, cookies=COOKIES)
+
+
+@pytest.mark.parametrize('service_records, fetch_start_datetime, expected_result',
+                         input_data.filter_service_records_by_time_input)
+def test_filter_service_records_by_time(service_records, fetch_start_datetime, expected_result):
+    """
+    Given:
+        - Service records from SysAid
+    When:
+        - Fetch incidents runs
+    Then:
+        - Returns the service records that happened after the last fetch
+    """
+    from SysAid import filter_service_records_by_time
+    assert filter_service_records_by_time(service_records, fetch_start_datetime) == expected_result
+
+
+@pytest.mark.parametrize('service_records, fetch_start_datetime, last_id_fetched, expected_result',
+                         input_data.filter_service_records_by_id_input)
+def test_filter_service_records_by_id(service_records, fetch_start_datetime, last_id_fetched, expected_result):
+    """
+    Given:
+        - Service records from SysAid, that might happen at the same time as the last fetched service record
+    When:
+        - Fetch incidents runs
+    Then:
+        - Returns the service records that need to be fetched - only those that were not fetched
+    """
+    from SysAid import filter_service_records_by_id
+    assert filter_service_records_by_id(service_records, fetch_start_datetime, last_id_fetched) == expected_result
+
+
+@pytest.mark.parametrize('service_records, limit, last_fetch, last_id_fetched, returned_last_fetch, returned_last_id_fetched, '
+                         'returned_service_records', input_data.reduce_service_records_to_limit_input)
+def test_reduce_service_records_to_limit(service_records, limit, last_fetch, last_id_fetched, returned_last_fetch,
+                                         returned_last_id_fetched, returned_service_records):
+    """
+    Given:
+        - Service records from SysAid, filtered by date and by id, and sorted by date and then by id
+    When:
+        - Fetch incidents runs
+    Then:
+        - Returns new time and id fetched, and the service records only up to the limit given
+    """
+    from SysAid import reduce_service_records_to_limit
+    assert reduce_service_records_to_limit(service_records, limit, last_fetch, last_id_fetched) == \
+           (returned_last_fetch, returned_last_id_fetched, returned_service_records)
+
+
+@pytest.mark.parametrize('service_records, limit, fetch_start_datetime, last_id_fetched, expected_last_fetch, '
+                         'expected_last_id_fetched, expected_incidents_names', input_data.parse_service_records_input)
+def test_parse_service_records(service_records, limit, fetch_start_datetime, last_id_fetched, expected_last_fetch,
+                               expected_last_id_fetched, expected_incidents_names):
+    """
+    Given:
+        - All service records from SysAid, that some of them will become fetched incidents
+    When:
+        - Fetch incidents runs
+    Then:
+        - Returns the relevant fetched incidents, the new time to fetch from next time and the last id fetched
+    """
+    from SysAid import parse_service_records
+    returned_last_fetch, returned_last_id_fetched, returned_incidents = \
+        parse_service_records(service_records, limit, fetch_start_datetime, last_id_fetched)
+    assert returned_last_fetch == expected_last_fetch
+    assert returned_last_id_fetched == expected_last_id_fetched
+    for i in range(len(expected_incidents_names)):
+        assert returned_incidents[i]['name'] == expected_incidents_names[i]
+
+
+@pytest.mark.parametrize('last_fetch, first_fetch, expected_datetime', input_data.calculate_fetch_start_datetime_input)
+@freeze_time("2022-02-28 11:00:00 UTC")
+def test_calculate_fetch_start_datetime(last_fetch, first_fetch, expected_datetime):
+    """
+    Given:
+        - The time when the last fetch occurred and the time we need to fetch from, to calculate the time to start fetching from
+    When:
+        - Fetch incidents runs
+    Then:
+        - Returns the time to fetch from - the latter of the 2 given
+    """
+    from SysAid import calculate_fetch_start_datetime
+    assert calculate_fetch_start_datetime(last_fetch, first_fetch) == expected_datetime
+
+
+def test_get_service_record_update_time():
+    """
+    Given:
+        - A service record we want to know it's update time
+    When:
+        - Fetch incidents runs
+    Then:
+        - Returns the update time of the service record
+    """
+    from SysAid import get_service_record_update_time
+    assert get_service_record_update_time(input_data.service_record_update_time) == input_data.update_time
+
+
+@pytest.mark.parametrize('raw_service_record, incident_context', input_data.service_record_to_incident_context_input)
+def test_service_record_to_incident_context(raw_service_record, incident_context):
+    """
+    Given:
+        - A service record we want to turn to incident context
+    When:
+        - Fetch incidents runs
+    Then:
+        - Returns the incident context
+    """
+    from SysAid import service_record_to_incident_context
+    assert service_record_to_incident_context(raw_service_record) == incident_context

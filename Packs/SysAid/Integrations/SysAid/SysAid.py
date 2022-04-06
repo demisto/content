@@ -341,26 +341,37 @@ def set_returned_fields(fields: str = None) -> Optional[str]:
 ''' FETCH HELPER FUNCTIONS '''
 
 
-def filter_service_records_by_time(service_records: List[Dict[str, Any]], fetch_start_timestamp: datetime) \
+def fetch_request(client: Client, fetch_types: str = None, include_archived: bool = False, included_statuses: str = None):
+    fetch_types = 'all' if not fetch_types or 'all' in fetch_types else fetch_types
+    filters = {'status': included_statuses} if included_statuses else {}
+
+    response = client.service_record_list_request(type_=fetch_types, archive=int(include_archived), filters=filters)
+
+    responses = [response] if isinstance(response, dict) else response
+    demisto.debug(f'The request returned {len(response)} service records.')
+    return responses
+
+
+def filter_service_records_by_time(service_records: List[Dict[str, Any]], fetch_start_datetime: datetime) \
         -> List[Dict[str, Any]]:
     filtered_service_records = []
     for service_record in service_records:
         update_time = get_service_record_update_time(service_record)
-        if update_time and update_time >= fetch_start_timestamp:
+        if update_time and update_time >= fetch_start_datetime:
             filtered_service_records.append(service_record)
 
     return filtered_service_records
 
 
-def filter_service_records_by_id(service_records: List[Dict[str, Any]], fetch_start_timestamp: datetime, last_id_fetched: int):
-    # only for service_records with the same update_time as fetch_start_timestamp
+def filter_service_records_by_id(service_records: List[Dict[str, Any]], fetch_start_datetime: datetime, last_id_fetched: str):
+    # only for service_records with the same update_time as fetch_start_datetime
     return [service_record for service_record in service_records
-            if get_service_record_update_time(service_record) != fetch_start_timestamp
+            if get_service_record_update_time(service_record) != fetch_start_datetime
             or service_record['id'] > last_id_fetched]
 
 
 def reduce_service_records_to_limit(service_records: List[Dict[str, Any]], limit: int, last_fetch: datetime,
-                                    last_id_fetched: int) -> Tuple[datetime, int, List[Dict[str, Any]]]:
+                                    last_id_fetched: str) -> Tuple[datetime, str, List[Dict[str, Any]]]:
     incidents_count = min(limit, len(service_records))
     # limit can't be 0 or less, but there could be no service_records at the wanted time
     if incidents_count > 0:
@@ -371,15 +382,15 @@ def reduce_service_records_to_limit(service_records: List[Dict[str, Any]], limit
     return last_fetch, last_id_fetched, service_records
 
 
-def parse_service_records(service_records: List[Dict[str, Any]], limit: int, fetch_start_timestamp: datetime,
-                          last_id_fetched: int) -> Tuple[datetime, int, List[Dict[str, Any]]]:
-    service_records = filter_service_records_by_time(service_records, fetch_start_timestamp)
-    service_records = filter_service_records_by_id(service_records, fetch_start_timestamp, last_id_fetched)
+def parse_service_records(service_records: List[Dict[str, Any]], limit: int, fetch_start_datetime: datetime,
+                          last_id_fetched: str) -> Tuple[datetime, str, List[Dict[str, Any]]]:
+    service_records = filter_service_records_by_time(service_records, fetch_start_datetime)
+    service_records = filter_service_records_by_id(service_records, fetch_start_datetime, last_id_fetched)
 
     # sorting service_records by date and then by id
     service_records.sort(key=lambda service_record: (get_service_record_update_time(service_record), service_record['id']))
 
-    last_fetch, last_id_fetched, service_records = reduce_service_records_to_limit(service_records, limit, fetch_start_timestamp,
+    last_fetch, last_id_fetched, service_records = reduce_service_records_to_limit(service_records, limit, fetch_start_datetime,
                                                                                    last_id_fetched)
 
     incidents: List[Dict[str, Any]] = [service_record_to_incident_context(service_record) for service_record in service_records]
@@ -763,7 +774,7 @@ def service_record_delete_command(client: Client, args: Dict[str, Any]) -> Comma
 def fetch_incidents(client: Client, first_fetch: str, limit: Optional[int] = MAX_INCIDENTS_TO_FETCH,
                     included_statuses: str = None, include_archived: bool = False, fetch_types: str = None):
     last_fetch = demisto.getLastRun().get('last_fetch')
-    last_id_fetched = demisto.getLastRun().get('last_id_fetched', -1)
+    last_id_fetched = demisto.getLastRun().get('last_id_fetched', '-1')
     fetch_start_datetime = calculate_fetch_start_datetime(last_fetch, first_fetch)
     demisto.debug(f'last fetch was at: {last_fetch}, last id fetched was: {last_id_fetched}, '
                   f'time to fetch from is: {fetch_start_datetime}.')
@@ -774,17 +785,6 @@ def fetch_incidents(client: Client, first_fetch: str, limit: Optional[int] = MAX
     last_fetch, last_id_fetched, incidents = parse_service_records(responses, limit, fetch_start_datetime, last_id_fetched)
     demisto.setLastRun({'last_fetch': last_fetch.isoformat(), 'last_id_fetched': last_id_fetched})
     return incidents
-
-
-def fetch_request(client: Client, fetch_types: str = None, include_archived: bool = False, included_statuses: str = None):
-    fetch_types = 'all' if not fetch_types or 'all' in fetch_types else fetch_types
-    filters = {'status': included_statuses} if included_statuses else {}
-
-    response = client.service_record_list_request(type_=fetch_types, archive=int(include_archived), filters=filters)
-
-    responses = [response] if isinstance(response, dict) else response
-    demisto.debug(f'The request returned {len(response)} service records.')
-    return responses
 
 
 def test_module(client: Client, params: dict) -> None:
