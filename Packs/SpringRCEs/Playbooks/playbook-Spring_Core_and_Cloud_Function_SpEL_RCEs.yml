@@ -8,9 +8,11 @@ description: |
 
   Later, it was discovered that these are two separate vulnerabilities, one in Spring Core and the other in Spring Cloud Function:
 
-  **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell.**
+  **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell**
 
-  **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL".**
+  **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL"**
+
+  **CVE-2022-22947 - RCE in "Spring Cloud Gateway"**
 
   **Spring Core vulnerability requirements:**
 
@@ -1944,7 +1946,7 @@ view: |-
 inputs:
 - key: RelatedCVEs
   value:
-    simple: CVE-2022-22963,CVE-2022-22965,cve-2022,22947
+    simple: CVE-2022-22963,CVE-2022-22965,cve-2022-22947
   required: false
   description: The vulnerability assigned CVE.
   playbookInputQuery:
@@ -1957,9 +1959,11 @@ inputs:
 
       Later, it was discovered that these are two separate vulnerabilities, one in Spring Core and the other in Spring Cloud Function:
 
-      **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell.**
+      **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell**
 
-      **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL".**
+      **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL"**
+
+      **CVE-2022-22947 - RCE in "Spring Cloud Gateway"**
 
       **Spring Core vulnerability requirements:**
 

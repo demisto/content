@@ -6,8 +6,12 @@ Spring Framework is an extremely popular framework used by Java developers to bu
 
 Later, it was discovered that these are two separate vulnerabilities, one in Spring Core and the other in Spring Cloud Function:
 
-**CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell.**
-**CVE-2022-22963 - RCE in "Spring Cloud Function SpEL".**
+**CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell**
+
+**CVE-2022-22963 - RCE in "Spring Cloud Function SpEL"**
+
+**CVE-2022-22947 - RCE in "Spring Cloud Gateway"**
+
 
 **Spring Core vulnerability requirements:**
 

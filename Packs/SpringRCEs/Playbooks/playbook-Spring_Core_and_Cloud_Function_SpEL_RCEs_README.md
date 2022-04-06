@@ -4,11 +4,13 @@ Spring Framework is an extremely popular framework used by Java developers to bu
 
 Later, it was discovered that these are two separate vulnerabilities, one in Spring Core and the other in Spring Cloud Function:
 
-**CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell.**
+**CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell**
 
-**CVE-2022-22963 - RCE in "Spring Cloud Function SpEL".**
+**CVE-2022-22963 - RCE in "Spring Cloud Function SpEL"**
 
-**Spring Core vulnerability requirements:**
+**CVE-2022-22947 - RCE in "Spring Cloud Gateway"**
+
+###Spring Core vulnerability requirements:
 
 * JDK 9 or higher
 * Apache Tomcat as the Servlet container
@@ -16,12 +18,12 @@ Later, it was discovered that these are two separate vulnerabilities, one in Spr
 * spring-webmvc or spring-webflux dependency
 * Spring Framework versions 5.3.0 to 5.3.17, 5.2.0 to 5.2.19, and older versions
 
-**Spring Cloud Function unaffected versions:**
+###Spring Cloud Function unaffected versions:
 
 * 3.1.7
 * 3.2.3
 
-**This playbook will provide you with a first response kit which includes:**
+###This playbook will provide you with a first response kit which includes:
 
 * Hunting
     * Panorama
