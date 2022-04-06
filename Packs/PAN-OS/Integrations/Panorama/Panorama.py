@@ -57,6 +57,7 @@ SECURITY_RULE_ARGS = {
     'action': 'Action',
     'service': 'Service',
     'disable': 'Disabled',
+    'disabled': 'Disabled',
     'application': 'Application',
     'source_user': 'SourceUser',
     'disable_server_response_inspection': 'DisableServerResponseInspection',
@@ -261,7 +262,7 @@ def add_argument_open(arg: Optional[str], field_name: str, member: bool) -> str:
 
 
 def add_argument_yes_no(arg: Optional[str], field_name: str, option: bool = False) -> str:
-    if arg and arg == 'No':
+    if arg and arg.lower() == 'no':
         result = '<' + field_name + '>' + 'no' + '</' + field_name + '>'
     else:
         result = '<' + field_name + '>' + ('yes' if arg else 'no') + '</' + field_name + '>'
