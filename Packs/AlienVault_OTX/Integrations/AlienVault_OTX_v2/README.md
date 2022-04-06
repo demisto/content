@@ -1033,6 +1033,7 @@ Queries a URL in AlienVault OTX.
 
 ## Dbot score calculation method
 In case AlienVault OTX API response contains `accepted` under the `false_positive.assessment` key, the DbotScore will be set to **Good**.
+
 Otherwise, if the response includes one validation, DbotScore will be set to **SUSPICIOUS**, if there's no validation in the response then the DbotScore will be set by the `pulse_info` length in the following manner:
    - **Bad** - If the length of is greater or equal to the default threshold given by the user.
    - **SUSPICIOUS** - If the length is shorter than the default threshold.
