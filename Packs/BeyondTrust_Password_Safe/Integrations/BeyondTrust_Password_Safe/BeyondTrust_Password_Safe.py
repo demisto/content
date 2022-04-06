@@ -70,8 +70,8 @@ def http_request(method: str, suffix_url: str, data=None):
             headers=HEADERS
         )
     except requests.exceptions.SSLError as e:
-        ssl_error = 'Could not connect to BeyondTrust: Some ssl error.'
-        return return_error(message=ssl_error, error=e)
+        ssl_error = f'Could not connect to BeyondTrust, SSL error: {e}'
+        return return_error(ssl_error)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
             requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
         connection_error = f'Could not connect to BeyondTrust: {e}'
