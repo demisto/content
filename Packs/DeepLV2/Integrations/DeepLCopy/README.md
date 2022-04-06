@@ -1,10 +1,10 @@
 This integration uses DeepL (https://www.deepl.com/) to translate text or files
-This integration was integrated and tested with DeepL
+This integration was integrated and tested with version xx of DeepL_copy
 
-## Configure DeepL on Cortex XSOAR
+## Configure DeepL_copy on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for DeepL.
+2. Search for DeepL_copy.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
@@ -38,6 +38,14 @@ Get current API key usage
 | --- | --- | --- |
 | DeepL.Usage | unknown | Usage statistics of API key | 
 
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
 ### deepl-translate-text
 ***
 Translates input text
@@ -59,7 +67,7 @@ Translates input text
 | glossary_id | Specify the glossary to use for the translation. Important: This requires the source_lang parameter to be set and the language pair of the glossary has to match the language pair of the request. | Optional | 
 | tag_handling | Sets which kind of tags should be handled. Options currently available: "xml" "html". Possible values are: xml, html. | Optional | 
 | non_splitting_tags | Comma-separated list of XML tags which never split sentences. | Optional | 
-| outline_detection | . | Optional | 
+| outline_detection | The automatic detection of the XML structure won't yield best results in all XML files. You can disable this automatic mechanism altogether by setting the outline_detection parameter to 0 and selecting the tags that should be considered structure tags. This will split sentences using the splitting_tags parameter. | Optional | 
 | splitting_tags | Comma-separated list of XML tags which always cause splits. | Optional | 
 | ignore_tags | Comma-separated list of XML tags that indicate text not to be translated. | Optional | 
 
@@ -69,6 +77,14 @@ Translates input text
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | DeepL.TranslatedText | string | Output of Translation | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
 
 ### deepl-submit-document
 ***
@@ -98,6 +114,14 @@ Please note that with every submitted document of type .pptx, .docx or .pdf you 
 | DeepL.DocumentSubmission.document_id | string | Document ID returned | 
 | DeepL.DocumentSubmission.document_key | string | Document Key returned | 
 
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
 ### deepl-check-document-status
 ***
 The status of the document translation process can be checked by sending a status request to the document specific status URL.
@@ -123,6 +147,14 @@ The status of the document translation process can be checked by sending a statu
 | DeepL.DocumentStatus.document_id | string | ID of the submitted document | 
 | DeepL.DocumentStatus.status | string | Status of the translation | 
 
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
 ### deepl-get-document
 ***
 Get the translated document
@@ -142,4 +174,18 @@ Get the translated document
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | string | File Name | 
+| InfoFile.EntryID | string | The EntryID of the translated document | 
+| InfoFile.Info | unknown | Basic information of the file | 
+| InfoFile.Size | unknown | File Size | 
+| InfoFile.Type | unknown | File type e.g. "PDF" | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+

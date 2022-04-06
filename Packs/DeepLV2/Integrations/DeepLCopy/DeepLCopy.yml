@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: DeepL
+  id: DeepL_copy
   version: -1
 configuration:
 - display: Server URL (e.g. https://api-free.deepl.com)
@@ -19,10 +19,19 @@ configuration:
   name: proxy
   required: false
   type: 8
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: eeb9f594-c639-4256-8790-812c708c50e4
+    propagationLabels:
+    - all
+    toServerVersion: ""
 description: This integration uses DeepL (https://www.deepl.com/) to translate text
   or files
-display: DeepL
-name: DeepL
+display: DeepL_copy
+name: DeepL_copy
 script:
   commands:
   - arguments: []
@@ -104,8 +113,8 @@ script:
         ignoring newlines'
       name: split_sentences
       predefined:
-      - '0'
-      - '1'
+      - "0"
+      - "1"
     - auto: PREDEFINED
       description: 'Sets whether the translation engine should respect the original
         formatting, even if it would usually correct some aspects. Possible values
@@ -114,8 +123,8 @@ script:
         beginning of the sentence'
       name: preserve_formatting
       predefined:
-      - '0'
-      - '1'
+      - "0"
+      - "1"
     - auto: PREDEFINED
       description: 'Sets whether the translated text should lean towards formal or
         informal language. This feature currently only works for target languages
@@ -221,13 +230,13 @@ script:
       - SV
       - ZH
       required: true
-    - description: "The document file to be translated. The file name should be included\
-        \ in this part's content disposition. As an alternative, the filename parameter\
-        \ can be used. The following file types and extensions are supported: \"docx\"\
-        \ - Microsoft Word Document \"pptx\" - Microsoft PowerPoint Document \"pdf\"\
-        \ - Portable Document Format \"htm / html\" - HTML Document \"txt\" - Plain\
-        \ Text Document Please note that in order to translate PDF documents you need\
-        \ to give one-time consent to using the Adobe API via the account interface."
+    - description: 'The document file to be translated. The file name should be included
+        in this part''s content disposition. As an alternative, the filename parameter
+        can be used. The following file types and extensions are supported: "docx"
+        - Microsoft Word Document "pptx" - Microsoft PowerPoint Document "pdf" - Portable
+        Document Format "htm / html" - HTML Document "txt" - Plain Text Document Please
+        note that in order to translate PDF documents you need to give one-time consent
+        to using the Adobe API via the account interface.'
       name: file
       required: true
     - description: The name of the uploaded file. Can be used as an alternative to
@@ -309,13 +318,25 @@ script:
     - defaultValue: TranslatedFile
       description: Filename to use for the file
       name: filename
+      type: textArea
     description: Get the translated document
     name: deepl-get-document
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File Name
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the translated document
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+    - contextPath: InfoFile.Size
+      description: File Size
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PDF"
   dockerimage: demisto/python3:3.10.4.27798
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 6.0.0
-tests:
-- No tests (auto formatted)
+sourcemoduleid: DeepL

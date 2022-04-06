@@ -76,7 +76,7 @@ def main():
             document_id = args.get('document_id')
             filename = args.get('filename')
             results = run_command(client, data, f'/document/{document_id}/result', resp_type='content')
-            demisto.results(fileResult(filename, results))
+            return_results(fileResult(filename, results, file_type=EntryType.ENTRY_INFO_FILE))
 
     # Log exceptions
     except Exception as e:
