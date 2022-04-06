@@ -84,14 +84,14 @@ def get_headers(params: Dict) -> Dict:
             demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
             "Content-Type": "application/json"
         }
-        LOG.add_replace_strs(demisto.getLicenseCustomField("Core.ApiKey"))
+        add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
     else:
         headers = {
             "Content-Type": "application/json",
             "x-xdr-auth-id": str(api_key_id),
             "Authorization": api_key
         }
-        LOG.add_replace_strs(api_key)
+        add_sensitive_log_strs(api_key)
 
     return headers
 
@@ -161,7 +161,9 @@ def get_iocs(page=0, size=200, query=None) -> List:
 def demisto_expiration_to_core(expiration) -> int:
     if expiration and not expiration.startswith('0001'):
         try:
-            return int(parse(expiration).astimezone(timezone.utc).timestamp() * 1000)
+            expiration_date = parse(expiration)
+            assert expiration_date is not None, f'could not parse {expiration}'
+            return int(expiration_date.astimezone(timezone.utc).timestamp() * 1000)
         except ValueError:
             pass
     return -1

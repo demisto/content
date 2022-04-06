@@ -1296,12 +1296,15 @@ def get_non_added_packs_ids(build: Build):
 def set_marketplace_url(servers, branch_name, ci_build_number):
     url_suffix = quote_plus(f'{branch_name}/{ci_build_number}/xsoar')
     config_path = 'marketplace.bootstrap.bypass.url'
-    config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
+    config = {
+        config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}',
+        'jobs.marketplacepacks.schedule': '1m'
+    }
     for server in servers:
         server.add_server_configuration(config, 'failed to configure marketplace custom url ', True)
     logging.success('Updated marketplace url and restarted servers')
-    logging.info('sleeping for 60 seconds')
-    sleep(60)
+    logging.info('sleeping for 120 seconds')
+    sleep(120)
 
 
 @run_with_proxy_configured

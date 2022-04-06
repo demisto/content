@@ -32,8 +32,6 @@ trigger-private-build:
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-unittests-and-lint:
-  tags:
-    - gce-europe-west4
   extends:
     - .run-unittests-and-lint
   rules:
@@ -195,6 +193,10 @@ prepare-testing-bucket-mpv2:
     - |
       if [[ -f ./Tests/succeeded_tests.txt ]]; then
         cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
+      fi
+    - |
+      if [[ -f ./Tests/test_playbooks_report.json ]]; then
+        cp ./Tests/test_playbooks_report.json $ARTIFACTS_FOLDER/test_playbooks_report.json
       fi
 
     - |
