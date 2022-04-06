@@ -404,7 +404,8 @@ tasks:
       log_type:
         simple: threat
       query:
-        simple: (threatid eq 92389) or (threatid eq 92393) or (threatid eq 92394) or (threatid eq 83239)
+        simple: (threatid eq 92389) or (threatid eq 92393) or (threatid eq 92394)
+          or (threatid eq 83239)
     separatecontext: true
     loop:
       iscommand: false
@@ -1210,6 +1211,7 @@ tasks:
       - "20"
       "yes":
       - "33"
+      - "51"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1256,7 +1258,7 @@ tasks:
     task:
       id: e1b1bbb6-17e7-4cb5-8206-e70fbb85ece3
       version: -1
-      name: Search for possible vulnerable servers using Prisma Cloud
+      name: Search for possible vulnerable servers
       description: Runs an RQL query on the Prisma Cloud.
       script: '|||redlock-get-rql-response'
       type: regular
@@ -1269,7 +1271,7 @@ tasks:
       limit:
         simple: "10"
       rql:
-        simple: config from cloud.resource where finding.type = 'Host Vulnerability' AND protection.finding.name IN ('CVE-2022-22963​', 'CVE-2022-22965')
+        simple: config from cloud.resource where finding.type = 'Host Vulnerability' AND protection.finding.name IN ('CVE-2022-22963', 'CVE-2022-22965')
     separatecontext: false
     view: |-
       {
@@ -1599,7 +1601,28 @@ tasks:
       - "20"
     scriptarguments:
       query:
-        simple: "config case_sensitive = false |\ndataset = xdr_data \n| alter ct = current_time() \n| alter diff = timestamp_diff(ct, _time, \"DAY\")\n| filter event_type = PROCESS\nand (\nactor_process_image_name contains \"apache\" \nor actor_process_image_name contains \"java\"\n)\n//and diff < 2\n| dedup action_process_image_command_line, agent_hostname, actor_process_image_name \n| fields action_process_image_name ,action_process_image_command_line, agent_hostname, actor_process_image_name\n\n\n| join conflict_strategy = left type = left \n    (\n        dataset = xdr_data\n           | filter event_type = PROCESS                      \n            and (\nactor_process_image_name contains \"apache\" \nor actor_process_image_name contains \"java\"\n)            \n            | comp count(action_process_image_name) as Action_Proc_Days_count by actor_process_image_name   \n    )  as Three_Months_Action_Process (Three_Months_Action_Process.actor_process_image_name = actor_process_image_name)\n\n| join conflict_strategy = left type = left \n    (\n        dataset = xdr_data\n           | filter event_type = PROCESS        \n            and (\nactor_process_image_name contains \"apache\" \nor actor_process_image_name contains \"java\"\n)        \n            | comp count(action_process_image_command_line) as Commandline_Days_count by  actor_process_image_name, action_process_image_command_line \n    )  as Three_Months_CommandLine (Three_Months_CommandLine.action_process_image_command_line = action_process_image_command_line )\n\n| dedup agent_hostname ,actor_process_image_name , action_process_image_name\n| sort asc Commandline_Days_count , asc Action_Proc_Days_count \n| filter Commandline_Days_count < 5 and Action_Proc_Days_count < 5"
+        simple: "config case_sensitive = false |\ndataset = xdr_data \n| alter ct\
+          \ = current_time() \n| alter diff = timestamp_diff(ct, _time, \"DAY\")\n\
+          | filter event_type = PROCESS\nand (\nactor_process_image_name contains\
+          \ \"apache\" \nor actor_process_image_name contains \"java\"\n)\n//and diff\
+          \ < 2\n| dedup action_process_image_command_line, agent_hostname, actor_process_image_name\
+          \ \n| fields action_process_image_name ,action_process_image_command_line,\
+          \ agent_hostname, actor_process_image_name\n\n\n| join conflict_strategy\
+          \ = left type = left \n    (\n        dataset = xdr_data\n           | filter\
+          \ event_type = PROCESS                      \n            and (\nactor_process_image_name\
+          \ contains \"apache\" \nor actor_process_image_name contains \"java\"\n\
+          )            \n            | comp count(action_process_image_name) as Action_Proc_Days_count\
+          \ by actor_process_image_name   \n    )  as Three_Months_Action_Process\
+          \ (Three_Months_Action_Process.actor_process_image_name = actor_process_image_name)\n\
+          \n| join conflict_strategy = left type = left \n    (\n        dataset =\
+          \ xdr_data\n           | filter event_type = PROCESS        \n         \
+          \   and (\nactor_process_image_name contains \"apache\" \nor actor_process_image_name\
+          \ contains \"java\"\n)        \n            | comp count(action_process_image_command_line)\
+          \ as Commandline_Days_count by  actor_process_image_name, action_process_image_command_line\
+          \ \n    )  as Three_Months_CommandLine (Three_Months_CommandLine.action_process_image_command_line\
+          \ = action_process_image_command_line )\n\n| dedup agent_hostname ,actor_process_image_name\
+          \ , action_process_image_name\n| sort asc Commandline_Days_count , asc Action_Proc_Days_count\
+          \ \n| filter Commandline_Days_count < 5 and Action_Proc_Days_count < 5"
       query_name:
         simple: Spring4shell_POC_Usage
       time_frame:
@@ -1689,7 +1712,7 @@ tasks:
       id: 981cbeac-3edd-4f21-8c36-661a1fa48411
       version: -1
       name: Is Cortex XDR Investigation & Response enabled?
-      description: Checks if Cortex XDR Investigation & Response is enabled.
+      description: Checks if Cortex XDR Investigation & Response instance is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -1850,6 +1873,42 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 1e87e36b-6876-473c-8288-48373310dbb5
+    type: regular
+    task:
+      id: 1e87e36b-6876-473c-8288-48373310dbb5
+      version: -1
+      name: Search for internet exposed vulnerable hosts that are receiving traffic
+      description: Runs an RQL query on the Prisma Cloud.
+      script: '|||redlock-get-rql-response'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      limit:
+        simple: "10"
+      rql:
+        simple: network from vpc.flow_record where bytes > 0 AND destination.resource
+          IN ( resource where finding.type IN ( 'Host Vulnerability' ) AND finding.source
+          IN ( 'Prisma Cloud' ) AND finding.name IN ('CVE-2022-22963', 'CVE-2022-22965')
+          ) AND source.publicnetwork IN ('Internet IPs', 'Suspicious IPs')
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -1860,6 +1919,7 @@ view: |-
       "21_23_yes": 0.37,
       "32_20_#default#": 0.27,
       "32_33_yes": 0.44,
+      "32_51_yes": 0.71,
       "35_20_#default#": 0.4,
       "35_34_yes": 0.48,
       "39_20_#default#": 0.38,
@@ -1872,7 +1932,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3575,
-        "width": 3190,
+        "width": 3440,
         "x": -1430,
         "y": -1050
       }
@@ -1881,7 +1941,7 @@ view: |-
 inputs:
 - key: RelatedCVEs
   value:
-    simple: CVE-2022-22963,CVE-2022-22965
+    simple: CVE-2022-22963,CVE-2022-22965,cve-2022,22947
   required: false
   description: The vulnerability assigned CVE.
   playbookInputQuery:
