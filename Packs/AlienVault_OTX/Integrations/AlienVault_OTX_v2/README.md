@@ -1037,4 +1037,5 @@ Otherwise, if the response includes one validation, DbotScore will be set to **S
    - **Bad** - If the length of is greater or equal to the default threshold given by the user.
    - **SUSPICIOUS** - If the length is shorter than the default threshold.
    - **None** - If the length is zero.
+
 In any other case, the DbotScore will be set to **Good**.
