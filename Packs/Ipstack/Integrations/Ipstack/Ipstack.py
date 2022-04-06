@@ -6,6 +6,7 @@ import requests
 
 BASE_URL = 'http://api.ipstack.com'
 API_KEY = demisto.params().get('apikey')
+RELIABILITY = demisto.params().get('integrationReliability')
 BRAND_NAME = "Ipstack"
 
 if not demisto.params()['proxy']:
@@ -65,10 +66,16 @@ def do_ip_command():
         "Longitude": raw_response.get('longitude')
     }
 
-    dbot_score=Common.DBotScore(indicator=ip,
-                                    indicator_type=DBotScoreType.IP,
-                                    integration_name=BRAND_NAME,
-                                    score=Common.DBotScore.NONE)
+    if DBotScoreReliability.is_valid_type(RELIABILITY):
+        dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(RELIABILITY)
+    else:
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
+    dbot_score = Common.DBotScore(indicator=ip,
+                                  indicator_type=DBotScoreType.IP,
+                                  integration_name=BRAND_NAME,
+                                  reliability=dbot_reliability,
+                                  score=Common.DBotScore.NONE)
 
     outputs = {
         'IP(val.Address == obj.Address)': {
