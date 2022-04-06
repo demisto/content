@@ -58,29 +58,27 @@ def handle_stix_types(entities_types: str) -> str:
     return ','.join(str(x) for x in entities_types).replace(', ', ',')
 
 
-def search_relationships_fromversion_6_6_0(args: dict) -> Optional[List[dict]]:
+def search_relationships_fromversion_6_6_0(args: dict) -> List[dict]:
     for list_arg in ['entities', 'entityTypes', 'relationshipNames']:
         args[list_arg] = argToList(args[list_arg]) if args[list_arg] else None
     res = demisto.searchRelationships({'filter': args})
     return res.get('data', [])
 
 
-def search_relationships_toversion_6_5_0(args: dict) -> Optional[List[dict]]:
+def search_relationships_toversion_6_5_0(args: dict) -> List[dict]:
     res = demisto.executeCommand("searchRelationships", args)
     if is_error(res[0]):
         raise Exception("Error in searchRelationships command - {}".format(res[0]["Contents"]))
     return res[0].get('Contents', {}).get('data', [])
 
 
-def search_relationships(args: dict) -> Optional[List[dict]]:
-    entities = args.get('entities', '')
-    entities_types = args.get('entities_types', '')
-    relationships = args.get('relationships', '')
-    limit = int(args.get('limit', '20'))
-    revoked = argToBoolean(args.get('revoked', 'false'))
-    query = 'revoked:T' if revoked else 'revoked:F'
-    handle_stix_types(entities_types)
-
+def search_relationships(
+    entities: Optional[str] = None,
+    entities_types: Optional[str] = None,
+    relationships: Optional[str] = None,
+    limit: Optional[int] = None,
+    query: Optional[str] = None
+) -> List[dict]:
     args = {
         'entities': entities,
         'entityTypes': entities_types,
@@ -99,11 +97,17 @@ def search_relationships(args: dict) -> Optional[List[dict]]:
 def main():  # pragma: no cover
     try:
         args = demisto.args()
+        entities = args.get('entities', '')
+        entities_types = args.get('entities_types', '')
+        relationships = args.get('relationships', '')
+        limit = int(args.get('limit', '20'))
         verbose = argToBoolean(args.get('verbose', 'false'))
-        if relationships := search_relationships(args):
-            context = to_context(relationships, verbose)
-        else:
-            context = []
+        revoked = argToBoolean(args.get('revoked', 'false'))
+        query = 'revoked:T' if revoked else 'revoked:F'
+        handle_stix_types(entities_types)
+
+        relationships = search_relationships(entities, entities_types, relationships, limit, query)
+        context = to_context(relationships, verbose)
         hr = tableToMarkdown('Relationships', context,
                              headers=['EntityA', 'EntityAType', 'EntityB', 'EntityBType', 'Relationship'],
                              headerTransform=lambda header: re.sub(r"\B([A-Z])", r" \1", header))

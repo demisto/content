@@ -1263,7 +1263,6 @@ def searchRelationships(args):
     ```
     """
     return {'data': []}
-      
 
 
 def _apiCall(name, params=None, data=None):

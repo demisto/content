@@ -60,6 +60,25 @@ def test_handle_stix_types(mocker):
     ('7.0.0', ['mock_result_3'])
 ])
 def test_search_relationship_command_args_by_demisto_version(mocker, demisto_version, expected_result):
+    """
+    Given:
+        XSOAR versions:
+        1. 6.5.0
+        2. 6.6.0
+        3. 7.0.0
+    When:
+        Calling search_relationships method.
+    Then:
+        Make sure that for each version, the correct implementation of searchRelationships server script is called:
+        - For version 6.5.0:
+          - The command is called using `executeCommand`.
+          - The payload is sent in the expected `searchRelationships` format.
+          - An XSOAR entry is returned.
+        - For versions 6.6.0 and 7.0.0:
+          - the command is called using `demisto.searchRelationships`,
+          - The payload is sent in a RelationshipFilter structure.
+          - The data is returned in a RelationshipSearchResponse format.
+    """
     get_demisto_version._version = None  # clear cache between runs of the test
 
     def searchRelationships(args):
@@ -78,5 +97,5 @@ def test_search_relationship_command_args_by_demisto_version(mocker, demisto_ver
     mocker.patch.object(demisto, 'demistoVersion', return_value={'version': demisto_version})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'searchRelationships', side_effect=searchRelationships)
-    result = search_relationships({'entities': '1.1.1.1,8.8.8.8'})
+    result = search_relationships(entities='1.1.1.1,8.8.8.8')
     assert result == expected_result
