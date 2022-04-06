@@ -188,7 +188,7 @@ def main():
     object_name = params.get('object')
     key_field = params.get('key_field')
     query_filter = params.get('filter', None)
-    ignore_last_modified = params.get('ignore_last_modified')
+    ignore_last_modified = params.get('ignore_last_modified', False)
     fields = params.get('fields', None)
     history = params.get('indicator_history', 365)
     reputation = params.get('feedReputation', 'None')
