@@ -128,7 +128,6 @@ def update_tags(
     api_name = api_obj.__class__.__name__
 
     if method_name == "add":
-        demisto.log(f"{internal_axon_id_arr},{len(internal_axon_id_arr)},{[tag_name]} ")
         res = api_obj.labels.add(rows=internal_axon_id_arr, labels=[tag_name])
     else:
         res = api_obj.labels.remove(rows=internal_axon_id_arr, labels=[tag_name])
@@ -300,6 +299,21 @@ def main():
             )
             return_results(results)
         elif command == "axonius-get-saved-queries":
+            results = get_saved_queries(client=client, args=args)
+            return_results(results)
+        elif command == "axonius-get-tags":
+            results = get_tags(client=client, args=args)
+            return_results(results)
+        elif command == "axonius-add-tag":
+            results = update_tags(client=client, args=args, method_name="add")
+            return_results(results)
+        elif command == "axonius-remove-tag":
+            results = update_tags(client=client, args=args, method_name="remove")
+            return_results(results)
+        elif command == "axonius-get-devices-by-mac-regex":
+            results = get_by_value(api_obj=client.devices, args=args, method_name="mac_regex")
+            return_results(results)
+        elif command == "axonius-get-savedqueries":
             results = get_saved_queries(client=client, args=args)
             return_results(results)
         elif command == "axonius-get-tags":
