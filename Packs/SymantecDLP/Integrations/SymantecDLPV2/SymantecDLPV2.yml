@@ -277,9 +277,9 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The incident ID to update.
-      isArray: false
-      name: incident_id
+      description: The incident IDs to update.
+      isArray: true
+      name: incident_ids
       required: true
       secret: false
     - default: false

@@ -532,12 +532,12 @@ def get_context_incident_history(incident_history_list: List[dict]):
     return history_context
 
 
-def create_update_body(incident_id: Optional[int], data_owner_email: str = None, data_owner_name: str = None,
+def create_update_body(incident_ids: list, data_owner_email: str = None, data_owner_name: str = None,
                        note: str = None,
                        incident_status_id: str = None, remediation_status_name: str = None,
                        remediation_location: str = None,
                        severity: str = None, custom_attributes: List[str] = None):
-    data: Dict[str, Any] = assign_params(**{"incidentIds": [incident_id], 'dataOwnerEmail': data_owner_email,
+    data: Dict[str, Any] = assign_params(**{"incidentIds": incident_ids, 'dataOwnerEmail': data_owner_email,
                                             'dataOwnerName': data_owner_name,
                                             'incidentStatusId': incident_status_id,
                                             'preventOrProtectStatus': remediation_status_name,
@@ -648,7 +648,9 @@ def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 
 def update_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    incident_id = arg_to_number(args.get('incident_id', ''))
+    incident_ids = argToList(args.get('incident_ids'))
+    if not all(incident_id.isdigit() for incident_id in incident_ids):
+        raise ValueError("Incident IDs must be integers.")
     data_owner_email = args.get('data_owner_email', '')
     data_owner_name = args.get('data_owner_name', '')
     note = args.get('note', '')
@@ -660,14 +662,14 @@ def update_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
         severity = UPDATE_INCIDENT_SEVERITY_MAPPING[severity]
     custom_attributes = argToList(args.get('custom_attributes', ''))
 
-    update_body = create_update_body(incident_id=incident_id, data_owner_email=data_owner_email,
+    update_body = create_update_body(incident_ids=incident_ids, data_owner_email=data_owner_email,
                                      data_owner_name=data_owner_name, note=note, incident_status_id=incident_status_id,
                                      remediation_status_name=remediation_status_name,
                                      remediation_location=remediation_location, severity=severity,
                                      custom_attributes=custom_attributes)
     client.update_incident_request(update_body)
     return CommandResults(
-        readable_output=f"Symantec DLP incident {incident_id} was updated"
+        readable_output=f"Symantec DLP incidents: {incident_ids} were updated"
     )
 
 

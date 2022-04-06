@@ -55,7 +55,6 @@ SECOND_INCIDENT_DETAILS = json.dumps(
      "discoverTargetName": "Discovery server - File system", "discoverScanStartDate": "2022-03-06T07:00:00"})
 
 
-
 def test_parse_custom_attribute():
     from SymantecDLPV2 import parse_custom_attribute
     custom_attribute_group_list = [
@@ -190,7 +189,7 @@ def test_create_update_body():
     """
     from SymantecDLPV2 import create_update_body
 
-    update_body = create_update_body(incident_id=3620, data_owner_email='testing@gmail.com', note='test note',
+    update_body = create_update_body(incident_ids=[3620], data_owner_email='testing@gmail.com', note='test note',
                                      custom_attributes=['1:test'])
     assert update_body == {'incidentIds': [3620], 'dataOwnerEmail': 'testing@gmail.com',
                            'incidentNotes': [{'note': 'test note'}],
@@ -506,4 +505,3 @@ def test_get_incident_details_fetch(mocker):
                         'incidentStatusId': 1, 'detectionDate': '2022-03-06T15:23:39.197', 'policyVersion': 4,
                         'messageSource': 'NETWORK', 'messageType': 'HTTP', 'matchCount': 3,
                         'errorMessage': 'Notice: Incident contains partial data only'}
-

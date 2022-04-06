@@ -228,7 +228,7 @@ Updates the details of a specific incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The incident ID to update. | Required | 
+| incident_ids | The incident IDs to update. | Required | 
 | data_owner_email | The data owner email. | Optional | 
 | data_owner_name | The data owner name. | Optional | 
 | note | The note to be added. | Optional | 
@@ -243,10 +243,10 @@ Updates the details of a specific incident.
 
 There is no context output for this command.
 #### Command example
-```!symantec-dlp-update-incident incident_id=1 severity=Medium data_owner_email=testing@gmail.com custom_attributes=4:test```
+```!symantec-dlp-update-incident incident_ids=1,2 severity=Medium data_owner_email=testing@gmail.com custom_attributes=4:test```
 #### Human Readable Output
 
->Symantec DLP incident 1 was updated
+>Symantec DLP incidents: ['1', '2'] were updated
 
 ### symantec-dlp-list-incident-status
 ***
@@ -776,6 +776,7 @@ There are no input arguments for this command.
 #### The following arguments were removed in this version:
 
 In the *symantec-dlp-update-incident* command:
+* *incident_id* - this argument was replaced by *incident_ids*.
 * *note_time*
 * *status*
 * *custom_attribute_name* - this argument was replaced by *custom_attributes*.
@@ -786,7 +787,8 @@ In the *symantec-dlp-update-incident* command:
 
 In the *symantec-dlp-update-incident* command:
   *custom_attribute_name* and *custom_attribute_value* are now used in *custom_attributes*.
-
+  *incident_id* argument are now called *incident_ids* and can get a list of incident IDs to update.
+  
 ### Outputs
 #### The following outputs were removed in this version:
 
