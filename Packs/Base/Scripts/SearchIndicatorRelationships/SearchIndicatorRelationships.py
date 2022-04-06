@@ -106,8 +106,11 @@ def main():  # pragma: no cover
         query = 'revoked:T' if revoked else 'revoked:F'
         handle_stix_types(entities_types)
 
-        relationships = search_relationships(entities, entities_types, relationships, limit, query)
-        context = to_context(relationships, verbose)
+        
+        if relationships := search_relationships(entities, entities_types, relationships, limit, query):
+            context = to_context(relationships, verbose)
+        else:
+            context = []
         hr = tableToMarkdown('Relationships', context,
                              headers=['EntityA', 'EntityAType', 'EntityB', 'EntityBType', 'Relationship'],
                              headerTransform=lambda header: re.sub(r"\B([A-Z])", r" \1", header))
