@@ -95,7 +95,7 @@ class Client(BaseClient):
 
 def fetch_indicators_command(client, manual_run=False):
 
-    indicators_unparsed = list()
+    indicators_unparsed: List[Dict] = list()
     indicators = list()
     now = datetime.utcnow()
     history_date = dateparser.parse(f"{client.history} days ago", settings={'RELATIVE_BASE': now})
