@@ -100,10 +100,10 @@ def fetch_indicators_command(client, manual_run=False):
     history_date = dateparser.parse(f"{client.history} days ago", settings={'RELATIVE_BASE': now})
     assert history_date is not None, f'could not parse {client.history} days ago'
     date_filter = history_date.strftime("%Y-%m-%dT%H:%M:%S.000+0000")
-    integration_context = get_integration_context()
+    stored_last_run = demisto.getLastRun()
 
-    if integration_context:
-        last_run = integration_context.get('lastRun')
+    if stored_last_run:
+        last_run = stored_last_run.get('lastRun')
     else:
         last_run = None
     object_fields = None
@@ -158,7 +158,7 @@ def fetch_indicators_command(client, manual_run=False):
 
         # Update the last run time
         last_run = now.strftime("%Y-%m-%dT%H:%M:00Z")
-        set_integration_context({"lastRun": last_run})
+        demisto.setLastRun({"lastRun": last_run})
 
         # We submit indicators in batches
         for b in batch(indicators, batch_size=2000):
