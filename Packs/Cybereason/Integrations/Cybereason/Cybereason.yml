@@ -840,6 +840,28 @@ script:
       required: true
     description: Block a file only in particular machine
     name: cybereason-block-file
+  - arguments:
+    - description: Filter value which user wants to apply for needsAttention
+      name: needsAttention
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+    - description: Filter value which user wants to apply for type
+      name: type
+      required: false
+    - description: Filter value which user wants to apply for status
+      name: status
+      required: false
+    - description: Filter value which user wants to apply for timestamp
+      name: timestamp
+      required: false
+    - description: Filter value which user wants to apply for limit
+      name: limit
+      required: true
+    description: Malware query with options and values to filter
+    name: cybereason-malware-query
   isfetch: true
   runonce: false
   script: '-'

@@ -1770,6 +1770,42 @@ def close_fetchfile(batch_id):
     return http_request('GET', url, custom_response=True,return_json=False)
 
 
+def malware_query_command():
+    needs_attention = demisto.getArg('needsAttention')
+    is_type = demisto.getArg('type')
+    status_val = demisto.getArg('status')
+    time_stamp = demisto.getArg('timestamp')
+    limit_range = demisto.getArg('limit')
+    int_limit_range = int(limit_range)
+    if int_limit_range >= 0:
+        filter_response = malware_query_filter(needs_attention, is_type, status_val, time_stamp, int_limit_range)
+        demisto.results(filter_response)
+    else:
+        raise Exception("The limit should not contain any negative value")
+
+
+def malware_query_filter(needs_attention, is_type, status_val, time_stamp, int_limit_range):
+    query = []
+    if bool(needs_attention) == True:
+        query.append({"fieldName": "needsAttention","operator": "Is","values": [bool(needs_attention)]})
+    if bool(is_type) == True:
+        types = is_type.split(",")
+        query.append({"fieldName": "type","operator": "Equals","values": types})
+    if bool(status_val) == True:
+        is_status = status_val.split(",")
+        query.append({"fieldName": "status","operator": "Equals","values": is_status})
+    if bool(time_stamp) == True:
+        query.append({"fieldName": "timestamp","operator": "GreaterThan","values": [int(time_stamp)]})
+    response = malware_query(query, int_limit_range)
+    return response
+
+
+def malware_query(action_values, limit):
+    json_body = {"filters": action_values,"sortingFieldName":"timestamp","sortDirection":"DESC","limit":limit,"offset":0}
+
+    return http_request('POST', '/rest/malware/query', json_body=json_body)
+
+
 def main():
     auth = ''
     try:
@@ -1864,6 +1900,9 @@ def main():
 
         elif demisto.command() == 'cybereason-delete-sensor':
             delete_sensor()
+
+        elif demisto.command() == 'cybereason-malware-query':
+            malware_query_command()
 
     except Exception as e:
         return_error(str(e))
