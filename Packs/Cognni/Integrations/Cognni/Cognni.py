@@ -378,8 +378,8 @@ def test_module(client: Client, api_key: str, first_fetch: int) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
+    answer = ''
     try:
-        answer = ''
         client.fetch_key(api_key)
     except ValueError:
         answer += 'The api key is invalid'
