@@ -1,0 +1,36 @@
+args:
+- default: true
+  description: A list for which to sum the list values.
+  isArray: true
+  name: value
+  required: true
+comment: "Gets the minimum value from list\ne.g. [\"25\", \"10\", \"25\"] =>  \"10\"\
+  \n "
+commonfields:
+  id: 34dbcfbd-a8dd-4e30-805b-ef92f8cf9f15
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 39ddb7fd-dafe-41a0-8aaa-55baf2a7f4a3
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.4.27798
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: MinList
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- number
+- entirelist
+type: python
