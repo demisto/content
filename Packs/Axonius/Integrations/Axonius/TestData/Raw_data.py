@@ -1,3 +1,9 @@
+DUMMY_TAGS = ["one", "two", "three"]
+
+DUMMY_DEVICES_IDS = ["123", "abc"]
+
+DUMMY_USER_IDS = "321"
+
 USERS_SQS = [
     {
         "id": "61b0ef77749934fad94f121a",
@@ -194,6 +200,40 @@ USERS_SQS = [
     },
 ]
 
-DUMMY_TAGS = ["one", "two", "three"]
-DUMMY_DEVICES_IDS = ["123", "abc"]
-DUMMY_USER_IDS = ["321", "cba"]
+DUMMY_DEVICES = [
+  {
+    "adapter_list_length": 8,
+    "adapters": [
+      "active_directory_adapter",
+      "cisco_meraki_adapter",
+      "counter_act_adapter",
+      "eclypsium_adapter",
+      "epo_adapter",
+      "esx_adapter",
+      "sccm_adapter",
+      "tenable_security_center_adapter"
+    ],
+    "internal_axon_id": "98d57c96f73fbcb1edd63110f4f15613",
+    "labels": [
+      "Count Meraki",
+      "JB-Windows",
+      "Windows Workstation"
+    ],
+    "specific_data.data.hostname": [
+      "DESKTOP-DUMMY.DEMO.LOCAL"
+    ],
+    "specific_data.data.last_seen": "Tue, 05 Apr 2022 22:58:14 GMT",
+    "specific_data.data.name": [
+      "DESKTOP-DUMMY"
+    ],
+    "specific_data.data.network_interfaces.ips": [
+      "10.0.48.31"
+    ],
+    "specific_data.data.network_interfaces.mac": [
+      "88:53:2E:12:44:4F"
+    ],
+    "specific_data.data.os.type": [
+      "Windows"
+    ]
+  }
+]

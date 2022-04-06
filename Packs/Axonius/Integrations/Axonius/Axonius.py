@@ -1,11 +1,10 @@
 """Demisto Integration for Axonius."""
-import traceback
-from typing import Any, List, Optional, Union
 
 from axonius_api_client.api.assets.devices import Devices
 from axonius_api_client.api.assets.users import Users
 from axonius_api_client.connect import Connect
 from axonius_api_client.tools import dt_parse, strip_left
+
 from CommonServerPython import *
 
 MAX_ROWS: int = 50
@@ -122,7 +121,7 @@ def update_tags(
 ) -> CommandResults:  # noqa: F821, F405
     tag_name: str = args["tag_name"]
     internal_axon_id_arr: list = args["ids"]
-    if type(internal_axon_id_arr) == str:
+    if isinstance(internal_axon_id_arr, str):
         internal_axon_id_arr = argToList(internal_axon_id_arr, separator=",")
     api_obj = client.devices if args["type"] == "devices" else client.users
     api_name = api_obj.__class__.__name__
@@ -216,6 +215,60 @@ def parse_assets(
     )  # noqa: F821, F405
 
 
+def run_command(client: Connect, args: dict, command: str):
+
+    results: Union[CommandResults, str, None] = None
+    if command == "test-module":
+        results = test_module(client=client)
+    elif command == "axonius-get-devices-by-savedquery":
+        results = get_by_sq(api_obj=client.devices, args=args)
+    elif command == "axonius-get-users-by-savedquery":
+        results = get_by_sq(api_obj=client.users, args=args)
+    elif command == "axonius-get-users-by-mail":
+        results = get_by_value(api_obj=client.users, args=args, method_name="mail")
+    elif command == "axonius-get-users-by-mail-regex":
+        results = get_by_value(
+            api_obj=client.users, args=args, method_name="mail_regex"
+        )
+    elif command == "axonius-get-users-by-username":
+        results = get_by_value(
+            api_obj=client.users, args=args, method_name="username"
+        )
+    elif command == "axonius-get-users-by-username-regex":
+        results = get_by_value(
+            api_obj=client.users, args=args, method_name="username_regex"
+        )
+    elif command == "axonius-get-devices-by-hostname":
+        results = get_by_value(
+            api_obj=client.devices, args=args, method_name="hostname"
+        )
+    elif command == "axonius-get-devices-by-hostname-regex":
+        results = get_by_value(
+            api_obj=client.devices, args=args, method_name="hostname_regex"
+        )
+    elif command == "axonius-get-devices-by-ip":
+        results = get_by_value(api_obj=client.devices, args=args, method_name="ip")
+    elif command == "axonius-get-devices-by-ip-regex":
+        results = get_by_value(
+            api_obj=client.devices, args=args, method_name="ip_regex"
+        )
+    elif command == "axonius-get-devices-by-mac":
+        results = get_by_value(api_obj=client.devices, args=args, method_name="mac")
+    elif command == "axonius-get-devices-by-mac-regex":
+        results = get_by_value(
+            api_obj=client.devices, args=args, method_name="mac_regex"
+        )
+    elif command == "axonius-get-saved-queries":
+        results = get_saved_queries(client=client, args=args)
+    elif command == "axonius-get-tags":
+        results = get_tags(client=client, args=args)
+    elif command == "axonius-add-tag":
+        results = update_tags(client=client, args=args, method_name="add")
+    elif command == "axonius-remove-tag":
+        results = update_tags(client=client, args=args, method_name="remove")
+    return results
+
+
 def main():
     """PARSE AND VALIDATE INTEGRATION PARAMS."""
     params: dict = demisto.params()
@@ -239,96 +292,10 @@ def main():
             certverify=certverify,
             certwarn=False,
         )
-
-        if command == "test-module":
-            result = test_module(client=client)
-            return_results(result)  # noqa: F821, F405
-        elif command == "axonius-get-devices-by-savedquery":
-            results = get_by_sq(api_obj=client.devices, args=args)
-            return_results(results)  # noqa: F821, F405
-        elif command == "axonius-get-users-by-savedquery":
-            results = get_by_sq(api_obj=client.users, args=args)
-            return_results(results)  # noqa: F821, F405
-        elif command == "axonius-get-users-by-mail":
-            results = get_by_value(api_obj=client.users, args=args, method_name="mail")
-            return_results(results)  # noqa: F821, F405
-        elif command == "axonius-get-users-by-mail-regex":
-            results = get_by_value(
-                api_obj=client.users, args=args, method_name="mail_regex"
-            )
-            return_results(results)
-        elif command == "axonius-get-users-by-username":
-            results = get_by_value(
-                api_obj=client.users, args=args, method_name="username"
-            )
-            return_results(results)  # noqa: F821, F405
-        elif command == "axonius-get-users-by-username-regex":
-            results = get_by_value(
-                api_obj=client.users, args=args, method_name="username_regex"
-            )
-            return_results(results)
-        elif command == "axonius-get-devices-by-hostname":
-            results = get_by_value(
-                api_obj=client.devices, args=args, method_name="hostname"
-            )
-            return_results(results)  # noqa: F821, F405
-        elif command == "axonius-get-devices-by-hostname-regex":
-            results = get_by_value(
-                api_obj=client.devices, args=args, method_name="hostname_regex"
-            )
-            return_results(results)
-        elif command == "axonius-get-devices-by-ip":
-            results = get_by_value(api_obj=client.devices, args=args, method_name="ip")
-            return_results(results)  # noqa: F821, F405
-        elif command == "axonius-get-devices-by-ip-regex":
-            results = get_by_value(
-                api_obj=client.devices, args=args, method_name="ip_regex"
-            )
-            return_results(results)
-        elif command == "axonius-get-devices-by-mac":
-            results = get_by_value(api_obj=client.devices, args=args, method_name="mac")
-            return_results(results)  # noqa: F821, F405
-        elif command == "axonius-get-devices-by-mac-regex":
-            results = get_by_value(
-                api_obj=client.devices, args=args, method_name="mac_regex"
-            )
-            return_results(results)
-        elif command == "axonius-get-devices-by-mac-regex":
-            results = get_by_value(
-                api_obj=client.devices, args=args, method_name="mac_regex"
-            )
-            return_results(results)
-        elif command == "axonius-get-saved-queries":
-            results = get_saved_queries(client=client, args=args)
-            return_results(results)
-        elif command == "axonius-get-tags":
-            results = get_tags(client=client, args=args)
-            return_results(results)
-        elif command == "axonius-add-tag":
-            results = update_tags(client=client, args=args, method_name="add")
-            return_results(results)
-        elif command == "axonius-remove-tag":
-            results = update_tags(client=client, args=args, method_name="remove")
-            return_results(results)
-        elif command == "axonius-get-devices-by-mac-regex":
-            results = get_by_value(api_obj=client.devices, args=args, method_name="mac_regex")
-            return_results(results)
-        elif command == "axonius-get-savedqueries":
-            results = get_saved_queries(client=client, args=args)
-            return_results(results)
-        elif command == "axonius-get-tags":
-            results = get_tags(client=client, args=args)
-            return_results(results)
-        elif command == "axonius-add-tag":
-            results = update_tags(client=client, args=args, method_name="add")
-            return_results(results)
-        elif command == "axonius-remove-tag":
-            results = update_tags(client=client, args=args, method_name="remove")
-            return_results(results)
+        return_results(run_command(client, args, command))  # noqa: F821, F405
 
     except Exception as exc:
         demisto.error(traceback.format_exc())
-
         msg: List[str] = [f"Failed to execute {command} command", "Error:", str(exc)]
         return_error("\n".join(msg))  # noqa: F821, F405
 

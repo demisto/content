@@ -113,3 +113,39 @@ EXPECTED_USERS_SQS = [
 ]
 
 EXPECTED_DEVICE_TAGS = ["one", "two", "three"]
+
+EXPECTED_DEVICE = {
+    "adapter_list_length": 8,
+    "adapters": [
+      "active_directory_adapter",
+      "cisco_meraki_adapter",
+      "counter_act_adapter",
+      "eclypsium_adapter",
+      "epo_adapter",
+      "esx_adapter",
+      "sccm_adapter",
+      "tenable_security_center_adapter"
+    ],
+    "internal_axon_id": "98d57c96f73fbcb1edd63110f4f15613",
+    "labels": [
+      "Count Meraki",
+      "JB-Windows",
+      "Windows Workstation"
+    ],
+    "aggregated_hostname": [
+      "DESKTOP-DUMMY.DEMO.LOCAL"
+    ],
+    "aggregated_last_seen": "Tue, 05 Apr 2022 22:58:14 GMT",
+    "aggregated.name": [
+      "DESKTOP-DUMMY"
+    ],
+    "aggregated_network_interfaces_ips": [
+      "10.0.48.31"
+    ],
+    "aggregated_network_interfaces_mac": [
+      "88:53:2E:12:44:4F"
+    ],
+    "aggregated_os_type": [
+      "Windows"
+    ]
+  }
