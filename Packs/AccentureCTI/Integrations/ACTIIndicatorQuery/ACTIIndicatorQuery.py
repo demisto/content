@@ -352,6 +352,8 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
                           raw_response=res,
                           readable_output=tableToMarkdown('Results', analysis_info))
 
+def new_fundamental_command():
+    pass
 
 def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, indicatorTypeHash: bool = False):
     """
