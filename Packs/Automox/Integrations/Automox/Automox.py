@@ -680,11 +680,11 @@ def run_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER, None) or DEFAULT_ORG_ID
     device_id = args.get(DEVICE_IDENTIFIER, None)
     command_type_name = args.get('command', None)
-    args = args.get('args', None)
+    patches = args.get('patches', None)
 
     payload = {
         'command_type_name': command_type_name,
-        'args': args
+        'args': patches
     }
 
     client.run_command(org_id, device_id, payload)

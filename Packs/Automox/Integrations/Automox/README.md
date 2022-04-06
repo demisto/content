@@ -264,6 +264,7 @@ List all Automox users within an organization.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| org_id | Organization identifier. | Optional |
 | limit | The maximum number of results to return per page. Default is 50. | Optional |
 | page | The page of results to return. | Optional |
 
@@ -640,6 +641,7 @@ Upload a vulnerability report to Automox Vulnerability Sync.
 | entry_id | Entry ID of the CSV file to upload. | Required |
 | csv_file_name | Name for CSV file uploaded and shown within Automox. Default is XSOAR-uploaded-report.csv. | Optional |
 | reports_source | The third-party source of the vulnerability report. Default is Generic Report. | Optional |
+| type | The type of task to create | Optional |
 
 
 #### Context Output
@@ -872,6 +874,7 @@ Create a group in Automox
 | parent_server_group_id | Identifier of the parent group. Defaults to default group id if omitted. | Optional |
 | policies | List of policy identifiers to assign to group. | Optional |
 | refresh_interval | Frequency of device refreshes in minutes. (Must be between 360 and 1440). | Required |
+| color | Automox console highlight color for the group. Value should be a valid Hex color code | Optional |
 
 
 #### Context Output
@@ -918,6 +921,7 @@ Update a group's information in Automox
 | parent_server_group_id | Identifier of the parent group. Defaults to default group id if omitted. | Optional |
 | policies | List of policy identifiers to assign to group. | Optional |
 | refresh_interval | Frequency of device refreshes in minutes. | Optional |
+| color | Automox console highlight color for the group. Value should be a valid Hex color code | Optional |
 
 
 #### Context Output

@@ -278,6 +278,13 @@ script:
   - name: automox-organization-users-list
     description: 'List all Automox users within an organization.'
     arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
     - name: limit
       description: 'The maximum number of results to return per page.'
       type: 'number'
@@ -693,6 +700,14 @@ script:
       default: false
       defaultValue: 'Generic Report'
       secret: false
+    - name: type
+      description: 'The type of task to create.'
+      type: 'string'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 'patch'
+      secret: false
     deprecated: false
     execution: false
     outputs:
@@ -961,6 +976,13 @@ script:
       required: true
       default: false
       secret: false
+    - name: color
+      description: 'Automox console highlight color for the group. Value should be a valid Hex color code'
+      type: String
+      isArray: false
+      required: false
+      default: false
+      secret: false
     deprecated: false
     execution: false
     outputs:
@@ -1046,6 +1068,13 @@ script:
       required: false
       default: false
       secret: false
+    - name: color
+      description: 'Automox console highlight color for the group. Value should be a valid Hex color code'
+      type: String
+      isArray: false
+      required: false
+      default: false
+      secret: false
     deprecated: false
     execution: false
   - name: automox-group-delete
@@ -1073,6 +1102,6 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.4.27798
-fromversion: 5.5.0
+fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- Upload_Vulnerability_Report_to_Automox
