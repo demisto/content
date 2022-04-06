@@ -7,8 +7,8 @@ args:
   secret: false
   auto: PREDEFINED
   predefined:
-    - soft
-    - hard
+  - soft
+  - hard
 - default: false
   description: 'The brand of which you wish to delete this email from. the default value is the incident using brand.'
   isArray: false
@@ -21,15 +21,14 @@ args:
   name: search_name
   required: false
   secret: false
-  hidden: false
 - auto: PREDEFINED
   default: false
   description: Use XSOAR built-in polling to retrieve the result when it's ready.
   isArray: false
   name: polling
   predefined:
-    - 'true'
-    - 'false'
+  - 'true'
+  - 'false'
 - default: false
   description: Interval in seconds between each poll.
   isArray: false
@@ -72,5 +71,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.4.27798
 fromversion: '6.1.0'
+tests:
+- No tests (auto formatted)

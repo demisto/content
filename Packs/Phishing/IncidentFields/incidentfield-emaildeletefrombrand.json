@@ -1,10 +1,10 @@
 {
-    "id": "incident_deleteemailfrombrand",
+    "id": "incident_emaildeletefrombrand",
     "version": -1,
     "modified": "2022-01-02T15:33:29.590862104Z",
-    "name": "Delete Email From Brand",
+    "name": "Email Delete From Brand",
     "ownerOnly": false,
-    "cliName": "deleteemailfrombrand",
+    "cliName": "emaildeletefrombrand",
     "type": "singleSelect",
     "closeForm": false,
     "editForm": true,

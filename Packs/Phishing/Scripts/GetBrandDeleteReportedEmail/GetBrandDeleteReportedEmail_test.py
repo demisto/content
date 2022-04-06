@@ -19,6 +19,24 @@ INTEGRATION_INSTANCES = {
             'brand': 'NoMailIntegration', 'enabled': 'false'}],
     }}
 
+ENABLED_INSTANCES = [
+    {
+        'name': 'DeleteReportedEmail_Integration_instance1',
+        'brand': 'SecurityAndCompliance',
+        'enabled': 'true'
+    },
+    {
+        'name': 'DeleteReportedEmail_Integration_instance2',
+        'brand': 'EWSO365',
+        'enabled': 'true'
+    },
+    {
+        'name': 'NoMailIntegration_instance1',
+        'brand': 'NoMailIntegration',
+        'enabled': 'true'
+    }
+]
+
 
 def test_get_enabled_instances(mocker):
     """
@@ -54,3 +72,20 @@ def test_get_enabled_instances_failure(mocker):
     """
     mocker.patch.object(demisto, 'internalHttpRequest', return_value={'statusCode': 400})
     assert get_enabled_instances() == []
+
+
+def test_get_delete_reported_email_integrations(mocker):
+    """
+       Given:
+           - All enabled integration instances
+
+       When:
+           - Filtering the suitable integrations for deleting an email
+
+       Then:
+           - Return only the suitable integrations brand name
+
+       """
+    import GetBrandDeleteReportedEmail
+    mocker.patch.object(GetBrandDeleteReportedEmail, 'get_enabled_instances', return_value=ENABLED_INSTANCES)
+    assert set(get_delete_reported_email_integrations()) == {'EWSO365', 'SecurityAndCompliance'}

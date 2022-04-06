@@ -271,7 +271,7 @@ def get_search_args(args: dict):
 
     """
     incident_info = demisto.incident()
-    custom_fields = incident_info.get('CustomFields')
+    custom_fields = incident_info.get('CustomFields', {})
     message_id = custom_fields.get('reportedemailmessageid')
     user_id = custom_fields.get('reportedemailto')
     delete_type = custom_fields.get('emaildeletetype', args.get('delete_type'))
@@ -298,7 +298,7 @@ def get_search_args(args: dict):
 def delete_from_brand_handler(incident_info: dict, args: dict):
     """
     Handle the delete_from_brand argument in the following logic:
-    1. If the source brand exists in the 'deleteemailfrombrand' field, use it.
+    1. If the source brand exists in the 'emaildeletefrombrand' field, use it.
     2. If the field is empty, use the script's argument.
     3. If there is no argument given, use the incident's source brand.
     2. If the value is given (in any of the above ways) but it is not of a suitable integration, raise an error.
@@ -312,7 +312,7 @@ def delete_from_brand_handler(incident_info: dict, args: dict):
         The suitable delete brand
 
     """
-    delete_from_brand = incident_info.get('CustomFields').get('deleteemailfrombrand')
+    delete_from_brand = incident_info.get('CustomFields').get('emaildeletefrombrand')
     if not delete_from_brand or delete_from_brand == 'Unspecified':
         delete_from_brand = args.get('delete_from_brand', incident_info.get('sourceBrand'))
 
@@ -325,7 +325,7 @@ def delete_from_brand_handler(incident_info: dict, args: dict):
 def main():
     args = demisto.args()
     search_args = get_search_args(args)
-    result, deletion_failure_reason, scheduled_command = '', '', ''
+    result, deletion_failure_reason, scheduled_command = '', '', None
     delete_from_brand = search_args['using-brand']
     try:
 
