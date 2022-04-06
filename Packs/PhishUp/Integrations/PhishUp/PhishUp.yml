@@ -59,6 +59,21 @@ script:
     - contextPath: PhishUp.Score
       description: Phishup Engine Url Score
       type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: URL.Data
+      description: The URL
+      type: String
   - deprecated: false
     description: Get chosen action from PhishUp instance
     execution: false
@@ -82,7 +97,7 @@ script:
     - contextPath: PhishUp.Evaluation
       description: returns "Phish" if any response has "Phish" result
       type: String
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.4.27798
   feed: false
   isfetch: false
   longRunning: false
