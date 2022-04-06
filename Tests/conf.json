@@ -3257,12 +3257,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "integrations": "Cortex Data Lake",
-            "playbookID": "Cortex Data Lake Test",
-            "instance_names": "cdl_dev",
-            "fromversion": "4.5.0"
-        },
-        {
             "integrations": "MongoDB",
             "playbookID": "MongoDB - Test"
         },
