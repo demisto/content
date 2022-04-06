@@ -2049,7 +2049,10 @@ def fetch_incidents(client: Client) -> list:
 
         severity = severity_map.get(result.get('severity', ''), 0)
 
-        parse_dict_ticket_fields(client, result)
+        try:
+            parse_dict_ticket_fields(client, result)
+        except Exception:
+            pass
 
         file_names = []
         if client.get_attachments:
