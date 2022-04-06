@@ -60,17 +60,18 @@ def test_generic_command_with_boolean_value(requests_mock, client):
     Then:
         - Ensure Human readable returns
     """
-    response = load_test_data('booleanResults.json')
+    # Example response returned from the API for this resource
+    res = {"@odata.context": "https://graph.microsoft.com/v1.0/$metadata#Edm.Boolean", "value": True}
     requests_mock.get(
         'https://graph.microsoft.com/v1.0/users/testUser/revokeSignInSessions',
-        json=response,
+        json=res,
     )
     args = {
         'resource': '/users/testUser/revokeSignInSessions',
 
     }
     res = generic_command(client, args)
-    assert res == 'The API query ran successfully and returned no content.'
+    assert res.readable_output == 'The API query ran successfully and returned no content.'
 
 
 def test_generic_command_positive_other_key(requests_mock, client):
