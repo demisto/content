@@ -1,12 +1,7 @@
 """Axonius Integration for Cortex XSOAR - Unit Tests file."""
 import inspect
-import pytest
-from unittest import TestCase
-
 import axonius_api_client as axonapi
-from axonius_api_client.connect import Connect
-from axonius_api_client.api import Devices
-from axonius_api_client.api import Users
+
 from TestData.Raw_data import USERS_SQS, DUMMY_TAGS, DUMMY_DEVICES_IDS, DUMMY_USER_IDS
 from TestData.Expected_data import EXPECTED_USERS_SQS, EXPECTED_DEVICE_TAGS
 from Axonius import get_saved_queries, get_tags, update_tags
