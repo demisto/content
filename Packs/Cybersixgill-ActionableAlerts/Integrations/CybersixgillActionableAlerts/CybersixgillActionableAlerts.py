@@ -1,7 +1,7 @@
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 import json
@@ -17,7 +17,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 CHANNEL_CODE = '7698e8287dfde53dcd13082be750a85a'
-MAX_INCIDENTS = 100
+MAX_INCIDENTS = 20
 DEFAULT_INCIDENTS = '50'
 MAX_DAYS_BACK = 30
 DEFAULT_DAYS_BACK = '1'
@@ -35,7 +35,6 @@ TO_DEMISTO_STATUS = {
 }
 VERIFY = not demisto.params().get("insecure", True)
 SESSION = requests.Session()
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -91,11 +90,25 @@ def add_sub_alerts_fields(incident, item_info, sixgill_alerts_client):
     incident['status'] = TO_DEMISTO_STATUS[status]
     content_item = {'creator': None, 'title': '', 'content': '', 'description': item_info.get('description', '')}
     # cve alert
-    if item_info.get('es_id') == 'Not Applicable' and 'cve_id' in item_info.get('additional_info'):
-        content_item['content'] = f'https://portal.cybersixgill.com/#/cve/{item_info.get("additional_info",{}).get("cve_id", "")}'
+    if 'cve_id' in item_info.get('additional_info'):
+        content_item[
+            'content'] = f'https://portal.cybersixgill.com/#/cve/{item_info.get("additional_info", {}).get("cve_id", "")}'
+        add_info = item_info.get("additional_info", {})
+        content_item['CVSS 3.1'] = add_info.get("nvd", {}).get("v3", {}).get("current")
+        content_item['CVSS 2.0'] = add_info.get("nvd", {}).get("v2", {}).get("current")
+        content_item['DVE Score'] = add_info.get("score", {}).get("current")
+        attributes = []
+        attributes_dict = {}
+        for att in add_info.get("attributes"):
+            if att.get("value"):
+                attributes_dict["Name"] = att.get("name")
+                attributes_dict["Description"] = att.get("description")
+                attributes.append(attributes_dict)
+        content_item['CVE Attributes'] = attributes
     else:
         content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=item_info.get('id'),
-                                                                     aggregate_alert_id=item_info.get('aggregate_alert_id', None))
+                                                                     aggregate_alert_id=item_info.get(
+                                                                         'aggregate_alert_id', None))
         # get item full content
         content = content.get('items', None)
         if content:
@@ -117,12 +130,17 @@ def add_sub_alerts_fields(incident, item_info, sixgill_alerts_client):
     for key, value in item_info.get('additional_info', {}).items():
         if 'matched_' in key:
             triggered_assets.extend(value)
-    incident['CustomFields'].update({
+    additional_customfields = {
         'cybersixgillstatus': status.replace('_', ' ').title(),
         'cybersixgillsite': item_info.get('site', None),
         'cybersixgillactor': content_item.get('creator', None),
-        'cybersixgilltriggeredassets': triggered_assets
-    })
+        'cybersixgilltriggeredassets': triggered_assets,
+        'cybersixgillcvss31': content_item.get('CVSS 3.1', None),
+        'cybersixgillcvss20': content_item.get('CVSS 2.0', None),
+        'cybersixgilldvescore': content_item.get('DVE Score', None),
+        'cybersixgillattributes': content_item.get('CVE Attributes', None),
+    }
+    incident['CustomFields'].update(additional_customfields)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -167,7 +185,6 @@ def fetch_incidents():
     filter_alerts_kwargs = get_incident_init_params()
     incidents = []
     items = sixgill_alerts_client.get_actionable_alerts_bulk(limit=MAX_INCIDENTS, **filter_alerts_kwargs)
-
     if len(items) > 0:
         newest_incident_date = datetime.strptime(items[0].get('date'), DATETIME_FORMAT)
         offset = 0
@@ -193,7 +210,6 @@ def fetch_incidents():
             newest_incident_date = items_to_add[-1].get('date')
             for item in items_to_add:
                 item_info = sixgill_alerts_client.get_actionable_alert(actionable_alert_id=item.get('id'))
-                item_info['date'] = item.get('date')
                 new_incidents = item_to_incident(item_info, sixgill_alerts_client)
                 incidents.extend(new_incidents)
                 if len(incidents) >= max_incidents_to_return:
