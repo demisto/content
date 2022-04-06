@@ -141,6 +141,11 @@ ShowCampaignSenders
 ShowCampaignRecipients
 GetCampaignIncidentsInfo
 IsIncidentPartOfCampaign
+automations
+DBotRole
+GetIncidentsByQuery
+FindSimilarIncidentsByText
+CommonServerPython
 markdown
 Rasterize
 GetCampaignLowSimilarityIncidentsInfo
@@ -150,3 +155,4 @@ GetCampaignIncidentsInfo
 IsIncidentPartOfCampaign
 unsearchable
 ChronicleAsset
+SNDBOX
