@@ -7,7 +7,7 @@ from CommonServerPython import *
 ATP_REGEX = re.compile(r'(https://\w*|\w*)\.safelinks\.protection\.outlook\.com/.*\?url=')
 FIREEYE_REGEX = re.compile(r'(https:\/\/\w*|\w*)\.fireeye\.com\/.*\/url\?k=')
 PROOF_POINT_URL_REG = re.compile(r'https://urldefense(?:\.proofpoint)?\.(com|us)/(v[0-9])/')
-FIRST_TLD = re.compile(r"([.(?!.)][a-zA-Z]{0,1}[\/])|([.(?!.)][a-zA-Z0-9]{2,}[\/])")
+FIRST_TLD = re.compile(r"([.(?!.)][a-zA-Z]?(?:\/|$))|([.(?!.)][a-zA-Z0-9]{2,}[\/])")
 
 HTTP = 'http'
 PREFIX_TO_NORMALIZE = {
