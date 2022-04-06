@@ -110,11 +110,10 @@ configuration:
   required: false
   type: 0
 - additionalinfo: If this option is selected the
-    last modified date will be used to only pull 
-    the latest objects.
-  default: 'true'
-  display: Use Last Modified Date
-  name: use_last_modified
+    last modified date will be ignored and will 
+    pull all objects regardless of modified date.
+  display: Ignore Last Modified Date
+  name: ignore_last_modified
   required: false
   type: 8
 - defaultvalue: 'true'
