@@ -227,10 +227,10 @@ DUMMY_DEVICES = [
       "DESKTOP-DUMMY"
     ],
     "specific_data.data.network_interfaces.ips": [
-      "10.0.48.31"
+      "1.1.1.1"
     ],
     "specific_data.data.network_interfaces.mac": [
-      "88:53:2E:12:44:4F"
+      "52-84-D4-D0-79-04"
     ],
     "specific_data.data.os.type": [
       "Windows"

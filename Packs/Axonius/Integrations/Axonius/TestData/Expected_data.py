@@ -140,10 +140,10 @@ EXPECTED_DEVICE = {
       "DESKTOP-DUMMY"
     ],
     "aggregated_network_interfaces_ips": [
-      "10.0.48.31"
+      "1.1.1.1"
     ],
     "aggregated_network_interfaces_mac": [
-      "88:53:2E:12:44:4F"
+      "52-84-D4-D0-79-04"
     ],
     "aggregated_os_type": [
       "Windows"
