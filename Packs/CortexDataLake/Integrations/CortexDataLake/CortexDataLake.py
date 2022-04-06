@@ -861,7 +861,7 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
         fetch_subtype: Identifies the log subtype.
         fetch_table: Identifies the fetch type.
         fetch_fields: Fields to fetch from the table.
-        fetch_filter: Filter that should be used for the query
+        fetch_filter: Filter that should be used for the query.
 
     Returns:
         SQL query that matches the arguments
