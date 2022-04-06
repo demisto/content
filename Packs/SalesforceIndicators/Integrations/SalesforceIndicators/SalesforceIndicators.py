@@ -101,7 +101,7 @@ def fetch_indicators_command(client, manual_run=False):
     history_date = dateparser.parse(f"{client.history} days ago", settings={'RELATIVE_BASE': now})
     assert history_date is not None, f'could not parse {client.history} days ago'
     date_filter = history_date.strftime("%Y-%m-%dT%H:%M:%S.000+0000")
-    latest_modified_date = None
+    latest_mod_date = None
     last_run = demisto.getLastRun().get('lastRun')
     object_fields = None
 
@@ -146,7 +146,7 @@ def fetch_indicators_command(client, manual_run=False):
 
             more_records = True if indicators_raw.get('nextRecordsUrl', None) else False
     if indicators_unparsed and len(indicators_unparsed) > 0:
-        latest_modified_date = dateparser.parse((sorted([x.get('LastModifiedDate')for x in indicators_unparsed], reverse=True)[0]))
+        latest_mod_date = dateparser.parse((sorted([x.get('LastModifiedDate')for x in indicators_unparsed], reverse=True)[0]))
     for item in indicators_unparsed:
         try:
             value = item[client.key_field] if client.key_field in item else None
@@ -165,8 +165,8 @@ def fetch_indicators_command(client, manual_run=False):
     if not manual_run:
 
         # Update the last run time if there was a LastModifiedDate found
-        if latest_modified_date:
-            last_run = latest_modified_date.strftime("%Y-%m-%dT%H:%M:00Z")
+        if latest_mod_date:
+            last_run = latest_mod_date.strftime("%Y-%m-%dT%H:%M:00Z")
             demisto.setLastRun({"lastRun": last_run})
 
         # We submit indicators in batches
