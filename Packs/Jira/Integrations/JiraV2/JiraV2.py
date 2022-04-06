@@ -1031,15 +1031,7 @@ def get_attachment_data(attachment):
     """
     attachment_url = attachment.get('content')
     filename = attachment.get('filename')
-    # attachments_zip = jira_req(method='GET', resource_url=attachment_url).content
-    demisto.debug(f'Attachemnt url used: {attachment_url}')
-    demisto.debug(f'Attachemnt filename used: {filename}')
-    demisto.debug(f'Attachemnt data: \n{json.deumps(attachment)}')
-
     attachments_zip = jira_req(method='GET', resource_url=attachment_url, link=True).content
-    #
-    # attachment_metadata_url = f"rest{attachment['self'].split('/rest')[-1]}"
-    # attachment_metadata = jira_req(method='GET', resource_url=attachment_metadata_url).json()
 
     return filename, attachments_zip
 
