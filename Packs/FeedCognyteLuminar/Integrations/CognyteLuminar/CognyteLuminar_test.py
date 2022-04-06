@@ -13,7 +13,9 @@ client = Client(
     client_id="cognyte",
     client_secret="test",
     verify=False,
-    proxy=False
+    proxy=False,
+    tags=["TT1", "TT2"],
+    tlp_color="RED"
 )
 generic_expected_output = {
     "type": "indicator",
@@ -102,6 +104,14 @@ def test_cognyte_luminar_get_indicators(mocker):
     assert response.outputs_prefix == "Luminar.Indicators"
 
 
+def test_cognyte_luminar_get_indicators_zero_limit(mocker):
+    mocker.patch.object(client, 'get_luminar_indicators_list',
+                        side_effect=[INDICATOR_LIST])
+    args = {"limit": 0}
+    response = cognyte_luminar_get_indicators(client, args)
+    assert response.readable_output == "No Indicators Found."
+
+
 def test_cognyte_luminar_get_indicators_without_limit(mocker):
     mocker.patch.object(client, 'get_luminar_indicators_list',
                         side_effect=[INDICATOR_LIST])
@@ -136,7 +146,15 @@ def test_cognyte_luminar_get_leaked_records_without_limit(mocker):
     assert response.outputs_prefix == "Luminar.Leaked_Credentials"
 
 
-def test_reset_last_run(mocker):
+def test_cognyte_luminar_get_leaked_records_zero_limit(mocker):
+    mocker.patch.object(client, 'get_luminar_leaked_credentials_list',
+                        side_effect=[INDICATOR_LIST])
+    args = {"limit": 0}
+    response = cognyte_luminar_get_leaked_records(client, args)
+    assert response.readable_output == "No Leaked Records Found."
+
+
+def test_reset_last_run():
     response = reset_last_run()
     assert response.readable_output == "Fetch history deleted successfully"
 
@@ -149,7 +167,7 @@ def test_fetch_indicators_command(mocker):
 
 
 @pytest.mark.parametrize('expected_optput', [(generic_expected_output)])
-def test_generic_item_finder(mocker, expected_optput):
+def test_generic_item_finder(expected_optput):
     response = generic_item_finder(INDICATOR_LIST,
                                    "indicator--b54a0418-5d8e-4265-b440-15787bd8e0c4")
     result = {}
@@ -159,7 +177,7 @@ def test_generic_item_finder(mocker, expected_optput):
 
 
 @pytest.mark.parametrize('expected_optput', [(enrich_malware_output)])
-def test_enrich_malware_items(mocker, expected_optput):
+def test_enrich_malware_items(expected_optput):
     malware = {
         "type": "malware",
         "spec_version": "2.1",
@@ -172,13 +190,14 @@ def test_enrich_malware_items(mocker, expected_optput):
         "is_family": False
     },
     indicator = [ele for ele in INDICATOR_LIST if ele["type"] == "indicator"]
-    parent, child = enrich_malware_items(malware[0], indicator)
+    parent, child = enrich_malware_items(malware[0], indicator, ["TT1",
+                                                                 "TT2"], "RED")
     assert parent == expected_optput
     assert child == child_record
 
 
 @pytest.mark.parametrize('expected_optput', [(enrich_incident_output)])
-def test_enrich_incident_items(mocker, expected_optput):
+def test_enrich_incident_items(expected_optput):
     user_account_list = [ele for ele in INDICATOR_LIST if
                          ele["type"] == "user-account"]
     incident = {
@@ -190,7 +209,7 @@ def test_enrich_incident_items(mocker, expected_optput):
         "name": "Master Breach Comp",
         "created_by_ref": "identity--b276f696-62b2-4b5b-b8df-cda64e955399"
     }
-    parent, child = enrich_incident_items(incident, user_account_list)
+    parent, child = enrich_incident_items(incident, user_account_list, ["TT1", "TT2"], "RED")
     assert parent == expected_optput
 
 
@@ -199,8 +218,7 @@ def test_fetch_access_token(requests_mock):
     req_headers = {
         "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
     }
-    requests_mock.post(req_url, headers=req_headers,
-                       json={'access_token': '12345'})
+    requests_mock.post(req_url, headers=req_headers, json={'access_token': '12345'})
 
     response = client.fetch_access_token()
     assert response == "12345"
@@ -212,7 +230,7 @@ def test_get_last_run(mocker):
     assert response == ""
 
 
-def test_fetch_luminar_api_feeds(mocker, requests_mock):
+def test_fetch_luminar_api_feeds(requests_mock):
     post_req_url = f"{client._base_url}/realm/{client.luminar_account_id}/token"
     get_req_url = f"{client._base_url}/stix"
     post_req_headers = {

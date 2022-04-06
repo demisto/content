@@ -20,12 +20,14 @@ LUMINAR_TO_XSOAR_TYPES = {
 }
 
 
-def enrich_incident_items(parent, childrens):
+def enrich_incident_items(parent, childrens, feed_tags, tlp_color):
     """
     This will get Account, Incident objects
     Args:
         parent: Incident
         childrens: Accounts
+        feed_tags: feed_tags
+        tlp_color: tlp_color
 
     Returns: Incident, Account objects
 
@@ -34,6 +36,9 @@ def enrich_incident_items(parent, childrens):
 
     for children in childrens:
         tags = [LEAKED_RECORD, f'Incident: {parent.get("name")}', f'Credentials:{children.get("credential")}']
+        if feed_tags:
+            tags.extend([ft for ft in feed_tags])
+
         additional_field = {
             'tags': tags,
             "category": LEAKED_RECORD,
@@ -44,7 +49,8 @@ def enrich_incident_items(parent, childrens):
             'firstseenbysource': parent.get('created'),
             'updateddate': parent.get('modified'),
             'lastseenbysource': parent.get('created'),
-            "shortdescription": parent.get('description') or ""
+            "shortdescription": parent.get('description') or "",
+            "trafficlightprotocol": tlp_color
         }
 
         indicator = {
@@ -60,12 +66,14 @@ def enrich_incident_items(parent, childrens):
     return parent, modified_childrens
 
 
-def enrich_malware_items(parent, childrens):
+def enrich_malware_items(parent, childrens, feed_tags, tlp_color):
     """
     This will get Malware, Indicator objects
     Args:
         parent: Malware
         childrens: Indicator
+        feed_tags: feed_tags
+        tlp_color: tlp_color
 
     Returns: Malware, Indicator Objects
 
@@ -85,19 +93,22 @@ def enrich_malware_items(parent, childrens):
             children.update(indicator_type=indicator_type)
             parent["name"] = children["name"]
             children["value"] = value
-            relationships_lst = EntityRelationship(
+            relationship_obj = EntityRelationship(
                 name=EntityRelationship.Relationships.INDICATED_BY,
                 entity_a=value,
                 entity_a_type=indicator_type,
                 entity_b=parent["name"],
-                entity_b_type="STIX Malware",
+                entity_b_type=ThreatIntel.ObjectsNames.MALWARE,
             )
             tags = [it for it in children["indicator_types"]]
             all_tags.update(tags)
+
             tags.append("Malware Family: " + parent["name"])
             malware_types_str = ",".join(malware_types)
             indicator_type_str = ",".join(children["indicator_types"])
             tags.append(f"Malware Type: {malware_types_str}")
+            if feed_tags:
+                tags.extend([ft for ft in feed_tags])
 
             indicator = {
                 'value': value,
@@ -114,9 +125,10 @@ def enrich_malware_items(parent, childrens):
                     'firstseenbysource': children["created"],
                     "updateddate": children["modified"],
                     'lastseenbysource': children["modified"],
-                    "tags": tags
+                    "tags": tags,
+                    "trafficlightprotocol": tlp_color
                 },
-                'relationships': [relationships_lst.to_indicator()]
+                'relationships': [relationship_obj.to_indicator()]
             }
             modified_childrens.append(indicator)
 
@@ -149,7 +161,8 @@ class Client(BaseClient):
     This class handles logic for Luminar API
     """
 
-    def __init__(self, base_url, account_id, client_id, client_secret, verify=None, proxy=None):
+    def __init__(self, base_url: str, account_id: str, client_id: str, client_secret: str, verify: bool = False,
+                 proxy: bool = False, tags: list = [], tlp_color: Optional[str] = None):
         BaseClient.__init__(
             self,
             base_url,
@@ -162,6 +175,8 @@ class Client(BaseClient):
         self.luminar_client_secret = client_secret
         self.offset = 0
         self.limit = 100
+        self.feed_tags = tags
+        self.tlp_color = tlp_color
 
     def fetch_access_token(self):
         """
@@ -228,14 +243,16 @@ class Client(BaseClient):
 
                 if parent and parent.get("type") == "malware":
                     indicators_list = []
-                    modified_parent, modified_childrens = enrich_malware_items(parent, children)
+                    modified_parent, modified_childrens = enrich_malware_items(parent, children,
+                                                                               self.feed_tags, self.tlp_color)
                     indicators_list.extend(modified_childrens)
                     indicators_list.append(modified_parent)
                     for b in batch(indicators_list, batch_size=2000):
                         demisto.createIndicators(b)
                 elif parent and parent.get("type") == "incident":
                     incidents_list = []
-                    modified_parent, modified_childrens = enrich_incident_items(parent, children)
+                    modified_parent, modified_childrens = enrich_incident_items(parent, children,
+                                                                                self.feed_tags, self.tlp_color)
                     incidents_list.extend(modified_childrens)
                     incidents_list.append(modified_parent)
                     for b in batch(incidents_list, batch_size=2000):
@@ -337,13 +354,9 @@ def cognyte_luminar_get_leaked_records(client: Client, args: dict):
     Returns:
 
     """
-    limit = arg_to_number(args.get('limit', 0), arg_name='limit')
+    limit = arg_to_number(args.get('limit', 50), arg_name='limit')
     leaked_records = client.get_luminar_leaked_credentials_list()
-    if limit != 0:
-        leaked_records = leaked_records[:limit]
-    else:
-        limit = 50
-        leaked_records = leaked_records[:limit]
+    leaked_records = leaked_records[:limit]
     if leaked_records:
         readable_output = tableToMarkdown(name=LEAKED_CREDENTIALS_TABLE_HEADER, t=leaked_records,
                                           headers=["Indicator Type", "Indicator Value", "Credentials"],
@@ -372,13 +385,9 @@ def cognyte_luminar_get_indicators(client: Client, args: dict):
     Returns:
 
     """
-    limit = arg_to_number(args.get('limit', 0), arg_name='limit')
+    limit = arg_to_number(args.get('limit', 50), arg_name='limit')
     indicators_list = client.get_luminar_indicators_list()
-    if limit != 0:
-        indicators_list = indicators_list[:limit]
-    else:
-        limit = 50
-        indicators_list = indicators_list[:limit]
+    indicators_list = indicators_list[:limit]
     if indicators_list:
         readable_output = tableToMarkdown(name=IOC_TABLE_HEADER, t=indicators_list,
                                           headers=["Indicator Type", "Indicator Value", "Malware Family"],
@@ -430,8 +439,10 @@ def main() -> None:
     account_id = params.get('luminar_account_id')
     client_id = params.get('luminar_client_id')
     client_secret = params.get('luminar_client_secret')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    tags = argToList(params.get('feedTags'))
+    tlp_color = params.get('tlp_color')
     client = Client(
         base_url=base_url,
         account_id=account_id,
@@ -439,6 +450,8 @@ def main() -> None:
         client_secret=client_secret,
         verify=verify_certificate,
         proxy=proxy,
+        tags=tags,
+        tlp_color=tlp_color
     )
     command = demisto.command()
     demisto.info(f'Command being called is {demisto.command()}')
