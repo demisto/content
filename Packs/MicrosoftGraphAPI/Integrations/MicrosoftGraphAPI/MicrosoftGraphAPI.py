@@ -112,9 +112,10 @@ def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResul
         results = {'raw_response': response}
 
         if argToBoolean(args.get('populate_context', 'true')):
-            results['outputs'] = get_response_outputs(response)
-            if results['outputs'] is True:
+            outputs = get_response_outputs(response)
+            if outputs is True:
                 return CommandResults(readable_output='The API query ran successfully and returned no content.')
+            results['outputs'] = outputs
             results['outputs_prefix'] = 'MicrosoftGraph'
 
     return CommandResults(**results)  # type: ignore[arg-type]
