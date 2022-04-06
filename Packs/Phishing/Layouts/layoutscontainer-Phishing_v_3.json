@@ -534,7 +534,7 @@
                     {
                         "description": "Results of machine-learning checks on the email using a pretrained model.",
                         "displayType": "CARD",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "swtuqptgvs-84947d50-a904-11ec-8585-0dac7af6e9b0",
                         "items": [
@@ -551,25 +551,25 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
+                                "endCol": 1,
                                 "fieldId": "dbotprediction",
                                 "height": 53,
                                 "id": "e4e7c2c0-a904-11ec-8585-0dac7af6e9b0",
-                                "index": 0,
+                                "index": 1,
                                 "listId": "swtuqptgvs-84947d50-a904-11ec-8585-0dac7af6e9b0",
                                 "sectionItemType": "field",
-                                "startCol": 1
+                                "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 2,
                                 "fieldId": "dbottextsuggestionhighlighted",
                                 "height": 106,
                                 "id": "fa1f2070-a904-11ec-8585-0dac7af6e9b0",
-                                "index": 0,
+                                "index": 2,
                                 "listId": "swtuqptgvs-84947d50-a904-11ec-8585-0dac7af6e9b0",
                                 "sectionItemType": "field",
-                                "startCol": 2
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -578,14 +578,14 @@
                         "moved": false,
                         "name": "ML Prediction For The Email",
                         "static": false,
-                        "w": 2,
+                        "w": 1,
                         "x": 0,
                         "y": 5
                     },
                     {
                         "description": "The category of the email. In case of a phishing email, also shows the phishing sub-type.",
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "swtuqptgvs-4b078f40-a905-11ec-8585-0dac7af6e9b0",
                         "items": [
@@ -643,7 +643,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 7
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
@@ -671,6 +671,29 @@
                         "w": 1,
                         "x": 2,
                         "y": 3
+                    },
+                    {
+                        "description": "Provides machine-learning based detection of phishing URLs (shows only malicious detections).",
+                        "h": 3,
+                        "i": "swtuqptgvs-d2300fd0-b5a1-11ec-9a46-87b4f35ed7e4",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "ML Prediction for URLs",
+                        "query": {
+                            "notTags": [],
+                            "tags": [
+                                "DBOT_URL_PHISHING_MALICIOUS"
+                            ]
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 1,
+                        "y": 5
                     }
                 ]
             },
