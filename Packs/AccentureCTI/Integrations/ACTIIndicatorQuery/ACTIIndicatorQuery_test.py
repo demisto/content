@@ -1,5 +1,5 @@
 import requests_mock
-from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, markdown_postprocessing                          # noqa: E501
+from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, markdown_postprocessing, fundamental_uuid_command                          # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import *
 import demistomock as demisto
@@ -670,3 +670,26 @@ def test_markdown_postprocessing():
         " as China has.\n\n ![Arctic Map](data:image/jpg;base64,)"
     output = markdown_postprocessing(md_text)
     assert output == expexted_output
+
+def test_fundamental_uuid_command():
+    url = 'https://test.com/rest/fundamental/v0/c1b3216e-8b2e-4a9f-b0a9-2e184b7182f7'
+
+    status_code = 200
+    json_data = MALWARE_FAMILY_RES_JSON
+    expected_output = expected_output_malware_family
+
+    uuid_to_check = {'uuid': 'c1b3216e-8b2e-4a9f-b0a9-2e184b7182f7'}
+    with requests_mock.Mocker() as m:
+        m.get(url, status_code=status_code, json=json_data)
+        client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        results = fundamental_uuid_command(client, uuid_to_check, DBotScoreReliability.B)
+
+        output = results.to_context().get('EntryContext', {})
+
+        # print(output)
+        print(output.get('malware_family(val.value && val.value == obj.value)', []))
+        # print(output.get(DBOT_KEY, []))
+        # print("test---------------------------->")
+
+        assert output.get('malware_family(val.value && val.value == obj.value)', []) == expected_output.get('malware_family')
+        assert output.get(DBOT_KEY, []) == expected_output.get('dbot')

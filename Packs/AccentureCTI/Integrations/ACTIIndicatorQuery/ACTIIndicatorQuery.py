@@ -35,6 +35,9 @@ class Client(BaseClient):
     def threat_indicator_search(self, url_suffix: str, data: dict = {}) -> dict:
         return self._http_request(method='GET', url_suffix=url_suffix, params=data)
 
+    # def fundamental_search(self, url_suffix: str, data: dict = {}) -> dict:
+    #     return self._http_request(method='GET', url_suffix=url_suffix, params=data)
+
 
 def _validate_args(indicator_type: str, values: list) -> None:
     """
@@ -352,8 +355,57 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
                           raw_response=res,
                           readable_output=tableToMarkdown('Results', analysis_info))
 
-def new_fundamental_command():
-    pass
+
+def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreReliability) -> CommandResults:
+    """
+    doc...
+    """
+    uuid: str = str(args.get('uuid'))
+    res = {}
+    try:
+        res = client.threat_indicator_search(url_suffix=f'/v0/{uuid}')
+    except Exception as e:
+        if 'Failed to parse json object from response' in e.args[0]:
+            return_results(CommandResults(indicator=None,
+                                          raw_response={},
+                                          readable_output=f"No results were found for uuid: {uuid}"))
+        else:
+            raise e
+    indicator = None
+    analysis_info = {}
+    if len(res):
+        dbot_score = _calculate_dbot_score(res.get('severity', 0))
+        desc = 'Match found in Accenture CTI database'
+        indicator_value = res.get('key', '')
+        indicator_type = res.get('type', '')
+        last_published = res.get('last_published', '')
+        last_published_format = parse_date_string(last_published, DATE_FORMAT)
+
+        analysis_info = {
+            'Name': res.get('display_text', ''),
+            'DbotReputation': dbot_score,
+            'Confidence': res.get('confidence', 0),
+            'ThreatTypes': res.get('threat_types', ''),
+            'TypeOfUse': res.get('last_seen_as', ''),
+            'Type': indicator_type,
+            'LastPublished': str(last_published_format),
+            'Description': res.get('description', '')
+        }
+
+        if indicator_type.lower() == 'malware_family':
+            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTIIndicatorQuery', dbot_score, desc, reliability)
+            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'malware_family')
+        elif indicator_type.lower() == 'threat_group':
+            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTIIndicatorQuery', dbot_score, desc, reliability)
+            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'threat_group')
+        elif indicator_type.lower() == 'threat_actor':
+            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTIIndicatorQuery', dbot_score, desc, reliability)
+            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'threat_actor')
+
+        return CommandResults(indicator=indicator,
+                          raw_response=res,
+                          readable_output=tableToMarkdown('Results', analysis_info))
+
 
 def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, indicatorTypeHash: bool = False):
     """
@@ -578,11 +630,15 @@ def main():
         client = Client(base_url, api_key, verify_certificate, proxy, endpoint=ENDPOINTS['threatindicator'])  # pragma: no cover
         document_search_client = Client(base_url, api_key, verify_certificate,  # pragma: no cover
                                         proxy, endpoint=ENDPOINTS['document'])  # pragma: no cover
+        fundamental_client = Client(base_url, api_key, verify_certificate,  # pragma: no cover
+                                        proxy, endpoint=ENDPOINTS['fundamental'])  # pragma: no cover
         demisto.debug(f'Command being called is {command}')  # pragma: no cover
         if command == 'test-module':  # pragma: no cover
             return_results(test_module(client))  # pragma: no cover
         elif command == 'acti-getThreatIntelReport':  # pragma: no cover
             return_results(getThreatReport_command(document_search_client, demisto.args(), reliability))  # pragma: no cover
+        elif command == 'acti-get-fundamentals-by-uuid':  # pragma: no cover
+            return_results(fundamental_uuid_command(fundamental_client, demisto.args(), reliability))  # pragma: no cover
         elif command in commands:  # pragma: no cover
             return_results(commands[command](client, demisto.args(), reliability, document_search_client))  # pragma: no cover
 
