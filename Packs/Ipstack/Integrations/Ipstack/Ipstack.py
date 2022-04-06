@@ -6,6 +6,7 @@ import requests
 
 BASE_URL = 'http://api.ipstack.com'
 API_KEY = demisto.params().get('apikey')
+BRAND_NAME = "Ipstack"
 
 if not demisto.params()['proxy']:
     del os.environ['HTTP_PROXY']
@@ -63,6 +64,11 @@ def do_ip_command():
         "Latitude": raw_response.get('latitude'),
         "Longitude": raw_response.get('longitude')
     }
+
+    # dbot_score=Common.DBotScore(indicator=ip,
+    #                                 indicator_type=DBotScoreType.IP,
+    #                                 integration_name=BRAND_NAME,
+    #                                 score=Common.DBotScore.NONE),
 
     outputs = {
         'IP(val.Address == obj.Address)': {
