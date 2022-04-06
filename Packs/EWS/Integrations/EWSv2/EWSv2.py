@@ -37,8 +37,6 @@ sys.setdefaultencoding('utf8')  # pylint: disable=E1101
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
 
-# CHANGE IN PACK
-
 # Docker BC
 MNS = None
 TNS = None
