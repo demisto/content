@@ -2049,6 +2049,8 @@ def fetch_incidents(client: Client) -> list:
 
         severity = severity_map.get(result.get('severity', ''), 0)
 
+        parse_dict_ticket_fields(client, result)
+
         file_names = []
         if client.get_attachments:
             file_entries = client.get_ticket_attachment_entries(result.get('sys_id', ''))
@@ -2170,6 +2172,31 @@ def check_assigned_to_field(client: Client, assigned_to: dict) -> Optional[str]:
     return ''
 
 
+def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
+
+    # Parse user dict to email
+    assigned_to = ticket.get('assigned_to', {})
+    caller = ticket.get('caller_id', {})
+    assignment_group = ticket.get('assignment_group', {})
+
+    if assignment_group:
+        group_result = client.get('sys_user_group', assignment_group.get('value'))
+        group = group_result.get('result', {})
+        group_name = group.get('name')
+        ticket['assignment_group'] = group_name
+
+    user_assigned = check_assigned_to_field(client, assigned_to)
+    ticket['assigned_to'] = user_assigned
+
+    if caller:
+        user_result = client.get('sys_user', caller.get('value'))
+        user = user_result.get('result', {})
+        user_email = user.get('email')
+        ticket['caller_id'] = user_email
+
+    return ticket
+
+
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
     """
     get-remote-data command: Returns an updated incident and entries
@@ -2222,25 +2249,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     else:
         demisto.debug(f'ticket is updated: {ticket}')
 
-    # Parse user dict to email
-    assigned_to = ticket.get('assigned_to', {})
-    caller = ticket.get('caller_id', {})
-    assignment_group = ticket.get('assignment_group', {})
-
-    if assignment_group:
-        group_result = client.get('sys_user_group', assignment_group.get('value'))
-        group = group_result.get('result', {})
-        group_name = group.get('name')
-        ticket['assignment_group'] = group_name
-
-    user_assigned = check_assigned_to_field(client, assigned_to)
-    ticket['assigned_to'] = user_assigned
-
-    if caller:
-        user_result = client.get('sys_user', caller.get('value'))
-        user = user_result.get('result', {})
-        user_email = user.get('email')
-        ticket['caller_id'] = user_email
+    parse_dict_ticket_fields(client, ticket)
 
     # get latest comments and files
     entries = []
