@@ -71,4 +71,4 @@ ignore=SC106
 UnzipFile
 ZipStrings
 ExtractInbetween
-TLD
+TLDs
