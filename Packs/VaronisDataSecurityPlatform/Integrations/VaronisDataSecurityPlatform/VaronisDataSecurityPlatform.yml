@@ -38,7 +38,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- defaultvalue: 2 weeks
+- defaultvalue: 1 week
   display: First fetch time
   hidden: false
   name: first_fetch

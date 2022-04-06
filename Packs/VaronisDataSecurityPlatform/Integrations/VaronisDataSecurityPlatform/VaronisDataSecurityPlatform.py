@@ -1124,7 +1124,7 @@ def main() -> None:
                 max_results = MAX_INCIDENTS_TO_FETCH
 
             first_fetch_time = arg_to_datetime(
-                arg=params.get('first_fetch', '2 weeks'),
+                arg=params.get('first_fetch', '1 week'),
                 arg_name='First fetch time',
                 required=True
             )
