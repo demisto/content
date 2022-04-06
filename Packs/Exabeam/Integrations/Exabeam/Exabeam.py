@@ -745,7 +745,9 @@ def convert_date_to_unix(date_string):
     if not date_string:
         return None
 
-    return int(dateparser.parse(date_string).timestamp() * 1000)
+    parsed_date = dateparser.parse(date_string)
+    assert parsed_date is not None, f'could not parse {date_string}'
+    return int(parsed_date.timestamp() * 1000)
 
 
 def contents_user_info(user, user_info) -> Dict:

@@ -46,6 +46,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     variables: true
   variables:
     IS_NIGHTLY: "false"
+    KUBERNETES_CPU_REQUEST: 1000m
   script:
     - section_start "Secrets Detection" --collapsed
     - demisto-sdk secrets --post-commit --ignore-entropy
@@ -169,3 +170,4 @@ demisto-sdk-nightly:trigger-slack-notify:
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
+    SLACK_JOB: 'true'

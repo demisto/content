@@ -70,7 +70,7 @@ class TestHttpRequest:
         assert e.value.message == f'Could not parse json out of {text}'
         assert e.value.res.status_code == 200
         assert isinstance(e.value.exception, json.JSONDecodeError)
-        assert e.value.exception.args == ('Expecting value: line 1 column 1 (char 0)',)
+        assert e.value.exception.args == ('Expecting value', 'not a json')
 
 
 class TestGetRequestsKwargs:
@@ -546,19 +546,6 @@ class TestCoreIOCToDemisto:
             }
         )
     ]
-
-    @pytest.mark.parametrize('core_ioc, demisto_ioc', data_test_core_ioc_to_demisto)
-    def test_core_ioc_to_demisto(self, core_ioc, demisto_ioc, mocker):
-        """
-            Given:
-                - IOC in XDR format.
-            Then:
-                - IOC in demisto format.
-        """
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
-        output = core_ioc_to_demisto(core_ioc)
-        del output['rawJSON']
-        assert output == demisto_ioc, f'core_ioc_to_demisto({core_ioc})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(demisto_ioc)}'    # noqa: E501
 
 
 class TestCommands:

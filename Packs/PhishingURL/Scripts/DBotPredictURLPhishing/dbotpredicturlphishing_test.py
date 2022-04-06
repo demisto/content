@@ -56,6 +56,7 @@ def test_regular_malicious_new_domain(mocker):
     model_mock = PhishingURLModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'urls': 'psg.fr', 'numberDetailedReports': '1'})
+    mocker.patch('DBotPredictURLPhishing.is_valid_url', return_value=(True, EMPTY_STRING, 200))
     mocker.patch('DBotPredictURLPhishing.decode_model_data', return_value=model_mock, create=True)
     mocker.patch.object(model_mock, 'top_domains', return_value=("", 0), create=True)
     mocker.patch.object(model_mock, 'major', return_value=0, create=True)

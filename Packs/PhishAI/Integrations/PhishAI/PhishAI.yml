@@ -1,0 +1,94 @@
+commonfields:
+  id: Phish.AI
+  version: -1
+name: Phish.AI
+display: Phish.AI (Deprecated)
+deprecated: true
+category: Data Enrichment & Threat Intelligence
+description: "Deprecated. Vendor has declared end of life for this integration. No\
+  \ available replacement."
+fromversion: "5.0.0"
+configuration:
+- display: Private API Key (Optional)
+  name: apiKey
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: phish-ai-scan-url
+    arguments:
+    - name: url
+      required: true
+      description: url to check
+    outputs:
+    - contextPath: URL.Data
+      description: URL address
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: IP.Address
+      description: IP address of the url
+      type: string
+    - contextPath: IP.Geo.Country
+      description: Geo location of the url
+      type: string
+    - contextPath: PhishAI.ScanID
+      description: Phish.AI scan ID
+      type: string
+    - contextPath: PhishAI.Status
+      description: Scan status
+      type: string
+    - contextPath: PhishAI.URL
+      description: URL address
+      type: string
+    description: Check if url is phishing and get details about the brand that is
+      being phished
+  - name: phish-ai-check-status
+    arguments:
+    - name: scan_id
+      required: true
+      description: Scan ID of the URL to check its status
+    outputs:
+    - contextPath: URL.Data
+      description: URL's Address
+      type: string
+    - contextPath: PhishAI.Status
+      description: Scan status
+      type: string
+    - contextPath: PhishAI.ScanID
+      description: Phish.AI scan ID
+      type: string
+    description: Checks on url's status, e.g. completed, in progress
+  - name: phish-ai-dispute-url
+    arguments:
+    - name: scan_id
+      required: true
+      description: Scan ID of the URL to dispute
+    description: Dispute the result of the scan
+  runonce: false
+tests:
+- No tests

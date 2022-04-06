@@ -1,0 +1,169 @@
+{
+    "specific_users":
+    {
+        "responder_request": {
+            "incident": {
+                "id": "PXP12GZ",
+                "type": "incident_reference",
+                "summary": "[#99999] Test Incident for Demisto Integration - No Action",
+                "self": "https://api.pagerduty.com/incidents/PXP12GZ",
+                "html_url": "https://upstart.pagerduty.com/incidents/PXP12GZ"
+            },
+            "requester": {
+                "id": "P09TT3C",
+                "type": "user_reference",
+                "summary": "John Doe",
+                "self": "https://api.pagerduty.com/users/P09TT3C",
+                "html_url": "https://mycompany.pagerduty.com/users/P09TT3C"
+            },
+            "requested_at": "2022-02-24T18:08:50-08:00",
+            "message": "Please help with issue - join bridge at +1(234)-567-8910",
+            "responder_request_targets": [
+                {
+                    "responder_request_target": {
+                        "type": "user",
+                        "id": "P09TT3C",
+                        "summary": "",
+                        "incidents_responders": [
+                            {
+                                "state": "pending",
+                                "user": {
+                                    "id": "P09TT3C",
+                                    "type": "user_reference",
+                                    "summary": "John Doe",
+                                    "self": "https://api.pagerduty.com/users/P09TT3C",
+                                    "html_url": "https://mycompany.pagerduty.com/users/P09TT3C",
+                                    "avatar_url": "https://secure.gravatar.com/avatar/1c747247b75acc1f724e2784c838b3f8.png?d=mm&r=PG",
+                                    "job_title": ""
+                                },
+                                "incident": {
+                                    "id": "PXP12GZ",
+                                    "type": "incident_reference",
+                                    "summary": "[#30990] Test Incident for Demisto Integration - No Action",
+                                    "self": "https://api.pagerduty.com/incidents/PXP12GZ",
+                                    "html_url": "https://upstart.pagerduty.com/incidents/PXP12GZ"
+                                },
+                                "updated_at": "2022-02-24T16:58:27-08:00",
+                                "message": "Please help with issue - join bridge at +1(234)-567-8910",
+                                "requester": {
+                                    "id": "P09TT3C",
+                                    "type": "user_reference",
+                                    "summary": "John Doe",
+                                    "self": "https://api.pagerduty.com/users/P09TT3C",
+                                    "html_url": "https://mycompany.pagerduty.com/users/P09TT3C",
+                                    "avatar_url": "https://secure.gravatar.com/avatar/1c747247b75acc1f724e2784c838b3f8.png?d=mm&r=PG",
+                                    "job_title": ""
+                                },
+                                "requested_at": "2022-02-25T00:58:27Z"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "responder_request_target": {
+                        "type": "user",
+                        "id": "PAIXXX",
+                        "summary": "",
+                        "incidents_responders": [
+                            {
+                                "state": "pending",
+                                "user": {
+                                    "id": "PAIXXX",
+                                    "type": "user_reference",
+                                    "summary": "Jane Doe",
+                                    "self": "https://api.pagerduty.com/users/PAIXXX",
+                                    "html_url": "https://upstart.pagerduty.com/users/PAIXXX",
+                                    "avatar_url": "https://secure.gravatar.com/avatar/7982b65c651637dc65c626924c4a3b9c.png?d=mm&r=PG",
+                                    "job_title": ""
+                                },
+                                "incident": {
+                                    "id": "PXP12GZ",
+                                    "type": "incident_reference",
+                                    "summary": "[#30990] Test Incident for Demisto Integration - No Action",
+                                    "self": "https://api.pagerduty.com/incidents/PXP12GZ",
+                                    "html_url": "https://upstart.pagerduty.com/incidents/PXP12GZ"
+                                },
+                                "updated_at": "2022-02-24T18:08:50-08:00",
+                                "message": "Please help with issue - join bridge at +1(234)-567-8910",
+                                "requester": {
+                                    "id": "P09TT3C",
+                                    "type": "user_reference",
+                                    "summary": "John Doe",
+                                    "self": "https://api.pagerduty.com/users/P09TT3C",
+                                    "html_url": "https://mycompany.pagerduty.com/users/P09TT3C",
+                                    "avatar_url": "https://secure.gravatar.com/avatar/1c747247b75acc1f724e2784c838b3f8.png?d=mm&r=PG",
+                                    "job_title": ""
+                                },
+                                "requested_at": "2022-02-25T00:58:27Z"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+
+    "default_user":
+    {
+        "responder_request": {
+            "incident": {
+                "id": "PXP12GZ",
+                "type": "incident_reference",
+                "summary": "[#99999] Test Incident for Demisto Integration - No Action",
+                "self": "https://api.pagerduty.com/incidents/PXP12GZ",
+                "html_url": "https://upstart.pagerduty.com/incidents/PXP12GZ"
+            },
+            "requester": {
+                "id": "P09TT3C",
+                "type": "user_reference",
+                "summary": "John Doe",
+                "self": "https://api.pagerduty.com/users/P09TT3C",
+                "html_url": "https://mycompany.pagerduty.com/users/P09TT3C"
+            },
+            "requested_at": "2022-02-24T18:08:50-08:00",
+            "message": "Please help with issue - join bridge at +1(234)-567-8910",
+            "responder_request_targets": [
+                {
+                    "responder_request_target": {
+                        "type": "user",
+                        "id": "P09TT3C",
+                        "summary": "",
+                        "incidents_responders": [
+                            {
+                                "state": "pending",
+                                "user": {
+                                    "id": "P09TT3C",
+                                    "type": "user_reference",
+                                    "summary": "John Doe",
+                                    "self": "https://api.pagerduty.com/users/P09TT3C",
+                                    "html_url": "https://mycompany.pagerduty.com/users/P09TT3C",
+                                    "avatar_url": "https://secure.gravatar.com/avatar/1c747247b75acc1f724e2784c838b3f8.png?d=mm&r=PG",
+                                    "job_title": ""
+                                },
+                                "incident": {
+                                    "id": "PXP12GZ",
+                                    "type": "incident_reference",
+                                    "summary": "[#30990] Test Incident for Demisto Integration - No Action",
+                                    "self": "https://api.pagerduty.com/incidents/PXP12GZ",
+                                    "html_url": "https://upstart.pagerduty.com/incidents/PXP12GZ"
+                                },
+                                "updated_at": "2022-02-24T16:58:27-08:00",
+                                "message": "Please help with issue - join bridge at +1(234)-567-8910",
+                                "requester": {
+                                    "id": "P09TT3C",
+                                    "type": "user_reference",
+                                    "summary": "John Doe",
+                                    "self": "https://api.pagerduty.com/users/P09TT3C",
+                                    "html_url": "https://mycompany.pagerduty.com/users/P09TT3C",
+                                    "avatar_url": "https://secure.gravatar.com/avatar/1c747247b75acc1f724e2784c838b3f8.png?d=mm&r=PG",
+                                    "job_title": ""
+                                },
+                                "requested_at": "2022-02-25T00:58:27Z"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}
