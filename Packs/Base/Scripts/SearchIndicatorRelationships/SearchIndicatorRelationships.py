@@ -86,8 +86,8 @@ def search_relationships(
         'size': limit,
         'query': query
     }
-    # if is_demisto_version_ge('6.6.0'):
-    #     return search_relationships_fromversion_6_6_0(args)
+    if is_demisto_version_ge('6.6.0'):
+        return search_relationships_fromversion_6_6_0(args)
     return search_relationships_toversion_6_5_0(args)
 
 
