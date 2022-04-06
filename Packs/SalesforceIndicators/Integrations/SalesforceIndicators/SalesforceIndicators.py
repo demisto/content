@@ -17,7 +17,7 @@ requests.packages.urllib3.disable_warnings()
 
 class Client(BaseClient):
     def __init__(self, base_url, username, password, client_id, client_secret, object_name, key_field, query_filter,
-                 fields, history, ignore_last_modified, verify, proxy, feedReputation, ok_codes=[], headers=None, auth=None):
+                 fields, history, verify, proxy, feedReputation, ok_codes=[], headers=None, auth=None):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers, auth=auth)
         self.username = username
         self.password = password
@@ -35,7 +35,6 @@ class Client(BaseClient):
         self.key_field = key_field
         self.query_filter = query_filter
         self.fields = fields
-        self.ignore_last_modified = ignore_last_modified
         self.history = history
         self.feedReputation = feedReputation
         self.score = 1 if self.feedReputation == 'Good'\
@@ -77,13 +76,15 @@ class Client(BaseClient):
         if raw_query:
             res = self._http_request(
                 'GET',
-                f'{query}'
+                f'{query}',
+                timeout=600
             )
         else:
             res = self._http_request(
                 'GET',
                 'query',
-                params=params
+                params=params,
+                timeout=600
             )
         return res
 
@@ -100,12 +101,8 @@ def fetch_indicators_command(client, manual_run=False):
     history_date = dateparser.parse(f"{client.history} days ago", settings={'RELATIVE_BASE': now})
     assert history_date is not None, f'could not parse {client.history} days ago'
     date_filter = history_date.strftime("%Y-%m-%dT%H:%M:%S.000+0000")
-    stored_last_run = demisto.getLastRun()
-
-    if stored_last_run:
-        last_run = stored_last_run.get('lastRun')
-    else:
-        last_run = None
+    latest_modified_date = None
+    last_run = demisto.getLastRun().get('lastRun')
     object_fields = None
 
     if client.fields:
@@ -115,16 +112,26 @@ def fetch_indicators_command(client, manual_run=False):
 
     if "id" not in object_fields and "Id" not in object_fields:
         object_fields.append("id")
+    if "CreatedDate" not in object_fields and "CreatedDate" not in object_fields:
+        object_fields.append("CreatedDate")
+    if "LastModifiedDate" not in object_fields and "LastModifiedDate" not in object_fields:
+        object_fields.append("LastModifiedDate")
 
+    # Define whether to use a user provided query
     if client.query_filter:
         search_criteria = f"{client.query_filter}"
-        if last_run and not client.ignore_last_modified:
-            search_criteria = f"{search_criteria} AND LastModifiedDate >= {last_run}"
+
+        # If there is a last run date, use it if there is not already one specified
+        if last_run and "LastModifiedDate" not in client.query_filter:
+            search_criteria = f"LastModifiedDate >= {last_run} AND {client.query_filter}"
+
     else:
-        if last_run and not client.ignore_last_modified:
+        # Define which date range to use if there is no user criteria
+        if last_run:
             search_criteria = f"LastModifiedDate >= {last_run}"
         else:
-            search_criteria = f"LastModifiedDate > {date_filter}"
+            search_criteria = f"CreatedDate >= {date_filter}"
+
     indicators_raw = client.query_object(object_fields, client.object_name, search_criteria)
     if indicators_raw.get('totalSize', 0) > 0:
         for indicator in indicators_raw.get('records', []):
@@ -138,7 +145,8 @@ def fetch_indicators_command(client, manual_run=False):
                 indicators_unparsed.append({k: v for k, v in indicator.items() if k != 'attributes'})
 
             more_records = True if indicators_raw.get('nextRecordsUrl', None) else False
-
+    if indicators_unparsed and len(indicators_unparsed) > 0:
+        latest_modified_date = dateparser.parse((sorted([x.get('LastModifiedDate')for x in indicators_unparsed], reverse=True)[0]))
     for item in indicators_unparsed:
         try:
             value = item[client.key_field] if client.key_field in item else None
@@ -156,9 +164,10 @@ def fetch_indicators_command(client, manual_run=False):
 
     if not manual_run:
 
-        # Update the last run time
-        last_run = now.strftime("%Y-%m-%dT%H:%M:00Z")
-        demisto.setLastRun({"lastRun": last_run})
+        # Update the last run time if there was a LastModifiedDate found
+        if latest_modified_date:
+            last_run = latest_modified_date.strftime("%Y-%m-%dT%H:%M:00Z")
+            demisto.setLastRun({"lastRun": last_run})
 
         # We submit indicators in batches
         for b in batch(indicators, batch_size=2000):
@@ -188,7 +197,6 @@ def main():
     object_name = params.get('object')
     key_field = params.get('key_field')
     query_filter = params.get('filter', None)
-    ignore_last_modified = params.get('ignore_last_modified', False)
     fields = params.get('fields', None)
     history = params.get('indicator_history', 365)
     reputation = params.get('feedReputation', 'None')
@@ -196,7 +204,7 @@ def main():
     command = demisto.command()
 
     client = Client(url, username, password, client_id, client_secret, object_name, key_field,
-                    query_filter, fields, history, ignore_last_modified, verify_certificate, proxies, reputation)
+                    query_filter, fields, history, verify_certificate, proxies, reputation)
 
     if command == 'test-module':
         test_module(client)
