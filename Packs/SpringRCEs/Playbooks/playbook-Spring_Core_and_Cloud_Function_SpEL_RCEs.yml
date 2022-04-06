@@ -1306,8 +1306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1380,
-          "y": 660
+          "x": 1630,
+          "y": 670
         }
       }
     note: false
@@ -1349,7 +1349,7 @@ tasks:
       {
         "position": {
           "x": 1200,
-          "y": 485
+          "y": 495
         }
       }
     note: false
@@ -1886,6 +1886,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
     scriptarguments:
       limit:
         simple: "10"

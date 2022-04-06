@@ -45,25 +45,25 @@ Later, it was discovered that these are two separate vulnerabilities, one in Spr
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* CVE Enrichment - Generic v2
 * Block IP - Generic v3
 * Panorama Query Logs
 * Search Endpoint by CVE - Generic
 * Rapid Breach Response - Set Incident Info
-* CVE Enrichment - Generic v2
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* SearchIncidentsV2
 * IsIntegrationAvailable
 * http
+* SearchIncidentsV2
 
 ### Commands
-* closeInvestigation
 * createNewIndicator
-* redlock-get-rql-response
 * xdr-xql-generic-query
+* redlock-get-rql-response
+* closeInvestigation
 
 ## Playbook Inputs
 ---
