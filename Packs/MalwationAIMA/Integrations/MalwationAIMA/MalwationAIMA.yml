@@ -164,10 +164,10 @@ script:
     outputs:
     - contextPath: AIMA.Analysis.UUID
       description: UUID of sample.
-      type: Unknown
+      type: String
     - contextPath: AIMA.Analysis.URL
       description: URL of analysis of sample.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: UUID of the submission.
@@ -184,27 +184,26 @@ script:
       description: The status of the submission scanning process.
       type: String
     - contextPath: AIMA.Result.LEVEL
-      description: The scan result specifies the classification of the file. (malicious,
-        suspicious or informative)
-      type: Unknown
+      description: Threat Level of the scanned file. (malicious, suspicious or informative)
+      type: String
     - contextPath: AIMA.Result.URL
       description: The result page url of the submission.
-      type: Unknown
+      type: String
     - contextPath: AIMA.Result.MD5
       description: The md5 hash of the submission.
-      type: Unknown
+      type: String
     - contextPath: AIMA.Result.INFO
       description: Contains the file name, scan process status and public status.
-      type: Unknown
+      type: String
     - contextPath: AIMA.Result.SHA1
       description: The sha1 hash of the submission.
-      type: Unknown
+      type: String
     - contextPath: AIMA.Result.SHA256
       description: The sha256 hash of the submission.
-      type: Unknown
+      type: String
     - contextPath: AIMA.Result.ID
       description: The ID of the submission
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: The entry id of the file.
@@ -219,9 +218,10 @@ script:
     outputs:
     - contextPath: CAP.Static.UUID
       description: The uuid value of the submission.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
+      description: The Entry id of the file.
       isArray: false
       name: entry_id
       required: true
@@ -233,7 +233,7 @@ script:
     outputs:
     - contextPath: CAP.Mav.UUID
       description: The uuid value of the submission.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: The uuid of the file.
@@ -247,7 +247,7 @@ script:
     name: aima-cap-static-get-submission
     outputs:
     - contextPath: CAP.Static.SCORE
-      description: The identifier of the scan result. (malicious, suspicious or informative)
+      description: Thread level of the scanned file. (malicious, suspicious or informative)
       type: String
     - contextPath: CAP.Static.WEIGHT
       description: The weight score of detection.
@@ -257,7 +257,7 @@ script:
       type: String
     - contextPath: CAP.Static.YARA
       description: The matched yara rules with sample.
-      type: Unknown
+      type: String
     - contextPath: CAP.Static.ENTROPY
       description: The entropy value of sample.
       type: Number
@@ -277,15 +277,15 @@ script:
       description: The count of the detection by engines.
       type: Number
     - contextPath: CAP.Mav.SCORE
-      description: The identifier of the scan result. (malicious, suspicious or informative)
+      description: Threat Level of the scanned file (malicious, suspicious or informative)
       type: String
     - contextPath: CAP.Mav.DETECTIONS
       description: The results of detections by engines.
-      type: Unknown
+      type: Number
     - contextPath: CAP.Mav.STATUS
       description: The status of the submission scanning process.
-      type: Unknown
-  dockerimage: demisto/python3:3.9.8.24399
+      type: String
+  dockerimage: demisto/python3:3.10.4.27798
   feed: false
   isfetch: false
   longRunning: false

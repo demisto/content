@@ -12,7 +12,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 handle_proxy()
 
 
-def test_module() -> str:
+def test_module(params) -> str:
     """Tests API connectivity and authentication'"
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -20,13 +20,12 @@ def test_module() -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-
     try:
-        url = demisto.params().get('url')[:-1] if str(demisto.params().get('url')).endswith('/') \
-            else demisto.params().get('url')
-        credentials = demisto.params().get('apikey')
-        params = "Bearer " + credentials
-        headers = {"Authorization": params}
+        url = params.get('url')[:-1] if str(params.get('url')).endswith('/') \
+            else params.get('url')
+        credentials = params.get('apikey')
+        creds = "Bearer " + credentials
+        headers = {"Authorization": creds}
         url = urljoin(url, '/customer/getSubmission/7bf5ba92-30e1-4d42-821f-6d4ac94c3be1')
         response = requests.request("GET", url, headers=headers)
         status = response.status_code
@@ -106,7 +105,7 @@ class Client(BaseClient):
         )
 
     def cap_static_add(self, param: dict) -> Dict[str, Any]:
-        """Submits the sample scan result from Malwation CAP using the '/capstatic/filestatus/' API endpoint"""
+        """Submits the sample to AIMA url using the '/capstatic/upload/' API endpoint """
 
         return self._http_request(
             method='POST',
@@ -210,16 +209,18 @@ def aima_get_result(client: Client, args: Dict[str, Any]) -> CommandResults:
         md5 = result['submission']['file_info']['hashes']['md5']
         sha1 = result['submission']['file_info']['hashes']['sha1']
         sha256 = result['submission']['file_info']['hashes']['sha256']
-        submission_info = {'file_info': result['submission']['file_info']['original_name'],'status_id': result['submission']['file_info']['status_id'],'isPublic': result['submission']['file_info']['isPublic']}
+        submission_info = {'file_name': result['submission']['file_info']['original_name'],'status_id': result['submission']['file_info']['status_id'],'isPublic': result['submission']['file_info']['isPublic']}
         result_url = result['submission']['resultURL']
-        submission_id = md5 = result['submission']['uuid']
+        submission_id = result['submission']['uuid']
         level = result['submissionLevel']
         output = {'AIMA.Result(val.Job_ID == obj.Job_ID)': {'STATUS': status, 'MD5': md5,'SHA1': sha1,'SHA256':sha256, 'LEVEL': level, 'INFO': submission_info, 'URL': result_url,'ID':submission_id}}
+        readable_output = tableToMarkdown('Submission Result', {'STATUS': status, 'MD5': md5,'SHA1': sha1,'SHA256':sha256, 'THREAT_LEVEL': level, 'FILE_NAME': result['submission']['file_info']['original_name'],'STATUS_ID': result['submission']['file_info']['status_id'],'isPublic': result['submission']['file_info']['isPublic'], 'SCAN_URL': result_url,'ID':submission_id})
     except:
         status = result['status']
-        output = {'AIMA.Result(val.Job_ID == obj.Job_ID)': {'STATUS': status,}}
+        output = {'AIMA.Result(val.Job_ID == obj.Job_ID)': {'STATUS': status}}
+        readable_output = tableToMarkdown('Submission Result', result)
 
-    readable_output = tableToMarkdown('Submission Result', result)
+
     return CommandResults(
         readable_output=readable_output,
         outputs_key_field='results',
@@ -238,16 +239,23 @@ def cap_mav_get_submission(client: Client, args: Dict[str, Any]) -> CommandResul
 
     result = client.cap_mav_get(param=param)
 
-    readable_output = tableToMarkdown('Submission Result', result)
-    if result['detection']:
-        count = result['detection']
-        score = result['status']
-        detections = result['scan_results']
-        output = {'CAP.Mav(val.Job_ID == obj.Job_ID)': {'COUNT': count, 'SCORE': score, 'DETECTIONS': detections}}
+    try:
+        if result['detection']:
+            count = result['detection']
+            score = result['status']
+            detections = result['scan_results']
+            output = {'CAP.Mav(val.Job_ID == obj.Job_ID)': {'COUNT': count, 'SCORE': score, 'DETECTIONS': detections}}
+            readable_output = tableToMarkdown('Submission Result', {'DETECTION_COUNT': count, 'SCORE': score, 'VENDOR_RESULTS': detections})
 
-    else:
+        else:
+            status = result['status']
+            output = {'CAP.Mav(val.Job_ID == obj.Job_ID)': {'STATUS': status}}
+            readable_output = tableToMarkdown('Submission Result', result)
+
+    except:
         status = result['status']
         output = {'CAP.Mav(val.Job_ID == obj.Job_ID)': {'STATUS': status}}
+        readable_output = tableToMarkdown('Submission Result', result)
 
     return CommandResults(
         readable_output=readable_output,
@@ -273,7 +281,7 @@ def cap_mav_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResult
 
     result = client.cap_mav_add(param=param)
 
-    readable_output = tableToMarkdown('Submission Result', result)
+    readable_output = tableToMarkdown('SAMPLE UPLOADED', result)
     uuid =result['uid']
 
     return CommandResults(
@@ -296,14 +304,18 @@ def cap_static_get_submission(client: Client, args: Dict[str, Any]) -> CommandRe
 
     readable_output = tableToMarkdown('Submission Result', result)
 
-    if result['Score'][0]:
-        score = result['Score'][0]
-        weight = result['Score'][1]
-        yara_rules = result["Matched YARA rules"]
-        entropy = result['File Info']['Entropy']
-        output = {'CAP.Static(val.Job_ID == obj.Job_ID)': {'SCORE': score, 'WEIGHT': weight,'YARA':yara_rules,'ENTROPY':entropy}}
+    try:
+        if result['Score'][0]:
+            score = result['Score'][0]
+            weight = result['Score'][1]
+            yara_rules = result["Matched YARA rules"]
+            entropy = result['File Info']['Entropy']
+            output = {'CAP.Static(val.Job_ID == obj.Job_ID)': {'SCORE': score, 'WEIGHT': weight,'YARA':yara_rules,'ENTROPY':entropy}}
 
-    else:
+        else:
+            status = result['status']
+            output = {'CAP.Static(val.Job_ID == obj.Job_ID)': {'STATUS': status}}
+    except:
         status = result['status']
         output = {'CAP.Static(val.Job_ID == obj.Job_ID)': {'STATUS': status}}
 
@@ -333,7 +345,7 @@ def cap_static_upload_sample(client: Client, args: Dict[str, Any]) -> CommandRes
 
     result = client.cap_static_add(param=param)
 
-    readable_output = tableToMarkdown('Submission Result', result)
+    readable_output = tableToMarkdown('SAMPLE UPLOADED', result)
     uuid = result['uid']
 
     return CommandResults(
@@ -359,18 +371,20 @@ def main() -> None:
     :return:
     :rtype:
     """
-    base_url = demisto.params()['url']
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    params = demisto.params()
+    base_url = params['url']
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     ''' EXECUTION '''
     # LOG('command is %s' % (demisto.command(), ))
     demisto.debug(f'Command being called is {demisto.command()}')
+    args = demisto.args()
     if 'cap' not in demisto.command():
         try:
-            credentials = demisto.params().get('apikey')
-            params = "Bearer " + credentials
-            headers = {'Authorization': params}
+            credentials = params.get('apikey')
+            creds = "Bearer " + credentials
+            headers = {'Authorization': creds}
 
             client = Client(
                 base_url=base_url,
@@ -379,12 +393,11 @@ def main() -> None:
                 proxy=proxy)
 
             if demisto.command() == 'test-module':
-                demisto.results(test_module())
+                demisto.results(test_module(params))
             elif demisto.command() == 'aima-upload-sample':
-                return_results(aima_upload_sample(client, demisto.args()))
+                return_results(aima_upload_sample(client, args))
             elif demisto.command() == 'aima-get-result':
-                return_results(aima_get_result(client, demisto.args()))
-
+                return_results(aima_get_result(client, args))
 
         # Log exceptions and return errors
         except Exception as e:
@@ -392,9 +405,9 @@ def main() -> None:
             return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
     else:
         try:
-            credentials = demisto.params().get('cap_apikey')
-            params = credentials
-            headers = {'api-key': params}
+            credentials = params.get('cap_apikey')
+            creds = credentials
+            headers = {'api-key': creds}
             client = Client(
                 base_url=base_url,
                 verify=verify_certificate,
