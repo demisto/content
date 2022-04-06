@@ -126,7 +126,7 @@ def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_t
     message_body = HTMLBody(html_body) if html_body else body
     m = Message(
         account=account,
-        mime_content=raw_message.encode('UTF-8') if raw_message else None,
+        mime_content=raw_message if raw_message else None,
         folder=account.sent,
         cc_recipients=cc,
         bcc_recipients=bcc,
@@ -212,7 +212,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
-        'subject': subject.encode('utf-8'),
+        'subject': subject,
         'attachments': attachments_names
     }
 
@@ -287,7 +287,7 @@ def reply_email(to, inReplyTo, body="", subject="", bcc=None, cc=None, htmlBody=
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
-        'subject': subject.encode('utf-8'),
+        'subject': subject,
         'attachments': attachments_names
     }
 

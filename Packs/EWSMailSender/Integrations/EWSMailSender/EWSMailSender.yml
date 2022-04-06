@@ -1,8 +1,8 @@
 commonfields:
-  id: EWS Mail Sender
+  id: EWS Mail Sender -3
   version: -1
-name: EWS Mail Sender
-display: EWS Mail Sender
+name: EWS Mail Sender -3
+display: EWS Mail Sender -3
 category: Messaging
 description: 'Exchange Web Services mail sender. Note: this integration supports Office
   365 basic authentication only. If you are using Office 365, we recommend using the
