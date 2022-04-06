@@ -422,12 +422,10 @@ def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, 
 
     alerts, reports = _get_ia_for_indicator(indicator, doc_search_client)
 
-    if alerts is not None:
-        analysis_info['Intelligence Alerts'] = alerts if len(
-            alerts) > 0 else 'No Intelligence Alert has been linked to this indicator'
-    if reports is not None:
-        analysis_info['Intelligence Reports'] = reports if len(
-            reports) > 0 else 'No Intelligence Report has been linked to this indicator'
+    if (alerts is not None) and (len(alerts) > 0):
+        analysis_info['Intelligence Alerts'] = alerts
+    if reports is not None and (len(reports) > 0):
+        analysis_info['Intelligence Reports'] = reports
 
     return analysis_info
 
