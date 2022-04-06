@@ -5584,11 +5584,9 @@
         }
     },
     "test_marketplacev2": [
-        "Create Phishing Classifier V2 ML Test",
-        "Phishing v2 - Test - Incident Starter",
-        "Phishing - Core - Test - Incident Starter",
-        "DBotCreatePhishingClassifierV2FromFile-Test",
-        "DBot Build Phishing Classifier Test - Multiple Algorithms",
-        "DBotPredictURLPhishing_test"
+        "Sanity Test - Playbook with integration",
+        "Sanity Test - Playbook with no integration",
+        "Sanity Test - Playbook with mocked integration",
+        "Sanity Test - Playbook with Unmockable Integration"
     ]
 }
