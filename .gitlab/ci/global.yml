@@ -200,7 +200,7 @@
     - section_end "Test Infrastructure"
     - section_start "Run Unit Testing and Lint"
     - |
-      if [[-n $FORCE_BUCKET_UPLOAD]]; then
+      if [[ -n $FORCE_BUCKET_UPLOAD ]]; then
         echo "Skipping validations when uploading to a test bucket."
       else
         echo "demisto-sdk version: $(demisto-sdk --version)"
