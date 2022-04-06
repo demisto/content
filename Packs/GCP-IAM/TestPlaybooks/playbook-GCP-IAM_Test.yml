@@ -150,7 +150,7 @@ tasks:
       - "7"
     scriptarguments:
       members:
-        simple: user:cloudidentity@demistodev.com
+        simple: user:shai@demistodev.com
       project_name:
         simple: ${GCPIAM.Project.name}
       role:
@@ -185,7 +185,7 @@ tasks:
       - "8"
     scriptarguments:
       members:
-        simple: user:cloudidentity@demistodev.com
+        simple: user:shai@demistodev.com
       project_name:
         simple: ${GCPIAM.Project.name}
       role:
@@ -573,7 +573,7 @@ tasks:
       folder_name:
         simple: ${GCPIAM.Folder.name}
       members:
-        simple: user:cloudidentity@demistodev.com
+        simple: user:shai@demistodev.com
       role:
         simple: roles/resourcemanager.folderEditor
     separatecontext: false
@@ -608,7 +608,7 @@ tasks:
       folder_name:
         simple: ${GCPIAM.Folder.name}
       members:
-        simple: user:cloudidentity@demistodev.com
+        simple: user:shai@demistodev.com
       role:
         simple: roles/resourcemanager.folderEditor
     separatecontext: false
@@ -1025,7 +1025,7 @@ tasks:
       - "31"
     scriptarguments:
       members:
-        simple: user:cloudidentity@demistodev.com
+        simple: user:shai@demistodev.com
       organization_name:
         simple: ${GCPIAM.Organization.name}
       role:
@@ -1060,7 +1060,7 @@ tasks:
       - "32"
     scriptarguments:
       members:
-        simple: user:cloudidentity@demistodev.com
+        simple: user:shai@demistodev.com
       organization_name:
         simple: ${GCPIAM.Organization.name}
       role:
@@ -1439,7 +1439,7 @@ tasks:
       groups_name:
         simple: ${GCPIAM.Group.name}
       member_email:
-        simple: cloudidentity@demistodev.com
+        simple: shai@demistodev.com
       role:
         simple: MEMBER
     separatecontext: false
