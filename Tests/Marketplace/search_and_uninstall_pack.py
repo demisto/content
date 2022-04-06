@@ -134,7 +134,7 @@ def reset_base_pack_version(client: demisto_client):
     try:
         # make the search request
         response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                            path=f'/contentpacks/marketplace/Base',
+                                                                            path='/contentpacks/marketplace/Base',
                                                                             method='GET',
                                                                             accept='application/json',
                                                                             _request_timeout=None)
@@ -167,7 +167,7 @@ def reset_base_pack_version(client: demisto_client):
                       f'{status_code}\n{msg}'
             raise Exception(err_msg)
     except Exception:
-        logging.exception(f'Search request Base pack has failed.')
+        logging.exception('Search request Base pack has failed.')
         return False
 
 
