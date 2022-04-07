@@ -208,39 +208,6 @@
                         ]
                     }
                 },
-                "Varonis Data Security Platform Has Follow Up Indicators": {
-                    "complex": {
-                        "accessor": "HasFollowUpIndicators",
-                        "filters": [],
-                        "root": "By",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "condition": {},
-                                    "else": {
-                                        "value": {
-                                            "simple": "false"
-                                        }
-                                    },
-                                    "equals": {
-                                        "value": {
-                                            "simple": "Yes"
-                                        }
-                                    },
-                                    "lhs": {},
-                                    "options": {},
-                                    "rhs": {},
-                                    "then": {
-                                        "value": {
-                                            "simple": "true"
-                                        }
-                                    }
-                                },
-                                "operator": "If-Then-Else"
-                            }
-                        ]
-                    }
-                },
                 "Varonis Data Security Platform Number of Events": {
                     "simple": "NumOfAlertedEvents"
                 },
@@ -249,6 +216,9 @@
                 },
                 "sAMAccountName": {
                     "simple": "By.SamAccountName"
+                },
+                "Department": {
+                    "simple": "By.Department"
                 }
             }
         }

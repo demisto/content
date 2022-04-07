@@ -1,5 +1,4 @@
 {
-    "fromVersion": "6.0.0",
     "detailsV2": {
         "tabs": [
             {
@@ -46,15 +45,15 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "varonisdatasecurityplatformblacklistlocation",
                                 "height": 53,
                                 "id": "9a705f30-a3b0-11ec-9cda-f7920a71352f",
                                 "index": 2,
+                                "listId": "vpdxqzumhf-ad458840-ae98-11ec-8bba-8b3a4f6436f6",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "vpdxqzumhf-ad458840-ae98-11ec-8bba-8b3a4f6436f6"
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -106,13 +105,11 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "varonisdatasecurityplatformhasfollowupindicators",
-                                "height": 53,
-                                "id": "c49c1e20-a3b0-11ec-9cda-f7920a71352f",
+                                "fieldId": "department",
+                                "height": 22,
+                                "id": "938465d0-b671-11ec-86d1-4fb4f86ab412",
                                 "index": 3,
-                                "listId": "vpdxqzumhf-caseinfoid-a9c37a00-a3ae-11ec-9d09-8f08fc549556",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -421,7 +418,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 2
+                        "y": 0
                     },
                     {
                         "h": 2,
@@ -460,7 +457,7 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 10
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -515,7 +512,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 8
+                        "y": 4
                     },
                     {
                         "displayType": "CARD",
@@ -574,7 +571,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 6
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
@@ -616,7 +613,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 10
+                        "y": 6
                     },
                     {
                         "displayType": "CARD",
@@ -641,36 +638,6 @@
                         "w": 1,
                         "x": 1,
                         "y": 2
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "vpdxqzumhf-caseinfoid-dc7f5ec0-a3ac-11ec-9d09-8f08fc549556",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "New Section",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "vpdxqzumhf-caseinfoid-e1f82080-a3ac-11ec-9d09-8f08fc549556",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "New Section",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 0
                     }
                 ],
                 "type": "custom"
@@ -707,5 +674,6 @@
     "name": "Varonis DSP Incident",
     "system": false,
     "version": -1,
+    "fromVersion": "6.0.0",
     "description": ""
 }

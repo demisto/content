@@ -17,7 +17,7 @@
             "By": {
                 "SamAccountName": "",
                 "PrivilegedAccountType": "",
-                "HasFollowUpIndicators": ""
+                "Department": "IT"
             },
             "On": {
                 "ContainsFlaggedData": "",
@@ -49,7 +49,7 @@
             "By": {
                 "SamAccountName": "",
                 "PrivilegedAccountType": "",
-                "HasFollowUpIndicators": ""
+                "Department": "IT"
             },
             "On": {
                 "ContainsFlaggedData": "",
