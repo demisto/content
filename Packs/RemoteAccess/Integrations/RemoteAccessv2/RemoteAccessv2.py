@@ -122,10 +122,8 @@ def create_paramiko_ssh_client(
     client.set_missing_host_key_policy(AutoAddPolicy())
     try:
         if private_key:
-            file1 = StringIO(private_key)
-            file2 = open('/Users/gafik/.ssh/id_rsa')
-            # private_key = paramiko.RSAKey.from_private_key(file)
-            private_key = paramiko.RSAKey.from_private_key(file1)
+            # authenticating with private key only works for certificates which are based on PEM files.
+            private_key = paramiko.RSAKey.from_private_key(StringIO(private_key))
         client.connect(hostname=host_name, username=user_name, password=password, port=22, pkey=private_key)
     except NoValidConnectionsError as e:
         raise DemistoException(f'Unable to connect to port 22 on {host_name}') from e
@@ -251,8 +249,8 @@ def main() -> None:
     command = demisto.command()
 
     credentials: Dict[str, Any] = params.get('credentials') or {}
-    user: str = credentials.get('identifier') or ''
-    password: str = credentials.get('password') or ''
+    user: str = credentials.get('identifier')
+    password: str = credentials.get('password')
     certificate = (credentials.get('credentials') or {}).get('sshkey')
 
     host_name: str = params.get('hostname', '')
