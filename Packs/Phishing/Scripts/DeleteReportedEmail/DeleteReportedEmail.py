@@ -75,7 +75,8 @@ class DeletionArgs:
             The args needed for the deletion operation
 
         """
-        agari_message_id = demisto.get(demisto.context(), 'incident.apdglobalmessageid')
+        incident_info = demisto.incident()
+        agari_message_id = incident_info.get('CustomFields', {}).get('apdglobalmessageid')
         return {
             'operation': 'delete',
             'id': agari_message_id,
@@ -274,7 +275,7 @@ def get_search_args(args: dict):
     custom_fields = incident_info.get('CustomFields', {})
     message_id = custom_fields.get('reportedemailmessageid')
     user_id = custom_fields.get('reportedemailto')
-    delete_type = custom_fields.get('emaildeletetype', args.get('delete_type'))
+    delete_type = args.get('delete_type', custom_fields.get('emaildeletetype', 'soft'))
     delete_from_brand = delete_from_brand_handler(incident_info, args)
 
     search_args = {
