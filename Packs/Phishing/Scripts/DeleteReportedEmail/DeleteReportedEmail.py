@@ -32,7 +32,7 @@ class DeletionArgs:
             The args needed for the deletion operation
 
         """
-        is_permanent = True if search_args['delete-type'] == 'hard' else False
+        is_permanent = search_args['delete-type'] == 'hard'
         gmail_message_id = search_result[0].get('id')
         return {
             'user-id': search_args['user-id'],
