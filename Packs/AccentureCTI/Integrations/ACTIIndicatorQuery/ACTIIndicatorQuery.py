@@ -393,14 +393,14 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
         }
 
         if indicator_type.lower() == 'malware_family':
-            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTIIndicatorQuery', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'malware_family')
+            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
+            indicator = Common.CustomIndicator('ACTI Malware Family', indicator_value, dbot, analysis_info, 'malware_family')
         elif indicator_type.lower() == 'threat_group':
-            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTIIndicatorQuery', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'threat_group')
+            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
+            indicator = Common.CustomIndicator('ACTI Threat Group', indicator_value, dbot, analysis_info, 'threat_group')
         elif indicator_type.lower() == 'threat_actor':
-            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTIIndicatorQuery', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'threat_actor')
+            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
+            indicator = Common.CustomIndicator('ACTI Threat Actor', indicator_value, dbot, analysis_info, 'threat_actor')
 
         return CommandResults(indicator=indicator,
                           raw_response=res,
@@ -598,7 +598,7 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
         indicatortype = 'ACTI Intelligence Alert'
         iair_link = IA_URL + uuid
     dbot_score = Common.DBotScore(indicator=uuid, indicator_type=DBotScoreType.CUSTOM,
-                                  integration_name='ACTI Threat Intelligence Report',
+                                  integration_name='ACTI Indicator Query',
                                   score=severity_dbot_score, reliability=reliability)
     custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score,
                                               value=uuid, data=context, context_prefix='IAIR')
