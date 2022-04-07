@@ -4,13 +4,17 @@ MSG_LOGO_ADDED = "Logo was add successfully"
 
 
 class PhishingURLModelMock:
-    def __init__(self, top_domains=None, logos_dict=None, minor=0, major=0):
+    def __init__(self, top_domains=None, logos_dict=None, minor=0, major=0, custom_logo_associated_domain=[]):
         self.top_domains = top_domains
         self.logos_dict = logos_dict
         self.major = major
         self.minor = minor
+        self.custom_logo_associated_domain = custom_logo_associated_domain
 
     def add_new_logo(self, logo_name, logo_url):
+        return True, "Logo was add successfully"
+
+    def update_domain_for_custom_logo(self, logo_name, associated_domains):
         return True, "Logo was add successfully"
 
 
