@@ -208,18 +208,22 @@ def nginx_log_monitor_loop(nginx_process: subprocess.Popen):
         nginx_log_process(nginx_process)
 
 
+def test_nginx_web_server(port: int, params: Dict):
+    protocol = 'https' if params.get('key') else 'http'
+    res = requests.get(f'{protocol}://localhost:{port}/nginx-test',
+                       verify=False, proxies={"http": "", "https": ""})  # nosec guardrails-disable-line
+    res.raise_for_status()
+    welcome = 'Welcome to nginx'
+    if welcome not in res.text:
+        raise ValueError(f'Unexpected response from nginx-text (does not contain "{welcome}"): {res.text}')
+
+
 def test_nginx_server(port: int, params: Dict):
     nginx_process = start_nginx_server(port, params)
     # let nginx startup
     time.sleep(0.5)
     try:
-        protocol = 'https' if params.get('key') else 'http'
-        res = requests.get(f'{protocol}://localhost:{port}/nginx-test',
-                           verify=False, proxies={"http": "", "https": ""})  # nosec guardrails-disable-line
-        res.raise_for_status()
-        welcome = 'Welcome to nginx'
-        if welcome not in res.text:
-            raise ValueError(f'Unexpected response from nginx-text (does not contain "{welcome}"): {res.text}')
+        test_nginx_web_server(port, params)
     finally:
         try:
             nginx_process.terminate()
@@ -299,6 +303,9 @@ def run_long_running(params: Dict = None, is_test: bool = False):
 
         else:
             nginx_process = start_nginx_server(nginx_port, params)
+            # let nginx startup
+            time.sleep(0.5)
+            test_nginx_web_server(nginx_port, params)
             nginx_log_monitor = gevent.spawn(nginx_log_monitor_loop, nginx_process)
             demisto.updateModuleHealth('')
             server.serve_forever()
