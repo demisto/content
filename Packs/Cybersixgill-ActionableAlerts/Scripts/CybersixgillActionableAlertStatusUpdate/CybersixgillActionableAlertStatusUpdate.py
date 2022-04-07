@@ -1,4 +1,4 @@
-from urllib.parse import parse_qs, urlparse
+import json
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -6,16 +6,16 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     args = demisto.args()
-
     command_args = {}
-
     incident = demisto.incident()
 
-    command_args['alert_status'] = args['new']
+    alert_status = args['new']
+    alert_status = alert_status.lower().replace(' ', '_')
+    command_args['alert_status'] = alert_status
 
-    incident_link = incident.get('CustomFields').get('incidentlink')
-
-    command_args['alert_id'] = parse_qs(urlparse(incident_link).fragment)["/?actionable_alert"][0]
+    incident_json = json.loads(incident.get('rawJSON'))
+    command_args['alert_id'] = incident_json.get('id')
+    command_args['aggregate_alert_id'] = incident_json.get('aggregate_alert_id')
 
     res = demisto.executeCommand("cybersixgill-update-alert-status", command_args)
 

@@ -81,7 +81,17 @@ script:
     description: updates the existing actionable alert status
     execution: false
     name: cybersixgill-update-alert-status
-  dockerimage: demisto/sixgill:1.0.0.26756
+    arguments:
+    - required: true
+      description: The alert id to update.
+      name: alert_id
+    - required: true
+      description: The new status.
+      name: alert_status
+    - required: false
+      description: The aggregate alert id.
+      name: aggregate_alert_id
+  dockerimage: demisto/sixgill:1.0.0.28149
   feed: false
   isfetch: true
   longRunning: false
