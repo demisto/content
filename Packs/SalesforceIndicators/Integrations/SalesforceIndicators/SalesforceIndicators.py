@@ -146,7 +146,8 @@ def fetch_indicators_command(client, manual_run=False):
 
             more_records = True if indicators_raw.get('nextRecordsUrl', None) else False
     if indicators_unparsed and len(indicators_unparsed) > 0:
-        latest_mod_date = dateparser.parse((sorted([x.get('LastModifiedDate')for x in indicators_unparsed], reverse=True)[0]))  # type: ignore
+        mod_date = (sorted([x.get('LastModifiedDate')for x in indicators_unparsed], reverse=True)[0]) # type: ignore
+        latest_mod_date = dateparser.parse(mod_date)  
     for item in indicators_unparsed:
         try:
             value = item[client.key_field] if client.key_field in item else None
