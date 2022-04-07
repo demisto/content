@@ -11,7 +11,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, build_query_for_request_params, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, parse_build_query, \
-    get_ticket_fields, check_assigned_to_field
+    get_ticket_fields, check_assigned_to_field, generic_api_call_command
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -23,7 +23,7 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, RESPONSE_MIRROR_FILE_ENTRY, \
     RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, \
     MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
-    RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME, USER_RESPONSE
+    RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME, USER_RESPONSE, RESPONSE_GENERIC_TICKET
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_CREATE_TICKET_WITH_OUT_JSON, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, \
@@ -278,6 +278,7 @@ def test_fetch_incidents(mocker):
     Validate The length of the results.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
+    mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number')
@@ -302,6 +303,7 @@ def test_fetch_incidents_with_attachments(mocker):
     Validate The length of the results and the attachment content.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2016-10-10 15:19:57", 'never mind'))
+    mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident', get_attachments=True,
@@ -330,6 +332,7 @@ def test_fetch_incidents_with_incident_name(mocker):
     Validate The length of the results.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
+    mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident',
@@ -705,7 +708,7 @@ def test_get_remote_data(mocker):
     res = get_remote_data_command(client, args, params)
 
     assert res[1]['File'] == 'test.txt'
-    assert res[2]['Contents'] == 'This is a comment'
+    assert res[2]['Contents'] == 'Type: comments\n\nThis is a comment'
 
 
 def test_assigned_to_field_no_user():
@@ -809,7 +812,7 @@ def test_get_remote_data_no_attachment(mocker):
     mocker.patch.object(client, 'get', return_value=RESPONSE_ASSIGNMENT_GROUP)
 
     res = get_remote_data_command(client, args, params)
-    assert res[1]['Contents'] == 'This is a comment'
+    assert res[1]['Contents'] == 'Type: comments\n\nThis is a comment'
     assert len(res) == 2
 
 
@@ -1201,3 +1204,26 @@ def test_get_ticket_attachment_entries_with_oauth_token(mocker):
     assert requests_get_mocker.call_args.kwargs.get('headers').get('Authorization') == \
            f"Bearer {mock_res_for_get_access_token}", "When An OAuth 2.0 client is configured the 'Authorization'" \
                                                       " Header argument should be passed to 'requests.get' function"
+
+
+@pytest.mark.parametrize(
+    'command, args, response',
+    [
+        (generic_api_call_command,
+         {"method": "GET",
+          "path": "table/sn_si_incident?sysparam_limit=1&sysparam_query=active=true^ORDERBYDESCnumber",
+          "body": {},
+          "headers": {},
+          },
+         RESPONSE_GENERIC_TICKET)
+    ])
+def test_generic_api_call_command(command, args, response, mocker):
+    """test case for `generic_api_call_command`"""
+
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
+
+    mocker.patch.object(client, 'send_request', return_value=response)
+    result = command(client, args)
+    assert result.outputs == response

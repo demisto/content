@@ -8,7 +8,7 @@ import splunklib.results as results
 import json
 from datetime import timedelta, datetime
 import pytz
-import dateparser
+import dateparser  # type: ignore
 import urllib2
 import hashlib
 import ssl
@@ -44,7 +44,6 @@ MIRROR_DIRECTION = {
     'Incoming And Outgoing': 'Both'
 }
 OUTGOING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency']
-INCOMING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'status_label']
 
 # =========== Enrichment Mechanism Globals ===========
 ENABLED_ENRICHMENTS = params.get('enabled_enrichments', [])
@@ -1179,26 +1178,21 @@ def get_remote_data_command(service, args, close_incident):
 
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
-    delta = {field: updated_notable.get(field) for field in INCOMING_MIRRORED_FIELDS if updated_notable.get(field)}
+    demisto.debug('notable {} data: {}'.format(notable_id, updated_notable))
+    if updated_notable.get('status') == '5' and close_incident:
+        demisto.info('Closing incident related to notable {}'.format(notable_id))
+        entries = [{
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeReason': 'Notable event was closed on Splunk.'
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }]
 
-    if delta:
-        demisto.debug('notable {} delta: {}'.format(notable_id, delta))
-        if delta.get('status') == '5' and close_incident:
-            demisto.info('Closing incident related to notable {}'.format(notable_id))
-            entries = [{
-                'Type': EntryType.NOTE,
-                'Contents': {
-                    'dbotIncidentClose': True,
-                    'closeReason': 'Notable event was closed on Splunk.'
-                },
-                'ContentsFormat': EntryFormat.JSON
-            }]
+    demisto.debug('Updated notable {}'.format(notable_id))
 
-        demisto.debug('Updated notable {}'.format(notable_id))
-    else:
-        demisto.debug('no delta was found for notable {}'.format(notable_id))
-
-    return_results(GetRemoteDataResponse(mirrored_object=delta, entries=entries))
+    return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
 
 
 def get_modified_remote_data_command(service, args):
@@ -1915,10 +1909,24 @@ def build_search_human_readable(args, parsed_search_results):
         if not isinstance(parsed_search_results[0], dict):
             headers = "results"
         else:
+            query = args.get('query', '')
+            table_args = re.findall(r' {} (?P<{}>[^|]*)'.format('table', 'table'), query)
+            rename_args = re.findall(r' {} (?P<{}>[^|]*)'.format('rename', 'rename'), query)
+
             chosen_fields = []
-            for table_args in re.findall(r' table (?P<table>[^|]*)', args.get('query', '')):
-                chosen_fields.extend([field.strip('"')
-                                      for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field])
+            for arg_string in table_args:
+                for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', arg_string):
+                    if field:
+                        chosen_fields.append(field.strip('"'))
+
+            rename_dict = {}
+            for arg_string in rename_args:
+                for field in re.findall(r'((?:".*?")|(?:[^\s,]+))( AS )((?:".*?")|(?:[^\s,]+))', arg_string):
+                    if field:
+                        rename_dict[field[0].strip('"')] = field[-1].strip('"')
+
+            # replace renamed fields
+            chosen_fields = [rename_dict.get(field, field) for field in chosen_fields]
 
             headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
@@ -1930,17 +1938,15 @@ def build_search_human_readable(args, parsed_search_results):
 
 def update_headers_from_field_names(search_result, chosen_fields):
     headers = []
-    result_keys = set()
-    for search_result_keys in search_result:
-        result_keys.update(search_result_keys.keys())
+    search_result_keys = set().union(*(d.keys() for d in search_result))  # type: Set
     for field in chosen_fields:
         if field[-1] == '*':
             temp_field = field.replace('*', '.*')
-            for key in result_keys:
+            for key in search_result_keys:
                 if re.search(temp_field, key):
                     headers.append(key)
 
-        elif field in result_keys and field not in headers:
+        elif field in search_result_keys:
             headers.append(field)
 
     return headers
@@ -2245,7 +2251,6 @@ def splunk_parse_raw_command():
 
 
 def test_module(service):
-
     try:
         # validate connection
         service.info()
