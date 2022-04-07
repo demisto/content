@@ -400,14 +400,14 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
         }
 
         if indicator_type.lower() == 'malware_family':
-            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTIIndicatorQuery', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'MalwareFamily')
+            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
+            indicator = Common.CustomIndicator('ACTI Malware Family', indicator_value, dbot, analysis_info, 'malware_family')
         elif indicator_type.lower() == 'threat_group':
-            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTIIndicatorQuery', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'ThreatGroup')
+            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
+            indicator = Common.CustomIndicator('ACTI Threat Group', indicator_value, dbot, analysis_info, 'threat_group')
         elif indicator_type.lower() == 'threat_actor':
-            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTIIndicatorQuery', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'ThreatActor')
+            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
+            indicator = Common.CustomIndicator('ACTI Threat Actor', indicator_value, dbot, analysis_info, 'threat_actor')
 
         return CommandResults(indicator=indicator,
                           raw_response=res,
@@ -522,10 +522,14 @@ def convert_inline_image_to_encoded(md_text: str) -> str:
     regex = r'(!\[[^\]]+\])\((https?://[^\)]+)\)'
     matches = re.findall(regex, md_text)
     encoded_images = []
+    params = demisto.params()
+    api_key = params.get('api_token')
+    if isinstance(api_key, dict):
+        api_key = api_key.get('password')
+
     for single_match in matches:
         single_image_link = single_match[1]
         single_image_name = single_match[0]
-        api_key = demisto.params().get('api_token')
         response = requests.get(single_image_link,
                                 headers={"auth-token": api_key}).content
         data = base64.b64encode(response).decode('ascii')
@@ -601,7 +605,7 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
         indicatortype = 'ACTI Intelligence Alert'
         iair_link = IA_URL + uuid
     dbot_score = Common.DBotScore(indicator=uuid, indicator_type=DBotScoreType.CUSTOM,
-                                  integration_name='ACTI Threat Intelligence Report',
+                                  integration_name='ACTI Indicator Query',
                                   score=severity_dbot_score, reliability=reliability)
     custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score,
                                               value=uuid, data=context, context_prefix='IAIR')
