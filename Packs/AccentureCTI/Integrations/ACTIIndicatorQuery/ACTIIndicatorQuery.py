@@ -368,12 +368,10 @@ def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, 
 
     alerts, reports = _get_ia_for_indicator(indicator, doc_search_client)
 
-    if alerts is not None:
-        analysis_info['Intelligence Alerts'] = alerts if len(
-            alerts) > 0 else 'No Intelligence Alert has been linked to this indicator'
-    if reports is not None:
-        analysis_info['Intelligence Reports'] = reports if len(
-            reports) > 0 else 'No Intelligence Report has been linked to this indicator'
+    if (alerts is not None) and (len(alerts) > 0):
+        analysis_info['Intelligence Alerts'] = alerts
+    if reports is not None and (len(reports) > 0):
+        analysis_info['Intelligence Reports'] = reports
 
     return analysis_info
 
@@ -466,9 +464,9 @@ def convert_inline_image_to_encoded(md_text: str) -> str:
     for single_match in matches:
         single_image_link = single_match[1]
         single_image_name = single_match[0]
-        api_key = demisto.params().get('api_token')
+        #api_key = demisto.params().get('api_token')
         response = requests.get(single_image_link,
-                                headers={"auth-token": api_key}).content
+                                headers={"auth-token": demisto.params().get('api_token').get('password')}).content
         data = base64.b64encode(response).decode('ascii')
         image_type = single_image_link.split(".")[-1]
         encoded_images.append(f'{single_image_name}(data:image/{image_type};base64,{data})')
