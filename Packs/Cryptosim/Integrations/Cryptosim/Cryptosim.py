@@ -228,7 +228,7 @@ def get_client(params):
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None: # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
@@ -262,11 +262,10 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"""Failed to execute {demisto.command()}
-command.\nError:\n{str(e)}""")
+        return_error(f"""Failed to execute {demisto.command()} command.\nError:\n{str(e)}""")
 
 
 ''' ENTRY POINT '''
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'): # pragma: no cover
     main()
