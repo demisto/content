@@ -61,10 +61,10 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 | Advanced: use legacy queries       | When enabled, the integration will query the server using full queries. Advanced configuration to be used only if instructed by XSOAR Support, or you've encountered log errors in the form of: 'msgpack: invalid code.'                             | False        |
 
 ### Safeguards
-There are two integrations parameters that are used as safeguards: `Block CIDRs Prefix Len Threshold` and `Block Top Level Domains`.
+There are two integrations parameters that are used as safeguards: `Maximum CIDR prefix size` and `Disable insertion top level domains`.
 Those are meant to prevent the integration to incorrectly insert Top Level Domains or too wide CIDRs.
-The default value for `Block CIDRs Prefix Len Threshold` is 8, which means that CIDR's of prefix smaller than 8 will not be inserted. This option is configurable by the user.
-The default value for `Block Top Level Domains` is off. If enabled, EDL will not insert items such as `*.com`, `*.co.uk`, `*.org` and all the Top Level Domains.
+The default value for `Maximum CIDR prefix size` is 8, which means that CIDR's of prefix smaller than 8 will not be inserted. This option is configurable by the user.
+The default value for `Disable insertion top level domains` is off. If enabled, EDL will not insert items such as `*.com`, `*.co.uk`, `*.org` and all the Top Level Domains.
 
 ### Access the Export Indicators Service by Instance Name (HTTPS)
 **Note**: By default, the route will be open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to connect to the integration.
@@ -78,21 +78,23 @@ To access the Export Indicators service by instance name, make sure ***Instance 
 ### URL Inline Arguments
 Use the following arguments in the URL to change the request:
 
-| **Argument Name** | **Description** | **Example** |
-| --- | --- | --- |
-| n | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | `https://{server_host}/instance/execute/{instance_name}?n=50` |
-| s | The starting entry index from which to export the indicators. | `https://{server_host}/instance/execute/{instance_name}?s=10&n=50` |
-| v | The output format. Supports `PAN-OS (text)`, `CSV`, `JSON`, `mwg` and `proxysg` (alias: `bluecoat`). | `https://{server_host}/instance/execute/{instance_name}?v=JSON` |
-| q | The query used to retrieve indicators from the system. | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"` |
-| t | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex. | `https://{server_host}/instance/execute/{instance_name}?v=mwg&t=ip` |
-| sp | If set will strip ports off URLs. | `https://{server_host}/instance/execute/{instance_name}?v=PAN-OS (text)&sp` |
-| pr | If set will strip protocol off URLs. | `https://{server_host}/instance/execute/{instance_name}?v=text&pr` |
-| di | Only with `PAN-OS (text)` format. If set will ignore urls which are not compliant with PAN-OS URL format instead of being re-written. | `https://{server_host}/instance/execute/{instance_name}?v=PAN-OS (text)&di` |
-| tr | Only with `PAN-OS (text)`Whether to collapse IPs. 0 - to not collapse, 1 - collapse to ranges or 2 - collapse to CIDRs | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"&tr=1` |
-| cd | Only with `proxysg` format. The default category for the exported indicators. | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&cd=default_category` |
-| ca | Only with `proxysg` format. The categories which will be exported. Indicators not falling to these categories will be classified as the default category. | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&ca=category1,category2` |
-| tx | Whether to output `CSV` format as textual web pages. | `https://{server_host}/instance/execute/{instance_name}?v=CSV&tx` |
-| fi | Only with `CSV` or `JSON` format - Select fields to export. | `https://{server_host}/instance/execute/{instance_name}?v=CSV&tx` |
+| **Argument Name** | **Description**                                                                                                                                                         | **Example**                                                                                         |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| n                 | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | `https://{server_host}/instance/execute/{instance_name}?n=50`                                       |
+| s                 | The starting entry index from which to export the indicators.                                                                                                           | `https://{server_host}/instance/execute/{instance_name}?s=10&n=50`                                  |
+| v                 | The output format. Supports `PAN-OS (text)`, `CSV`, `JSON`, `mwg` and `proxysg` (alias: `bluecoat`).                                                                    | `https://{server_host}/instance/execute/{instance_name}?v=JSON`                                     |
+| q                 | The query used to retrieve indicators from the system.                                                                                                                  | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"`      |
+| t                 | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex.        | `https://{server_host}/instance/execute/{instance_name}?v=mwg&t=ip`                                 |
+| sp                | If set will strip ports off URLs.                                                                                                                                       | `https://{server_host}/instance/execute/{instance_name}?v=PAN-OS (text)&sp`                         |
+| pr                | If set will strip protocol off URLs.                                                                                                                                    | `https://{server_host}/instance/execute/{instance_name}?v=text&pr`                                  |
+| di                | Only with `PAN-OS (text)` format. If set will ignore urls which are not compliant with PAN-OS URL format instead of being re-written.                                   | `https://{server_host}/instance/execute/{instance_name}?v=PAN-OS (text)&di`                         |
+| tr                | Only with `PAN-OS (text)`Whether to collapse IPs. 0 - to not collapse, 1 - collapse to ranges or 2 - collapse to CIDRs                                                  | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"&tr=1` |
+| cd                | Only with `proxysg` format. The default category for the exported indicators.                                                                                           | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&cd=default_category`              |
+| ca                | Only with `proxysg` format. The categories which will be exported. Indicators not falling to these categories will be classified as the default category.               | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&ca=category1,category2`           |
+| tx                | Whether to output `CSV` format as textual web pages.                                                                                                                    | `https://{server_host}/instance/execute/{instance_name}?v=CSV&tx`                                   |
+| mc                | Configure max CIDR size.                                                                                                                                                | `https://{server_host}/instance/execute/{instance_name}?mc=10`                                      |
+| nt                 | Configure if disable insertion if top level domain.                                                                                                                     | `https://{server_host}/instance/execute/{instance_name}?nt=true`                                    |
+
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI as part of an automation, or in a playbook.

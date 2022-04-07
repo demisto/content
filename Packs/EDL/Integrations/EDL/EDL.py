@@ -869,8 +869,8 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     add_comment_if_empty = request_args.get('ce', params.get('add_comment_if_empty', True))
     fields_to_present = request_args.get('fi', params.get('fields_filter', ''))
     url_truncate = request_args.get('ut', params.get('url_truncate', ''))
-    maximum_cidr_size = try_parse_integer(request_args.get('bc', params.get('maximum_cidr_size')), EDL_CIDR_SIZR_MSG)
-    no_tld = argToBoolean(request_args.get('bt', params.get('no_tld')))
+    maximum_cidr_size = try_parse_integer(request_args.get('mcs', params.get('maximum_cidr_size')), EDL_CIDR_SIZR_MSG)
+    no_tld = argToBoolean(request_args.get('nt', params.get('no_tld')))
 
 
     # handle flags

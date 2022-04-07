@@ -77,7 +77,7 @@ configuration:
   name: maximum_cidr_size
   required: true
   type: 0
-- additionalinfo: 'Check if disable top Level Domain in the list.'
+- additionalinfo: 'Configure tp disable top level domain in the list.'
   defaultvalue: 'false'
   display: 'Disable insertion top level domains'
   hidden: false
