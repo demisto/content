@@ -70,6 +70,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "GCP-IAM",
+            "playbookID": "playbook-GCP-IAM_Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
             "fromversion": "5.0.0"
@@ -5581,5 +5586,11 @@
                 "memory_threshold": 200
             }
         }
-    }
+    },
+    "test_marketplacev2": [
+        "Sanity Test - Playbook with integration",
+        "Sanity Test - Playbook with no integration",
+        "Sanity Test - Playbook with mocked integration",
+        "Sanity Test - Playbook with Unmockable Integration"
+    ]
 }
