@@ -11,7 +11,6 @@ configuration:
 - display: Indicator Feed
   name: indicator_feeds
   options:
-  - Daily Threat Feed
   - Custom Feed
   - Samples Feed
   required: true
