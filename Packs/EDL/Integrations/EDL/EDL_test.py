@@ -51,7 +51,9 @@ class TestRequestArguments:
         fields_to_present=context_json[RequestArguments.CTX_FIELDS_TO_PRESENT],
         csv_text=context_json[RequestArguments.CTX_CSV_TEXT],
         url_protocol_stripping=context_json[RequestArguments.CTX_PROTOCOL_STRIP_KEY],
-        url_truncate=context_json[RequestArguments.CTX_URL_TRUNCATE_KEY]
+        url_truncate=context_json[RequestArguments.CTX_URL_TRUNCATE_KEY],
+        no_tld=context_json[RequestArguments.CTX_NO_TLD],
+        maximum_cidr_size=context_json[RequestArguments.CTX_MAXIMUM_CIDR],
     )
 
     def test_to_context_json(self):

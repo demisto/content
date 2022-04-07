@@ -9,7 +9,7 @@ import re
 from base64 import b64decode
 from flask import Flask, Response, request
 from netaddr import IPSet, IPNetwork
-from typing import Any, Dict, cast, Iterable, Callable, IO, Tuple
+from typing import Any, Dict, cast, Iterable, Callable, IO
 from math import ceil
 import tldextract
 import urllib3
@@ -73,6 +73,7 @@ INCREASE_LIMIT = 1.1
 '''Request Arguments Class'''
 tldextractor = tldextract.TLDExtract(cache_dir='~/.cache')
 
+
 class RequestArguments:
     CTX_QUERY_KEY = 'last_query'
     CTX_OUT_FORMAT = 'out_format'
@@ -91,7 +92,6 @@ class RequestArguments:
     CTX_URL_TRUNCATE_KEY = 'url_truncate'
     CTX_MAXIMUM_CIDR = 'maximum_cidr_size'
     CTX_NO_TLD = 'no_tld'
-
 
     FILTER_FIELDS_ON_FORMAT_TEXT = "name,type"
     FILTER_FIELDS_ON_FORMAT_MWG = "name,type,sourceBrands"
@@ -871,7 +871,6 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     url_truncate = request_args.get('ut', params.get('url_truncate', ''))
     maximum_cidr_size = try_parse_integer(request_args.get('mc', params.get('maximum_cidr_size')), EDL_CIDR_SIZR_MSG)
     no_tld = argToBoolean(request_args.get('nt', params.get('no_tld')))
-
 
     # handle flags
     if drop_invalids == '':
