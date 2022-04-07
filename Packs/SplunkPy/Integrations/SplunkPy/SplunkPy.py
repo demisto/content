@@ -143,7 +143,6 @@ class UserMappingObject:
 
         return splunk_user
 
-
 # =========== Regular Fetch Mechanism ===========
 def splunk_time_to_datetime(incident_ocurred_time):
     incident_time_without_timezone = incident_ocurred_time.split('.')[0]
@@ -528,11 +527,11 @@ class Notable:
         if demisto.get(notable_data, 'rule_description'):
             incident["details"] = notable_data["rule_description"]
         if demisto.get(notable_data, "owner"):
-            incident["owner"] = mapper.get_xsoar_user_by_splunk(
+            owner = mapper.get_xsoar_user_by_splunk(
                 notable_data["owner"]) if mapper.should_map else notable_data["owner"]
-
+            if owner:
+                incident["owner"] = owner
         incident["occurred"] = occurred
-
         notable_data = parse_notable(notable_data)
         notable_data.update({
             'mirror_instance': demisto.integrationInstance(),
@@ -567,17 +566,17 @@ class Notable:
     def submitted(self):
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
         return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and \
-               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+            len(self.enrichments) == len(ENABLED_ENRICHMENTS)
 
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
         return all(enrichment.status == Enrichment.FAILED for enrichment in self.enrichments) and \
-               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+            len(self.enrichments) == len(ENABLED_ENRICHMENTS)
 
     def handled(self):
         """ Returns an indicator on whether all notable's enrichments were handled or not """
         return all(enrichment.status in Enrichment.HANDLED for enrichment in self.enrichments) or \
-               any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
+            any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
 
     def get_submitted_enrichments(self):
         """ Returns indicators on whether each enrichment was submitted/failed or not initiated """
@@ -1224,6 +1223,7 @@ def get_remote_data_command(service, args, close_incident, mapper):
         GetRemoteDataResponse: The Response containing the update notable to mirror and the entries
 
     """
+
     entries = []
     updated_notable = {}
     remote_args = GetRemoteDataArgs(args)
@@ -1239,28 +1239,27 @@ def get_remote_data_command(service, args, close_incident, mapper):
 
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
+    demisto.debug('notable {} data: {}'.format(notable_id, updated_notable))
+
+    if updated_notable.get('owner'):
+        demisto.debug("owner field was found, changing according to mapping.")
         updated_notable["owner"] = mapper.get_xsoar_user_by_splunk(
-            updated_notable["owner"]) if mapper.should_map else updated_notable["owner"]
-    delta = {field: updated_notable.get(field) for field in INCOMING_MIRRORED_FIELDS if updated_notable.get(field)}
+            updated_notable.get("owner")) if mapper.should_map else updated_notable.get("owner")
 
-    if delta:
-        demisto.debug('notable {} delta: {}'.format(notable_id, delta))
-        if delta.get('status') == '5' and close_incident:
-            demisto.info('Closing incident related to notable {}'.format(notable_id))
-            entries = [{
-                'Type': EntryType.NOTE,
-                'Contents': {
-                    'dbotIncidentClose': True,
-                    'closeReason': 'Notable event was closed on Splunk.'
-                },
-                'ContentsFormat': EntryFormat.JSON
-            }]
+    if updated_notable.get('status') == '5' and close_incident:
+        demisto.info('Closing incident related to notable {}'.format(notable_id))
+        entries = [{
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeReason': 'Notable event was closed on Splunk.'
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }]
 
-        demisto.debug('Updated notable {}'.format(notable_id))
-    else:
-        demisto.debug('no delta was found for notable {}'.format(notable_id))
+    demisto.debug('Updated notable {}'.format(notable_id))
 
-    return_results(GetRemoteDataResponse(mirrored_object=delta, entries=entries))
+    return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
 
 
 def get_modified_remote_data_command(service, args):
@@ -1311,11 +1310,11 @@ def update_remote_system_command(args, params, service, auth_token, mapper):
                       '{}'.format(str(list(delta.keys())), notable_id))
         changed_data = {field: None for field in OUTGOING_MIRRORED_FIELDS}
         for field in delta:
-            if field in OUTGOING_MIRRORED_FIELDS:
+            if field == 'owner':
+                demisto.debug('Changing owner according to mapper')
+                changed_data['owner'] = mapper.get_splunk_user_by_xsoar(delta["owner"]) if mapper.should_map else delta["owner"]
+            elif field in OUTGOING_MIRRORED_FIELDS:
                 changed_data[field] = delta[field]
-
-        changed_data['owner'] = mapper.get_splunk_user_by_xsoar(
-            delta["owner"]) if mapper.should_map else delta["owner"]
 
         # Close notable if relevant
         if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_notable'):
@@ -2553,6 +2552,7 @@ def extract_indicator(indicator_path, _dict_objects):
 
 def get_store_data(service):
     args = demisto.args()
+    stores = args['kv_store_collection_name'].split(',')
 
     for store in stores:
         store = service.kvstore[store]
@@ -2582,19 +2582,21 @@ def get_connection_args():
 
 def main():
     command = demisto.command()
+    params = demisto.params()
+
     if command == 'splunk-parse-raw':
         splunk_parse_raw_command()
         sys.exit(0)
     service = None
-    proxy = params.get('proxy')
-    use_requests_handler = params.get('use_requests_handler')
+    proxy = demisto.params().get('proxy')
+    use_requests_handler = demisto.params().get('use_requests_handler')
 
     connection_args = get_connection_args()
 
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
     auth_token = None
-    username = params['authentication']['identifier']
-    password = params['authentication']['password']
+    username = demisto.params()['authentication']['identifier']
+    password = demisto.params()['authentication']['password']
     if username == '_token':
         connection_args['splunkToken'] = password
         auth_token = password
@@ -2639,6 +2641,7 @@ def main():
     elif command == 'splunk-get-indexes':
         splunk_get_indexes_command(service)
     elif command == 'fetch-incidents':
+        demisto.info('########### FETCH #############')
         fetch_incidents(service, mapper)
     elif command == 'splunk-submit-event':
         splunk_submit_event_command(service)
@@ -2677,14 +2680,17 @@ def main():
         else:
             get_mapping_fields_command(service)
     elif command == 'get-remote-data':
-        get_remote_data_command(service, demisto.args(), params.get('close_incident'), mapper=mapper)
+        demisto.info('########### MIRROR IN #############')
+        get_remote_data_command(service, demisto.args(), demisto.params().get('close_incident'), mapper)
     elif command == 'get-modified-remote-data':
         get_modified_remote_data_command(service, demisto.args())
     elif command == 'update-remote-system':
-        update_remote_system_command(demisto.args(), params, service, auth_token, mapper=mapper)
+        demisto.info('########### MIRROR OUT #############')
+        update_remote_system_command(demisto.args(), demisto.params(), service, auth_token, mapper)
     else:
         raise NotImplementedError('Command not implemented: {}'.format(command))
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
+
