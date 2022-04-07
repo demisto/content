@@ -671,7 +671,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             if indicator.startswith('*.'):
                 domain = str(indicator.lstrip('*.'))
                 # if we should ignore TLDs and the domain is a TLD
-                if request_args.no_tld and tldextractor(domain) == domain:
+                if request_args.no_tld and tldextractor(domain).suffix == domain:
                     continue
                 formatted_indicators.write(new_line + domain)
                 new_line = '\n'
