@@ -282,42 +282,6 @@ def prepend_protocol(url: str, protocol: str, www: bool = True) -> str:
     return p.geturl()
 
 
-def is_valid_url(url: str) -> Tuple[bool, str, Union[str, int]]:
-    """
-    Check is an url is valid by requesting it using different protocol
-    :param url: url
-    :return: boolis_valid_url
-    """
-    try:
-        response = requests.get(url, verify=True, timeout=TIMEOUT_REQUESTS)  # nosec  guardrails-disable-line
-    except requests.exceptions.RequestException:
-        prepend_url = prepend_protocol(url, 'http', True)
-        try:
-            response = requests.get(prepend_url, verify=True,
-                                    timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
-        except requests.exceptions.RequestException:
-            prepend_url = prepend_protocol(url, 'https', True)
-            try:
-                response = requests.get(prepend_url, verify=True,
-                                        timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
-            except requests.exceptions.RequestException:
-                prepend_url = prepend_protocol(url, 'http', False)
-                try:
-                    response = requests.get(prepend_url, verify=True,
-                                            timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
-                except requests.exceptions.RequestException:
-                    prepend_url = prepend_protocol(url, 'https', False)
-                    try:
-                        response = requests.get(prepend_url, verify=True,
-                                                timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
-                    except requests.exceptions.RequestException:
-                        return False, MSG_IMPOSSIBLE_CONNECTION, UNKNOWN
-    if response.status_code == 200:
-        return True, EMPTY_STRING, response.status_code
-    else:
-        return False, response.reason, response.status_code
-
-
 def verdict_to_int(verdict):
     if verdict == MALICIOUS_VERDICT:
         return 3
