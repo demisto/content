@@ -12,7 +12,7 @@ IR_URL = 'https://intelgraph.idefense.com/#/node/intelligence_report/view/'
 ENDPOINTS = {
     'threatindicator': '/rest/threatindicator',
     'document': '/rest/document',
-    'fundamental': '/rest/fundamental/v0'
+    'fundamental': '/rest/fundamental'
 }
 
 
@@ -380,31 +380,38 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
         indicator_type = res.get('type', '')
         last_published = res.get('last_published', '')
         last_published_format = parse_date_string(last_published, DATE_FORMAT)
+        last_modified = res.get('last_modified', '')
+        last_modified_format = parse_date_string(last_modified, DATE_FORMAT)
+        index_timestamp = res.get('index_timestamp', '')
+        index_timestamp_format = parse_date_string(index_timestamp, DATE_FORMAT)
+        display_name = res.get('display_text', '')
 
         analysis_info = {
-            'Name': res.get('display_text', ''),
+            'Name': display_name,
             'DbotReputation': dbot_score,
-            'Confidence': res.get('confidence', 0),
             'ThreatTypes': res.get('threat_types', ''),
-            'TypeOfUse': res.get('last_seen_as', ''),
             'Type': indicator_type,
             'LastPublished': str(last_published_format),
-            'Description': res.get('description', '')
+            'LastModified': str(last_modified_format),
+            'IndexTimestamp': str(index_timestamp_format),
+            'Description': res.get('description', ''),
+            'Analysis': res.get('analysis', ''),
+            'Severity': res.get('severity', 0)
         }
 
         if indicator_type.lower() == 'malware_family':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTIIndicatorQuery', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'malware_family')
+            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'MalwareFamily')
         elif indicator_type.lower() == 'threat_group':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTIIndicatorQuery', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'threat_group')
+            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'ThreatGroup')
         elif indicator_type.lower() == 'threat_actor':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTIIndicatorQuery', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'threat_actor')
+            indicator = Common.CustomIndicator(indicator_type, indicator_value, dbot, analysis_info, 'ThreatActor')
 
         return CommandResults(indicator=indicator,
                           raw_response=res,
-                          readable_output=tableToMarkdown('Results', analysis_info))
+                          readable_output=tableToMarkdown(f'{display_name}', analysis_info))
 
 
 def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, indicatorTypeHash: bool = False):

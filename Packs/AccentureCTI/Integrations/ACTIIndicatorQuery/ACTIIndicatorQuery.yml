@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ACTI Indicator Query
+  id: ACTI Indicator Query Ankit
   version: -1
 configuration:
 - display: URL
@@ -39,8 +39,8 @@ configuration:
   type: 8
   required: false
 description: ACTI provides intelligence regarding security threats and vulnerabilities.
-display: ACTI Indicator Query
-name: ACTI Indicator Query
+display: ACTI Indicator Query Ankit
+name: ACTI Indicator Query Ankit
 script:
   commands:
   - name: ip
@@ -173,6 +173,101 @@ script:
       type: String
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason the vendor made that decision.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - name: acti-get-fundamentals-by-uuid
+    description: Checks reputation of a specific indicator(URL/IP/Domain) uuid.
+    arguments:
+    - name: uuid
+      required: true
+      default: false
+      description: Unique User ID.
+    outputs:
+    - contextPath: MalwareFamily.display_text
+      description: desc.
+      type: String
+    - contextPath: MalwareFamily.threat_types
+      description: desc.
+      type: String
+    - contextPath: MalwareFamily.type
+      description: desc.
+      type: String
+    - contextPath: MalwareFamily.last_published
+      description: desc.
+      type: String
+    - contextPath: MalwareFamily.last_modified
+      description: desc.
+      type: String
+    - contextPath: MalwareFamily.index_timestamp
+      description: desc.
+      type: String
+    - contextPath: MalwareFamily.description
+      description: desc.
+      type: String
+    - contextPath: MalwareFamily.analysis
+      description: desc.
+      type: String
+    - contextPath: ThreatGroup.display_text
+      description: desc.
+      type: String
+    - contextPath: ThreatGroup.threat_types
+      description: desc.
+      type: String
+    - contextPath: ThreatGroup.type
+      description: desc.
+      type: String
+    - contextPath: ThreatGroup.last_published
+      description: desc.
+      type: String
+    - contextPath: ThreatGroup.last_modified
+      description: desc.
+      type: String
+    - contextPath: ThreatGroup.index_timestamp
+      description: desc.
+      type: String
+    - contextPath: ThreatGroup.description
+      description: desc.
+      type: String
+    - contextPath: ThreatGroup.analysis
+      description: desc.
+      type: String
+    - contextPath: ThreatActor.display_text
+      description: desc.
+      type: String
+    - contextPath: ThreatActor.threat_types
+      description: desc.
+      type: String
+    - contextPath: ThreatActor.type
+      description: desc.
+      type: String
+    - contextPath: ThreatActor.last_published
+      description: desc.
+      type: String
+    - contextPath: ThreatActor.last_modified
+      description: desc.
+      type: String
+    - contextPath: ThreatActor.index_timestamp
+      description: desc.
+      type: String
+    - contextPath: ThreatActor.description
+      description: desc.
+      type: String
+    - contextPath: ThreatActor.analysis
+      description: desc.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
