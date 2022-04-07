@@ -1,0 +1,280 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 969774c0-e5d7-44d4-85b3-f557a8bd0147
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |+
+  Playbook to abstract out process of polling for  an Activity to appear in the SentinelOne Activity feed after a file upload has been requested.
+
+  We did not use GenericPolling due to a difference in semantics. GenericPolling expects a value to show up in the context when results are incomplete, and then for that value to disappear when results are present or the action is incomplete.
+
+  SentinelOne returns *no* results when incompleted, then results when complete - the opposite of GenericPolling semantics. This seemed to be the cleanest way to implement this contract.
+
+id: 9d832d8d-5c79-406b-82cb-7b7c4b1f12c8
+inputs:
+- description: SentenelOne get-activities created_after field
+  key: StartTimestamp
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Agent ID to check
+  key: AgentId
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Timeout in minutes
+  key: Timeout
+  playbookInputQuery: null
+  required: true
+  value: {}
+name: SentinelOne - Check for New File Upload Activity
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 116f6314-00ca-4993-802b-7be2e9a38f73
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 116f6314-00ca-4993-802b-7be2e9a38f73
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      builtincondition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: Counter
+                transformers:
+                - operator: LastArrayElement
+          operator: greaterThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: MaxCounter
+        - left:
+            iscontext: true
+            value:
+              simple: SentinelOne.Activity
+          operator: isNotEmpty
+      exitCondition: ""
+      iscommand: false
+      max: 60
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Counter:
+        simple: ${Counter}
+      MaxCounter:
+        complex:
+          root: inputs.Timeout
+          transformers:
+          - args:
+              by:
+                value:
+                  simple: "4"
+            operator: multiply
+      StartTimestamp:
+        simple: ${inputs.StartTimestamp}
+      AgentId:
+        simple: ${inputs.AgentId}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Playbook called inside a loop by  "SentinelOne - Check for New
+        File Upload Activity". Does the actual poll of the SentinelOne Activity feed,
+        then sleeps for 15 seconds if no result is found.
+      id: 1c6620fc-7113-4167-8630-817585433078
+      iscommand: false
+      name: SentinelOne - Check for New File Upload Activity - Inner Loop
+      playbookId: 923b98f3-1dd3-471a-8a32-3397d16b9dd5
+      type: playbook
+      version: -1
+    taskid: 1c6620fc-7113-4167-8630-817585433078
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 530
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      id: 9d6ea723-4d56-4e86-8457-03c0b07010f3
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 9d6ea723-4d56-4e86-8457-03c0b07010f3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: Counter
+      value:
+        simple: "0"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: bc79fdf5-7d9a-41e8-8849-d29737f3a7ed
+      iscommand: false
+      name: Set Counter
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: bc79fdf5-7d9a-41e8-8849-d29737f3a7ed
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fe5517ff-1a65-44e0-8291-58856d462914
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: fe5517ff-1a65-44e0-8291-58856d462914
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 710
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d578d5c9-0e72-4622-8153-32de0137a133
+      iscommand: false
+      name: Sleeps are 15 seconds. So MaxCounter = Timeout* 4
+      type: title
+      version: -1
+    taskid: d578d5c9-0e72-4622-8153-32de0137a133
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 725,
+        "width": 845,
+        "x": 265,
+        "y": 50
+      }
+    }
+  }
