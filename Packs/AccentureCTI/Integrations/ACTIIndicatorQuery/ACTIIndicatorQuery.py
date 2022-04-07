@@ -397,8 +397,10 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             'Severity': res.get('severity', 0)
         }
 
-        description = res.get('description', '')
-        analysis = res.get('analysis', '')
+        # description = res.get('description', '')
+        # analysis = res.get('analysis', '')
+        description = markdown_postprocessing(res.get('description', ''))
+        analysis = markdown_postprocessing(res.get('analysis', ''))
 
         if description:
             analysis_info["Description"] = description

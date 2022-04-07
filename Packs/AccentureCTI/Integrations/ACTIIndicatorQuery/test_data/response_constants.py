@@ -46,6 +46,7 @@ URL_RES_JSON = {
                  'uuid': '60a2ef03-8650-490b-9542-0f8cc21e5c6d',
                  'arguments': [], 'path': ['nuklyuql']}], 'total_size': 1, 'page': 1, 'page_size': 25, 'more': False}
 
+
 URL_INTEL_JSON = {'results': [
     {
         'key': 'http://www.malware.com',
@@ -65,6 +66,7 @@ URL_INTEL_JSON = {'results': [
     'page_size': 25,
     'more': False
 }
+
 
 IP_RES_JSON = {
     'results':
@@ -98,6 +100,7 @@ IP_RES_JSON = {
     'page_size': 25,
     'more': False}
 
+
 IP_INTEL_JSON = {'results': [
     {
         'key': '0.0.0.0',
@@ -130,6 +133,7 @@ IP_INTEL_JSON = {'results': [
     'more': False
 }
 
+
 DOMAIN_RES_JSON = {
     'results': [
         {
@@ -158,6 +162,7 @@ DOMAIN_RES_JSON = {
     'page_size': 25,
     'more': False
 }
+
 
 DOMAIN_INTEL_JSON = {'results': [
     {
@@ -2763,6 +2768,7 @@ THREAT_ACTOR_RES_JSON = {
     ],
     "skill_lvl": "Moderate"
 }
+
 
 expected_output_malware_family = {
     'malware_family': [{'value': 'Hive', 'Name': 'Hive', 'DbotReputation': 2, 'Confidence': 0, 'ThreatTypes': ['Cyber Crime'], 'TypeOfUse': '', 'Type': 'malware_family', 'LastPublished': '2022-03-20 19:46:58', 'Description': '##Overview\nThe Hive ransomware, written in the Go programming language, first came to the attention of researchers in June 2021. In August 2021, actors used the [Hive ransomware against a healthcare provider in Ohio]( https://labs.sentinelone.com/hive-attacks-analysis-of-the-human-operated-ransomware-targeting-healthcare/). Hive actors conduct double extortion tactics and maintain a leak site at hxxp://hiveleakdbtnp76ulyhi52eag6c6tyc3xw7ez7iqy6wc34gd2nekazyd[.]onion/ and an instructions and  payment site at  hxxp://hivecust6vhekztbqgdnkks64ucehqacge3dij3gyrrpdp57zoq3ooqd[.]onion/, which requires login and password credentials.\n\n##Functionality and Behavior\nA preliminary iDefense analysis of the Hive ransomware revealed the following functionality:\n\n- Once Hive is deployed on the target machine, the operator can issue command-line parameters that perform functions listed in Exhibit 1.\n \n\n ![alt text](/rest/files/download/58/bb/30/2517f5e13cd79953067a30412537285c85cdf49ee3d9c6776f996b4834/Hive-params.png)  \n *Exhibit 1: Command-Line Parameters*\n\n- When run without command-line parameters, Hive executes its default functionality as listed in Exhibit 2. Some of the functions include deleting itself, stopping default services shown in Exhibit 1, skipping files more than five years old, and deleting shadow copies.\n \n\n ![alt text](/rest/files/download/81/31/a0/e099c923f928728d98947dfe73b8aea00df7c0da11df7386f1ee69fc1b/hive-execution.png)  \n *Exhibit 2: Default Execution*\n\n- During its default encryption activities in a test directory, Hive encrypted an executable file and encrypted PPT files but skipped an XLS file. When encrypting executables in an analysis sandbox, the sandbox environment became unstable. Exhibit 3 shows the encrypted and unencrypted files in the test directory. Hive added the file extension `.[key string][alphanumeric string].hive` to files it encrypted.\n \n ![alt text](/rest/files/download/c3/9e/3c/9e3e09b70c098e7fb52d2ed9b735a233c91b9a67bacc5aa11ff5737bd6/Hive-test.png)  \n *Exhibit 3: Default Execution*\n\n- Hive drops its ransom note in directories it examined during encryption activities. Exhibit 4 shows the ransom note.\n  \n ![alt text](/rest/files/download/a4/97/74/ea7057fd08316335ab87acf1f98cfe7e50933532385788b4f594fd88f7/hive-ransom.png)  \n *Exhibit 4: Ransom Note*\n\n##Mitigation\n\nTo protect against the Hive ransomware and possible data exfiltration, iDefense suggests:\n* Implementing the appropriate mitigations selected in the left-hand MITRE ATT&CK techniques tab.\n- Training users to identify and safely handle social engineering emails that could be part of a phishing campaign.\n\n- Avoiding opening or downloading suspicious links and attachments in emails from external sources until confirming with the sender using other means that the message and its contents are valid.\n- Securing networks from malware through best practices for patching, configuring firewalls, maintaining up-to-date anti-virus signatures, running regular scans, retaining backups separate from the network on which they reside, and using application whitelists.\n- Preparing and implementing a robust incident response plan in case a data breach or malware incident occurs.\n- Immediately disconnecting compromised systems from the network on which they reside.\n- Refraining from paying ransoms, as doing so provides an incentive to threat actors to continue making demands.\n- Consider developing continuity of operations plans  that account for massive ransomware or wiper attacks that can spread across the entire business.\n- For additional mitigation advice on how to protect against ransomware attacks, see iDefense’s Intelligence Alert titled [“Overview of Ransomware Activity.”](/#/node/intelligence_alert/view/5afaf6fc-30eb-4635-960b-e92df530787f)\n\nFor threat hunting against Hive samples, iDefense suggests looking for the following files:\n* Encrypted files with extension `.[key string][alphanumeric string].hive`\n* Ransom note “HOW\\_TO_DECRYPT.txt in various directories\n* Hive batch files hive.bat or shadow.bat\n* Key files [key string].key, [key string].key.hiv\n* temp[integer]_swamp.hive of unknown use'}],
