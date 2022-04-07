@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 
 import requests
 import urllib3
-from datetime import date
+from datetime import date, datetime
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -55,6 +55,7 @@ class Client(BaseClient):
             if resp.get('success') or False:
                 event_type_alias = resp['data']
             else:
+                raise Exception(resp)
                 demisto.error("Error trying to Fetch EventTypess {}".format(resp))
         except Exception as e:
             demisto.error("Exception with Fetch EventTypes [{}]".format(e))
@@ -94,11 +95,9 @@ class Client(BaseClient):
             if resp.get('count'):
                 ioc_data = resp
             else:
-                ioc_data = {"error": "Failed to Fetch Taxiis !!"}
                 demisto.error("Error trying to Fetch IOC's {}".format(resp))
         except Exception as e:
-            demisto.error("Error: [{}] for response [{}]".format(e, resp))
-            raise e
+            raise Exception("Error: [{}] for response [{}]".format(e, resp))
 
         return ioc_data
 
@@ -129,11 +128,10 @@ class Client(BaseClient):
 
         try:
             resp = response.json()
-
-            if resp.get('success') or False:
+            if (resp.get('success') or False):
                 events_data = resp.get('data', {}).get('results')
             else:
-                demisto.error("Error trying to Fetch Events {}".format(resp))
+                raise Exception(resp)
         except Exception as e:
             demisto.error("Exception with Fetch Events [{}]".format(e))
             raise e
@@ -168,6 +166,7 @@ class Client(BaseClient):
                 resp = response.json()
         except Exception as e:
             demisto.error('Exception while fetching the event details {}'.format(e))
+            raise e
 
         if response.status_code == 200 and (resp.get('success') or False):
             events_data.extend(resp.get('events', []))
@@ -175,7 +174,8 @@ class Client(BaseClient):
                 params['from'] += params.get('limit', '50')
                 self.get_event_details(method, eventurl, params, events_data)
         else:
-            demisto.error("Fetch event detail error (code:{}, reason:{})".format(response.status_code, response.reason))
+            raise Exception(
+                "Fetch event detail error (code:{}, reason:{})".format(response.status_code, response.reason))
 
 
 def get_test_response(client, method, token):
@@ -245,7 +245,11 @@ def cyble_fetch_iocs(client, method, args):
     else:
         result = {"error": "Invalid token !!"}
 
+    markdown = tableToMarkdown('Indicator Details:', result.get('results'),
+                               headers=['event_title', 'type', 'indicator', 'references', 'last_seen_on'])
+
     command_results = CommandResults(
+        readable_output=markdown,
         outputs_prefix='CybleEvents.IoCs',
         outputs_key_field='data',
         outputs=result
@@ -290,7 +294,7 @@ def format_incidents(resp, eventTypes):
         return []
 
 
-def cyble_fetch_events(client, method, args):
+def cyble_fetch_alerts(client, method, args):
     """
     Fetch alert details from server for creating incidents in XSOAR
     :param client: instace of client to communicate with server
@@ -318,7 +322,10 @@ def cyble_fetch_events(client, method, args):
         eventTypes = get_event_types(client, "GET", args['token'])
         incidents = format_incidents(result, eventTypes)
 
+    markdown = tableToMarkdown('Alerts:', incidents)
+
     command_results = CommandResults(
+        readable_output=markdown,
         outputs_prefix='CybleEvents.Events',
         outputs_key_field=['cybleeventsid', 'cybleeventstype'],
         outputs=incidents
@@ -351,7 +358,9 @@ def fetch_alert_details(client, args):
     if args.get('token'):
         client.get_event_details("POST", events_url, params, results)
 
+    markdown = tableToMarkdown('Event Details:', results)
     command_results = CommandResults(
+        readable_output=markdown,
         outputs_prefix='CybleEvents.Events',
         outputs_key_field='Details',
         outputs=results
@@ -419,6 +428,38 @@ def fetch_incidents(client, method, token, maxResults):
     return incidents
 
 
+def validate_input(args, check_date=False):
+    """
+    Check if the input params for the command are valid. Return an error if any
+    :param args: dictionary of input params
+    :param check_date: if false, dont validate the date items
+    """
+    try:
+        # we assume all the params to be non-empty, as cortex ensures it
+        if arg_to_number(args.get('from')) < 0:
+            raise ValueError(f"Parameter having negative value, from: {arg_to_number(args.get('from'))}'")
+
+        if arg_to_number(args.get('limit', '50')) <= 0:
+            raise ValueError(f"Limit should be greater than zero, limit: {arg_to_number(args.get('limit', '50'))}")
+
+        if check_date:
+            _start_date = datetime.strptime(args.get('start_date'), "%Y/%m/%d")
+            _end_date = datetime.strptime(args.get('end_date'), "%Y/%m/%d")
+
+            if _start_date > datetime.today():
+                raise ValueError(
+                    f"Start date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}")
+            if _end_date > datetime.today():
+                raise ValueError(f"End date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}")
+            if _start_date > _end_date:
+                raise ValueError(f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}")
+
+        return None
+    except Exception as e:
+        demisto.error("Exception with validating inputs [{}]".format(e))
+        raise e
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -471,18 +512,20 @@ def main():
                 args['start_date'] = datetime.today().strftime('%Y/%m/%d')
             if not args.get('end_date'):
                 args['end_date'] = datetime.today().strftime('%Y/%m/%d')
-
+            # check for validation errors
+            validate_input(args, True)
             return_results(cyble_fetch_iocs(client, 'POST', args))
 
-        elif demisto.command() == 'cyble-vision-fetch-events':
-            # This is the call made when cyble-fetch-events command.
+        elif demisto.command() == 'cyble-vision-fetch-alerts':
+            # This is the call made when cyble-vision-fetch-alerts command.
             args['order_by'] = (args.get('order_by') or '').title()
             if not args.get('start_date'):
                 args['start_date'] = datetime.today().strftime('%Y-%m-%d')
             if not args.get('end_date'):
                 args['end_date'] = datetime.today().strftime('%Y-%m-%d')
-
-            return_results(cyble_fetch_events(client, 'POST', args))
+            # check for validation errors
+            validate_input(args, True)
+            return_results(cyble_fetch_alerts(client, 'POST', args))
 
         elif demisto.command() == "cyble-vision-fetch-event-detail":
             # Fetch event detail.

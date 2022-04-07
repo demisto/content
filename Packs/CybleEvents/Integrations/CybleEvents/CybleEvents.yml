@@ -73,7 +73,7 @@ script:
       description: Returns indicator inital creation date
       type: String
     description: Fetch the indicators for the given timeline
-  - name: cyble-vision-fetch-events
+  - name: cyble-vision-fetch-alerts
     arguments:
     - name: from
       required: true
