@@ -47,6 +47,10 @@ data_test_is_id_valid = [
     (123, True),
     ('123', True),
     (123.3, False),
+    ('1,2,3', True),
+    ([1, 2, 3], True),
+    ('[1,2,3]', True),
+
 ]
 
 

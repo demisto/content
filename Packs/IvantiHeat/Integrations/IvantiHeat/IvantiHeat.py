@@ -215,6 +215,7 @@ def fetch_incidents(client, last_run, first_fetch_time, name_field):
     raw_res = client.do_request('GET', 'odata/businessobject/incidents', params=params)
     for item in raw_res.get('value', []):
         incident_created_time = dateparser.parse(item.get('CreatedDateTime'))
+        assert incident_created_time is not None
         incident_name = item.get(name_field, item.get('RecId'))
         incident = {
             'name': incident_name,
