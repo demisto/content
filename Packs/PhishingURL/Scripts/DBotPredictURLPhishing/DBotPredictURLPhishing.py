@@ -460,8 +460,8 @@ def get_score(pred_json):
     else:
         domain_age_key = pred_json[DOMAIN_AGE_KEY]
     total_weight_used = WEIGHT_HEURISTIC[DOMAIN_AGE_KEY] * use_age + WEIGHT_HEURISTIC[MODEL_KEY_LOGIN_FORM] \
-                        + WEIGHT_HEURISTIC[MODEL_KEY_SEO] + WEIGHT_HEURISTIC[MODEL_KEY_URL_SCORE] \
-                        + WEIGHT_HEURISTIC[MODEL_KEY_LOGO_FOUND] * use_logo
+        + WEIGHT_HEURISTIC[MODEL_KEY_SEO] + WEIGHT_HEURISTIC[MODEL_KEY_URL_SCORE] \
+        + WEIGHT_HEURISTIC[MODEL_KEY_LOGO_FOUND] * use_logo
     score = (use_age * WEIGHT_HEURISTIC[DOMAIN_AGE_KEY] * domain_age_key
              + WEIGHT_HEURISTIC[MODEL_KEY_LOGIN_FORM] * pred_json[MODEL_KEY_LOGIN_FORM]
              + WEIGHT_HEURISTIC[MODEL_KEY_SEO] * pred_json[MODEL_KEY_SEO]
@@ -528,7 +528,8 @@ def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
         if 'disabled' in error or 'enabled' in error:
             raise DemistoException(MSG_NEED_TO_UPDATE_RASTERIZE)
         elif 'timeout' in error:
-            return create_dict_context(url, url, MSG_FAILED_RASTERIZE_TIMEOUT, {}, SCORE_INVALID_URL, is_white_listed, {})
+            return create_dict_context(url, url, MSG_FAILED_RASTERIZE_TIMEOUT, {}, SCORE_INVALID_URL, is_white_listed,
+                                       {})
         elif 'ERR_NAME_NOT_RESOLVED' in error:
             return create_dict_context(url, url, MSG_FAILED_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
         else:
@@ -539,7 +540,8 @@ def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
 
     if KEY_IMAGE_RASTERIZE not in res_rasterize[0]['Contents'].keys() or KEY_IMAGE_HTML \
             not in res_rasterize[0]['Contents'].keys():
-        return create_dict_context(url, url, MSG_SOMETHING_WRONG_IN_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
+        return create_dict_context(url, url, MSG_SOMETHING_WRONG_IN_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed,
+                                   {})
 
     if len(res_rasterize) > 0:
         output_rasterize = res_rasterize[0]['Contents']
@@ -572,7 +574,7 @@ def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
         try:
             res_whois = demisto.executeCommand('whois', {'query': domain, 'execution-timeout': 5
                                                          })
-        except Exception as e:
+        except Exception:
             res_whois = []
     is_new_domain = extract_created_date(res_whois)
 
@@ -772,7 +774,7 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
 def check_if_whois_installed():
     try:
         demisto.executeCommand('whois', {'query': DOMAIN_CHECK_RASTERIZE, 'execution-timeout': 5
-                                                     })
+                                         })
         return True
     except ValueError:
         return_results(MSG_ENABLE_WHOIS)
