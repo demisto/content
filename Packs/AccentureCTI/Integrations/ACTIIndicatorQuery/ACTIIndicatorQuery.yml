@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ACTI Indicator Query Ankit
+  id: ACTI Indicator Query
   version: -1
 configuration:
 - display: URL
@@ -39,8 +39,8 @@ configuration:
   type: 8
   required: false
 description: ACTI provides intelligence regarding security threats and vulnerabilities.
-display: ACTI Indicator Query Ankit
-name: ACTI Indicator Query Ankit
+display: ACTI Indicator Query
+name: ACTI Indicator Query
 script:
   commands:
   - name: ip
