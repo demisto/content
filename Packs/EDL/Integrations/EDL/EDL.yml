@@ -70,14 +70,14 @@ configuration:
   name: add_comment_if_empty
   required: false
   type: 8
-- additionalinfo: 'CIDRs with prefix len smaller than this value will not be included. (integer)'
+- additionalinfo: 'CIDRs with prefix size smaller than this value will not be included'
   defaultvalue: 8
   display: 'Maximum CIDR prefix size'
   hidden: false
   name: maximum_cidr_size
   required: true
   type: 0
-- additionalinfo: 'Configure tp disable top level domain in the list.'
+- additionalinfo: 'Configure to disable top level domain in the list.'
   defaultvalue: 'false'
   display: 'Disable insertion top level domains'
   hidden: false
