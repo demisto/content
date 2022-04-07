@@ -212,7 +212,7 @@ class TestHelperFunctions:
                       {"value": "*.google.com", "indicator_type": "Domain"},  # no tld
                       {"value": "aא.com", "indicator_type": "URL"}]  # no ascii
         f = '\n'.join((json.dumps(indicator) for indicator in indicators))
-        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, block_cidr_prefix_threshold=2)
+        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=2)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
         edl_v = edl.create_new_edl(request_args)
         expected_values = set()
@@ -223,13 +223,13 @@ class TestHelperFunctions:
             expected_values.add(value)
         assert set(edl_v.split('\n')) == expected_values
 
-        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, block_cidr_prefix_threshold=8)
+        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=8)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
         edl_v = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"1.1.1.1/12", "*.com", "com", "*.co.uk",
                                           "co.uk", "*.google.com", "google.com", "aא.com"}
 
-        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, block_tld=True, block_cidr_prefix_threshold=13)
+        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, no_tld=True, maximum_cidr_size=13)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
         edl_v = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"*.google.com", "google.com", "aא.com"}

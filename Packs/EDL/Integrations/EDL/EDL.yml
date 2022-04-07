@@ -70,6 +70,20 @@ configuration:
   name: add_comment_if_empty
   required: false
   type: 8
+- additionalinfo: 'CIDRs with prefix len smaller than this value will not be included. (integer)'
+  defaultvalue: 8
+  display: 'Maximum CIDR prefix size'
+  hidden: false
+  name: maximum_cidr_size
+  required: true
+  type: 0
+- additionalinfo: 'Check if disable top Level Domain in the list.'
+  defaultvalue: 'false'
+  display: 'Disable insertion top level domains'
+  hidden: false
+  name: no_tld
+  required: true
+  type: 8
 - additionalinfo: If selected, ports in URLs will be removed. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.
   defaultvalue: 'true'
   display: Strip ports from URLs
@@ -190,20 +204,7 @@ configuration:
   name: use_legacy_query
   required: false
   type: 8
-- additionalinfo: 'CIDRs with prefix len smaller than this value will not be included.'
-  defaultvalue: 8
-  display: 'Block CIDRs Prefix Len Threshold'
-  hidden: false
-  name: block_cidr_prefix_threshold
-  required: true
-  type: 8
-- additionalinfo: 'Check if not include top Level Domain.'
-  defaultvalue: 'false'
-  display: 'Block Top Level Domains'
-  hidden: false
-  name: block_tld
-  required: true
-  type: 8
+
 
 description: Use the Generic Export Indicators Service integration to provide an endpoint
   with a list of indicators as a service for the system indicators.
@@ -481,7 +482,7 @@ script:
     deprecated: false
     description: Updates values stored in the List (only available On-Demand).
     execution: false
-  dockerimage: demisto/flask-nginx:1.0.0.23674
+  dockerimage: devdemisto/flask-nginx:1.0.0.28185
   feed: false
   isfetch: false
   longRunning: true
