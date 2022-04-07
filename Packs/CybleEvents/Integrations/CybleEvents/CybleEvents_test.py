@@ -205,19 +205,19 @@ def test_cyble_vision_fetch_iocs(requests_mock, offset):
     assert response['results'][0]['indicator'] == 'some_indicator'
 
 
-def test_cyble_vision_fetch_events(requests_mock):
+def test_cyble_vision_fetch_alerts(requests_mock):
     """
-    Tests the cyble_vision_fetch_events command
+    Tests the cyble_vision_fetch_alerts command
 
-    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_events
-    API response when the correct cyble_vision_fetch_events API request is performed. Checks
+    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_alerts
+    API response when the correct cyble_vision_fetch_alerts API request is performed. Checks
     the output of the command function with the expected output.
 
     :param requests_mock:
     :return:
     """
 
-    from CybleEvents import Client, cyble_fetch_events
+    from CybleEvents import Client, cyble_fetch_alerts
 
     mock_response_1 = load_json_file("dummy_fetch_incidents.json")
     mock_response_2 = load_json_file("dummy_fetch_incidents_types.json")
@@ -240,7 +240,7 @@ def test_cyble_vision_fetch_events(requests_mock):
         'order_by': 'Ascending'
     }
 
-    response = cyble_fetch_events(client=client, method='POST', args=args).outputs
+    response = cyble_fetch_alerts(client=client, method='POST', args=args).outputs
 
     assert isinstance(response, list)
     assert isinstance(response[0], dict)
