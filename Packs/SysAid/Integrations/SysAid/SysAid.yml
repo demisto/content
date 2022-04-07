@@ -56,9 +56,10 @@ configuration:
   required: false
   type: 16
 - additionalinfo: A comma separated list of statuses to return.
-    Default value is including "open classes". You may add/remove statuses
-    according to your needs. Can be found by running the "sysaid-table-list" command
-    with the "list_id=status" argument.
+    Default value includes "open classes". You may add/remove statuses
+    according to your needs. The list of status numbers and their values
+    can be retrieved by running the "sysaid-table-list" command with the 
+    "list_id=status" argument.
   defaultvalue: 1,2,5,6,8,18,19,22,23,24,25,26,27,30,31,32,33
   display: Included statuses
   name: included_statuses
@@ -68,19 +69,19 @@ configuration:
   name: include_archived
   required: false
   type: 8
-description: SysAid is a robust IT management system that was designed to meet all
-  of your needs as an IT department.
+description: SysAid is a robust IT management system designed to meet all
+  of the needs of an IT department.
 display: SysAid
 name: SysAid
 script:
   commands:
   - name: sysaid-table-list
-    description: 'Allows to retrieve all lists (tables) related to a specific entity,
-      or to return a specific list from an entity.'
+    description: 'Retrieve all lists (tables) related to a specific entity,
+      or a specific list from an entity.'
     arguments:
     - name: entity
       description: 'A SysAid entity by which to retrieve the available lists. Defaults
-        to service record. The options are: sr - Service record related lists, asset - Asset related
+        to service record. Options are: sr - Service record related lists, asset - Asset related
         lists, user - User related lists, ci - CI related lists, company - Company
         related lists, action_item - Action item related lists, project - Service
         record Sub Tabs lists, task - Task related lists, catalog - Catalog related
@@ -107,23 +108,23 @@ script:
       - user_groups
     - name: entity_id
       description: "The entity's ID. For example, in service record Form lists, send the service record ID
-        to populate additional filters on the lists. e.g. the responsibility list
+        to populate additional filters on the lists. For example, the responsibility list
         may be filtered by the admin group of the service record."
       required: false
       isArray: false
     - name: entity_type
-      description: 'Numeric. For example: in sr entity, send the sr_type id, for ci
-        entity, send the ci type id (e.g. for getting the list of CI sub types).'
+      description: 'Numeric. For example, in sr entity, send the sr_type ID, for ci
+        entity, send the ci type ID (for retrieving the list of CI sub-types).'
       required: false
       isArray: false
     - name: list_id
-      description: 'Desired list id.'
+      description: 'Desired list ID.'
       required: false
       isArray: false
     - name: key
       description: 'Relevant for users/groups related fields. Defines whether to use
-        the id or the name as the key for each value in the result. Available values
-        are "name" or "id". Defaults to id.'
+        the ID or the name as the key for each value in the result. Available values
+        are "name" or "id". Defaults to "id".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -131,8 +132,8 @@ script:
       - id
       - name
     - name: fields
-      description: 'A comma separated list of fields to return. Available fields to
-        return are: id (always returned), caption, and values.'
+      description: 'A comma separated list of fields to return. Available fields 
+         are: id (always returned), caption, and values.'
       required: false
       isArray: false
     outputs:
@@ -146,7 +147,7 @@ script:
       contextPath: SysAid.List.values
       description: 'The values of the list.'
   - name: sysaid-asset-list
-    description: 'List all assets or get a specific asset by ID. It is recommended to filter the results by the wanted fields.'
+    description: 'List all assets or get a specific asset by ID. Cortex XSOAR recommends filtering the results by the desired fields.'
     arguments:
     - name: asset_id
       description: 'The ID of the asset to return.'
@@ -176,7 +177,7 @@ script:
       contextPath: SysAid.Asset.info
       description: 'The info of the asset.'
   - name: sysaid-asset-search
-    description: 'Get information about a specific asset. It is recommended to filter the results by the wanted fields.'
+    description: 'Get information about a specific asset. Cortex XSOAR recommends filtering the results by the desired fields.'
     arguments:
     - name: query
       description: 'The search criteria.'
@@ -206,7 +207,7 @@ script:
       contextPath: SysAid.Asset.info
       description: 'The info of the asset.'
   - name: sysaid-filter-list
-    description: 'List all filters. It is recommended to filter the results by the wanted fields.'
+    description: 'List all filters. Cortex XSOAR recommends filtering the results by the desired fields.'
     arguments:
     - name: fields
       description: 'Comma separated list of fields to return to context data. You can send "all" for debugging purposes.'
@@ -226,7 +227,7 @@ script:
       contextPath: SysAid.Filter.values
       description: 'The values of the filter.'
   - name: sysaid-user-list
-    description: 'Get list of users in SysAid. It is recommended to filter the results by the wanted fields.'
+    description: 'Get list of users in SysAid. Cortex XSOAR recommends filtering the results by the desired fields.'
     arguments:
     - name: fields
       description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the
@@ -234,7 +235,7 @@ script:
       required: true
       isArray: false
     - name: type
-      description: 'The users type to retrieve. Defaults to all user type if not specified.'
+      description: 'The user type to retrieve. Defaults to all user types if not specified.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -270,10 +271,10 @@ script:
       contextPath: SysAid.User.isGuest
       description: 'Whether the SysAid user is a guest or not.'
   - name: sysaid-user-search
-    description: 'Get information about a specific asset. It is recommended to filter the results by the wanted fields.'
+    description: 'Get information about a specific asset. Cortex XSOAR recommends filtering the results by the desired fields.'
     arguments:
     - name: query
-      description: 'The search criteria'
+      description: 'The search criteria.'
       required: true
       isArray: false
     - name: fields
@@ -282,7 +283,7 @@ script:
       required: true
       isArray: false
     - name: type
-      description: 'The users type to retrieve. Defaults to all user type if not specified.'
+      description: 'The user types to retrieve. Defaults to all user types if not specified.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -318,7 +319,7 @@ script:
       contextPath: SysAid.User.isGuest
       description: 'Whether the SysAid user is a guest or not.'
   - name: sysaid-service-record-list
-    description: 'List all service requests. It is recommended to filter the results by the wanted fields.'
+    description: 'List all service requests. Cortex XSOAR recommends filtering the results by the desired fields.'
     arguments:
     - name: type
       description: 'The requested service record type.'
@@ -344,11 +345,11 @@ script:
       required: false
       isArray: false
     - name: ids
-      description: 'The list of service records IDs to return, comma separated'
+      description: 'The list of service records IDs to return, comma separated.'
       required: false
       isArray: false
     - name: archive
-      description: 'Whether to return archived service records. Value can be 1 or 0'
+      description: 'Whether to return archived service records. Value can be 1 or 0.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -356,11 +357,12 @@ script:
       - '0'
       - '1'
     - name: custom_fields_keys
-      description: 'Comma separated list of filters ids.'
+      description: 'Comma separated list of filter IDs.'
       required: false
       isArray: true
     - name: custom_fields_values
-      description: 'Comma separated list of filters values, each corresponding to the filter key at the same place.'
+      description: 'Comma separated list of the values of the filter IDs. 
+      For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2.'
       required: false
       isArray: true
     outputs:
@@ -383,7 +385,7 @@ script:
       contextPath: SysAid.ServiceRecord.notes
       description: 'The notes of the service record.'
   - name: sysaid-service-record-search
-    description: 'Search by a query among all service records. It is recommended to filter the results by the wanted fields.'
+    description: 'Search by a query through all service records. Cortex XSOAR recommends filtering the results by the desired fields.'
     arguments:
     - name: type
       description: 'The requested service record type.'
@@ -413,7 +415,7 @@ script:
       required: true
       isArray: false
     - name: archive
-      description: 'Whether to return archived service records. Value can be 1 or 0'
+      description: 'Whether to return archived service records. Value can be 1 or 0.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -421,11 +423,12 @@ script:
       - '0'
       - '1'
     - name: custom_fields_keys
-      description: 'Comma separated list of filters ids.'
+      description: 'Comma separated list of filters IDs.'
       required: false
       isArray: true
     - name: custom_fields_values
-      description: 'Comma separated list of filters values, each corresponding to the filter key at the same place.'
+      description: 'Comma separated list of the values of the filter IDs. 
+      For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2.'
       required: false
       isArray: true
     outputs:
@@ -451,7 +454,7 @@ script:
     description: 'The valid statuses can be retrieved using the "sysaid-table-list" command.'
     arguments:
     - name: id
-      description: 'The service record ID'
+      description: 'The service record ID.'
       required: true
       isArray: false
     - name: impact
@@ -479,7 +482,7 @@ script:
       required: false
       isArray: false
     - name: problem_sub_type
-      description: 'The new problem sub type of the service record.'
+      description: 'The new problem sub-type of the service record.'
       required: false
       isArray: false
     - name: third_level_category
@@ -491,7 +494,7 @@ script:
       required: false
       isArray: false
     - name: sub_type
-      description: 'The new sub type of the service record.'
+      description: 'The new sub-type of the service record.'
       required: false
       isArray: false
     - name: agreement
@@ -503,15 +506,15 @@ script:
       required: false
       isArray: false
     - name: followup_user
-      description: 'The new followup user of the service record.'
+      description: 'The new follow up user of the service record.'
       required: false
       isArray: false
     - name: followup_text
-      description: 'The new followup text of the service record.'
+      description: 'The new follow up text of the service record.'
       required: false
       isArray: false
     - name: cust_notes
-      description: 'The new cust notes of the service record.'
+      description: 'The new custom notes of the service record.'
       required: false
       isArray: false
     - name: email_account
@@ -535,7 +538,7 @@ script:
       required: false
       isArray: false
     - name: computer_id
-      description: 'The new computer id of the service record.'
+      description: 'The new computer ID of the service record.'
       required: false
       isArray: false
     - name: due_date
@@ -559,11 +562,12 @@ script:
       required: false
       isArray: false
     - name: custom_fields_keys
-      description: 'Comma separated list of filters ids.'
+      description: 'Comma separated list of filters IDs.'
       required: false
       isArray: true
     - name: custom_fields_values
-      description: 'Comma separated list of filters values, each corresponding to the filter key at the same place.'
+      description: 'Comma separated list of the values of the filter IDs. 
+      For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2.'
       required: false
       isArray: true
   - name: sysaid-service-record-close
@@ -571,7 +575,7 @@ script:
       Close status, as defined in the Help Desk settings.'
     arguments:
     - name: id
-      description: 'The service record ID'
+      description: 'The service record ID.'
       required: true
       isArray: false
     - name: solution
@@ -579,7 +583,7 @@ script:
       required: false
       isArray: false
   - name: sysaid-service-record-template-get
-    description: 'Gets the template of a service record. It is recommended to filter the results by the wanted fields.'
+    description: 'Gets the template of a service record. Cortex XSOAR recommends filtering the results by the desired fields.'
     arguments:
     - name: fields
       description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the
@@ -626,7 +630,7 @@ script:
   - name: sysaid-service-record-create
     description: 'Create a new service record and return the newly created service
        record. The valid statuses can be retrieved using the "sysaid-table-list" command.
-       It is recommended to filter the results by the wanted fields.'
+       Cortex XSOAR recommends filtering the results by the desired fields.'
     arguments:
     - name: fields
       description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the
@@ -677,7 +681,7 @@ script:
       required: false
       isArray: false
     - name: problem_sub_type
-      description: 'The new problem sub type of the service record.'
+      description: 'The new problem sub-type of the service record.'
       required: false
       isArray: false
     - name: third_level_category
@@ -689,7 +693,7 @@ script:
       required: false
       isArray: false
     - name: sub_type
-      description: 'The new sub type of the service record.'
+      description: 'The new sub-type of the service record.'
       required: false
       isArray: false
     - name: agreement
@@ -697,15 +701,15 @@ script:
       required: false
       isArray: false
     - name: followup_user
-      description: 'The new followup user of the service record.'
+      description: 'The new follow up user of the service record.'
       required: false
       isArray: false
     - name: followup_text
-      description: 'The new followup text of the service record.'
+      description: 'The new follow up text of the service record.'
       required: false
       isArray: false
     - name: cust_notes
-      description: 'The new cust notes of the service record.'
+      description: 'The new custom notes of the service record.'
       required: false
       isArray: false
     - name: email_account
@@ -729,7 +733,7 @@ script:
       required: false
       isArray: false
     - name: computer_id
-      description: 'The new computer id of the service record.'
+      description: 'The new computer ID of the service record.'
       required: false
       isArray: false
     - name: due_date
@@ -753,11 +757,12 @@ script:
       required: false
       isArray: false
     - name: custom_fields_keys
-      description: 'Comma separated list of filters ids.'
+      description: 'Comma separated list of filters IDs.'
       required: false
       isArray: true
     - name: custom_fields_values
-      description: 'Comma separated list of filters values, each corresponding to the filter key at the same place.'
+      description: 'Comma separated list of the values of the filter IDs. 
+      For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2.'
       required: false
       isArray: true
     outputs:
@@ -783,7 +788,7 @@ script:
     description: 'Delete one or more service records.'
     arguments:
     - name: ids
-      description: 'The service record ID'
+      description: 'The service record ID.'
       required: true
       isArray: false
     - name: solution
