@@ -3262,12 +3262,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "integrations": "Cortex Data Lake",
-            "playbookID": "Cortex Data Lake Test",
-            "instance_names": "cdl_dev",
-            "fromversion": "4.5.0"
-        },
-        {
             "integrations": "MongoDB",
             "playbookID": "MongoDB - Test"
         },
@@ -5153,7 +5147,6 @@
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
-        "Cortex Data Lake Test": "Issue 24346",
         "Phishing - Core - Test - Incident Starter": "Issue 26784",
         "Phishing - Core - Test - Actual Incident": "Issue 45227",
         "Phishing v2 - Test - Incident Starter": "Issue 46660",
