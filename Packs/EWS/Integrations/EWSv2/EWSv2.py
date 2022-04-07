@@ -4,10 +4,10 @@ import subprocess
 import warnings
 from multiprocessing import Process
 
-# import dateparser
+import dateparser  # type: ignore
 import exchangelib
 from CommonServerPython import *
-from io import StringIO
+from cStringIO import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Body, Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
@@ -22,18 +22,17 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ResponseMessageError, TransportError)
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
-from exchangelib.services.common import EWSAccountService, EWSService
+from exchangelib.services import EWSAccountService, EWSService
 from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
                                  EXCHANGE_2010_SP2, EXCHANGE_2013,
                                  EXCHANGE_2016)
-# from future import utils as future_utils
+from future import utils as future_utils
 from requests.exceptions import ConnectionError
 
 # Define utf8 as default encoding
-# import importlib
-# importlib.reload(sys)
-# sys.setdefaultencoding('utf8')  # pylint: disable=E1101
+reload(sys)
+sys.setdefaultencoding('utf8')  # pylint: disable=E1101
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
@@ -41,10 +40,10 @@ warnings.filterwarnings("ignore")
 # Docker BC
 MNS = None
 TNS = None
-# if exchangelib.__version__ == "1.12.0":
-MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
-# else:
-#     MNS, TNS = exchangelib.util.MNS, exchangelib.transport.TNS  # pylint: disable=E1101
+if exchangelib.__version__ == "1.12.0":
+    MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
+else:
+    MNS, TNS = exchangelib.transport.MNS, exchangelib.transport.TNS  # pylint: disable=E1101
 
 # consts
 VERSIONS = {
@@ -572,9 +571,11 @@ def fix_2010():
 
 def str_to_unicode(obj):
     if isinstance(obj, dict):
-        obj = {k: str_to_unicode(v) for k, v in obj.items()}
+        obj = {k: str_to_unicode(v) for k, v in obj.iteritems()}
     elif isinstance(obj, list):
         obj = map(str_to_unicode, obj)
+    elif isinstance(obj, str):
+        obj = unicode(obj, "utf-8")
     return obj
 
 
@@ -986,9 +987,9 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
 
     raw_dict = {}
     for field, value in item.__dict__.items():
-        if type(value) in [str, int, float, bool, Body, HTMLBody, None]:
+        if type(value) in [str, unicode, int, float, bool, Body, HTMLBody, None]:
             try:
-                if isinstance(value, str):
+                if isinstance(value, basestring):
                     value.encode('utf-8')  # type: ignore
                 raw_dict[field] = value
             except Exception:
@@ -1591,7 +1592,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
 
     if not selected_all_fields:
         searched_items_result = [
-            {k: v for (k, v) in i.items()
+            {k: v for (k, v) in i.iteritems()
              if k in keys_to_camel_case(restricted_fields)} for i in searched_items_result]
 
         for item in searched_items_result:
@@ -1659,7 +1660,7 @@ def get_contacts(limit, target_mailbox=None):
     def parse_contact(contact):
         contact_dict = dict((k, v if not isinstance(v, EWSDateTime) else v.ewsformat())
                             for k, v in contact.__dict__.items()
-                            if isinstance(v, str) or isinstance(v, EWSDateTime))
+                            if isinstance(v, basestring) or isinstance(v, EWSDateTime))
         if isinstance(contact, Contact) and contact.physical_addresses:
             contact_dict['physical_addresses'] = map(parse_physical_address, contact.physical_addresses)
         if isinstance(contact, Contact) and contact.phone_numbers:
@@ -2099,7 +2100,7 @@ def sub_main():
     args = prepare_args(demisto.args())
     fix_2010()
     try:
-        # protocol = get_protocol()
+        protocol = get_protocol()
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'fetch-incidents':
@@ -2279,5 +2280,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins", "__main__"):
+if __name__ in ("__builtin__", "builtins"):
     main()
