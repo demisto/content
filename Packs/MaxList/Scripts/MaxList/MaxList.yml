@@ -11,10 +11,7 @@ commonfields:
   version: -1
 dockerimage: demisto/python3:3.10.4.27798
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: MaxList
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
