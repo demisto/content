@@ -394,20 +394,27 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             'LastPublished': str(last_published_format),
             'LastModified': str(last_modified_format),
             'IndexTimestamp': str(index_timestamp_format),
-            'Description': res.get('description', ''),
-            'Analysis': res.get('analysis', ''),
             'Severity': res.get('severity', 0)
         }
 
+        description = res.get('description', '')
+        analysis = res.get('analysis', '')
+
+        if description:
+            analysis_info["Description"] = description
+        if analysis:
+            analysis_info["Analysis"] = analysis
+        
+
         if indicator_type.lower() == 'malware_family':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator('ACTI Malware Family', indicator_value, dbot, analysis_info, 'malware_family')
+            indicator = Common.CustomIndicator('ACTI Malware Family', indicator_value, dbot, analysis_info, 'MalwareFamily')
         elif indicator_type.lower() == 'threat_group':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator('ACTI Threat Group', indicator_value, dbot, analysis_info, 'threat_group')
+            indicator = Common.CustomIndicator('ACTI Threat Group', indicator_value, dbot, analysis_info, 'ThreatGroup')
         elif indicator_type.lower() == 'threat_actor':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator('ACTI Threat Actor', indicator_value, dbot, analysis_info, 'threat_actor')
+            indicator = Common.CustomIndicator('ACTI Threat Actor', indicator_value, dbot, analysis_info, 'ThreatActor')
 
         return CommandResults(indicator=indicator,
                           raw_response=res,
