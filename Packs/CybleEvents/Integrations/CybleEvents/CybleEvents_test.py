@@ -385,5 +385,5 @@ def test_datecheck_validate_input():
         'limit': '1'
     }
 
-    with pytest.raises(ValueError, match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"):
+    with pytest.raises(ValueError, match="Start date {} cannot be after end date {}".format(args.get('start_date'), args.get('end_date'))):
         validate_input(args=args, is_iocs=True)

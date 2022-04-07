@@ -441,8 +441,6 @@ def validate_input(args, is_iocs=False):
         if int(args.get('limit', '50')) <= 0:
             raise ValueError(f"Limit should be greater than zero, limit: {arg_to_number(args.get('limit', '50'))}")
 
-        _start_date, _end_date = None, None
-        date_format = None
         if is_iocs:
             date_format = "%Y-%m-%d"
             _start_date = datetime.strptime(args.get('start_date'), date_format)
@@ -452,7 +450,6 @@ def validate_input(args, is_iocs=False):
             _start_date = datetime.strptime(args.get('start_date'), date_format)
             _end_date = datetime.strptime(args.get('end_date'), date_format)
 
-        a = datetime.today()
         if _start_date > datetime.today():
             raise ValueError(f"Start date must be a date before or equal to {datetime.today().strftime(date_format)}")
         if _end_date > datetime.today():
