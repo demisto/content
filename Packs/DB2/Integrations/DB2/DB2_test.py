@@ -87,6 +87,8 @@ def test_create_insert_empty_table_query_commands(command, args, response, heade
     Test create table command
     """
     mocker.patch.object(client, "execute_query", side_effect=Exception("No results found"))
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(demisto, "info")
     with pytest.raises(DemistoException):
         command(client, args)
 
@@ -103,6 +105,8 @@ def test_fetch_query_commands(command, args, response, headers, expected_result,
     Test create table command
     """
     mocker.patch.object(client, "execute_query", return_value=(response, headers))
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(demisto, "info")
     result = command(client, args)
     assert result.raw_response == response
     assert result.outputs == expected_result
