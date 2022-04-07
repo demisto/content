@@ -1,8 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('MinList', 'start', __line__())
-
 
 def min_value(value):
     if isinstance(value, float):
@@ -34,7 +32,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ['__builtin__', 'builtins']:
     main()
-
-register_module_line('MinList', 'end', __line__())
