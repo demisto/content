@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 def max_value(value):
     if isinstance(value, float):
         return value
@@ -33,4 +34,3 @@ def main():
 # python2 uses __builtin__ python3 uses builtins
 if __name__ in ['__builtin__', 'builtins']:
     main()
-
