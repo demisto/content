@@ -123,7 +123,7 @@ def test_was_email_found_security_and_compliance():
     assert not was_email_found_security_and_compliance(success_results_dict_not_found)
 
 
-def execute_command_seacrh_and_compliance_not_deleted_yet(command, args):
+def execute_command_search_and_compliance_not_deleted_yet(command, args):
     if command == 'o365-sc-get-search' and args:
         return [{'Status': 'Completed'}]
     elif command == 'o365-sc-list-search-action':
