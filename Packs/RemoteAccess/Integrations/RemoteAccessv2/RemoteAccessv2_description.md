@@ -7,3 +7,6 @@ When ciphers are specified, the SSH connection will be established with the firs
 
 ### Key Algorithms
 When key algorithms are specified, the SSH connection will be established with the first key algorithm of the specified key algorithms that the given host supports.
+
+### SSH Certificate
+Currently, only PEM based certificates are supported.

@@ -100,7 +100,7 @@ def create_paramiko_ssh_client(
         password (str): Password of the given user.
         ciphers (Set[str]): Set of ciphers to be used, if given.
         key_algorithms (Set[str]): Set of key algorithms to be used, if given.
-        private_key (str): The SSH certificate
+        private_key (str): The SSH certificate (should be PEM file based certificate only)
 
     Returns:
         (SSHClient): Paramiko SSH client if connection was successful, exception otherwise.
@@ -123,6 +123,7 @@ def create_paramiko_ssh_client(
     try:
         if private_key:
             # authenticating with private key only works for certificates which are based on PEM files.
+            # (RSA private keys)
             private_key = paramiko.RSAKey.from_private_key(StringIO(private_key))
         client.connect(hostname=host_name, username=user_name, password=password, port=22, pkey=private_key)
     except NoValidConnectionsError as e:
@@ -251,7 +252,10 @@ def main() -> None:
     credentials: Dict[str, Any] = params.get('credentials') or {}
     user: str = credentials.get('identifier')
     password: str = credentials.get('password')
-    certificate = (credentials.get('credentials') or {}).get('sshkey')
+    certificate: Optional[str] = (credentials.get('credentials') or {}).get('sshkey')
+
+    if certificate == '':
+        certificate = None
 
     host_name: str = params.get('hostname', '')
     ciphers: Set[str] = set(argToList(params.get('ciphers')))
