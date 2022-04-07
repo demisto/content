@@ -34,7 +34,7 @@ configuration:
   type: 8
 - defaultvalue: '100'
   display: Maximum number of incidents per fetch
-  additionalinfo: Maximum number is 100 incidents per fetch
+  additionalinfo: Maximum value is 100
   hidden: false
   name: max_fetch
   required: false
