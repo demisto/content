@@ -464,9 +464,8 @@ def convert_inline_image_to_encoded(md_text: str) -> str:
     for single_match in matches:
         single_image_link = single_match[1]
         single_image_name = single_match[0]
-        #api_key = demisto.params().get('api_token')
         response = requests.get(single_image_link,
-                                headers={"auth-token": demisto.params().get('api_token').get('password')}).content
+                                headers={"auth-token": dict(demisto.params().get('api_token')).get('password')}).content
         data = base64.b64encode(response).decode('ascii')
         image_type = single_image_link.split(".")[-1]
         encoded_images.append(f'{single_image_name}(data:image/{image_type};base64,{data})')
