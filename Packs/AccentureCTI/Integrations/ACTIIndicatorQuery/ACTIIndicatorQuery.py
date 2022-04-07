@@ -539,7 +539,7 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
         indicatortype = 'ACTI Intelligence Alert'
         iair_link = IA_URL + uuid
     dbot_score = Common.DBotScore(indicator=uuid, indicator_type=DBotScoreType.CUSTOM,
-                                  integration_name='ACTI Threat Intelligence Report',
+                                  integration_name='ACTI Indicator Query',
                                   score=severity_dbot_score, reliability=reliability)
     custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score,
                                               value=uuid, data=context, context_prefix='IAIR')
