@@ -1,78 +1,5 @@
 from GetBrandDeleteReportedEmail import *
 
-INTEGRATION_INSTANCES = {
-    'statusCode': 200, 'body': {'instances': [
-        {
-            'name': 'DeleteReportedEmail_Integration_instance1',
-            'brand': 'DeleteReportedEmail_Integration', 'enabled': 'true'},
-        {
-            'name': 'DeleteReportedEmail_Integration_instance2',
-            'brand': 'DeleteReportedEmail_Integration', 'enabled': 'true'},
-        {
-            'name': 'DeleteReportedEmail_Integration_instance3',
-            'brand': 'DeleteReportedEmail_Integration', 'enabled': 'false'},
-        {
-            'name': 'NoMailIntegration_instance1',
-            'brand': 'NoMailIntegration', 'enabled': 'true'},
-        {
-            'name': 'NoMailIntegration_instance2',
-            'brand': 'NoMailIntegration', 'enabled': 'false'}],
-    }}
-
-ENABLED_INSTANCES = [
-    {
-        'name': 'DeleteReportedEmail_Integration_instance1',
-        'brand': 'SecurityAndCompliance',
-        'enabled': 'true'
-    },
-    {
-        'name': 'DeleteReportedEmail_Integration_instance2',
-        'brand': 'EWSO365',
-        'enabled': 'true'
-    },
-    {
-        'name': 'NoMailIntegration_instance1',
-        'brand': 'NoMailIntegration',
-        'enabled': 'true'
-    }
-]
-
-
-def test_get_enabled_instances(mocker):
-    """
-
-    Given:
-        - A successful demisto response
-
-    When:
-        - The "Delete Reported Email" single select field try to populate the available instances
-
-    Then:
-        - Get the integration instances that can be used for the Delete Reported Email script
-
-    """
-    mocker.patch.object(demisto, 'internalHttpRequest', return_value=INTEGRATION_INSTANCES)
-    mocker.patch('json.loads', return_value=INTEGRATION_INSTANCES.get('body'))
-    result = get_enabled_instances()
-
-    assert all(argToBoolean(item.get('enabled')) for item in result)
-
-
-def test_get_enabled_instances_failure(mocker):
-    """
-    Given:
-        - A failed demisto response
-
-    When:
-        - The "Delete Reported Email" single select field try to populate the available instances
-
-    Then:
-        - Validate that when no results, empty list returned
-
-    """
-    mocker.patch.object(demisto, 'internalHttpRequest', return_value={'statusCode': 400})
-    assert get_enabled_instances() == []
-
 
 def test_get_delete_reported_email_integrations(mocker):
     """
@@ -86,6 +13,31 @@ def test_get_delete_reported_email_integrations(mocker):
            - Return only the suitable integrations brand name
 
        """
+
+    mock_modules = {
+        'instanceName1': {'state': 'active', 'brand': 'EWSO365'},
+        'instanceName2': {'state': 'disabled', 'brand': 'SecurityAndCompliance'}
+    }
+    mocker.patch.object(demisto, 'getModules', return_value=mock_modules)
+    assert get_delete_reported_email_integrations() == ['EWSO365']
+
+
+def test_get_brand_delete_reported_email(mocker):
+    """
+       Given:
+           - All enabled integration instances that are also suitable for this script
+
+       When:
+           - Running the script
+
+       Then:
+           - Results object with the suitable brand names
+
+       """
     import GetBrandDeleteReportedEmail
-    mocker.patch.object(GetBrandDeleteReportedEmail, 'get_enabled_instances', return_value=ENABLED_INSTANCES)
-    assert set(get_delete_reported_email_integrations()) == {'EWSO365', 'SecurityAndCompliance'}
+    mocker.patch.object(GetBrandDeleteReportedEmail, 'get_delete_reported_email_integrations', return_value=['EWSO365'])
+
+    mocker.patch.object(demisto, 'results')
+    main()
+    assert demisto.results.call_args[0][0]['options'] == ['EWSO365']
+

@@ -5,20 +5,6 @@ EMAIL_INTEGRATIONS = ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'M
                       'SecurityAndCompliance']
 
 
-def get_enabled_instances():
-    """
-    Get all enabled integration instances via an API request using demisto rest api
-    Returns:
-        List of all enabled integration instances
-    """
-    integration_search = demisto.internalHttpRequest('POST', '/settings/integration/search', '{\"size\":1000}')
-    if integration_search and integration_search['statusCode'] == 200:
-        integration_search = json.loads(integration_search.get('body', '{}'))
-        return [instance for instance in integration_search['instances'] if instance['enabled'] == 'true']
-    demisto.debug('Did not receive expected response from Demisto API: /settings/integration/search')
-    return []
-
-
 def get_delete_reported_email_integrations():
     """
     Get all enabled integration instances that can be used for deleting an email using the DeleteReportedEmail script.
@@ -26,7 +12,9 @@ def get_delete_reported_email_integrations():
         List of enabled integrations suitable for DeleteReportedEmail script.
 
     """
-    return [instance['brand'] for instance in get_enabled_instances() if instance['brand'] in EMAIL_INTEGRATIONS]
+    instances = demisto.getModules()
+    return [data.get('brand') for data in instances.values() if data.get('state') == 'active' and data.get('brand')
+            in EMAIL_INTEGRATIONS]
 
 
 def main():

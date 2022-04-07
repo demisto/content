@@ -134,7 +134,7 @@ def execute_command_search_and_compliance_not_deleted_yet(command, args):
         return {'Status': 'Starting'}
 
 
-def execute_command_seacrh_and_compliance_deleted_successfully(command, args):
+def execute_command_search_and_compliance_deleted_successfully(command, args):
     if command == 'o365-sc-get-search' and args:
         return [{'Status': 'Completed'}]
     elif command == 'o365-sc-list-search-action':
@@ -188,7 +188,7 @@ class TestSecurityAndCompliance:
             Return that the status is in progress
         """
         mocker.patch.object(DeleteReportedEmail, 'execute_command',
-                            side_effect=execute_command_seacrh_and_compliance_not_deleted_yet)
+                            side_effect=execute_command_search_and_compliance_not_deleted_yet)
         self.args['search_name'] = 'search_name'
         result = security_and_compliance_delete_mail(self.args, **self.search_args)[0]
         assert result == 'In Progress'
@@ -203,7 +203,7 @@ class TestSecurityAndCompliance:
             Return Success
         """
         mocker.patch.object(DeleteReportedEmail, 'execute_command',
-                            side_effect=execute_command_seacrh_and_compliance_deleted_successfully)
+                            side_effect=execute_command_search_and_compliance_deleted_successfully)
         self.args['search_name'] = 'search_name'
         result = security_and_compliance_delete_mail(self.args, **self.search_args)[0]
         assert result == 'Success'
