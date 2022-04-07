@@ -440,26 +440,28 @@ def validate_passcode_type_args(passcode_type, passcode, passcode_length, payloa
 def parse_freeze_device_response(response: dict):
     outputs = {'RequestUID': response.get('requestUid'), 'SucceededDeviceUIDs': response.get('deviceUids')}
     errors = response.get('errors', [])
+    human_readable_errors = ""
     if errors:
-        human_readable_errors = []
         for error in errors:
-            human_readable_errors.append(str({
-                ','.join(error.get('detail', []).get('deviceUids')): error.get('message', '')
-            }).replace('{', '').replace('}', ''))  # we want to convert the dict to str for readability reasons
-        outputs['FailedDeviceUIDs'] = human_readable_errors
+            human_readable_errors += f"{','.join(error.get('detail', []).get('deviceUids'))} " \
+                                     f"failed with the error: {error.get('message', '')}\n"
         outputs['Errors'] = errors
-    return outputs
+    return outputs, human_readable_errors
 
 
 def device_freeze_request_command(args, client) -> CommandResults:
     payload = prepare_payload_to_freeze_request(args)
     res = client.api_request_absolute('POST', '/v2/device-freeze/requests', body=json.dumps(payload),
                                       success_status_code=[201])
-    outputs = parse_freeze_device_response(res)
+
+    outputs, human_readable_errors = parse_freeze_device_response(res)
     human_readable = tableToMarkdown(f"{INTEGRATION} device freeze requests results", outputs,
-                                     headers=['RequestUID', 'SucceededDeviceUIDs', 'FailedDeviceUIDs'],
-                                     removeNull=True)
-    outputs.pop('FailedDeviceUIDs', None)  # if exists, don't include it in context data
+                                     headers=['RequestUID', 'SucceededDeviceUIDs'], removeNull=True)
+
+    if human_readable_errors:
+        human_readable += f"Note: the command was failed on the following devices. Each failed device ID is " \
+                          f"followed by the error message.\n {human_readable_errors}"
+
     return CommandResults(readable_output=human_readable, outputs=outputs, outputs_prefix="Absolute.FreezeRequest",
                           outputs_key_field="RequestUID", raw_response=res)
 
