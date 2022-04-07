@@ -366,7 +366,7 @@ def encode_file_name(file_name):
     return file_name.encode('ascii', 'ignore')
 
 
-def main() -> None:
+def main() -> None: # pragma: no cover
     """main function, parses params and runs command functions
     :return:
     :rtype:
@@ -378,9 +378,10 @@ def main() -> None:
 
     ''' EXECUTION '''
     # LOG('command is %s' % (demisto.command(), ))
-    demisto.debug(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     args = demisto.args()
-    if 'cap' not in demisto.command():
+    if 'cap' not in command:
         try:
             credentials = params.get('apikey')
             creds = "Bearer " + credentials
@@ -392,17 +393,17 @@ def main() -> None:
                 headers=headers,
                 proxy=proxy)
 
-            if demisto.command() == 'test-module':
+            if command == 'test-module':
                 demisto.results(test_module(params))
-            elif demisto.command() == 'aima-upload-sample':
+            elif command == 'aima-upload-sample':
                 return_results(aima_upload_sample(client, args))
-            elif demisto.command() == 'aima-get-result':
+            elif command == 'aima-get-result':
                 return_results(aima_get_result(client, args))
 
         # Log exceptions and return errors
         except Exception as e:
             demisto.error(traceback.format_exc())  # print the traceback
-            return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+            return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
     else:
         try:
             credentials = params.get('cap_apikey')
@@ -413,18 +414,18 @@ def main() -> None:
                 verify=verify_certificate,
                 headers=headers,
                 proxy=proxy)
-            if demisto.command() == 'aima-cap-mav-upload-sample':
-                return_results(cap_mav_upload_sample(client, demisto.args()))
-            elif demisto.command() == 'aima-cap-mav-get-submission':
-                return_results(cap_mav_get_submission(client, demisto.args()))
-            elif demisto.command() == 'aima-cap-static-upload-sample':
-                return_results(cap_static_upload_sample(client, demisto.args()))
-            elif demisto.command() == 'aima-cap-static-get-submission':
-                return_results(cap_static_get_submission(client, demisto.args()))
+            if command == 'aima-cap-mav-upload-sample':
+                return_results(cap_mav_upload_sample(client, args))
+            elif command == 'aima-cap-mav-get-submission':
+                return_results(cap_mav_get_submission(client, args))
+            elif command == 'aima-cap-static-upload-sample':
+                return_results(cap_static_upload_sample(client, args))
+            elif command == 'aima-cap-static-get-submission':
+                return_results(cap_static_get_submission(client, args))
                 # Log exceptions and return errors
         except Exception as e:
             demisto.error(traceback.format_exc())  # print the traceback
-            return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+            return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
