@@ -305,7 +305,7 @@ def test_cyble_vision_fetch_detail(requests_mock, eID, eType):
         assert el['lastseenon'] == '2022-03-02'
 
 
-def test_validate_input():
+def test_validate_input(capfd):
     from CybleEvents import validate_input
 
     args = {
@@ -314,12 +314,12 @@ def test_validate_input():
         'from': '-1',
         'limit': '1',
     }
+    with capfd.disabled():
+        with pytest.raises(ValueError, match=f"Parameter having negative value, from: {args.get('from')}"):
+            validate_input(args=args)
 
-    with pytest.raises(ValueError, match=f"Parameter having negative value, from: {args.get('from')}"):
-        validate_input(args=args)
 
-
-def test_limit_validate_input():
+def test_limit_validate_input(capfd):
     from CybleEvents import validate_input
 
     args = {
@@ -328,12 +328,12 @@ def test_limit_validate_input():
         'from': '0',
         'limit': '-1',
     }
+    with capfd.disabled():
+        with pytest.raises(ValueError, match=f"Limit should be greater than zero, limit: {args.get('limit', '50')}"):
+            validate_input(args=args)
 
-    with pytest.raises(ValueError, match=f"Limit should be greater than zero, limit: {args.get('limit', '50')}"):
-        validate_input(args=args)
 
-
-def test_sdate_validate_input():
+def test_sdate_validate_input(capfd):
     from CybleEvents import validate_input
 
     args = {
@@ -342,12 +342,12 @@ def test_sdate_validate_input():
         'from': '0',
         'limit': '1'
     }
+    with capfd.disabled():
+        with pytest.raises(ValueError, match=f"Start date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}"):
+            validate_input(args=args)
 
-    with pytest.raises(ValueError, match=f"Start date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}"):
-        validate_input(args=args)
 
-
-def test_edate_validate_input():
+def test_edate_validate_input(capfd):
     from CybleEvents import validate_input
 
     args = {
@@ -356,12 +356,12 @@ def test_edate_validate_input():
         'from': '0',
         'limit': '1'
     }
+    with capfd.disabled():
+        with pytest.raises(ValueError, match=f"End date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}"):
+            validate_input(args=args)
 
-    with pytest.raises(ValueError, match=f"End date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}"):
-        validate_input(args=args)
 
-
-def test_date_validate_input():
+def test_date_validate_input(capfd):
     from CybleEvents import validate_input
 
     args = {
@@ -371,11 +371,12 @@ def test_date_validate_input():
         'limit': '1'
     }
 
-    with pytest.raises(ValueError, match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"):
-        validate_input(args=args)
+    with capfd.disabled():
+        with pytest.raises(ValueError, match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"):
+            validate_input(args=args)
 
 
-def test_datecheck_validate_input():
+def test_datecheck_validate_input(capfd):
     from CybleEvents import validate_input
 
     args = {
@@ -385,5 +386,6 @@ def test_datecheck_validate_input():
         'limit': '1'
     }
 
-    with pytest.raises(ValueError, match="Start date {} cannot be after end date {}".format(args.get('start_date'), args.get('end_date'))):
-        validate_input(args=args, is_iocs=True)
+    with capfd.disabled():
+        with pytest.raises(ValueError, match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"):
+            validate_input(args=args, is_iocs=True)
