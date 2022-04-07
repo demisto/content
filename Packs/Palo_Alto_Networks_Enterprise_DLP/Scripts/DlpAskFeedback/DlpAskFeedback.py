@@ -92,7 +92,7 @@ def main():
         message += '\n\n'
 
     if question_type == 'ABOUT_EXEMPTION':
-        message += 'Do you want to request a temporary exemption?'
+        message += f'Do you want to request a temporary exemption for {file_name}?'
     else:
         message += 'Please confirm if this file contains sensitive information:'
 

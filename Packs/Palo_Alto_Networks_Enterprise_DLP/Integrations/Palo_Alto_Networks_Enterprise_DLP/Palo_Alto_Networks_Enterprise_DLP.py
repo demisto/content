@@ -321,8 +321,11 @@ def update_incident(client: Client, args: dict) -> CommandResults:
     }
     if feedback_enum == FeedbackStatus.EXCEPTION_GRANTED:
         minutes = result_json['expiration_duration_in_minutes']
-        if minutes:
-            output['duration'] = minutes / 60
+        if minutes and minutes < 60:
+            output['duration'] = f'{minutes} minutes'
+        elif minutes:
+            output['duration'] = f'{minutes / 60} hours'
+
         result = CommandResults(
             outputs_prefix="Exemption",
             outputs_key_field='duration',
