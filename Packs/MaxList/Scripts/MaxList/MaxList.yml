@@ -7,17 +7,8 @@ args:
 comment: "Gets the maximum value from list\ne.g. [\"25\", \"10\", \"25\"] =>  \"25\"\
   \n "
 commonfields:
-  id: 17363abb-faf8-4e49-8e33-1171be08f14f
+  id: MaxList
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 39af0cb1-cc68-4aa5-8945-b2bf2e4ec233
-    propagationLabels:
-    - all
-    toServerVersion: ""
 dockerimage: demisto/python3:3.10.4.27798
 enabled: true
 engineinfo: {}
