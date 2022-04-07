@@ -1,5 +1,5 @@
 import pytest
-
+from CommonServerPython import *
 import ibm_db
 from ibm_db_dbi import Connection
 
@@ -87,10 +87,8 @@ def test_create_insert_empty_table_query_commands(command, args, response, heade
     Test create table command
     """
     mocker.patch.object(client, "execute_query", side_effect=Exception("No results found"))
-    result = command(client, args)
-    assert result.raw_response == response
-    assert result.outputs == expected_result
-    assert result.readable_output == "No results found"
+    with pytest.raises(DemistoException):
+        command(client, args)
 
 
 @pytest.mark.parametrize(
