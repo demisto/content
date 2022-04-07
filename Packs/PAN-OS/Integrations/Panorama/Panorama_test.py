@@ -782,6 +782,57 @@ class TestPanoramaEditRuleCommand:
         with pytest.raises(DemistoException):
             Panorama.panorama_edit_rule_command(args)
 
+    @staticmethod
+    def test_edit_rule_to_disabled_flow(mocker):
+        """
+        Given -
+            arguments to change a pre-rule to 'disabled'
+
+        When -
+            running panorama_edit_rule_command function.
+
+        Then -
+            make sure the entire command flow succeeds.
+        """
+        from Panorama import panorama_edit_rule_command
+        args = {
+            "rulename": "test",
+            "element_to_change": "disabled",
+            "element_value": "yes",
+            "behaviour": "replace",
+            "pre_post": "pre-rulebase"
+        }
+        mocker.patch("Panorama.http_request", return_value=TestPanoramaEditRuleCommand.EDIT_SUCCESS_RESPONSE)
+        results_mocker = mocker.patch.object(demisto, "results")
+        panorama_edit_rule_command(args)
+        assert results_mocker.called
+
+    @staticmethod
+    def test_edit_rule_to_disabled_with_no_element_value(mocker):
+        """
+        Given -
+            arguments to change a pre-rule to 'disabled' when the element value should be set to 'no'
+
+        When -
+            running panorama_edit_rule_command function.
+
+        Then -
+            make sure that the `params['element']` contains the 'no' element value.
+        """
+        from Panorama import panorama_edit_rule_command
+        args = {
+            "rulename": "test",
+            "element_to_change": "disabled",
+            "element_value": "no",
+            "behaviour": "replace",
+            "pre_post": "pre-rulebase"
+        }
+        http_req_mocker = mocker.patch(
+            "Panorama.http_request", return_value=TestPanoramaEditRuleCommand.EDIT_SUCCESS_RESPONSE
+        )
+        panorama_edit_rule_command(args)
+        assert http_req_mocker.call_args.kwargs.get('body').get('element') == '<disabled>no</disabled>'
+
 
 class MockedResponse:
     def __init__(self, text, status_code, reason):
