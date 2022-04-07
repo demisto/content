@@ -16,8 +16,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-MAX_INCIDENTS_TO_FETCH_PER_RUN = 1000
-MAX_INCIDENTS_TO_FETCH = 200
+MAX_INCIDENTS_TO_FETCH = 100
 SEARCH_RESULT_RETRIES = 10
 BACKOFF_FACTOR = 5
 THREAT_MODEL_ENUM_ID = 5821
@@ -868,54 +867,51 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
     if threat_models and len(threat_models) > 0:
         validate_threat_models(client, threat_models)
 
+    if max_results > MAX_INCIDENTS_TO_FETCH:
+        raise ValueError(f'{max_results} is too big number to fetch. Max incidents to fetch is {MAX_INCIDENTS_TO_FETCH}')
+
     last_fetched_id = last_run.get('last_fetched_id', None)
     incidents: List[Dict[str, Any]] = []
     next_run = {'last_fetched_id': last_fetched_id}
-    iteration: int = 0
 
-    while len(incidents) <= MAX_INCIDENTS_TO_FETCH_PER_RUN:
-        iteration += 1
-        demisto.debug(f'Fetching incidents. Iteration #{iteration}. Last fetched id: {last_fetched_id}')
+    demisto.debug(f'Fetching incidents. Last fetched id: {last_fetched_id}')
 
-        alert_ids = client.varonis_get_alerts_id(first_fetch_time=first_fetch_time, from_alert_id=last_fetched_id,
-                                                 max_results=max_results, alert_status=alert_status,
-                                                 threat_models=threat_models,
-                                                 severity=severity)
+    alert_ids = client.varonis_get_alerts_id(first_fetch_time=first_fetch_time, from_alert_id=last_fetched_id,
+                                             max_results=max_results, alert_status=alert_status,
+                                             threat_models=threat_models,
+                                             severity=severity)
 
-        last_fetched_id = alert_ids['LatestAlertId']
-        if last_fetched_id != 0:
-            next_run['last_fetched_id'] = last_fetched_id
-        else:
-            demisto.debug('API returned no alerts')
-            return next_run, incidents
+    last_fetched_id = alert_ids['LatestAlertId']
+    if last_fetched_id != 0:
+        next_run['last_fetched_id'] = last_fetched_id
+    else:
+        demisto.debug('API returned no alerts')
+        return next_run, incidents
 
-        alert_id_to_datetime = alert_ids['AlertIdToOccuredTime']
-        alert_guids: List[str] = alert_id_to_datetime.keys()
+    alert_id_to_datetime = alert_ids['AlertIdToOccuredTime']
+    alert_guids: List[str] = alert_id_to_datetime.keys()
 
-        result = varonis_get_alerts(client, None, None, None, None, MAX_INCIDENTS_TO_FETCH_PER_RUN, 1, alert_guids)
-        alerts_output = create_output(ALERT_OUTPUT, result['rows'])
+    result = varonis_get_alerts(client, None, None, None, None, 1000, 1, alert_guids)
+    alerts_output = create_output(ALERT_OUTPUT, result['rows'])
 
-        if not alerts_output:
-            demisto.debug('API returned no alerts from search api')
-            return next_run, incidents
+    if not alerts_output:
+        demisto.debug('API returned no alerts from search api')
+        return next_run, incidents
 
-        alerts = alerts_output['Alert']
+    alerts = alerts_output['Alert']
 
-        for alert in alerts:
-            guid = alert['ID']
-            alert_time = alert_id_to_datetime[guid]
-            incident = {
-                'name': f'Varonis alert {guid}',
-                'occurred': f'{alert_time}Z',
-                'rawJSON': json.dumps(alert),
-                'type': 'Varonis DSP Incident',
-                'severity': convert_to_demisto_severity(alert['Severity']),
-            }
+    for alert in alerts:
+        guid = alert['ID']
+        alert_time = alert_id_to_datetime[guid]
+        incident = {
+            'name': f'Varonis alert {guid}',
+            'occurred': f'{alert_time}Z',
+            'rawJSON': json.dumps(alert),
+            'type': 'Varonis DSP Incident',
+            'severity': convert_to_demisto_severity(alert['Severity']),
+        }
 
-            incidents.append(incident)
-
-        if len(alert_guids) < max_results:
-            return next_run, incidents
+        incidents.append(incident)
 
     return next_run, incidents
 
