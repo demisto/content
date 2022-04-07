@@ -30,6 +30,23 @@ def test_send_reply(mocker):
     assert "Mail sent successfully. To: test1@gmail.com,test2@gmail.com Cc: test3@gmail.com" == result
 
 
+def test_send_reply_fails(mocker):
+    """
+    Given -
+        a random error message which is returned from reply-mail executed command.
+
+    When -
+        executing the 'send_reply' function
+
+    Then -
+        an error message would be returned.
+    """
+    mocker.patch('SendEmailReply.send_mail_request', return_value=[{'Contents': 'some error'}])
+    from SendEmailReply import send_reply
+    result = send_reply('', '', '', '', '', '', '', {}, '', '')
+    assert result == 'An error occurred while trying to send the mail: some error'
+
+
 GET_EMAIL_RECIPIENTS = [
     # Both service mail and mailbox are configured as different addresses, should remove only mailbox.
     ('["avishai@demistodev.onmicrosoft.com", "test test <\'test@test.com\'>"]',
