@@ -337,13 +337,14 @@ def test_sdate_validate_input(capfd):
     from CybleEvents import validate_input
 
     args = {
-        'start_date': (datetime.today()+timedelta(days=4)).strftime('%Y/%m/%d'),
+        'start_date': (datetime.today() + timedelta(days=4)).strftime('%Y/%m/%d'),
         'end_date': datetime.today().strftime('%Y/%m/%d'),
         'from': '0',
         'limit': '1'
     }
     with capfd.disabled():
-        with pytest.raises(ValueError, match=f"Start date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}"):
+        with pytest.raises(ValueError,
+                           match=f"Start date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}"):
             validate_input(args=args)
 
 
@@ -352,12 +353,13 @@ def test_edate_validate_input(capfd):
 
     args = {
         'start_date': datetime.today().strftime('%Y/%m/%d'),
-        'end_date': (datetime.today()+timedelta(days=4)).strftime('%Y/%m/%d'),
+        'end_date': (datetime.today() + timedelta(days=4)).strftime('%Y/%m/%d'),
         'from': '0',
         'limit': '1'
     }
     with capfd.disabled():
-        with pytest.raises(ValueError, match=f"End date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}"):
+        with pytest.raises(ValueError,
+                           match=f"End date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}"):
             validate_input(args=args)
 
 
@@ -366,13 +368,14 @@ def test_date_validate_input(capfd):
 
     args = {
         'start_date': datetime.today().strftime('%Y/%m/%d'),
-        'end_date': (datetime.today()-timedelta(days=4)).strftime('%Y/%m/%d'),
+        'end_date': (datetime.today() - timedelta(days=4)).strftime('%Y/%m/%d'),
         'from': '0',
         'limit': '1'
     }
 
     with capfd.disabled():
-        with pytest.raises(ValueError, match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"):
+        with pytest.raises(ValueError,
+                           match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"):
             validate_input(args=args)
 
 
@@ -381,11 +384,12 @@ def test_datecheck_validate_input(capfd):
 
     args = {
         'start_date': datetime.today().strftime('%Y-%m-%d'),
-        'end_date': (datetime.today()-timedelta(days=4)).strftime('%Y-%m-%d'),
+        'end_date': (datetime.today() - timedelta(days=4)).strftime('%Y-%m-%d'),
         'from': '0',
         'limit': '1'
     }
 
     with capfd.disabled():
-        with pytest.raises(ValueError, match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"):
+        with pytest.raises(ValueError,
+                           match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"):
             validate_input(args=args, is_iocs=True)
