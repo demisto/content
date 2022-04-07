@@ -44,7 +44,6 @@ MIRROR_DIRECTION = {
     'Incoming And Outgoing': 'Both'
 }
 OUTGOING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'reviewer']
-INCOMING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'status_label', 'reviewer']
 
 # =========== Enrichment Mechanism Globals ===========
 ENABLED_ENRICHMENTS = params.get('enabled_enrichments', [])
@@ -1223,7 +1222,6 @@ def get_remote_data_command(service, args, close_incident, mapper):
         GetRemoteDataResponse: The Response containing the update notable to mirror and the entries
 
     """
-
     entries = []
     updated_notable = {}
     remote_args = GetRemoteDataArgs(args)
@@ -1239,13 +1237,13 @@ def get_remote_data_command(service, args, close_incident, mapper):
 
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
-    demisto.debug('notable {} data: {}'.format(notable_id, updated_notable))
 
     if updated_notable.get('owner'):
         demisto.debug("owner field was found, changing according to mapping.")
         updated_notable["owner"] = mapper.get_xsoar_user_by_splunk(
             updated_notable.get("owner")) if mapper.should_map else updated_notable.get("owner")
 
+    demisto.debug('notable {} data: {}'.format(notable_id, updated_notable))
     if updated_notable.get('status') == '5' and close_incident:
         demisto.info('Closing incident related to notable {}'.format(notable_id))
         entries = [{
@@ -2588,8 +2586,8 @@ def main():
         splunk_parse_raw_command()
         sys.exit(0)
     service = None
-    proxy = demisto.params().get('proxy')
-    use_requests_handler = demisto.params().get('use_requests_handler')
+    proxy = params.get('proxy')
+    use_requests_handler = params.get('use_requests_handler')
 
     connection_args = get_connection_args()
 
@@ -2693,4 +2691,3 @@ def main():
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
-
