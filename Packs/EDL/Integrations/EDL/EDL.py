@@ -71,7 +71,7 @@ MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "med
 
 INCREASE_LIMIT = 1.1
 '''Request Arguments Class'''
-
+tldextractor = tldextract.TLDExtract(cache_dir='~/.cache')
 
 class RequestArguments:
     CTX_QUERY_KEY = 'last_query'
@@ -671,7 +671,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             if indicator.startswith('*.'):
                 domain = str(indicator.lstrip('*.'))
                 # if we should ignore TLDs and the domain is a TLD
-                if request_args.no_tld and tldextract.extract(domain).suffix == domain:
+                if request_args.no_tld and tldextractor(domain) == domain:
                     continue
                 formatted_indicators.write(new_line + domain)
                 new_line = '\n'
