@@ -427,31 +427,38 @@ def fetch_incidents(client, method, token, maxResults):
     return incidents
 
 
-def validate_input(args, check_date=False):
+def validate_input(args, is_iocs=False):
     """
     Check if the input params for the command are valid. Return an error if any
     :param args: dictionary of input params
-    :param check_date: if false, dont validate the date items
+    :param is_iocs: check if the params are for iocs command
     """
     try:
         # we assume all the params to be non-empty, as cortex ensures it
-        if arg_to_number(args.get('from')) < 0:
+        if int(args.get('from')) < 0:
             raise ValueError(f"Parameter having negative value, from: {arg_to_number(args.get('from'))}'")
 
-        if arg_to_number(args.get('limit', '50')) <= 0:
+        if int(args.get('limit', '50')) <= 0:
             raise ValueError(f"Limit should be greater than zero, limit: {arg_to_number(args.get('limit', '50'))}")
 
-        if check_date:
-            _start_date = datetime.strptime(args.get('start_date'), "%Y/%m/%d")
-            _end_date = datetime.strptime(args.get('end_date'), "%Y/%m/%d")
+        _start_date, _end_date = None, None
+        date_format = None
+        if is_iocs:
+            date_format = "%Y-%m-%d"
+            _start_date = datetime.strptime(args.get('start_date'), date_format)
+            _end_date = datetime.strptime(args.get('end_date'), date_format)
+        else:
+            date_format = "%Y/%m/%d"
+            _start_date = datetime.strptime(args.get('start_date'), date_format)
+            _end_date = datetime.strptime(args.get('end_date'), date_format)
 
-            if _start_date > datetime.today():
-                raise ValueError(
-                    f"Start date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}")
-            if _end_date > datetime.today():
-                raise ValueError(f"End date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}")
-            if _start_date > _end_date:
-                raise ValueError(f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}")
+        a = datetime.today()
+        if _start_date > datetime.today():
+            raise ValueError(f"Start date must be a date before or equal to {datetime.today().strftime(date_format)}")
+        if _end_date > datetime.today():
+            raise ValueError(f"End date must be a date before or equal to {datetime.today().strftime(date_format)}")
+        if _start_date > _end_date:
+            raise ValueError(f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}")
 
         return None
     except Exception as e:
@@ -523,7 +530,7 @@ def main():
             if not args.get('end_date'):
                 args['end_date'] = datetime.today().strftime('%Y-%m-%d')
             # check for validation errors
-            validate_input(args, True)
+            validate_input(args, False)
             return_results(cyble_fetch_alerts(client, 'POST', args))
 
         elif demisto.command() == "cyble-vision-fetch-event-detail":
