@@ -9,7 +9,7 @@ maintain a proactive threat intelligence operation that enables to anticipate an
 and enhance security resilience. Luminar enables security teams to define a customized, dynamic monitoring plan to 
 uncover malicious activity in its earliest stages on all layers of the Web.
 
-This connecter allows integration of intelligence-based IOC data and customer-related leaked records identified by Luminar.
+This connector allows integration of intelligence-based IOC data and customer-related leaked records identified by Luminar.
 
 ## Configure Luminar IOCs & leaked credentials on Cortex XSOAR
 
