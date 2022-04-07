@@ -1,5 +1,6 @@
 import tempfile
-
+from io import StringIO
+import paramiko
 from paramiko import SSHClient, AutoAddPolicy, transport, Transport
 from paramiko.ssh_exception import NoValidConnectionsError
 from scp import SCPClient, SCPException
@@ -120,6 +121,11 @@ def create_paramiko_ssh_client(
     client = SSHClient()
     client.set_missing_host_key_policy(AutoAddPolicy())
     try:
+        if private_key:
+            file1 = StringIO(private_key)
+            file2 = open('/Users/gafik/.ssh/id_rsa')
+            # private_key = paramiko.RSAKey.from_private_key(file)
+            private_key = paramiko.RSAKey.from_private_key(file1)
         client.connect(hostname=host_name, username=user_name, password=password, port=22, pkey=private_key)
     except NoValidConnectionsError as e:
         raise DemistoException(f'Unable to connect to port 22 on {host_name}') from e
