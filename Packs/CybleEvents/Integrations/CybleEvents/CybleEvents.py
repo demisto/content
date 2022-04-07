@@ -55,8 +55,8 @@ class Client(BaseClient):
             if resp.get('success') or False:
                 event_type_alias = resp['data']
             else:
-                raise Exception(resp)
                 demisto.error("Error trying to Fetch EventTypess {}".format(resp))
+                raise Exception(resp)
         except Exception as e:
             demisto.error("Exception with Fetch EventTypes [{}]".format(e))
             raise e
