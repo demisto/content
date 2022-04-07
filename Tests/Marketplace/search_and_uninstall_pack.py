@@ -171,14 +171,28 @@ def reset_base_pack_version(client: demisto_client):
         return False
 
 
-def wait_for_uninstalling_to_over(client: demisto_client):
+def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 30):
+    """
+    Query if there are still installed packs, as it might take time to complete.
+    Args:
+        client (demisto_client): The client to connect to.
+        retries: Max number of sleep priods.
+
+    Returns: True if all packs were uninstalled successfully
+
+    """
+    retry = 0
     try:
         installed_packs = get_all_installed_packs(client)
         while len(installed_packs) > 1:
+            if retry > retries:
+                raise Exception('Waiting time for packs to be uninstalled has passed, there are still installed '
+                                'packs. Aborting.')
             logging.debug(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
                           f'packs installed. Sleeping for 5 seconds.')
             sleep(5)
             installed_packs = get_all_installed_packs(client)
+            retry = retry + 1
 
     except Exception as e:
         logging.exception(f'Exception while waiting for the packs to be uninstalled. The error is {e}')
@@ -196,7 +210,6 @@ def options_handler():
     parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
     parser.add_argument('--xsiam_servers_path', help='Path to secret xsiam server metadata file.')
 
-    # disable-secrets-detection-end
     options = parser.parse_args()
 
     return options
@@ -239,7 +252,7 @@ def main():
                                       api_key=api_key,
                                       auth_id=xdr_auth_id)
 
-    success = reset_base_pack_version(client) and uninstall_all_packs(client) and wait_for_uninstalling_to_over(client)
+    success = reset_base_pack_version(client) and uninstall_all_packs(client) and wait_for_uninstallation_to_complete(client)
 
     if not success:
         sys.exit(2)
