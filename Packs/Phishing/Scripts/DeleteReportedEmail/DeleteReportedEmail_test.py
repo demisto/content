@@ -51,6 +51,9 @@ SEARCH_ARGS = {
 
 MISSING_EMAIL_ERROR_MSG = 'Email was not found in mailbox. It is possible that the email was already deleted manually.'
 
+WAS_EMAIL_DELETED_EXPECTED_RESULTS = [([], ('Skipped', MISSING_EMAIL_ERROR_MSG)),
+                                      ([{'message_id': 'message-id', 'result': 'Success'}], ('Success', ''))]
+
 
 @pytest.mark.parametrize('integration_name', ['EWS365', 'EWSv2', 'gmail', 'MSGraph'])
 def test_get_deletion_args(integration_name):
@@ -85,9 +88,7 @@ def test_delete_email(mocker, integration_name):
     assert delete_email(SEARCH_ARGS, 'func', ARGS_FUNC[integration_name], 'func', lambda x: False) == 'Success'
 
 
-@pytest.mark.parametrize('delete_email_context, result', [([], ('Skipped', MISSING_EMAIL_ERROR_MSG)),
-                                                          ([{'message_id': 'message-id', 'result': 'Success'}],
-                                                           ('Success', ''))])
+@pytest.mark.parametrize('delete_email_context, result', WAS_EMAIL_DELETED_EXPECTED_RESULTS)
 def test_was_email_already_deleted(mocker, delete_email_context, result):
     """
 
