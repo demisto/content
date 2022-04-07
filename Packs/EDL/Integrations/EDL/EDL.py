@@ -89,8 +89,8 @@ class RequestArguments:
     CTX_CSV_TEXT = 'csv_text'
     CTX_PROTOCOL_STRIP_KEY = 'url_protocol_stripping'
     CTX_URL_TRUNCATE_KEY = 'url_truncate'
-    CTX_BLOCK_CIDR_PREFIX_THRESHOLD = 'maximum_cidr_size'
-    CTX_BLOCK_TLD = 'no_tld'
+    CTX_MAXIMUM_CIDR = 'maximum_cidr_size'
+    CTX_NO_TLD = 'no_tld'
 
 
     FILTER_FIELDS_ON_FORMAT_TEXT = "name,type"
@@ -160,8 +160,8 @@ class RequestArguments:
             self.CTX_CSV_TEXT: self.csv_text,
             self.CTX_PROTOCOL_STRIP_KEY: self.url_protocol_stripping,
             self.CTX_URL_TRUNCATE_KEY: self.url_truncate,
-            self.CTX_BLOCK_CIDR_PREFIX_THRESHOLD: self.maximum_cidr_size,
-            self.CTX_BLOCK_TLD: self.no_tld,
+            self.CTX_MAXIMUM_CIDR: self.maximum_cidr_size,
+            self.CTX_NO_TLD: self.no_tld,
 
         }
 
@@ -185,8 +185,8 @@ class RequestArguments:
                 csv_text=ctx_dict.get(cls.CTX_CSV_TEXT),
                 url_protocol_stripping=ctx_dict.get(cls.CTX_PROTOCOL_STRIP_KEY),
                 url_truncate=ctx_dict.get(cls.CTX_URL_TRUNCATE_KEY),
-                maximum_cidr_size=ctx_dict.get(cls.CTX_BLOCK_CIDR_PREFIX_THRESHOLD),
-                no_tld=ctx_dict.get(cls.CTX_BLOCK_TLD),
+                maximum_cidr_size=ctx_dict.get(cls.CTX_MAXIMUM_CIDR),
+                no_tld=ctx_dict.get(cls.CTX_NO_TLD),
             )
         )
 
@@ -869,7 +869,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     add_comment_if_empty = request_args.get('ce', params.get('add_comment_if_empty', True))
     fields_to_present = request_args.get('fi', params.get('fields_filter', ''))
     url_truncate = request_args.get('ut', params.get('url_truncate', ''))
-    maximum_cidr_size = try_parse_integer(request_args.get('mcs', params.get('maximum_cidr_size')), EDL_CIDR_SIZR_MSG)
+    maximum_cidr_size = try_parse_integer(request_args.get('mc', params.get('maximum_cidr_size')), EDL_CIDR_SIZR_MSG)
     no_tld = argToBoolean(request_args.get('nt', params.get('no_tld')))
 
 

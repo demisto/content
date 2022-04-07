@@ -31,7 +31,9 @@ class TestRequestArguments:
         RequestArguments.CTX_FIELDS_TO_PRESENT: 'name,type',
         RequestArguments.CTX_CSV_TEXT: False,
         RequestArguments.CTX_PROTOCOL_STRIP_KEY: False,
-        RequestArguments.CTX_URL_TRUNCATE_KEY: False
+        RequestArguments.CTX_URL_TRUNCATE_KEY: False,
+        RequestArguments.CTX_NO_TLD: True,
+        RequestArguments.CTX_MAXIMUM_CIDR: 8
     }
 
     request_args = RequestArguments(
@@ -549,7 +551,9 @@ class TestHelperFunctions:
             'drop_invalids': not drop_invalids,
             'collapse_ips': 2,
             'add_comment_if_empty': not add_comment_if_empty,
-            'format': 'CSV'
+            'format': 'CSV',
+            'no_tld': False,
+            'maximum_cidr_size': '8'
         }
 
         # request with no request_args
@@ -593,7 +597,9 @@ def test_initialize_edl_context():
               'fields_filter': 'value,type',
               'format': 'CSV',
               'csv_text': True,
-              'url_truncate': False}
+              'url_truncate': False,
+              'maximum_cidr_size': '8',
+              'no_tld': True}
 
     initialize_edl_context(params)
     assert demisto.integrationContext == {'last_query': '*',
@@ -611,7 +617,10 @@ def test_initialize_edl_context():
                                           'csv_text': True,
                                           'url_protocol_stripping': True,
                                           'url_truncate': False,
-                                          'UpdateEDL': True
+                                          'UpdateEDL': True,
+                                          'maximum_cidr_size': 8,
+                                          'no_tld': True,
+                                          'maximum_cidr_size': 8
                                           }
 
 
