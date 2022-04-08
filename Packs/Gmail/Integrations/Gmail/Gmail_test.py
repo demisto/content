@@ -184,7 +184,7 @@ def test_labels_to_entry():
         gmail label api response
 
     When:
-        executing labels_to_entry function
+        executing labels_to_entry function.
 
     Then:
         the context and human readable are valid
