@@ -388,6 +388,8 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
         last_modified_format = parse_date_string(last_modified, DATE_FORMAT)
         index_timestamp = res.get('index_timestamp', '')
         index_timestamp_format = parse_date_string(index_timestamp, DATE_FORMAT)
+        created_on = res.get('created_on','')
+        created_on_format = parse_date_string(created_on, DATE_FORMAT)
         display_name = res.get('display_text', '')
         description = markdown_postprocessing(res.get('description', ''))
         analysis = markdown_postprocessing(res.get('analysis', ''))
@@ -400,7 +402,8 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             'LastPublished': str(last_published_format),
             'LastModified': str(last_modified_format),
             'IndexTimestamp': str(index_timestamp_format),
-            'Severity': res.get('severity', 0)
+            'Severity': res.get('severity', 0),
+            'CreatedOn': str(created_on_format)
         }
 
         readableOutput = {
@@ -411,7 +414,8 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             'LastPublished': str(last_published_format),
             'LastModified': str(last_modified_format),
             'IndexTimestamp': str(index_timestamp_format),
-            'Severity': res.get('severity', 0)
+            'Severity': res.get('severity', 0),
+            'CreatedOn': str(created_on_format)
         }
 
         if description:
