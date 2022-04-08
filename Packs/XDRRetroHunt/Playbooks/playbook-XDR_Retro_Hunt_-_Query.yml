@@ -1,52 +1,23 @@
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 2c31883e-ae3a-4aaf-8301-befa2e867e35
-    propagationLabels:
-    - all
-    toServerVersion: ""
 id: ce8ab14f-6f17-4ade-899f-b8f13af58ba7
-inputs:
-- description: "Subplaybook to perform XDR XQL queries for different indicator types"
-  key: item
-  playbookInputQuery: null
-  required: true
-  value: {}
-- description: |-
-    Can be
-    - File
-    - IP
-  key: type
-  playbookInputQuery: null
-  required: true
-  value: {}
+version: 13
+vcShouldKeepItemLegacyProdMachine: false
 name: XDR Retro Hunt - Query
-outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: 21b07525-4a8c-4e1f-8838-e0e3c3918f7d
+    type: start
+    task:
+      id: 21b07525-4a8c-4e1f-8838-e0e3c3918f7d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 21b07525-4a8c-4e1f-8838-e0e3c3918f7d
-      iscommand: false
-      name: ""
-      version: -1
-    taskid: 21b07525-4a8c-4e1f-8838-e0e3c3918f7d
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -54,28 +25,28 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: 162bb0e9-9170-4fa8-858b-8ed757976e6c
+    type: title
+    task:
+      id: 162bb0e9-9170-4fa8-858b-8ed757976e6c
+      version: -1
+      name: 'Type: File Hash'
+      type: title
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 162bb0e9-9170-4fa8-858b-8ed757976e6c
-      iscommand: false
-      name: 'Type: File Hash'
-      type: title
-      version: -1
-    taskid: 162bb0e9-9170-4fa8-858b-8ed757976e6c
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
@@ -83,42 +54,24 @@ tasks:
           "y": 370
         }
       }
-  "2":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.type
-          operator: isEqualString
-          right:
-            value:
-              simple: File
-      label: File
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.type
-          operator: isEqualString
-          right:
-            value:
-              simple: IP
-      label: IP
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.type
-          operator: isEqualString
-          right:
-            value:
-              simple: domain
-      label: Domain
-    id: "2"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 36c096be-b3ee-4af1-8477-e7044c702213
+    type: condition
+    task:
+      id: 36c096be-b3ee-4af1-8477-e7044c702213
+      version: -1
+      name: Check type
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       Domain:
       - "6"
@@ -126,20 +79,38 @@ tasks:
       - "1"
       IP:
       - "3"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 36c096be-b3ee-4af1-8477-e7044c702213
-      iscommand: false
-      name: Check type
-      type: condition
-      version: -1
-    taskid: 36c096be-b3ee-4af1-8477-e7044c702213
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: File
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.type
+            iscontext: true
+          right:
+            value:
+              simple: File
+    - label: IP
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.type
+            iscontext: true
+          right:
+            value:
+              simple: IP
+    - label: Domain
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.type
+            iscontext: true
+          right:
+            value:
+              simple: domain
     view: |-
       {
         "position": {
@@ -147,28 +118,28 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: e8a91721-fdd3-4e02-8b41-210153caf532
+    type: title
+    task:
+      id: e8a91721-fdd3-4e02-8b41-210153caf532
+      version: -1
+      name: 'Type: IP'
+      type: title
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: e8a91721-fdd3-4e02-8b41-210153caf532
-      iscommand: false
-      name: 'Type: IP'
-      type: title
-      version: -1
-    taskid: e8a91721-fdd3-4e02-8b41-210153caf532
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
@@ -176,16 +147,32 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: fd9363f8-1833-4f50-8684-7c20e5882fde
+    type: regular
+    task:
+      id: fd9363f8-1833-4f50-8684-7c20e5882fde
+      version: -1
+      name: Execute Query
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
-    note: false
-    quietmode: 0
     scriptarguments:
       max_fields:
         simple: "30"
@@ -194,22 +181,6 @@ tasks:
       query_name:
         simple: XSOARRetroHunt
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: |-
-        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
-        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
-        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
-      id: fd9363f8-1833-4f50-8684-7c20e5882fde
-      iscommand: true
-      name: Execute Query
-      script: '|||xdr-xql-generic-query'
-      type: regular
-      version: -1
-    taskid: fd9363f8-1833-4f50-8684-7c20e5882fde
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -217,35 +188,35 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: e48d7b95-c0b3-45b7-8d0a-8f69916f1aa7
+    type: regular
+    task:
+      id: e48d7b95-c0b3-45b7-8d0a-8f69916f1aa7
+      version: -1
+      name: Execute Query
+      description: Query file events by the SHA256 file.
+      script: '|||xdr-xql-file-event-query'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
-    note: false
-    quietmode: 0
     scriptarguments:
       file_sha256:
         simple: ${inputs.item}
       query_name:
         simple: XSOARRetroHunt
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Query file events by the SHA256 file.
-      id: e48d7b95-c0b3-45b7-8d0a-8f69916f1aa7
-      iscommand: true
-      name: Execute Query
-      script: '|||xdr-xql-file-event-query'
-      type: regular
-      version: -1
-    taskid: e48d7b95-c0b3-45b7-8d0a-8f69916f1aa7
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -253,28 +224,28 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: ce4c8cbf-ac40-40dc-8efb-56b4a4d41ed2
+    type: title
+    task:
+      id: ce4c8cbf-ac40-40dc-8efb-56b4a4d41ed2
+      version: -1
+      name: Type Domain
+      type: title
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: ce4c8cbf-ac40-40dc-8efb-56b4a4d41ed2
-      iscommand: false
-      name: Type Domain
-      type: title
-      version: -1
-    taskid: ce4c8cbf-ac40-40dc-8efb-56b4a4d41ed2
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
@@ -282,35 +253,35 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: ee948d29-fcc9-4323-8195-6994a0c1c403
+    type: regular
+    task:
+      id: ee948d29-fcc9-4323-8195-6994a0c1c403
+      version: -1
+      name: Execute Query
+      description: Query by DNS query or domain name.
+      script: '|||xdr-xql-dns-query'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
-    note: false
-    quietmode: 0
     scriptarguments:
       external_domain:
         simple: ${inputs.item}
       query_name:
         simple: XSOARRetroHunt
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Query by DNS query or domain name.
-      id: ee948d29-fcc9-4323-8195-6994a0c1c403
-      iscommand: true
-      name: Execute Query
-      script: '|||xdr-xql-dns-query'
-      type: regular
-      version: -1
-    taskid: ee948d29-fcc9-4323-8195-6994a0c1c403
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -318,25 +289,25 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: d0aa35a0-b26a-419e-8d6d-2fda94a7c002
+    type: title
     task:
-      brand: ""
       id: d0aa35a0-b26a-419e-8d6d-2fda94a7c002
-      iscommand: false
+      version: -1
       name: Done Hunting
       type: title
-      version: -1
-    taskid: d0aa35a0-b26a-419e-8d6d-2fda94a7c002
-    timertriggers: []
-    type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -344,7 +315,13 @@ tasks:
           "y": 690
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -357,3 +334,18 @@ view: |-
       }
     }
   }
+inputs:
+- key: item
+  value: {}
+  required: true
+  description: the indicator to search for
+  playbookInputQuery: null
+- key: type
+  value: {}
+  required: true
+  description: |-
+    Can be
+    - File
+    - IP
+  playbookInputQuery: null
+outputs: []
