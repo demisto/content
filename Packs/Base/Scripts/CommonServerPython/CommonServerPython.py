@@ -19,9 +19,7 @@ import traceback
 import types
 import urllib
 import gzip
-import secrets
-import string
-from random import randint
+afrom random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
@@ -39,9 +37,9 @@ def __line__():
     return cf.f_back.f_lineno
 
 
-# 41 - The line offset from the beggining of the file.
+# 42 - The line offset from the beggining of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 41, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 42, 'end': float('inf')},
 }
 
 
