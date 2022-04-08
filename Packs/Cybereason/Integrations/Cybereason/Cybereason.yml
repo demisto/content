@@ -841,23 +841,19 @@ script:
     description: Block a file only in particular machine
     name: cybereason-block-file
   - arguments:
-    - description: Filter value which user wants to apply for needsAttention
+    - description: Filter value which user wants to apply for needsAttention.
       name: needsAttention
-      required: false
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
-    - description: Filter value which user wants to apply for type
+    - description: Filter value which user wants to apply for type. (Possible filter values for type are "KnownMalware,UnknownMalware,FilelessMalware,ApplicationControlMalware,RansomwareMalware").
       name: type
-      required: false
-    - description: Filter value which user wants to apply for status
+    - description: Filter value which user wants to apply for status. (Possible filter values for status are "Done,Excluded,Detected,Prevented,Remediated,DeleteOnRestart,Quarantined").
       name: status
-      required: false
-    - description: Filter value which user wants to apply for timestamp
+    - description: Filter value which user wants to apply for timestamp. enter the time (in epoch).
       name: timestamp
-      required: false
-    - description: Filter value which user wants to apply for limit
+    - description: Filter value which user wants to apply for limit to get limited output.
       name: limit
       required: true
     description: Malware query with options and values to filter

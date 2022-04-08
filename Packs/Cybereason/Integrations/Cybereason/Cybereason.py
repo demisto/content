@@ -371,37 +371,44 @@ def query_connections_command():
     elif not ip and not machine:
         raise Exception('Not enough arguments given.')
 
-    response = query_connections(machine, ip)
-    elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
-    outputs = []
+    if machine:
+        input_list = machine.split(",")
+    else:
+        input_list = ip.split(",")
 
-    for item in elements.values():
-        simple_values = dict_safe_get(item, ['simpleValues'], default_return_value={}, return_type=dict)
-        element_values = dict_safe_get(item, ['elementValues'], default_return_value={}, return_type=dict)
+    for item in range(len(input_list)):
+        single_input = input_list[item]
+        response = query_connections(machine, ip, single_input)
+        elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
+        outputs = []
 
-        output = update_output({}, simple_values, element_values, CONNECTION_INFO)
-        outputs.append(output)
+        for item in elements.values():
+            simple_values = dict_safe_get(item, ['simpleValues'], default_return_value={}, return_type=dict)
+            element_values = dict_safe_get(item, ['elementValues'], default_return_value={}, return_type=dict)
 
-    context = []
-    for output in outputs:
-        # Remove whitespaces from dictionary keys
-        context.append({key.translate(None, ' '): value for key, value in output.iteritems()})
+            output = update_output({}, simple_values, element_values, CONNECTION_INFO)
+            outputs.append(output)
 
-    ec = {
-        'Connection': context
-    }
+        context = []
+        for output in outputs:
+            # Remove whitespaces from dictionary keys
+            context.append({key.translate(None, ' '): value for key, value in output.iteritems()})
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Cybereason Connections', outputs),
-        'EntryContext': ec
-    })
+        ec = {
+            'Connection': context
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Cybereason Connections for: {}'.format(single_input), outputs),
+            'EntryContext': ec
+        })
 
 
-def query_connections(machine, ip):
+def query_connections(machine, ip, single_input):
     if machine:
         path = [
             {
@@ -417,7 +424,7 @@ def query_connections(machine, ip):
                 'requestedType': 'Machine',
                 'filters': [{
                     'facetName': 'elementDisplayName',
-                    'values': [machine],
+                    'values': [single_input],
                     'filterType': 'Equals'
                 }]
             }
@@ -429,7 +436,7 @@ def query_connections(machine, ip):
                 'filters':
                     [{
                         'facetName': 'elementDisplayName',
-                        'values': [ip]
+                        'values': [single_input]
                     }],
                 'isResult': True
             }
@@ -1073,125 +1080,128 @@ def delete_registry_key(malop_guid, machine_guid, process_guid):
 
 
 def query_file_command():
-    file_hash = demisto.getArg('file_hash')
+    file_hash_input = demisto.getArg('file_hash')
+    file_hash_list = file_hash_input.split(",")
+    for item in range(len(file_hash_list)):
+        file_hash = file_hash_list[item]
 
-    filters = []
+        filters = []
 
-    hash_type = get_hash_type(file_hash)
-    if hash_type == 'sha1':
-        filters.append({
-            'facetName': 'sha1String',
-            'values': [file_hash],
-            'filterType': 'ContainsIgnoreCase'
-        })
-    elif hash_type == 'md5':
-        filters.append({
-            'facetName': 'md5String',
-            'values': [file_hash],
-            'filterType': 'ContainsIgnoreCase'
-        })
-    else:
-        raise Exception('Hash type is not supported.')
+        hash_type = get_hash_type(file_hash)
+        if hash_type == 'sha1':
+            filters.append({
+                'facetName': 'sha1String',
+                'values': [file_hash],
+                'filterType': 'ContainsIgnoreCase'
+            })
+        elif hash_type == 'md5':
+            filters.append({
+                'facetName': 'md5String',
+                'values': [file_hash],
+                'filterType': 'ContainsIgnoreCase'
+            })
+        else:
+            raise Exception('Hash type is not supported.')
 
-    data = query_file(filters)
+        data = query_file(filters)
 
-    if data:
-        cybereason_outputs = []
-        file_outputs = []
-        endpoint_outputs = []
-        files = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
-        for fname, fstat in files.iteritems():
-            raw_machine_details = dict_safe_get(get_file_machine_details(fname), ['data', 'resultIdToElementDataMap'],
+        if data:
+            cybereason_outputs = []
+            file_outputs = []
+            endpoint_outputs = []
+            files = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
+            for fname, fstat in files.iteritems():
+                raw_machine_details = dict_safe_get(get_file_machine_details(fname), ['data', 'resultIdToElementDataMap'],
+                                                    default_return_value={}, return_type=dict)
+                machine_details = dict_safe_get(raw_machine_details, dict_safe_get(raw_machine_details.keys(), [0]),
                                                 default_return_value={}, return_type=dict)
-            machine_details = dict_safe_get(raw_machine_details, dict_safe_get(raw_machine_details.keys(), [0]),
-                                            default_return_value={}, return_type=dict)
-            simple_values = dict_safe_get(fstat, ['simpleValues'], default_return_value={}, return_type=dict)
-            file_name = dict_safe_get(simple_values, ['elementDisplayName', 'values', 0])
-            md5 = dict_safe_get(simple_values, ['md5String', 'values', 0])
-            sha1 = dict_safe_get(simple_values, ['sha1String', 'values', 0])
-            path = dict_safe_get(simple_values, ['correctedPath', 'values', 0])
-            machine = dict_safe_get(fstat, ['elementValues', 'ownerMachine', 'elementValues', 0, 'name'])
+                simple_values = dict_safe_get(fstat, ['simpleValues'], default_return_value={}, return_type=dict)
+                file_name = dict_safe_get(simple_values, ['elementDisplayName', 'values', 0])
+                md5 = dict_safe_get(simple_values, ['md5String', 'values', 0])
+                sha1 = dict_safe_get(simple_values, ['sha1String', 'values', 0])
+                path = dict_safe_get(simple_values, ['correctedPath', 'values', 0])
+                machine = dict_safe_get(fstat, ['elementValues', 'ownerMachine', 'elementValues', 0, 'name'])
 
-            machine_element_values = dict_safe_get(machine_details, ['elementValues'], default_return_value={},
-                                                   return_type=dict)
-            machine_simple_values = dict_safe_get(machine_details, ['simpleValues'], default_return_value={},
-                                                  return_type=dict)
+                machine_element_values = dict_safe_get(machine_details, ['elementValues'], default_return_value={},
+                                                    return_type=dict)
+                machine_simple_values = dict_safe_get(machine_details, ['simpleValues'], default_return_value={},
+                                                    return_type=dict)
 
-            os_version = dict_safe_get(machine_simple_values, ['ownerMachine.osVersionType', 'values', 0])
-            raw_suspicions = dict_safe_get(machine_details, ['suspicions'], default_return_value={}, return_type=dict)
+                os_version = dict_safe_get(machine_simple_values, ['ownerMachine.osVersionType', 'values', 0])
+                raw_suspicions = dict_safe_get(machine_details, ['suspicions'], default_return_value={}, return_type=dict)
 
-            suspicions = {}
-            for key, value in raw_suspicions.iteritems():
-                suspicions[key] = timestamp_to_datestring(value)
+                suspicions = {}
+                for key, value in raw_suspicions.iteritems():
+                    suspicions[key] = timestamp_to_datestring(value)
 
-            evidences = []
-            for key in machine_element_values.keys():
-                if 'evidence' in key.lower():
-                    evidences.append(key)
-            for key in machine_simple_values.keys():
-                if 'evidence' in key.lower():
-                    evidences.append(key)
+                evidences = []
+                for key in machine_element_values.keys():
+                    if 'evidence' in key.lower():
+                        evidences.append(key)
+                for key in machine_simple_values.keys():
+                    if 'evidence' in key.lower():
+                        evidences.append(key)
 
-            company_name = None
-            if 'companyName' in simple_values:
-                company_name = dict_safe_get(simple_values, ['companyName', 'values', 0])
+                company_name = None
+                if 'companyName' in simple_values:
+                    company_name = dict_safe_get(simple_values, ['companyName', 'values', 0])
 
-            created_time = None
-            if 'createdTime' in simple_values:
-                created_time = timestamp_to_datestring(dict_safe_get(simple_values, ['createdTime', 'values', 0]))
+                created_time = None
+                if 'createdTime' in simple_values:
+                    created_time = timestamp_to_datestring(dict_safe_get(simple_values, ['createdTime', 'values', 0]))
 
-            modified_time = None
-            if 'modifiedTime' in simple_values:
-                modified_time = timestamp_to_datestring(dict_safe_get(simple_values, ['modifiedTime', 'values', 0]))
+                modified_time = None
+                if 'modifiedTime' in simple_values:
+                    modified_time = timestamp_to_datestring(dict_safe_get(simple_values, ['modifiedTime', 'values', 0]))
 
-            is_signed = None
-            if 'isSigned' in simple_values:
-                is_signed = True if dict_safe_get(simple_values, ['isSigned', 'values', 0]) == 'true' else False
+                is_signed = None
+                if 'isSigned' in simple_values:
+                    is_signed = True if dict_safe_get(simple_values, ['isSigned', 'values', 0]) == 'true' else False
 
-            cybereason_outputs.append({
-                'Name': file_name,
-                'CreationTime': created_time,
-                'ModifiedTime': modified_time,
-                'Malicious': fstat.get('isMalicious'),
-                'MD5': md5,
-                'SHA1': sha1,
-                'Path': path,
-                'Machine': machine,
-                'SuspicionsCount': machine_details.get('suspicionCount'),
-                'IsConnected': (dict_safe_get(machine_simple_values,
-                                              ['ownerMachine.isActiveProbeConnected', 'values', 0]) == 'true'),
-                'OSVersion': os_version,
-                'Suspicion': suspicions,
-                'Evidence': evidences,
-                'Signed': is_signed,
-                'Company': company_name
+                cybereason_outputs.append({
+                    'Name': file_name,
+                    'CreationTime': created_time,
+                    'ModifiedTime': modified_time,
+                    'Malicious': fstat.get('isMalicious'),
+                    'MD5': md5,
+                    'SHA1': sha1,
+                    'Path': path,
+                    'Machine': machine,
+                    'SuspicionsCount': machine_details.get('suspicionCount'),
+                    'IsConnected': (dict_safe_get(machine_simple_values,
+                                                ['ownerMachine.isActiveProbeConnected', 'values', 0]) == 'true'),
+                    'OSVersion': os_version,
+                    'Suspicion': suspicions,
+                    'Evidence': evidences,
+                    'Signed': is_signed,
+                    'Company': company_name
+                })
+
+                file_outputs.append({
+                    'Name': fname,
+                    'MD5': md5,
+                    'SHA1': sha1,
+                    'Path': path,
+                    'Hostname': machine
+                })
+                endpoint_outputs.append({
+                    'Hostname': machine,
+                    'OSVersion': os_version
+                })
+            ec = {'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
+                'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs,
+                outputPaths['file']: file_outputs}
+
+            demisto.results({
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': data,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown('Cybereason file query results for the file hash: {}'.format(file_hash), cybereason_outputs, removeNull=True),
+                'EntryContext': ec
             })
-
-            file_outputs.append({
-                'Name': fname,
-                'MD5': md5,
-                'SHA1': sha1,
-                'Path': path,
-                'Hostname': machine
-            })
-            endpoint_outputs.append({
-                'Hostname': machine,
-                'OSVersion': os_version
-            })
-        ec = {'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
-              'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs,
-              outputPaths['file']: file_outputs}
-
-        demisto.results({
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': data,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Cybereason file query results', cybereason_outputs, removeNull=True),
-            'EntryContext': ec
-        })
-    else:
-        demisto.results('No results found.')
+        else:
+            demisto.results('No results found.')
 
 
 def query_file(filters):
@@ -1238,63 +1248,66 @@ def get_file_machine_details(file_guid):
 
 
 def query_domain_command():
-    domain_input = demisto.getArg('domain')
+    domain_input_value = demisto.getArg('domain')
+    domain_list = domain_input_value.split(",")
+    for item in range(len(domain_list)):
+        domain_input = domain_list[item]
 
-    filters = [{
-        'facetName': 'elementDisplayName',
-        'values': [domain_input],
-        'filterType': 'ContainsIgnoreCase'
-    }]
+        filters = [{
+            'facetName': 'elementDisplayName',
+            'values': [domain_input],
+            'filterType': 'ContainsIgnoreCase'
+        }]
 
-    data = query_domain(filters)
+        data = query_domain(filters)
 
-    if data:
-        cybereason_outputs = []
-        domain_outputs = []
-        domains = dict_safe_get(data, ['resultIdToElementDataMap'], default_return_value={}, return_type=dict)
-        for domain in domains.values():
-            if not isinstance(domain, dict):
-                raise ValueError("Cybereason raw response is not valid, domain in domains.values() is not dict")
+        if data:
+            cybereason_outputs = []
+            domain_outputs = []
+            domains = dict_safe_get(data, ['resultIdToElementDataMap'], default_return_value={}, return_type=dict)
+            for domain in domains.values():
+                if not isinstance(domain, dict):
+                    raise ValueError("Cybereason raw response is not valid, domain in domains.values() is not dict")
 
-            simple_values = dict_safe_get(domain, ['simpleValues'], default_return_value={}, return_type=dict)
-            reputation = dict_safe_get(simple_values, ['maliciousClassificationType', 'values', 0])
-            is_internal_domain = dict_safe_get(simple_values, ['isInternalDomain', 'values', 0]) == 'true'
-            was_ever_resolved = dict_safe_get(simple_values, ['everResolvedDomain', 'values', 0]) == 'true'
-            was_ever_resolved_as = dict_safe_get(simple_values,
-                                                 ['everResolvedSecondLevelDomain', 'values', 0]) == 'true'
-            malicious = domain.get('isMalicious')
-            suspicions_count = domain.get('suspicionCount')
+                simple_values = dict_safe_get(domain, ['simpleValues'], default_return_value={}, return_type=dict)
+                reputation = dict_safe_get(simple_values, ['maliciousClassificationType', 'values', 0])
+                is_internal_domain = dict_safe_get(simple_values, ['isInternalDomain', 'values', 0]) == 'true'
+                was_ever_resolved = dict_safe_get(simple_values, ['everResolvedDomain', 'values', 0]) == 'true'
+                was_ever_resolved_as = dict_safe_get(simple_values,
+                                                    ['everResolvedSecondLevelDomain', 'values', 0]) == 'true'
+                malicious = domain.get('isMalicious')
+                suspicions_count = domain.get('suspicionCount')
 
-            cybereason_outputs.append({
-                'Name': domain_input,
-                'Reputation': reputation,
-                'Malicious': malicious,
-                'SuspicionsCount': suspicions_count,
-                'IsInternalDomain': is_internal_domain,
-                'WasEverResolved': was_ever_resolved,
-                'WasEverResolvedAsASecondLevelDomain': was_ever_resolved_as
+                cybereason_outputs.append({
+                    'Name': domain_input,
+                    'Reputation': reputation,
+                    'Malicious': malicious,
+                    'SuspicionsCount': suspicions_count,
+                    'IsInternalDomain': is_internal_domain,
+                    'WasEverResolved': was_ever_resolved,
+                    'WasEverResolvedAsASecondLevelDomain': was_ever_resolved_as
+                })
+
+                domain_outputs.append({
+                    'Name': domain_input,
+                })
+
+            ec = {'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs,
+                outputPaths['domain']: domain_outputs}
+
+            demisto.results({
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': data,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown('Cybereason domain query results for the domain: {}'.format(domain_input), cybereason_outputs,
+                                                ['Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved',
+                                                'WasEverResolvedAsASecondLevelDomain', 'Malicious',
+                                                'SuspicionsCount']),
+                'EntryContext': ec
             })
-
-            domain_outputs.append({
-                'Name': domain_input,
-            })
-
-        ec = {'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs,
-              outputPaths['domain']: domain_outputs}
-
-        demisto.results({
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': data,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Cybereason domain query results', cybereason_outputs,
-                                             ['Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved',
-                                              'WasEverResolvedAsASecondLevelDomain', 'Malicious',
-                                              'SuspicionsCount']),
-            'EntryContext': ec
-        })
-    else:
-        demisto.results('No results found.')
+        else:
+            demisto.results('No results found.')
 
 
 def query_domain(filters):
@@ -1316,53 +1329,56 @@ def query_domain(filters):
 
 
 def query_user_command():
-    username = demisto.getArg('username')
+    username_input = demisto.getArg('username')
+    username_list = username_input.split(",")
+    for item in range(len(username_list)):
+        username = username_list[item]
 
-    filters = [{
-        'facetName': 'elementDisplayName',
-        'values': [username],
-        'filterType': 'ContainsIgnoreCase'
-    }]
+        filters = [{
+            'facetName': 'elementDisplayName',
+            'values': [username],
+            'filterType': 'ContainsIgnoreCase'
+        }]
 
-    data = query_user(filters)
+        data = query_user(filters)
 
-    if data:
-        cybereason_outputs = []
-        users = dict_safe_get(data, ['resultIdToElementDataMap'], default_return_value={}, return_type=dict)
+        if data:
+            cybereason_outputs = []
+            users = dict_safe_get(data, ['resultIdToElementDataMap'], default_return_value={}, return_type=dict)
 
-        for user in users.values():
-            simple_values = dict_safe_get(user, ['simpleValues'], default_return_value={}, return_type=dict)
-            element_values = dict_safe_get(user, ['elementValues'], default_return_value={}, return_type=dict)
+            for user in users.values():
+                simple_values = dict_safe_get(user, ['simpleValues'], default_return_value={}, return_type=dict)
+                element_values = dict_safe_get(user, ['elementValues'], default_return_value={}, return_type=dict)
 
-            domain = dict_safe_get(simple_values, ['domain', 'values', 0])
-            local_system = True if dict_safe_get(simple_values, ['isLocalSystem', 'values', 0]) == 'true' else False
-            machine = dict_safe_get(element_values, ['ownerMachine', 'elementValues', 0, 'name'])
-            organization = dict_safe_get(element_values, ['ownerOrganization', 'elementValues', 0, 'name'])
+                domain = dict_safe_get(simple_values, ['domain', 'values', 0])
+                local_system = True if dict_safe_get(simple_values, ['isLocalSystem', 'values', 0]) == 'true' else False
+                machine = dict_safe_get(element_values, ['ownerMachine', 'elementValues', 0, 'name'])
+                organization = dict_safe_get(element_values, ['ownerOrganization', 'elementValues', 0, 'name'])
 
-            cybereason_outputs.append({
-                'Username': username,
-                'Domain': domain,
-                'LastMachineLoggedInTo': machine,
-                'Organization': organization,
-                'LocalSystem': local_system
-            })
+                cybereason_outputs.append({
+                    'Username': username,
+                    'Domain': domain,
+                    'LastMachineLoggedInTo': machine,
+                    'Organization': organization,
+                    'LocalSystem': local_system
+                })
 
-            ec = {
-                'Cybereason.User(val.Username && val.Username===obj.Username)': cybereason_outputs
-            }
+                ec = {
+                    'Cybereason.User(val.Username && val.Username===obj.Username)': cybereason_outputs
+                }
 
-            demisto.results({
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': data,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Cybereason user query results', cybereason_outputs,
-                                                 ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization',
-                                                  'LocalSystem']),
-                'EntryContext': ec
-            })
-    else:
-        demisto.results('No results found.')
+                demisto.results({
+                    'ContentsFormat': formats['json'],
+                    'Type': entryTypes['note'],
+                    'Contents': data,
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': tableToMarkdown('Cybereason user query results for the username: {}'.format(username), cybereason_outputs,
+                                                    ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization',
+                                                    'LocalSystem']),
+                    'EntryContext': ec
+                })
+        else:
+            demisto.results('No results found.')
 
 
 def query_user(filters):
