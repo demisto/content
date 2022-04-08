@@ -9,6 +9,9 @@ IDEFENSE_URL_TEMPLATE = "https://intelgraph.idefense.com/#/node/{0}/view/{1}"
 ATTACHMENT_LINK = 'https://intelgraph.idefense.com/rest/files/download'
 IA_URL = 'https://intelgraph.idefense.com/#/node/intelligence_alert/view/'
 IR_URL = 'https://intelgraph.idefense.com/#/node/intelligence_report/view/'
+MALWARE_FAMILY_URL = 'https://intelgraph.idefense.com/#/node/malware_family/view/'
+THREAT_ACTOR_URL = 'https://intelgraph.idefense.com/#/node/threat_actor/view/'
+THREAT_GROUP_URL = 'https://intelgraph.idefense.com/#/node/threat_group/view/'
 ENDPOINTS = {
     'threatindicator': '/rest/threatindicator',
     'document': '/rest/document',
@@ -376,7 +379,7 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
     if len(res):
         dbot_score = _calculate_dbot_score(res.get('severity', 0))
         desc = 'Match found in Accenture CTI database'
-        indicator_value = res.get('key', '')
+        indicator_value = res.get('uuid', '')
         indicator_type = res.get('type', '')
         last_published = res.get('last_published', '')
         last_published_format = parse_date_string(last_published, DATE_FORMAT)
@@ -385,6 +388,8 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
         index_timestamp = res.get('index_timestamp', '')
         index_timestamp_format = parse_date_string(index_timestamp, DATE_FORMAT)
         display_name = res.get('display_text', '')
+        description = markdown_postprocessing(res.get('description', ''))
+        analysis = markdown_postprocessing(res.get('analysis', ''))
 
         analysis_info = {
             'Name': display_name,
@@ -396,31 +401,40 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             'IndexTimestamp': str(index_timestamp_format),
             'Severity': res.get('severity', 0)
         }
-
-        # description = res.get('description', '')
-        # analysis = res.get('analysis', '')
-        description = markdown_postprocessing(res.get('description', ''))
-        analysis = markdown_postprocessing(res.get('analysis', ''))
+            
+        readableOutput = {
+            'Name': display_name,
+            'DbotReputation': dbot_score,
+            'ThreatTypes': res.get('threat_types', ''),
+            'Type': indicator_type,
+            'LastPublished': str(last_published_format),
+            'LastModified': str(last_modified_format),
+            'IndexTimestamp': str(index_timestamp_format),
+            'Severity': res.get('severity', 0)
+        }
 
         if description:
             analysis_info["Description"] = description
+            # readableOutput["Description"] = description
         if analysis:
             analysis_info["Analysis"] = analysis
-        
 
         if indicator_type.lower() == 'malware_family':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Malware Family', indicator_value, dbot, analysis_info, 'MalwareFamily')
+            result_link: str = MALWARE_FAMILY_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_group':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Threat Group', indicator_value, dbot, analysis_info, 'ThreatGroup')
+            result_link: str = THREAT_GROUP_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_actor':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Threat Actor', indicator_value, dbot, analysis_info, 'ThreatActor')
+            result_link: str = THREAT_ACTOR_URL + res.get('uuid', '')
 
         return CommandResults(indicator=indicator,
                           raw_response=res,
-                          readable_output=tableToMarkdown(f'{display_name}', analysis_info))
+                          readable_output=tableToMarkdown(f'{display_name}', readableOutput, metadata=f'For more insight click: {result_link}'))
 
 
 def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, indicatorTypeHash: bool = False):
