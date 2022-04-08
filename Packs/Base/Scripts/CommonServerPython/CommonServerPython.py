@@ -19,7 +19,7 @@ import traceback
 import types
 import urllib
 import gzip
-afrom random import randint
+from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
