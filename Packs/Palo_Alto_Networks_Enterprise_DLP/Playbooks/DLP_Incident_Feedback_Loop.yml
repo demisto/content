@@ -725,8 +725,8 @@ tasks:
       blocks:
         simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\":
           \"mrkdwn\",\n\t\t\t\t\"text\": \"Thank you for the request. Your temporary
-          exemption for ${incident.filename} is enabled now for ${Exemption.duration}
-          hours. Please try again.\"\n\t\t\t}\n\t\t}\n\t]"
+          exemption for ${incident.filename} is enabled now for ${Exemption.duration}.
+          Please try again.\"\n\t\t\t}\n\t\t}\n\t]"
       to:
         simple: ${Slack.User.Email}
     separatecontext: false
