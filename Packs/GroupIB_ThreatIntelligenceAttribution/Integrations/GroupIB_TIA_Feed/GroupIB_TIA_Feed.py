@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 
 from typing import Dict, Generator, List, Optional, Tuple, Union
 
+from datetime import datetime
 import dateparser
 import urllib3
 
@@ -587,7 +588,8 @@ def unpack_iocs(iocs, ioc_type, fields, fields_names, collection_name):
         # Transforming into correct date format
         for date_field in DATE_FIELDS_LIST:
             if fields_dict.get(date_field):
-                fields_dict[date_field] = dateparser.parse(fields_dict.get(date_field)).strftime('%Y-%m-%dT%H:%M:%SZ')
+                previous_date: datetime = dateparser.parse(fields_dict.get(date_field, ""))
+                fields_dict[date_field] = previous_date.strftime('%Y-%m-%dT%H:%M:%SZ')
 
         fields_dict.update({'gibcollection': collection_name})
 
@@ -661,11 +663,11 @@ def handle_first_time_fetch(last_run, collection_name, first_fetch_time):
     date_from = None
     seq_update = None
     if not last_fetch:
-        date_from = dateparser.parse(first_fetch_time)
-        if date_from is None:
+        date_from_for_mypy: datetime = dateparser.parse(first_fetch_time)
+        if date_from_for_mypy is None:
             raise DemistoException('Inappropriate indicators_first_fetch format, '
                                    'please use something like this: 2020-01-01 or January 1 2020 or 3 days')
-        date_from = date_from.strftime('%Y-%m-%d')
+        date_from = date_from_for_mypy.strftime('%Y-%m-%d')
     else:
         seq_update = last_fetch
 
