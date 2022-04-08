@@ -420,7 +420,6 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
 
         if description:
             analysis_info["Description"] = description
-            # readableOutput["Description"] = description
         if analysis:
             analysis_info["Analysis"] = analysis
 
