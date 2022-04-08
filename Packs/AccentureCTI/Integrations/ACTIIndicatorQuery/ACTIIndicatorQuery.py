@@ -402,7 +402,7 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             'IndexTimestamp': str(index_timestamp_format),
             'Severity': res.get('severity', 0)
         }
-            
+
         readableOutput = {
             'Name': display_name,
             'DbotReputation': dbot_score,
@@ -434,12 +434,13 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             result_link: str = THREAT_ACTOR_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_campaign':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator('ACTI Threat Actor', indicator_value, dbot, analysis_info, 'ThreatCampaign')
+            indicator = Common.CustomIndicator('ACTI Threat Campaign', indicator_value, dbot, analysis_info, 'ThreatCampaign')
             result_link: str = THREAT_CAMPAIGN_URL + res.get('uuid', '')
 
         return CommandResults(indicator=indicator,
-                          raw_response=res,
-                          readable_output=tableToMarkdown(f'{display_name}', readableOutput, metadata=f'For more insight click: {result_link}'))
+                              raw_response=res,
+                              readable_output=tableToMarkdown(f'{display_name}', readableOutput,
+                                                              metadata=f'For more insight click: {result_link}'))
 
 
 def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, indicatorTypeHash: bool = False):
@@ -668,7 +669,7 @@ def main():
         document_search_client = Client(base_url, api_key, verify_certificate,  # pragma: no cover
                                         proxy, endpoint=ENDPOINTS['document'])  # pragma: no cover
         fundamental_client = Client(base_url, api_key, verify_certificate,  # pragma: no cover
-                                        proxy, endpoint=ENDPOINTS['fundamental'])  # pragma: no cover
+                                    proxy, endpoint=ENDPOINTS['fundamental'])  # pragma: no cover
         demisto.debug(f'Command being called is {command}')  # pragma: no cover
         if command == 'test-module':  # pragma: no cover
             return_results(test_module(client))  # pragma: no cover
