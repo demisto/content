@@ -9704,7 +9704,7 @@ def send_events_to_xsiam(events: Union[str, list], vendor: str, product: str, da
     amount_of_events = 0
     # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
     if isinstance(events, list):
-        amount_of_events = len(list)
+        amount_of_events = len(events)
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         if isinstance(events[0], dict):
             events = [json.dumps(event) for event in events]
