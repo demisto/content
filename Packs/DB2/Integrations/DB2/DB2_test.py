@@ -84,7 +84,7 @@ def client(mocker):
 )
 def test_create_insert_empty_table_query_commands(command, args, response, headers, expected_result, mocker, client):
     """
-    Test create table command
+    Test create table command into empty table.
     """
     mocker.patch.object(client, "execute_query", side_effect=Exception("No results found"))
     mocker.patch.object(demisto, "error")
