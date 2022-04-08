@@ -1,13 +1,13 @@
 import json
 import traceback
-from typing import Dict, List, Optional, Union, Tuple
+from typing import Dict, List, Optional, Union, Tuple, cast
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
 from datetime import datetime
 
 requests.packages.urllib3.disable_warnings()
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+NCURION_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 apiVersion = "v1"
 '''GLOBALS/PARAMS'''
 INTEGRATION_NAME = 'NCURITY - Ncurion'
@@ -80,34 +80,38 @@ def get_log_list(base_url, username, password):
 def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
                     first_fetch_time: Optional[int]) -> Tuple[Dict[str, datetime], List[dict]]:
     access_token, refresh_token, headers1 = login(base_url, username, password)
+    
     log_list = loglist(base_url, access_token, refresh_token, headers1)
     log_server_id = [e["id"] for e in log_list if e["is_connected"] is True]
     last_fetch = last_run.get('last_fetch', None)
+    verify_certificate = not demisto.params().get('insecure', False)
+    incidents = []
     max_fetch = demisto.params().get('max_fetch')
-    now_time = datetime.datetime.utcnow()
-    if (last_fetch is None):
+    
+    if last_fetch is None:
         last_fetch = first_fetch_time
-        if (first_fetch_time is None):
-            params1 = {"start": f"None", "end": f"{now_time}", "size": max_fetch}
-        else:
-            params1 = {"start": f"{last_fetch}", "end": f"{now_time}", "size": max_fetch}
-    if len(log_server_id) == 0:
-        next_run = {'last_fetch': now_time}
     else:
-        incidents = []
-        verify_certificate = not demisto.params().get('insecure', False)
+        last_fetch = last_fetch
+        
+    last_fetch_time = datetime.fromtimestamp(last_fetch)
+    last_fetch_Format = last_fetch_time.strftime(NCURION_DATE_FORMAT)
+    params1 = {"start":f"{last_fetch_Format}","size":max_fetch}
+    
+    if len(log_server_id) > 0:
         for i in log_server_id:
-            base_url_log = base_url + f'/logapi/api/v1/logserver/search/alert/search/{i}'
+            base_url_log = url + f'/logapi/api/v1/logserver/search/alert/search/{i}'
             response_log = requests.request("GET", base_url_log, headers=headers1, params=params1, verify=verify_certificate)
             data = response_log.json()
-            for hit in data:
-                incident = {
-                    'name': hit['alert']['category'] + hit['alert']['signature'],
-                    'occured': hit['@timestamp'],
-                    'rawJSON': json.dumps(hit)
-                }
-                incidents.append(incident)
-        next_run = {'last_fetch': now_time}
+            if data is not None:
+                for hit in data:
+                    incident={
+                        'name' : hit['alert']['category'] + hit['alert']['signature'],
+                        'occured' : hit['@timestamp'],
+                        'rawJSON' : json.dumps(hit)
+                    }
+                    incidents.append(incident)
+    lastes_created_time = cast(int, last_fetch)
+    next_run = {'last_fetch': lastes_created_time}
     logout = json.dumps({
         "access_token": access_token,
         "refresh_token": refresh_token
