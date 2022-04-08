@@ -1,0 +1,683 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 2c31883e-ae3a-4aaf-8301-befa2e867e35
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |
+  XDR Retro Hunt is an automated threat hunting playbook created for Palo Alto Network Cortex XDR, it will fetch indicators from the Threat Intelligence Library / Threat Intelligence module for a given time and verdict (default malicious / yesterday) and execute XQL queries for every found indicator, at the end it will report the number of events found.
+
+  v1:
+  - Hunt for IP addresses, File Hashes and Domain names
+  - default limit for indicators : 10 (changeable via input)
+  - default verdict malicious (changeable via input)
+  - default time "yesterday" (changeable via input)
+  - Print amount of events found for each type of hunt
+
+  (!!!) Higher limits can impact the performance of XSOAR and XDR
+id: d4e503cf-c2f1-4bc1-81c4-644c6d4d898d
+inputs:
+- description: ""
+  key: limit
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "100"
+- description: ""
+  key: verdict
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: malicious
+- description: ""
+  key: time
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: '{yesterday}'
+name: XDR Retro Hunt
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 03b34cf2-8814-49d8-8c2a-37f1675e5505
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 03b34cf2-8814-49d8-8c2a-37f1675e5505
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      extend-context:
+        simple: xHuntHashes=value::xHuntHashes
+      limit:
+        simple: ${inputs.limit}
+      populateFields:
+        simple: value
+      query:
+        simple: sourcetimestamp:>=${inputs.time} and type:"File" and verdict:${inputs.verdict}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets a list of indicator objects and the associated indicator outputs
+        that match the specified query and filters. The results are returned in a
+        structured data file.
+      id: cf92ff41-6b83-40ce-8479-85f76bc3c911
+      iscommand: false
+      name: Get Indicators
+      scriptName: GetIndicatorsByQuery
+      type: regular
+      version: -1
+    taskid: cf92ff41-6b83-40ce-8479-85f76bc3c911
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 78c9fd57-909c-46f9-8518-36bd1368877b
+      iscommand: false
+      name: Hunt for File Hashes
+      type: title
+      version: -1
+    taskid: 78c9fd57-909c-46f9-8518-36bd1368877b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      item:
+        simple: xHuntFileHashes
+      type:
+        simple: File
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fe0f8821-cda2-466c-8b47-78b8e8add8c5
+      iscommand: false
+      name: XDR Retro Hunt - Query
+      playbookId: ce8ab14f-6f17-4ade-899f-b8f13af58ba7
+      type: playbook
+      version: -1
+    taskid: fe0f8821-cda2-466c-8b47-78b8e8add8c5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      extend-context:
+        simple: xHuntIPs=value::xHuntIPs
+      limit:
+        simple: ${inputs.limit}
+      populateFields:
+        simple: value
+      query:
+        simple: sourcetimestamp:>=${inputs.time} and type:"IP" and verdict:${inputs.verdict}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets a list of indicator objects and the associated indicator outputs
+        that match the specified query and filters. The results are returned in a
+        structured data file.
+      id: f5a17bd2-d3ec-4351-8c8a-d748b5c496e5
+      iscommand: false
+      name: Get Indicators
+      scriptName: GetIndicatorsByQuery
+      type: regular
+      version: -1
+    taskid: f5a17bd2-d3ec-4351-8c8a-d748b5c496e5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 340
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1c7368aa-2630-4aa1-87ab-fd0b0db875fc
+      iscommand: false
+      name: Hunt for IPs
+      type: title
+      version: -1
+    taskid: 1c7368aa-2630-4aa1-87ab-fd0b0db875fc
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 195
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      item:
+        simple: xHuntIPs
+      type:
+        simple: IP
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b059f199-650f-4032-81d4-a7830c81cb3c
+      iscommand: false
+      name: XDR Retro Hunt - Query
+      playbookId: ce8ab14f-6f17-4ade-899f-b8f13af58ba7
+      type: playbook
+      version: -1
+    taskid: b059f199-650f-4032-81d4-a7830c81cb3c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 515
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: db166950-3ed3-4bc1-8912-9bc0a765d4e0
+      iscommand: false
+      name: Hunt for Domain names
+      type: title
+      version: -1
+    taskid: db166950-3ed3-4bc1-8912-9bc0a765d4e0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      extend-context:
+        simple: xHuntDomains=value::xHuntDomains
+      limit:
+        simple: ${inputs.limit}
+      populateFields:
+        simple: value
+      query:
+        simple: sourcetimestamp:>=${inputs.time} and type:"domain" and verdict:${inputs.verdict}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets a list of indicator objects and the associated indicator outputs
+        that match the specified query and filters. The results are returned in a
+        structured data file.
+      id: ff9be7ae-3cef-4710-83de-77c0ef2b46f5
+      iscommand: false
+      name: Get Indicators
+      scriptName: GetIndicatorsByQuery
+      type: regular
+      version: -1
+    taskid: ff9be7ae-3cef-4710-83de-77c0ef2b46f5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 340
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      item:
+        simple: xHuntDomains
+      type:
+        simple: domain
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9823b459-e9bd-426a-8643-014cc7bc1438
+      iscommand: false
+      name: XDR Retro Hunt - Query
+      playbookId: ce8ab14f-6f17-4ade-899f-b8f13af58ba7
+      type: playbook
+      version: -1
+    taskid: 9823b459-e9bd-426a-8643-014cc7bc1438
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 515
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${subplaybook-3.PaloAltoNetworksXQL.FileEvent.number_of_results}
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "1"
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ebe8f578-9855-4583-813d-b071f9085e7c
+      iscommand: false
+      name: Events Found?
+      type: condition
+      version: -1
+    taskid: ebe8f578-9855-4583-813d-b071f9085e7c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Retro Hunt for Hashes found ${subplaybook-3.PaloAltoNetworksXQL.FileEvent.number_of_results}
+          Events
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 49f7c985-8f85-4f05-8767-fe658d23cf84
+      iscommand: false
+      name: Print
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 49f7c985-8f85-4f05-8767-fe658d23cf84
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 90b8c276-e37f-4ab3-8c86-c54cbe12adbc
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 90b8c276-e37f-4ab3-8c86-c54cbe12adbc
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1040
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${subplaybook-6.PaloAltoNetworksXQL.FileEvent.number_of_results}
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "1"
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2380628f-8ebb-4fff-88f5-e70f56ba5fac
+      iscommand: false
+      name: Events Found?
+      type: condition
+      version: -1
+    taskid: 2380628f-8ebb-4fff-88f5-e70f56ba5fac
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 690
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${subplaybook-9.PaloAltoNetworksXQL.FileEvent.number_of_results}
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "1"
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a6e819bd-8130-4ab0-8893-23235a86c629
+      iscommand: false
+      name: Events Found?
+      type: condition
+      version: -1
+    taskid: a6e819bd-8130-4ab0-8893-23235a86c629
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 690
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Retro Hunt for IPs found ${subplaybook-3.PaloAltoNetworksXQL.FileEvent.number_of_results}
+          Events
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: d1865a3f-73fa-4bcf-8131-72ac8951ea9f
+      iscommand: false
+      name: Print
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: d1865a3f-73fa-4bcf-8131-72ac8951ea9f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 865
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Retro Hunt for Domains found ${subplaybook-3.PaloAltoNetworksXQL.FileEvent.number_of_results}
+          Events
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 9cbd1474-03d4-4594-8a1f-3b3aba227312
+      iscommand: false
+      name: Print
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 9cbd1474-03d4-4594-8a1f-3b3aba227312
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 865
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1055,
+        "width": 1392.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

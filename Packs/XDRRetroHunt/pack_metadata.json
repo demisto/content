@@ -1,0 +1,17 @@
+{
+    "name": "XDR Retro Hunt",
+    "description": "XDR Retro Hunt is an automated threat hunting playbook created for Palo Alto Network Cortex XDR, it will fetch indicators from the Threat Intelligence Library / Threat Intelligence module for a given time and verdict (default malicious / yesterday) and execute XQL queries for every found indicator, at the end it will report the number of events found.\n\nv1:\n* Hunt for IP addresses, File Hashes and Domain names\n* default limit for indicators : 10 (changeable via input)\n* default verdict malicious (changeable via input)\n* default time \u201cyesterday\u201d (changeable via input)\n* Print amount of events found for each type of hunt\n\n(!!!) Higher limits can impact the performance of XSOAR and XDR",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Joerg Stephan",
+    "url": "",
+    "email": "",
+    "created": "2022-04-08T07:28:48Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "johestephan"
+    ]
+}
