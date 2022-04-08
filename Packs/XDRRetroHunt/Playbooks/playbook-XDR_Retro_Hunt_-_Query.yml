@@ -9,7 +9,7 @@ contentitemexportablefields:
     toServerVersion: ""
 id: ce8ab14f-6f17-4ade-899f-b8f13af58ba7
 inputs:
-- description: ""
+- description: "Subplaybook to perform XDR XQL queries for different indicator types"
   key: item
   playbookInputQuery: null
   required: true
