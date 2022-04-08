@@ -68,7 +68,7 @@ def main():
     file_name = args.get('file_name')
     data_profile_name = args.get('data_profile_name')
     snippets = args.get('snippets', '')
-    app_name = args.get('app_name')
+    app_name = args.get('app_name', 'Unknown App')
     user_display_name = args.get('user_display_name')
     question_type = args.get('question_type')
     include_violation_detail = args.get('include_violation_detail')
