@@ -269,6 +269,30 @@ script:
     - contextPath: ThreatActor.analysis
       description: desc.
       type: String
+    - contextPath: ThreatCampaign.display_text
+      description: desc.
+      type: String
+    - contextPath: ThreatCampaign.threat_types
+      description: desc.
+      type: String
+    - contextPath: ThreatCampaign.type
+      description: desc.
+      type: String
+    - contextPath: ThreatCampaign.last_published
+      description: desc.
+      type: String
+    - contextPath: ThreatCampaign.last_modified
+      description: desc.
+      type: String
+    - contextPath: ThreatCampaign.index_timestamp
+      description: desc.
+      type: String
+    - contextPath: ThreatCampaign.description
+      description: desc.
+      type: String
+    - contextPath: ThreatCampaign.analysis
+      description: desc.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String

@@ -12,6 +12,7 @@ IR_URL = 'https://intelgraph.idefense.com/#/node/intelligence_report/view/'
 MALWARE_FAMILY_URL = 'https://intelgraph.idefense.com/#/node/malware_family/view/'
 THREAT_ACTOR_URL = 'https://intelgraph.idefense.com/#/node/threat_actor/view/'
 THREAT_GROUP_URL = 'https://intelgraph.idefense.com/#/node/threat_group/view/'
+THREAT_CAMPAIGN_URL = 'https://intelgraph.idefense.com/#/node/threat_campaign/view/'
 ENDPOINTS = {
     'threatindicator': '/rest/threatindicator',
     'document': '/rest/document',
@@ -431,6 +432,10 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Threat Actor', indicator_value, dbot, analysis_info, 'ThreatActor')
             result_link: str = THREAT_ACTOR_URL + res.get('uuid', '')
+        elif indicator_type.lower() == 'threat_campaign':
+            dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
+            indicator = Common.CustomIndicator('ACTI Threat Actor', indicator_value, dbot, analysis_info, 'ThreatCampaign')
+            result_link: str = THREAT_CAMPAIGN_URL + res.get('uuid', '')
 
         return CommandResults(indicator=indicator,
                           raw_response=res,
