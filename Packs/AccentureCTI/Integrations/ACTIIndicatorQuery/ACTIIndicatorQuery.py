@@ -399,11 +399,11 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             'DbotReputation': dbot_score,
             'ThreatTypes': res.get('threat_types', ''),
             'Type': indicator_type,
-            'LastPublished': str(last_published_format),
-            'LastModified': str(last_modified_format),
-            'IndexTimestamp': str(index_timestamp_format),
+            'LastPublished': last_published,
+            'LastModified': last_modified,
+            'IndexTimestamp': index_timestamp,
             'Severity': res.get('severity', 0),
-            'CreatedOn': str(created_on_format)
+            'CreatedOn': created_on
         }
 
         readableOutput = {
