@@ -75,35 +75,29 @@ def get_log_list(base_url, username, password):
         outputs=context_entry
     )
     return_results(results)
-    
-    
+
+
 def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
                     first_fetch_time: Optional[int]) -> Tuple[Dict[str, datetime], List[dict]]:
     access_token, refresh_token, headers1 = login(base_url, username, password)
-    
     log_list = loglist(base_url, access_token, refresh_token, headers1)
     log_server_id = [e["id"] for e in log_list if e["is_connected"] is True]
     last_fetch = last_run.get('last_fetch', None)
     verify_certificate = not demisto.params().get('insecure', False)
     incidents = []
     max_fetch = demisto.params().get('max_fetch')
-    
     if last_fetch is None:
-        last_fetch = first_fetch_time
-    else:
-        last_fetch = last_fetch
-        
+        last_fetch = first_fetch_time        
     last_fetch_time = datetime.fromtimestamp(last_fetch)
     last_fetch_Format = last_fetch_time.strftime(NCURION_DATE_FORMAT)
     params1 = {"start":f"{last_fetch_Format}","size":max_fetch}
-    
     if len(log_server_id) > 0:
         for i in log_server_id:
-            base_url_log = url + f'/logapi/api/v1/logserver/search/alert/search/{i}'
+            base_url_log = base_url + f'/logapi/api/v1/logserver/search/alert/search/{i}'
             response_log = requests.request("GET", base_url_log, headers=headers1, params=params1, verify=verify_certificate)
             data = response_log.json()
-            if data is not None:
-                for hit in data:
+            if data is not None: 
+                for hit in data: 
                     incident={
                         'name' : hit['alert']['category'] + hit['alert']['signature'],
                         'occured' : hit['@timestamp'],
@@ -111,10 +105,10 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
                     }
                     incidents.append(incident)
     lastes_created_time = cast(int, last_fetch)
-    next_run = {'last_fetch': lastes_created_time}
+    next_run = {'last_fetch' : lastes_created_time}
     logout = json.dumps({
-        "access_token": access_token,
-        "refresh_token": refresh_token
+        "access_token" : access_token,
+        "refresh_token" : refresh_token
     })
     remove_url = base_url + '/napi/api/v1/apikey/remove'
     requests.request("POST", remove_url, headers=headers1, data=logout, verify=verify_certificate)
@@ -129,8 +123,8 @@ def api_log_out(base_url, access_token, refresh_token, headers1):
     remove_url = base_url + '/napi/api/v1/apikey/remove'
     verify_certificate = not demisto.params().get('insecure', False)
     requests.request("POST", remove_url, headers=headers1, data=logout, verify=verify_certificate)
-    
-    
+
+
 def main():
     params = demisto.params()
     base_url = params.get('base_url')
@@ -171,9 +165,8 @@ def main():
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute{demisto.command()}command.\nError:\n{str(e)}')
-        
-        
+
+
 if  __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
 
-    
