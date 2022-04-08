@@ -87,28 +87,28 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
     incidents = []
     max_fetch = demisto.params().get('max_fetch')
     if last_fetch is None:
-        last_fetch = first_fetch_time        
+        last_fetch = first_fetch_time
     last_fetch_time = datetime.fromtimestamp(last_fetch)
     last_fetch_Format = last_fetch_time.strftime(NCURION_DATE_FORMAT)
-    params1 = {"start":f"{last_fetch_Format}","size":max_fetch}
+    params1 = {"start": f"{last_fetch_Format}","size": max_fetch}
     if len(log_server_id) > 0:
         for i in log_server_id:
             base_url_log = base_url + f'/logapi/api/v1/logserver/search/alert/search/{i}'
             response_log = requests.request("GET", base_url_log, headers=headers1, params=params1, verify=verify_certificate)
             data = response_log.json()
-            if data is not None: 
-                for hit in data: 
-                    incident={
-                        'name' : hit['alert']['category'] + hit['alert']['signature'],
-                        'occured' : hit['@timestamp'],
-                        'rawJSON' : json.dumps(hit)
+            if data is not None:
+                for hit in data:
+                    incident = {
+                        'name': hit['alert']['category'] + hit['alert']['signature'],
+                        'occured': hit['@timestamp'],
+                        'rawJSON': json.dumps(hit)
                     }
                     incidents.append(incident)
     lastes_created_time = cast(int, last_fetch)
-    next_run = {'last_fetch' : lastes_created_time}
+    next_run = {'last_fetch': lastes_created_time}
     logout = json.dumps({
-        "access_token" : access_token,
-        "refresh_token" : refresh_token
+        "access_token": access_token,
+        "refresh_token": refresh_token
     })
     remove_url = base_url + '/napi/api/v1/apikey/remove'
     requests.request("POST", remove_url, headers=headers1, data=logout, verify=verify_certificate)
@@ -167,6 +167,5 @@ def main():
         return_error(f'Failed to execute{demisto.command()}command.\nError:\n{str(e)}')
 
 
-if  __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
