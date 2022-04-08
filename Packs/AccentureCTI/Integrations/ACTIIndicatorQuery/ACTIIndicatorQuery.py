@@ -425,19 +425,19 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
 
         if indicator_type.lower() == 'malware_family':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator('ACTI Malware Family', indicator_value, dbot, analysis_info, 'MalwareFamily')
+            indicator = Common.CustomIndicator('ACTI Malware Family', indicator_value, dbot, analysis_info, 'ACTI_MalwareFamily')
             result_link: str = MALWARE_FAMILY_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_group':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator('ACTI Threat Group', indicator_value, dbot, analysis_info, 'ThreatGroup')
+            indicator = Common.CustomIndicator('ACTI Threat Group', indicator_value, dbot, analysis_info, 'ACTI_ThreatGroup')
             result_link: str = THREAT_GROUP_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_actor':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator('ACTI Threat Actor', indicator_value, dbot, analysis_info, 'ThreatActor')
+            indicator = Common.CustomIndicator('ACTI Threat Actor', indicator_value, dbot, analysis_info, 'ACTI_ThreatActor')
             result_link: str = THREAT_ACTOR_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_campaign':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator('ACTI Threat Campaign', indicator_value, dbot, analysis_info, 'ThreatCampaign')
+            indicator = Common.CustomIndicator('ACTI Threat Campaign', indicator_value, dbot, analysis_info, 'ACTI_ThreatCampaign')
             result_link: str = THREAT_CAMPAIGN_URL + res.get('uuid', '')
 
         return CommandResults(indicator=indicator,
