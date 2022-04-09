@@ -100,7 +100,7 @@ def cyble_fetch_taxii(client, method, args):
         temp_list.append(eachone.get('indicator'))
 
     md = tableToMarkdown('Indicator Details:', temp_list,
-                        headers=['name', 'indicator_types', 'pattern', 'modified'])
+                         headers=['name', 'indicator_types', 'pattern', 'modified'])
     command_results = CommandResults(
         readable_output=md,
         outputs_prefix='CybleIntel.Threat',
@@ -128,9 +128,8 @@ def validate_input(args):
         try:
             _start_date = datetime.strptime(args.get('start_date'), date_format)
             _end_date = datetime.strptime(args.get('end_date'), date_format)
-        except Exception as e:
-            raise ValueError(f"Invalid date format received")
-
+        except Exception:
+            raise ValueError("Invalid date format received")
 
         if _start_date > datetime.today():
             raise ValueError(f"Start date must be a date before or equal to {datetime.today().strftime(date_format)}")
@@ -141,10 +140,10 @@ def validate_input(args):
 
         time_format = "%H:%M:%S"
         try:
-            _start_time = datetime.strptime(args.get('start_time', '00:00:00'), time_format).time()
-            _end_time = datetime.strptime(args.get('end_time', '00:00:00'), time_format).time()
-        except Exception as e:
-            raise ValueError(f"Invalid time format received")
+            datetime.strptime(args.get('start_time', '00:00:00'), time_format).time()
+            datetime.strptime(args.get('end_time', '00:00:00'), time_format).time()
+        except Exception:
+            raise ValueError("Invalid time format received")
 
         return None
     except Exception as e:

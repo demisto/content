@@ -393,7 +393,7 @@ def test_idate_validate_input(capfd):
     }
 
     with capfd.disabled():
-        with pytest.raises(ValueError, match=f"Invalid date format received"):
+        with pytest.raises(ValueError, match="Invalid date format received"):
             validate_input(args=args)
 
 
@@ -410,5 +410,5 @@ def test_time_validate_input(capfd):
     }
 
     with capfd.disabled():
-        with pytest.raises(ValueError, match=f"Invalid time format received"):
+        with pytest.raises(ValueError, match="Invalid time format received"):
             validate_input(args=args)
