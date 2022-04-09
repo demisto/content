@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<body>
+<b>From:</b> soc_sender@company.com<br><b>To:</b> end_user@company.com<br><b>CC:</b> cc_user@company.com<br><b>Subject:</b> Test Email #1<br><b>Email Time:</b> 2022-04-06T17:53:46UTC<br><b>Attachments:</b> File1.txt, File2.txt
+<p>Test email body.</p>
+<hr style="width:98%;text-align:center;height:3px;border-width:0;background-color:#cccccc">
+
+<b>From:</b> soc_sender@company.com<br><b>To:</b> end_user@company.com<br><b>CC:</b> cc_user@company.com<br><b>Subject:</b> Test Email #2<br><b>Email Time:</b> 2022-04-06T17:53:46UTC<br><b>Attachments:</b> File1.txt, File2.txt
+<p>Test email body.</p>
+<hr style="width:98%;text-align:center;height:3px;border-width:0;background-color:#cccccc">
+
+<b>From:</b> soc_sender@company.com<br><b>To:</b> end_user@company.com<br><b>CC:</b> cc_user@company.com<br><b>Subject:</b> Test Email #3<br><b>Email Time:</b> 2022-04-06T17:53:46UTC<br><b>Attachments:</b> File1.txt, File2.txt
+<p>Test email body.</p>
+<hr style="width:98%;text-align:center;height:3px;border-width:0;background-color:#cccccc">
+
+
+</body>
+</html>

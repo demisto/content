@@ -370,6 +370,15 @@ def test_main(return_incident_path, expected_return, create_context_called, mock
 
 
 def test_create_thread_context(mocker):
+    """Unit test
+        Given:
+        - all required function arguments are provided
+        When:
+        - creating new context entry to store email thread data
+        Then
+        - validate that function calls demisto.executeCommand() with all arguments and data needed to properly create
+          the required context entry
+    """
     # demisto.executeCommand will be called twice in the tested function - prepare separate responses for each
     def side_effect_function(command, args):
         if command == "getContext":
@@ -395,7 +404,7 @@ def test_create_thread_context(mocker):
     assert EMAIL_THREADS[0]['Contents']['context']['EmailThreads'][3] == call_args.args[1]['arguments']['value']
 
 
-def test_get_email_related_incident_id_1(mocker):
+def test_get_email_related_incident_id_email_in_fields(mocker):
     """
         Given
         - Multiple incidents with the same identifying code
@@ -413,7 +422,7 @@ def test_get_email_related_incident_id_1(mocker):
     assert id == '2'
 
 
-def test_get_email_related_incident_id_2(mocker):
+def test_get_email_related_incident_id_email_in_context(mocker):
     """
         Given
         - An incident with the matching identifying code
@@ -429,8 +438,3 @@ def test_get_email_related_incident_id_2(mocker):
     mocker.patch.object(demisto, 'executeCommand', return_value=EMAIL_THREADS)
     id = get_email_related_incident_id('69433507', 'Test Email 2')
     assert id == '3'
-
-
-def get_executed_at_command(command, arguments, incidents):
-    from CommonServerPython import return_error
-    return_error(f'command={command}, arguments={arguments}, incidents={incidents}')

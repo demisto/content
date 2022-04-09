@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body>
+<b>From:</b> end_user@company.com<br><b>To:</b> soc_sender@company.com<br><b>CC:</b> <br><b>Subject:</b> Re: <87692312> Test Email 4<br><b>Email Time:</b> 2022-02-04T20:58:20UTC<br><b>Attachments:</b> None
+Response from end user to SOC
+
+
+Signature Line
+
+
+
+________________________________
+From: SOC <soc_sender@company.com>
+Sent: Friday, February 4, 2022 3:56 PM
+To: End User <end_user@company.com>
+Subject: <87692312> Test Email 4
+
+Outbound test message from XSOAR to User.
+
+<hr style="width:98%;text-align:center;height:3px;border-width:0;background-color:#cccccc">
+
+<b>From:</b> soc_sender@company.com<br><b>To:</b> end_user@company.com<br><b>CC:</b> <br><b>Subject:</b> <87692312> Test Email 4<br><b>Email Time:</b> 2022-02-04T20:56:53UTC<br><b>Attachments:</b> None
+Outbound test message from XSOAR to User.
+<hr style="width:98%;text-align:center;height:3px;border-width:0;background-color:#cccccc">
+
+
+</body>
+</html>

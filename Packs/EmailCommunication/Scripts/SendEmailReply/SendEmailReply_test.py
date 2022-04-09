@@ -162,30 +162,37 @@ def test_get_email_cc(current_cc, additional_cc, excepted):
 
 
 def test_create_thread_context(mocker):
+    """Unit test
+        Given:
+        - all required function arguments are provided
+        When:
+        - creating new context entry to store email thread data
+        Then
+        - validate that function calls appendContext() with all arguments and data needed to properly create
+          the required context entry
+    """
     email_threads = util_load_json('test_data/email_threads.json')
-    # demisto.executeCommand will be called twice in the tested function - prepare separate responses for each
 
     def side_effect_function(command, args):
         if command == "getContext":
             return email_threads
-        elif command == "executeCommandAt":
-            return True
 
     from SendEmailReply import create_thread_context
+    import SendEmailReply
 
     # Email data to use both for function input and function output validation
     test_email = email_threads[0]
     # Mock function to get current time string to match the expected result
     mocker.patch('SendEmailReply.get_utc_now',
                  return_value=datetime.strptime(test_email['MessageTime'], "%Y-%m-%dT%H:%M:%SUTC"))
-
-    execute_command_mocker = mocker.patch.object(demisto, 'executeCommand', side_effect=side_effect_function)
+    appendContext_mocker = mocker.patch.object(SendEmailReply, "appendContext", return_value=True)
     create_thread_context(test_email['EmailCommsThreadId'], test_email['EmailCC'], test_email['EmailBCC'],
                           test_email['EmailBody'], test_email['EmailFrom'], test_email['EmailHTML'],
                           test_email['MessageID'], test_email['EmailReceived'], test_email['EmailReplyTo'],
-                          test_email['EmailSubject'], test_email['EmailTo'], '123', ['None'])
-    call_args = execute_command_mocker.call_args
-    assert test_email == call_args.args[1]['arguments']['value']
+                          test_email['EmailSubject'], test_email['EmailTo'], '123', 'None')
+    call_args = appendContext_mocker.call_args
+    assert "EmailThreads" == call_args.args[0]
+    assert test_email == call_args.args[1]
 
 
 @pytest.mark.parametrize(
@@ -196,23 +203,47 @@ def test_create_thread_context(mocker):
      ('false', 'list')]
 )
 def test_main(new_thread, thread_input_type, mocker):
-    """Unit test
-    Given
-     - new_thread = 'n/a'
-     - new_thread = 'true'
-     - new_thread = 'false'
-    When
-        Preparing email message to send
-    Then
-     - validate that logic is followed as expected
-     - for case with new_thread = 'false', validate proper email details are pulled from context
+    """
+    Unit test scenario - new_thread = 'n/a', thread_input_type = ''
+        Given
+         - Script is called to send an email message
+        When
+         - new_thread = 'n/a', indicating use by the generic 'Email Communication' layout workflow replying to message
+        Then
+         - validate that the new email is constructed and the send_reply function is called successfully
+    Unit test scenario - new_thread = 'true', thread_input_type = ''
+        Given
+         - Script is called to send an email message
+        When
+         - new_thread = 'true', indicating use by incident types besides 'Email Communication' and sending a
+         first-contact outbound email message
+        Then
+         - validate that the new email is constructed and the send_new_email function is called successfully
+    Unit test scenario - new_thread = 'false', thread_input_type = 'dict'
+        Given
+         - Script is called to send an email message
+        When
+         - new_thread = 'false', indicating use by incident types besides 'Email Communication' and sending a
+         reply to an existing email chain
+         - 'EmailThreads' context key is type dict, indicating an attempt to reply to an email chain that has never
+         received a reply from the end user and we must send a new email message rather than reply to one
+        Then
+         - validate that the new email is constructed and resend_first_contact is called successfully
+    Unit test scenario - new_thread = 'false', thread_input_type = 'list'
+        Given
+         - Script is called to send an email message
+        When
+         - new_thread = 'false', indicating use by incident types besides 'Email Communication' and sending a
+         reply to an existing email chain
+         - 'EmailThreads' context key is type list, indicating there is at least one reply to the first-contact email
+        Then
+         - validate that the new email is constructed, re-using correct items from the existing email thread entries
+         - validate that send_reply is called successfully
+         - validate that create_thread_context is successfully called
     """
     def executeCommand_side_effects(command, args):
         if command == "setIncident":
             return True
-
-    def return_results_side_effects(results):
-        return True
 
     import SendEmailReply
     from SendEmailReply import main
