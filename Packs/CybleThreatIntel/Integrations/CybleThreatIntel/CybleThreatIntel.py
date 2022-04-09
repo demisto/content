@@ -95,13 +95,61 @@ def cyble_fetch_taxii(client, method, args):
     else:
         result = {"error": "Invalid Token!!"}
 
+    temp_list = []
+    for eachone in result.get('result', []):
+        temp_list.append(eachone.get('indicator'))
+
+    md = tableToMarkdown('Indicator Details:', temp_list,
+                        headers=['name', 'indicator_types', 'pattern', 'modified'])
     command_results = CommandResults(
+        readable_output=md,
         outputs_prefix='CybleIntel.Threat',
         outputs_key_field='details',
         outputs=result
     )
 
     return command_results
+
+
+def validate_input(args):
+    """
+    Check if the input params for the command are valid. Return an error if any
+    :param args: dictionary of input params
+    """
+    try:
+        # we assume all the params to be non-empty, as cortex ensures it
+        if int(args.get('page', '1')) <= 0:
+            raise ValueError(f"Parameter should be positive number, page: {arg_to_number(args.get('page'))}'")
+
+        if int(args.get('limit', '1')) <= 0 or int(args.get('limit', '1')) > 20:
+            raise ValueError(f"Limit should be positive number upto 20, limit: {arg_to_number(args.get('limit', 0))}")
+
+        date_format = "%Y-%m-%d"
+        try:
+            _start_date = datetime.strptime(args.get('start_date'), date_format)
+            _end_date = datetime.strptime(args.get('end_date'), date_format)
+        except Exception as e:
+            raise ValueError(f"Invalid date format received")
+
+
+        if _start_date > datetime.today():
+            raise ValueError(f"Start date must be a date before or equal to {datetime.today().strftime(date_format)}")
+        if _end_date > datetime.today():
+            raise ValueError(f"End date must be a date before or equal to {datetime.today().strftime(date_format)}")
+        if _start_date > _end_date:
+            raise ValueError(f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}")
+
+        time_format = "%H:%M:%S"
+        try:
+            _start_time = datetime.strptime(args.get('start_time', '00:00:00'), time_format).time()
+            _end_time = datetime.strptime(args.get('end_time', '00:00:00'), time_format).time()
+        except Exception as e:
+            raise ValueError(f"Invalid time format received")
+
+        return None
+    except Exception as e:
+        demisto.error("Exception with validating inputs [{}]".format(e))
+        raise e
 
 
 def main():
@@ -135,6 +183,7 @@ def main():
 
         elif demisto.command() == 'cyble-vision-fetch-taxii':
             # fetch events using taxii service
+            validate_input(args)
             return_results(cyble_fetch_taxii(client, "POST", args))
 
     # Log exceptions
@@ -142,5 +191,5 @@ def main():
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

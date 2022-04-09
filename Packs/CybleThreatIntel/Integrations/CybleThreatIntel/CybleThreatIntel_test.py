@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import json
 import pytest
 
@@ -133,7 +134,9 @@ def test_cyble_vision_fetch_taxii(requests_mock, page, limit):
         "page": page,
         "limit": limit,
         "start_date": "2022-02-22",
-        "end_date": "2022-02-22"
+        "end_date": "2022-02-22",
+        "start_time": "00:00:00",
+        "end_time": "00:00:00",
     }
 
     response = cyble_fetch_taxii(client=client, method='POST', args=args).outputs
@@ -305,3 +308,107 @@ def test_failure_cyble_fetch_taxii(requests_mock):
 
     # each result entry is a list
     assert response['error'] == 'Invalid Token!!'
+
+
+def test_page_validate_input(capfd):
+    from CybleThreatIntel import validate_input
+
+    args = {
+        'start_date': datetime.today().strftime('%Y-%m-%d'),
+        'end_date': datetime.today().strftime('%Y-%m-%d'),
+        'page': '-1',
+        'limit': '1',
+    }
+    with capfd.disabled():
+        with pytest.raises(ValueError, match=f"Parameter should be positive number, page: {args.get('page')}"):
+            validate_input(args=args)
+
+
+def test_limit_validate_input(capfd):
+    from CybleThreatIntel import validate_input
+
+    args = {
+        'start_date': datetime.today().strftime('%Y-%m-%d'),
+        'end_date': datetime.today().strftime('%Y-%m-%d'),
+        'page': '1',
+        'limit': '40',
+    }
+    with capfd.disabled():
+        with pytest.raises(ValueError, match=f"Limit should be positive number upto 20, limit: {args.get('limit', 0)}"):
+            validate_input(args=args)
+
+
+def test_sdate_validate_input(capfd):
+    from CybleThreatIntel import validate_input
+
+    args = {
+        'start_date': (datetime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
+        'end_date': datetime.today().strftime('%Y-%m-%d'),
+        'page': '1',
+        'limit': '1'
+    }
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match=f"Start date must be a date before or equal to {datetime.today().strftime('%Y-%m-%d')}"):
+            validate_input(args=args)
+
+
+def test_edate_validate_input(capfd):
+    from CybleThreatIntel import validate_input
+
+    args = {
+        'start_date': datetime.today().strftime('%Y-%m-%d'),
+        'end_date': (datetime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
+        'page': '1',
+        'limit': '1'
+    }
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match=f"End date must be a date before or equal to {datetime.today().strftime('%Y-%m-%d')}"):
+            validate_input(args=args)
+
+
+def test_date_validate_input(capfd):
+    from CybleThreatIntel import validate_input
+
+    args = {
+        'start_date': datetime.today().strftime('%Y-%m-%d'),
+        'end_date': (datetime.today() - timedelta(days=4)).strftime('%Y-%m-%d'),
+        'page': '1',
+        'limit': '1'
+    }
+
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"):
+            validate_input(args=args)
+
+
+def test_idate_validate_input(capfd):
+    from CybleThreatIntel import validate_input
+
+    args = {
+        'start_date': '2001-18-12',
+        'end_date': datetime.today().strftime('%Y-%m-%d')
+    }
+
+    with capfd.disabled():
+        with pytest.raises(ValueError, match=f"Invalid date format received"):
+            validate_input(args=args)
+
+
+def test_time_validate_input(capfd):
+    from CybleThreatIntel import validate_input
+
+    args = {
+        'start_date': datetime.today().strftime('%Y-%m-%d'),
+        'end_date': datetime.today().strftime('%Y-%m-%d'),
+        'page': '1',
+        'limit': '1',
+        'start_time': '12:34:23',
+        'end_time': '16:83:45'
+    }
+
+    with capfd.disabled():
+        with pytest.raises(ValueError, match=f"Invalid time format received"):
+            validate_input(args=args)
