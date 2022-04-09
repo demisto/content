@@ -1,0 +1,42 @@
+{
+    "name": "file_analysis_by_hash",
+    "execute": "response_raw = CimTrak.file_analysis_by_hash_command(client,{'Hash':'SHA256:B47DD22BFE1E5554448262D0C8E6555496B1AA6685AF50F49A12AD82D1109769'})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.fileAnalysisByHash",
+            "reply": {
+                "results": [
+                    {
+                        "analysisEngine": "VirusTotal",
+                        "analysisSuccess": true,
+                        "analysisResults": {
+                            "response_code": 0,
+                            "resource": "B47DD22BFE1E5554448262D0C8E6555496B1AA6685AF50F49A12AD82D1109769",
+                            "verbose_msg": "The requested resource is not among the finished, queued or pending scans"
+                        }
+                    }
+                ],
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": []
+            }
+        }
+    ],
+    "response": {
+        "results": [
+            {
+                "analysisEngine": "VirusTotal",
+                "analysisSuccess": true,
+                "analysisResults": {
+                    "response_code": 0,
+                    "resource": "B47DD22BFE1E5554448262D0C8E6555496B1AA6685AF50F49A12AD82D1109769",
+                    "verbose_msg": "The requested resource is not among the finished, queued or pending scans"
+                }
+            }
+        ],
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": ""
+    }
+}
