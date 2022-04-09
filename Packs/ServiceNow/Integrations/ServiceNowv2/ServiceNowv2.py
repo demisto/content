@@ -1,9 +1,10 @@
+import shutil
+from typing import Callable, Dict, Iterable, List, Tuple
 from urllib import parse
 
-import shutil
-from typing import List, Tuple, Dict, Callable, Iterable
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-from CommonServerPython import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -573,6 +574,25 @@ class Client(BaseClient):
                                                                   headers=oauth_params.get('headers', ''))
         else:
             self._auth = (self._username, self._password)
+
+    def generic_request(self, method: str, path: str, body: Optional[Dict] = None, headers: Optional[Dict] = None,
+                        sc_api: bool = False, cr_api: bool = False):
+        """Generic request to ServiceNow api.
+
+        Args:
+            (Required Arguments)
+            method (str) required: The HTTP method, for example, GET, POST, and so on.
+            path (str) required: The API endpoint.
+            (Optional Arguments)
+            body (dict): The body to send in a 'POST' request. Default is None.
+            header (dict): requests headers. Default is None.
+            sc_api: Whether to send the request to the Service Catalog API
+            cr_api: Whether to send the request to the Change Request REST API
+
+        Returns:
+            Resposne object or Exception
+        """
+        return self.send_request(path, method, body, headers=headers, sc_api=sc_api, cr_api=cr_api)
 
     def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
                      headers: dict = None, file=None, sc_api: bool = False, cr_api: bool = False):
@@ -2029,6 +2049,11 @@ def fetch_incidents(client: Client) -> list:
 
         severity = severity_map.get(result.get('severity', ''), 0)
 
+        try:
+            parse_dict_ticket_fields(client, result)
+        except Exception:
+            pass
+
         file_names = []
         if client.get_attachments:
             file_entries = client.get_ticket_attachment_entries(result.get('sys_id', ''))
@@ -2150,6 +2175,31 @@ def check_assigned_to_field(client: Client, assigned_to: dict) -> Optional[str]:
     return ''
 
 
+def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
+
+    # Parse user dict to email
+    assigned_to = ticket.get('assigned_to', {})
+    caller = ticket.get('caller_id', {})
+    assignment_group = ticket.get('assignment_group', {})
+
+    if assignment_group:
+        group_result = client.get('sys_user_group', assignment_group.get('value'))
+        group = group_result.get('result', {})
+        group_name = group.get('name')
+        ticket['assignment_group'] = group_name
+
+    user_assigned = check_assigned_to_field(client, assigned_to)
+    ticket['assigned_to'] = user_assigned
+
+    if caller:
+        user_result = client.get('sys_user', caller.get('value'))
+        user = user_result.get('result', {})
+        user_email = user.get('email')
+        ticket['caller_id'] = user_email
+
+    return ticket
+
+
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
     """
     get-remote-data command: Returns an updated incident and entries
@@ -2202,6 +2252,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     else:
         demisto.debug(f'ticket is updated: {ticket}')
 
+    parse_dict_ticket_fields(client, ticket)
+
     # get latest comments and files
     entries = []
     file_entries = client.get_ticket_attachment_entries(ticket_id, datetime.fromtimestamp(last_update))  # type: ignore
@@ -2229,33 +2281,14 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
             entries.append({
                 'Type': note.get('type'),
                 'Category': note.get('category'),
-                'Contents': note.get('value'),
+                'Contents': f"Type: {note.get('element')}\n\n{note.get('value')}",
                 'ContentsFormat': note.get('format'),
                 'Tags': note.get('tags'),
                 'Note': True,
                 'EntryContext': comments_context
             })
-    # Parse user dict to email
-    assigned_to = ticket.get('assigned_to', {})
-    caller = ticket.get('caller_id', {})
-    assignment_group = ticket.get('assignment_group', {})
 
-    if assignment_group:
-        group_result = client.get('sys_user_group', assignment_group.get('value'))
-        group = group_result.get('result', {})
-        group_name = group.get('name')
-        ticket['assignment_group'] = group_name
-
-    user_assigned = check_assigned_to_field(client, assigned_to)
-    ticket['assigned_to'] = user_assigned
-
-    if caller:
-        user_result = client.get('sys_user', caller.get('value'))
-        user = user_result.get('result', {})
-        user_email = user.get('email')
-        ticket['caller_id'] = user_email
-
-    if ticket.get('resolved_by') or ticket.get('closed_at'):
+    if ticket.get('closed_at'):
         if params.get('close_incident'):
             demisto.debug(f'ticket is closed: {ticket}')
             entries.append({
@@ -2372,7 +2405,9 @@ def get_modified_remote_data_command(
         mirror_limit: str = '100',
 ) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'}).strftime('%Y-%m-%d %H:%M:%S')
+    parsed_date = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
+    assert parsed_date is not None, f'could not parse {remote_args.last_update}'
+    last_update = parsed_date.strftime('%Y-%m-%d %H:%M:%S')
 
     demisto.debug(f'Running get-modified-remote-data command. Last update is: {last_update}')
 
@@ -2560,6 +2595,45 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
     return item
 
 
+def generic_api_call_command(client: Client, args: Dict) -> Union[str, CommandResults]:
+    """make a call to ServiceNow api
+    Args:
+        (Required Arguments)
+        method (str) required: The HTTP method, for example, GET, POST, and so on.
+        url_suffix (str) required: The API endpoint.
+        (Optional Arguments)
+        body (dict): The body to send in a 'POST' request. Default is None.
+        header (dict): requests headers. Default is None.
+
+    Return:
+        Generic Api Response.
+    """
+    methods = ("GET", "POST", "PATCH", "DELETE")
+    method = str(args.get("method"))
+    path = str(args.get("path"))
+    headers = json.loads(str(args.get("headers", {})))
+    body: Dict = json.loads(str(args.get("body", {})))
+    sc_api: bool = argToBoolean(args.get("sc_api", False))
+    cr_api: bool = argToBoolean(args.get("cr_api", False))
+
+    if method.upper() not in methods:
+        return f"{method} method not supported.\nTry something from {', '.join(methods)}"
+
+    response = None
+    response = client.generic_request(method=method, path=path, body=body, headers=headers, sc_api=sc_api, cr_api=cr_api)
+
+    if response is not None:
+        resp = response
+        human_readable: str = f"Request for {method} method is successful"
+        return CommandResults(
+            outputs_prefix="ServiceNow.Generic.Response",
+            outputs=resp,
+            readable_output=human_readable,
+        )
+
+    return f"Request for {method} method is not successful"
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -2664,6 +2738,8 @@ def main():
             demisto.incidents(incidents)
         elif command == 'servicenow-get-ticket':
             demisto.results(get_ticket_command(client, args))
+        elif command == "servicenow-generic-api-call":
+            return_results(generic_api_call_command(client, args))
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
         elif command == 'update-remote-system':

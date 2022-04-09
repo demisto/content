@@ -27,7 +27,8 @@ AZURE_MANAGEMENT_RESOURCE = 'https://management.azure.com'
 
 class Client:
     def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
-                 subscription_id, resource_group_name, workspace_name, verify, proxy):
+                 subscription_id, resource_group_name, workspace_name, verify, proxy, certificate_thumbprint,
+                 private_key):
 
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
@@ -50,7 +51,9 @@ class Client:
             auth_code=auth_code,
             ok_codes=(200, 204, 400, 401, 403, 404, 409),
             multi_resource=True,
-            resources=[AZURE_MANAGEMENT_RESOURCE, LOG_ANALYTICS_RESOURCE]
+            resources=[AZURE_MANAGEMENT_RESOURCE, LOG_ANALYTICS_RESOURCE],
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
@@ -312,19 +315,32 @@ def main():
     params = demisto.params()
 
     LOG(f'Command being called is {demisto.command()}')
+
     try:
+        self_deployed = params.get('self_deployed', False)
+        enc_key = params.get('enc_key')
+        certificate_thumbprint = params.get('certificate_thumbprint')
+        private_key = params.get('private_key')
+        if not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+
         client = Client(
-            self_deployed=params.get('self_deployed', False),
+            self_deployed=self_deployed,
             auth_and_token_url=params.get('auth_id'),
             refresh_token=params.get('refresh_token'),
-            enc_key=params.get('enc_key'),
+            enc_key=enc_key,
             redirect_uri=params.get('redirect_uri', ''),
             auth_code=params.get('auth_code'),
             subscription_id=params.get('subscriptionID'),
             resource_group_name=params.get('resourceGroupName'),
             workspace_name=params.get('workspaceName'),
             verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False)
+            proxy=params.get('proxy', False),
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
         )
 
         commands = {
