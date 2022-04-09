@@ -1,0 +1,80 @@
+{
+	"id": "caseadoption_wizard_sample",
+	"name": "Cade Adoption Wizard Sample",
+	"description": "test",
+	"readonly": true,
+	"system": true,
+	"dependency_integrations": [
+		{
+			"category": "Sandboxes",
+			"minimum_required": 1,
+			"integrations": [
+				{
+					"name": "Joe Security",
+					"pack": "Pack name that include Joe Security"
+				}
+			]
+		},
+		{
+			"category": "Endpoints",
+			"minimum_required": 0,
+			"integrations": [
+				{
+					"name": "XDR",
+					"pack": "Pack name that include XDR"
+				},{
+					"name": "CrowdStrike",
+					"pack": "Pack name that include CrowdStrike"
+				}
+			]
+		}
+	],
+	"wizard": {
+		"fetching_integrations": [
+			{
+				"action": {
+					"existing": "should contain the manual changes the client needs to perform to update integration",
+					"new": "something regarding new"
+				},
+				"integration": "activedir-login",
+				"description": "Setup activedir-login integration to work with the Malware use case"
+			},
+			{
+				"action": {
+					"existing": "should contain the manual changes the client needs to perform to update integration",
+					"new": "something regarding new"
+				},
+				"integration": "CrowdStrike",
+				"description": "Setup Crowdstrike integration to work with the Malware use case"
+			}
+		],
+		"set_playbook": [{
+					"name": "Generic Malware Playbook",
+					"link_to_integrations": "XDR1"
+			},{
+					"name": "XDR Malware Playbook",
+					"link_to_integration": "CrowdStrike"
+			}],
+		"supporting_integrations": [
+			{
+				"action": {
+					"existing": "should contain the manual changes the client needs to perform to update integration",
+					"new": "something regarding new"
+				},
+				"integration": "Wildfire",
+				"description": "some bla bla"
+			},
+			{
+				"action": {
+					"existing": "should contain the manual changes the client needs to perform to update integration",
+					"new": "something regarding new"
+				},
+				"integration": "EWS",
+				"description": "some bla bla"
+			}
+		],
+		"next": {
+			"turn_on": {}
+		}
+	}
+}

@@ -1586,6 +1586,7 @@ class Pack(object):
                 PackFolders.LISTS.value: "list",
                 PackFolders.PREPROCESS_RULES.value: "preprocessrule",
                 PackFolders.JOBS.value: "job",
+                PackFolders.CASE_ADOPTION.value: "caseadoption"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -1796,6 +1797,13 @@ class Pack(object):
                             # note that `name` may technically be blank, but shouldn't pass validations
                             'name': content_item.get('name', ''),
                             'details': content_item.get('details', ''),
+                        })
+
+                    elif current_directory == PackFolders.CASE_ADOPTION.value:
+                        folder_collected_items.append({
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'details': content_item.get('details', '')
                         })
 
                 if current_directory in PackFolders.pack_displayed_items():
