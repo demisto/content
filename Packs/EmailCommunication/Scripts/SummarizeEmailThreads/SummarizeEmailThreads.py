@@ -1,6 +1,14 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+no_entries_message = """<!DOCTYPE html>
+<html>
+<body>
+<h3>This Incident does not contain any email threads yet.</h3>
+</body>
+</html>
+"""
+
 
 def fetch_email_threads(incident_id):
     """Fetch all Email Threads stored in the current incident context
@@ -34,39 +42,39 @@ def format_threads(email_threads):
         md (str): Markdown formatted table
     """
     try:
-        thread_summary_md = []
+        thread_summary_rows = {}
         for thread_entry in email_threads:
-            # Loop through thread entries.  'EmailCommsThreadNumber' is indexed from 0 so we can use it for list indexing
+            # Loop through thread entries.
             # Trim off thread ID code for readability
-            thread_number = thread_entry['EmailCommsThreadNumber']
+            thread_number = int(thread_entry['EmailCommsThreadNumber'])
             email_original_subject = thread_entry['EmailSubject'].split('<')[-1].split('>')[1].strip()
             cc_addresses = thread_entry['EmailCC']
             bcc_addresses = thread_entry['EmailBCC']
             recipients = thread_entry['EmailTo']
 
-            if 0 <= int(thread_number) < len(thread_summary_md):
+            if thread_number in thread_summary_rows:
                 # Table row already exists for this thread - just append recipients, if needed
-                thread_recipients = thread_summary_md[int(thread_number)]['Recipients']
-                thread_cc = thread_summary_md[int(thread_number)]['CC']
-                thread_bcc = thread_summary_md[int(thread_number)]['BCC']
+                thread_recipients = thread_summary_rows[thread_number]['Recipients']
+                thread_cc = thread_summary_rows[thread_number]['CC']
+                thread_bcc = thread_summary_rows[thread_number]['BCC']
 
                 for recipient in recipients.split(","):
                     if recipient not in thread_recipients:
-                        thread_summary_md[int(thread_number)]['Recipients'] += f', {recipient}'
+                        thread_summary_rows[thread_number]['Recipients'] += f', {recipient}'
 
                 if cc_addresses and len(cc_addresses) > 0:
                     for cc_address in cc_addresses.split(","):
                         if cc_address not in thread_cc and len(thread_cc) == 0:
-                            thread_summary_md[int(thread_number)]['CC'] = cc_address
+                            thread_summary_rows[thread_number]['CC'] = cc_address
                         elif cc_address not in thread_cc:
-                            thread_summary_md[int(thread_number)]['CC'] += f', {cc_address}'
+                            thread_summary_rows[thread_number]['CC'] += f', {cc_address}'
 
                 if bcc_addresses and len(bcc_addresses) > 0:
                     for bcc_address in bcc_addresses.split(","):
                         if bcc_address not in thread_bcc and len(thread_bcc) == 0:
-                            thread_summary_md[int(thread_number)]['BCC'] = bcc_address
+                            thread_summary_rows[thread_number]['BCC'] = bcc_address
                         elif bcc_address not in thread_bcc:
-                            thread_summary_md[int(thread_number)]['BCC'] += f', {bcc_address}'
+                            thread_summary_rows[thread_number]['BCC'] += f', {bcc_address}'
             else:
                 table_row = {
                     'Thread Number': thread_number,
@@ -75,11 +83,14 @@ def format_threads(email_threads):
                     'CC': cc_addresses,
                     'BCC': bcc_addresses
                 }
-                thread_summary_md.append(table_row)
+                thread_summary_rows[thread_number] = table_row
+
+        # Convert dict of dict into list of dicts for MD formatting
+        thread_summary_table = [entry for entry in thread_summary_rows.values()]
 
         table_name = 'Email Thread List'
         table_headers = ['Thread Number', 'Subject', 'Recipients', 'CC', 'BCC']
-        md = tableToMarkdown(name=table_name, t=thread_summary_md, headers=table_headers)
+        md = tableToMarkdown(name=table_name, t=thread_summary_table, headers=table_headers)
         return md
 
     except Exception as e:
@@ -92,21 +103,20 @@ def main():
 
     email_threads = fetch_email_threads(incident_id)
     if email_threads:
-        thread_summary_md = format_threads(email_threads)
+        thread_summary_rows = format_threads(email_threads)
     else:
-        return_error('This incident does not contain any email threads yet.')
-        demisto.results({
-            'ContentsFormat': EntryFormat.TEXT,
+        return_results({
+            'ContentsFormat': EntryFormat.HTML,
             'Type': EntryType.NOTE,
-            'Contents': 'No threads present',
-            'HumanReadable': 'No threads present'
+            'Contents': no_entries_message
         })
+        return None
 
     demisto.results({
         'ContentsFormat': EntryFormat.TABLE,
         'Type': EntryType.NOTE,
-        'Contents': thread_summary_md,
-        'HumanReadable': thread_summary_md
+        'Contents': thread_summary_rows,
+        'HumanReadable': thread_summary_rows
     })
 
 

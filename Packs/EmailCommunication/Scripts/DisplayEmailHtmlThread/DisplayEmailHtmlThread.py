@@ -3,30 +3,16 @@ from CommonServerPython import *  # noqa: F401
 import re
 
 
-def get_entry_id_list(attachments, files):
-    """Get the email attachments and create entry id list.
-    Args:
-        attachments (list): The attachments of the email.
-        files (list): The uploaded files in the context.
-    Returns:
-        list. Attachments entries ids list.
-    """
-    if not (attachments and files):
-        return []
-
-    entry_id_list = []
-    files = [files] if not isinstance(files, list) else files
-    for attachment in attachments:
-        attachment_name = attachment.get('name', '')
-        for file in files:
-            if attachment_name == file.get('Name'):
-                entry_id_list.append((attachment_name, file.get('EntryID')))
-    demisto.info(f'\n\n idlist \n\n{entry_id_list}')
-    return entry_id_list
+no_entries_message = """<!DOCTYPE html>
+<html>
+<body>
+<h3>This Incident does not contain any email threads yet.</h3>
+</body>
+</html>
+"""
 
 
-def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, email_time, attachments,
-                    attachment_names):
+def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, email_time, attachment_names):
     """Set the email reply from the given details.
     Args:
         email_from: The email author mail.
@@ -35,7 +21,6 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, em
         email_subject: The email subject.
         html_body: The email HTML body.
         email_time: The time the email was received
-        attachments: List of attachment entries
         attachment_names: String of attachment names
     Returns:
         str. Email reply.
@@ -44,9 +29,6 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, em
     single_reply = f'<html><body><b>From:</b> {email_from}<br><b>To:</b> {email_to}<br><b>CC:</b> {email_cc}<br>' \
                    f'<b>Subject:</b> {email_subject}<br><b>Email Time:</b> {email_time}<br>' \
                    f'<b>Attachments:</b> {attachment_names}</body></html>'
-    if attachments:
-        attachment_names = [attachment.get('name', '') for attachment in attachments]
-        single_reply += f'Attachments: {attachment_names}\n'
 
     single_reply += f'\n{html_body}\n<hr style="width:98%;text-align:center;height:3px;border-width:0;' \
                     f'background-color:#cccccc">\n\n'
@@ -76,12 +58,17 @@ def html_cleanup(full_thread_html):
 def main():
     incident = demisto.incident()
     custom_fields = incident.get('CustomFields')
-    thread_number = custom_fields.get('emailselectedthread')
+    thread_number = custom_fields.get('emailselectedthread', 0)
     incident_context = demisto.context()
     email_threads = incident_context.get('EmailThreads', {})
 
     if len(email_threads) == 0:
-        return_error('This incident does not contain any email threads yet.')
+        return_results({
+            'ContentsFormat': EntryFormat.HTML,
+            'Type': EntryType.NOTE,
+            'Contents': no_entries_message
+        })
+        return None
 
     if isinstance(email_threads, dict):
         email_threads = [email_threads]
@@ -105,18 +92,16 @@ def main():
             }
             thread_items.append(thread_dict)
 
-    attachments = None  # incident.get('attachment', {})
-
     if thread_exists:
         # Append all messages together, with the most recent on top
         for thread in reversed(thread_items):
-            email_reply = set_email_reply(thread['email_from'], thread['email_to'], thread['email_cc'],
-                                          thread['email_subject'], thread['email_html'], thread['email_time'],
-                                          attachments, thread['email_attachments'])
+            email_reply = set_email_reply(thread.get('email_from', None), thread.get('email_to', None),
+                                          thread.get('email_cc', None), thread.get('email_subject', None),
+                                          thread.get('email_html', None), thread.get('email_time', None),
+                                          thread.get('email_attachments', None))
             full_thread_html += email_reply
 
-        final_html_result = html_cleanup(full_thread_html
-                                         )
+        final_html_result = html_cleanup(full_thread_html)
         return_results({
             'ContentsFormat': EntryFormat.HTML,
             'Type': EntryType.NOTE,

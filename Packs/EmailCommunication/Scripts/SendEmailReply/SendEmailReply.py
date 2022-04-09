@@ -165,15 +165,13 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
             'EmailReplyTo': email_replyto,
             'EmailSubject': email_subject,
             'EmailTo': email_to,
-            'EmailAttachments': f'{new_attachment_names}',
+            'EmailAttachments': new_attachment_names,
             'MessageDirection': 'outbound',
             'MessageTime': get_utc_now().strftime("%Y-%m-%dT%H:%M:%SUTC")
         }
         # Add email message to context key
         try:
-            demisto.executeCommand('executeCommandAt', {
-                'command': 'Set', 'incidents': incident_id, 'arguments':
-                    {'key': 'EmailThreads', 'value': email_message, 'append': 'true'}})
+            appendContext('EmailThreads', email_message, False)
         except Exception as e:
             return_error(f"Failed to append new email to context of incident {incident_id}. Reason: {e}")
     except Exception as e:
@@ -595,9 +593,9 @@ def main():
     email_selected_thread = custom_fields.get('emailselectedthread')
 
     if new_email_attachments:
-        new_attachment_names = [attachment.get('name', '') for attachment in new_email_attachments]
+        new_attachment_names = ', '.join([attachment.get('name', '') for attachment in new_email_attachments])
     else:
-        new_attachment_names = ["None"]
+        new_attachment_names = 'None'
 
     if new_thread == 'n/a':
         # Default action - Use Incident fields to construct & send email reply.
