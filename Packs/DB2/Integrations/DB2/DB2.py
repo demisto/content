@@ -356,7 +356,7 @@ def test_module(client: Client, *_) -> str:
     return "ok"
 
 
-def main():
+def main():  # pragma: no cover
     """main function, parses params and runs command functions"""
 
     params = demisto.params()
