@@ -309,7 +309,7 @@ def fetch_incidents(client, last_run: Dict[str, int], first_fetch_time: Optional
         'offset': last_fetch
     }
 
-    alerts = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-events'])
+    alerts = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-non-compliance'])
 
     if alerts:
         for alert in alerts.outputs:
