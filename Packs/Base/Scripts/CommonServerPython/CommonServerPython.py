@@ -9722,7 +9722,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
 
     xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
     xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
-    xsiam_url = f'https://api-{xsiam_domain}'
+    xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
     headers = {
         'authorization': xsiam_api_token,
         'format': data_format,

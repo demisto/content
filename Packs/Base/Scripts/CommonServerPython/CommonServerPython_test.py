@@ -7151,7 +7151,7 @@ class TestSendEventsToXSIAMTest:
     test_data = events_dict
 
     @staticmethod
-    def get_license_custom_field_mock(arg: str):
+    def get_license_custom_field_mock(arg):
         if 'token' in arg:
             return "TOKEN"
         elif 'url' in arg:
