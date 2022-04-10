@@ -55,22 +55,18 @@ class Client(BaseClient):
         """
         if param['file_from_zip'] == '':
             payload = {'metafields': '{ "data": { "environment":' + param['environment'] + ', "work_path":' + param[
-                'work_path'] + ', "timeout":' + param['timeout'] + ', '
-                                                                   '"mouse_simulation": ' + param[
+                'work_path'] + ', "timeout":' + param['timeout'] + ', "mouse_simulation": ' + param[
                                          'mouse_simulation'] + ', "config_extractor": ' + param[
                                          'config_extractor'] + ', "https_inspection": ' + param[
-                                         'https_inspection'] + ', '
-                                                               '"full_memory_dump": ' + param[
+                                         'https_inspection'] + ', "full_memory_dump": ' + param[
                                          'full_memory_dump'] + ', "enable_net": ' + param['enable_net'] + ' } }',
                        'isPublic': '{ "data": ' + param['isPublic'] + ' }'}
         else:
             payload = {'metafields': '{ "data": { "environment":' + param['environment'] + ', "work_path":"' + param[
-                'work_path'] + '", "timeout":' + param['timeout'] + ', '
-                                                                    '"mouse_simulation": ' + param[
+                'work_path'] + '", "timeout":' + param['timeout'] + ', "mouse_simulation": ' + param[
                                          'mouse_simulation'] + ', "config_extractor": ' + param[
                                          'config_extractor'] + ', "https_inspection": ' + param[
-                                         'https_inspection'] + ', '
-                                                               '"full_memory_dump": ' + param[
+                                         'https_inspection'] + ', "full_memory_dump": ' + param[
                                          'full_memory_dump'] + ', "enable_net": ' + param['enable_net'] + ' } }',
                        'isPublic': '{ "data": ' + param['isPublic'] + ' }',
                        'zip': '{ "data": { "zipSelectName": "' + param['file_from_zip'] + '", "zipPassword": "' + param[
@@ -237,7 +233,7 @@ def aima_get_result(client: Client, args: Dict[str, Any]) -> CommandResults:
                                            'STATUS_ID': result['submission']['file_info']['status_id'],
                                            'isPublic': result['submission']['file_info']['isPublic'],
                                            'SCAN_URL': result_url, 'ID': submission_id})
-    except:
+    except Exception:
         status = result['status']
         output = {'AIMA.Result(val.Job_ID == obj.Job_ID)': {'STATUS': status}}
         readable_output = tableToMarkdown('Submission Result', result)
@@ -274,7 +270,7 @@ def cap_mav_get_submission(client: Client, args: Dict[str, Any]) -> CommandResul
             output = {'CAP.Mav(val.Job_ID == obj.Job_ID)': {'STATUS': status}}
             readable_output = tableToMarkdown('Submission Result', result)
 
-    except:
+    except Exception:
         status = result['status']
         output = {'CAP.Mav(val.Job_ID == obj.Job_ID)': {'STATUS': status}}
         readable_output = tableToMarkdown('Submission Result', result)
@@ -338,7 +334,7 @@ def cap_static_get_submission(client: Client, args: Dict[str, Any]) -> CommandRe
         else:
             status = result['status']
             output = {'CAP.Static(val.Job_ID == obj.Job_ID)': {'STATUS': status}}
-    except:
+    except Exception:
         status = result['status']
         output = {'CAP.Static(val.Job_ID == obj.Job_ID)': {'STATUS': status}}
 
