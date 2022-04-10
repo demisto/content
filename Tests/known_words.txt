@@ -101,6 +101,8 @@ TAXII
 Syslog
 DomainTools
 replyTo
+indicator
+DBotScore
 HX
 hostSetName
 fieldSearchName
@@ -114,7 +116,6 @@ MSDE
 CrowdStrike
 FAQ
 hashes
-URLs
 FTPs
 afterwards
 http
