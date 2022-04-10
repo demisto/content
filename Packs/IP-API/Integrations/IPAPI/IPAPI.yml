@@ -34,8 +34,7 @@ description: |
   This integration will enrich IP addresses from IP-API with data about the geolocation, as well as a determination of the IP address being associated with a mobile device, hosting or proxy. Revers DNS is also returned.
 
   This service is available for free (with a throttle) - or paid.
-  This service is not following context standards, hence not recommended to use.
-display: IP-API (beta)
+display: IP-API
 name: IP-API
 script:
   commands:
@@ -129,12 +128,11 @@ script:
     - contextPath: IP-API.regionName
       description: regionName
       type: string
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3
   type: python
 fromversion: 6.0.0
-beta: true
 tests:
 - No tests (auto formatted)
