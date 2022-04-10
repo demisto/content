@@ -248,4 +248,4 @@ def test_add_safe_member_permissions_validate(mocker):
     mock = mocker.patch.object(Client, '_http_request')
 
     add_safe_member_command(client, **ADD_SAFE_MEMBER_ARGS)
-    assert mock.call_args[1].get('json_data').get('member').get('Permissions')[12].get('Value') == True
+    assert mock.call_args[1].get('json_data').get('member').get('Permissions')[12].get('Value')
