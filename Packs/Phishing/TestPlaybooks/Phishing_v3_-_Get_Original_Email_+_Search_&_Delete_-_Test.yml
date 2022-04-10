@@ -643,8 +643,8 @@ tasks:
         simple: FoundID
       value:
         complex:
-          root: foundIncidents.id
-          accessor: '[0]'
+          root: foundIncidents
+          accessor: id
           transformers:
           - operator: sort
             args:
