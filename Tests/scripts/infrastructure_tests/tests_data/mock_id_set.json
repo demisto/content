@@ -267,13 +267,6 @@
       }
     },
     {
-      "fake_playbook_in_fake_pack": {
-        "name": "fake_playbook_in_fake_pack",
-        "pack": "FakePack",
-        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_playbook_in_fake_pack.yml"
-      }
-    },
-    {
       "fake_test_playbook": {
         "name": "fake_test_playbook",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
@@ -492,12 +485,6 @@
         "marketplaces": [
           "xsoar", "marketplacev2"
         ]
-      }
-    },
-    {
-      "Test XDR Playbook": {
-        "name": "Test XDR Playbook",
-        "pack": "CortexXDR"
       }
     }
   ],

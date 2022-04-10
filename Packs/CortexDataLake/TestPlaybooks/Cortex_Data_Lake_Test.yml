@@ -142,7 +142,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2015
+          "y": 1595
         }
       }
     note: false
@@ -165,7 +165,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "3"
     scriptarguments:
       add_to_context: {}
       brand_name:
@@ -429,7 +429,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2030,
+        "height": 1610,
         "width": 380,
         "x": 50,
         "y": 50
