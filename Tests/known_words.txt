@@ -157,3 +157,10 @@ IsIncidentPartOfCampaign
 unsearchable
 ChronicleAsset
 SNDBOX
+EDL
+TLD
+Wildcards
+CIDRs
+CIDR
+domainglob
+subdomain
