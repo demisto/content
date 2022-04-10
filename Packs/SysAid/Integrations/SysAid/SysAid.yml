@@ -357,12 +357,12 @@ script:
       - '0'
       - '1'
     - name: custom_fields_keys
-      description: 'Comma separated list of filters' IDs.'
+      description: "Comma separated list of filters' IDs."
       required: false
       isArray: true
     - name: custom_fields_values
-      description: 'Comma separated list of the values of the filters' IDs. 
-      For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2.'
+      description: "Comma separated list of the values of the filters' IDs.
+      For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2."
       required: false
       isArray: true
     outputs:
@@ -423,12 +423,12 @@ script:
       - '0'
       - '1'
     - name: custom_fields_keys
-      description: 'Comma separated list of filters' IDs.'
+      description: "Comma separated list of filters' IDs."
       required: false
       isArray: true
     - name: custom_fields_values
-      description: 'Comma separated list of the values of the filters' IDs. 
-      For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2.'
+      description: "Comma separated list of the values of the filters' IDs.
+      For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2."
       required: false
       isArray: true
     outputs:
@@ -562,12 +562,12 @@ script:
       required: false
       isArray: false
     - name: custom_fields_keys
-      description: 'Comma separated list of filters' IDs.'
+      description: "Comma separated list of filters' IDs."
       required: false
       isArray: true
     - name: custom_fields_values
-      description: 'Comma separated list of the values of the filters' IDs. 
-      For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2.'
+      description: "Comma separated list of the values of the filters' IDs.
+      For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2."
       required: false
       isArray: true
   - name: sysaid-service-record-close
@@ -757,12 +757,12 @@ script:
       required: false
       isArray: false
     - name: custom_fields_keys
-      description: 'Comma separated list of filters' IDs.'
+      description: "Comma separated list of filters' IDs."
       required: false
       isArray: true
     - name: custom_fields_values
-      description: 'Comma separated list of the values of the filters' IDs. 
-      For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2.'
+      description: "Comma separated list of the values of the filters' IDs.
+      For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2."
       required: false
       isArray: true
     outputs:
