@@ -18,7 +18,7 @@ This integration was integrated and tested with version 21.4.44 of SysAid.
     | Maximum number of incidents to fetch | Maximum is limited to 200. | False |
     | Fetch incidents |  | False |
     | First fetch time interval |  | False |
-    | Fetch types | Choose what service record type to fetch - incidents, requests, problems, changes, or all. | False |
+    | Fetch types | Choose which service record type to fetch - incidents, requests, problems, changes, or all. | False |
     | Included statuses | A comma separated list of statuses to return. Default value includes "open classes". You may add/remove statuses according to your needs. The list of status numbers and their values can be retrieved by running the "sysaid-table-list" command with the "list_id=status" argument. | False |
     | Include Archived |  | False |
 
@@ -8501,9 +8501,9 @@ List all service requests. Cortex XSOAR recommends filtering the results by the 
 | page_number | Index of the page of results to retrieve. Default is 1. | Optional | 
 | page_size | The number of service records to return on a page. Default is 100. | Optional | 
 | ids | The list of service records IDs to return, comma separated. | Optional | 
-| archive | Whether to return archived service records. Value can be 1 or 0. Possible values are: 0, 1. | Optional | 
-| custom_fields_keys | Comma separated list of filter IDs. | Optional | 
-| custom_fields_values | Comma separated list of the values of the filter IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2. | Optional | 
+| archive | Whether to return archived service records. Possible values are: 0, 1. | Optional | 
+| custom_fields_keys | Comma separated list of filters' IDs. | Optional | 
+| custom_fields_values | Comma separated list of the values of the filters' IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2. | Optional | 
 
 
 #### Context Output
@@ -13436,9 +13436,9 @@ Search by a query through all service records. Cortex XSOAR recommends filtering
 | page_number | Index of the page of results to retrieve. Default is 1. | Optional | 
 | page_size | The number of service records to return on a page. Default is 100. | Optional | 
 | query | The search criteria. | Required | 
-| archive | Whether to return archived service records. Value can be 1 or 0. Possible values are: 0, 1. | Optional | 
-| custom_fields_keys | Comma separated list of filters IDs. | Optional | 
-| custom_fields_values | Comma separated list of the values of the filter IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2. | Optional | 
+| archive | Whether to return archived service records. Possible values are: 0, 1. | Optional | 
+| custom_fields_keys | Comma separated list of filters' IDs. | Optional | 
+| custom_fields_values | Comma separated list of the values of the filters' IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2. | Optional | 
 
 
 #### Context Output
@@ -17848,8 +17848,8 @@ The valid statuses can be retrieved using the "sysaid-table-list" command.
 | change_category | The new change category of the service record. | Optional | 
 | assigned_group | The new assigned group of the service record. | Optional | 
 | location | The new location of the service record. | Optional | 
-| custom_fields_keys | Comma separated list of filters IDs. | Optional | 
-| custom_fields_values | Comma separated list of the values of the filter IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2. | Optional | 
+| custom_fields_keys | Comma separated list of filters' IDs. | Optional | 
+| custom_fields_values | Comma separated list of the values of the filters' IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2. | Optional | 
 
 
 #### Context Output
@@ -18756,8 +18756,8 @@ Create a new service record and return the newly created service record. The val
 | change_category | The new change category of the service record. | Optional | 
 | assigned_group | The new assigned group of the service record. | Optional | 
 | location | The new location of the service record. | Optional | 
-| custom_fields_keys | Comma separated list of filters IDs. | Optional | 
-| custom_fields_values | Comma separated list of the values of the filter IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2. | Optional | 
+| custom_fields_keys | Comma separated list of filters' IDs. | Optional | 
+| custom_fields_values | Comma separated list of the values of the filters' IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2. | Optional | 
 
 
 #### Context Output
