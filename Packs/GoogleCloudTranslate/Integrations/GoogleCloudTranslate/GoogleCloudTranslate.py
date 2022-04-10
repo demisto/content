@@ -182,7 +182,7 @@ def translate_text(client, args):
         result['detected_language_code']
     )
 
-    id_ = hashlib.md5(f'{target}-{source}-{text}'.encode('utf-8')).hexdigest()
+    id_ = hashlib.md5(f'{target}-{source}-{text}'.encode('utf-8')).hexdigest()  # nosec
 
     outputs = {
         'GoogleCloudTranslate.TranslateText(val.ID && val.ID==obj.ID)': {
