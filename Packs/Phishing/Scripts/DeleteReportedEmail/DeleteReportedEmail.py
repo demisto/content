@@ -11,7 +11,7 @@ EMAIL_INTEGRATIONS = ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'M
 
 class MissingEmailException(Exception):
     def __init__(self):
-        super().__init__('Email was not found in mailbox. It is possible that the email was already deleted manually.')
+        super().__init__('Email was not found in the mailbox. It is possible that the email was already deleted manually.')
 
 
 class DeletionFailed(Exception):
@@ -25,11 +25,11 @@ class DeletionArgs:
         """
         Parse the arguments needed for the delete operation for Gmail integration.
         Args:
-            search_result: Results from the priorly preformed search operation
-            search_args: The args used for the search operation
+            search_result: Results from the previously performed search operation
+            search_args: The arguments used for the search operation
 
         Returns:
-            The args needed for the deletion operation
+            The arguments needed for the deletion operation
 
         """
         is_permanent = search_args['delete-type'] == 'hard'
@@ -46,11 +46,11 @@ class DeletionArgs:
         """
         Parse the arguments needed for the delete operation for O365 - MSGraph integration.
         Args:
-            search_result: Results from the priorly preformed search operation
-            search_args: The args used for the search operation
+            search_result: Results from the previously performed search operation
+            search_args: The arguments used for the search operation
 
         Returns:
-            The args needed for the deletion operation
+            The arguments needed for the deletion operation
 
         """
         results = search_result[0].get('value', [])
@@ -67,12 +67,12 @@ class DeletionArgs:
     @staticmethod
     def agari(search_args: dict):
         """
-        Parse the arguments needed for the delete operation for Agari Phishing Defence integration.
+        Parse the arguments needed for the delete operation for the Agari Phishing Defense integration.
         Args:
-            search_args: The args used for the search operation
+            search_args: The arguments used for the search operation
 
         Returns:
-            The args needed for the deletion operation
+            The arguments needed for the deletion operation
 
         """
         incident_info = demisto.incident()
@@ -88,11 +88,11 @@ class DeletionArgs:
         """
         Parse the arguments needed for the delete operation for EWS integrations (EWS365, EWSv2).
         Args:
-            search_result: Results from the priorly preformed search operation
-            search_args: The args used for the search operation
+            search_result: Results from the previously performed search operation
+            search_args: The arguments used for the search operation
 
         Returns:
-            The args needed for the deletion operation
+            The arguments needed for the deletion operation
 
         """
         item_id = search_result[0].get('itemId')
@@ -106,20 +106,20 @@ class DeletionArgs:
 
 def check_demisto_version():
     """
-    Check if the demisto version is suitable for preforming the polling flow (6.2 and above)
+    Check if the Cortex XSOAR version is suitable for performing the polling flow (6.2 and above)
     """
     if not is_demisto_version_ge('6.2.0'):
         raise DemistoException('Deleting an email using this script for Security And Compliance integration is not '
-                               'supported by this XSOAR server version. Please update your server version to 6.2.0 '
-                               'or later, or delete the email using the playbook: '
-                               'O365 - Security And Compliance - Search And Delete ')
+                               'supported by this Cortex XSOAR server version. Please update your server version to 6.2.0 '
+                               'or later, or delete the email using the '
+                               'O365 - Security And Compliance - Search And Delete playbook')
 
 
 def schedule_next_command(args: dict):
     """
     Handle the creation of the ScheduleCommand object
     Returns:
-        ScheduleCommand object that will cal this script again.
+        ScheduleCommand object that will call this script again.
     """
     polling_args = {
         'interval_in_seconds': 60,
@@ -136,14 +136,14 @@ def schedule_next_command(args: dict):
 
 def was_email_already_deleted(search_args: dict, e: Exception):
     """
-    Checks if the email was already deleted by this script, using the context data info.
+    Checks if the email was already deleted by this script, using the context data information.
     Args:
         search_args: the command arguments
-        e: error msg indicating the email was not found
+        e: error message indicating the email was not found
 
     Returns:
-        'Success', '' if the email was already previously deleted by this script
-        'Skipped', e if the email was not found in the mailbox and was not priorly deleted by this script
+        'Success', if the email was previously deleted by this script
+        'Skipped', if the email was not found in the mailbox and was not previously deleted by this script
 
     """
     delete_email_from_context = demisto.get(demisto.context(), 'DeleteReportedEmail')
@@ -159,9 +159,9 @@ def was_email_already_deleted(search_args: dict, e: Exception):
 
 def was_email_found_security_and_compliance(search_results: list):
     """
-    Checks if the search command using the Security & Compliance integration has found the email of interest.
+    Checks if the search command using the Security & Compliance integration found the email of interest.
     Args:
-        search_results: The results retrieved from the search preformed priorly.
+        search_results: The results retrieved from the search previously performed.
     Returns:
         True if the email was found, False otherwise
 
@@ -177,12 +177,12 @@ def was_email_found_security_and_compliance(search_results: list):
 def security_and_compliance_delete_mail(args: dict, to_user_id: str, from_user_id: str, email_subject: str, using_brand: str,
                                         delete_type: str):
     """
-    Search and delete the email using the Security & Compliance integration, preformed by the genric polling flow.
+    Search and delete the email using the Security & Compliance integration, performed by the generic polling flow.
     Args:
         args: script args
-        from_user_id: source user id of email of interest
-        to_user_id: destination user id of email
-        email_subject: subject of email of interest
+        from_user_id: source user ID of the email of interest
+        to_user_id: destination user ID of the email
+        email_subject: subject of the email of interest
         using_brand: the brand used for this operation
         delete_type: the delete type, soft or hard.
     Returns:
@@ -239,11 +239,11 @@ def delete_email(search_args: dict, search_function: str,
                                              Callable[[dict], dict]], delete_function: str,
                  deletion_error_condition: Callable[[str], bool] = lambda x: 'successfully' not in x):
     """
-    Generic function to preform the search and delete operations.
+    Generic function to perform the search and delete operations.
     Args:
-        search_args: arguments needed to preform the search command.
+        search_args: arguments needed to perform the search command.
         search_function: a string representing the search command.
-        delete_args_function: a function that parses the arguments needed to preform the search command.
+        delete_args_function: a function that parses the arguments needed to perform the search command.
         delete_function: a string representing the delete command.
         deletion_error_condition: a condition to validate if the deletion was successful or not.
     Returns:
@@ -307,7 +307,7 @@ def delete_from_brand_handler(incident_info: dict, args: dict):
 
     Args:
         incident_info: Incident info from the context data.
-        args: the args of this script
+        args: the arguments of this script
 
     Returns:
         The suitable delete brand
@@ -319,7 +319,7 @@ def delete_from_brand_handler(incident_info: dict, args: dict):
 
     elif delete_from_brand not in EMAIL_INTEGRATIONS:
         raise DemistoException(
-            f'Can not delete email using the chosen brand. The possible brands are: {EMAIL_INTEGRATIONS}')
+            f'Cannot delete the email using the chosen brand. The possible brands are: {EMAIL_INTEGRATIONS}')
     return delete_from_brand
 
 
