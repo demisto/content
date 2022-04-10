@@ -6,28 +6,28 @@ script: ''
 type: python
 tags: []
 enabled: true
-comment: Sends a message via Slack to the user whose upload of a file violated DLP
-  policies and triggered the incident
+comment: Sends a message via Slack to the user whose file upload violated DLP
+  policies and triggered the incident.
 args:
 - name: file_name
   required: true
-  description: The name of the file that triggered the incident
+  description: The name of the file that triggered the incident.
 - name: data_profile_name
   required: true
-  description: The name of the DLP data profile that detected the violation
+  description: The name of the DLP data profile that detected the violation.
 - name: app_name
   required: true
-  description: The application that performed the upload
+  description: The application that performed the upload.
 - name: task
-  description: A manual task that this task can close
+  description: A manual task that this task can close.
 - name: user_display_name
   required: true
-  description: The name of the user used for greeting in the Slack message
+  description: The user name displayed in the Slack message.
 - name: user_id
   required: true
-  description: The user Id to identify the recipient on Slack
+  description: The user ID to identify the recipient in Slack.
 - name: snippets
-  description: The snippets of the violation
+  description: The snippets of the violation.
 
 - name: include_violation_detail
   required: true
@@ -35,7 +35,7 @@ args:
   predefined:
   - "True"
   - "False"
-  description: Whether or not to include violation detail in the message
+  description: Whether to include violation details in the message.
   defaultValue: "True"
 - name: question_type
   required: true
@@ -43,8 +43,8 @@ args:
   predefined:
   - ABOUT_FILE
   - ABOUT_EXEMPTION
-  description: What kind of question to ask the user, about the file content or about
-    exemption
+  description: Whether to ask the user about the file content or about
+    exemption.
   defaultValue: ABOUT_FILE
 scripttarget: 0
 subtype: python3
