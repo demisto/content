@@ -183,16 +183,17 @@ def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
     assert not Path(module.NGINX_SERVER_ERROR_LOG).stat().st_size
 
 
-def test_nginx_web_server_is_down(requests_mock):
+def test_nginx_web_server_is_down(requests_mock, capfd):
     import NGINXApiModule as module
-    requests_mock.get(f'http://localhost:9009/nginx-test', status_code=404)
-    with raises(DemistoException, match='Testing nginx server: 404 Client Error: None for url: http://localhost:9009/nginx-test'):
-        module.test_nginx_web_server(9009, {})
+    with capfd.disabled():
+        requests_mock.get('http://localhost:9009/nginx-test', status_code=404)
+        with raises(DemistoException, match='Testing nginx server: 404 Client Error: None for url: http://localhost:9009/nginx-test'):
+            module.test_nginx_web_server(9009, {})
 
 
 def test_nginx_web_server_is_up_running(requests_mock):
     import NGINXApiModule as module
-    requests_mock.get(f'http://localhost:9009/nginx-test', status_code=200, text='Welcome to nginx')
+    requests_mock.get('http://localhost:9009/nginx-test', status_code=200, text='Welcome to nginx')
     try:
         module.test_nginx_web_server(9009, {})
     except DemistoException as ex:

@@ -232,7 +232,7 @@ def test_nginx_web_server(port: int, params: Dict):
                 polling_tries += 1
     except Exception as ex:
         err_msg = f'Testing nginx server: {ex}'
-        demisto.error(f'Testing nginx server: {ex}')
+        demisto.error(err_msg)
         raise DemistoException(err_msg) from ex
 
 
