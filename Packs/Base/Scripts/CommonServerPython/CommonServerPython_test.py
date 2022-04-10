@@ -7145,8 +7145,8 @@ def test_create_indicator_result_with_dbotscore_unknown(mocker, args, expected):
     else:
         assert 'Results:' in results.readable_output
 
-class TestSendEventsToXSIAMTest:
 
+class TestSendEventsToXSIAMTest:
     from test_data.send_events_to_xsiam_data import events_dict
     test_data = events_dict
 
