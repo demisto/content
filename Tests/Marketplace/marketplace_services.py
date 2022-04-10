@@ -1800,11 +1800,15 @@ class Pack(object):
                         })
 
                     elif current_directory == PackFolders.CASE_ADOPTION.value:
+                        logging.info('Collected CASE_ADOPTION')
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'details': content_item.get('details', '')
                         })
+
+                    else:
+                        logging.info(f'Failed to collect: {current_directory}')
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = content_item_name_mapping[current_directory]
