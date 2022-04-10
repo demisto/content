@@ -9,4 +9,5 @@ When ciphers are specified, the SSH connection will be established with the firs
 When key algorithms are specified, the SSH connection will be established with the first key algorithm of the specified key algorithms that the given host supports.
 
 ### SSH Certificate
-Currently, only PEM based certificates are supported.
+Currently, OpenSSH keys are not supported, but only RSA keys (.PEM files) are supported. 
+In order to create a key which is RSA based, please use **ssh-keygen -p -m PEM -f <file_name>**.
