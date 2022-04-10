@@ -226,6 +226,23 @@ def clear_trailing_whitespace(res):
     return res
 
 
+def filter_and_save_unseen_incident(incidents: List) -> List:
+    last_run_obj = demisto.getLastRun()
+    fetched_starred_incidents = last_run_obj.pop('fetched_starred_incidents', {})
+    filtered_incidents = []
+    for incident in incidents:
+        incident_id = incident.get('incident_id')
+        if incident_id in fetched_starred_incidents:
+            demisto.debug(f'incident (ID {incident_id} was already fetched in the past.')
+            continue
+        fetched_starred_incidents[incident_id] = True
+        filtered_incidents.append(incident)
+
+    last_run_obj['fetched_starred_incidents'] = fetched_starred_incidents
+    demisto.setLastRun(last_run_obj)
+    return filtered_incidents
+
+
 class Client(BaseClient):
 
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
@@ -248,7 +265,8 @@ class Client(BaseClient):
                 raise
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
-                      lte_creation_time=None, gte_creation_time=None, status=None, sort_by_modification_time=None,
+                      lte_creation_time=None, gte_creation_time=None, status=None, starred=None, starred_incidents_fetch_window=None,
+                      sort_by_modification_time=None,
                       sort_by_creation_time=None, page_number=0, limit=100, gte_creation_time_milliseconds=0):
         """
         Filters and returns incidents
@@ -258,6 +276,8 @@ class Client(BaseClient):
         :param gte_modification_time: string of time format "2019-12-31T23:59:00"
         :param lte_creation_time: string of time format "2019-12-31T23:59:00"
         :param gte_creation_time: string of time format "2019-12-31T23:59:00"
+        :param starred_incidents_fetch_window: string of time format "2019-12-31T23:59:00"
+        :param starred: True if the incident is starred, else False
         :param status: string of status
         :param sort_by_modification_time: optional - enum (asc,desc)
         :param sort_by_creation_time: optional - enum (asc,desc)
@@ -296,47 +316,60 @@ class Client(BaseClient):
                 'value': incident_id_list
             })
 
-        if lte_creation_time:
-            filters.append({
-                'field': 'creation_time',
-                'operator': 'lte',
-                'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
-            })
-
-        if gte_creation_time:
-            filters.append({
-                'field': 'creation_time',
-                'operator': 'gte',
-                'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
-            })
-
-        if lte_modification_time:
-            filters.append({
-                'field': 'modification_time',
-                'operator': 'lte',
-                'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
-            })
-
-        if gte_modification_time:
-            filters.append({
-                'field': 'modification_time',
-                'operator': 'gte',
-                'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
-            })
-
-        if gte_creation_time_milliseconds > 0:
-            filters.append({
-                'field': 'creation_time',
-                'operator': 'gte',
-                'value': gte_creation_time_milliseconds
-            })
-
         if status:
             filters.append({
                 'field': 'status',
                 'operator': 'eq',
                 'value': status
             })
+
+        if starred and starred_incidents_fetch_window:
+            filters.append({
+                'field': 'starred',
+                'operator': 'eq',
+                'value': True
+            })
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': starred_incidents_fetch_window
+            })
+
+        else:
+            if lte_creation_time:
+                filters.append({
+                    'field': 'creation_time',
+                    'operator': 'lte',
+                    'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
+                })
+
+            if gte_creation_time:
+                filters.append({
+                    'field': 'creation_time',
+                    'operator': 'gte',
+                    'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
+                })
+
+            if lte_modification_time:
+                filters.append({
+                    'field': 'modification_time',
+                    'operator': 'lte',
+                    'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
+                })
+
+            if gte_modification_time:
+                filters.append({
+                    'field': 'modification_time',
+                    'operator': 'gte',
+                    'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
+                })
+
+            if gte_creation_time_milliseconds > 0:
+                filters.append({
+                    'field': 'creation_time',
+                    'operator': 'gte',
+                    'value': gte_creation_time_milliseconds
+                })
 
         if len(filters) > 0:
             request_data['filters'] = filters
@@ -349,6 +382,10 @@ class Client(BaseClient):
         )
         incidents = res.get('reply').get('incidents', [])
 
+        if starred and demisto.command() == 'fetch-incidents':
+            # we want to avoid duplications of starred incidents in the fetch-incident command (we fetch all incidents
+            # in the fetch window).
+            incidents = filter_and_save_unseen_incident(incidents)
         return incidents
 
     def get_incident_extra_data(self, incident_id, alerts_limit=1000):
@@ -1470,6 +1507,10 @@ def get_incidents_command(client, args):
 
     statuses = argToList(args.get('status', ''))
 
+    starred = args.get('starred')
+    starred_incidents_fetch_window = args.get('starred_incidents_fetch_window', '3 days')
+    starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
+
     sort_by_modification_time = args.get('sort_by_modification_time')
     sort_by_creation_time = args.get('sort_by_creation_time')
 
@@ -1479,7 +1520,7 @@ def get_incidents_command(client, args):
     # If no filters were given, return a meaningful error message
     if not incident_id_list and (not lte_modification_time and not gte_modification_time and not since_modification_time
                                  and not lte_creation_time and not gte_creation_time and not since_creation_time
-                                 and not statuses):
+                                 and not statuses and not starred):
         raise ValueError("Specify a query for the incidents.\nFor example:"
                          " !xdr-get-incidents since_creation_time=\"1 year\" sort_by_creation_time=\"desc\" limit=10")
 
@@ -1497,7 +1538,9 @@ def get_incidents_command(client, args):
                 sort_by_modification_time=sort_by_modification_time,
                 page_number=page,
                 limit=limit,
-                status=status
+                status=status,
+                starred=starred,
+                starred_incidents_fetch_window=starred_incidents_fetch_window,
             )
 
         if len(raw_incidents) > limit:
@@ -1513,6 +1556,8 @@ def get_incidents_command(client, args):
             sort_by_modification_time=sort_by_modification_time,
             page_number=page,
             limit=limit,
+            starred=starred,
+            starred_incidents_fetch_window=starred_incidents_fetch_window,
         )
 
     return (
@@ -2945,7 +2990,7 @@ def update_remote_system_command(client, args):
 
 
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
-                    statuses: List = []):
+                    statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
@@ -2955,6 +3000,9 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
 
+    if starred:
+        starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
+
     incidents = []
     if incidents_from_previous_run:
         raw_incidents = incidents_from_previous_run
@@ -2963,11 +3011,13 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             raw_incidents = []
             for status in statuses:
                 raw_incidents += client.get_incidents(gte_creation_time_milliseconds=last_fetch, status=status,
-                                                      limit=max_fetch, sort_by_creation_time='asc')
+                                                      limit=max_fetch, sort_by_creation_time='asc', starred=starred,
+                                                      starred_incidents_fetch_window=starred_incidents_fetch_window)
             raw_incidents = sorted(raw_incidents, key=lambda inc: inc['creation_time'])
         else:
             raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
-                                                 sort_by_creation_time='asc')
+                                                 sort_by_creation_time='asc', starred=starred,
+                                                 starred_incidents_fetch_window=starred_incidents_fetch_window)
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
@@ -3582,6 +3632,9 @@ def main():
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
     statuses = demisto.params().get('status')
+    starred = True if demisto.params().get('starred') else None
+    starred_incidents_fetch_window = demisto.params().get('starred_incidents_fetch_window', '3 days')
+
 
     try:
         timeout = int(demisto.params().get('timeout', 120))
@@ -3624,9 +3677,11 @@ def main():
 
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
-            next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance, demisto.getLastRun(),
-                                                  max_fetch, statuses)
-            demisto.setLastRun(next_run)
+            next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance,
+                                                  demisto.getLastRun().get('next_run'), max_fetch, statuses, starred, starred_incidents_fetch_window)
+            last_run_obj = demisto.getLastRun()
+            last_run_obj['next_run'] = next_run
+            demisto.setLastRun(last_run_obj)
             demisto.incidents(incidents)
 
         elif command == 'xdr-get-incidents':

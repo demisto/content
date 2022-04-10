@@ -1,8 +1,8 @@
 {
     "description": "Maps incoming Cortex XDR incidents fields.",
     "feed": false,
-    "id": "Cortex XDR - IR-mapper",
-    "name": "XDR - Incoming Mapper",
+    "id": "Cortex XDR - IR-mapper1",
+    "name": "XDR - Incoming Mapper1",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0",
@@ -207,6 +207,9 @@
                     "complex": null,
                     "simple": "resolve_comment"
                 },
+				"XDR Starred": {
+					"simple": "starred"
+				},
                 "XDR Status": {
                     "complex": null,
                     "simple": "status"

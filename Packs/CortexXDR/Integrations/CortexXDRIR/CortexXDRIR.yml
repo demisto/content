@@ -1,3 +1,4 @@
+beta: false
 category: Endpoint
 commonfields:
   id: Cortex XDR - IR
@@ -90,6 +91,22 @@ configuration:
   - resolved_auto
   required: false
   type: 16
+- display: Only fetch starred incidents
+  hidden: false
+  name: starred
+  required: false
+  type: 8
+- additionalinfo: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours,
+    7 days)
+  defaultvalue: 3 days
+  display: Starred incidents fetch window
+  hidden: false
+  name: starred_incidents_fetch_window
+  required: false
+  type: 0
+defaultclassifier: Cortex XDR - IR
+defaultmapperin: Cortex XDR - IR-mapper
+defaultmapperout: Cortex XDR - IR-out-mapper
 description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
@@ -188,6 +205,24 @@ script:
         resolved_security_testing, resolved_other, resolved_auto'
       isArray: false
       name: status
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether incident is starred or not (Boolean value: true or false).'
+      isArray: false
+      name: starred
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: 'Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours,
+        7 days)'
+      defaultValue: 3 days
+      isArray: false
+      name: starred_incidents_fetch_window
       required: false
       secret: false
     deprecated: false
@@ -3143,18 +3178,15 @@ script:
   dockerimage: demisto/python3:3.10.1.27636
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   type: python
 tests:
 - Test XDR Playbook
-defaultmapperin: Cortex XDR - IR-mapper
-defaultclassifier: Cortex XDR - IR
-defaultmapperout: Cortex XDR - IR-out-mapper
 fromversion: 5.0.0
