@@ -1,4 +1,4 @@
-SysAid is a robust IT management system that was designed to meet all of your needs as an IT department.
+SysAid is a robust IT management system designed to meet all of the needs of an IT department.
 This integration was integrated and tested with version 21.4.44 of SysAid.
 
 ## Configure SysAid on Cortex XSOAR
@@ -19,7 +19,7 @@ This integration was integrated and tested with version 21.4.44 of SysAid.
     | Fetch incidents |  | False |
     | First fetch time interval |  | False |
     | Fetch types | Choose what service record type to fetch - incidents, requests, problems, changes, or all. | False |
-    | Included statuses | A comma separated list of statuses to return. Default value is including "open classes". You may add/remove statuses according to your needs. Can be found by running the "sysaid-table-list" command with the "list_id=status" argument. | False |
+    | Included statuses | A comma separated list of statuses to return. Default value includes "open classes". You may add/remove statuses according to your needs. The list of status numbers and their values can be retrieved by running the "sysaid-table-list" command with the "list_id=status" argument. | False |
     | Include Archived |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -28,7 +28,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### sysaid-table-list
 ***
-Allows to retrieve all lists (tables) related to a specific entity, or to return a specific list from an entity.
+Retrieve all lists (tables) related to a specific entity, or a specific list from an entity.
 
 
 #### Base Command
@@ -38,12 +38,12 @@ Allows to retrieve all lists (tables) related to a specific entity, or to return
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity | A SysAid entity by which to retrieve the available lists. Defaults to service record. The options are: sr - Service record related lists, asset - Asset related lists, user - User related lists, ci - CI related lists, company - Company related lists, action_item - Action item related lists, project - Service record Sub Tabs lists, task - Task related lists, catalog - Catalog related lists, software - Software related lists, sr_activity - Service Record activity related lists, supplier - Supplier related lists, task_activity - Task activity related lists, user_groups - User Group related lists. Possible values are: sr, asset, user, ci, company, action_item, project, task, catalog, software, sr_activity, supplier, task_activity, user_groups. | Optional | 
-| entity_id | The entity's ID. For example, in service record Form lists, send the service record ID to populate additional filters on the lists. e.g. the responsibility list may be filtered by the admin group of the service record. | Optional | 
-| entity_type | Numeric. For example: in sr entity, send the sr_type id, for ci entity, send the ci type id (e.g. for getting the list of CI sub types). | Optional | 
-| list_id | Desired list id. | Optional | 
-| key | Relevant for users/groups related fields. Defines whether to use the id or the name as the key for each value in the result. Available values are "name" or "id". Defaults to id. Possible values are: id, name. | Optional | 
-| fields | A comma separated list of fields to return. Available fields to return are: id (always returned), caption, and values. | Optional | 
+| entity | A SysAid entity by which to retrieve the available lists. Defaults to service record. Options are: sr - Service record related lists, asset - Asset related lists, user - User related lists, ci - CI related lists, company - Company related lists, action_item - Action item related lists, project - Service record Sub Tabs lists, task - Task related lists, catalog - Catalog related lists, software - Software related lists, sr_activity - Service Record activity related lists, supplier - Supplier related lists, task_activity - Task activity related lists, user_groups - User Group related lists. Possible values are: sr, asset, user, ci, company, action_item, project, task, catalog, software, sr_activity, supplier, task_activity, user_groups. | Optional | 
+| entity_id | The entity's ID. For example, in service record Form lists, send the service record ID to populate additional filters on the lists. For example, the responsibility list may be filtered by the admin group of the service record. | Optional | 
+| entity_type | Numeric. For example, in sr entity, send the sr_type ID, for ci entity, send the ci type ID (for retrieving the list of CI sub-types). | Optional | 
+| list_id | Desired list ID. | Optional | 
+| key | Relevant for users/groups related fields. Defines whether to use the ID or the name as the key for each value in the result. Available values are "name" or "id". Defaults to "id". Possible values are: id, name. | Optional | 
+| fields | A comma separated list of fields to return. Available fields are: id (always returned), caption, and values. | Optional | 
 
 
 #### Context Output
@@ -92,7 +92,7 @@ Allows to retrieve all lists (tables) related to a specific entity, or to return
 
 ### sysaid-asset-list
 ***
-List all assets or get a specific asset by ID. It is recommended to filter the results by the wanted fields.
+List all assets or get a specific asset by ID. Cortex XSOAR recommends filtering the results by the desired fields.
 
 
 #### Base Command
@@ -3081,7 +3081,7 @@ List all assets or get a specific asset by ID. It is recommended to filter the r
 
 ### sysaid-asset-search
 ***
-Get information about a specific asset. It is recommended to filter the results by the wanted fields.
+Get information about a specific asset. Cortex XSOAR recommends filtering the results by the desired fields.
 
 
 #### Base Command
@@ -5089,7 +5089,7 @@ Get information about a specific asset. It is recommended to filter the results 
 
 ### sysaid-filter-list
 ***
-List all filters. It is recommended to filter the results by the wanted fields.
+List all filters. Cortex XSOAR recommends filtering the results by the desired fields.
 
 
 #### Base Command
@@ -6687,7 +6687,7 @@ List all filters. It is recommended to filter the results by the wanted fields.
 
 ### sysaid-user-list
 ***
-Get list of users in SysAid. It is recommended to filter the results by the wanted fields.
+Get list of users in SysAid. Cortex XSOAR recommends filtering the results by the desired fields.
 
 
 #### Base Command
@@ -6698,7 +6698,7 @@ Get list of users in SysAid. It is recommended to filter the results by the want
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | fields | Comma separated list of fields to return to context data. The valid fields can be retrieved using the "sysaid-table-list" command with the "entity=user" argument. You can send "all" for debugging purposes. | Required | 
-| type | The users type to retrieve. Defaults to all user type if not specified. Possible values are: admin, user, manager. | Optional | 
+| type | The user type to retrieve. Defaults to all user types if not specified. Possible values are: admin, user, manager. | Optional | 
 | page_number | Index of the page of results to retrieve. Default is 1. | Optional | 
 | page_size | The number of users to return on a page. Default is 100. | Optional | 
 
@@ -7756,7 +7756,7 @@ Get list of users in SysAid. It is recommended to filter the results by the want
 
 ### sysaid-user-search
 ***
-Get information about a specific asset. It is recommended to filter the results by the wanted fields.
+Get information about a specific asset. Cortex XSOAR recommends filtering the results by the desired fields.
 
 
 #### Base Command
@@ -7768,7 +7768,7 @@ Get information about a specific asset. It is recommended to filter the results 
 | --- | --- | --- |
 | query | The search criteria. | Required | 
 | fields | Comma separated list of fields to return to context data. The valid fields can be retrieved using the "sysaid-table-list" command with the "entity=user" argument. You can send "all" for debugging purposes. | Required | 
-| type | The users type to retrieve. Defaults to all user type if not specified. Possible values are: admin, user, manager. | Optional | 
+| type | The user types to retrieve. Defaults to all user types if not specified. Possible values are: admin, user, manager. | Optional | 
 | page_number | Index of the page of results to retrieve. Default is 1. | Optional | 
 | page_size | The number of users to return on a page. Default is 100. | Optional | 
 
@@ -8486,7 +8486,7 @@ Get information about a specific asset. It is recommended to filter the results 
 
 ### sysaid-service-record-list
 ***
-List all service requests. It is recommended to filter the results by the wanted fields.
+List all service requests. Cortex XSOAR recommends filtering the results by the desired fields.
 
 
 #### Base Command
@@ -8502,8 +8502,8 @@ List all service requests. It is recommended to filter the results by the wanted
 | page_size | The number of service records to return on a page. Default is 100. | Optional | 
 | ids | The list of service records IDs to return, comma separated. | Optional | 
 | archive | Whether to return archived service records. Value can be 1 or 0. Possible values are: 0, 1. | Optional | 
-| custom_fields_keys | Comma separated list of filters ids. | Optional | 
-| custom_fields_values | Comma separated list of filters values, each corresponding to the filter key at the same place. | Optional | 
+| custom_fields_keys | Comma separated list of filter IDs. | Optional | 
+| custom_fields_values | Comma separated list of the values of the filter IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2. | Optional | 
 
 
 #### Context Output
@@ -13421,7 +13421,7 @@ List all service requests. It is recommended to filter the results by the wanted
 
 ### sysaid-service-record-search
 ***
-Search by a query among all service records. It is recommended to filter the results by the wanted fields.
+Search by a query through all service records. Cortex XSOAR recommends filtering the results by the desired fields.
 
 
 #### Base Command
@@ -13437,8 +13437,8 @@ Search by a query among all service records. It is recommended to filter the res
 | page_size | The number of service records to return on a page. Default is 100. | Optional | 
 | query | The search criteria. | Required | 
 | archive | Whether to return archived service records. Value can be 1 or 0. Possible values are: 0, 1. | Optional | 
-| custom_fields_keys | Comma separated list of filters ids. | Optional | 
-| custom_fields_values | Comma separated list of filters values, each corresponding to the filter key at the same place. | Optional | 
+| custom_fields_keys | Comma separated list of filters IDs. | Optional | 
+| custom_fields_values | Comma separated list of the values of the filter IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2. | Optional | 
 
 
 #### Context Output
@@ -17828,28 +17828,28 @@ The valid statuses can be retrieved using the "sysaid-table-list" command.
 | description | The new description of the service record. | Optional | 
 | solution | The new solution of the service record. | Optional | 
 | problem_type | The new problem type of the service record. | Optional | 
-| problem_sub_type | The new problem sub type of the service record. | Optional | 
+| problem_sub_type | The new problem sub-type of the service record. | Optional | 
 | third_level_category | The new third level category of the service record. | Optional | 
 | sr_type | The new service record type of the service record. | Optional | 
-| sub_type | The new sub type of the service record. | Optional | 
+| sub_type | The new sub-type of the service record. | Optional | 
 | agreement | The new agreement of the service record. | Optional | 
 | title | The new title of the service record. | Optional | 
-| followup_user | The new followup user of the service record. | Optional | 
-| followup_text | The new followup text of the service record. | Optional | 
-| cust_notes | The new cust notes of the service record. | Optional | 
+| followup_user | The new follow up user of the service record. | Optional | 
+| followup_text | The new follow up text of the service record. | Optional | 
+| cust_notes | The new custom notes of the service record. | Optional | 
 | email_account | The new email account of the service record. | Optional | 
 | responsibility | The new responsibility of the service record. | Optional | 
 | urgency | The new urgency of the service record. | Optional | 
 | company | The new company of the service record. | Optional | 
 | department | The new department of the service record. | Optional | 
-| computer_id | The new computer id of the service record. | Optional | 
+| computer_id | The new computer ID of the service record. | Optional | 
 | due_date | The new due date of the service record. | Optional | 
 | escalation | The new escalation of the service record. | Optional | 
 | change_category | The new change category of the service record. | Optional | 
 | assigned_group | The new assigned group of the service record. | Optional | 
 | location | The new location of the service record. | Optional | 
-| custom_fields_keys | Comma separated list of filters ids. | Optional | 
-| custom_fields_values | Comma separated list of filters values, each corresponding to the filter key at the same place. | Optional | 
+| custom_fields_keys | Comma separated list of filters IDs. | Optional | 
+| custom_fields_values | Comma separated list of the values of the filter IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2. | Optional | 
 
 
 #### Context Output
@@ -17888,7 +17888,7 @@ There is no context output for this command.
 
 ### sysaid-service-record-template-get
 ***
-Gets the template of a service record. It is recommended to filter the results by the wanted fields.
+Gets the template of a service record. Cortex XSOAR recommends filtering the results by the desired fields.
 
 
 #### Base Command
@@ -18717,7 +18717,7 @@ Gets the template of a service record. It is recommended to filter the results b
 
 ### sysaid-service-record-create
 ***
-Create a new service record and return the newly created service record. The valid statuses can be retrieved using the "sysaid-table-list" command. It is recommended to filter the results by the wanted fields.
+Create a new service record and return the newly created service record. The valid statuses can be retrieved using the "sysaid-table-list" command. Cortex XSOAR recommends filtering the results by the desired fields.
 
 
 #### Base Command
@@ -18737,27 +18737,27 @@ Create a new service record and return the newly created service record. The val
 | status | The new status of the service record. | Optional | 
 | solution | The new solution of the service record. | Optional | 
 | problem_type | The new problem type of the service record. | Optional | 
-| problem_sub_type | The new problem sub type of the service record. | Optional | 
+| problem_sub_type | The new problem sub-type of the service record. | Optional | 
 | third_level_category | The new third level category of the service record. | Optional | 
 | sr_type | The new service record type of the service record. | Optional | 
-| sub_type | The new sub type of the service record. | Optional | 
+| sub_type | The new sub-type of the service record. | Optional | 
 | agreement | The new agreement of the service record. | Optional | 
-| followup_user | The new followup user of the service record. | Optional | 
-| followup_text | The new followup text of the service record. | Optional | 
-| cust_notes | The new cust notes of the service record. | Optional | 
+| followup_user | The new follow up user of the service record. | Optional | 
+| followup_text | The new follow up text of the service record. | Optional | 
+| cust_notes | The new custom notes of the service record. | Optional | 
 | email_account | The new email account of the service record. | Optional | 
 | responsibility | The new responsibility of the service record. | Optional | 
 | urgency | The new urgency of the service record. | Optional | 
 | company | The new company of the service record. | Optional | 
 | department | The new department of the service record. | Optional | 
-| computer_id | The new computer id of the service record. | Optional | 
+| computer_id | The new computer ID of the service record. | Optional | 
 | due_date | The new due date of the service record. | Optional | 
 | escalation | The new escalation of the service record. | Optional | 
 | change_category | The new change category of the service record. | Optional | 
 | assigned_group | The new assigned group of the service record. | Optional | 
 | location | The new location of the service record. | Optional | 
-| custom_fields_keys | Comma separated list of filters ids. | Optional | 
-| custom_fields_values | Comma separated list of filters values, each corresponding to the filter key at the same place. | Optional | 
+| custom_fields_keys | Comma separated list of filters IDs. | Optional | 
+| custom_fields_values | Comma separated list of the values of the filter IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2. | Optional | 
 
 
 #### Context Output
