@@ -121,11 +121,12 @@ def create_paramiko_ssh_client(
     client = SSHClient()
     client.set_missing_host_key_policy(AutoAddPolicy())
     try:
+        rsa_private_key = None
         if private_key:
             # authenticating with private key only works for certificates which are based on PEM files.
             # (RSA private keys)
-            private_key = paramiko.RSAKey.from_private_key(StringIO(private_key))
-        client.connect(hostname=host_name, username=user_name, password=password, port=22, pkey=private_key)
+            rsa_private_key = paramiko.RSAKey.from_private_key(StringIO(private_key))  # type: ignore # [assignment]
+        client.connect(hostname=host_name, username=user_name, password=password, port=22, pkey=rsa_private_key)
     except NoValidConnectionsError as e:
         raise DemistoException(f'Unable to connect to port 22 on {host_name}') from e
     return client
