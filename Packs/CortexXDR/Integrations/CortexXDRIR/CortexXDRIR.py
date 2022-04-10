@@ -265,9 +265,9 @@ class Client(BaseClient):
                 raise
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
-                      lte_creation_time=None, gte_creation_time=None, status=None, starred=None, starred_incidents_fetch_window=None,
-                      sort_by_modification_time=None,
-                      sort_by_creation_time=None, page_number=0, limit=100, gte_creation_time_milliseconds=0):
+                      lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
+                      starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
+                      page_number=0, limit=100, gte_creation_time_milliseconds=0):
         """
         Filters and returns incidents
 
@@ -3635,7 +3635,6 @@ def main():
     starred = True if demisto.params().get('starred') else None
     starred_incidents_fetch_window = demisto.params().get('starred_incidents_fetch_window', '3 days')
 
-
     try:
         timeout = int(demisto.params().get('timeout', 120))
     except ValueError as e:
@@ -3678,7 +3677,8 @@ def main():
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
             next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance,
-                                                  demisto.getLastRun().get('next_run'), max_fetch, statuses, starred, starred_incidents_fetch_window)
+                                                  demisto.getLastRun().get('next_run'), max_fetch, statuses, starred,
+                                                  starred_incidents_fetch_window)
             last_run_obj = demisto.getLastRun()
             last_run_obj['next_run'] = next_run
             demisto.setLastRun(last_run_obj)
