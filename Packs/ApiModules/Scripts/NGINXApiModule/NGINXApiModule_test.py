@@ -187,7 +187,8 @@ def test_nginx_web_server_is_down(requests_mock, capfd):
     import NGINXApiModule as module
     with capfd.disabled():
         requests_mock.get('http://localhost:9009/nginx-test', status_code=404)
-        with raises(DemistoException, match='Testing nginx server: 404 Client Error: None for url: http://localhost:9009/nginx-test'):
+        with raises(DemistoException,
+                    match='Testing nginx server: 404 Client Error: None for url: http://localhost:9009/nginx-test'):
             module.test_nginx_web_server(9009, {})
 
 
