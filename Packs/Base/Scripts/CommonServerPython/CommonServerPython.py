@@ -9733,7 +9733,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
 
     header_msg = 'Error sending new events into XSIAM. \n'
 
-    def events_error_handler(response: requests.Response):
+    def events_error_handler(response):
         """
         Internal function to parse the XSIAM API errors
         """
