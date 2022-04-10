@@ -455,6 +455,7 @@ async def long_running_loop(
     """
     try:
         offset_to_store = offset
+        demisto.debug(f'Offset to fetch from: {offset_to_store}')
         sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
         async with init_refresh_token(base_url, client_id, client_secret, verify_ssl, proxy) as refresh_token:
             stream.set_refresh_token(refresh_token)
@@ -478,7 +479,7 @@ async def long_running_loop(
                     'occurred': occurred
                 }]
                 demisto.createIncidents(incident)
-                offset_to_store = int(event_offset) + 1
+                offset_to_store = int(offset_to_store) + 1
                 integration_context = get_integration_context()
                 integration_context['offset'] = offset_to_store
                 if store_samples:
