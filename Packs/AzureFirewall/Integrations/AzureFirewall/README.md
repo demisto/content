@@ -1,6 +1,6 @@
 ## Azure Firewall
-Azure Firewall is a cloud-native and intelligent network firewall security service that provides breed threat protection for cloud workloads running in Azure. It's a fully stateful, firewall as a service with built-in high availability and unrestricted cloud scalability.
-This integration was integrated and tested with version 2021-03-01 of Azure Firewall
+Azure Firewall is a cloud-native and intelligent network firewall security service that provides breed threat protection for cloud workloads running in Azure. It's a fully stateful, firewall as a service, with built-in high availability and unrestricted cloud scalability.
+This integration was integrated and tested with version 2021-03-01 of Azure Firewall.
 
 ## Configure Azure Firewall on Cortex XSOAR
 
@@ -87,7 +87,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 ### azure-firewall-list
 ***
-List azure firewalls in resource group or subscription.
+List Azure firewalls in the specified resource group or subscription.
 
 
 #### Base Command
@@ -97,8 +97,8 @@ List azure firewalls in resource group or subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource | The resource which contains the firewalls to list. Possible values are: resource_group, subscription. Default is resource_group. | Required | 
-| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+| resource | The resource that contains the firewalls to list. Possible values are: resource_group, subscription. Default is resource_group. | Required | 
+| limit | The maximum number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 
 
@@ -169,10 +169,9 @@ List azure firewalls in resource group or subscription.
 >|---|---|---|---|---|---|---|
 >| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 189.160.40.11 | Succeeded |
 
-
 ### azure-firewall-get
 ***
-Retrieve azure firewall information.
+Retrieve Azure firewall information.
 
 
 #### Base Command
@@ -184,8 +183,8 @@ Retrieve azure firewall information.
 | --- | --- | --- |
 | firewall_names | Comma-separated list of firewall names retrieve. | Required | 
 | polling | Indicates if the command was scheduled. Possible values: "True" or "False". Possible values are: True, False. Default is True. | Optional | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -252,10 +251,9 @@ Retrieve azure firewall information.
 >|---|---|---|---|---|---|---|
 >| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 189.160.40.11 | Succeeded |
 
-
 ### azure-firewall-rule-collection-list
 ***
-List collection rules in firewall or in policy. One of the arguments 'firewall_name' or 'policy'  must be provided.
+List collection rules in firewall or in policy. One of the arguments 'firewall_name' or 'policy' must be provided.
 
 
 #### Base Command
@@ -265,10 +263,10 @@ List collection rules in firewall or in policy. One of the arguments 'firewall_n
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firewall_name | The name of the azure firewall which contains the collections. | Optional | 
-| policy | The name of the azure policy which contains the collections. | Optional | 
+| firewall_name | The name of the Azure firewall that contains the collections. | Optional | 
+| policy | The name of the Azure policy that contains the collections. | Optional | 
 | rule_type | The names of the rule collection type to retrieve. Possible values are: application_rule, network_rule, nat_rule. | Required | 
-| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+| limit | The maximum number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 
 
@@ -344,10 +342,9 @@ List collection rules in firewall or in policy. One of the arguments 'firewall_n
 >|---|---|---|
 >| playbook-collection | Deny | 201 |
 
-
 ### azure-firewall-rule-list
 ***
-List rules in firewall or in policy. One of the arguments 'firewall_name' or 'policy'  must be provided.
+List rules in the firewall or policy. One of the arguments 'firewall_name' or 'policy' must be provided.
 
 
 #### Base Command
@@ -357,11 +354,11 @@ List rules in firewall or in policy. One of the arguments 'firewall_name' or 'po
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firewall_name | The name of the azure firewall which contains the rules. | Optional | 
-| policy | The name of the azure policy which contains the rules. | Optional | 
-| rule_type | The names of the rule types to retrieve. Required when "firewall_name" argument is provided. Possible values are: application_rule, network_rule, nat_rule. | Optional | 
-| collection_name | The name of the rule collection which contains the rules. | Required | 
-| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+| firewall_name | The name of the Azure firewall that contains the rules. | Optional | 
+| policy | The name of the Azure policy that contains the rules. | Optional | 
+| rule_type | The names of the rule types to retrieve. Required when the "firewall_name" argument is provided. Possible values are: application_rule, network_rule, nat_rule. | Optional | 
+| collection_name | The name of the rule collection that contains the rules. | Required | 
+| limit | The maximum number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 
 
@@ -414,10 +411,9 @@ List rules in firewall or in policy. One of the arguments 'firewall_name' or 'po
 >|---|
 >| playbook-rule |
 
-
 ### azure-firewall-rule-get
 ***
-Retrieve rule information. One of the arguments 'firewall_name' or 'policy'  must be provided.
+Retrieve rule information. One of the arguments 'firewall_name' or 'policy' must be provided.
 
 
 #### Base Command
@@ -427,10 +423,10 @@ Retrieve rule information. One of the arguments 'firewall_name' or 'policy'  mus
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firewall_name | The name of the firewall which contains the rule. | Optional | 
-| policy | The name of the azure policy which contains the rules. | Optional | 
-| rule_type | The name of the rule type collection which contains the rule. Required when "firewall_name" argument is provided. Possible values are: application_rule, network_rule, nat_rule. | Optional | 
-| collection_name | The name of the rule collection which contains the rule. | Required | 
+| firewall_name | The name of the firewall that contains the rule. | Optional | 
+| policy | The name of the Azure policy that contains the rules. | Optional | 
+| rule_type | The name of the rule type collection that contains the rule. Required when the "firewall_name" argument is provided. Possible values are: application_rule, network_rule, nat_rule. | Optional | 
+| collection_name | The name of the rule collection that contains the rule. | Required | 
 | rule_name | The name of the rule to retrieve. | Required | 
 
 
@@ -479,10 +475,9 @@ Retrieve rule information. One of the arguments 'firewall_name' or 'policy'  mus
 >|---|
 >| new-playbook-rule |
 
-
 ### azure-firewall-policy-create
 ***
-Create firewall policy. This command only create the policy resource. In order to attach policy to firewall please run the 'azure-firewall-policy-attach' command.
+Create a firewall policy. This command only creates the policy resource. In order to attach the policy to a firewall, run the 'azure-firewall-policy-attach' command.
 
 
 #### Base Command
@@ -492,17 +487,17 @@ Create firewall policy. This command only create the policy resource. In order t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | The name of the azure policy to create. | Required | 
-| threat_intelligence_mode | The operation mode for Threat Intelligence. Possible values are: Alert, Deny, Turned-off. Default is Turned-off. | Required | 
+| policy_name | The name of the Azure policy to create. | Required | 
+| threat_intelligence_mode | The operation mode for threat intelligence. Possible values are: Alert, Deny, Turned-off. Default is Turned-off. | Required | 
 | ips | Comma-separated list of IP addresses for the threat intelligence whitelist. | Optional | 
-| domains | Comma-separated list of fully qualified domain name for the threat intelligence whitelist. For example : *.microsoft.com,email.college.edu . | Optional | 
+| domains | Comma-separated list of fully qualified domain names for the threat intelligence whitelist. For example : *.microsoft.com,email.college.edu . | Optional | 
 | location | Policy resource region location. Possible values are: northcentralus, eastus, northeurope, westeurope, eastasia, southeastasia, eastus2, centralus, southcentralus, westus, japaneast, japanwest, australiaeast, australiasoutheast, brazilsouth, centralindia, southindia, westindia, canadacentral, canadaeast, uksouth, ukwest, westcentralus, westus2, koreacentral, francecentral, australiacentral, uaenorth, southafricanorth, switzerlandnorth, germanywestcentral, norwayeast, westus3, jioindiawest. | Required | 
-| tier | Tier of an Azure Policy. Possible values are: Standard, Premium. Default is Standard. | Required | 
+| tier | Tier of an Azure policy. Possible values are: Standard, Premium. Default is Standard. | Required | 
 | base_policy_id | The ID of the parent firewall policy from which rules are inherited. | Optional | 
-| enable_proxy | Enable DNS Proxy on Firewalls attached to the Firewall Policy. Possible values are: True, False. Default is False. | Optional | 
-| dns_servers | Comma-separated list of custom DNS Servers. | Optional | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| enable_proxy | Whether to enable DNS proxy on firewalls attached to the firewall policy. Possible values are: True, False. Default is False. | Optional | 
+| dns_servers | Comma-separated list of custom DNS servers. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -549,10 +544,9 @@ Create firewall policy. This command only create the policy resource. In order t
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Updating |
 
-
 ### azure-firewall-policy-update
 ***
-Update policy resource. The command will update the provided arguments.
+Update the policy resource. The command will update the provided arguments.
 
 
 #### Base Command
@@ -562,15 +556,15 @@ Update policy resource. The command will update the provided arguments.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | The name of the azure policy to update. | Required | 
-| threat_intelligence_mode | The operation mode for Threat Intelligence. Possible values are: Alert, Deny, Turned-off. | Optional | 
+| policy_name | The name of the Azure policy to update. | Required | 
+| threat_intelligence_mode | The operation mode for threat intelligence. Possible values are: Alert, Deny, Turned-off. | Optional | 
 | ips | Comma-separated list of IP addresses for the threat intelligence whitelist. | Optional | 
-| domains | Comma-separated list of fully qualified domain name for the threat intelligence whitelist. For example : *.microsoft.com,email.college.edu . | Optional | 
+| domains | Comma-separated list of fully qualified domain names for the threat intelligence whitelist. For example : *.microsoft.com,email.college.edu . | Optional | 
 | base_policy_id | The ID of the parent firewall policy from which rules are inherited. | Optional | 
-| enable_proxy | Enable DNS Proxy on Firewalls attached to the Firewall Policy. Possible values are: True, False. | Optional | 
-| dns_servers | Comma-separated list of custom DNS Servers. | Optional | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| enable_proxy | Whether to enable the DNS proxy on firewalls attached to the firewall policy. Possible values are: True, False. | Optional | 
+| dns_servers | Comma-separated list of custom DNS servers. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -617,7 +611,6 @@ Update policy resource. The command will update the provided arguments.
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Updating |
 
-
 ### azure-firewall-policy-get
 ***
 Retrieve policy information.
@@ -632,8 +625,8 @@ Retrieve policy information.
 | --- | --- | --- |
 | policy_names | Comma-separated list of policy names to retrieve. | Required | 
 | polling | Indicates if the command was scheduled. Possible values: "True" or "False". Possible values are: True, False. Default is True. | Optional | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -680,10 +673,9 @@ Retrieve policy information.
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Succeeded |
 
-
 ### azure-firewall-policy-delete
 ***
-Delete policy resource.
+Delete a policy resource.
 
 
 #### Base Command
@@ -702,33 +694,23 @@ There is no context output for this command.
 #### Command example
 ```!azure-firewall-policy-delete policy_names=xsoar-policy-test```
 #### Human Readable Output
-
 >Policy xsoar-policy-test deleted successfully.
-
 ### azure-firewall-policy-list
 ***
-List policy in resource group or subscription.
-
-
+List the policy in the resource group or subscription.
 #### Base Command
-
 `azure-firewall-policy-list`
 #### Input
-
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource | The resource which contains the policies to list. Possible values are: resource_group, subscription. Default is resource_group. | Required | 
-| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+| resource | The resource that contains the policies to list. Possible values are: resource_group, subscription. Default is resource_group. | Required | 
+| limit | The maximum number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
-
-
 #### Context Output
-
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AzureFirewall.Policy.id | String | Policy resource ID. | 
 | AzureFirewall.Policy.name | String | Policy resource name. | 
-
 #### Command example
 ```!azure-firewall-policy-list resource=resource_group limit=1 page=1```
 #### Context Example
@@ -769,10 +751,9 @@ List policy in resource group or subscription.
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Succeeded |
 
-
 ### azure-firewall-policy-attach
 ***
-Attach policy to firewall. The policy and firewall have to belong to the same tier.
+Attach a policy to a firewall. The policy and firewall have to belong to the same tier.
 
 
 #### Base Command
@@ -782,10 +763,10 @@ Attach policy to firewall. The policy and firewall have to belong to the same ti
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firewall_names | Comma-separated list of firewall names which the policy will be attached. | Required | 
+| firewall_names | Comma-separated list of firewall names to which the policy will be attached. | Required | 
 | policy_id | The ID of the policy to attach. | Required | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -855,10 +836,9 @@ Attach policy to firewall. The policy and firewall have to belong to the same ti
 >|---|---|---|---|---|---|---|
 >| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 189.160.40.11 | Updating |
 
-
 ### azure-firewall-policy-detach
 ***
-Remove policy from firewall. This command will detach between policy and firewall, and not delete the policy.
+Remove a policy from the firewall. This command will detach the policy and firewall, but will not delete the policy.
 
 
 #### Base Command
@@ -869,8 +849,8 @@ Remove policy from firewall. This command will detach between policy and firewal
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | firewall_names | Comma-separated list of firewall names from which the policy will be removed. | Required | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -937,11 +917,10 @@ Remove policy from firewall. This command will detach between policy and firewal
 >|---|---|---|---|---|---|---|
 >| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 189.160.40.11 | Updating |
 
-
 ### azure-firewall-network-rule-collection-create
 ***
-Create network rule collection in firewall or policy. The command will return firewall or policy rule collection resource information. One of the arguments 'firewall_name' or
-      'policy'  must be provided.
+Create a network rule collection in a firewall or policy. The command will return firewall or policy rule collection resource information. One of the arguments 'firewall_name' or
+      'policy' must be provided.
 
 
 #### Base Command
@@ -951,8 +930,8 @@ Create network rule collection in firewall or policy. The command will return fi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firewall_name | The name of the firewall which contains the collection. | Optional | 
-| policy | The name of the policy which contains the collection. | Optional | 
+| firewall_name | The name of the firewall that contains the collection. | Optional | 
+| policy | The name of the policy that contains the collection. | Optional | 
 | collection_name | The name of the network rule collection to create. | Required | 
 | collection_priority | The priority of the network rule collection resource. Minimum value is 100, maximum value us 65000. | Required | 
 | action | The action type of a rule collection. Possible values are: Allow, Deny. | Required | 
@@ -963,10 +942,10 @@ Create network rule collection in firewall or policy. The command will return fi
 | source_ips | Comma-separated list of source IP addresses for the created rule. Must be provided when 'source_type' argument is assigned to 'ip_address'. | Optional | 
 | source_ip_group_ids | Comma-separated list of source IP group IDs for the created rule. Must be provided when 'source_type' argument is assigned to 'ip_group'. | Optional | 
 | destination_type | Rule destination type. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required | 
-| destinations | Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument. Supports IP address, service tag name, IP group ID and FQDN address. | Required | 
+| destinations | Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs and FQDN addresses. | Required | 
 | destination_ports | Comma-separated list of destination ports. | Required | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -1013,10 +992,9 @@ There is no context output for this command.
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Updating |
 
-
 ### azure-firewall-network-rule-collection-delete
 ***
-Delete network rule collection from firewall or policy. One of the arguments 'firewall_name' or 'policy'  must be provided.
+Delete a network rule collection from the firewall or policy. One of the arguments 'firewall_name' or 'policy'  must be provided.
 
 
 #### Base Command
@@ -1026,11 +1004,11 @@ Delete network rule collection from firewall or policy. One of the arguments 'fi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firewall_name | The name of the firewall which contains the collection. | Optional | 
-| policy | The name of the policy which contains the collection. | Optional | 
+| firewall_name | The name of the firewall that contains the collection. | Optional | 
+| policy | The name of the policy that contains the collection. | Optional | 
 | collection_name | The name of the network rule collection to delete. | Required | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -1077,10 +1055,9 @@ There is no context output for this command.
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Updating |
 
-
 ### azure-firewall-network-rule-create
 ***
-Create network rule in firewall or policy rule collection. One of the arguments 'firewall_name' or 'policy'  must be provided.
+Create a network rule in the firewall or policy rule collection. One of the arguments 'firewall_name' or 'policy' must be provided.
 
 
 #### Base Command
@@ -1090,9 +1067,9 @@ Create network rule in firewall or policy rule collection. One of the arguments 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firewall_name | The name of the firewall which contains the collection. | Optional | 
-| policy | The name of the policy which contains the collection. | Optional | 
-| collection_name | The name of the network rule collection which contains the rule. | Required | 
+| firewall_name | The name of the firewall that contains the collection. | Optional | 
+| policy | The name of the policy that contains the collection. | Optional | 
+| collection_name | The name of the network rule collection that contains the rule. | Required | 
 | rule_name | The name of the network rule to create. | Required | 
 | description | The description of the created rule. | Required | 
 | protocols | Comma-separated list of protocols for the created rule. Possible values are: TCP, UDP, ICMP, Any. | Required | 
@@ -1100,10 +1077,10 @@ Create network rule in firewall or policy rule collection. One of the arguments 
 | source_ips | Comma-separated list of source IP addresses for the created rule. Must be provided when 'source_type' argument is assigned to 'ip_address'. | Optional | 
 | source_ip_group_ids | Comma-separated list of source IP group IDs for the created rule. Must be provided when 'source_type' argument is assigned to 'ip_group'. | Optional | 
 | destination_type | Rule destination type. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required | 
-| destinations | Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument. Supports IP address, service tag name, IP group ID and FQDN address. | Required | 
+| destinations | Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs and FQDN addresses. | Required | 
 | destination_ports | Comma-separated list of destination ports. | Required | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -1150,10 +1127,9 @@ There is no context output for this command.
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Updating |
 
-
 ### azure-firewall-network-rule-update
 ***
-Update network rule in firewall. The provided arguments will replace the existing rule configuration. One of the arguments 'firewall_name' or 'policy'  must be provided. The command will not replace the rule source or destination types.
+Update the network rule in the firewall. The provided arguments will replace the existing rule configuration. One of the arguments 'firewall_name' or 'policy' must be provided. The command will not replace the rule source or destination types.
 
 
 #### Base Command
@@ -1163,20 +1139,20 @@ Update network rule in firewall. The provided arguments will replace the existin
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firewall_name | The name of the firewall which contains the collection. | Optional | 
-| policy | The name of the policy which contains the collection. | Optional | 
+| firewall_name | The name of the firewall that contains the collection. | Optional | 
+| policy | The name of the policy that contains the collection. | Optional | 
 | collection_name | The name of the network rule collection to update. | Required | 
 | rule_name | The name of the network rule to update. | Required | 
 | description | The new description of the rule. | Optional | 
 | protocols | Comma-separated list of protocols for the rule. Possible values are: TCP, UDP, ICMP, Any. | Optional | 
 | source_type | Rule source type. Possible values are: ip_address, ip_group. | Optional | 
-| source_ips | Comma-separated list of source IP addresses for the created rule. Must be provided when 'source_type' argument is assigned to 'ip_address'. | Optional | 
-| source_ip_group_ids | Comma-separated list of source IP group IDs for the created rule. Must be provided when 'source_type' argument is assigned to 'ip_group'. | Optional | 
-| destination_type | Rule destination type. Must be provided when 'destinations' argument is provided. Possible values are: ip_address, ip_group, service_tag, fqdn. | Optional | 
-| destinations | Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument. Supports IP address, service tag name, IP group ID and FQDN address. | Optional | 
+| source_ips | Comma-separated list of source IP addresses for the created rule. Must be provided when the 'source_type' argument is assigned to 'ip_address'. | Optional | 
+| source_ip_group_ids | Comma-separated list of source IP group IDs for the created rule. Must be provided when the 'source_type' argument is assigned to 'ip_group'. | Optional | 
+| destination_type | Rule destination type. Must be provided when the 'destinations' argument is provided. Possible values are: ip_address, ip_group, service_tag, fqdn. | Optional | 
+| destinations | Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs and FQDN addresses. | Optional | 
 | destination_ports | Comma-separated list of destination ports. | Optional | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -1223,10 +1199,9 @@ There is no context output for this command.
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Succeeded |
 
-
 ### azure-firewall-network-rule-delete
 ***
-Delete network rule from collection. One of the arguments 'firewall_name' or 'policy'  must be provided.
+Delete a network rule from the collection. One of the arguments 'firewall_name' or 'policy'  must be provided.
 
 
 #### Base Command
@@ -1236,12 +1211,12 @@ Delete network rule from collection. One of the arguments 'firewall_name' or 'po
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firewall_name | The name of the firewall which contains the collection. | Optional | 
-| policy | The name of the policy which contains the collection. | Optional | 
+| firewall_name | The name of the firewall that contains the collection. | Optional | 
+| policy | The name of the policy that contains the collection. | Optional | 
 | collection_name | The name of the network rule collection to update. | Required | 
 | rule_names | Comma-separated list of network rule names to delete from the collection. | Required | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -1288,10 +1263,9 @@ There is no context output for this command.
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Updating |
 
-
 ### azure-firewall-network-rule-collection-update
 ***
-Update network rule collection in firewall or policy. The command will update the provided arguments. One of the arguments 'firewall_name' or 'policy'  must be provided.  The command will return firewall or policy rule collection resource information.
+Update a network rule collection in a firewall or policy. The command will update the provided arguments. One of the arguments 'firewall_name' or 'policy' must be provided. The command will return firewall or policy rule collection resource information.
 
 
 #### Base Command
@@ -1301,13 +1275,13 @@ Update network rule collection in firewall or policy. The command will update th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firewall_name | The name of the firewall which contains the collection. | Optional | 
-| policy | The name of the policy which contains the collection. | Optional | 
+| firewall_name | The name of the firewall that contains the collection. | Optional | 
+| policy | The name of the policy that contains the collection. | Optional | 
 | collection_name | The name of the network rule collection to update. | Required | 
-| priority | The priority of the network rule collection resource. Minimum value is 100, maximum value us 65000. | Optional | 
+| priority | The priority of the network rule collection resource. Minimum value is 100, maximum value is 65000. | Optional | 
 | action | The action type of a rule collection. Possible values are: Allow, Deny. | Optional | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -1354,7 +1328,6 @@ There is no context output for this command.
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Succeeded |
 
-
 ### azure-firewall-service-tag-list
 ***
 Retrieve service tags information.
@@ -1367,8 +1340,8 @@ Retrieve service tags information.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The location that will be used as a reference for version (not as a filter based on location, the command will retrieve the list of service tags with prefix details across all regions but limited to the cloud that your subscription belongs to). Possible values are: northcentralus, eastus, northeurope, westeurope, eastasia, southeastasia, eastus2, centralus, southcentralus, westus, japaneast, japanwest, australiaeast, australiasoutheast, brazilsouth, centralindia, southindia, westindia, canadacentral, canadaeast, uksouth, ukwest, westcentralus, westus2, koreacentral, francecentral, australiacentral, uaenorth, southafricanorth, switzerlandnorth, germanywestcentral, norwayeast, westus3, jioindiawest. | Required | 
-| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+| location | The location that will be used as a reference for a version (not as a filter based on location, the command will retrieve the list of service tags with prefix details across all regions but limited to the cloud that your subscription belongs to). Possible values are: northcentralus, eastus, northeurope, westeurope, eastasia, southeastasia, eastus2, centralus, southcentralus, westus, japaneast, japanwest, australiaeast, australiasoutheast, brazilsouth, centralindia, southindia, westindia, canadacentral, canadaeast, uksouth, ukwest, westcentralus, westus2, koreacentral, francecentral, australiacentral, uaenorth, southafricanorth, switzerlandnorth, germanywestcentral, norwayeast, westus3, jioindiawest. | Required | 
+| limit | The maximum number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 
 
@@ -1418,10 +1391,9 @@ There is no context output for this command.
 >|---|---|
 >| ApiManagement.AustraliaCentral | ApiManagement.AustraliaCentral |
 
-
 ### azure-firewall-ip-group-create
 ***
-Create IP group.
+Create an IP group.
 
 
 #### Base Command
@@ -1434,8 +1406,8 @@ Create IP group.
 | ip_group_name | The name of the IP group resource to create. | Required | 
 | ips | Comma-separated list of IP addresses or IP address prefixes in the IP group resource. | Optional | 
 | location | The location of the IP group resource. Possible values are: northcentralus, eastus, northeurope, westeurope, eastasia, southeastasia, eastus2, centralus, southcentralus, westus, japaneast, japanwest, australiaeast, australiasoutheast, brazilsouth, centralindia, southindia, westindia, canadacentral, canadaeast, uksouth, ukwest, westcentralus, westus2, koreacentral, francecentral, australiacentral, uaenorth, southafricanorth, switzerlandnorth, germanywestcentral, norwayeast, westus3, jioindiawest. | Required | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -1478,10 +1450,9 @@ Create IP group.
 >|---|---|---|---|---|---|
 >| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 189.160.40.11 |  |  | Updating |
 
-
 ### azure-firewall-ip-group-update
 ***
-Update IP group. Add or remove IPs from the group.
+Update an IP group. Add or remove IP addresses from the group.
 
 
 #### Base Command
@@ -1494,8 +1465,8 @@ Update IP group. Add or remove IPs from the group.
 | ip_group_name | The name of the IP group resource to update. | Required | 
 | ips_to_add | Comma-separated list of IP addresses or IP address prefixes to add to the IP group resource. | Optional | 
 | ips_to_remove | Comma-separated list of IP addresses or IP address prefixes to remove from the IP group resource. | Optional | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -1539,10 +1510,9 @@ Update IP group. Add or remove IPs from the group.
 >|---|---|---|---|---|---|
 >| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 189.160.40.11,<br/>189.160.40.11 |  |  | Updating |
 
-
 ### azure-firewall-ip-group-list
 ***
-List IP groups in resource group or subscription.
+List IP groups in a resource group or subscription.
 
 
 #### Base Command
@@ -1552,8 +1522,8 @@ List IP groups in resource group or subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource | The resource which contains the IP groups to list. Possible values are: resource_group, subscription. Default is resource_group. | Required | 
-| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+| resource | The resource that contains the IP groups to list. Possible values are: resource_group, subscription. Default is resource_group. | Required | 
+| limit | The maximum number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 
 
@@ -1600,7 +1570,6 @@ List IP groups in resource group or subscription.
 >|---|---|---|---|---|---|
 >| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 189.160.40.11 |  |  | Succeeded |
 
-
 ### azure-firewall-ip-group-get
 ***
 Retrieve IP group information.
@@ -1615,8 +1584,8 @@ Retrieve IP group information.
 | --- | --- | --- |
 | ip_group_names | Comma-separated list of IP group names resources to retrieve. | Required | 
 | polling | Indicates if the command was scheduled. Possible values: "True" or "False". Possible values are: True, False. Default is True. | Optional | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
+| interval | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence times out. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -1662,10 +1631,9 @@ Retrieve IP group information.
 >|---|---|---|---|---|---|
 >| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 189.160.40.11 |  |  | Succeeded |
 
-
 ### azure-firewall-ip-group-delete
 ***
-Delete IP group resource.
+Delete an IP group resource.
 
 
 #### Base Command
@@ -1684,5 +1652,4 @@ There is no context output for this command.
 #### Command example
 ```!azure-firewall-ip-group-delete ip_group_names=xsoar-ip-group```
 #### Human Readable Output
-
 >IP Group xsoar-ip-group deleted successfully.
