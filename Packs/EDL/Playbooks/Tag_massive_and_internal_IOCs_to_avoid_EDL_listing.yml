@@ -7,7 +7,7 @@ description: |-
 
   CIDRs - If the CIDR prefix is larger than the set max prefix it will tag it as a `Massive_CIDR` and also with `skip_edl`
 
-  TLD Wildcards - If a domainglob is a TLD wildcard (i.e. - *.net) it will be tagged as "TLD_Wildcard` and also with `skip_edl`.
+  TLD Wildcards - If a domainglob is a TLD wildcard (i.e. - *.net) it will be tagged as `TLD_Wildcard` and also with `skip_edl`.
 
   Internal IPs - If an IP is internal and also part of the CIDR configured by the user in the "Internal Assets" list it will be checked as `internal` and tagged with `skip_edl`.
 
