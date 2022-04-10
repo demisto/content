@@ -1378,6 +1378,15 @@ class CoreClient(BaseClient):
         )
         return reply
 
+    def get_file_by_url_suffix(self, url_suffix):
+        reply = self._http_request(
+            method='GET',
+            url_suffix=file_link,
+            timeout=self.timeout,
+            resp_type='content'
+        )
+        return reply
+
     def save_modified_incidents_to_integration_context(self):
         last_modified_incidents = self.get_incidents(limit=100, sort_by_modification_time='desc')
         modified_incidents_context = {}
