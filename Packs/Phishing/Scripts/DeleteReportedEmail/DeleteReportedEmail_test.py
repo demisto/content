@@ -49,7 +49,7 @@ SEARCH_ARGS = {
     'user-id': 'user_id'
 }
 
-MISSING_EMAIL_ERROR_MSG = 'Email was not found in mailbox. It is possible that the email was already deleted manually.'
+MISSING_EMAIL_ERROR_MSG = 'Email was not found in the mailbox. It is possible that the email was already deleted manually.'
 
 WAS_EMAIL_DELETED_EXPECTED_RESULTS = [([], ('Skipped', MISSING_EMAIL_ERROR_MSG)),
                                       ([{'message_id': 'message-id', 'result': 'Success'}], ('Success', ''))]

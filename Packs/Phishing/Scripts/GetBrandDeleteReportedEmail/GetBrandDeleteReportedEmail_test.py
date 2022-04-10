@@ -40,4 +40,3 @@ def test_get_brand_delete_reported_email(mocker):
     mocker.patch.object(demisto, 'results')
     main()
     assert demisto.results.call_args[0][0]['options'] == ['EWSO365']
-

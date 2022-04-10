@@ -253,9 +253,9 @@ def delete_email(search_args: dict, search_function: str,
         search_result = execute_command(search_function, search_args)
         if not search_result or isinstance(search_result, str):
             raise MissingEmailException()
-        delete_args = delete_args_function(search_result, search_args)
+        delete_args = delete_args_function(search_result, search_args)  # type: ignore
     else:
-        delete_args = delete_args_function(search_args)
+        delete_args = delete_args_function(search_args)  # type: ignore
     resp = execute_command(delete_function, delete_args)
     if deletion_error_condition(resp):
         raise DeletionFailed(resp)
@@ -313,7 +313,7 @@ def delete_from_brand_handler(incident_info: dict, args: dict):
         The suitable delete brand
 
     """
-    delete_from_brand = incident_info.get('CustomFields').get('emaildeletefrombrand')
+    delete_from_brand = incident_info.get('CustomFields', {}).get('emaildeletefrombrand')
     if not delete_from_brand or delete_from_brand == 'Unspecified':
         delete_from_brand = args.get('delete_from_brand', incident_info.get('sourceBrand'))
 
@@ -344,7 +344,7 @@ def main():
                 'Agari Phishing Defense': (None, DeletionArgs.agari, 'apd-remediate-message'),
                 'MicrosoftGraphMail': ('msgraph-mail-list-emails', DeletionArgs.msgraph, 'msgraph-mail-delete-email'),
             }
-            result = delete_email(search_args, *integrations_dict[delete_from_brand])
+            result = delete_email(search_args, *integrations_dict[delete_from_brand])  # type: ignore
 
     except MissingEmailException as e:
         result, deletion_failure_reason = was_email_already_deleted(search_args, e)
