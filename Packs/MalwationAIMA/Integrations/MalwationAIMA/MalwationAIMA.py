@@ -54,13 +54,27 @@ class Client(BaseClient):
         :rtype: ``Dict[str, Any]``
         """
         if param['file_from_zip'] == '':
-            payload = {'metafields': '{ "data": { "environment":'+param['environment']+', "work_path":"'+param['work_path']+'", "timeout":'+param['timeout']+', '
-                                   '"mouse_simulation": '+param['mouse_simulation']+', "config_extractor": '+param['config_extractor']+', "https_inspection": '+param['https_inspection']+', '
-                                   '"full_memory_dump": '+param['full_memory_dump']+', "enable_net": '+param['enable_net']+' } }', 'isPublic': '{ "data": '+param['isPublic']+' }'}
+            payload = {'metafields': '{ "data": { "environment":' + param['environment'] + ', "work_path":' + param[
+                'work_path'] + ', "timeout":' + param['timeout'] + ', '
+                                                                   '"mouse_simulation": ' + param[
+                                         'mouse_simulation'] + ', "config_extractor": ' + param[
+                                         'config_extractor'] + ', "https_inspection": ' + param[
+                                         'https_inspection'] + ', '
+                                                               '"full_memory_dump": ' + param[
+                                         'full_memory_dump'] + ', "enable_net": ' + param['enable_net'] + ' } }',
+                       'isPublic': '{ "data": ' + param['isPublic'] + ' }'}
         else:
-            payload = {'metafields': '{ "data": { "environment":'+param['environment']+', "work_path":"'+param['work_path']+'", "timeout":'+param['timeout']+', '
-                                   '"mouse_simulation": '+param['mouse_simulation']+', "config_extractor": '+param['config_extractor']+', "https_inspection": '+param['https_inspection']+', '
-                                   '"full_memory_dump": '+param['full_memory_dump']+', "enable_net": '+param['enable_net']+' } }', 'isPublic': '{ "data": '+param['isPublic']+' }', 'zip': '{ "data": { "zipSelectName": "'+param['file_from_zip']+'", "zipPassword": "'+param['zip_pass']+'" } }'}
+            payload = {'metafields': '{ "data": { "environment":' + param['environment'] + ', "work_path":"' + param[
+                'work_path'] + '", "timeout":' + param['timeout'] + ', '
+                                                                    '"mouse_simulation": ' + param[
+                                         'mouse_simulation'] + ', "config_extractor": ' + param[
+                                         'config_extractor'] + ', "https_inspection": ' + param[
+                                         'https_inspection'] + ', '
+                                                               '"full_memory_dump": ' + param[
+                                         'full_memory_dump'] + ', "enable_net": ' + param['enable_net'] + ' } }',
+                       'isPublic': '{ "data": ' + param['isPublic'] + ' }',
+                       'zip': '{ "data": { "zipSelectName": "' + param['file_from_zip'] + '", "zipPassword": "' + param[
+                           'zip_pass'] + '" } }'}
         return self._http_request(
             method='POST',
             url_suffix='/customer/addSubmission',
@@ -68,7 +82,6 @@ class Client(BaseClient):
             files=param['files']
 
         )
-
 
     def aima_get(self, param: dict) -> Dict[str, Any]:
         """Gets the sample scan result from AIMA using the '/customer/getSubmission/' API endpoint
@@ -123,7 +136,6 @@ class Client(BaseClient):
 
 
 def aima_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     """Uploads the sample to the AIMA sandbox to analyse with required or optional selections."""
 
     ispublic = args.get('isPublic')
@@ -189,8 +201,8 @@ def aima_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs={'AIMA.Analysis(val.Job_ID == obj.Job_ID)': {'UUID': uuid, 'URL': url}}
     )
 
-def aima_get_result(client: Client, args: Dict[str, Any]) -> CommandResults:
 
+def aima_get_result(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Retrive the sample scan result from the AIMA sandbox.
 
         :type uuid: ``str``
@@ -209,17 +221,26 @@ def aima_get_result(client: Client, args: Dict[str, Any]) -> CommandResults:
         md5 = result['submission']['file_info']['hashes']['md5']
         sha1 = result['submission']['file_info']['hashes']['sha1']
         sha256 = result['submission']['file_info']['hashes']['sha256']
-        submission_info = {'file_name': result['submission']['file_info']['original_name'],'status_id': result['submission']['file_info']['status_id'],'isPublic': result['submission']['file_info']['isPublic']}
+        submission_info = {'file_name': result['submission']['file_info']['original_name'],
+                           'status_id': result['submission']['file_info']['status_id'],
+                           'isPublic': result['submission']['file_info']['isPublic']}
         result_url = result['submission']['resultURL']
         submission_id = result['submission']['uuid']
         level = result['submissionLevel']
-        output = {'AIMA.Result(val.Job_ID == obj.Job_ID)': {'STATUS': status, 'MD5': md5,'SHA1': sha1,'SHA256':sha256, 'LEVEL': level, 'INFO': submission_info, 'URL': result_url,'ID':submission_id}}
-        readable_output = tableToMarkdown('Submission Result', {'STATUS': status, 'MD5': md5,'SHA1': sha1,'SHA256':sha256, 'THREAT_LEVEL': level, 'FILE_NAME': result['submission']['file_info']['original_name'],'STATUS_ID': result['submission']['file_info']['status_id'],'isPublic': result['submission']['file_info']['isPublic'], 'SCAN_URL': result_url,'ID':submission_id})
+        output = {'AIMA.Result(val.Job_ID == obj.Job_ID)': {'STATUS': status, 'MD5': md5, 'SHA1': sha1,
+                                                            'SHA256': sha256, 'LEVEL': level, 'INFO': submission_info,
+                                                            'URL': result_url, 'ID': submission_id}}
+        readable_output = tableToMarkdown('Submission Result',
+                                          {'STATUS': status, 'MD5': md5, 'SHA1': sha1,
+                                           'SHA256': sha256, 'THREAT_LEVEL': level,
+                                           'FILE_NAME': result['submission']['file_info']['original_name'],
+                                           'STATUS_ID': result['submission']['file_info']['status_id'],
+                                           'isPublic': result['submission']['file_info']['isPublic'],
+                                           'SCAN_URL': result_url, 'ID': submission_id})
     except:
         status = result['status']
         output = {'AIMA.Result(val.Job_ID == obj.Job_ID)': {'STATUS': status}}
         readable_output = tableToMarkdown('Submission Result', result)
-
 
     return CommandResults(
         readable_output=readable_output,
@@ -245,7 +266,8 @@ def cap_mav_get_submission(client: Client, args: Dict[str, Any]) -> CommandResul
             score = result['status']
             detections = result['scan_results']
             output = {'CAP.Mav(val.Job_ID == obj.Job_ID)': {'COUNT': count, 'SCORE': score, 'DETECTIONS': detections}}
-            readable_output = tableToMarkdown('Submission Result', {'DETECTION_COUNT': count, 'SCORE': score, 'VENDOR_RESULTS': detections})
+            readable_output = tableToMarkdown('Submission Result',
+                                              {'DETECTION_COUNT': count, 'SCORE': score, 'VENDOR_RESULTS': detections})
 
         else:
             status = result['status']
@@ -282,7 +304,7 @@ def cap_mav_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResult
     result = client.cap_mav_add(param=param)
 
     readable_output = tableToMarkdown('SAMPLE UPLOADED', result)
-    uuid =result['uid']
+    uuid = result['uid']
 
     return CommandResults(
         readable_output=readable_output,
@@ -310,7 +332,8 @@ def cap_static_get_submission(client: Client, args: Dict[str, Any]) -> CommandRe
             weight = result['Score'][1]
             yara_rules = result["Matched YARA rules"]
             entropy = result['File Info']['Entropy']
-            output = {'CAP.Static(val.Job_ID == obj.Job_ID)': {'SCORE': score, 'WEIGHT': weight,'YARA':yara_rules,'ENTROPY':entropy}}
+            output = {'CAP.Static(val.Job_ID == obj.Job_ID)': {'SCORE': score, 'WEIGHT': weight, 'YARA': yara_rules,
+                                                               'ENTROPY': entropy}}
 
         else:
             status = result['status']
@@ -319,13 +342,11 @@ def cap_static_get_submission(client: Client, args: Dict[str, Any]) -> CommandRe
         status = result['status']
         output = {'CAP.Static(val.Job_ID == obj.Job_ID)': {'STATUS': status}}
 
-
     return CommandResults(
         readable_output=readable_output,
         outputs_key_field='results',
         outputs=output
     )
-
 
 
 def cap_static_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -355,7 +376,6 @@ def cap_static_upload_sample(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-
 def encode_file_name(file_name):
     """
     encodes the file name - i.e ignoring non ASCII chars and removing backslashes
@@ -366,7 +386,7 @@ def encode_file_name(file_name):
     return file_name.encode('ascii', 'ignore')
 
 
-def main() -> None: # pragma: no cover
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
     :return:
     :rtype:

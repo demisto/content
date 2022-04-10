@@ -1,5 +1,4 @@
 Malwation AIMA malware analysis sandboxing.
-This integration was integrated and tested with version xx of MalwationAIMA
 
 ## Configure Malwation AIMA on Cortex XSOAR
 

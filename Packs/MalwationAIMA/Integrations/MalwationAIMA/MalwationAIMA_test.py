@@ -1,22 +1,20 @@
 import json
-import pytest
-import time
 from MalwationAIMA import Client
-import os
 import demistomock as demisto
-
 
 BASE_URL = 'https://test.com'
 
 client = Client(base_url=BASE_URL,
                 verify=False,
                 proxy=False,
-                 headers={
-            'Authentication': 'Bearer some_api_key'
-        })
+                headers={
+                    'Authentication': 'Bearer some_api_key'
+                })
 
 AIMA_SCAN_RESPONSE = {
-    "message": "File successfully uploaded, now you can track your submissions progress from /checkSubmissionStatus/2661ca6d-8989-45b1-b912-203fa2c60a21 or /getSubmission/2661ca6d-8989-45b1-b912-203fa2c60a21",
+    "message": "File successfully uploaded, now you can track your submissions progress from "
+               "/checkSubmissionStatus/2661ca6d-8989-45b1-b912-203fa2c60a21 or "
+               "/getSubmission/2661ca6d-8989-45b1-b912-203fa2c60a21",
     "uuid": "2661ca6d-8989-45b1-b912-203fa2c60a21",
     "link": "https://aima.malwation.com/submission/2661ca6d-8989-45b1-b912-203fa2c60a21"
 }
@@ -84,7 +82,7 @@ MAV_SCAN_RESULT = {
                 "name": "malware"
             }
         }
-        
+
     ],
     "detection": "2",
     "status": "malicious"
@@ -206,10 +204,7 @@ STATIC_SCAN_RESULT = '''{
 }'''
 
 
-
-
 def test_cap_mav_get_submission(requests_mock):
-
     from MalwationAIMA import cap_mav_get_submission
 
     mock_response = MAV_SCAN_RESULT
@@ -226,13 +221,13 @@ def test_cap_mav_get_submission(requests_mock):
     assert response.outputs['CAP.Mav(val.Job_ID == obj.Job_ID)']['DETECTIONS'] == mock_response['scan_results']
 
 
-def test_cap_mav_upload_sample(mocker,requests_mock):
-
+def test_cap_mav_upload_sample(mocker, requests_mock):
     from MalwationAIMA import cap_mav_upload_sample
 
     mock_response = MAV_SCAN_RESPONSE
     mocker.patch.object(demisto, 'getFilePath',
-                        return_value={'id': id, 'path': './test_data/cap_mav_scan_response.json', 'name': 'cap_mav_scan_response.json'})
+                        return_value={'id': id, 'path': './test_data/cap_mav_scan_response.json',
+                                      'name': 'cap_mav_scan_response.json'})
     requests_mock.post('https://test.com/mav/upload', json=mock_response)
 
     args = {
@@ -245,7 +240,6 @@ def test_cap_mav_upload_sample(mocker,requests_mock):
 
 
 def test_cap_static_get_submission(requests_mock):
-
     from MalwationAIMA import cap_static_get_submission
 
     mock_response = json.loads(STATIC_SCAN_RESULT)
@@ -260,13 +254,13 @@ def test_cap_static_get_submission(requests_mock):
     assert response.outputs['CAP.Static(val.Job_ID == obj.Job_ID)']['SCORE'] == mock_response['Score'][0]
 
 
-def test_cap_static_upload_sample(mocker,requests_mock):
-
+def test_cap_static_upload_sample(mocker, requests_mock):
     from MalwationAIMA import cap_static_upload_sample
 
     mock_response = STATIC_SCAN_RESPONSE
     mocker.patch.object(demisto, 'getFilePath',
-                        return_value={'id': id, 'path': './test_data/cap_static_scan_response.json', 'name': 'cap_static_scan_response.json'})
+                        return_value={'id': id, 'path': './test_data/cap_static_scan_response.json',
+                                      'name': 'cap_static_scan_response.json'})
     requests_mock.post('https://test.com/capstatic/upload', json=mock_response)
 
     args = {
@@ -279,7 +273,6 @@ def test_cap_static_upload_sample(mocker,requests_mock):
 
 
 def test_aima_get_result(requests_mock):
-
     from MalwationAIMA import aima_get_result
 
     mock_response = json.loads(AIMA_SCAN_RESULT)
@@ -294,13 +287,13 @@ def test_aima_get_result(requests_mock):
     assert response.outputs['AIMA.Result(val.Job_ID == obj.Job_ID)']['LEVEL'] == mock_response['submissionLevel']
 
 
-def test_aima_upload_sample(mocker,requests_mock):
-
+def test_aima_upload_sample(mocker, requests_mock):
     from MalwationAIMA import aima_upload_sample
 
     mock_response = AIMA_SCAN_RESPONSE
     mocker.patch.object(demisto, 'getFilePath',
-                        return_value={'id': id, 'path': './test_data/aima_scan_response.json', 'name': 'aima_scan_response.json'})
+                        return_value={'id': id, 'path': './test_data/aima_scan_response.json',
+                                      'name': 'aima_scan_response.json'})
     requests_mock.post('https://test.com/customer/addSubmission', json=mock_response)
 
     args = {
@@ -314,7 +307,7 @@ def test_aima_upload_sample(mocker,requests_mock):
         "https_inspection": 'false',
         "full_memory_dump": 'false',
         "enable_net": 'false'
-        }
+    }
 
     response = aima_upload_sample(client, args)
 

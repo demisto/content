@@ -35,7 +35,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: win7x64
       description: Choose what environment you want to run your submission.
       isArray: false
@@ -65,7 +65,7 @@ script:
       required: true
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: '1'
       description: Duration of the submission analysis.
       isArray: false
@@ -78,7 +78,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'false'
       description: Enable human simulation.
       isArray: false
@@ -89,7 +89,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'false'
       description: Malware Config Extractor
       isArray: false
@@ -100,7 +100,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'false'
       description: Https inspection to read encrypted traffic.
       isArray: false
@@ -111,7 +111,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'false'
       description: If you want to access MemProcFS Module enable this metafield.
       isArray: false
@@ -122,7 +122,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'false'
       description: Enable Internet Connection
       isArray: false
@@ -133,7 +133,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: desktop
       description: The working path of the submission.
       isArray: false
