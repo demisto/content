@@ -1,0 +1,14 @@
+{
+  "createTime": "2021-12-07T08:39:20.854659Z",
+  "description": "api-test-2",
+  "displayName": "xsoar-api-test-2",
+  "groupKey": {
+    "id": "poctest12@xsoar.com"
+  },
+  "labels": {
+    "cloudidentity.googleapis.com/groups.discussion_forum": ""
+  },
+  "name": "groups/group-1-name",
+  "parent": "customers/xsoar-customer-id",
+  "updateTime": "2021-12-07T08:39:20.854659Z"
+}

@@ -645,11 +645,12 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     outputs_prefix = get_outputs_prefix(command_name)
     command_results = CommandResults(outputs_prefix=outputs_prefix, outputs_key_field='execution_id', outputs=outputs,
                                      raw_response=copy.deepcopy(outputs))
-    # if there are more then 1000 results
+    # if there are more than 1000 results
     if file_data:
         if not parse_result_file_to_context:
             #  Extracts the results into a file only
             file = fileResult(filename="results.gz", data=file_data)
+            command_results.readable_output = 'More than 1000 results were retrieved, see the compressed gzipped file below.'
             remove_query_id_from_integration_context(query_id)
             return [file, command_results]
         else:
