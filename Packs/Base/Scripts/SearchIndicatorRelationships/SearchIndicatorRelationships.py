@@ -106,7 +106,6 @@ def main():  # pragma: no cover
         query = 'revoked:T' if revoked else 'revoked:F'
         handle_stix_types(entities_types)
 
-        
         if relationships := search_relationships(entities, entities_types, relationships, limit, query):
             context = to_context(relationships, verbose)
         else:
