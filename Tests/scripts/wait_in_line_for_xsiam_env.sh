@@ -217,15 +217,17 @@ do
   fi
 
   # we are next in line for polling! let's see if anyone has finished
-  if [[ "$NUMBER_IN_LINE" -eq $(($NUM_OF_TEST_MACHINES + 1)) ]] # build nym 4 have the most responsibility because he is the next to run
+  if [[ "$NUMBER_IN_LINE" -eq $(($NUM_OF_TEST_MACHINES + 1)) ]] # build num 4 have the most responsibility because he is the next to run
   then
+    # loop starts from 2 because handle_previous_builds func checks one build before the $i argument we provide to it.
+    # So when we provide i=2,3,4 the function handles builds that number 1,2,3 in line.
     for ((i=2;i<=NUM_OF_TEST_MACHINES + 1;i++))
     do
       handle_previous_builds "$i" queue	# checks if builds num 1,2,3 still alive, if no removes them from line.
     done
   fi
 
-	# If curr build in one of 3 first places:
+	# If curr build in one of $NUM_OF_TEST_MACHINES first places:
 	if [[ "$NUMBER_IN_LINE" -le $NUM_OF_TEST_MACHINES ]]
 	then
 		# there should be free env waiting for us. let's find out which.
