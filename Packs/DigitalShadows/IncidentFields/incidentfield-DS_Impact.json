@@ -1,0 +1,32 @@
+{
+    "id": "incident_dsimpact",
+    "version": -1,
+    "modified": "2022-03-31T08:38:48.699587712Z",
+    "name": "DS Impact",
+    "ownerOnly": false,
+    "description": "The potential impact of the identified risk",
+    "cliName": "dsimpact",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Digital Shadows Client Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}
