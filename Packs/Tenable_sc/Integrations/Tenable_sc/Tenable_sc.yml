@@ -1,6 +1,6 @@
 category: Vulnerability Management
 commonfields:
-  id: Tenable.sc
+  id: Tenable.sc - Test
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -33,8 +33,8 @@ configuration:
   required: false
   type: 0
 description: With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
-display: Tenable.sc
-name: Tenable.sc
+display: Tenable.sc - Test
+name: Tenable.sc - Test
 script:
   commands:
   - arguments:
