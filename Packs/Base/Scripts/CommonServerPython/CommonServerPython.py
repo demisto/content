@@ -9731,7 +9731,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         'content-encoding': 'gzip'
     }
 
-    header_msg = f'Error sending new events into XSIAM. \n'
+    header_msg = 'Error sending new events into XSIAM. \n'
 
     def events_error_handler(response: requests.Response):
         """
