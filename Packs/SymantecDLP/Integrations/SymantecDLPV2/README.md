@@ -19,7 +19,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Password | True |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
     | Fetch limit | False |
-    | Incident type | False |
+    | Fetch incidents from type | False |
     | Incident Status ID | False |
     | Incident Severity | False |
     | Trust any certificate (not secure) | False |
