@@ -82,8 +82,10 @@ def test_template_params(mocker, template_params_arg):
     """
     Given:
         A templateParams argument
+            Case A: As a string type.
+            Case B: As a dict type.
     When:
-        Calling template_params()
+        Calling template_params().
     Then:
         - Make sure providing both JSON and JSON string objects for the argument is supported.
         - Make sure that for "key" field the method takes the value from the context.
