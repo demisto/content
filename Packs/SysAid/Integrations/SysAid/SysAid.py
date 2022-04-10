@@ -23,11 +23,8 @@ STATUSES = {'1', '2', '3', '4', '5', '6', '7', '8', '18', '19', '20', '21', '22'
             '31', '32', '33', '34', '35', '36', '39', '40', 'OPEN_CLASSES'}
 
 DEFAULT_PAGE_SIZE = 100
-
 DEFAULT_PAGE_NUMBER = 1
-
 MAX_INCIDENTS_TO_FETCH = 200
-
 FETCH_DEFAULT_TIME = '3 days'
 
 ''' CLIENT CLASS '''
@@ -89,32 +86,32 @@ class Client(BaseClient):
 
         return response
 
-    def user_list_request(self, fields: str = None, type_: str = None, offset: int = None, limit: int = None):
-        params = assign_params(fields=fields, type=type_, offset=offset, limit=limit)
+    def user_list_request(self, fields: str = None, record_type: str = None, offset: int = None, limit: int = None):
+        params = assign_params(fields=fields, type=record_type, offset=offset, limit=limit)
 
         response = self._http_request('GET', 'users', params=params, cookies=self._cookies)
 
         return response
 
-    def user_search_request(self, query: str, fields: str = None, type_: str = None, offset: int = None, limit: int = None):
-        params = assign_params(query=query, fields=fields, type=type_, offset=offset, limit=limit)
+    def user_search_request(self, query: str, fields: str = None, record_type: str = None, offset: int = None, limit: int = None):
+        params = assign_params(query=query, fields=fields, type=record_type, offset=offset, limit=limit)
 
         response = self._http_request('GET', 'users/search', params=params, cookies=self._cookies)
 
         return response
 
-    def service_record_list_request(self, type_: str, fields: str = None, offset: int = None, limit: int = None,
+    def service_record_list_request(self, record_type: str, fields: str = None, offset: int = None, limit: int = None,
                                     ids: List[str] = None, archive: int = None, filters: Dict[str, Any] = None):
-        params = assign_params(type=type_, fields=fields, offset=offset, limit=limit, ids=ids, archive=archive)
+        params = assign_params(type=record_type, fields=fields, offset=offset, limit=limit, ids=ids, archive=archive)
         params.update(filters or {})
 
         response = self._http_request('GET', 'sr', params=params, cookies=self._cookies)
 
         return response
 
-    def service_record_search_request(self, type_: str, query: str, fields: str = None, offset: int = None,
+    def service_record_search_request(self, record_type: str, query: str, fields: str = None, offset: int = None,
                                       limit: int = None, archive: int = None, filters: Dict[str, Any] = None):
-        params = assign_params(type=type_, fields=fields, offset=offset, limit=limit, query=query, archive=archive)
+        params = assign_params(type=record_type, fields=fields, offset=offset, limit=limit, query=query, archive=archive)
         params.update(filters)
 
         response = self._http_request('GET', 'sr/search', params=params, cookies=self._cookies)
@@ -137,16 +134,16 @@ class Client(BaseClient):
 
         return response
 
-    def service_record_template_get_request(self, type_: str, fields: str = None, template_id: str = None):
-        params = assign_params(fields=fields, type=type_, template=template_id)
+    def service_record_template_get_request(self, record_type: str, fields: str = None, template_id: str = None):
+        params = assign_params(fields=fields, type=record_type, template=template_id)
 
         response = self._http_request('GET', 'sr/template', params=params, cookies=self._cookies)
 
         return response
 
-    def service_record_create_request(self, type_: str, info: List[Dict[str, str]], fields: str = None,
+    def service_record_create_request(self, record_type: str, info: List[Dict[str, str]], fields: str = None,
                                       template_id: str = None):
-        params = assign_params(fields=fields, type=type_, template=template_id)
+        params = assign_params(fields=fields, type=record_type, template=template_id)
         data = {"info": info}
 
         response = self._http_request('GET', 'sr/template', params=params, json_data=data, cookies=self._cookies)
@@ -209,9 +206,9 @@ def asset_list_handler(response: Dict[str, Any], remove_if_null: str):
     new_info = []
     response_entry = {key: response[key] for key in ['id', 'name'] if key in response}
     if 'info' in response:
-        for info in response['info']:
-            if info['keyCaption'] in ['Model', 'Description'] and info[remove_if_null]:
-                new_info.append(f'{info["keyCaption"]}: {info["valueCaption"]}')
+        for asset_info in response['info']:
+            if asset_info['keyCaption'] in ['Model', 'Description'] and asset_info[remove_if_null]:
+                new_info.append(f'{asset_info["keyCaption"]}: {asset_info["valueCaption"]}')
 
         response_entry['info'] = new_info
     return response_entry
@@ -226,8 +223,8 @@ def filter_list_handler(response: Dict[str, Any]):
     new_info = []
     response_entry = {key: response[key] for key in ['id', 'type', 'caption'] if key in response}
     if 'values' in response:
-        for info in response['values']:
-            new_info.append(f'{info["id"]}: {info["caption"]}')
+        for filter_info in response['values']:
+            new_info.append(f'{filter_info["id"]}: {filter_info["caption"]}')
 
         response_entry['values'] = new_info
     return response_entry
@@ -241,11 +238,11 @@ def service_record_handler(response: Dict[str, Any]):
     """
     response_entry = {'id': response['id']}
     if 'info' in response:
-        for info in response['info']:
-            if info['key'] in ['title', 'notes']:
-                response_entry[info['key']] = info['value']
-            if info['key'] in ['status', 'update_time', 'sr_type']:
-                response_entry[info['keyCaption']] = info['valueCaption']
+        for service_record_info in response['info']:
+            if service_record_info['key'] in ['title', 'notes']:
+                response_entry[service_record_info['key']] = service_record_info['value']
+            if service_record_info['key'] in ['status', 'update_time', 'sr_type']:
+                response_entry[service_record_info['keyCaption']] = service_record_info['valueCaption']
 
         return response_entry
 
@@ -320,11 +317,18 @@ def template_readable_response(responses: Union[dict, List[dict], str]) -> Union
 
 
 def calculate_offset(page_size: int, page_number: int) -> int:
-    # page numbering starts at 1, offset (the start point from which to retrieve values, zero based) starts at 0
+    """
+    SysAid receives offset and page_size arguments. To follow our convention, we receive page_size and page_number arguments and
+    calculate the offset from them.
+    The offset is the start point from which to retrieve values, zero based. It starts at 0.
+
+    :param page_size: The number of results to show in one page.
+    :param page_number: The page number to show, starts at 1.
+    """
     return page_size * (page_number - 1)
 
 
-def paging_heading(page_size: Union[str, int] = None, page_number: Union[str, int] = None):
+def readable_paging_heading(page_size: Union[str, int] = None, page_number: Union[str, int] = None):
     if page_number or page_size:
         return 'Showing' + (f' {page_size}' if page_size else '') + ' results' + \
                (f' from page {page_number}' if page_number else '') + ':\n'
@@ -332,7 +336,12 @@ def paging_heading(page_size: Union[str, int] = None, page_number: Union[str, in
 
 
 def set_returned_fields(fields: str = None) -> Optional[str]:
-    # "all" was added for debugging purposes as we set the "fields" argument to be mandatory, and is not sent in the request
+    """
+    We made the 'fields' argument mandatory, so the context data won’t be filled with unneeded data.
+    It is not mandatory by SysAid, and when it is not sent- all fields will be returned in the response.
+    To enable this behavior, we added an option to send 'fields=all'. In that case, we will not send a value to SysAid in the
+    fields parameter.
+    """
     if fields and 'all' in fields:
         return None
     return fields
@@ -345,7 +354,7 @@ def fetch_request(client: Client, fetch_types: str = None, include_archived: boo
     fetch_types = 'all' if not fetch_types or 'all' in fetch_types else fetch_types
     filters = {'status': included_statuses} if included_statuses else {}
 
-    response = client.service_record_list_request(type_=fetch_types, archive=int(include_archived), filters=filters)
+    response = client.service_record_list_request(record_type=fetch_types, archive=int(include_archived), filters=filters)
 
     responses = [response] if isinstance(response, dict) else response
     demisto.debug(f'The request returned {len(response)} service records.')
@@ -354,6 +363,12 @@ def fetch_request(client: Client, fetch_types: str = None, include_archived: boo
 
 def filter_service_records_by_time(service_records: List[Dict[str, Any]], fetch_start_datetime: datetime) \
         -> List[Dict[str, Any]]:
+    """
+    Returns the service records that changed after the fetch_start_datetime, from the service_records given.
+
+    :param service_records: Service records as given form SysAid.
+    :param fetch_start_datetime: The datetime to start fetching service records from.
+    """
     filtered_service_records = []
     for service_record in service_records:
         update_time = get_service_record_update_time(service_record)
@@ -411,10 +426,10 @@ def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str):
 
 
 def get_service_record_update_time(service_record: Dict[str, Any]) -> Optional[datetime]:
-    for i in service_record['info']:
-        if i['key'] == 'update_time':
+    for service_record_info in service_record['info']:
+        if service_record_info['key'] == 'update_time':
             # We are using 'valueCaption' and not 'value' as they hold different values
-            occurred = str(i['valueCaption'])
+            occurred = str(service_record_info['valueCaption'])
             return dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'})
 
     demisto.debug(f'The service record with ID {service_record["id"]} does not have a modify time (update_time).')
@@ -422,28 +437,25 @@ def get_service_record_update_time(service_record: Dict[str, Any]) -> Optional[d
 
 
 def service_record_to_incident_context(service_record: Dict[str, Any]):
-    title, type_ = '', ''
-    for i in service_record['info']:
-        if i['key'] == 'sr_type':
-            type_ = str(i['valueCaption'])
-        elif i['key'] == 'title':
-            title = i['valueCaption']
+    title, record_type = '', ''
+    for service_record_info in service_record['info']:
+        if service_record_info['key'] == 'sr_type':
+            record_type = str(service_record_info['valueCaption'])
+        elif service_record_info['key'] == 'title':
+            title = service_record_info['valueCaption']
 
-    occurred = get_service_record_update_time(service_record)
-
-    if not occurred:
-        demisto.debug(f'The service record {type_} with ID {service_record["id"]} does not have a modify time (update_time) '
-                      f'and therefore can\'t be fetched.')
-        return None
+    occurred_datetime = get_service_record_update_time(service_record)
+    if occurred_datetime:
+        occurred = occurred_datetime.strftime(DATE_FORMAT)
 
     incident_context = {
         'name': title,
-        'occurred': occurred.strftime(DATE_FORMAT),
+        'occurred': occurred,
         'rawJSON': json.dumps(service_record),
-        'type': f'SysAid {type_}'
+        'type': f'SysAid {record_type}'
     }
-    demisto.debug(f'New service record {type_} is: name: {incident_context["name"]}, occurred: {incident_context["occurred"]}, '
-                  f'type: {incident_context["type"]}.')
+    demisto.debug(f'New service record {record_type} is: name: {incident_context["name"]}, occurred: '
+                  f'{incident_context["occurred"]}, type: {incident_context["type"]}.')
     return incident_context
 
 
@@ -491,7 +503,7 @@ def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         response = client.asset_list_with_id_request(asset_id, fields)
     else:
         response = client.asset_list_request(fields, offset, limit)
-        heading = paging_heading(limit, page_number)
+        heading = readable_paging_heading(limit, page_number)
     headers = ['id', 'name', 'info']
     readable_response = create_readable_response(response, asset_list_handler, 'valueCaption')
     command_results = CommandResults(
@@ -526,11 +538,11 @@ def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=paging_heading(limit, page_number) + tableToMarkdown('Asset Results:',
-                                                                             readable_response,
-                                                                             headers=headers,
-                                                                             removeNull=True,
-                                                                             headerTransform=pascalToSpace)
+        readable_output=readable_paging_heading(limit, page_number) + tableToMarkdown('Asset Results:',
+                                                                                      readable_response,
+                                                                                      headers=headers,
+                                                                                      removeNull=True,
+                                                                                      headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -559,23 +571,23 @@ def filter_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     fields = set_returned_fields(args.get('fields'))
-    type_ = args.get('type')
+    record_type = args.get('type')
 
     limit = arg_to_number(args.get('page_size')) or DEFAULT_PAGE_SIZE
     page_number = arg_to_number(args.get('page_number')) or DEFAULT_PAGE_NUMBER
     offset = calculate_offset(limit, page_number)
 
-    response = client.user_list_request(fields, type_, offset, limit)
+    response = client.user_list_request(fields, record_type, offset, limit)
     headers = ['id', 'name', 'isAdmin', 'isManager', 'isSysAidAdmin', 'isGuest']
     command_results = CommandResults(
         outputs_prefix='SysAid.User',
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=paging_heading(limit, page_number) + tableToMarkdown('Filter Results:',
-                                                                             response,
-                                                                             headers=headers,
-                                                                             removeNull=True)
+        readable_output=readable_paging_heading(limit, page_number) + tableToMarkdown('Filter Results:',
+                                                                                      response,
+                                                                                      headers=headers,
+                                                                                      removeNull=True)
     )
 
     return command_results
@@ -584,30 +596,30 @@ def user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get('query')
     fields = set_returned_fields(args.get('fields'))
-    type_ = args.get('type')
+    record_type = args.get('type')
 
     limit = arg_to_number(args.get('page_size')) or DEFAULT_PAGE_SIZE
     page_number = arg_to_number(args.get('page_number')) or DEFAULT_PAGE_NUMBER
     offset = calculate_offset(limit, page_number)
 
-    response = client.user_search_request(str(query), fields, type_, offset, limit)
+    response = client.user_search_request(str(query), fields, record_type, offset, limit)
     headers = ['id', 'name', 'isAdmin', 'isManager', 'isSysAidAdmin', 'isGuest']
     command_results = CommandResults(
         outputs_prefix='SysAid.User',
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=paging_heading(limit, page_number) + tableToMarkdown('User Results:',
-                                                                             response,
-                                                                             headers=headers,
-                                                                             removeNull=True)
+        readable_output=readable_paging_heading(limit, page_number) + tableToMarkdown('User Results:',
+                                                                                      response,
+                                                                                      headers=headers,
+                                                                                      removeNull=True)
     )
 
     return command_results
 
 
 def service_record_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    type_ = args.get('type')
+    record_type = args.get('type')
     fields = set_returned_fields(args.get('fields'))
     ids = args.get('ids')
     archive = arg_to_number(args.get('archive'))
@@ -620,7 +632,7 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
     custom_fields_values = argToList(args.get('custom_fields_values'))
     filters = extract_filters(custom_fields_keys, custom_fields_values)
 
-    response = client.service_record_list_request(str(type_), fields, offset, limit, ids, archive, filters)
+    response = client.service_record_list_request(str(record_type), fields, offset, limit, ids, archive, filters)
     headers = ['id', 'title', 'Status', 'Modify time', 'Service Record Type', 'notes']
     readable_response = create_readable_response(response, service_record_handler)
     command_results = CommandResults(
@@ -628,11 +640,11 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=paging_heading(limit, page_number) + tableToMarkdown('Service Record Results:',
-                                                                             readable_response,
-                                                                             headers=headers,
-                                                                             removeNull=True,
-                                                                             headerTransform=pascalToSpace)
+        readable_output=readable_paging_heading(limit, page_number) + tableToMarkdown('Service Record Results:',
+                                                                                      readable_response,
+                                                                                      headers=headers,
+                                                                                      removeNull=True,
+                                                                                      headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -640,7 +652,7 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
 
 def service_record_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get('query')
-    type_ = args.get('type')
+    record_type = args.get('type')
     fields = set_returned_fields(args.get('fields'))
     archive = arg_to_number(args.get('archive'))
 
@@ -652,7 +664,7 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
     custom_fields_values = argToList(args.get('custom_fields_values'))
     filters = extract_filters(custom_fields_keys, custom_fields_values)
 
-    response = client.service_record_search_request(str(type_), str(query), fields, offset, limit, archive, filters)
+    response = client.service_record_search_request(str(record_type), str(query), fields, offset, limit, archive, filters)
     headers = ['id', 'title', 'Status', 'Modify time', 'Service Record Type', 'notes']
     readable_response = create_readable_response(response, service_record_handler)
     command_results = CommandResults(
@@ -660,11 +672,11 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=paging_heading(limit, page_number) + tableToMarkdown('Service Record Results:',
-                                                                             readable_response,
-                                                                             headers=headers,
-                                                                             removeNull=True,
-                                                                             headerTransform=pascalToSpace)
+        readable_output=readable_paging_heading(limit, page_number) + tableToMarkdown('Service Record Results:',
+                                                                                      readable_response,
+                                                                                      headers=headers,
+                                                                                      removeNull=True,
+                                                                                      headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -708,10 +720,10 @@ def service_record_close_command(client: Client, args: Dict[str, Any]) -> Comman
 
 def service_record_template_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     fields = set_returned_fields(args.get('fields'))
-    type_ = args.get('type')
+    record_type = args.get('type')
     template_id = args.get('template_id')
 
-    response = client.service_record_template_get_request(str(type_), fields, template_id)
+    response = client.service_record_template_get_request(str(record_type), fields, template_id)
     readable_response = template_readable_response(response)
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecordTemplate',
@@ -730,11 +742,11 @@ def service_record_template_get_command(client: Client, args: Dict[str, Any]) ->
 
 def service_record_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     fields = set_returned_fields(args.get('fields'))
-    type_ = args.get('type')
+    record_type = args.get('type')
     template_id = args.get('template_id')
     info = set_service_record_info(args)
 
-    response = client.service_record_create_request(str(type_), info, fields, template_id)
+    response = client.service_record_create_request(str(record_type), info, fields, template_id)
     headers = ['id', 'title', 'Status', 'Modify time', 'Service Record Type', 'notes']
     readable_response = create_readable_response(response, service_record_handler)
     command_results = CommandResults(
@@ -812,7 +824,8 @@ def test_module(client: Client, params: dict) -> None:
         include_archived = argToBoolean(params.get('include_archived', False))
         filters = {'status': included_statuses} if included_statuses else {}
 
-        client.service_record_list_request(type_=fetch_types, limit=max_fetch, archive=int(include_archived), filters=filters)
+        client.service_record_list_request(record_type=fetch_types, limit=max_fetch, archive=int(include_archived),
+                                           filters=filters)
 
     return return_results(message)
 
