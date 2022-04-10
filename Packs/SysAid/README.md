@@ -7,4 +7,4 @@ The integration in this pack enables you to:
 - List and search users.
 - List table and filters.
 - List, search, update, close, create and delete service records.
-- List service record's template.
+- List a service record's template.
