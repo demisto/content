@@ -7,10 +7,11 @@ APIs and global IP database services.
 2. Search for ipstack.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | API Key | True |
-    | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | API Key |  | True |
+    | Source Reliability | Reliability of the source providing the intelligence data. | True |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -43,3 +44,8 @@ Queries an IP address in ipstack.
 | Ipstack.IP.continent_name | string | Continent of the IP address. | 
 | Ipstack.IP.latitude | string | Latitude of the IP address. | 
 | Ipstack.IP.longitude | string | Longitude of the IP address. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | How reliable the score is \(for example, "C - fairly reliable"\). | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
