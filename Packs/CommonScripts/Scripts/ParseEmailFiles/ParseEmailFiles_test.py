@@ -1217,11 +1217,13 @@ def test_long_subject_and_special_characters(mocker):
     Given:
         an eml file with a long subject and special characters.
     Then:
-        assert all the subject is parsed.
+        assert all the subject is parsed correctly.
 
     """
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('Those_characters____will_mess_with_the_parsing_automation.eml'))
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('Those_characters___'
+                                                                                     '_will_mess_with_'
+                                                                                     'the_parsing_automation.eml'))
     mocker.patch.object(demisto, 'results')
 
     main()
