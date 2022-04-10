@@ -9678,7 +9678,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
     return last_run
 
 
-def send_events_to_xsiam(events: Union[str, list], vendor: str, product: str, data_format=None):
+def send_events_to_xsiam(events, vendor, product, data_format=None):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -9747,10 +9747,13 @@ def send_events_to_xsiam(events: Union[str, list], vendor: str, product: str, da
         except ValueError:
             error = '\n{}'.format(res.text)
 
-        api_call_info = f'Parameters used:\n' \
-                        f'\tURL: {xsiam_url}\n' \
-                        f'\tHeaders: {json.dumps(headers, indent=8)}\n\n' \
-                        f'Error received:\n\t{error}'
+        api_call_info = (
+            'Parameters used:\n'
+            '\tURL: {xsiam_url}\n'
+            '\tHeaders: {headers}\n\n'
+            'Error received:\n\t{error}'
+        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=4), error=error)
+
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
 
