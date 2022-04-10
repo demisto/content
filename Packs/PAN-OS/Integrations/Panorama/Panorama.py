@@ -3269,7 +3269,7 @@ def panorama_list_pcaps_command(args: dict):
         raise Exception('Request to get list of Pcaps Failed.\nStatus code: ' + str(
             json_result['response']['@code']) + '\nWith message: ' + str(json_result['response']['msg']['line']))
 
-    dir_listing = (json_result.get('result') or {}).get('dir-listing') or []
+    dir_listing = (json_result.get('result') or {}).get('dir-listing') or {}
     if 'file' not in dir_listing:
         return_results(f'PAN-OS has no Pcaps of type: {pcap_type}.')
     else:
