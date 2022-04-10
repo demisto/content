@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 
 RAW_RESPONSE_MOCK = {
-    'ip': '98.136.103.23',
+    'ip': '1.1.1.1',
     'country_name': 'country_name',
     'latitude': '1234',
     'longitude': '5678',
