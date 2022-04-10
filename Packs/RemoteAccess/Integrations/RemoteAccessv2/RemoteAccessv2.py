@@ -3,6 +3,7 @@ from io import StringIO
 import paramiko
 from paramiko import SSHClient, AutoAddPolicy, transport, Transport
 from paramiko.ssh_exception import NoValidConnectionsError
+from paramiko import RSAKey
 from scp import SCPClient, SCPException
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -85,11 +86,11 @@ def get_available_key_algorithms() -> Set[str]:
 
 def create_paramiko_ssh_client(
     host_name: str,
-    user_name: str,
-    password: str,
+    user_name: Optional[str],
+    password: Optional[str],
     ciphers: Set[str],
     key_algorithms: Set[str],
-    private_key: Optional[str] = None
+    private_key: Optional[str, RSAKey] = None
 ) -> SSHClient:
     """
     Creates the Paramiko SSH client.
@@ -250,8 +251,8 @@ def main() -> None:
     command = demisto.command()
 
     credentials: Dict[str, Any] = params.get('credentials') or {}
-    user: str = credentials.get('identifier')
-    password: str = credentials.get('password')
+    user: Optional[str] = credentials.get('identifier')
+    password: Optional[str] = credentials.get('password')
     certificate: Optional[str] = (credentials.get('credentials') or {}).get('sshkey')
 
     if certificate == '':
