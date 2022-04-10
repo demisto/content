@@ -1,5 +1,5 @@
 args:
-- description: 'The type of deletion - soft allows restoring, hard doesn't. Not relevant for O365 and Search & Compliance.'
+- description: 'The type of deletion - soft allows restoring, hard does not. Not relevant for O365 and Search & Compliance.'
   isArray: false
   name: delete_type
   required: false
