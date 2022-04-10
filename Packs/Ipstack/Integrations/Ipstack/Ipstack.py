@@ -6,7 +6,7 @@ import requests
 
 BASE_URL = 'http://api.ipstack.com'
 API_KEY = demisto.params().get('apikey')
-RELIABILITY = demisto.params().get('integrationReliability')
+RELIABILITY = demisto.params().get('integrationReliability', 'C - Fairly reliable')
 BRAND_NAME = "Ipstack"
 
 if not demisto.params()['proxy']:
