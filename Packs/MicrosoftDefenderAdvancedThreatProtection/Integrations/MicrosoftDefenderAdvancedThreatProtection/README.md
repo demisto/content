@@ -4851,6 +4851,7 @@ Is there evidence of attempted lateral movement. By selecting a “query_purpose
 | time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
 
 #### Context Output
 
@@ -4994,6 +4995,7 @@ Is there evidence of persistence. By selecting a “query_purpose” argument, a
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | process_cmd | Proccess command line that initiated the registry entry. Can only be used with "registry_entry" query_purpose. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
 
 #### Context Output
 
@@ -5201,6 +5203,7 @@ Process investigation. By selecting a “query_purpose” argument, a designated
 | time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
 
 #### Context Output
 
@@ -5297,6 +5300,7 @@ Network connections investigation. By selecting a “query_purpose” argument, 
 | time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
 
 #### Context Output
 
@@ -5369,6 +5373,7 @@ Cover up action investigation. By selecting a “query_purpose” argument, a de
 | time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
 
 #### Context Output
 
@@ -5629,6 +5634,7 @@ How did the file get on the machine. Possible details are "dropped_file" - Was t
 | time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
 
 #### Context Output
 
@@ -5654,6 +5660,7 @@ Is there evidence for privilege escalation.
 | time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
 
 #### Context Output
 
@@ -5680,7 +5687,7 @@ Detect if there was any evidence of MSDE agent/sensor manipulation.
 | time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
-
+| show_query | Show the query as part of the entry result. | Optional |
 #### Context Output
 
 | **Path** | **Type** | **Description** |

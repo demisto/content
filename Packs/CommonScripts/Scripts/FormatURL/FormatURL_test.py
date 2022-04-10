@@ -119,6 +119,19 @@ REDIRECT_TEST_CASES = PROOF_POINT_REDIRECTS + REDIRECT_NON_ATP_PROOF_POINT
 
 FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + REDIRECT_TEST_CASES + FORMAT_URL_ADDITIONAL_TEST_CASES
 
+SINGLE_LETTER_TLD = [
+    ('www.test.com', False),
+    ('a./b', True),
+    ('goog./', True),
+    ('goog.l/', True),
+    ('goog.l', True),
+    ('google.#/', False),
+    ('ww.goo./com/', True),
+    ('google.com/./', False),
+    ('hello////,,,,dfdsf', False),
+    ('hello./.com/', True),
+]
+
 
 class TestFormatURL:
     @pytest.mark.parametrize('non_formatted_url, expected', NOT_FORMAT_TO_FORMAT)
@@ -329,3 +342,18 @@ class TestFormatURL:
         main()
         result_ = mock_results.call_args.args[0]
         assert result_['Contents'] == [TEST_URL_HTTP]
+
+    @pytest.mark.parametrize('non_formatted_url, expected', SINGLE_LETTER_TLD)
+    def test_remove_single_letter_tld_url(self, non_formatted_url: str, expected: bool):
+        """
+        Given:
+            - a url
+
+        When:
+            - Formatting URLs
+
+        Then:
+            - Ensure URLs with a {0,1} letter TLD return true.
+        """
+        from FormatURL import remove_single_letter_tld_url
+        assert remove_single_letter_tld_url(non_formatted_url) == expected
