@@ -6075,6 +6075,13 @@ script:
         name: page
         required: false
         secret: false
+      - default: false
+        defaultValue: "false"
+        description: Show the query as part of the entry result.
+        isArray: false
+        name: show_query
+        required: false
+        secret: false
     outputs:
       - contextPath: MicrosoftATP.HuntCoverUp.Result.file_deleted
         description: The query results for file_deleted query_purpose.
