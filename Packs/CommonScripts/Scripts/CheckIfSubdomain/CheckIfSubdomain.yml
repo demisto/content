@@ -1,0 +1,26 @@
+commonfields:
+  id: 1bbda28b-cbd2-48f3-89c1-408e19b9a169
+  version: 8
+vcShouldKeepItemLegacyProdMachine: false
+name: CheckIfSubdomain
+script: ''
+type: python
+tags:
+- filter
+comment: Checks if given domains is a subdomain to one of the domains listed
+enabled: true
+args:
+- name: left
+  required: true
+  description: List of domains to check if thy are subdomains of the internal assets
+- name: right
+  required: true
+  description: List of internal assets (i.e. - mycompany.com)
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.10.4.27798
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}

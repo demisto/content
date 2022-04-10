@@ -1,0 +1,25 @@
+commonfields:
+  id: b8cd921d-feda-4c58-8f09-662891755cfb
+  version: 7
+vcShouldKeepItemLegacyProdMachine: false
+name: CIDRBiggerThanPrefix
+script: ''
+type: python
+tags:
+- filter
+enabled: true
+args:
+- name: right
+  required: true
+  description: The prefix to set as maximum
+- name: left
+  required: true
+  description: The CIDR to validate (IPv4 or IPv6), can also be a comma separated list.
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.10.1.27636
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
