@@ -9714,8 +9714,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         amount_of_events = len(events.split('\n'))
 
     else:
-        raise DemistoException(f'Unsupported type: {type(events)} for the "events" parameter. '
-                               f'Should be a string or dict.')
+        raise DemistoException(('Unsupported type: {type_events} for the "events" parameter. Should be a string or '
+                                'dict.').format(type_events=type(events)))
 
     if not data_format:
         data_format = 'text'

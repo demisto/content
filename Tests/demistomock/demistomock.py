@@ -1212,7 +1212,7 @@ def _apiCall(name, params=None, data=None):
     return {}
 
 
-def getLicenseCustomField(key: str) -> str:
+def getLicenseCustomField(key):
     """
     Get a custom field from content XSOAR configuration (can only be run in system integrations)
 
