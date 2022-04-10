@@ -1639,6 +1639,8 @@ class Pack(object):
                     self._server_min_version = get_updated_server_version(self._server_min_version, content_item,
                                                                           self._pack_name)
 
+                    if self._pack_name == 'Wizard':
+                        logging.info(content_item.get('name', 'DeanLog: couldn\'t find the name :('))
                     content_item_tags = content_item.get('tags', [])
 
                     if current_directory == PackFolders.SCRIPTS.value:

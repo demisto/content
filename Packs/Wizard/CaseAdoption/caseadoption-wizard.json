@@ -3,6 +3,7 @@
 	"name": "Cade Adoption Wizard Sample",
 	"description": "test",
 	"readonly": true,
+	"fromversion": "6.6.0",
 	"system": true,
 	"dependency_integrations": [
 		{
