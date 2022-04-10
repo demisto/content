@@ -3269,7 +3269,7 @@ def panorama_list_pcaps_command(args: dict):
         raise Exception('Request to get list of Pcaps Failed.\nStatus code: ' + str(
             json_result['response']['@code']) + '\nWith message: ' + str(json_result['response']['msg']['line']))
 
-    dir_listing = (json_result.get('result') or {}).get('dir-listing') or []
+    dir_listing = json_result['result']['dir-listing']
     if 'file' not in dir_listing:
         return_results(f'PAN-OS has no Pcaps of type: {pcap_type}.')
     else:
@@ -3320,10 +3320,6 @@ def panorama_get_pcap_command(args: dict):
     password = args.get('password')
     pcap_id = args.get('pcapID')
     search_time = args.get('searchTime')
-    pcap_name = args.get('from')
-
-    if pcap_type == 'filter-pcap' and not pcap_name:
-        raise Exception('cannot download filter-pcap without the from argument')
 
     if pcap_type == 'dlp-pcap' and not password:
         raise Exception('Can not download dlp-pcap without the password argument.')
@@ -3332,6 +3328,7 @@ def panorama_get_pcap_command(args: dict):
     if pcap_type == 'threat-pcap' and (not pcap_id or not search_time):
         raise Exception('Can not download threat-pcap without the pcapID and the searchTime arguments.')
 
+    pcap_name = args.get('from')
     local_name = args.get('localName')
     serial_no = args.get('serialNo')
     session_id = args.get('sessionID')
@@ -3372,10 +3369,6 @@ def panorama_get_pcap_command(args: dict):
 
     # due to pcap file size limitation in the product. For more details, please see the documentation.
     if result.headers['Content-Type'] != 'application/octet-stream':
-        json_result = json.loads(xml2json(result.text)).get('response', {})
-        if (json_result.get('@status') or '') == 'error':
-            errors = '\n'.join([error for error in (json_result.get('msg') or {}).values()])
-            raise Exception(errors)
         raise Exception(
             'PCAP download failed. Most likely cause is the file size limitation.\n'
             'For information on how to download manually, see the documentation for this integration.')
