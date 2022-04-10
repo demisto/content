@@ -79,7 +79,7 @@ def search_incidents(args: Dict):   # pragma: no cover
         args.pop('trimevents')
 
     # handle list of ids
-    if args.get('id'):
+    if args.get('id') and isinstance(args.get('id'), str):
         args['id'] = ','.join(argToList(args.get('id')))
 
     res: List = execute_command('getIncidents', args, extract_contents=False)
