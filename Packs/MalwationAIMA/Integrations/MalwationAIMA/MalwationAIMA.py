@@ -56,21 +56,21 @@ class Client(BaseClient):
         if param['file_from_zip'] == '':
             payload = {'metafields': '{ "data": { "environment":' + param['environment'] + ', "work_path":' + param[
                 'work_path'] + ', "timeout":' + param['timeout'] + ', "mouse_simulation": ' + param[
-                                         'mouse_simulation'] + ', "config_extractor": ' + param[
-                                         'config_extractor'] + ', "https_inspection": ' + param[
-                                         'https_inspection'] + ', "full_memory_dump": ' + param[
-                                         'full_memory_dump'] + ', "enable_net": ' + param['enable_net'] + ' } }',
-                       'isPublic': '{ "data": ' + param['isPublic'] + ' }'}
+                'mouse_simulation'] + ', "config_extractor": ' + param[
+                'config_extractor'] + ', "https_inspection": ' + param[
+                'https_inspection'] + ', "full_memory_dump": ' + param[
+                'full_memory_dump'] + ', "enable_net": ' + param['enable_net'] + ' } }',
+                'isPublic': '{ "data": ' + param['isPublic'] + ' }'}
         else:
             payload = {'metafields': '{ "data": { "environment":' + param['environment'] + ', "work_path":"' + param[
                 'work_path'] + '", "timeout":' + param['timeout'] + ', "mouse_simulation": ' + param[
-                                         'mouse_simulation'] + ', "config_extractor": ' + param[
-                                         'config_extractor'] + ', "https_inspection": ' + param[
-                                         'https_inspection'] + ', "full_memory_dump": ' + param[
-                                         'full_memory_dump'] + ', "enable_net": ' + param['enable_net'] + ' } }',
-                       'isPublic': '{ "data": ' + param['isPublic'] + ' }',
-                       'zip': '{ "data": { "zipSelectName": "' + param['file_from_zip'] + '", "zipPassword": "' + param[
-                           'zip_pass'] + '" } }'}
+                'mouse_simulation'] + ', "config_extractor": ' + param[
+                'config_extractor'] + ', "https_inspection": ' + param[
+                'https_inspection'] + ', "full_memory_dump": ' + param[
+                'full_memory_dump'] + ', "enable_net": ' + param['enable_net'] + ' } }',
+                'isPublic': '{ "data": ' + param['isPublic'] + ' }',
+                'zip': '{ "data": { "zipSelectName": "' + param['file_from_zip'] + '", "zipPassword": "' + param[
+                'zip_pass'] + '" } }'}
         return self._http_request(
             method='POST',
             url_suffix='/customer/addSubmission',
