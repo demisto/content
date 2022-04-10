@@ -2,7 +2,7 @@ id: DLP Incident Feedback Loop
 version: -1
 fromversion: 6.0.0
 name: DLP Incident Feedback Loop
-description: Collect feedback from user about blocked files
+description: Collects feedback from user about blocked files.
 starttaskid: "0"
 tasks:
   "0":
@@ -237,8 +237,8 @@ tasks:
       id: 5d2eab81-a9b9-436e-86f1-c281f0d12e27
       version: -1
       name: Save feedback failed?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, returns Yes
         if one of the entries returned an error.
       scriptName: isError
       type: condition
@@ -275,7 +275,7 @@ tasks:
       id: d085d949-faad-4841-8d84-76483f2e8a9d
       version: -1
       name: 'send-mail '
-      description: Send an email
+      description: Sends an email.
       script: Mail Sender (New)|||send-mail
       type: regular
       iscommand: true
@@ -315,7 +315,7 @@ tasks:
       id: ea098652-e80e-49de-87cb-a7b66041db8f
       version: -1
       name: Find user on slack
-      description: Get details about a specified user.
+      description: Gets details about a specified user.
       script: SlackV3|||slack-get-user-details
       type: regular
       iscommand: true
@@ -389,7 +389,7 @@ tasks:
       id: c7133657-d2d1-4ca2-8de2-d5d42512e897
       version: -1
       name: 'Set feedback status to "Pending" '
-      description: Update a DLP incident with user feedback
+      description: Updates a DLP incident with user feedback.
       script: '|||pan-dlp-update-incident'
       type: regular
       iscommand: true
@@ -430,7 +430,7 @@ tasks:
       id: 91c65d7a-1adf-469d-86cc-1501feea0063
       version: -1
       name: Save feedback to DLP
-      description: Update a DLP incident with user feedback
+      description: Updates a DLP incident with user feedback.
       script: '|||pan-dlp-update-incident'
       type: regular
       iscommand: true
@@ -568,8 +568,8 @@ tasks:
       id: 18cb82a8-ad2c-4f03-8877-2973dafbcb09
       version: -1
       name: Any Error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, returns Yes
         if one of the entries returned an error.
       scriptName: isError
       type: condition
@@ -606,8 +606,8 @@ tasks:
       id: f706b7cc-a555-430e-8ea6-5c9d902463a3
       version: -1
       name: Get eligibility for exemption
-      description: Determines if exemption can be granted on incidents from a certain
-        data profile
+      description: Determines whether exemption can be granted on incidents from a certain
+        data profile.
       script: '|||pan-dlp-exemption-eligible'
       type: regular
       iscommand: true
@@ -894,7 +894,7 @@ tasks:
       id: db49b638-6265-4d87-8088-5179472ed48c
       version: -1
       name: 'Set feedback status to "Pending" '
-      description: Update a DLP incident with user feedback
+      description: Updates a DLP incident with user feedback.
       script: '|||pan-dlp-update-incident'
       type: regular
       iscommand: true
@@ -1065,7 +1065,7 @@ tasks:
       id: ebe92084-13e6-460a-8a7b-a9324a99f6ce
       version: -1
       name: Set include_violation_detail to False
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1188,7 +1188,7 @@ tasks:
       id: 60ecaf0e-e904-4cbb-86a8-a3f488b77559
       version: -1
       name: 'Set feedback status to "Operational Error" '
-      description: Update a DLP incident with user feedback
+      description: Updates a DLP incident with user feedback
       script: '|||pan-dlp-update-incident'
       type: regular
       iscommand: true
