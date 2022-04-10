@@ -1,5 +1,5 @@
 args:
-- description: 'The type of deletion - soft allows restoring, hard doesnt. Not relevant for O365 and Search & Compliance.'
+- description: 'The type of deletion - soft allows restoring, hard doesn't. Not relevant for O365 and Search & Compliance.'
   isArray: false
   name: delete_type
   required: false
@@ -9,20 +9,20 @@ args:
   - soft
   - hard
 - default: false
-  description: 'The brand of which you wish to delete this email from. the default value is the incident using brand.'
+  description: 'The brand from which to delete this email. The default value is the incident using brand.'
   isArray: false
   name: delete_from_brand
   required: false
   secret: false
 - default: false
-  description: 'argument used for the generic polling flow within the security and compliance search.'
+  description: 'Argument used for the generic polling flow within the security and compliance search.'
   isArray: false
   name: search_name
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Use XSOAR built-in polling to retrieve the result when it's ready.
+  description: Whether to use the Cortex XSOAR built-in polling to retrieve the result when it's ready.
   isArray: false
   name: polling
   predefined:
@@ -43,25 +43,22 @@ name: DeleteReportedEmail
 polling: true
 outputs:
 - contextPath: DeleteReportedEmail.result
-  description: 'Whether the deletion operation was successful, skipped, or failed'
+  description: 'Whether the deletion operation was successful, skipped, or failed.'
   type: String
 - contextPath: DeleteReportedEmail.deletion_failure_reason
-  description: 'The reason of failure if the deletion operation failed or skipped'
+  description: 'The reason for the failure if the deletion operation failed or was skipped.'
   type: String
 - contextPath: DeleteReportedEmail.delete_type
-  description: 'Whether the deletion operation was hard or soft'
+  description: 'Whether the deletion operation was hard or soft.'
   type: String
 - contextPath: DeleteReportedEmail.using_brand
-  description: 'The email service that was used to delete the email'
+  description: 'The email service that was used to delete the email.'
   type: String
 - contextPath: DeleteReportedEmail.email_subject
-  description: 'The subject of the deleted email'
+  description: 'The subject of the deleted email.'
   type: String
 - contextPath: DeleteReportedEmail.message_id
-  description: 'The message id of the deleted email'
-  type: String
-- contextPath: DeleteReportedEmail.message_id
-  description: 'The message id of the deleted email'
+  description: 'The message ID of the deleted email.'
   type: String
 script: '-'
 system: false
