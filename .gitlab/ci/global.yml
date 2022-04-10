@@ -224,7 +224,7 @@
             gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
             gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "$ARTIFACTS_FOLDER/previous_index.json"
             export COMMIT_HASH_COMPARE_TO=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq -r ".\"commit\"")
-            demisto-sdk lint -p 8 -g --prev-ver fb4cd8ed27054819d73e74b32bc9c038b58921c9 -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
+            demisto-sdk lint -p 8 -g --prev-ver fb4cd8ed27054819d73e74b32bc9c038b58921c9 -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -idp $ARTIFACTS_FOLDER/id_set.json
           else
             demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
           fi
