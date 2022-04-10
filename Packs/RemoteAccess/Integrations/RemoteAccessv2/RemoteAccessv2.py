@@ -89,7 +89,7 @@ def create_paramiko_ssh_client(
     password: str,
     ciphers: Set[str],
     key_algorithms: Set[str],
-    private_key: Optional[str]
+    private_key: Optional[str] = None
 ) -> SSHClient:
     """
     Creates the Paramiko SSH client.
