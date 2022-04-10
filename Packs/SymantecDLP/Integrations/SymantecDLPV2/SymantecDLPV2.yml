@@ -23,8 +23,8 @@ configuration:
   required: false
   type: 0
 - additionalinfo: If not selected, will fetch all incident types.
-  display: Incident type
-  name: incidentType
+  display: Fetch incidents from type
+  name: fetchIncidentType
   options:
   - Network
   - Discover
