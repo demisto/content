@@ -116,6 +116,7 @@ def test_apply_filters(args, expected_incident_ids):
 @pytest.mark.parametrize('args,filtered_args', (({}, {}),
                                                 (dict(trimevents='0'), {}),
                                                 (dict(trimevents='1'), dict(trimevents='1')),
+                                                ({'id': 1}, {'id': 1}),
                                                 ))
 def test_filter_events(mocker, args, filtered_args):
     import SearchIncidentsV2
