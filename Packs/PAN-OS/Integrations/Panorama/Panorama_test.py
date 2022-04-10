@@ -1411,6 +1411,24 @@ class TestUniversalCommand:
         ):
             UniversalCommand.reboot(mock_topology, "badserialnumber")
 
+    @patch("Panorama.run_op_command")
+    def test_system_status(self, patched_run_op_command, mock_topology):
+        """
+        Given a topology object with a mixture of systems in it, assert that check_system_availability returns the correct status
+        based on whether devices are connected or not.
+        """
+        from Panorama import UniversalCommand
+
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_SYSTEM_INFO_XML)
+        # Check a normal, up device
+        result = UniversalCommand.check_system_availability(mock_topology, MOCK_PANORAMA_SERIAL)
+        assert result.up
+
+        # Check a device that isn't in the topology
+        result = UniversalCommand.check_system_availability(mock_topology, "fake")
+        assert result
+        assert not result.up
+
 
 class TestFirewallCommand:
     """Test all the commands relevant only to Firewall instances"""
@@ -1520,3 +1538,15 @@ class TestFirewallCommand:
             for value in result_dataclass.__dict__.values():
                 # Attribute may be int 0
                 assert value is not None
+
+    @patch("Panorama.run_op_command")
+    def test_update_ha_state(self, patched_run_op_command, mock_topology):
+        """
+        Test the HA Update command returns the correct data
+        """
+        from Panorama import FirewallCommand
+
+        result_dataclass = FirewallCommand.change_status(mock_topology, MOCK_FIREWALL_1_SERIAL, "operational")
+        # Check all attributes of summary data have values
+        for value in result_dataclass.__dict__.values():
+            assert value

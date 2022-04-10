@@ -9242,6 +9242,12 @@ class UniversalCommand:
     def check_system_availability(topology: Topology, hostid: str) -> CheckSystemStatus:
         """
         Checks if the provided device is up by attempting to connect to it and run a show system info.
+
+        This function will show a device as disconnected in the following scenarios;
+            * If the device is not present in the topology, which means it's not appearing in the output of show devices on
+            Panorama
+            * If the device is in the topology but it is not returning a "normal" operatational mode.
+
         :param topology: `Topology` instance.
         :param hostid: hostid of device to check.
         """
@@ -10280,7 +10286,7 @@ def main():
             return_results(
                 dataclasses_to_command_results(
                     install_software(topology, **demisto.args()),
-                    empty_result_message="Software download not started"
+                    empty_result_message="Software Install not started"
                 )
             )
         elif demisto.command() == 'pan-os-platform-reboot':
@@ -10288,7 +10294,7 @@ def main():
             return_results(
                 dataclasses_to_command_results(
                     reboot(topology, **demisto.args()),
-                    empty_result_message="Software download not started"
+                    empty_result_message="Device not rebooted, or did not respond."
                 )
             )
         elif demisto.command() == 'pan-os-platform-get-system-status':
@@ -10296,7 +10302,7 @@ def main():
             return_results(
                 dataclasses_to_command_results(
                     system_status(topology, **demisto.args()),
-                    empty_result_message="Software download not started"
+                    empty_result_message="No system status."
                 )
             )
         elif demisto.command() == 'pan-os-platform-update-ha-state':
@@ -10304,7 +10310,7 @@ def main():
             return_results(
                 dataclasses_to_command_results(
                     update_ha_state(topology, **demisto.args()),
-                    empty_result_message="Software download not started"
+                    empty_result_message="HA State either wasn't change or the device did not respond."
                 )
             )
         elif demisto.command() == 'pan-os-hygiene-check-log-forwarding':
@@ -10312,7 +10318,7 @@ def main():
             return_results(
                 dataclasses_to_command_results(
                     check_log_forwarding(topology, **demisto.args()),
-                    empty_result_message="Software download not started"
+                    empty_result_message="At least one log forwarding profile is configured according to best practices."
                 )
             )
         elif demisto.command() == 'pan-os-hygiene-check-vulnerability-profiles':
@@ -10320,7 +10326,7 @@ def main():
             return_results(
                 dataclasses_to_command_results(
                     check_vulnerability_profiles(topology, **demisto.args()),
-                    empty_result_message="Software download not started"
+                    empty_result_message="At least one vulnerability profile is configured according to best practices."
                 )
             )
         else:
