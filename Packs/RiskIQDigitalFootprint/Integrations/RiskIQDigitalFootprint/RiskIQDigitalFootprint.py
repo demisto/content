@@ -2423,9 +2423,13 @@ def main() -> None:
 
         # Trim the arguments
         args = demisto.args()
+        nargs = {}
         for argument in args:
             if isinstance(args[argument], str):
-                args[argument] = args[argument].strip()
+                nargs[argument] = args[argument].strip()
+            else:
+                nargs[argument] = args[argument]
+        args = nargs
 
         # Fetch the request_timeout according to the value of size argument
         request_timeout = 10
