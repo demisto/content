@@ -156,6 +156,9 @@ def get_reply_body(notes, incident_id, attachments):
             user_fullname = dict_safe_get(note_userdata[0], ['Contents', 'name']) or "DBot"
             reply_body += f"{user_fullname}: \n{note['Contents']}\n\n"
 
+        if isinstance(attachments, str):
+            attachments = argToList(attachments)
+
         if attachments:
             attachment_names = [attachment.get('name') for attachment in attachments]
             reply_body += f'Attachments: {attachment_names}\n\n'
@@ -246,7 +249,7 @@ def main():
     email_code = custom_fields.get('emailgeneratedcode')
     email_to_str = get_email_recipients(email_to, email_from, service_mail, mailbox)
     files = args.get('files', {})
-    attachments = args.get('attachment', {})
+    attachments = argToList(args.get('attachment', []))
     notes = demisto.executeCommand("getEntries", {'filter': {'categories': ['notes']}})
 
     try:
