@@ -156,7 +156,11 @@ GetCampaignIncidentsInfo
 IsIncidentPartOfCampaign
 unsearchable
 ChronicleAsset
+Reforamtted
+ipstack
 SNDBOX
+C
+integrationReliability
 EDL
 TLD
 Wildcards
