@@ -39,8 +39,6 @@ class Client(BaseClient):
     def threat_indicator_search(self, url_suffix: str, data: dict = {}) -> dict:
         return self._http_request(method='GET', url_suffix=url_suffix, params=data)
 
-    # def fundamental_search(self, url_suffix: str, data: dict = {}) -> dict:
-    #     return self._http_request(method='GET', url_suffix=url_suffix, params=data)
 
 
 def _validate_args(indicator_type: str, values: list) -> None:

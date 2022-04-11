@@ -671,6 +671,7 @@ def test_markdown_postprocessing():
     output = markdown_postprocessing(md_text)
     assert output == expexted_output
 
+
 def test_fundamental_uuid_command():
     url = 'https://test.com/rest/fundamental/v0/c1b3216e-8b2e-4a9f-b0a9-2e184b7182f7'
 
@@ -686,10 +687,5 @@ def test_fundamental_uuid_command():
 
         output = results.to_context().get('EntryContext', {})
 
-        # print(output)
-        print(output.get('malware_family(val.value && val.value == obj.value)', []))
-        # print(output.get(DBOT_KEY, []))
-        # print("test---------------------------->")
-
-        assert output.get('malware_family(val.value && val.value == obj.value)', []) == expected_output.get('malware_family')
+        assert output.get('ACTI_MalwareFamily(val.value && val.value == obj.value)', []) == expected_output.get('malware_family')
         assert output.get(DBOT_KEY, []) == expected_output.get('dbot')
