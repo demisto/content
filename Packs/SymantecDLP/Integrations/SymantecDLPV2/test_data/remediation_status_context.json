@@ -1,0 +1,42 @@
+[
+    {
+        "id": 0,
+        "name": "PASSED"
+    },
+    {
+        "id": 1,
+        "name": "BLOCKED"
+    },
+    {
+        "id": 2,
+        "name": "MESSAGE_MODIFIED"
+    },
+    {
+        "id": 3,
+        "name": "PROTECT_FILE_COPIED"
+    },
+    {
+        "id": 4,
+        "name": "PROTECT_FILE_QUARANTINED"
+    },
+    {
+        "id": 5,
+        "name": "PROTECT_FILE_DELETED"
+    },
+    {
+        "id": 6,
+        "name": "PROTECT_REMEDIATION_ERROR"
+    },
+    {
+        "id": 8,
+        "name": "CONTENT_REMOVED"
+    },
+    {
+        "id": 9,
+        "name": "ENDPOINT_BLOCK"
+    },
+    {
+        "id": 10,
+        "name": "ENDPOINT_NOTIFY"
+    }
+]
