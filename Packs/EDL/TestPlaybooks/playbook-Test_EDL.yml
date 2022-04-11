@@ -45,7 +45,7 @@ tasks:
       version: -1
       name: Check Update EDL
       description: Updates values stored in the EDL (only avaialable On-Demand).
-      script: '|||edl-update'
+      script: '|||edl-updat'
       type: regular
       iscommand: true
       brand: ""
