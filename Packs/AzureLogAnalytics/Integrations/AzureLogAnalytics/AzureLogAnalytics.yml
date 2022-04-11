@@ -3,6 +3,11 @@ commonfields:
   id: Azure Log Analytics
   version: -1
 configuration:
+- additionalinfo: Check when authenticating using the Client Credentials flow.
+  display: Use Client Credentials Authorization Flow
+  name: client_credentials
+  required: false
+  type: 8
 - additionalinfo: Received from the authorization process or from the self-deployed
     configuration process.
   display: ID / Client ID

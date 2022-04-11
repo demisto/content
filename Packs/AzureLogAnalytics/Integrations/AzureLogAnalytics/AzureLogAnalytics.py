@@ -28,7 +28,7 @@ AZURE_MANAGEMENT_RESOURCE = 'https://management.azure.com'
 class Client:
     def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
                  subscription_id, resource_group_name, workspace_name, verify, proxy, certificate_thumbprint,
-                 private_key):
+                 private_key, client_credentials):
 
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
@@ -41,7 +41,7 @@ class Client:
             enc_key=enc_key,
             redirect_uri=redirect_uri,
             token_retrieval_url='https://login.microsoftonline.com/{tenant_id}/oauth2/token',
-            grant_type=AUTHORIZATION_CODE,  # disable-secrets-detection
+            grant_type=CLIENT_CREDENTIALS if client_credentials else AUTHORIZATION_CODE,  # disable-secrets-detection
             app_name=APP_NAME,
             base_url=base_url,
             verify=verify,
@@ -318,6 +318,7 @@ def main():
 
     try:
         self_deployed = params.get('self_deployed', False)
+        client_credentials = params.get('client_credentials', False)
         enc_key = params.get('enc_key')
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
@@ -341,6 +342,7 @@ def main():
             proxy=params.get('proxy', False),
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
+            client_credentials=client_credentials
         )
 
         commands = {
