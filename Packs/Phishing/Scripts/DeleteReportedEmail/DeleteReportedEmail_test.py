@@ -102,7 +102,7 @@ def test_was_email_already_deleted(mocker, delete_email_context, result):
     search_args = {'message_id': 'message-id'}
     mocker.patch.object(demisto, 'get', return_value=delete_email_context)
     e = MissingEmailException()
-    assert was_email_already_deleted(search_args, e) == result
+    assert was_email_already_deleted(search_args, str(e)) == result
 
 
 def test_was_email_found_security_and_compliance():

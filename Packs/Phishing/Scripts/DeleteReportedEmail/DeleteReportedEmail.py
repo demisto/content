@@ -132,11 +132,11 @@ def schedule_next_command(args: dict):
         command='DeleteReportedEmail',
         next_run_in_seconds=60,
         args=polling_args,
-        timeout_in_seconds=600,
+        timeout_in_seconds=60,
     )
 
 
-def was_email_already_deleted(search_args: dict, e: Exception):
+def was_email_already_deleted(search_args: dict, e: str):
     """
     Checks if the email was already deleted by this script, using the context data information.
     Args:
@@ -156,7 +156,7 @@ def was_email_already_deleted(search_args: dict, e: Exception):
             message_id = item.get('message_id')
             if message_id == search_args.get('message_id') and item.get('result') == 'Success':
                 return 'Success', ''
-    return 'Skipped', str(e)
+    return 'Skipped', e
 
 
 def was_email_found_security_and_compliance(search_results: list):
@@ -176,8 +176,8 @@ def was_email_found_security_and_compliance(search_results: list):
     return False
 
 
-def security_and_compliance_delete_mail(args: dict, to_user_id: str, from_user_id: str, email_subject: str, using_brand: str,
-                                        delete_type: str):
+def security_and_compliance_delete_mail(args: dict, to_user_id: str, from_user_id: str, email_subject: str,
+                                        using_brand: str, delete_type: str, message_id: str):
     """
     Search and delete the email using the Security & Compliance integration, performed by the generic polling flow.
     Args:
@@ -187,6 +187,7 @@ def security_and_compliance_delete_mail(args: dict, to_user_id: str, from_user_i
         email_subject: subject of the email of interest
         using_brand: the brand used for this operation
         delete_type: the delete type, soft or hard.
+        message_id: the message id of the email.
     Returns:
         The command status (In Progress or Success) and the scheduledCommand object for the next command, if needed.
 
@@ -194,6 +195,11 @@ def security_and_compliance_delete_mail(args: dict, to_user_id: str, from_user_i
     check_demisto_version()
     query = f'from:{from_user_id} AND subject:{email_subject}'
     search_name = args.get('search_name', '')
+
+    if was_email_already_deleted({'message_id': message_id}, '')[0] == 'Success':
+        # Since Security & Compliance will change the context due to the polling flow, we conduct this check first,
+        # instead of only if the email is not found.
+        return 'Success', None
 
     if not search_name:
         # first time entering this function, creating the search
@@ -334,7 +340,7 @@ def main():
     try:
 
         if delete_from_brand == 'SecurityAndCompliance':
-            security_and_compliance_args = {k.replace('-', '_'): v for k, v in search_args.items() if k != 'message-id'}
+            security_and_compliance_args = {k.replace('-', '_'): v for k, v in search_args.items()}
             result, scheduled_command = security_and_compliance_delete_mail(args, **security_and_compliance_args)
 
         else:
@@ -350,7 +356,7 @@ def main():
             result = delete_email(search_args, *integrations_dict[delete_from_brand])  # type: ignore
 
     except MissingEmailException as e:
-        result, deletion_failure_reason = was_email_already_deleted(search_args, e)
+        result, deletion_failure_reason = was_email_already_deleted(search_args, str(e))
     except DeletionFailed as e:
         result, deletion_failure_reason = 'Failed', f'Failed deleting email: {str(e)}'
     except Exception as e:
