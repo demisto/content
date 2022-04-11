@@ -162,6 +162,19 @@ class Pack(object):
         """
         self._is_feed = is_feed
 
+    @property
+    def is_siem(self):
+        """
+        bool: whether the pack is a siem pack
+        """
+        return self._is_siem
+
+    @is_siem.setter
+    def is_siem(self, is_siem):
+        """ setter of is_siem
+        """
+        self._is_siem = is_siem
+
     @status.setter  # type: ignore[attr-defined,no-redef]
     def status(self, status_value):
         """ setter of pack current status.
@@ -451,10 +464,10 @@ class Pack(object):
 
     def add_pack_type_tags(self, yaml_content, yaml_type):
         """
-        Checks if an integration is a feed integration. If so, updates Pack._is_feed
+        Checks if an pack objects is siem or feed object. If so, updates Pack._is_feed or Pack._is_siem
         Args:
             yaml_content: The yaml content extracted by yaml.safe_load().
-            yaml_type: The type of object to check. Should be 'Playbook' or 'Integration'.
+            yaml_type: The type of object to check.
 
         Returns:
             Doesn't return
@@ -469,7 +482,6 @@ class Pack(object):
                 self._is_feed = True
         if yaml_type in SIEM_RULES_OBJECTS:
             self._is_siem = True
-
 
     @staticmethod
     def _clean_release_notes(release_notes_lines):

@@ -4851,12 +4851,16 @@ Is there evidence of attempted lateral movement. By selecting a “query_purpose
 | time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.HuntLateralMovementEvidence.Result | String | The query results. |
+| MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections | String | The query results for network_connections query_purpose. |
+| MicrosoftATP.HuntLateralMovementEvidence.Result.smb_connections | String | The query results for smb_connections query_purpose. |
+| MicrosoftATP.HuntLateralMovementEvidence.Result.credential_dumping | String | The query results for credential_dumping query_purpose. |
+| MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection | String | The query results for management_connection query_purpose. |
 
 #### Command example
 ```!microsoft-atp-advanced-hunting-lateral-movement-evidence query_purpose=network_connections device_name=devicename_2,devicename_1 limit=6```
@@ -4991,12 +4995,23 @@ Is there evidence of persistence. By selecting a “query_purpose” argument, a
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | process_cmd | Proccess command line that initiated the registry entry. Can only be used with "registry_entry" query_purpose. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.HuntPersistenceEvidence.Result | String | The query results. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job | String | The query results for scheduled_job query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry | String | The query results for registry_entry query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes | String | The query results for startup_folder_changes query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.new_service_created | String | The query results for new_service_created query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.service_updated | String | The query results for service_updated query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.file_replaced | String | The query results for file_replaced query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.new_user | String | The query results for new_user query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.new_group | String | The query results for new_group query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.group_user_change | String | The query results for group_user_change query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change | String | The query results for local_firewall_change query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change | String | The query results for host_file_change query_purpose. |
 
 #### Command example
 ```!microsoft-atp-advanced-hunting-persistence-evidence query_purpose=scheduled_job device_name=devicename_2 device_id=4cceb3c642212014e0e9553aa8b59e999ea515ff,96444b946be252d1f4550354edef5fdc23aca2c5 query_operation=or```
@@ -5188,12 +5203,18 @@ Process investigation. By selecting a “query_purpose” argument, a designated
 | time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.HuntProcessDetails.Result | String | The query results. |
+| MicrosoftATP.HuntProcessDetails.Result.parent_process | String | The query results for parent_process query_purpose. |
+| MicrosoftATP.HuntProcessDetails.Result.grandparent_process | String | The query results for grandparent_process query_purpose. |
+| MicrosoftATP.HuntProcessDetails.Result.process_details | String | The query results for process_details query_purpose. |
+| MicrosoftATP.HuntProcessDetails.Result.beaconing_evidence | String | The query results for beaconing_evidence query_purpose. |
+| MicrosoftATP.HuntProcessDetails.Result.powershell_execution_unsigned_files | String | The query results for powershell_execution_unsigned_files query_purpose. |
+| MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell | String | The query results for process_excecution_powershell query_purpose. |
 
 #### Command example
 ```!microsoft-atp-advanced-hunting-process-details query_purpose=beaconing_evidence file_name=powershell device_name=desktop query_operation=and```
@@ -5279,12 +5300,15 @@ Network connections investigation. By selecting a “query_purpose” argument, 
 | time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.HuntNetworkConnections.Result | String | The query results. |
+| MicrosoftATP.HuntNetworkConnections.Result.external_addresses | String | The query results for external_addresses query_purpose. |
+| MicrosoftATP.HuntNetworkConnections.Result.dns_query | String | The query results for dns_query query_purpose. |
+| MicrosoftATP.HuntNetworkConnections.Result.encoded_commands | String | The query results for encoded_commands query_purpose. |
 
 #### Command example
 ```!microsoft-atp-advanced-hunting-network-connections query_purpose=dns_query device_name=devicename_1,devicename_2```
@@ -5349,12 +5373,18 @@ Cover up action investigation. By selecting a “query_purpose” argument, a de
 | time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.HuntCoverUp.Result | String | The query results. |
+| MicrosoftATP.HuntCoverUp.Result.file_deleted | String | The query results for file_deleted query_purpose. |
+| MicrosoftATP.HuntCoverUp.Result.event_log_cleared | String | The query results for event_log_cleared query_purpose. |
+| MicrosoftATP.HuntCoverUp.Result.compromised_information | String | The query results for compromised_information query_purpose. |
+| MicrosoftATP.HuntCoverUp.Result.connected_devices | String | The query results for connected_devices query_purpose. |
+| MicrosoftATP.HuntCoverUp.Result.action_types | String | The query results for action_types query_purpose. |
+| MicrosoftATP.HuntCoverUp.Result.common_files | String | The query results for common_files query_purpose. |
 
 #### Command example
 ```!microsoft-atp-advanced-hunting-cover-up query_purpose=file_deleted  file_name=chrome device_name=desktop query_operation=and```
@@ -5604,6 +5634,7 @@ How did the file get on the machine. Possible details are "dropped_file" - Was t
 | time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
 
 #### Context Output
 
@@ -5629,6 +5660,7 @@ Is there evidence for privilege escalation.
 | time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
 
 #### Context Output
 
@@ -5655,7 +5687,7 @@ Detect if there was any evidence of MSDE agent/sensor manipulation.
 | time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
-
+| show_query | Show the query as part of the entry result. | Optional |
 #### Context Output
 
 | **Path** | **Type** | **Description** |

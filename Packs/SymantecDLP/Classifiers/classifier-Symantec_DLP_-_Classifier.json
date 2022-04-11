@@ -1,0 +1,20 @@
+{
+    "description": "Symantec DLP Classifier",
+    "feed": false,
+    "id": "Symantec DLP - Classifier",
+    "keyTypeMap": {
+        "DISCOVER": "Symantec DLP Discover Incident",
+        "ENDPOINT": "Symantec DLP Endpoint Incident",
+        "NETWORK": "Symantec DLP Network Incident"
+    },
+    "name": "Symantec DLP - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "messageSource"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
