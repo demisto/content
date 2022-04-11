@@ -231,7 +231,7 @@ def install_nightly_packs(client: demisto_client,
     while not all_packs_install_successfully:
         try:
             packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
-            logging.debug(f'Installing the following packs in server {host}:\n{packs_to_install_str}')
+            logging.info(f'Installing the following packs in server {host}:\n{packs_to_install_str}')
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
                                                                                 method='POST',
