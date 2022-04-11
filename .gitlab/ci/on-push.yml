@@ -289,7 +289,7 @@ slack-notify-nightly-build:
 #    # todo: delete next 3 lines
     - echo -e "" > "$ARTIFACTS_FOLDER/filter_file.txt"
     - echo -e "" > "/builds/xsoar/content/artifacts/filter_file.txt"
-    - echo -e ""
+    - echo -e "" > "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
     - echo "Authing to GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
     - echo "Auth done successfully"
