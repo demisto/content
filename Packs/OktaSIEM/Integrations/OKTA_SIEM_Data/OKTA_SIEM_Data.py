@@ -184,36 +184,36 @@ class Client(BaseClient):
         return sorted_events_to_save, new_last_run
 
 
-def test_http_collector():
-    headers = {
-        'Authorization': 'MTM6WExKaFFQVmlsWWN1bktWekNsajAzcFU3ZERWN0N4TjVtNGtIMzFsTmxwOXZiMkRrWkVKRVRBSkppdFR4VkpMT1dFRFRkSFVORVRVV3RMQmF0bW42T2oySGh0NVl0bG5jQWhPTFdROENJdUVsQ1V2TlFLVzdjZTFLSlVzUzBlcVg=',
-        "Content-Type": "application/json"
-    }
-
-    data = [{"example1": "test", "timestamp": 1609100113039}, {"example2": [12321, 546456, 45687, 1]}]
-
-    res = requests.post('https://api-uyetter.xdr-qa2-uat.us.paloaltonetworks.com/logs/v1/event', headers=headers,
-                        data=json.dumpps(data))
-    demisto.info(f'\n\n{res.reason}\n\n\n')
-    demisto.info(f'\n\n{res.status_code}\n\n\n')
-    return res
-
-
-def send_logs_to_xsiam(client, logs):
-    headers = {
-        "Authorization": XSIAM_API_KEY,
-        "Content-Type": "text/plain "
-    }
-    res = client._http_request(method='POST', full_url=XSIAM_SERVER_URL, headers=headers, data=logs)
-    # Note: the logs must be separated by a new line
-    # res = requests.post(url=XSIAM_SERVER_URL, headers=headers, data=logs)
-
-    return res
+# def test_http_collector():
+#     headers = {
+#         'Authorization': 'MTM6WExKaFFQVmlsWWN1bktWekNsajAzcFU3ZERWN0N4TjVtNGtIMzFsTmxwOXZiMkRrWkVKRVRBSkppdFR4VkpMT1dFRFRkSFVORVRVV3RMQmF0bW42T2oySGh0NVl0bG5jQWhPTFdROENJdUVsQ1V2TlFLVzdjZTFLSlVzUzBlcVg=',
+#         "Content-Type": "application/json"
+#     }
+#
+#     data = [{"example1": "test", "timestamp": 1609100113039}, {"example2": [12321, 546456, 45687, 1]}]
+#
+#     res = requests.post('https://api-uyetter.xdr-qa2-uat.us.paloaltonetworks.com/logs/v1/event', headers=headers,
+#                         data=json.dumpps(data))
+#     demisto.info(f'\n\n{res.reason}\n\n\n')
+#     demisto.info(f'\n\n{res.status_code}\n\n\n')
+#     return res
 
 
-def save_logs(client, logs):
-    formatted_logs = '\n'.join([json.dumps(log) for log in logs])
-    res = send_events_to_xsiam()
+# def send_logs_to_xsiam(client, logs):
+#     headers = {
+#         "Authorization": XSIAM_API_KEY,
+#         "Content-Type": "text/plain "
+#     }
+#     res = client._http_request(method='POST', full_url=XSIAM_SERVER_URL, headers=headers, data=logs)
+#     # Note: the logs must be separated by a new line
+#     # res = requests.post(url=XSIAM_SERVER_URL, headers=headers, data=logs)
+#
+#     return res
+
+
+# def save_logs(client, logs):
+#     formatted_logs = '\n'.join([json.dumps(log) for log in logs])
+#     res = send_events_to_xsiam()
 
 def test_module(client):
     """
