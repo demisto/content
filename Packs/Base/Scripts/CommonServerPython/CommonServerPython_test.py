@@ -7147,6 +7147,7 @@ def test_create_indicator_result_with_dbotscore_unknown(mocker, args, expected):
 
 @pytest.mark.parametrize('content_format,outputs,expected_type', ((None, {}, 'json'),
                                                                   (None, 'foo', 'text'),
+                                                                  (None, 1, 'text'),
                                                                   ('html', '', 'html'),
                                                                   ('html', {}, 'html')))
 def test_content_type(content_format, outputs, expected_type):
