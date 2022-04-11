@@ -118,7 +118,7 @@ For information about classification and mapping see [Classification and Mapping
 - For Cortex XSOAR version 6.1 only, the final source of truth for an incident are the values in Cortex XSOAR.  For example, if you change the severity in Cortex XSOAR and then change it back in ServiceNow, the final value that will be presented is the one in Cortex XSOAR. For versions 6.2 and later, if mirroring is in both directions then the latest update is the source of truth. 
 - The mirroring settings apply only for incidents that are fetched after applying the settings. Pre-existing comments or work notes are not fetched/mirrored at the time of incident creation.
 -  Confirm whether you will use ServiceNow out of the box or the Security Incident Response (SIR) module, since mirroring is not supported out of the box for SIR. 
-- To use a custom mapper, you must first duplicate the mapper and edit the field in the copy of the mapper. This detaches the instance, so the pack does not automatically get updates.
+- To use a custom mapper, you must first duplicate the mapper and edit the field in the copy of the mapper. If you detach the out of the box mapper and make changes to it, the pack does not automatically get updates.
 
 To set up incident mirroring you need to:  
 1. Configure the ServiceNow Service Account roles.
@@ -138,15 +138,13 @@ These permissions may not suffice for managing records in some tables. Make sure
 have the correct role so you have permissions to work with the relevant table.  
 
 ### Configure Incident Mirroring When the Trigger Incident is ServiceNow  
-When the trigger incident is ServiceNow, you use the default **ServiceNow Create Ticket and Mirror**
-incident type. You can also use the default incoming and outgoing mappers or optionally create custom
-mappers.
+When the trigger incident is ServiceNow, you use the **ServiceNow Classifier** and leave the Incident type as N/A, with either the default incoming and outgoing mappers or optional custom mappers.
 
 #### STEP 1 - Configure the ServiceNow v2 Integration Instance for Mirroring.
 1. Navigate to **Integrations** and search for **ServiceNow v2**.
 2. Click **Add instance**.
 3. Select **Fetches incidents**.
-4. Under **Classifier**, select ServiceNow Classifier.  
+4. Under **Classifier**, select **ServiceNow Classifier**.  
     **Note:**  
     You define either the **Classifier** or the **Incident type** (not both). It is recommended to define the **Classifier** and leave **Incident type** N/A to enable labeling custom incident types under the ServiceNow Classifier.
 
@@ -169,7 +167,7 @@ custom mapping, follow the instructions in STEP 3 and then select the custom map
 12. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, and **File Entry Tag** values.  
 These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR, which defines how Cortex XSOAR handles comments when you tag them in the War Room.  
 **Note:**  
-These tags work only for mirroring comments from Cortex XSOAR to ServiceNow.
+These tags work only for mirroring comments, work notes, and files from Cortex XSOAR to ServiceNow.
 
     ![image](https://raw.githubusercontent.com/demisto/content-docs/954dfad984230fde68dc45bd3dd50bde8338413a/docs/doc_imgs/integrations/mirror-tags.png)
 
