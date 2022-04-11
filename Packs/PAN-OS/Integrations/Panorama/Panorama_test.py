@@ -719,7 +719,7 @@ def test_prettify_rule():
     assert prettify_rule == expected_prettify_rule
 
 
-class TestPcapCommands:
+class TestPcap:
 
     @staticmethod
     def test_list_pcaps_flow_with_no_existing_pcaps(mocker):
