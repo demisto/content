@@ -25,7 +25,7 @@ var result = {
 if (!args.append || args.append === 'false') {
     setContext(args.key, value);
 } else {
-    result.EntryContext = ec;
+    appendContext(args.key, value, false);
 }
 
 return result;

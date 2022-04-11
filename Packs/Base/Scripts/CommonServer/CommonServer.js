@@ -435,6 +435,65 @@ function createContext(data, id) {
     return createContextSingle(data);
 }
 
+/*
+ * Append data to the investigation context
+ * @param {string} key - context path (required)
+ * @param {any} data - Data to be added to the context (required)
+ * @param {bool} dedup - True if de-duplication is required. Default is False.
+ * @return {None} No data returned 
+*/
+function appendContext(key, data, dedup=False){
+    var new_val;
+    return "bka";
+    // if (!data){
+    //   return;
+    // }
+    // existing = invContext().key;
+    // if (existing){
+    //     if (existing instanceof String || existing instanceof Unicode){
+    //         if (data instanceof String || data instanceof Unicode){
+    //             new_val = data + ',' + existing;
+    //         }
+    //         else{
+    //             new_val = data + existing;  // will raise a self explanatory TypeError
+    //         }
+    //     }
+
+    //     else if(existing instanceof obj){
+    //         if(data instanceof obj){
+    //             new_val = [existing, data];  // type: ignore[assignment]
+    //         }
+    //         else{
+    //             new_val = data + existing;  // will raise a self explanatory TypeError
+    //         }   
+    //     }
+
+    //     else if(existing instanceof Array){
+    //         if(data instanceof Array){
+    //             existing.concat(data);  // type: ignore[assignment]
+    //         }
+    //         else{
+    //             new_val = data + existing;  // will raise a self explanatory TypeError
+    //         }
+    //         new_val = existing;
+    //     }
+
+    //     else{
+    //         new_val = [existing, data];
+    //     }
+
+    //     if (dedup && new_val instanceof Array){
+    //         new_val = Array.from(new Set(new_val));
+    //     }
+
+    //     setContext(key , new_val);
+    // }
+
+    // else{
+    //   setContext(key , data);  
+    // }
+}
+
 var isFunction = function(functionToCheck) {
     return functionToCheck && typeof functionToCheck === 'function';
 }
@@ -2066,7 +2125,6 @@ function mergeContexts(newContext, existingContext, objectKeys ) {
         }
     }
 }
-
 function mergeContextLists(newItems, oldItems, objectKey) {
     //if have a list like {a : b, c : d}, {a:z, b : y} and the key is b
     //should get the following { 'd': {a : b, c : d} , y : {a:z, b : y}
@@ -2078,56 +2136,4 @@ function mergeContextLists(newItems, oldItems, objectKey) {
     var oldItemsByKey = oldItems.reduce(toMapByKey, {});
     var newItemsByKey = newItems.reduce(toMapByKey, {});
     return Object.values(Object.assign(oldItemsByKey, newItemsByKey)).filter(function() {return !e['remove']});
-}
-
-function appendContext(key, data, dedup=False){
-/*Append data to the investigation context
-:type key: ``str``
-:param key: The context path (required)
-
-:type data: ``any``
-:param data: Data to be added to the context (required)
-
-:type dedup: ``bool``
-:param dedup: True if de-duplication is required. Default is False.
-
-:return: No data returned
-:rtype: ``None``    */
-//STRING_TYPES = (String, Unicode)
-    var new_val;
-
-    if (!data){
-      retrun;
-    }
-    existing = demisto.context.key
-    if (existing instanceof String || existing instanceof Unicode){
-      if (data instanceof String || data instanceof Unicode){
-        new_val = data + ',' + existing;
-      }
-      else{
-        new_val = data + existing;  // will raise a self explanatory TypeError
-      }
-    }
-    else if(existing instanceof obj){
-      if(data instanceof obj){
-        new_val = [existing, data];  // type: ignore[assignment]
-      }
-      else{
-        new_val = data + existing;  // will raise a self explanatory TypeError
-      }   
-    }
-    else if(existing instanceof Array){
-      if(data instanceof Array){
-        existing.concat(data);  // type: ignore[assignment]
-      }
-      else{
-        new_val = data + existing  // will raise a self explanatory TypeError
-      }
-      new_val = existing;
-    }
-    else{
-      new_val = [existing, data];
-    }
-    
-
 }
