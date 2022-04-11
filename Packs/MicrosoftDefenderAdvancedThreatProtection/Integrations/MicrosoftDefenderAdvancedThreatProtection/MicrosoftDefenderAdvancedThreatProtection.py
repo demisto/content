@@ -1909,7 +1909,7 @@ class MsClient:
         Returns:
             dict. User entities
         """
-        cmd_url = "/machines/{}/logonusers".format(machine_id)
+        cmd_url = f"/machines/{machine_id}/logonusers"
         response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
         return response
 
