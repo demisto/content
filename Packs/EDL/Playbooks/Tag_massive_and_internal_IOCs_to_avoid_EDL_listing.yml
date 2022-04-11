@@ -1,5 +1,5 @@
 id: 436c75bd-69cb-4284-8b17-663f537c74c6
-version: 78
+version: 80
 vcShouldKeepItemLegacyProdMachine: false
 name: Tag massive and internal IOCs to avoid EDL listing
 description: |-
@@ -46,12 +46,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 08ff8319-dfd7-4e07-8e2e-45a779e10b8b
+    taskid: 36927f6b-0edc-4026-869b-5463e3339f30
     type: condition
     task:
-      id: 08ff8319-dfd7-4e07-8e2e-45a779e10b8b
+      id: 36927f6b-0edc-4026-869b-5463e3339f30
       version: -1
       name: Check for DomainGlobs
+      description: Check if domainglobs are returned in the query
       type: condition
       iscommand: false
       brand: ""
@@ -164,12 +165,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: d4d8a401-c2f8-4c4c-872f-04ef504ff69c
+    taskid: c93f8140-071d-46cc-8e2e-01aa08afdffb
     type: condition
     task:
-      id: d4d8a401-c2f8-4c4c-872f-04ef504ff69c
+      id: c93f8140-071d-46cc-8e2e-01aa08afdffb
       version: -1
       name: Check for CIDRs
+      description: Check if CIDRs are returned in the query
       type: condition
       iscommand: false
       brand: ""
@@ -385,12 +387,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: e9bee919-4f10-405e-8a40-b67daa92dc1f
+    taskid: c2903f0f-6a94-4abc-87e5-7e3c2390b74b
     type: condition
     task:
-      id: e9bee919-4f10-405e-8a40-b67daa92dc1f
+      id: c2903f0f-6a94-4abc-87e5-7e3c2390b74b
       version: -1
       name: Check for internal Assets
+      description: Check if the user inputted a list of internal assets
       type: condition
       iscommand: false
       brand: ""
@@ -985,6 +988,7 @@ inputs:
   description: The maximum Prefix to allow, any prefix bigger than the specified will
     be tagged to be ignored by the EDL.
   playbookInputQuery: null
+fromversion: 5.5.0
 outputs:
 - {}
 - {}

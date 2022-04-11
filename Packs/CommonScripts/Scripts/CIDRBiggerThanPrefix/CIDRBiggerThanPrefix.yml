@@ -1,7 +1,6 @@
 commonfields:
-  id: b8cd921d-feda-4c58-8f09-662891755cfb
-  version: 7
-vcShouldKeepItemLegacyProdMachine: false
+  id: CIDRBiggerThanPrefix
+  version: -1
 name: CIDRBiggerThanPrefix
 script: ''
 type: python
@@ -14,12 +13,14 @@ args:
   description: The prefix to set as maximum
 - name: left
   required: true
-  description: The CIDR to validate (IPv4 or IPv6), can also be a comma separated list.
+  description: The CIDR to validate (IPv4 or IPv6), can also be a comma separated
+    list.
+comment: Checks if given CIDR prefix is bigger than the maximum given
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.10.1.27636
+dockerimage: demisto/python3:3.10.4.27798
 runas: DBotWeakRole
-engineinfo: {}
-mainengineinfo: {}
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
