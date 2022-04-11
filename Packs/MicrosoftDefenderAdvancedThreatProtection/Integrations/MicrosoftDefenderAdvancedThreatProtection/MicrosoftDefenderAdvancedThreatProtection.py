@@ -1927,6 +1927,7 @@ class MsClient:
         response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
         return response
 
+
 ''' Commands '''
 
 
@@ -4314,6 +4315,7 @@ def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
         ))
     return machines_outputs
 
+
 def get_machine_users_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves a collection of logon users on a given machine
 
@@ -4323,11 +4325,11 @@ def get_machine_users_command(client: MsClient, args: dict) -> CommandResults:
     headers = ["ID", "AccountName", "AccountDomain", "FirstSeen", "LastSeen", "LogonTypes", "DomainAdmin", "NetworkUser"]
     machine_id = args.get("machine_id")
     response = client.get_machine_users(machine_id)
-    users_list = [dict(**get_user_data(r),MachineID=machine_id) for r in response.get("value", [])]
+    users_list = [dict(**get_user_data(r), MachineID=machine_id) for r in response.get("value", [])]
 
     return CommandResults(
         outputs=users_list,
-        outputs_key_field=["ID","MachineID"],
+        outputs_key_field=["ID", "MachineID"],
         outputs_prefix="MicrosoftATP.MachineUser",
         readable_output=tableToMarkdown(
             "Microsoft Defender ATP logon users for machine {}:".format(machine_id),
@@ -4338,20 +4340,32 @@ def get_machine_users_command(client: MsClient, args: dict) -> CommandResults:
         raw_response=response,
     )
 
+
 def get_machine_alerts_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves a collection of alerts related to specific device.
 
     Returns:
         CommandResults.
     """
-    headers = ["ID", "Title", "Description", "IncidentID", "Severity", "Status", "Classification", "Category", "ThreatFamilyName", "MachineID"]
+    headers = [
+        "ID",
+        "Title",
+        "Description",
+        "IncidentID",
+        "Severity",
+        "Status",
+        "Classification",
+        "Category",
+        "ThreatFamilyName",
+        "MachineID"
+    ]
     machine_id = args.get("machine_id")
     alerts_response = client.get_machine_alerts(machine_id)
     alert_list = get_alerts_list(alerts_response)
 
     return CommandResults(
         outputs=alert_list,
-        outputs_key_field=["ID","MachineID"],
+        outputs_key_field=["ID", "MachineID"],
         outputs_prefix="MicrosoftATP.MachineAlerts",
         readable_output=tableToMarkdown(
             f"Alerts that are related to machine {machine_id}:",
