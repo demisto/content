@@ -4356,7 +4356,7 @@ def get_machine_users_command(client: MsClient, args: dict) -> CommandResults:
         outputs_key_field=["ID", "MachineID"],
         outputs_prefix="MicrosoftATP.MachineUser",
         readable_output=tableToMarkdown(
-            "Microsoft Defender ATP logon users for machine {}:".format(machine_id),
+            f"Microsoft Defender ATP logon users for machine {machine_id}:",
             users_list,
             headers=headers,
             removeNull=True,
