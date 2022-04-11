@@ -43,7 +43,7 @@ tasks:
       id: f26ecd92-0b32-4dcd-80c4-2f9244b6b0c9
       version: -1
       name: Set feedback to "true positive"
-      description: commands.local.cmd.set.incident
+      description: Set incident feedback to "true positive"
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -77,7 +77,7 @@ tasks:
       id: 6f8e5938-6e7c-4955-8bea-512f3bd07891
       version: -1
       name: Is Slack v3 enabled?
-      description: Checks whether the Slack V2 integration is enabled.
+      description: Checks whether the Slack V3 integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -162,7 +162,7 @@ tasks:
       id: 5711d3b0-043d-4431-8cc2-ec6a31160b4b
       version: -1
       name: Set feedback to "False Positive"
-      description: commands.local.cmd.set.incident
+      description: Set feedback to "False Positive"
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -389,7 +389,7 @@ tasks:
       id: c7133657-d2d1-4ca2-8de2-d5d42512e897
       version: -1
       name: 'Set feedback status to "Pending" '
-      description: Updates a DLP incident with user feedback.
+      description: Set feedback status to "Pending"
       script: '|||pan-dlp-update-incident'
       type: regular
       iscommand: true
@@ -523,7 +523,7 @@ tasks:
       id: b02603f1-197a-4efc-8a2b-c4a217597e0a
       version: -1
       name: Call API to save status
-      description: Update a DLP incident with user feedback
+      description: Call DLP API to save user feedback for the incident
       script: '|||pan-dlp-update-incident'
       type: regular
       iscommand: true
@@ -713,7 +713,7 @@ tasks:
       id: 415619a7-63e4-4ac4-84ad-04765eedcb43
       version: -1
       name: Send notice about exemption
-      description: Sends a message to a user, group, or channel.
+      description: Send the user a Slack message about the temporary exemption on the file .
       script: SlackV3|||send-notification
       type: regular
       iscommand: true
@@ -752,7 +752,7 @@ tasks:
       id: 1589cb4c-5d61-4f91-8b17-41a42fca7ce1
       version: -1
       name: Set feedback to "Exception Granted"
-      description: commands.local.cmd.set.incident
+      description: Set feedback to "Exception Granted"
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -894,7 +894,7 @@ tasks:
       id: db49b638-6265-4d87-8088-5179472ed48c
       version: -1
       name: 'Set feedback status to "Pending" '
-      description: Updates a DLP incident with user feedback.
+      description: Set feedback status to "Pending"
       script: '|||pan-dlp-update-incident'
       type: regular
       iscommand: true
@@ -935,7 +935,7 @@ tasks:
       id: 0e2efe95-5eba-4e68-81d2-319fc7297384
       version: -1
       name: Set feedback to "Exception not requested"
-      description: commands.local.cmd.set.incident
+      description: Set feedback to "Exception not requested"
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1065,7 +1065,7 @@ tasks:
       id: ebe92084-13e6-460a-8a7b-a9324a99f6ce
       version: -1
       name: Set include_violation_detail to False
-      description: Sets a value in context under the key you entered.
+      description: Set include_violation_detail to False
       scriptName: Set
       type: regular
       iscommand: false
@@ -1105,7 +1105,7 @@ tasks:
       id: c88b6458-f4cb-48a7-81f6-7d19dd48e917
       version: -1
       name: Set include_violation_detail to True
-      description: Set a value in context under the key you entered.
+      description: Set include_violation_detail to True
       scriptName: Set
       type: regular
       iscommand: false
@@ -1188,7 +1188,7 @@ tasks:
       id: 60ecaf0e-e904-4cbb-86a8-a3f488b77559
       version: -1
       name: 'Set feedback status to "Operational Error" '
-      description: Updates a DLP incident with user feedback
+      description: Set feedback status to "Operational Error"
       script: '|||pan-dlp-update-incident'
       type: regular
       iscommand: true
