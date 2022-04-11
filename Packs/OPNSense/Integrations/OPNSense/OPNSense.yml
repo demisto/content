@@ -20,27 +20,19 @@ configuration:
 - name: apikey
   display: API Key
   required: true
-  defaultvalue:
   type: 4
-  additionalinfo:
 - name: apisecret
   display: API Secret
   required: true
-  defaultvalue:
   type: 4
-  additionalinfo:
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
-  defaultvalue: ""
   type: 8
-  additionalinfo:
 - name: proxy
   display: Use system proxy settings
   required: false
-  defaultvalue: ""
   type: 8
-  additionalinfo:
 script:
   script: ""
   type: python
@@ -228,9 +220,9 @@ script:
   - name: opnsense-alias-get
     arguments:
     - name: uuid
-      description: Alias UUID
+      description: Alias UUID (you must at least define the name or the uuid argument)
     - name: name
-      description: Alias name
+      description: Alias name (you must at least define the name or the uuid argument)
     description: Get alias details
     outputs:
     - contextPath: OPNSense.Alias
@@ -967,7 +959,7 @@ script:
       description: Rollback revision
     description: Revert config to given savepoint
     outputs: []
-  dockerimage: demisto/opnsense:latest
+  dockerimage: demisto/opnsense:1.0.0.28314
   runonce: false
   subtype: python3
 fromversion: 6.0.0

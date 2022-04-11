@@ -11,6 +11,3 @@ From the OPNsense GUI, create an API key for a user that will run PowerShell scr
 - Under the section **API keys**, click on the Add **[+]** button to generate a key/secret pair.
 - Download the txt file.
 - Use the **key** and **secret** values to configure OPNsense integration.
-
----
-[View Integration Documentation] link

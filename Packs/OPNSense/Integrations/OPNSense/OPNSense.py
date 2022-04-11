@@ -1,10 +1,4 @@
-"""OPNSense integration for Cortex XSOAR (aka Demisto)
-
-blabla
-license
-
-SecInfra © 20xy
-"""
+"""OPNSense integration for Cortex XSOAR (aka Demisto)"""
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -12,11 +6,7 @@ from CommonServerUserPython import *  # noqa
 
 
 from typing import Any, Dict
-from pyopnsense2 import core_core
-from pyopnsense2 import core_diagnostics
-from pyopnsense2 import core_firmware
-from pyopnsense2 import core_firewall
-from pyopnsense2 import plugins_firewall
+from pyopnsense2 import core_core, core_diagnostics, core_firmware, core_firewall, plugins_firewall
 import json
 import requests
 import traceback
@@ -37,13 +27,7 @@ if not demisto.params().get('proxy', False):
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
-    """
+    """Client class to interact with the service API"""
 
     def __init__(self, params):
         # alias util
@@ -190,31 +174,29 @@ def with_keys(d, keys):
     return {x: d[x] for x in d if x in keys}
 
 
-def output_format(res, output_type=None, readable=None):
+def output_format(res, output_type_name=None, readable_title=None):
     if res:
         if isinstance(res, list):
-            keys = res[0].keys()
+            key_list = list(res[0].keys())
         else:
-            keys = res.keys()
-        key_list = []
-        for key in keys:
-            key_list.append(key)
-        if not output_type:
-            output_type = key_list[0].split(".")[0]
+            key_list = list(res.keys())
+        if not output_type_name:
+            output_type_name = key_list[0].split(".")[0]
         result = []
-        if not readable:
-            readable = output_type
-        result.append(CommandResults(outputs_prefix='OPNSense.' + output_type,
+        if not readable_title:
+            readable_title = output_type_name
+        result.append(CommandResults(outputs_prefix='OPNSense.' + output_type_name,
                       outputs_key_field=key_list,
                       outputs=res,
                       raw_response=res,
-                      readable_output=tableToMarkdown(name='OPNSense ' + readable, t=res, headers=key_list)))
+                      readable_output=tableToMarkdown(name='OPNSense ' + readable_title, t=res, headers=key_list)))
         return result
     else:
         return "No result"
 
 
 def rule_reformat_result(data):
+    """reformat data result from api when getting rule"""
     result = {"rule": {}}  # type: Dict[str, Any]
     for key in data['rule'].keys():
         if key in ['enabled', 'sequence', 'quick', 'source_net', 'source_not', 'source_port', 'destination_net',
@@ -228,8 +210,6 @@ def rule_reformat_result(data):
                     break
                 elif data['rule'][key][subkey]['selected'] == 0:
                     pass
-                else:
-                    return_error("something is wrong here")
             result['rule'][key] = tmpvalue
         else:
             result['rule'][key] = 'REPLACED'
@@ -237,6 +217,7 @@ def rule_reformat_result(data):
 
 
 def alias_reformat_result(data):
+    """reformat data result from api when getting alias"""
     result = {"alias": {}}  # type: Dict[str, Any]
     for key in data['alias'].keys():
         if key in ['enabled', 'name', 'counters', 'updatefreq', 'description']:
@@ -249,8 +230,6 @@ def alias_reformat_result(data):
                     break
                 elif data['alias'][key][subkey]['selected'] == 0:
                     pass
-                else:
-                    return_error("something is wrong here")
             result['alias'][key] = tmpvalue
         else:
             result['alias'][key] = 'REPLACED'
@@ -262,9 +241,12 @@ def alias_reformat_result(data):
 
 def test_module(client: Client) -> str:
     result = client.test_module()
-    if 'error' not in result and 'exception' not in result:
+    if 'error' in result:
+        return 'Test Failed! eRRoR: ' + str(json.loads(result['error']['resp_body'])['message'])
+    elif 'exception' in result:
+        return 'Test Failed! Exception: ' + str(result['exception'])
+    else:
         return 'ok'
-    return 'Test Failed!'
 
 
 # Alias commands
@@ -322,11 +304,8 @@ def alias_mod_command(client, args):
     original['alias']['content'] = format_content
     modified = {"alias": {}}  # type: Dict[str, Any]
     for key in original['alias'].keys():
-        newvalue = args.get(key)
-        if newvalue is None:
-            modified['alias'][key] = original['alias'][key]
-        else:
-            modified['alias'][key] = newvalue
+        newvalue = args.get(key, original['alias'][key])
+        modified['alias'][key] = newvalue
     result = client.alias_setItem(uuid, modified)
     if args.get('auto_commit'):
         client.alias_reconfigure()
@@ -375,7 +354,7 @@ def alias_get_command(client, args):
     name = args.get('name')
     uuid = args.get('uuid')
     if name is None and uuid is None:
-        return_error('You must at least define the name or the uuid argument')
+        raise DemistoException('You must at least define the name or the uuid argument')
     elif uuid is None and name is not None:
         uuid = client.alias_getuuid({'name': name})['uuid']
     data = client.alias_getItem({'uuid': uuid})
@@ -411,13 +390,11 @@ def logs_search_command(client: Client, args) -> CommandResults:
     results = client.log_search(limit)
     if interface:
         if ip:
-            sresult = [x for x in results if x['interface'] == interface if (x['dst'] == ip or x['src'] == ip)]
+            res = [x for x in results if x['interface'] == interface if (x['dst'] == ip or x['src'] == ip)]
         else:
-            sresult = [x for x in results if x['interface'] == interface]
+            res = [x for x in results if x['interface'] == interface]
     elif ip:
-        sresult = [x for x in results if (x['dst'] == ip or x['src'] == ip)]
-    if interface or ip:
-        res = sresult
+        res = [x for x in results if (x['dst'] == ip or x['src'] == ip)]
     else:
         res = results
     if res:
@@ -425,7 +402,7 @@ def logs_search_command(client: Client, args) -> CommandResults:
         for result in res:
             display = {'interface', 'src', 'srcport', 'dst', 'dstport', 'action', '__timestamp__', 'protoname', 'label'}
             pretty.append(with_keys(result, display))
-        return output_format(pretty, 'Logs', readable='firewall logs')
+        return output_format(pretty, 'Logs', readable_title='firewall logs')
     else:
         return CommandResults(readable_output='Nothing found')
 
@@ -437,9 +414,9 @@ def states_search_command(client: Client, args) -> CommandResults:
     results = client.states_search()
     if ip:
         sresult = [x for x in results['rows'] if (x['dst_addr'] == ip or x['src_addr'] == ip)]
-        result = output_format(sresult, 'States', readable='firewall states')
+        result = output_format(sresult, 'States', readable_title='firewall states')
     elif results:
-        result = output_format(results['rows'], 'States', readable='firewall states')
+        result = output_format(results['rows'], 'States', readable_title='firewall states')
     else:
         return CommandResults(readable_output='Nothing found')
     return result
@@ -493,11 +470,8 @@ def category_mod_command(client, args):
     original = client.category_getItem({'uuid': uuid})
     modified = {"category": {}}  # type: Dict[str, Any]
     for key in original['category'].keys():
-        newvalue = args.get(key)
-        if newvalue is None:
-            modified['category'][key] = original['category'][key]
-        else:
-            modified['category'][key] = newvalue
+        newvalue = args.get(key, original['category'][key])
+        modified['category'][key] = newvalue
     result = client.category_setItem(uuid, modified)
     output = output_format(result, 'Category', 'Category uuid : ' + uuid + ' modified:')
     return output
@@ -566,11 +540,8 @@ def fw_rule_mod_command(client, args):
     original = rule_reformat_result(data)
     modified = {"rule": {}}  # type: Dict[str, Any]
     for key in original['rule'].keys():
-        newvalue = args.get(key)
-        if newvalue is None:
-            modified['rule'][key] = original['rule'][key]
-        else:
-            modified['rule'][key] = newvalue
+        newvalue = args.get(key, original['rule'][key])
+        modified['rule'][key] = newvalue
     result = client.firewall_setRule(uuid, modified)
     if args.get('auto_commit'):
         client.firewall_apply()
@@ -646,11 +617,7 @@ def firmware_upgrade_command(client):
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
+    """main function, parses params and runs command functions"""
 
     command_list_noarg = {
         'opnsense-interfaces-list': interfaces_list_command,
@@ -707,9 +674,9 @@ def main() -> None:
 
         if cmd == 'test-module':
             return_results(test_module(client))
-        elif cmd in command_list_noarg.keys():
+        elif cmd in command_list_noarg:
             return_results(command_list_noarg[cmd](client))
-        elif cmd in command_list.keys():
+        elif cmd in command_list:
             return_results(command_list[cmd](client, demisto.args()))
 
     # Log exceptions and return errors
