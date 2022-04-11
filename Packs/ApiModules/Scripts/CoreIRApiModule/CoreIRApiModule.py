@@ -300,8 +300,8 @@ class CoreClient(BaseClient):
 
         return incident
 
-    def update_incident(self, incident_id, assigned_user_mail, assigned_user_pretty_name, status, severity,
-                        resolve_comment, unassign_user):
+    def update_incident(self, incident_id, status=None, assigned_user_mail=None, assigned_user_pretty_name=None, severity=None,
+                        resolve_comment=None, unassign_user=None):
         update_data = {}
 
         if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
