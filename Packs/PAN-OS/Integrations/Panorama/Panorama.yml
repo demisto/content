@@ -7534,7 +7534,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: null
+    description: Checks at least one Log forwarding profile is configured according to best practices.
     name: pan-os-hygiene-check-log-forwarding
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
@@ -7588,8 +7588,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Checks the configured Vulnerability profiles to ensure at least one
-      meets best practices.
+    description: Checks the configured Vulnerability profiles to ensure at least one meets best practices.
     name: pan-os-hygiene-check-vulnerability-profiles
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
@@ -7649,10 +7648,11 @@ script:
     name: pan-os-platform-install-software
     outputs:
       - contextPath: PANOS.InstallStatus.Summary.hostid
-        type: Unknown
+        description: Host ID
+        type: String
       - contextPath: PANOS.InstallStatus.Summary.started
         description: Whether download process has started.
-        type: Unknown
+        type: String
   dockerimage: demisto/pan-os-python:1.0.0.27970
   feed: false
   isfetch: false
