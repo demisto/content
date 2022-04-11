@@ -213,9 +213,11 @@ class TestReputationCommands:
         mocked_search = mocker.patch('AnomaliThreatStreamv3.search_worst_indicator_by_params', return_value=None)
         mocker.patch.object(demisto, 'params', return_value={'include_inactive': include_inactive})
 
-        for ioc in ['ip', 'domain', 'file', 'url']:
+        for ioc, value in [('ip', '8.8.8.8'), ('domain', 'google.com'),
+                           ('file', 'd26cec10398f2b10202d23c966022dce'),
+                           ('url', 'www.google.com')]:
             mocker.patch.object(demisto, 'command', return_value=ioc)
-            mocker.patch.object(demisto, 'args', return_value={ioc: 'test_ioc'})
+            mocker.patch.object(demisto, 'args', return_value={ioc: value})
 
             # run
             main()
