@@ -262,11 +262,16 @@ def test_search_args(mocker, brand):
 
 
 def test_schedule_next_command(mocker):
+    """
+
+        Given:
+            Script args
+        When:
+            Initiating a delete using security and compliance
+        Then:
+            Return a ScheduledCommand object
+
+    """
     mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
     args = {'arg': 'arg'}
-    polling_args = {
-        'interval_in_seconds': 60,
-        'polling': True,
-        **args,
-    }
     assert isinstance(schedule_next_command(args), ScheduledCommand)
