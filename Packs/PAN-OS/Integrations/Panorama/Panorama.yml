@@ -7649,10 +7649,11 @@ script:
     name: pan-os-platform-install-software
     outputs:
       - contextPath: PANOS.InstallStatus.Summary.hostid
-        type: Unknown
+        description: Host ID
+        type: String
       - contextPath: PANOS.InstallStatus.Summary.started
         description: Whether download process has started.
-        type: Unknown
+        type: String
   dockerimage: demisto/pan-os-python:1.0.0.27970
   feed: false
   isfetch: false
