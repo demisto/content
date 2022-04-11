@@ -9757,7 +9757,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
 
-    zipped_data = gzip.compress(data.encode('utf-8'))   # type: ignore[AttributeError]
+    zipped_data = gzip.compress(data.encode('utf-8'))   # type: ignore[AttributeError,attr-defined]
     client = BaseClient(base_url=xsiam_url)
     res = client._http_request(method='POST', full_url=urljoin(xsiam_url, '/logs/v1/xsiam'), data=zipped_data,
                                headers=headers,
