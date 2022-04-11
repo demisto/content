@@ -208,3 +208,45 @@ There is no context output for this command.
 #### Human Readable Output
 
 
+
+### rasterize-html
+***
+Converts an html file to a PDF or PNG file.
+
+
+#### Base Command
+
+`rasterize-html`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| EntryID | The entry ID of the html file. | Required | 
+| width | The html file width, for example, 600px. Specify with or without the px suffix. | Optional | 
+| height | The html file height, for example, 800px. Specify with or without the px suffix. If empty, the height is the entire image. | Optional | 
+| file_name | The name the file will be saved as. Default is the EntryID. | Optional | 
+| type | The file type to which to convert the html file. Can be "pdf" or "png". Default is "png". | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!rasterize-html EntryID=889@6e069bc4-2a1e-43ea-8ed3-ea558e4586751```
+
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "EntryID": "930@6e069bc4-2a1e-43ea-8ed3-ea558e458651",
+        "Extension": "png",
+        "Info": "application/png",
+        "Name": "889@6e069bc4-2a1e-43ea-8ed3-ea558e4586751.pdf",
+        "Size": 21856,
+        "Type": "png document, version 1.4"
+    }
+}
+```
+
+#### Human Readable Output

@@ -182,7 +182,7 @@ script:
       secret: false
     - default: false
       defaultValue: '3'
-      description: The maximum number of pages to render. Default is "3".
+      description: The maximum number of pages to render. Default is "3", to render all pages enter *.
       isArray: false
       name: maxPages
       required: false
@@ -217,6 +217,47 @@ script:
     description: Converts a PDF file to an image file.
     execution: false
     name: rasterize-pdf
+  - arguments:
+    - default: true
+      description: The entry ID of the html file.
+      isArray: false
+      name: EntryID
+      required: true
+      secret: false
+    - default: false
+      defaultValue: 600px
+      description: The html page width, for example, 600px. Specify with or without
+        the px suffix.
+      isArray: false
+      name: width
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 800px
+      description: The html page height, for example, 800px. Specify with or without
+        the px suffix.
+      isArray: false
+      name: height
+      required: false
+      secret: false
+    - default: false
+      description: The file type to which to convert the email body. Can be "pdf"
+        or "png". Default is "png".
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      defaultValue: html
+      description: The name the file will be saved as.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Converts an html file to an image file or a PDF file.
+    execution: false
+    name: rasterize-email
   dockerimage: demisto/chromium:1.0.0.27948
   feed: false
   isfetch: false

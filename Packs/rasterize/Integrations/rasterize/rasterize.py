@@ -245,7 +245,7 @@ def get_pdf(driver, width: int, height: int):
     return data
 
 
-def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bool = False):
+def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bool = False):
     """
     Converts a PDF file into a jpeg image
     :param path: file's path
@@ -256,7 +256,8 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
     """
     demisto.debug(f'Loading file at Path: {path}')
     input_pdf = PdfFileReader(open(path, "rb"), strict=False)
-    pages = min(max_pages, input_pdf.numPages)
+    pages = input_pdf.numPages if max_pages == "*" else min(int(max_pages), input_pdf.numPages)
+    # pages = min(max_pages, input_pdf.numPages)
 
     with tempfile.TemporaryDirectory() as output_folder:
         demisto.debug('Converting PDF')
@@ -364,7 +365,7 @@ def rasterize_email_command():
 def rasterize_pdf_command():
     entry_id = demisto.args().get('EntryID')
     password = demisto.args().get('pdfPassword')
-    max_pages = int(demisto.args().get('maxPages', 30))
+    max_pages = demisto.args().get('maxPages', 30)
     horizontal = demisto.args().get('horizontal', 'false') == 'true'
     file_name = demisto.args().get('file_name', 'image')
 
@@ -382,6 +383,24 @@ def rasterize_pdf_command():
             results.append(res)
 
         demisto.results(results)
+
+
+def rasterize_html_command():
+    entry_id = demisto.args().get('EntryID')
+    w = demisto.args().get('width', DEFAULT_W).rstrip('px')
+    h = demisto.args().get('height', DEFAULT_H).rstrip('px')
+    r_type = demisto.args().get('type', 'png')
+    file_name = demisto.args().get('file_name', 'email')
+
+    file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
+
+    file_path = demisto.getFilePath(entry_id).get('path')
+    with open(file_path, 'rb') as f:
+        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type=r_type)
+        res = fileResult(filename=file_name, data=output)
+        if r_type == 'png':
+            res['Type'] = entryTypes['image']
+        demisto.results(res)
 
 
 def module_test():
@@ -413,6 +432,9 @@ def main():
 
         elif demisto.command() == 'rasterize-pdf':
             rasterize_pdf_command()
+
+        elif demisto.command() == 'rasterize-html':
+            rasterize_html_command()
 
         elif demisto.command() == 'rasterize':
             rasterize_command()
