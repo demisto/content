@@ -63,8 +63,9 @@ run-validations:
         UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
         RESP=$(curl --location --request GET 'https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH' \
         --header 'PRIVATE-TOKEN: $(GITLAB_API_READ_TOKEN)')
+        echo $RESP
         if [ "$RESP" != "[]" ]; then
-            echo "Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
+            echo $'Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo.'
             exit 1
         fi
       fi
