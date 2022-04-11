@@ -1,0 +1,220 @@
+id: Symantec Data Loss Prevention v2 - Test
+version: -1
+name: Symantec Data Loss Prevention v2 - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 692d5e58-0c6e-429b-839e-1fd33b395770
+    type: start
+    task:
+      id: 692d5e58-0c6e-429b-839e-1fd33b395770
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: bf48066d-93a1-4906-8672-ca3b04eb7ecc
+    type: regular
+    task:
+      id: bf48066d-93a1-4906-8672-ca3b04eb7ecc
+      version: -1
+      name: Get incidents list
+      description: Returns a list of incidents.
+      script: '|||symantec-dlp-list-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      limit:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f647ee5a-f7e4-4eb2-8edc-fc24b89e01bd
+    type: regular
+    task:
+      id: f647ee5a-f7e4-4eb2-8edc-fc24b89e01bd
+      version: -1
+      name: Get incidents status list
+      description: Returns a list of the custom status values defined in the Symantec
+        DLP deployment.
+      script: '|||symantec-dlp-list-incident-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c412bc93-a531-4d4c-812a-87de2527b8ed
+    type: regular
+    task:
+      id: c412bc93-a531-4d4c-812a-87de2527b8ed
+      version: -1
+      name: Get remediation status
+      description: Returns a list of the remediation status values defined in the
+        Symantec DLP deployment.
+      script: '|||symantec-dlp-list-remediation-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 64043fdc-6984-457f-81c8-06e6cb70df83
+    type: regular
+    task:
+      id: 64043fdc-6984-457f-81c8-06e6cb70df83
+      version: -1
+      name: Get incident details
+      description: Returns the details of the specified incident.
+      script: '|||symantec-dlp-get-incident-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      incident_id:
+        complex:
+          root: SymantecDLP.Incident
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: cd266d9d-f311-4667-8da5-28eeb10cacb7
+    type: regular
+    task:
+      id: cd266d9d-f311-4667-8da5-28eeb10cacb7
+      version: -1
+      name: Get incident history
+      description: Returns the history of the specified incident.
+      script: '|||symantec-dlp-get-incident-history'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      incident_id:
+        simple: ${SymantecDLP.Incident.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: 'Symantec DLP v2 test playbook'

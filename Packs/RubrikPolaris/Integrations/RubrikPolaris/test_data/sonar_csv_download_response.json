@@ -1,0 +1,19 @@
+{
+  "empty_response": {
+    "data": {}
+  },
+  "raw_response": {
+    "data": {
+      "downloadSnapshotResultsCsv": {
+        "isSuccessful": true
+      }
+    }
+  },
+  "outputs": {
+    "objectId": "dummy",
+    "snapshotId": "dummy",
+    "downloadSnapshotResultsCsv": {
+      "isSuccessful": true
+    }
+  }
+}
