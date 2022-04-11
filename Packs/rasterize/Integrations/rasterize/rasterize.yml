@@ -257,7 +257,7 @@ script:
     deprecated: false
     description: Converts an html file to an image file or a PDF file.
     execution: false
-    name: rasterize-email
+    name: rasterize-html
   dockerimage: demisto/chromium:1.0.0.27948
   feed: false
   isfetch: false
