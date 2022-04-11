@@ -1,7 +1,7 @@
 This playbook will retrieve emails data based on the "URLDomain", "SHA256" and "IPAddress" inputs.
-**SHA256** - Emails with attachments matching the "SHA256" input will be retrieved.
-**URLDomain** - Emails containing URLs (in the body) which the "URLDomain" input is their substring will be retrieved.
-**IPAddress** - Emails with "SenderIPv4"/SenderIPv6" or URLs (in the body) matching the "IPAddress" input will be retrieved.
+SHA256 - Emails with attachments matching the "SHA256" input will be retrieved.
+URLDomain - Emails containing URLs (in the body) which the "URLDomain" input is their substring will be retrieved.
+IPAddress - Emails with "SenderIPv4"/SenderIPv6" matching the "IPAddress" input will be retrieved.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -63,4 +63,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Microsoft 365 Defender - Indicators Hunt](../doc_files/Microsoft_365_Defender_-_Emails_Indicators_Hunt.png)
+![Microsoft 365 Defender - Emails Indicators Hunt](../doc_files/Microsoft_365_Defender_-_Emails_Indicators_Hunt.png)

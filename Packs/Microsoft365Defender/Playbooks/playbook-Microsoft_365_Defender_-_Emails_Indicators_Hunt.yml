@@ -1,12 +1,11 @@
 id: Microsoft 365 Defender - Emails Indicators Hunt
-version: 55
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Microsoft 365 Defender - Emails Indicators Hunt
 description: |-
   This playbook will retrieve emails data based on the "URLDomain", "SHA256" and "IPAddress" inputs.
   SHA256 - Emails with attachments matching the "SHA256" input will be retrieved.
   URLDomain - Emails containing URLs (in the body) which the "URLDomain" input is their substring will be retrieved.
-  IPAddress - Emails with "SenderIPv4"/SenderIPv6" or URLs (in the body) matching the "IPAddress" input will be retrieved.
+  IPAddress - Emails with "SenderIPv4"/SenderIPv6" matching the "IPAddress" input will be retrieved.
 starttaskid: "0"
 tasks:
   "0":
@@ -19,6 +18,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -171,6 +171,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -754,37 +755,37 @@ inputs:
   description: Domain or URL to search within emails. Can be a single domain or URL
     or an array of domains or URLs to search. The search will look for the exact Domain
     or URL.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SHA256
   value: {}
   required: false
   description: The SHA256 hash file or an array of hashes to search within emails.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IPAddress
   value: {}
   required: false
   description: The source or destination IP address to search. Can be a single address
     or an array of list of addresses.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "60"
   required: false
   description: The time limit in seconds for the http request to run. Default is 60.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SearchTimeframe
   value:
     simple: "7"
   required: false
   description: Number of days in the past to search in. Default is 7.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ResultsLimit
   value:
     simple: "50"
   required: false
   description: Number of retrieved entries.  Enter -1 for unlimited query. 50 is the
     default.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Microsoft365Defender.RetrievedEmails
   description: Email objects containing relevant fields.
@@ -855,4 +856,6 @@ outputs:
 - contextPath: Microsoft365Defender.RetrievedEmails.SenderIPv6
   description: Sender IPv6.
   type: unknown
-sourceplaybookid: 123abd81-fb85-4e50-8aa8-fd6c48ef28a3
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
