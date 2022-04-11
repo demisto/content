@@ -5313,13 +5313,13 @@ def panorama_content_update_download_status_command(args: dict):
 
 
 @logger
-def panorama_install_latest_content_update(target: str):
+def panorama_install_latest_content_update(args: dict):
     params = {
         'type': 'op',
         'cmd': '<request><content><upgrade><install><version>latest</version></install></upgrade></content></request>',
-        'target': target,
         'key': API_KEY
     }
+    update_target(args, params)
     result = http_request(
         URL,
         'GET',
@@ -5329,13 +5329,11 @@ def panorama_install_latest_content_update(target: str):
     return result
 
 
-def panorama_install_latest_content_update_command(target: Optional[str] = None):
+def panorama_install_latest_content_update_command(args: dict):
     """
         Check jobID of content content install status
     """
-    if DEVICE_GROUP:
-        raise Exception('Content download status is only supported on Firewall (not Panorama).')
-    result = panorama_install_latest_content_update(target)
+    result = panorama_install_latest_content_update(args)
 
     if 'result' in result['response']:
         # installation has been given a jobid
@@ -5427,14 +5425,15 @@ def panorama_check_latest_panos_software_command(target: Optional[str] = None):
 
 
 @logger
-def panorama_download_panos_version(target: str, target_version: str):
+def panorama_download_panos_version(args:dict):
+    target_version = str(args['target_version'])
     params = {
         'type': 'op',
         'cmd': f'<request><system><software><download><version>{target_version}'
                f'</version></download></software></system></request>',
-        'target': target,
         'key': API_KEY
     }
+    update_target(args, params)
     result = http_request(
         URL,
         'GET',
@@ -5447,11 +5446,7 @@ def panorama_download_panos_version_command(args: dict):
     """
     Check jobID of pan-os version download
     """
-    if DEVICE_GROUP:
-        raise Exception('Downloading PAN-OS version is only supported on Firewall (not Panorama).')
-    target = str(args['target']) if 'target' in args else None
-    target_version = str(args['target_version'])
-    result = panorama_download_panos_version(target, target_version)
+    result = panorama_download_panos_version(args)
 
     if 'result' in result['response']:
         # download has been given a jobid
@@ -5475,13 +5470,14 @@ def panorama_download_panos_version_command(args: dict):
 
 
 @logger
-def panorama_download_panos_status(target: str, job_id: str):
+def panorama_download_panos_status(args: dict):
+    job_id = args.get('job_id')
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
-        'target': target,
         'key': API_KEY
     }
+    update_target(args, params)
     result = http_request(
         URL,
         'GET',
@@ -5494,11 +5490,7 @@ def panorama_download_panos_status_command(args: dict):
     """
     Check jobID of panos download status
     """
-    if DEVICE_GROUP:
-        raise Exception('PAN-OS version download status is only supported on Firewall (not Panorama).')
-    target = str(args['target']) if 'target' in args else None
-    job_id = args.get('job_id')
-    result = panorama_download_panos_status(target, job_id)
+    result = panorama_download_panos_status(args)
     panos_download_status = {
         'JobID': result['response']['result']['job']['id']
     }
@@ -5528,14 +5520,15 @@ def panorama_download_panos_status_command(args: dict):
 
 
 @logger
-def panorama_install_panos_version(target: str, target_version: str):
+def panorama_install_panos_version(args: dict):
+    target_version = str(args['target_version'])
     params = {
         'type': 'op',
         'cmd': f'<request><system><software><install><version>{target_version}'
                '</version></install></software></system></request>',
-        'target': target,
         'key': API_KEY
     }
+    update_target(args, params)
     result = http_request(
         URL,
         'GET',
@@ -5548,11 +5541,7 @@ def panorama_install_panos_version_command(args: dict):
     """
     Check jobID of panos install
     """
-    if DEVICE_GROUP:
-        raise Exception('PAN-OS installation is only supported on Firewall (not Panorama).')
-    target = str(args['target']) if 'target' in args else None
-    target_version = str(args['target_version'])
-    result = panorama_install_panos_version(target, target_version)
+    result = panorama_install_panos_version(args)
 
     if 'result' in result['response']:
         # panos install has been given a jobid
@@ -5576,13 +5565,14 @@ def panorama_install_panos_version_command(args: dict):
 
 
 @logger
-def panorama_install_panos_status(target: str, job_id: str):
+def panorama_install_panos_status(args: dict):
+    job_id = args['job_id']
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
-        'target': target,
         'key': API_KEY
     }
+    update_target(args, params)
     result = http_request(
         URL,
         'GET',
@@ -5595,9 +5585,7 @@ def panorama_install_panos_status_command(args: dict):
     """
     Check jobID of panos install status
     """
-    target = str(args['target']) if 'target' in args else None
-    job_id = args['job_id']
-    result = panorama_install_panos_status(target, job_id)
+    result = panorama_install_panos_status(args)
 
     panos_install_status = {
         'JobID': result['response']['result']['job']['id']
@@ -9395,7 +9383,7 @@ def dataclasses_to_command_results(result: Any, empty_result_message: str = "No 
     return command_result
 
 
-def update_target(args, params):
+def update_target(args: dict, params: dict):
     """
         Action:
             if the target is specified in the args the target field will be updated
@@ -9666,7 +9654,7 @@ def main():
 
         # Install the latest content update
         elif command == 'panorama-install-latest-content-update' or command == 'pan-os-install-latest-content-update':
-            panorama_install_latest_content_update_command(args.get('target'))
+            panorama_install_latest_content_update_command(args)
 
         # Content update install status
         elif command == 'panorama-content-update-install-status' or command == 'pan-os-content-update-install-status':

@@ -6155,7 +6155,7 @@ script:
       description: Content download status.
       type: String
   - arguments:
-    - description: The device to which the content update is downloading.
+    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     - description: Job ID to check.
       name: job_id
@@ -6173,7 +6173,7 @@ script:
       description: Job ID details.
       type: String
   - arguments:
-    - description: The device on which to install the content update.
+    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     description: Installs the latest content update.
     name: pan-os-install-latest-content-update
@@ -6209,7 +6209,7 @@ script:
     description: Checks the PAN-OS software version from the repository.
     name: pan-os-check-latest-panos-software
   - arguments:
-    - description: The target device from which to download the PAN-OS software version.
+    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     - description: The target version number to install.
       name: target_version
@@ -6225,7 +6225,7 @@ script:
       description: Status of the PAN-OS download.
       type: String
   - arguments:
-    - description: The target device from which to get the download status.
+    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     - description: Job ID to check.
       name: job_id
@@ -6243,8 +6243,7 @@ script:
       description: PAN-OS download details.
       type: String
   - arguments:
-    - description: The target device on which to install the target PAN-OS software
-        version.
+    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     - description: Target PAN-OS version to install.
       name: target_version
@@ -6259,7 +6258,7 @@ script:
       description: Status of the PAN-OS installation.
       type: String
   - arguments:
-    - description: The target device from which to get the installation status.
+    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     - description: Job ID to check.
       name: job_id
