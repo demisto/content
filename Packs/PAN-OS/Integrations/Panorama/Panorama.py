@@ -3374,7 +3374,9 @@ def panorama_get_pcap_command(args: dict):
     if result.headers['Content-Type'] != 'application/octet-stream':
         json_result = json.loads(xml2json(result.text)).get('response', {})
         if (json_result.get('@status') or '') == 'error':
-            errors = '\n'.join([error for error in (json_result.get('msg') or {}).values()])
+            errors = '\n'.join(
+                [f'{error_key}: {error_val}' for error_key, error_val in (json_result.get('msg') or {}).items()]
+            )
             raise Exception(errors)
         raise Exception(
             'PCAP download failed. Most likely cause is the file size limitation.\n'

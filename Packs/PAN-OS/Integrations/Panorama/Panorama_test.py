@@ -766,7 +766,7 @@ class TestPcap:
             headers={'Content-Type': 'application/xml'}
         )
         mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
-        with pytest.raises(Exception, match='test.pcap not present'):
+        with pytest.raises(Exception, match='line: test.pcap not present'):
             panorama_get_pcap_command({'pcapType': 'filter-pcap', 'from': 'test'})
 
     @staticmethod
