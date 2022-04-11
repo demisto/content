@@ -7620,6 +7620,39 @@ script:
     - contextPath: PANOS.ConfigurationHygiene.Result.name
       description: The affected object name
       type: String
+  - arguments:
+      - default: false
+        description: software version to upgrade to, ex. 9.1.2
+        isArray: false
+        name: version
+        required: true
+        secret: false
+      - default: false
+        defaultValue: null
+        description: String to filter to only install to specific devices or serial
+          numbers
+        isArray: false
+        name: device_filter_string
+        required: false
+        secret: false
+      - default: false
+        defaultValue: false
+        description: If provided, runs the download synchronously - make sure 'execution-timeout'
+          is increased.
+        isArray: false
+        name: sync
+        required: false
+        secret: false
+    deprecated: false
+    description: Install the given software version onto the device. Download the
+      software first with
+    name: pan-os-platform-install-software
+    outputs:
+      - contextPath: PANOS.InstallStatus.Summary.hostid
+        type: Unknown
+      - contextPath: PANOS.InstallStatus.Summary.started
+        description: Whether download process has started.
+        type: Unknown
   dockerimage: demisto/pan-os-python:1.0.0.27970
   feed: false
   isfetch: false
