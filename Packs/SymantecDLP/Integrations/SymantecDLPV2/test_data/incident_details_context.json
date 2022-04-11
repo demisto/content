@@ -1,0 +1,46 @@
+{
+  "ID": 3620,
+  "creationDate": "2022-03-06T15:23:53.245",
+  "policyId": 2,
+  "severity": "High",
+  "incidentStatusId": 1,
+  "detectionDate": "2022-03-06T15:23:39.197",
+  "senderIPAddress": "1.1.1.1",
+  "endpointMachineIpAddress": "1.1.1.1",
+  "policyName": "Network Test policy",
+  "policyVersion": 4,
+  "preventOrProtectStatusId": 0,
+  "messageSource": "NETWORK",
+  "messageType": "HTTP",
+  "detectionServerName": "Detection - Network monitor",
+  "policyGroupName": "policy_group.default.name",
+  "matchCount": 3,
+  "customAttributeGroup": [
+    {
+      "name": "custom_attribute_group.default",
+      "customAttribute": [
+        {
+          "name": "Custom Attribue1",
+          "index": 1
+        },
+        {
+          "name": "cust2",
+          "index": 2
+        },
+        {
+          "name": "bla",
+          "index": 3
+        }
+      ]
+    },
+    {
+      "name": "att group2",
+      "customAttribute": [
+        {
+          "name": "kjv",
+          "index": 4
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "ed2b6df4-655d-4099-8a74-27d8d8d700e6",
+    "id": "Account Indicator",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -768,7 +768,7 @@
             }
         ]
     },
-    "name": "Account Indicator_copy",
+    "name": "Account Indicator",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
