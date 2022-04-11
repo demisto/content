@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Panorama
+  id: Panorama - Test
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -65,8 +65,8 @@ configuration:
   additionalinfo: Use the "API Key (Recommended)" parameter instead.
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
-display: Palo Alto Networks PAN-OS
-name: Panorama
+display: Palo Alto Networks PAN-OS - Test
+name: Panorama - Test
 script:
   commands:
   - arguments:
@@ -1776,6 +1776,8 @@ script:
     - description: Job ID to check.
       name: job_id
       required: true
+    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+      name: target
     description: Returns commit status for a configuration.
     deprecated: true
     name: panorama-commit-status
@@ -2850,7 +2852,7 @@ script:
       description: PAN-OS installation details.
       type: String
   - arguments:
-    - description: The target device on which to reboot the firewall.
+    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     description: Reboots the Firewall device.
     deprecated: true
@@ -3657,6 +3659,7 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
     description: Commits a configuration to the Palo Alto firewall or Panorama, but
       does not validate if the commit was successful. Committing to Panorama does
       not push the configuration to the firewalls. To push the configuration, run
@@ -5553,6 +5556,8 @@ script:
       name: device-group
     - description: Tag for which to filter the rules.
       name: tag
+    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+      name: target
     description: Returns a list of predefined Security Rules.
     name: pan-os-list-rules
     outputs:
@@ -5663,6 +5668,8 @@ script:
       isArray: true
       name: job_id
       required: true
+    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+      name: target
     description: Checks the status of a logs query.
     name: pan-os-check-logs-status
     outputs:
@@ -6118,7 +6125,7 @@ script:
       description: Whether the static route was deleted.
       type: Boolean
   - arguments:
-    - description: Serial number of the target device.
+    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     description: Show firewall device software version.
     name: pan-os-show-device-version
@@ -6136,7 +6143,7 @@ script:
       description: Version of the PAN-OS.
       type: String
   - arguments:
-    - description: The device to which to download the content update.
+    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     description: Downloads the latest content update.
     name: pan-os-download-latest-content-update
@@ -6197,7 +6204,7 @@ script:
       description: Content installation status details.
       type: String
   - arguments:
-    - description: The target device from which to get the PAN-OS software version.
+    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     description: Checks the PAN-OS software version from the repository.
     name: pan-os-check-latest-panos-software

@@ -562,8 +562,12 @@ def panorama_commit(args):
     params = {
         'type': 'commit',
         'cmd': f'<commit>{command}</commit>',
-        'key': API_KEY
+        'key': API_KEY,
     }
+
+    if target := args.get('target', None):
+        params.update({'target': target})
+
     if is_partial:
         params['action'] = 'partial'
 
@@ -611,6 +615,9 @@ def panorama_commit_status(args: dict):
         'cmd': f'<show><jobs><id>{args.get("job_id")}</id></jobs></show>',
         'key': API_KEY
     }
+
+    update_target(args, params)
+
     result = http_request(
         URL,
         'GET',
@@ -2806,7 +2813,8 @@ def prettify_rules(rules: Union[List[dict], dict]):
 
 
 @logger
-def panorama_list_rules(xpath: str, tag: str = None):
+def panorama_list_rules(xpath: str, args:dict):
+    tag = args.get('tag')
     params = {
         'action': 'get',
         'type': 'config',
@@ -2817,6 +2825,7 @@ def panorama_list_rules(xpath: str, tag: str = None):
     if tag:
         params["xpath"] = f'{params["xpath"]}[( tag/member = \'{tag}\')]'
 
+    update_target(args, params)
     result = http_request(
         URL,
         'GET',
@@ -2826,7 +2835,7 @@ def panorama_list_rules(xpath: str, tag: str = None):
     return result['response']['result']['entry']
 
 
-def panorama_list_rules_command(tag: str):
+def panorama_list_rules_command(args:dict):
     """
     List security rules
     """
@@ -2838,7 +2847,7 @@ def panorama_list_rules_command(tag: str):
     else:
         xpath = XPATH_SECURITY_RULES
 
-    rules = panorama_list_rules(xpath, tag)
+    rules = panorama_list_rules(xpath, args)
     pretty_rules = prettify_rules(rules)
 
     return_results({
@@ -4127,14 +4136,14 @@ def panorama_query_traffic_logs_command(args: dict):
 
 
 @logger
-def panorama_get_traffic_logs(job_id: str):
+def panorama_get_traffic_logs(job_id: str, args):
     params = {
         'action': 'get',
         'type': 'log',
         'job-id': job_id,
         'key': API_KEY
     }
-
+    update_target(args)
     result = http_request(
         URL,
         'GET',
@@ -4439,13 +4448,14 @@ def panorama_query_logs_command(args: dict):
     })
 
 
-def panorama_check_logs_status_command(job_id: str):
+def panorama_check_logs_status_command(args:dict):
     """
     Check query logs status
     """
+    job_id = args.get('job_id')
     job_ids = argToList(job_id)
     for job_id in job_ids:
-        result = panorama_get_traffic_logs(job_id)
+        result = panorama_get_traffic_logs(job_id, args)
 
         if result['response']['@status'] == 'error':
             if 'msg' in result['response'] and 'line' in result['response']['msg']:
@@ -5162,15 +5172,13 @@ def panorama_delete_static_route_command(args: dict):
     })
 
 
-def panorama_show_device_version(target: str = None):
+def panorama_show_device_version(args):
     params = {
         'type': 'op',
         'cmd': '<show><system><info/></system></show>',
         'key': API_KEY
     }
-    if target:
-        params['target'] = target
-
+    update_target(args, params)
     result = http_request(
         URL,
         'GET',
@@ -5180,11 +5188,11 @@ def panorama_show_device_version(target: str = None):
     return result['response']['result']['system']
 
 
-def panorama_show_device_version_command(target: Optional[str] = None):
+def panorama_show_device_version_command(args):
     """
     Get device details and show message in war room
     """
-    response = panorama_show_device_version(target)
+    response = panorama_show_device_version(args)
 
     info_data = {
         'Devicename': response['devicename'],
@@ -5207,13 +5215,13 @@ def panorama_show_device_version_command(target: Optional[str] = None):
 
 
 @logger
-def panorama_download_latest_content_update_content(target: str):
+def panorama_download_latest_content_update_content(args:dict):
     params = {
         'type': 'op',
-        'target': target,
         'cmd': '<request><content><upgrade><download><latest/></download></upgrade></content></request>',
         'key': API_KEY
     }
+    update_target(args, params)
     result = http_request(
         URL,
         'POST',
@@ -5223,13 +5231,11 @@ def panorama_download_latest_content_update_content(target: str):
     return result
 
 
-def panorama_download_latest_content_update_command(target: Optional[str] = None):
+def panorama_download_latest_content_update_command(args:dict):
     """
     Download content and show message in war room
     """
-    if DEVICE_GROUP:
-        raise Exception('Download latest content is only supported on Firewall (not Panorama).')
-    result = panorama_download_latest_content_update_content(target)
+    result = panorama_download_latest_content_update_content(args)
 
     if 'result' in result['response']:
         # download has been given a jobid
@@ -5255,13 +5261,14 @@ def panorama_download_latest_content_update_command(target: Optional[str] = None
 
 
 @logger
-def panorama_content_update_download_status(target: str, job_id: str):
+def panorama_content_update_download_status(args: dict):
+    job_id = args.get('job_id')
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
-        'target': target,
         'key': API_KEY
     }
+    update_target(args, params)
     result = http_request(
         URL,
         'GET',
@@ -5275,11 +5282,8 @@ def panorama_content_update_download_status_command(args: dict):
     """
     Check jobID of content update download status
     """
-    if DEVICE_GROUP:
-        raise Exception('Content download status is only supported on Firewall (not Panorama).')
-    target = str(args['target']) if 'target' in args else None
-    job_id = args['job_id']
-    result = panorama_content_update_download_status(target, job_id)
+
+    result = panorama_content_update_download_status(args)
 
     content_download_status = {
         'JobID': result['response']['result']['job']['id']
@@ -5408,8 +5412,6 @@ def panorama_content_update_install_status_command(args: dict):
 
 
 def panorama_check_latest_panos_software_command(target: Optional[str] = None):
-    if DEVICE_GROUP:
-        raise Exception('Checking latest PAN-OS version is only supported on Firewall (not Panorama).')
     params = {
         'type': 'op',
         'cmd': '<request><system><software><check></check></software></system></request>',
@@ -5624,15 +5626,13 @@ def panorama_install_panos_status_command(args: dict):
     })
 
 
-def panorama_device_reboot_command(target: Optional[str] = None):
-    if DEVICE_GROUP:
-        raise Exception('Device reboot is only supported on Firewall (not Panorama).')
+def panorama_device_reboot_command(args :dict):
     params = {
         'type': 'op',
         'cmd': '<request><restart><system></system></restart></request>',
-        'target': target,
         'key': API_KEY
     }
+    update_target(args, params)
     result = http_request(
         URL,
         'GET',
@@ -9395,6 +9395,23 @@ def dataclasses_to_command_results(result: Any, empty_result_message: str = "No 
     return command_result
 
 
+def update_target(args, params):
+    """
+        Action:
+            if the target is specified in the args the target field will be updated
+            in the params dict
+
+        Args:
+            args (dict): The args from the user
+            params (dict): The params for the https request
+
+        Returns:
+            None
+    """
+    if target := args.get('target', None):
+        params.update({'target': target})
+
+
 def main():
     try:
         args = demisto.args()
@@ -9568,7 +9585,7 @@ def main():
 
         # Security Rules Managing
         elif command == 'panorama-list-rules' or command == 'pan-os-list-rules':
-            panorama_list_rules_command(args.get('tag'))
+            panorama_list_rules_command(args)
 
         elif command == 'panorama-move-rule' or command == 'pan-os-move-rule':
             panorama_move_rule_command(args)
@@ -9601,7 +9618,7 @@ def main():
             panorama_query_logs_command(args)
 
         elif command == 'panorama-check-logs-status' or command == 'pan-os-check-logs-status':
-            panorama_check_logs_status_command(args.get('job_id'))
+            panorama_check_logs_status_command(args)
 
         elif command == 'panorama-get-logs' or command == 'pan-os-get-logs':
             panorama_get_logs_command(args)
@@ -9637,11 +9654,11 @@ def main():
         # Firewall Upgrade
         # Check device software version
         elif command == 'panorama-show-device-version' or command == 'pan-os-show-device-version':
-            panorama_show_device_version_command(args.get('target'))
+            panorama_show_device_version_command(args)
 
         # Download the latest content update
         elif command == 'panorama-download-latest-content-update' or command == 'pan-os-download-latest-content-update':
-            panorama_download_latest_content_update_command(args.get('target'))
+            panorama_download_latest_content_update_command(args)
 
         # Download the latest content update
         elif command == 'panorama-content-update-download-status' or command == 'pan-os-content-update-download-status':
@@ -9677,7 +9694,7 @@ def main():
 
         # Reboot Panorama Device
         elif command == 'panorama-device-reboot' or command == 'pan-os-device-reboot':
-            panorama_device_reboot_command(args.get('target'))
+            panorama_device_reboot_command(args)
 
         # PAN-OS Set vulnerability to drop
         elif command == 'panorama-block-vulnerability' or command == 'pan-os-block-vulnerability':
