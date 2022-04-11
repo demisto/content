@@ -214,7 +214,7 @@ class TestHelperFunctions:
             - Ensure that the list is the same as is should.
         """
 
-        import EDL as edl, tldextract
+        import EDL as edl
         with open('test_data/tld_domains.txt') as f:
             tld = f.read()
         requests_mock.get('https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat', text=tld)
