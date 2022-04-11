@@ -735,12 +735,14 @@ def panorama_push_to_device_group_command(args: dict):
 
 
 @logger
-def panorama_push_status(job_id: str):
+def panorama_push_status(args: dict):
+    job_id = args.get('job_id')
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
+    update_target(args, params)
     result = http_request(
         URL,
         'GET',
@@ -763,11 +765,11 @@ def safeget(dct: dict, keys: List[str]):
     return dct
 
 
-def panorama_push_status_command(job_id: str):
+def panorama_push_status_command(args: dict):
     """
     Check jobID of push status
     """
-    result = panorama_push_status(job_id)
+    result = panorama_push_status(args)
     job = result.get('response', {}).get('result', {}).get('job', {})
     if job.get('type', '') not in ('CommitAll', 'ValidateAll'):
         raise Exception('JobID given is not of a Push neither of a validate.')
@@ -2280,13 +2282,15 @@ def panorama_edit_custom_url_category_command(args: dict):
 
 
 @logger
-def panorama_get_url_category(url_cmd: str, url: str):
+def panorama_get_url_category(url_cmd: str, url: str, target: str):
     params = {
         'action': 'show',
         'type': 'op',
         'key': API_KEY,
         'cmd': f'<test><{url_cmd}>{url}</{url_cmd}></test>'
     }
+    if target:
+        params.update({'target': target})
     raw_result = http_request(
         URL,
         'POST',
@@ -2352,7 +2356,7 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
     return dbot_score
 
 
-def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list, additional_malicious: list):
+def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list, additional_malicious: list, target: str = None):
     """
     Get the url category from Palo Alto URL Filtering
     """
@@ -2364,7 +2368,7 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
     for url in urls:
         err_readable_output = None
         try:
-            category = panorama_get_url_category(url_cmd, url)
+            category = panorama_get_url_category(url_cmd, url, target)
             if category in categories_dict:
                 categories_dict[category].append(url)
                 categories_dict_hr[category].append(url)
@@ -4136,7 +4140,7 @@ def panorama_query_traffic_logs_command(args: dict):
 
 
 @logger
-def panorama_get_traffic_logs(job_id: str, args):
+def panorama_get_traffic_logs(job_id: str, args: dict= {}):
     params = {
         'action': 'get',
         'type': 'log',
@@ -4362,11 +4366,12 @@ def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_
 @logger
 def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
                         zone_src: str, zone_dst: str, time_generated: str, action: str,
-                        port_dst: str, rule: str, url: str, filedigest: str):
+                        port_dst: str, rule: str, url: str, filedigest: str, target: str):
     params = {
         'type': 'log',
         'log-type': log_type,
-        'key': API_KEY
+        'key': API_KEY,
+        'target': target,
     }
 
     if filedigest and log_type != 'wildfire':
@@ -4413,6 +4418,7 @@ def panorama_query_logs_command(args: dict):
     rule = args.get('rule')
     filedigest = args.get('filedigest')
     url = args.get('url')
+    target = args.get('target', None)
 
     if query and (address_src or address_dst or zone_src or zone_dst
                   or time_generated or action or port_dst or rule or url or filedigest):
@@ -4420,7 +4426,7 @@ def panorama_query_logs_command(args: dict):
 
     result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
                                  zone_src, zone_dst, time_generated, action,
-                                 port_dst, rule, url, filedigest)
+                                 port_dst, rule, url, filedigest, target)
 
     if result['response']['@status'] == 'error':
         if 'msg' in result['response'] and 'line' in result['response']['msg']:
@@ -4589,7 +4595,7 @@ def panorama_get_logs_command(args: dict):
     ignore_auto_extract = args.get('ignore_auto_extract') == 'true'
     job_ids = argToList(args.get('job_id'))
     for job_id in job_ids:
-        result = panorama_get_traffic_logs(job_id)
+        result = panorama_get_traffic_logs(job_id, args)
         log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
         if isinstance(log_type_dt, list):
             log_type = log_type_dt[0]
@@ -5188,7 +5194,7 @@ def panorama_show_device_version(args):
     return result['response']['result']['system']
 
 
-def panorama_show_device_version_command(args):
+def panorama_show_device_version_command(args: dict):
     """
     Get device details and show message in war room
     """
@@ -5358,19 +5364,19 @@ def panorama_install_latest_content_update_command(args: dict):
 
 
 @logger
-def panorama_content_update_install_status(target: str, job_id: str):
+def panorama_content_update_install_status(args: dict):
+    job_id = args['job_id']
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
-        'target': target,
         'key': API_KEY
     }
+    update_target(args, params)
     result = http_request(
         URL,
         'GET',
         params=params
     )
-
     return result
 
 
@@ -5378,9 +5384,7 @@ def panorama_content_update_install_status_command(args: dict):
     """
     Check jobID of content update install status
     """
-    target = str(args['target']) if 'target' in args else None
-    job_id = args['job_id']
-    result = panorama_content_update_install_status(target, job_id)
+    result = panorama_content_update_install_status(args)
 
     content_install_status = {
         'JobID': result['response']['result']['job']['id']
@@ -9429,7 +9433,7 @@ def main():
             panorama_push_to_device_group_command(args)
 
         elif command == 'panorama-push-status' or command == 'pan-os-push-status':
-            panorama_push_status_command(**args)
+            panorama_push_status_command(args)
 
         # Addresses commands
         elif command == 'panorama-list-addresses' or command == 'pan-os-list-addresses':
@@ -9507,23 +9511,28 @@ def main():
             if USE_URL_FILTERING:  # default is false
                 panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
                                                   additional_suspicious=additional_suspicious,
-                                                  additional_malicious=additional_malicious)
+                                                  additional_malicious=additional_malicious,
+                                                  )
             # do not error out
 
         elif command == 'panorama-get-url-category' or command == 'pan-os-get-url-category':
             panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
                                               additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious)
+                                              additional_malicious=additional_malicious,
+                                              target=args.get('target'),
+                                              )
 
         elif command == 'panorama-get-url-category-from-cloud' or command == 'pan-os-get-url-category-from-cloud':
             panorama_get_url_category_command(url_cmd='url-info-cloud', url=args.get('url'),
                                               additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious)
+                                              additional_malicious=additional_malicious,
+                                              )
 
         elif command == 'panorama-get-url-category-from-host' or command == 'pan-os-get-url-category-from-host':
             panorama_get_url_category_command(url_cmd='url-info-host', url=args.get('url'),
                                               additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious)
+                                              additional_malicious=additional_malicious,
+                                              )
 
         # URL Filter
         elif command == 'panorama-get-url-filter' or command == 'pan-os-get-url-filter':

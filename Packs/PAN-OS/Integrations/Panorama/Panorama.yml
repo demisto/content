@@ -955,6 +955,8 @@ script:
       description: URL to check.
       isArray: true
       name: url
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
+      name: target
     description: Gets a URL category from URL filtering. This command is only available
       on Firewall devices.
     name: panorama-get-url-category
@@ -1776,7 +1778,7 @@ script:
     - description: Job ID to check.
       name: job_id
       required: true
-    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     description: Returns commit status for a configuration.
     deprecated: true
@@ -1798,6 +1800,8 @@ script:
     - description: Job ID to check.
       name: job_id
       required: true
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
+      name: target
     description: Returns the push status for a configuration.
     deprecated: true
     name: panorama-push-status
@@ -2852,7 +2856,7 @@ script:
       description: PAN-OS installation details.
       type: String
   - arguments:
-    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     description: Reboots the Firewall device.
     deprecated: true
@@ -3583,7 +3587,7 @@ script:
     - description: The time that the PCAP was received on the firewall. Used for threat
         PCAPs.
       name: search-time
-    - description: Target number of the firewall. Use only on a Panorama instance.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     - description: Job ID.
       name: job-id
@@ -3659,7 +3663,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
     description: Commits a configuration to the Palo Alto firewall or Panorama, but
       does not validate if the commit was successful. Committing to Panorama does
       not push the configuration to the firewalls. To push the configuration, run
@@ -5556,7 +5560,7 @@ script:
       name: device-group
     - description: Tag for which to filter the rules.
       name: tag
-    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     description: Returns a list of predefined Security Rules.
     name: pan-os-list-rules
@@ -5651,6 +5655,8 @@ script:
       description: Maximum number of logs to retrieve. If empty, the default is 100.
         The maximum is 5,000.
       name: number_of_logs
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
+      name: target
     description: Query logs in Panorama.
     name: pan-os-query-logs
     outputs:
@@ -5668,7 +5674,7 @@ script:
       isArray: true
       name: job_id
       required: true
-    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     description: Checks the status of a logs query.
     name: pan-os-check-logs-status
@@ -5688,6 +5694,8 @@ script:
       description: Whether to auto-enrich the War Room entry. If "true", entry is
         not auto-enriched. If "false", entry is auto-extracted. Default is "true".
       name: ignore_auto_extract
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
+      name: target
     description: Retrieves the data of a logs query.
     name: pan-os-get-logs
     outputs:
@@ -6125,7 +6133,7 @@ script:
       description: Whether the static route was deleted.
       type: Boolean
   - arguments:
-    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     description: Show firewall device software version.
     name: pan-os-show-device-version
@@ -6143,7 +6151,7 @@ script:
       description: Version of the PAN-OS.
       type: String
   - arguments:
-    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     description: Downloads the latest content update.
     name: pan-os-download-latest-content-update
@@ -6155,7 +6163,7 @@ script:
       description: Content download status.
       type: String
   - arguments:
-    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     - description: Job ID to check.
       name: job_id
@@ -6173,7 +6181,7 @@ script:
       description: Job ID details.
       type: String
   - arguments:
-    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     description: Installs the latest content update.
     name: pan-os-install-latest-content-update
@@ -6191,6 +6199,8 @@ script:
     - description: Job ID of the content installation.
       name: job_id
       required: true
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
+      name: target
     description: Gets the installation status of the content update.
     name: pan-os-content-update-install-status
     outputs:
@@ -6204,12 +6214,12 @@ script:
       description: Content installation status details.
       type: String
   - arguments:
-    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     description: Checks the PAN-OS software version from the repository.
     name: pan-os-check-latest-panos-software
   - arguments:
-    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     - description: The target version number to install.
       name: target_version
@@ -6225,7 +6235,7 @@ script:
       description: Status of the PAN-OS download.
       type: String
   - arguments:
-    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     - description: Job ID to check.
       name: job_id
@@ -6243,7 +6253,7 @@ script:
       description: PAN-OS download details.
       type: String
   - arguments:
-    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     - description: Target PAN-OS version to install.
       name: target_version
@@ -6258,7 +6268,7 @@ script:
       description: Status of the PAN-OS installation.
       type: String
   - arguments:
-    - description: This arg is only for a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     - description: Job ID to check.
       name: job_id
