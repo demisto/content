@@ -6112,6 +6112,9 @@ class CommandResults:
     :type scheduled_command: ``ScheduledCommand``
     :param scheduled_command: manages the way the command should be polled.
 
+    :type content_format: ``str``
+    :param content_format: content format, see EntryFormat for possible values. default=None implies `EntryFormat.JSON`.
+
     :return: None
     :rtype: ``None``
     """
@@ -6170,7 +6173,7 @@ class CommandResults:
         self.relationships = relationships
 
         if content_format is not None and not EntryFormat.is_valid_type(content_format):
-            raise TypeError(f'content_format {content_format} is invalid, see CommonServerPython.EntryFormat')
+            raise TypeError('content_format {} is invalid, see CommonServerPython.EntryFormat'.format(content_format))
         self.content_format = content_format
 
     def to_context(self):
@@ -6229,18 +6232,18 @@ class CommandResults:
             relationships = [relationship.to_entry() for relationship in self.relationships if relationship.to_entry()]
 
         if self.content_format is None:
-            content_format = EntryFormat.JSON
+            self.content_format = EntryFormat.JSON
             if isinstance(raw_response, STRING_TYPES + (int,)):
-                content_format = EntryFormat.TEXT
+                self.content_format = EntryFormat.TEXT
 
         return_entry = {
             'Type': self.entry_type,
-            'ContentsFormat': content_format,
+            'ContentsFormat': self.content_format,
             'Contents': raw_response,
             'HumanReadable': human_readable,
             'EntryContext': outputs,
             'IndicatorTimeline': indicators_timeline,
-            'IgnoreAutoExtract': True if ignore_auto_extract else False,
+            'IgnoreAutoExtract': bool(ignore_auto_extract),
             'Note': mark_as_note,
             'Relationships': relationships,
         }
