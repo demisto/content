@@ -161,3 +161,6 @@ ipstack
 SNDBOX
 C
 integrationReliability
+html
+maxPages
+pdf

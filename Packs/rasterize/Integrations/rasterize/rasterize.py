@@ -417,7 +417,7 @@ def module_test():
     demisto.results('ok')
 
 
-def main():
+def main():  # pragma: no cover
     try:
         with open(DRIVER_LOG, 'w'):
             pass  # truncate the log file
