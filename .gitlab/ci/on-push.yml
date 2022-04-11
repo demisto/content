@@ -302,7 +302,7 @@ slack-notify-nightly-build:
 
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
     # todo: delete first line
-#    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
 
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
