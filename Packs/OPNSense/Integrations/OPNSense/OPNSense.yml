@@ -630,7 +630,6 @@ script:
     - name: description
       description: Rule description
     - name: auto_commit
-      required: true
       auto: PREDEFINED
       predefined:
       - None
