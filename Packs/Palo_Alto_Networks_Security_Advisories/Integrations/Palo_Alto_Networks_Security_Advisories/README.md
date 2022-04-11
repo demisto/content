@@ -1,6 +1,9 @@
 Queries the public repository of PAN-OS CVEs.
 This integration was integrated and tested with version 1 of the Palo Alto Networks Security Advisories API 
 
+The Palo Alto Networks Security Advisories API is a representation of the GUI; https://security.paloaltonetworks.com/
+
+
 ## Configure Palo Alto Networks Security Advisories on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -10,6 +13,7 @@ This integration was integrated and tested with version 1 of the Palo Alto Netwo
     | **Parameter** | **Required** |
     | --- | --- |
     | Default URL for PAN-OS advisories website | False |
+    | Fetch indicator product name | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

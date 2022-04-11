@@ -22,11 +22,13 @@ name: Palo_Alto_Networks_Security_Advisories
 script:
   commands:
   - arguments:
-    - default: false
-      description: Product name to search for advisories
+    - default: true
+      defaultValue: PAN-OS
+      description: Product name to search for advisories; valid values for this item
+        can be found in the sidebar at https://security.paloaltonetworks.com/
       isArray: false
       name: product
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: -date
@@ -50,7 +52,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Text search query
+      description: Text search query - supports same search syntax as the GUI filter
+        field
       isArray: false
       name: q
       required: false
