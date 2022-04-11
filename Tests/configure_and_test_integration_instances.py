@@ -202,6 +202,7 @@ class Build:
         self.tests_to_run = self.fetch_tests_list(options.tests_to_run)
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
+        logging.info(f'{self.pack_ids_to_install=}')
         self.service_account = options.service_account
 
     @staticmethod
