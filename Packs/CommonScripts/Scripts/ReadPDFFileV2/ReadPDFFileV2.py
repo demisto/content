@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+import PyPDF2
 import subprocess
 import glob
 import os
@@ -253,6 +254,33 @@ def get_urls_from_binary_file(file_path):
     return binary_file_urls
 
 
+def get_urls_and_emails_from_pdf_file(file_path):
+    """
+    Extracts the URLs and Emails from the pdf file using PyPDF2 package.
+    Args:
+        file_path (str): the path of the PDF file.
+
+    Returns: A set includes the URLs and emails that were found.
+
+    """
+    urls_and_emails_set = set()
+    pdf_file = open(file_path, 'rb')
+    pdf = PyPDF2.PdfFileReader(pdf_file)
+    pages = pdf.getNumPages()
+    for page in range(pages):
+        page_sliced = pdf.getPage(page)
+        page_object = page_sliced.getObject()
+        if annots := page_object.get('/Annots'):
+            for ann in annots:
+                ann_object = ann.getObject()
+                if a := ann_object.get('/A'):
+                    url = a.get('/URI')
+                    urls_and_emails_set.add(url)
+
+    return urls_and_emails_set
+    # TODO: improve the writing and the argument names here
+
+
 def get_urls_and_emails_from_pdf_html_content(cpy_file_path, output_folder):
     """
     Extract the URLs and emails from the pdf html content.
@@ -303,21 +331,28 @@ def main():
                 text = get_pdf_text(cpy_file_path, pdf_text_output_path)
 
                 # Get URLS + emails:
-                urls_set, emails_set = get_urls_and_emails_from_pdf_html_content(cpy_file_path, output_folder)
-                urls_set = urls_set.union(binary_file_urls)
+                urls_and_emails_set = get_urls_and_emails_from_pdf_file(cpy_file_path)
+                unified_set = urls_and_emails_set.union(binary_file_urls)
 
-                # this url is always generated with the pdf html file, and that's why we remove it
-                urls_set.remove('http://www.w3.org/1999/xhtml')
-                for url in urls_set:
-                    if re.match(emailRegex, url):
-                        emails_set.add(url)
+                # Separate urls from email addresses:
+                emails_set = set()
+                for extracted_object in unified_set:
+                    if email_match := re.search(EMAIL_REGXEX, extracted_object):
+                        # the extracted object is an email
+                        emails_set.add(email_match.group(0))
+
+                        if url_match := re.search(URL_EXTRACTION_REGEX, extracted_object):
+                            # the extracted object contains both url and email
+                            urls_ec.append({"Data": extracted_object})  # TODO: verify with ben that this is all a url
                     else:
-                        urls_ec.append({"Data": url})
+                        # the extracted object is a url
+                        urls_ec.append({"Data": extracted_object})
 
                 for email in emails_set:
                     emails_ec.append(email)
 
                 # Get images:
+                get_pdf_htmls_content(cpy_file_path, output_folder)
                 images = get_images_paths_in_path(output_folder)
             except Exception as e:
                 demisto.results({
