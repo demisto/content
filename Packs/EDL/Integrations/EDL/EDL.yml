@@ -70,20 +70,6 @@ configuration:
   name: add_comment_if_empty
   required: false
   type: 8
-- additionalinfo: 'CIDRs with a lower network prefix bits number are not included. For example - if the number is 8, then 0.0.0.0/2 is excluded from the list.'
-  defaultvalue: 8
-  display: 'Maximum CIDR network prefix bits size'
-  hidden: false
-  name: maximum_cidr_size
-  required: false
-  type: 0
-- additionalinfo: 'Option to remove top level domainGlobs from the list. For example - *.com.'
-  defaultvalue: 'false'
-  display: 'Exclude top level domainGlobs'
-  hidden: false
-  name: no_wildcard_tld
-  required: false
-  type: 8
 - additionalinfo: If selected, ports in URLs are removed. For example, 'www.example.com:9999/path' becomes 'www.example.com/path'.
   defaultvalue: 'true'
   display: Strip ports from URLs
@@ -126,6 +112,20 @@ configuration:
   - To Ranges
   required: false
   type: 15
+- additionalinfo: 'CIDRs with a lower network prefix bits number are not included. For example - if the number is 8, then 0.0.0.0/2 is excluded from the list.'
+  defaultvalue: 8
+  display: 'Maximum CIDR network prefix bits size'
+  hidden: false
+  name: maximum_cidr_size
+  required: false
+  type: 0
+- additionalinfo: 'Option to remove top level domainGlobs from the list. For example - *.com.'
+  defaultvalue: 'false'
+  display: 'Exclude top level domainGlobs'
+  hidden: false
+  name: no_wildcard_tld
+  required: false
+  type: 8
 - additionalinfo: For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of rewritten.
   display: "PAN-OS: drop invalid URL entries"
   hidden: false
