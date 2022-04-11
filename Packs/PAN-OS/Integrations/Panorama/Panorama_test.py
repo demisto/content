@@ -8,6 +8,7 @@ from unittest.mock import patch, MagicMock
 from panos.device import Vsys
 from panos.panorama import Panorama, DeviceGroup, Template
 from panos.firewall import Firewall
+from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 from CommonServerPython import DemistoException
 
 integration_params = {
@@ -1106,6 +1107,23 @@ def mock_vsys():
     return [mock_vsys]
 
 
+def mock_good_log_fowarding_profile():
+    good_log_forwarding_profile = LogForwardingProfile()
+    good_log_forwarding_profile.enhanced_logging = True
+    return [good_log_forwarding_profile]
+
+
+def mock_good_log_forwarding_profile_match_list():
+    return [
+        LogForwardingProfileMatchList(
+            log_type="traffic"
+        ),
+        LogForwardingProfileMatchList(
+            log_type="threat"
+        ),
+    ]
+
+
 @pytest.fixture
 def mock_topology(mock_panorama, mock_firewall):
     from Panorama import Topology
@@ -1550,3 +1568,27 @@ class TestFirewallCommand:
         # Check all attributes of summary data have values
         for value in result_dataclass.__dict__.values():
             assert value
+
+
+class TestHygieneFunctions:
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_check_log_forwarding(self, _, __, ___, mock_topology):
+        """
+        Test the Hygiene Configuration lookups can validate the log forwarding settings of a device
+        """
+        from Panorama import HygieneLookups, LogForwardingProfile, LogForwardingProfileMatchList
+        # First, test that a correctly configured LFP and match list don't return a failure
+        LogForwardingProfile.refreshall = MagicMock(return_value=mock_good_log_fowarding_profile())
+        LogForwardingProfileMatchList.refreshall = MagicMock(return_value=mock_good_log_forwarding_profile_match_list())
+        result = HygieneLookups.check_log_forwarding_profiles(mock_topology)
+        assert len(result.result_data) == 0
+
+        # Trim the "threat" log type and cause a missing log type error
+        LogForwardingProfileMatchList.refreshall = MagicMock(return_value=[mock_good_log_forwarding_profile_match_list()[0]])
+        result = HygieneLookups.check_log_forwarding_profiles(mock_topology)
+        # Note; because we mock the topology with multiple devices, it appears that the same LFP is missing in each Container.
+        # This is expected.
+        assert len(result.result_data) == 3
+        assert result.result_data[0].description == "Log forwarding profile missing log type 'threat'."
