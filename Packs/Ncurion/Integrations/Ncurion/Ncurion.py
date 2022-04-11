@@ -78,7 +78,7 @@ def get_log_list(base_url, username, password):
 
 
 def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int]) -> Tuple[Dict[str, datetime], List[dict]]:
+                    first_fetch_time: Optional[int]) -> Tuple[Dict[str, int], List[dict]]:
     access_token, refresh_token, headers1 = login(base_url, username, password)
     log_list = loglist(base_url, access_token, refresh_token, headers1)
     log_server_id = [e["id"] for e in log_list if e["is_connected"] is True]
@@ -104,7 +104,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
                         'rawJSON': json.dumps(hit)
                     }
                     incidents.append(incident)
-    nowtime = datetime.nowtime().timestamp()
+    nowtime = datetime.now().timestamp()
     lastest_created_time = cast(int, nowtime)
     next_run = {'last_fetch': lastest_created_time}
     logout = json.dumps({
