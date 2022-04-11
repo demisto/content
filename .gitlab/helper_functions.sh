@@ -38,7 +38,7 @@ section_start() {
     start_time=$(date +%s)
     start="$(echo "$start" | sed -e "s/the_time/$start_time/" -e "s/section_id/$section_id/" -e "s/section_header/$section_header/")"
     echo -e "$start"
-    date +"[%Y-%m-%dT%H:%M:%S] section start $start"
+    date +"[%Y-%m-%dT%H:%M:%S] section start"
 }
 
 section_end() {
