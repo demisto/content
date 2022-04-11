@@ -70,19 +70,19 @@ configuration:
   name: add_comment_if_empty
   required: false
   type: 8
-- additionalinfo: 'CIDRs with prefix size smaller than this value will not be included'
+- additionalinfo: 'CIDRs with a smaller network prefix bits number will not be included. For example - if the number is 8, then 0.0.0.0/2 will be excluded from the list.'
   defaultvalue: 8
-  display: 'Maximum CIDR prefix size'
+  display: 'Maximum CIDR network prefix bits size'
   hidden: false
   name: maximum_cidr_size
-  required: true
+  required: false
   type: 0
-- additionalinfo: 'Configure to disable top level domain in the list.'
+- additionalinfo: 'Option to remove top level domainGlobs from the list. For example - *.com.'
   defaultvalue: 'false'
-  display: 'Disable insertion top level domains'
+  display: 'Exclude top level domainGlobs'
   hidden: false
-  name: no_tld
-  required: true
+  name: no_wildcard_tld
+  required: false
   type: 8
 - additionalinfo: If selected, ports in URLs will be removed. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.
   defaultvalue: 'true'
@@ -482,7 +482,7 @@ script:
     deprecated: false
     description: Updates values stored in the List (only available On-Demand).
     execution: false
-  dockerimage: devdemisto/flask-nginx:1.0.0.28356
+  dockerimage: devdemisto/flask-nginx:1.0.0.28363
   feed: false
   isfetch: false
   longRunning: true

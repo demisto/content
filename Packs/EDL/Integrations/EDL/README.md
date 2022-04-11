@@ -53,19 +53,18 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 | Symantec ProxySG: Listed Categories | For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set, will list all existing categories.                                                                                                        | False        |
 | Show CSV formats as Text           | If selected, CSV format will appear in a textual webpage instead of initiating a file download.                                                                                                                                                      | False        |
 | XSOAR Indicator Page Size          | Internal page size used when querying Cortex XSOAR for the indicators.                                                                                                                                                                               | False        |
-| Maximum CIDR prefix size   | CIDRs with prefix size smaller than this value will not be included. Default is 8.                                                                                                                                                                   | True         |
-| Disable insertion top level domains        | Check if disable top Level Domain in the list. Default is False.                                                                                                                                                                                     | True         |
+| Maximum CIDR network prefix bits size   | CIDRs with a smaller network prefix bits number will not be included. For example - if the number is 8, then 0.0.0.0/2 will be excluded from the list.                                                                                                                                                                    | False         |
+| Disable insertion top level domains        | Option to remove top level domainGlobs from the list. For example - *.com.                                                                                                                                                                                     | False         |
 | Advanced: NGINX Global Directives  | NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by XSOAR Support. | False        |
 | Advanced: NGINX Server Conf        | NGINX server configuration to be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by XSOAR Support.                                                                  | False        |
 | Advanced: NGINX Read Timeout       | NGNIX read timeout in seconds.                                                                                                                                                                                                                       | False        |
 | Advanced: use legacy queries       | When enabled, the integration will query the server using full queries. Advanced configuration to be used only if instructed by XSOAR Support, or you've encountered log errors in the form of: 'msgpack: invalid code.'                             | False        |
 
 ### Safeguards
-There are two integrations parameters that are used as safeguards: `Maximum CIDR prefix size` and `Disable insertion top level domains`.
-Those are meant to prevent the integration to incorrectly insert Top Level Domains or too wide CIDRs.
-The default value for `Maximum CIDR prefix size` is 8, which means that CIDR's of prefix smaller than 8 will not be inserted. This option is configurable by the user.
-The default value for `Disable insertion top level domains` is off. If enabled, EDL will not insert items such as `*.com`, `*.co.uk`, `*.org` and all the Top Level Domains.
-
+There are two integrations parameters that are used as safeguards: `Maximum CIDR network prefix bits size` and `Exclude top level domainGlobs`.
+Those are meant to prevent the integration to incorrectly insert unwanted TLDs or too wide of a range in a CIDR.
+The default value for `Maximum CIDR network prefix bits size` is 8, which means that CIDRs with a smaller network prefix bits number will not be included (such as 0.0.0.0/2).
+The default value for `Exclude top level domainGlobs` is off. If enabled, the exported list will not hold indicators such as *.com, *.co.uk, *.org and other top level domains.
 ### Access the Export Indicators Service by Instance Name (HTTPS)
 **Note**: By default, the route will be open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to connect to the integration.
 

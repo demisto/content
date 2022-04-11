@@ -53,6 +53,8 @@ DONT_COLLAPSE = "Don't Collapse"
 COLLAPSE_TO_CIDR = "To CIDRS"
 COLLAPSE_TO_RANGES = "To Ranges"
 
+MAXIMUM_CIDR_SIZE_DEFAULT = 8
+
 MIMETYPE_JSON_SEQ: str = 'application/json-seq'
 MIMETYPE_JSON: str = 'application/json'
 MIMETYPE_CSV: str = 'text/csv'
@@ -71,8 +73,6 @@ MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "med
 
 INCREASE_LIMIT = 1.1
 '''Request Arguments Class'''
-tldextractor = tldextract.TLDExtract(cache_dir='~/.cache')
-
 
 class RequestArguments:
     CTX_QUERY_KEY = 'last_query'
@@ -91,7 +91,7 @@ class RequestArguments:
     CTX_PROTOCOL_STRIP_KEY = 'url_protocol_stripping'
     CTX_URL_TRUNCATE_KEY = 'url_truncate'
     CTX_MAXIMUM_CIDR = 'maximum_cidr_size'
-    CTX_NO_TLD = 'no_tld'
+    CTX_NO_TLD = 'no_wildcard_tld'
 
     FILTER_FIELDS_ON_FORMAT_TEXT = "name,type"
     FILTER_FIELDS_ON_FORMAT_MWG = "name,type,sourceBrands"
@@ -115,8 +115,8 @@ class RequestArguments:
                  csv_text: bool = False,
                  url_protocol_stripping: bool = False,
                  url_truncate: bool = False,
-                 maximum_cidr_size: int = 8,
-                 no_tld: bool = False,
+                 maximum_cidr_size: int = MAXIMUM_CIDR_SIZE_DEFAULT,
+                 no_wildcard_tld: bool = False,
                  ):
 
         self.query = query
@@ -135,7 +135,7 @@ class RequestArguments:
         self.csv_text = csv_text
         self.url_truncate = url_truncate
         self.maximum_cidr_size = maximum_cidr_size
-        self.no_tld = no_tld
+        self.no_wildcard_tld = no_wildcard_tld
 
         if category_attribute is not None:
             category_attribute_list = argToList(category_attribute)
@@ -161,7 +161,7 @@ class RequestArguments:
             self.CTX_PROTOCOL_STRIP_KEY: self.url_protocol_stripping,
             self.CTX_URL_TRUNCATE_KEY: self.url_truncate,
             self.CTX_MAXIMUM_CIDR: self.maximum_cidr_size,
-            self.CTX_NO_TLD: self.no_tld,
+            self.CTX_NO_TLD: self.no_wildcard_tld,
 
         }
 
@@ -186,7 +186,7 @@ class RequestArguments:
                 url_protocol_stripping=ctx_dict.get(cls.CTX_PROTOCOL_STRIP_KEY),
                 url_truncate=ctx_dict.get(cls.CTX_URL_TRUNCATE_KEY),
                 maximum_cidr_size=ctx_dict.get(cls.CTX_MAXIMUM_CIDR),
-                no_tld=ctx_dict.get(cls.CTX_NO_TLD),
+                no_wildcard_tld=ctx_dict.get(cls.CTX_NO_TLD),
             )
         )
 
@@ -671,7 +671,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             if indicator.startswith('*.'):
                 domain = str(indicator.lstrip('*.'))
                 # if we should ignore TLDs and the domain is a TLD
-                if request_args.no_tld and tldextractor(domain).suffix == domain:
+                if request_args.no_wildcard_tld and tldextract.extract(domain).suffix == domain:
                     continue
                 formatted_indicators.write(new_line + domain)
                 new_line = '\n'
@@ -870,7 +870,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     fields_to_present = request_args.get('fi', params.get('fields_filter', ''))
     url_truncate = request_args.get('ut', params.get('url_truncate', ''))
     maximum_cidr_size = try_parse_integer(request_args.get('mc', params.get('maximum_cidr_size')), EDL_CIDR_SIZR_MSG)
-    no_tld = argToBoolean(request_args.get('nt', params.get('no_tld')))
+    no_wildcard_tld = argToBoolean(request_args.get('nt', params.get('no_wildcard_tld')))
 
     # handle flags
     if drop_invalids == '':
@@ -928,7 +928,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
                             strip_protocol,
                             url_truncate,
                             maximum_cidr_size,
-                            no_tld
+                            no_wildcard_tld
                             )
 
 
@@ -986,7 +986,7 @@ def update_edl_command(args: Dict, params: Dict):
     csv_text = get_bool_arg_or_param(args, params, 'csv_text') == 'True'
     url_truncate = get_bool_arg_or_param(args, params, 'url_truncate')
     maximum_cidr_size = try_parse_integer(params.get('maximum_cidr_size'), EDL_CIDR_SIZR_MSG)
-    no_tld = argToBoolean(params.get('no_tld', False))
+    no_wildcard_tld = argToBoolean(params.get('no_wildcard_tld', False))
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
@@ -1008,7 +1008,7 @@ def update_edl_command(args: Dict, params: Dict):
                                     strip_protocol,
                                     url_truncate,
                                     maximum_cidr_size,
-                                    no_tld)
+                                    no_wildcard_tld)
 
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
@@ -1034,7 +1034,7 @@ def initialize_edl_context(params: dict):
     csv_text = argToBoolean(params.get('csv_text', False))
     url_truncate = params.get('url_truncate', False)
     maximum_cidr_size = try_parse_integer(params.get('maximum_cidr_size'), 'Please provide an integer')
-    no_tld = argToBoolean(params.get('no_tld', False))
+    no_wildcard_tld = argToBoolean(params.get('no_wildcard_tld', False))
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
@@ -1056,7 +1056,7 @@ def initialize_edl_context(params: dict):
                                     url_protocol_stripping,
                                     url_truncate,
                                     maximum_cidr_size,
-                                    no_tld)
+                                    no_wildcard_tld)
 
     EDL_ON_DEMAND_CACHE_PATH = demisto.uniqueFile()
     ctx = request_args.to_context_json()

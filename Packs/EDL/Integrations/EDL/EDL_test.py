@@ -52,7 +52,7 @@ class TestRequestArguments:
         csv_text=context_json[RequestArguments.CTX_CSV_TEXT],
         url_protocol_stripping=context_json[RequestArguments.CTX_PROTOCOL_STRIP_KEY],
         url_truncate=context_json[RequestArguments.CTX_URL_TRUNCATE_KEY],
-        no_tld=context_json[RequestArguments.CTX_NO_TLD],
+        no_wildcard_tld=context_json[RequestArguments.CTX_NO_TLD],
         maximum_cidr_size=context_json[RequestArguments.CTX_MAXIMUM_CIDR],
     )
 
@@ -203,6 +203,16 @@ class TestHelperFunctions:
                         '{"value": "demisto.com", "indicator_type": "URL"}'
 
     def test_create_new_edl_edge_cases(self, mocker, requests_mock):
+        """
+        Test create_new_edl with wildcards, cidrs with prefix and non-ascii chars
+        Given:
+            - A list of indicators of "edge cases"
+        When:
+            - calling create_new_edl
+        Then:
+            - Ensure that the list is the same as is should.
+        """
+
         import EDL as edl
         with open('test_data/tld_domains.txt') as f:
             tld = f.read()
@@ -233,7 +243,7 @@ class TestHelperFunctions:
         assert set(edl_v.split('\n')) == {"1.1.1.1/12", "*.com", "com", "*.co.uk",
                                           "co.uk", "*.google.com", "google.com", "aא.com"}
 
-        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, no_tld=True, maximum_cidr_size=13)
+        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, no_wildcard_tld=True, maximum_cidr_size=13)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
         edl_v = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"*.google.com", "google.com", "aא.com"}
@@ -554,7 +564,7 @@ class TestHelperFunctions:
             'collapse_ips': 2,
             'add_comment_if_empty': not add_comment_if_empty,
             'format': 'CSV',
-            'no_tld': False,
+            'no_wildcard_tld': False,
             'maximum_cidr_size': '8'
         }
 
@@ -601,7 +611,7 @@ def test_initialize_edl_context():
               'csv_text': True,
               'url_truncate': False,
               'maximum_cidr_size': '8',
-              'no_tld': True}
+              'no_wildcard_tld': True}
 
     initialize_edl_context(params)
     assert demisto.integrationContext == {'last_query': '*',
@@ -621,7 +631,7 @@ def test_initialize_edl_context():
                                           'url_truncate': False,
                                           'UpdateEDL': True,
                                           'maximum_cidr_size': 8,
-                                          'no_tld': True,
+                                          'no_wildcard_tld': True,
                                           'maximum_cidr_size': 8
                                           }
 
