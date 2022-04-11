@@ -1,0 +1,22 @@
+{
+  "empty_response": {
+    "data": {
+      "startMalwareDetection": {
+        "id": "",
+        "status": ""
+      }
+    }
+  },
+  "raw_response": {
+    "data": {
+      "startMalwareDetection": {
+        "id": "dummy-ioc-id",
+        "status": "RUNNING"
+      }
+    }
+  },
+  "outputs": {
+    "id": "dummy-ioc-id",
+    "status": "RUNNING"
+  }
+}
