@@ -7163,6 +7163,9 @@ class TestSendEventsToXSIAMTest:
         """
 
         """
+        if not IS_PY3:
+            return
+
         from CommonServerPython import BaseClient
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
         _http_request_mock = mocker.patch.object(BaseClient, '_http_request')
