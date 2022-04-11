@@ -376,9 +376,8 @@ def query_connections_command():
     else:
         input_list = ip.split(",")
 
-    for item in range(len(input_list)):
-        single_input = input_list[item]
-        response = query_connections(machine, ip, single_input)
+    for filter_input in input_list:
+        response = query_connections(machine, ip, filter_input)
         elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
         outputs = []
 
@@ -403,12 +402,12 @@ def query_connections_command():
             'Contents': response,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Cybereason Connections for: {}'.format(single_input), outputs),
+            'HumanReadable': tableToMarkdown('Cybereason Connections for: {}'.format(filter_input), outputs),
             'EntryContext': ec
         })
 
 
-def query_connections(machine, ip, single_input):
+def query_connections(machine, ip, filter_input):
     if machine:
         path = [
             {
@@ -424,7 +423,7 @@ def query_connections(machine, ip, single_input):
                 'requestedType': 'Machine',
                 'filters': [{
                     'facetName': 'elementDisplayName',
-                    'values': [single_input],
+                    'values': [filter_input],
                     'filterType': 'Equals'
                 }]
             }
@@ -436,7 +435,7 @@ def query_connections(machine, ip, single_input):
                 'filters':
                     [{
                         'facetName': 'elementDisplayName',
-                        'values': [single_input]
+                        'values': [filter_input]
                     }],
                 'isResult': True
             }
@@ -1082,8 +1081,7 @@ def delete_registry_key(malop_guid, machine_guid, process_guid):
 def query_file_command():
     file_hash_input = demisto.getArg('file_hash')
     file_hash_list = file_hash_input.split(",")
-    for item in range(len(file_hash_list)):
-        file_hash = file_hash_list[item]
+    for file_hash in file_hash_list:
 
         filters = []
 
@@ -1250,8 +1248,7 @@ def get_file_machine_details(file_guid):
 def query_domain_command():
     domain_input_value = demisto.getArg('domain')
     domain_list = domain_input_value.split(",")
-    for item in range(len(domain_list)):
-        domain_input = domain_list[item]
+    for domain_input in domain_list:
 
         filters = [{
             'facetName': 'elementDisplayName',
@@ -1331,8 +1328,7 @@ def query_domain(filters):
 def query_user_command():
     username_input = demisto.getArg('username')
     username_list = username_input.split(",")
-    for item in range(len(username_list)):
-        username = username_list[item]
+    for username in username_list:
 
         filters = [{
             'facetName': 'elementDisplayName',
@@ -1788,31 +1784,31 @@ def close_fetchfile(batch_id):
 
 def malware_query_command():
     needs_attention = demisto.getArg('needsAttention')
-    is_type = demisto.getArg('type')
-    status_val = demisto.getArg('status')
+    malware_type = demisto.getArg('type')
+    malware_status = demisto.getArg('status')
     time_stamp = demisto.getArg('timestamp')
     limit_range = demisto.getArg('limit')
-    int_limit_range = int(limit_range)
-    if int_limit_range >= 0:
-        filter_response = malware_query_filter(needs_attention, is_type, status_val, time_stamp, int_limit_range)
+    limit_range = int(limit_range)
+    if limit_range > 0:
+        filter_response = malware_query_filter(needs_attention, malware_type, malware_status, time_stamp, limit_range)
         demisto.results(filter_response)
     else:
-        raise Exception("The limit should not contain any negative value")
+        raise Exception("Limit cannot be zero or a negative number.")
 
 
-def malware_query_filter(needs_attention, is_type, status_val, time_stamp, int_limit_range):
+def malware_query_filter(needs_attention, malware_type, malware_status, time_stamp, limit_range):
     query = []
     if bool(needs_attention) == True:
         query.append({"fieldName": "needsAttention","operator": "Is","values": [bool(needs_attention)]})
-    if bool(is_type) == True:
-        types = is_type.split(",")
+    if bool(malware_type) == True:
+        types = malware_type.split(",")
         query.append({"fieldName": "type","operator": "Equals","values": types})
-    if bool(status_val) == True:
-        is_status = status_val.split(",")
+    if bool(malware_status) == True:
+        is_status = malware_status.split(",")
         query.append({"fieldName": "status","operator": "Equals","values": is_status})
     if bool(time_stamp) == True:
         query.append({"fieldName": "timestamp","operator": "GreaterThan","values": [int(time_stamp)]})
-    response = malware_query(query, int_limit_range)
+    response = malware_query(query, limit_range)
     return response
 
 
