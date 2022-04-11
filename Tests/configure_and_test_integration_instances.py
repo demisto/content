@@ -70,6 +70,7 @@ XSIAM_BUILD_TYPE = "XSIAM"
 MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
 MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
 ARTIFACTS_FOLDER_MPV2 = "/builds/xsoar/content/artifacts/marketplacev2"
+SET_SERVER_KEYS = True
 
 
 class Running(IntEnum):
@@ -200,6 +201,7 @@ class Build:
         self.id_set = get_id_set(id_set_path)
         self.test_pack_path = options.test_pack_path if options.test_pack_path else None
         self.tests_to_run = self.fetch_tests_list(options.tests_to_run)
+        logging.info(f'{self.tests_to_run=}')
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
         logging.info(f'{self.pack_ids_to_install=}')
@@ -234,7 +236,8 @@ class Build:
             tests_from_file = filter_file.readlines()
             for test_from_file in tests_from_file:
                 test_clean = test_from_file.rstrip()
-                tests_to_run.append(test_clean)
+                if test_clean:
+                    tests_to_run.append(test_clean)
         return tests_to_run
 
     @abstractmethod
@@ -694,6 +697,8 @@ class XSOARBuild(Build):
 class XSIAMBuild(Build):
 
     def __init__(self, options):
+        global SET_SERVER_KEYS
+        SET_SERVER_KEYS = False
         super().__init__(options)
         self.xsiam_machine = options.xsiam_machine
         self.xsiam_servers = get_json_file(options.xsiam_servers_path)
@@ -709,6 +714,10 @@ class XSIAMBuild(Build):
         return conf.get('api_key'), conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
 
     def configure_servers_and_restart(self):
+        # No need of this step in XSIAM.
+        pass
+
+    def test_integration_with_mock(self, instance: dict, pre_update: bool):
         # No need of this step in XSIAM.
         pass
 
@@ -1151,7 +1160,7 @@ def __set_server_keys(client, integration_params, integration_name):
         integration_name (str): The name of the integration which the server configurations keys are related to.
 
     """
-    if 'server_keys' not in integration_params:
+    if 'server_keys' not in integration_params or not SET_SERVER_KEYS:
         return
 
     logging.info(f'Setting server keys for integration: {integration_name}')
