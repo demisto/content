@@ -19,7 +19,6 @@ import traceback
 import types
 import urllib
 import gzip
-import StringIO
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
