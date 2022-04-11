@@ -1,6 +1,5 @@
 id: 436c75bd-69cb-4284-8b17-663f537c74c6
 version: 80
-vcShouldKeepItemLegacyProdMachine: false
 name: Tag massive and internal IOCs to avoid EDL listing
 description: |-
   This playbook will tag internal assets and Massive IOCs (TLD Wildcards and CIDRs) to be avoided by the EDL. The playbook will do the following according to indicator type:
