@@ -1,22 +1,22 @@
-id: ce8ab14f-6f17-4ade-899f-b8f13af58ba7
-version: 13
-vcShouldKeepItemLegacyProdMachine: false
+id: XDR Retro Hunt - Query
+version: -1
 name: XDR Retro Hunt - Query
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 21b07525-4a8c-4e1f-8838-e0e3c3918f7d
     type: start
     task:
       id: 21b07525-4a8c-4e1f-8838-e0e3c3918f7d
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     separatecontext: false
     view: |-
       {
@@ -32,8 +32,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 162bb0e9-9170-4fa8-858b-8ed757976e6c
     type: title
     task:
@@ -42,10 +42,11 @@ tasks:
       name: 'Type: File Hash'
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     separatecontext: false
     view: |-
       {
@@ -61,8 +62,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 36c096be-b3ee-4af1-8477-e7044c702213
     type: condition
     task:
@@ -71,14 +72,14 @@ tasks:
       name: Check type
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       Domain:
-      - "6"
+      - '6'
       File:
-      - "1"
+      - '1'
       IP:
-      - "3"
+      - '3'
     separatecontext: false
     conditions:
     - label: File
@@ -125,8 +126,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: e8a91721-fdd3-4e02-8b41-210153caf532
     type: title
     task:
@@ -135,10 +136,11 @@ tasks:
       name: 'Type: IP'
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     separatecontext: false
     view: |-
       {
@@ -154,8 +156,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: fd9363f8-1833-4f50-8684-7c20e5882fde
     type: regular
     task:
@@ -169,13 +171,13 @@ tasks:
       script: '|||xdr-xql-generic-query'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       max_fields:
-        simple: "30"
+        simple: '30'
       query:
         simple: filter action_local_ip = ${inputs.item} or action_remote_ip =  ${inputs.item}
       query_name:
@@ -195,8 +197,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: e48d7b95-c0b3-45b7-8d0a-8f69916f1aa7
     type: regular
     task:
@@ -207,10 +209,10 @@ tasks:
       script: '|||xdr-xql-file-event-query'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       file_sha256:
         simple: ${inputs.item}
@@ -231,8 +233,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: ce4c8cbf-ac40-40dc-8efb-56b4a4d41ed2
     type: title
     task:
@@ -241,10 +243,11 @@ tasks:
       name: Type Domain
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     separatecontext: false
     view: |-
       {
@@ -260,8 +263,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: ee948d29-fcc9-4323-8195-6994a0c1c403
     type: regular
     task:
@@ -272,10 +275,10 @@ tasks:
       script: '|||xdr-xql-dns-query'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       external_domain:
         simple: ${inputs.item}
@@ -296,8 +299,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: d0aa35a0-b26a-419e-8d6d-2fda94a7c002
     type: title
     task:
@@ -306,7 +309,8 @@ tasks:
       name: Done Hunting
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -339,7 +343,7 @@ inputs:
   value: {}
   required: true
   description: the indicator to search for
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: type
   value: {}
   required: true
@@ -347,5 +351,9 @@ inputs:
     Can be
     - File
     - IP
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
+description: ''
+fromversion: 6.2.0
