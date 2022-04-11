@@ -529,7 +529,7 @@ Note: To know the scan status use the "rubrik-sonar-ondemand-scan-status" comman
 
 
 #### Command Example
-```!rubrik-sonar-ondemand-scan scan_name="GLBA Scan for new user" sonar_policy_analyzer_groups='[{"id":"97c6a54a-acfc-5ab2-a24a-6a7f3a9a1553","name":"GLBA","groupType":"GLBA","analyzers":[{"id":"ed30dfa0-334f-55ff-a1b7-03b6bdd7849b","name":"CreditCard","analyzerType":"CREDIT_CARD"},{"id":"3e60a612-3e97-5f03-b3a1-cfb7a6a67e8f","name":"USBankAcct","analyzerType":"US_BANK_ACCT"},{"id":"03b3dc9e-81c1-561c-8235-17cf2fc1c729","name":"USITIN","analyzerType":"US_ITIN"},{"id":"d5ce3ae5-f530-562a-85b1-4a84264a350a","name":"USSSN","analyzerType":"US_SSN"}]}]' objects_to_scan="0887e71c-56ac-59f7-8763-54b726e64dd6, a82e888c-2440-5af9-8c2a-447a97f6746c"```
+```!rubrik-sonar-ondemand-scan scan_name="GLBA Scan for new user" sonar_policy_analyzer_groups='[{"id":"97c6a54a-acfc-5ab2-a24a-6a7f3a9a1553","name":"GLBA","groupType":"GLBA","analyzers":[{"id":"ed30dfa0-334f-55ff-a1b7-03b6bdd7849b","name":"CreditCard","analyzerType":"CREDIT_CARD"},{"id":"3e60a612-3e97-5f03-b3a1-cfb7a6a67e8f","name":"BANK_ACCT","analyzerType":"US_BANK_ACCT"},{"id":"03b3dc9e-81c1-561c-8235-17cf2fc1c729","name":"USITIN","analyzerType":"US_ITIN"},{"id":"d5ce3ae5-f530-562a-85b1-4a84264a350a","name":"USSSN","analyzerType":"US_SSN"}]}]' objects_to_scan="0887e71c-56ac-59f7-8763-54b726e64dd6, a82e888c-2440-5af9-8c2a-447a97f6746c"```
 
 #### Human Readable Output
 ### Sonar On-Demand Scan
