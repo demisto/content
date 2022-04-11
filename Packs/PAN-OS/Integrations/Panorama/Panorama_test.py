@@ -1124,6 +1124,52 @@ def mock_good_log_forwarding_profile_match_list():
     ]
 
 
+def mock_good_vulnerability_profile():
+    from Panorama import VulnerabilityProfile, VulnerabilityProfileRule
+    vulnerability_profile = VulnerabilityProfile()
+    vulnerability_profile.children = [
+        VulnerabilityProfileRule(
+            severity=["critical"],
+            is_reset_both=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["high"],
+            is_reset_both=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["medium"],
+            is_alert=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["low"],
+            is_alert=True
+        ),
+    ]
+
+    return vulnerability_profile
+
+
+def mock_bad_vulnerability_profile():
+    from Panorama import VulnerabilityProfile, VulnerabilityProfileRule
+    vulnerability_profile = VulnerabilityProfile()
+    vulnerability_profile.children = [
+        VulnerabilityProfileRule(
+            severity=["critical"],
+            is_reset_both=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["high"],
+            is_reset_both=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["medium"],
+            is_alert=True
+        ),
+    ]
+
+    return vulnerability_profile
+
+
 @pytest.fixture
 def mock_topology(mock_panorama, mock_firewall):
     from Panorama import Topology
@@ -1592,3 +1638,35 @@ class TestHygieneFunctions:
         # This is expected.
         assert len(result.result_data) == 3
         assert result.result_data[0].description == "Log forwarding profile missing log type 'threat'."
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_check_vulnerability_profiles(self, _, __, ___, mock_topology):
+        """
+        Test the Hygiene Configuration lookups can validate the vulnerability profiles
+        """
+        from Panorama import HygieneLookups, VulnerabilityProfile, BestPractices
+        # First, test that we can get the conforming threat profile, of which there should be one
+        result = HygieneLookups.get_conforming_threat_profiles(
+            [mock_good_vulnerability_profile(), mock_bad_vulnerability_profile()],
+            minimum_block_severities=BestPractices.VULNERABILITY_BLOCK_SEVERITIES,
+            minimum_alert_severities=BestPractices.VULNERABILITY_ALERT_THRESHOLD
+        )
+        assert len(result) == 1
+
+        VulnerabilityProfile.refreshall = MagicMock(
+            return_value=[mock_good_vulnerability_profile(), mock_bad_vulnerability_profile()]
+        )
+
+        result = HygieneLookups.check_vulnerability_profiles(mock_topology)
+        # Should return no results, as at least one vulnerability profile matches.
+        assert len(result.result_data) == 0
+
+        VulnerabilityProfile.refreshall = MagicMock(
+            return_value=[mock_bad_vulnerability_profile()]
+        )
+
+        result = HygieneLookups.check_vulnerability_profiles(mock_topology)
+        # Should return one issue, as no Vulnerability profile matches.
+        assert len(result.result_data) == 1

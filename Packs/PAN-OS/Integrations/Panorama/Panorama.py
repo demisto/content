@@ -7293,7 +7293,7 @@ class OpCommandError(Exception):
 class BestPractices:
     SPYWARE_ALERT_THRESHOLD = ["medium, low"]
     SPYWARE_BLOCK_SEVERITIES = ["critical", "high"]
-    VULNERABILITY_ALERT_THRESHOLD = ["medium, low"]
+    VULNERABILITY_ALERT_THRESHOLD = ["medium", "low"]
     VULNERABILITY_BLOCK_SEVERITIES = ["critical", "high"]
     URL_BLOCK_CATEGORIES = ["command-and-control", "hacking", "malware", "phishing"]
 
@@ -8828,6 +8828,7 @@ class HygieneLookups:
                                  rule.is_drop, rule.is_block_ip]
                 alert_actions = [rule.is_default, rule.is_alert]
                 for rule_severity in rule.severity:
+
                     # If the block severities are blocked
                     if any(block_actions) and rule_severity in block_severities:
                         block_severities.remove(rule_severity)
@@ -9736,6 +9737,7 @@ def check_vulnerability_profiles(
     )
 
     return result
+
 
 def get_topology() -> Topology:
     """
