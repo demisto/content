@@ -2,6 +2,7 @@ from CommonServerPython import *
 from typing import Callable, Union
 import time
 import traceback
+from urllib.parse import quote, unquote
 
 seconds = time.time()
 
@@ -11,7 +12,8 @@ EMAIL_INTEGRATIONS = ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'M
 
 class MissingEmailException(Exception):
     def __init__(self):
-        super().__init__('Email was not found in the mailbox. It is possible that the email was already deleted manually.')
+        super().__init__('Email was not found in the mailbox. It is possible that the email was already '
+                         'deleted manually.')
 
 
 class DeletionFailed(Exception):
@@ -288,7 +290,8 @@ def get_search_args(args: dict):
         'Gmail': {'query': f'Rfc822msgid:{message_id}', 'user-id': user_id},
         'EWSO365': {'target-mailbox': user_id},
         'EWS v2': {'target-mailbox': user_id},
-        'MicrosoftGraphMail': {'user_id': user_id, 'odata': f'"$filter=internetMessageId eq \'{message_id}\'"'},
+        'MicrosoftGraphMail': {'user_id': user_id, 'odata': f'"$filter=internetMessageId eq '
+                                                            f'\'{quote(unquote(message_id))}\'"'},
         'SecurityAndCompliance': {'to_user_id': user_id, 'from_user_id': custom_fields.get('reportedemailfrom')},
     }
 
