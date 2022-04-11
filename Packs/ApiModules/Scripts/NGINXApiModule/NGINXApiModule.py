@@ -9,7 +9,6 @@ import subprocess
 import gevent
 from signal import SIGUSR1
 import requests
-from requests.exceptions import HTTPError
 from flask.logging import default_handler
 from typing import Any, Dict
 import os
