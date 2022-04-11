@@ -2,6 +2,7 @@
 import io
 import json
 import tempfile
+from pathlib import Path
 
 import pytest
 import os
@@ -218,7 +219,8 @@ class TestHelperFunctions:
             tld = f.read()
         requests_mock.get('https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat', text=tld)
         requests_mock.get('https://publicsuffix.org/list/public_suffix_list.dat', text=tld)
-        edl.tldextractor = tldextract.TLDExtract()
+        if not Path('/home/demisto').exists():
+            edl.tldextractor = tldextract.TLDExtract()
         indicators = [{'value': '1.1.1.1/7', 'indicator_type': 'CIDR'},  # prefix=7
                       {"value": "1.1.1.1/12", "indicator_type": "CIDR"},  # prefix=12
                       {"value": "*.com", "indicator_type": "Domain"},  # tld
