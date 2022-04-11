@@ -1,7 +1,7 @@
-id: Microsoft 365 Defender - Indicators Hunt
+id: Microsoft 365 Defender - Emails Indicators Hunt
 version: 55
 vcShouldKeepItemLegacyProdMachine: false
-name: Microsoft 365 Defender - Indicators Hunt
+name: Microsoft 365 Defender - Emails Indicators Hunt
 description: |-
   This playbook will retrieve emails data based on the "URLDomain", "SHA256" and "IPAddress" inputs.
   SHA256 - Emails with attachments matching the "SHA256" input will be retrieved.

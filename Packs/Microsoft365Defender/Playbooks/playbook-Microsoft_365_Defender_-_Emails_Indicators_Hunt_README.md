@@ -63,4 +63,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Microsoft 365 Defender - Indicators Hunt](../doc_files/Microsoft_365_Defender_-_Indicators_Hunt.png)
+![Microsoft 365 Defender - Indicators Hunt](../doc_files/Microsoft_365_Defender_-_Emails_Indicators_Hunt.png)
