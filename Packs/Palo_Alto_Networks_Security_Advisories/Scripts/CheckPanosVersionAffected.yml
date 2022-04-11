@@ -11,8 +11,8 @@ args:
   name: advisories
   required: true
   secret: false
-comment: 'Checks if the given PAN-OS version number is affected by the given list
-  of vulnerabilties. '
+comment: Checks if the given PAN-OS version number is affected by the given list of
+  vulnerabilties from the pan-advisories-get-advisories command.
 commonfields:
   id: 072efb11-d549-442a-afba-11f43947a25b
   version: -1
