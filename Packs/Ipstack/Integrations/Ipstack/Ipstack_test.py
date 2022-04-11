@@ -19,8 +19,6 @@ CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 ])
 def test_right_location_format(mocker, raw_response_mock):
     """
-    Given:
-      - Case 1: raw_response mock
     When:
       - Calling ip_command
     Then:
