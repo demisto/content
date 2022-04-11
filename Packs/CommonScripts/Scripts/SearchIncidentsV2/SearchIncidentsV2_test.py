@@ -118,13 +118,14 @@ def get_incidents_mock(command, args, extract_contents=True, fail_on_error=True)
     return [{'Contents': {'data': [incident for incident in EXAMPLE_INCIDENTS_RAW_RESPONSE if incident['id'] in ids]}}]
 
 
-@pytest.mark.parametrize('args,filtered_args,expected_result', (({}, {}, []),
-                                                (dict(trimevents='0'), {}, []),
-                                                (dict(trimevents='1'), dict(trimevents='1'), []),
-                                                ({'id': 1}, {'id': '1'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0]]),
-                                                ({'id': [1, 2]}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
-                                                ({'id': '1,2'}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
-                                                ))
+@pytest.mark.parametrize('args,filtered_args,expected_result', [
+    ({}, {}, []),
+    (dict(trimevents='0'), {}, []),
+    (dict(trimevents='1'), dict(trimevents='1'), []),
+    ({'id': 1}, {'id': '1'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0]]),
+    ({'id': [1, 2]}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
+    ({'id': '1,2'}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
+])
 def test_filter_events(mocker, args, filtered_args, expected_result):
     import SearchIncidentsV2
     execute_mock = mocker.patch.object(SearchIncidentsV2, 'execute_command', side_effect=get_incidents_mock)
