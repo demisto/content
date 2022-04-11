@@ -1,0 +1,88 @@
+commonfields:
+  id: Github SIEM
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Github SIEM
+display: Github SIEM
+category: Analytics & SIEM
+description: This is the Hello World integration for getting started.
+detaileddescription: |-
+  ### Community Contributed Integration
+   #### Integration Author: Cortex XSOAR
+   No support or maintenance is provided by the author. Customers are encouraged to engage with the user community for questions and guidance at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).
+  ***
+  ## Hello World
+  - This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
+  - You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+
+  ---
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/hello-world)
+configuration:
+- display: Server URL (e.g. 'https://api.github.com/orgs/XXXXX/audit-log')
+  name: url
+  defaultvalue: 'https://api.github.com/orgs/XXXXX/audit-log'
+  type: 0
+  required: true
+- display: HTTP Method
+  name: method
+  type: 15
+  required: true
+  defaultvalue: GET
+  options:
+  - GET
+  - POST
+  - DELETE
+  - PUT
+  - PATCH
+  - HEAD
+- display: Maximum of objects to fetch
+  name: max_fetch
+  defaultvalue: "10"
+  type: 0
+  required: true
+- display: Headers
+  name: headers
+  defaultvalue: '{"Authorization": "Bearer XXXXXXXXX", "Accept": "application/vnd.github.v3+json"}'
+  type: 0
+  required: true
+  additionalinfo: Authorization Token
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Use Secured Connection
+  name: verify
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: How many logs to fetch in each iteration
+  name: limit
+  type: 0
+  defaultvalue: 10
+  required: false
+- display: First fetch time interval
+  name: first_fetch
+  type: 0
+  defaultvalue: 3 days
+  required: false
+- display: include
+  name: include
+  type: 0
+  defaultvalue: web
+  required: false
+script:
+  script: ""
+  type: python
+  commands:
+  - name: github-fetch-logs
+    arguments:
+    - name: name
+      description: The name of whom you want to say hello to.
+    outputs:
+    - contextPath: hello
+      description: Should be Hello **something** here.
+      type: String
+    description: Hello command - prints hello to anyone.
+  dockerimage: demisto/fastapi:1.0.0.28061
+  runonce: false
+  subtype: python3
