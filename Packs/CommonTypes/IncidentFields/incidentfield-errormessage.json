@@ -21,7 +21,10 @@
     "associatedTypes": [
         "IAM - App Add",
         "IAM - App Remove",
-        "IAM - Group Membership Update"
+        "IAM - Group Membership Update",
+        "Symantec DLP Discover Incident",
+        "Symantec DLP Endpoint Incident",
+        "Symantec DLP Network Incident"
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -29,5 +32,10 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.0.0",
+    "systemAssociatedTypes": [
+    "Symantec DLP Discover Incident",
+    "Symantec DLP Endpoint Incident",
+    "Symantec DLP Network Incident"
+    ]
 }
