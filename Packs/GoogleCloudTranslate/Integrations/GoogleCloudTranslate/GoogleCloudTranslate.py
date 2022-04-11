@@ -44,7 +44,7 @@ class Client:
                 support_target is a bool indicating if the language is
                 a supported target for the translation.
         """
-        parent = self.client.location_path(self.project_id, 'global')
+        parent = f"projects/{self.project_id}/locations/global"
         result = self.client.get_supported_languages(parent)
 
         return [
@@ -72,8 +72,15 @@ class Client:
                 code of the detected language or None if the source language
                 was specified.
         """
-        parent = self.client.location_path(self.project_id, 'global')
-        result = self.client.translate_text([text], target, parent, source_language_code=source)
+        parent = f"projects/{self.project_id}/locations/global"
+        result = self.client.translate_text(
+            request={
+                'contents': [text],
+                'target_language_code': target,
+                'parent': parent,
+                'source_language_code': source
+            }
+        )
 
         return {
             'detected_language_code': result.translations[0].detected_language_code,
