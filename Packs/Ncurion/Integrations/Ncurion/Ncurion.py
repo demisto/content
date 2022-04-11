@@ -104,8 +104,9 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
                         'rawJSON': json.dumps(hit)
                     }
                     incidents.append(incident)
-    lastes_created_time = cast(int, last_fetch)
-    next_run = {'last_fetch': lastes_created_time}
+    nowtime = datetime.nowtime().timestamp()
+    lastest_created_time = cast(int, nowtime)
+    next_run = {'last_fetch': lastest_created_time}
     logout = json.dumps({
         "access_token": access_token,
         "refresh_token": refresh_token
