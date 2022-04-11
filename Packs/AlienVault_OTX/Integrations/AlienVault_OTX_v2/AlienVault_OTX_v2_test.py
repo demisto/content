@@ -66,7 +66,16 @@ FILE_EC_WITHOUT_ANALYSIS = {
     'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||'
     ' val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 ||'
     ' val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH ||'
-    ' val.SSDeep && val.SSDeep == obj.SSDeep)': [{'SHA1': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'}],
+    ' val.SSDeep && val.SSDeep == obj.SSDeep)': [
+        {'SHA1': '6c5360d41bd2b14b1565f5b18e5c203cf512e493',
+         'Hashes': [
+             {
+                 'type': 'SHA1',
+                 'value': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'
+             }
+         ]
+         }
+    ],
     'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
     ' val.Type == obj.Type)': [{'Indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'Type': 'file',
                                 'Vendor': '', 'Score': 0, 'Reliability': 'C - Fairly reliable',
