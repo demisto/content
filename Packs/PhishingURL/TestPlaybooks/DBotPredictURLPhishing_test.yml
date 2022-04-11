@@ -1,5 +1,5 @@
 id: DBotPredictURLPhishing_test
-version: 4
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: DBotPredictURLPhishing_test
 starttaskid: "0"
@@ -407,3 +407,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
