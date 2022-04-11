@@ -19,6 +19,7 @@ import traceback
 import types
 import urllib
 import gzip
+import StringIO
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -9757,7 +9758,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
 
-    zipped_data = gzip.compress(data.encode('utf-8'))
+    zipped_data = gzip.compress(data.encode('utf-8'))   # type: ignore[attr-defined]
     client = BaseClient(base_url=xsiam_url)
     res = client._http_request(method='POST', full_url=urljoin(xsiam_url, '/logs/v1/xsiam'), data=zipped_data,
                                headers=headers,
