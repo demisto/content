@@ -9,7 +9,7 @@ if(! $startTime)
 
 if(! $endTime)
 {
-    $endDate = Get-Date
+    $endTime = Get-Date
 }
 
 try{
