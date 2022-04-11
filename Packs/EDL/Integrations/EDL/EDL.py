@@ -76,7 +76,6 @@ INCREASE_LIMIT = 1.1
 
 tldextractor = tldextract.TLDExtract(cache_dir='/home/demisto')
 
-
 class RequestArguments:
     CTX_QUERY_KEY = 'last_query'
     CTX_OUT_FORMAT = 'out_format'
@@ -814,7 +813,7 @@ def route_edl() -> Response:
     on_demand = params.get('on_demand')
     created = datetime.now(timezone.utc)
     edl = get_edl_on_demand() if on_demand else create_new_edl(request_args)
-    etag = f'"{hashlib.sha1(edl.encode()).hexdigest()}"'  # guardrails-disable-line
+    etag = f'"{hashlib.sha1(edl.encode()).hexdigest()}"'  # no-sec
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
     edl_size = 0
     if edl.strip():
