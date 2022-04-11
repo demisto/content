@@ -8,7 +8,7 @@ the API available as part of Vision Licensing and integrate the data into XSOAR.
 3. Click **Add instance** to create and configure a new integration instance.
 
    | **Parameter** | **Description** | **Required** |
-       | --- | --- | --- |
+          | --- | --- | --- |
    | Server URL (e.g. https://example.net) |  | True |
    | Access Token |  | True |
    | Trust any certificate (not secure) |  | False |
@@ -17,6 +17,7 @@ the API available as part of Vision Licensing and integrate the data into XSOAR.
    | Incidents Fetch Interval |  | False |
    | Incident Fetch Limit | Maximum incidents to be fetched every time. Upper limit is 50 incidents. | True |
    | Incident type |  | False |
+   | Priority | Fetch the events based on priority. All priorities will be considered by default. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -25,7 +26,7 @@ the API available as part of Vision Licensing and integrate the data into XSOAR.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you
 successfully execute a command, a DBot message appears in the War Room with the command details.
 
-This integration provides following command(s) which can be used to access the Threat Intelligence
+This integration provides the following command(s) which can be used to access Threat Intelligence
 
 ### cyble-vision-fetch-iocs
 
@@ -56,8 +57,8 @@ Fetch the indicators for the given timeline
 ### cyble-vision-fetch-alerts
 
 ***
-Fetch Incident event alerts based on the given parameters. Alerts would have multiple events grouped into one based on
-specific service type. So user would see in few cases more events than the limit provided.
+Fetch Incident Event alerts based on the given parameters. Alerts would have multiple events grouped into one based on
+specific service type. So users would see, in certain cases, more events than the limit provides.
 
 #### Base Command
 
@@ -66,12 +67,13 @@ specific service type. So user would see in few cases more events than the limit
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| from | Returns records for the timeline starting from given indice. Default is 0. | Required | 
-| limit | Number of records to return (max 50). Using a smaller limit will get faster responses. Default is 5. | Required | 
-| start_date | Timeline start date in the format "YYYY/MM/DD". | Required | 
-| end_date | Timeline end date in the format "YYYY/MM/DD". | Required | 
-| order_by | Sorting order for alert fetch either Ascending or Descending. Possible values are: Ascending, Descending. Default is Ascending. | Required | 
+| --- | --- |--------------|
+| from | Returns records for the timeline starting from given indice. Default is 0. | Required     | 
+| limit | Number of records to return (max 50). Using a smaller limit will get faster responses. Default is 5. | Required     | 
+| start_date | Timeline start date in the format "YYYY/MM/DD". | Required     | 
+| end_date | Timeline end date in the format "YYYY/MM/DD". | Required     | 
+| order_by | Sorting order for alert fetch either Ascending or Descending. Possible values are: Ascending, Descending. Default is Ascending. | Required     |
+| priority | Fetch the events based on priority. Possible values are: high,medium,low,informational. | Optional     | 
 
 #### Context Output
 
@@ -102,6 +104,8 @@ Fetch Incident detail based on event type and event ID
 | --- | --- | --- |
 | event_type | Event Type of the Incident. | Required | 
 | event_id | Event ID of the incident. | Required | 
+| from | The value in the field represents the position of records that are retrieved | Required | 
+| limit | The value in the field represents the number of events that can be returned, maximum allowed is 50 | Required | 
 
 #### Context Output
 

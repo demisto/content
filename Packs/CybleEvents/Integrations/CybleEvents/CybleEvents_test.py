@@ -291,10 +291,10 @@ def test_cyble_vision_fetch_detail(requests_mock, eID, eType):
 
     response = fetch_alert_details(client=client, args=args).outputs
 
-    assert isinstance(response, list)
-    assert isinstance(response[0], dict)
+    assert isinstance(response, dict)
+    assert isinstance(response['events'], list)
 
-    for i, el in enumerate(response):
+    for i, el in enumerate(response['events']):
         assert el['id'] == i + 1
         assert el['eventtitle'] == 'some_event_title_{0}'.format(i + 1)
         assert el['createdat'] == '2020-06-15T07:34:20.062000'
@@ -303,6 +303,147 @@ def test_cyble_vision_fetch_detail(requests_mock, eID, eType):
         assert el['indicator'] == 'some_indicator_{0}'.format(i + 1)
         assert el['references'] == ''
         assert el['lastseenon'] == '2022-03-02'
+
+
+@pytest.mark.parametrize(
+    "offset,limit", [
+        ('0', '-2'), ('0', '89')
+    ]
+)
+def test_limit_cyble_vision_fetch_detail(requests_mock, capfd, offset, limit):
+    """
+    Tests the cyble_vision_fetch_detail command for failure
+
+    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_detail
+    API response when the correct cyble_vision_fetch_detail API request is performed. Checks
+    the output of the command function with the expected output.
+
+    :param requests_mock:
+    :return:
+    """
+    from CybleEvents import Client, fetch_alert_details
+
+    mock_response_1 = load_json_file("dummy_fetch_detail.json")
+
+    requests_mock.post('https://test.com/api/v2/events/eType/eID', json=mock_response_1)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    args = {
+        'token': 'some_random_token',
+        'event_type': 'eType',
+        'event_id': 'eID',
+        'from': offset,
+        'limit': limit
+    }
+
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match=f"Limit should a positive number upto 50, limit: {limit}"):
+            fetch_alert_details(client=client, args=args)
+
+
+def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
+    """
+    Tests the cyble_vision_fetch_detail command for failure
+
+    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_detail
+    API response when the correct cyble_vision_fetch_detail API request is performed. Checks
+    the output of the command function with the expected output.
+
+    :param requests_mock:
+    :return:
+    """
+    from CybleEvents import Client, fetch_alert_details
+
+    mock_response_1 = load_json_file("dummy_fetch_detail.json")
+
+    requests_mock.post('https://test.com/api/v2/events/eType/eID', json=mock_response_1)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    args = {
+        'token': 'some_random_token',
+        'event_type': 'eType',
+        'event_id': 'eID',
+        'from': '-1',
+        'limit': 1
+    }
+
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match=f"Parameter having negative value, from: -1'"):
+            fetch_alert_details(client=client, args=args)
+
+
+def test_etype_cyble_vision_fetch_detail(requests_mock, capfd):
+    """
+    Tests the cyble_vision_fetch_detail command for failure
+
+    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_detail
+    API response when the correct cyble_vision_fetch_detail API request is performed. Checks
+    the output of the command function with the expected output.
+
+    :param requests_mock:
+    :return:
+    """
+    from CybleEvents import Client, fetch_alert_details
+
+    mock_response_1 = load_json_file("dummy_fetch_detail.json")
+    requests_mock.post('https://test.com/api/v2/events/eType/eID', json=mock_response_1)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    args = {
+        'token': 'some_random_token',
+        'event_id': 'eID'
+    }
+
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match=f"Event Type not specified"):
+            fetch_alert_details(client=client, args=args)
+
+
+def test_eid_cyble_vision_fetch_detail(requests_mock, capfd):
+    """
+    Tests the cyble_vision_fetch_detail command for failure
+
+    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_detail
+    API response when the correct cyble_vision_fetch_detail API request is performed. Checks
+    the output of the command function with the expected output.
+
+    :param requests_mock:
+    :return:
+    """
+    from CybleEvents import Client, fetch_alert_details
+
+    mock_response_1 = load_json_file("dummy_fetch_detail.json")
+    requests_mock.post('https://test.com/api/v2/events/eType/eID', json=mock_response_1)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    args = {
+        'token': 'some_random_token',
+        'event_type': 'eType'
+    }
+
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match=f"Event ID not specified"):
+            fetch_alert_details(client=client, args=args)
 
 
 def test_validate_input(capfd):
@@ -323,13 +464,13 @@ def test_limit_validate_input(capfd):
     from CybleEvents import validate_input
 
     args = {
-        'start_date': datetime.today().strftime('%Y-%m-%d'),
-        'end_date': datetime.today().strftime('%Y-%m-%d'),
+        'start_date': datetime.today().strftime('%Y/%m/%d'),
+        'end_date': datetime.today().strftime('%Y/%m/%d'),
         'from': '0',
         'limit': '-1',
     }
     with capfd.disabled():
-        with pytest.raises(ValueError, match=f"Limit should be greater than zero, limit: {args.get('limit', '50')}"):
+        with pytest.raises(ValueError, match=f"Limit should a positive number upto 50, limit: {args.get('limit', '50')}"):
             validate_input(args=args)
 
 

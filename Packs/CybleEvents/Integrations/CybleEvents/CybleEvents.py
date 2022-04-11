@@ -115,7 +115,8 @@ class Client(BaseClient):
             'limit': params.get('limit', '50'),
             'start_date': params.get('start_date'),
             'end_date': params.get('end_date'),
-            'order_by': params.get('order_by')
+            'order_by': params.get('order_by'),
+            'priority': params.get('priority', '')
         })
         headers = {
             'X-API-KEY': '{}'.format(params.get('token')),
@@ -148,8 +149,8 @@ class Client(BaseClient):
         """
 
         payload = json.dumps({
-            'from': params.get('from'),
-            'limit': params.get('limit', '50')
+            'from': params.get('from', 0),
+            'limit': params.get('limit', LIMIT_EVENT_ITEMS)
         })
         headers = {
             'X-API-KEY': '{}'.format(params.get('token')),
@@ -168,10 +169,7 @@ class Client(BaseClient):
             raise e
 
         if response.status_code == 200 and (resp.get('success') or False):
-            events_data.extend(resp.get('events', []))
-            if resp.get('total_count') != len(events_data) and len(events_data) <= MAX_EVENT_ITEMS:
-                params['from'] += params.get('limit', '50')
-                self.get_event_details(method, eventurl, params, events_data)
+            events_data.update(resp)
         else:
             raise Exception(
                 "Fetch event detail error (code:{}, reason:{})".format(response.status_code, response.reason))
@@ -230,8 +228,8 @@ def cyble_fetch_iocs(client, method, args):
     """
     params = {
         'token': args.get('token', ''),
-        'from': arg_to_number(args.get('from')),
-        'limit': arg_to_number(args.get('limit', '50')),
+        'from': arg_to_number(args.get('from', '0')),
+        'limit': arg_to_number(args.get('limit', LIMIT_EVENT_ITEMS)),
         'start_date': args.get('start_date'),
         'end_date': args.get('end_date'),
         'type': args.get('type') or '',
@@ -304,10 +302,11 @@ def cyble_fetch_alerts(client, method, args):
     params = {
         'token': args.get('token'),
         'from': arg_to_number(args.get('from', '0')),
-        'limit': arg_to_number(args.get('limit', '50')),
+        'limit': arg_to_number(args.get('limit', LIMIT_EVENT_ITEMS)),
         'start_date': args.get('start_date'),
         'end_date': args.get('end_date'),
-        'order_by': args.get('order_by')
+        'order_by': args.get('order_by'),
+        'priority': args.get('priority', ''),
     }
 
     events_url = r'/api/v2/events/all'
@@ -340,24 +339,31 @@ def fetch_alert_details(client, args):
     :param args: arguments for fetching alert details
     :return: alert details
     """
-    fetch_from = 0
     eventtype = args.get('event_type', None)
     eventid = args.get('event_id', None)
+    offset = int(args.get('from', '0'))
+    limit = int(args.get('limit', LIMIT_EVENT_ITEMS))
+
+    if offset < 0:
+        raise ValueError(f"Parameter having negative value, from: {arg_to_number(args.get('from'))}'")
+    if limit <= 0 or limit > LIMIT_EVENT_ITEMS:
+        raise ValueError(f"Limit should a positive number upto 50, limit: {arg_to_number(args.get('limit', '1'))}")
     if not eventtype:
         raise ValueError('Event Type not specified')
     if not eventid:
         raise ValueError('Event ID not specified')
+
     events_url = r'/api/v2/events/{}/{}'.format(eventtype, eventid)
-    results: List[Any] = []
+    results: Dict[str, Any] = {}
     params = {
         'token': args.get('token', None),
-        'from': fetch_from,
-        'limit': LIMIT_EVENT_ITEMS
+        'from': offset,
+        'limit': limit,
     }
     if args.get('token'):
         client.get_event_details("POST", events_url, params, results)
 
-    markdown = tableToMarkdown('Event Details:', results)
+    markdown = tableToMarkdown('Event Details:', results.get('events', []))
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='CybleEvents.Events',
@@ -378,6 +384,7 @@ def fetch_incidents(client, method, token, maxResults):
     :return: incidents from server
     """""
     last_run = demisto.getLastRun()
+    args = demisto.params()
 
     if 'total_alert_count' not in last_run.keys():
         last_run['total_alert_count'] = 0
@@ -389,10 +396,11 @@ def fetch_incidents(client, method, token, maxResults):
     params = {
         'token': token,
         'from': arg_to_number(last_run.get('fetched_alert_count', '0')),
-        'limit': int(MAX_EVENT_ITEMS) if maxResults > 50 else int(maxResults),
+        'limit': int(MAX_EVENT_ITEMS) if maxResults > MAX_EVENT_ITEMS else int(maxResults),
         'start_date': last_run.get('event_pull_start_date', '0'),
         'end_date': date.today().strftime("%Y/%m/%d"),
-        'order_by': 'Ascending'
+        'order_by': 'Ascending',
+        'priority': args.get('priority', '')
     }
 
     events_url = r'/api/v2/events/all'
@@ -437,18 +445,21 @@ def validate_input(args, is_iocs=False):
         # we assume all the params to be non-empty, as cortex ensures it
         if int(args.get('from')) < 0:
             raise ValueError(f"Parameter having negative value, from: {arg_to_number(args.get('from'))}'")
-
-        if int(args.get('limit', '50')) <= 0:
-            raise ValueError(f"Limit should be greater than zero, limit: {arg_to_number(args.get('limit', '50'))}")
+        limit = int(args.get('limit', '1'))
 
         if is_iocs:
             date_format = "%Y-%m-%d"
             _start_date = datetime.strptime(args.get('start_date'), date_format)
             _end_date = datetime.strptime(args.get('end_date'), date_format)
+            if limit <= 0 or limit > 1000:
+                raise ValueError(
+                    f"Limit should a positive number upto 1000, limit: {limit}")
         else:
             date_format = "%Y/%m/%d"
             _start_date = datetime.strptime(args.get('start_date'), date_format)
             _end_date = datetime.strptime(args.get('end_date'), date_format)
+            if limit <= 0 or limit > LIMIT_EVENT_ITEMS:
+                raise ValueError(f"Limit should a positive number upto 50, limit: {limit}")
 
         if _start_date > datetime.today():
             raise ValueError(f"Start date must be a date before or equal to {datetime.today().strftime(date_format)}")
