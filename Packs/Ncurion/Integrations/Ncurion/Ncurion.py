@@ -88,7 +88,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
     max_fetch = demisto.params().get('max_fetch')
     if last_fetch is None:
         last_fetch = first_fetch_time
-    last_fetch_time = datetime.datetime.fromtimestamp(last_fetch)
+    last_fetch_time = last_fetch.split('.')[0]
     last_fetch_Format = last_fetch_time.strftime(NCURION_DATE_FORMAT)
     params1 = {"start": f"{last_fetch_Format}", "size": max_fetch}
     if len(log_server_id) > 0:
