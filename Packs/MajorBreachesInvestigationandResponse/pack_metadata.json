@@ -40,131 +40,41 @@
         "Exchange"
     ],
     "dependencies": {
-        "EWS": {
-            "mandatory": false,
-            "display_name": "EWS"
-        },
-        "PAN-OS": {
-            "mandatory": false,
-            "display_name": "PAN-OS"
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
         },
         "PANWComprehensiveInvestigation": {
             "mandatory": false,
             "display_name": "PANW Comprehensive Investigation"
         },
-        "Campaign": {
-            "mandatory": true,
-            "display_name": "Phishing Campaign"
-        },
-        "CommonPlaybooks": {
-            "mandatory": false,
-            "display_name": "Common Playbooks"
-        },
-        "SplunkPyPreRelease": {
-            "mandatory": false,
-            "display_name": "Splunk Prerelease"
-        },
-        "SplunkPy": {
-            "mandatory": true,
-            "display_name": "Splunk"
-        },
-        "GitHub": {
-            "mandatory": false,
-            "display_name": "GitHub"
-        },
-        "QRadar": {
-            "mandatory": true,
-            "display_name": "IBM QRadar"
-        },
-        "ExpanseV2": {
-            "mandatory": false,
-            "display_name": "Cortex Xpanse"
-        },
-        "NIST": {
-            "mandatory": true,
-            "display_name": "NIST"
-        },
-        "CortexXDR": {
-            "mandatory": false,
-            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
-        },
-        "CoreAlertFields": {
-            "mandatory": true,
-            "display_name": "Core Alert Fields"
-        },
-        "Ransomware": {
-            "mandatory": true,
-            "display_name": "Ransomware"
-        },
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
         },
-        "Office365AndAzureAuditLog": {
+        "ExpanseV2": {
             "mandatory": false,
-            "display_name": "Office 365 and Azure (Audit Log)"
+            "display_name": "Expanse v2"
         },
-        "Identity": {
-            "mandatory": true,
-            "display_name": "Identity"
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "PAN-OS"
         },
-        "PaloAltoNetworks_PAN_OS_EDL_Management": {
-            "mandatory": true,
-            "display_name": "Palo Alto Networks PAN-OS EDL Management"
+        "MicrosoftPolicyAndCompliance": {
+            "display_name": "Microsoft Policy And Compliance",
+            "mandatory": false
         },
-        "Phishing": {
-            "mandatory": true,
-            "display_name": "Phishing"
+        "CVE_2021_44228": {
+            "mandatory": false,
+            "display_name": "CVE-2021-44228 - Log4j RCE"
         },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        },
-        "GoogleChronicleBackstory": {
-            "mandatory": true,
-            "display_name": "Chronicle"
-        },
-        "PaloAltoNetworks_IoT": {
-            "mandatory": true,
-            "display_name": "Palo Alto Networks IoT"
-        },
-        "SANS": {
-            "mandatory": true,
-            "display_name": "SANS"
-        },
-        "ServiceNow": {
-            "mandatory": true,
-            "display_name": "ServiceNow"
+        "CVE_2021_40444": {
+            "mandatory": false,
+            "display_name": "CVE-2021-40444 - MSHTML RCE"
         }
     },
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ],
-    "displayedImages": [
-        "EWS",
-        "PAN-OS",
-        "PANWComprehensiveInvestigation",
-        "Campaign",
-        "CommonPlaybooks",
-        "SplunkPyPreRelease",
-        "SplunkPy",
-        "GitHub",
-        "QRadar",
-        "ExpanseV2",
-        "NIST",
-        "CortexXDR",
-        "CoreAlertFields",
-        "Ransomware",
-        "CommonScripts",
-        "Office365AndAzureAuditLog",
-        "Identity",
-        "PaloAltoNetworks_PAN_OS_EDL_Management",
-        "Phishing",
-        "CommonTypes",
-        "GoogleChronicleBackstory",
-        "PaloAltoNetworks_IoT",
-        "SANS",
-        "ServiceNow"
     ]
 }
