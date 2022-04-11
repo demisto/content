@@ -1029,13 +1029,10 @@ def get_attachment_data(attachment):
     :param attachment: attachment metadata
     :return: attachment name and content
     """
-    attachment_url = f"rest{attachment['content'].split('/rest')[-1]}"
-    attachments_zip = jira_req(method='GET', resource_url=attachment_url).content
+    attachment_url = attachment.get('content')
+    filename = attachment.get('filename')
+    attachments_zip = jira_req(method='GET', resource_url=attachment_url, link=True).content
 
-    attachment_metadata_url = f"rest{attachment['self'].split('/rest')[-1]}"
-    attachment_metadata = jira_req(method='GET', resource_url=attachment_metadata_url).json()
-
-    filename = attachment_metadata.get('filename')
     return filename, attachments_zip
 
 
