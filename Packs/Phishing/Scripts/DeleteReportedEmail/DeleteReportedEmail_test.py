@@ -1,3 +1,4 @@
+import CommonServerPython
 from DeleteReportedEmail import *
 import DeleteReportedEmail
 import pytest
@@ -155,7 +156,8 @@ class TestSecurityAndCompliance:
             'using_brand': 'brand',
             'email_subject': 'subject',
             'to_user_id': 'user_id',
-            'from_user_id': 'from_user_id'
+            'from_user_id': 'from_user_id',
+            'message_id': 'message_id'
         }
         self.args = {}
         import DeleteReportedEmail
@@ -257,3 +259,14 @@ def test_search_args(mocker, brand):
     current_search_args = GENERAL_SEARCH_ARGS.copy()
     current_search_args.update(ADDED_SEARCH_ARGS.get(brand, {}))
     assert get_search_args({}) == current_search_args
+
+
+def test_schedule_next_command(mocker):
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    args = {'arg': 'arg'}
+    polling_args = {
+        'interval_in_seconds': 60,
+        'polling': True,
+        **args,
+    }
+    assert isinstance(schedule_next_command(args), ScheduledCommand)
