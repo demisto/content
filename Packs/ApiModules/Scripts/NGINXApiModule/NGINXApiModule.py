@@ -220,13 +220,13 @@ def test_nginx_web_server(port: int, params: Dict):
                 time.sleep(0.5)
                 protocol = 'https' if params.get('key') else 'http'
                 res = requests.get(f'{protocol}://localhost:{port}/nginx-test',
-                                   verify=False, proxies={"http": "", "https": ""})  # nosec guardrails-disable-line
+                                   verify=False, proxies={"http": "", "https": ""})  # guardrails-disable-line nosec
                 res.raise_for_status()
                 welcome = 'Welcome to nginx'
                 if welcome not in res.text:
                     raise ValueError(f'Unexpected response from nginx-test (does not contain "{welcome}"): {res.text}')
                 is_test_done = True
-            except HTTPError:
+            except Exception:
                 if polling_tries == NGINX_MAX_POLLING_TRIES:
                     raise
                 polling_tries += 1
