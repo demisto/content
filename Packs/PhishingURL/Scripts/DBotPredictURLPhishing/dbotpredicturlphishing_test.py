@@ -29,15 +29,18 @@ def executeCommand(command, args=None):
                         'CreationDate': date}}}, "Type": "note"}]
 
     elif command == 'rasterize':
-        return [{'Contents': {'image_b64': "",
-                              'html': "html", },
+        url = args.get('url')
+        return [{'Contents': {KEY_IMAGE_RASTERIZE: "",
+                              KEY_IMAGE_HTML: "html",
+                              KEY_CURRENT_URL_RASTERIZE: url},
                  'Type': 'note'}]
 
     elif command == 'getMLModel':
         return [{'Contents':
                 {'modelData': "ModelDataML", 'model':
                     {'type': {'type': ''}, 'extra':
-                        {OOB_MAJOR_VERSION_INFO_KEY: 0, OOB_MINOR_VERSION_INFO_KEY: 0}}}, 'Type': 'note'}]
+                        {OOB_MAJOR_VERSION_INFO_KEY: MAJOR_VERSION, OOB_MINOR_VERSION_INFO_KEY:
+                            MINOR_DEFAULT_VERSION}}}, 'Type': 'note'}]
 
     elif command == 'createMLModel':
         return None
@@ -56,7 +59,6 @@ def test_regular_malicious_new_domain(mocker):
     model_mock = PhishingURLModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'urls': 'psg.fr', 'numberDetailedReports': '1'})
-    mocker.patch('DBotPredictURLPhishing.is_valid_url', return_value=(True, EMPTY_STRING, 200))
     mocker.patch('DBotPredictURLPhishing.decode_model_data', return_value=model_mock, create=True)
     mocker.patch.object(model_mock, 'top_domains', return_value=("", 0), create=True)
     mocker.patch.object(model_mock, 'major', return_value=0, create=True)
@@ -122,7 +124,6 @@ def test_missing_url(mocker):
     mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
     mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
     general_summary, detailed_summary, msg_list = main()
-    assert MSG_INVALID_URL % (MSG_IMPOSSIBLE_CONNECTION, UNKNOWN) in general_summary[0][KEY_FINAL_VERDICT]
     assert MSG_NO_ACTION_ON_MODEL in msg_list
 
 
