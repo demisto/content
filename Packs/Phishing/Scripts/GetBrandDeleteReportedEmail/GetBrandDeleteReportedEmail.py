@@ -9,7 +9,7 @@ def get_delete_reported_email_integrations():
     """
     Get all enabled integration instances that can be used for deleting an email using the DeleteReportedEmail script.
     Returns:
-        List of enabled integrations suitable for DeleteReportedEmail script.
+        List of enabled integrations suitable for the DeleteReportedEmail script.
 
     """
     instances = demisto.getModules()
