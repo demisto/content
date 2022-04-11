@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![XDR Retro Hunt - Query](Insert the link to your image here)
+![Screenshot 2022-04-11 at 09 17 36](https://user-images.githubusercontent.com/7138386/162684752-d3e05bc3-051c-4bbb-aaf5-148d367c3e36.png)
