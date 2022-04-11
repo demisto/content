@@ -378,7 +378,7 @@ def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
 
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match=f"Parameter having negative value, from: -1'"):
+                           match="Parameter having negative value, from: -1'"):
             fetch_alert_details(client=client, args=args)
 
 
@@ -410,7 +410,7 @@ def test_etype_cyble_vision_fetch_detail(requests_mock, capfd):
 
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match=f"Event Type not specified"):
+                           match="Event Type not specified"):
             fetch_alert_details(client=client, args=args)
 
 
@@ -442,7 +442,7 @@ def test_eid_cyble_vision_fetch_detail(requests_mock, capfd):
 
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match=f"Event ID not specified"):
+                           match="Event ID not specified"):
             fetch_alert_details(client=client, args=args)
 
 
