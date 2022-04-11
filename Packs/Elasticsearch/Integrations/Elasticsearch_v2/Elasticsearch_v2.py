@@ -578,6 +578,9 @@ def format_to_iso(date_string):
     Returns:
         str. A date string in the format: YYYY-MM-DDThh:mm:ssZ
     """
+    if '.' in date_string:
+        date_string = date_string.split('.')[0]
+
     if len(date_string) > 19 and not date_string.endswith('Z'):
         date_string = date_string[:-6]
 
