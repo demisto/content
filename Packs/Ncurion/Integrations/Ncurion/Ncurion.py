@@ -78,7 +78,7 @@ def get_log_list(base_url, username, password):
 
 
 def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
-                    first_fetch_time: Optional[Any]) -> Tuple[Dict[str, int], List[dict]]:
+                    first_fetch_time: Optional[int]) -> Tuple[Dict[str, int], List[dict]]:
     access_token, refresh_token, headers1 = login(base_url, username, password)
     log_list = loglist(base_url, access_token, refresh_token, headers1)
     log_server_id = [e["id"] for e in log_list if e["is_connected"] is True]
@@ -88,7 +88,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
     max_fetch = demisto.params().get('max_fetch')
     if last_fetch is None:
         last_fetch = first_fetch_time
-    last_fetch_time = datetime.fromtimestamp(last_fetch)
+    last_fetch_time = datetime.datetime.fromtimestamp(last_fetch)
     last_fetch_Format = last_fetch_time.strftime(NCURION_DATE_FORMAT)
     params1 = {"start": f"{last_fetch_Format}", "size": max_fetch}
     if len(log_server_id) > 0:
