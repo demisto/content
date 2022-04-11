@@ -213,12 +213,12 @@ class TestHelperFunctions:
             - Ensure that the list is the same as is should.
         """
 
-        import EDL as edl
+        import EDL as edl, tldextract
         with open('test_data/tld_domains.txt') as f:
             tld = f.read()
         requests_mock.get('https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat', text=tld)
         requests_mock.get('https://publicsuffix.org/list/public_suffix_list.dat', text=tld)
-
+        edl.tldextractor = tldextract.TLDExtract()
         indicators = [{'value': '1.1.1.1/7', 'indicator_type': 'CIDR'},  # prefix=7
                       {"value": "1.1.1.1/12", "indicator_type": "CIDR"},  # prefix=12
                       {"value": "*.com", "indicator_type": "Domain"},  # tld
