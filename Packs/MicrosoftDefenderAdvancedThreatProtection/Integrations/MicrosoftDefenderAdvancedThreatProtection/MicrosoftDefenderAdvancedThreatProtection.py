@@ -1923,7 +1923,7 @@ class MsClient:
         Returns:
             dict. Alert entities
         """
-        cmd_url = "/machines/{}/alerts".format(machine_id)
+        cmd_url = f"/machines/{machine_id}/alerts"
         response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
         return response
 
