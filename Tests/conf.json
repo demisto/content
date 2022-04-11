@@ -5069,6 +5069,9 @@
             ]
         },
         {
+            "playbookID": "DBotUpdateLogoURLPhishing_test"
+        },
+        {
             "playbookID": "TAXII2 Server Performance Test",
             "instance_names": "taxii2server",
             "integrations": [
