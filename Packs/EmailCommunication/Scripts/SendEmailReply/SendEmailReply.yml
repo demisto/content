@@ -36,6 +36,6 @@ system: false
 timeout: '0'
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.4.27798
 tests:
 - No tests (auto formatted)
