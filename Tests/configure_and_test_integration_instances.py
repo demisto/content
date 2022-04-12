@@ -328,20 +328,25 @@ class Build:
         """
         server_numeric_version: str = self.server_numeric_version
         tests: dict = self.tests
+        logging.info(f'Starting get_tests: {server_numeric_version=}, {tests=}')
         if Build.run_environment == Running.CI_RUN:
             filtered_tests = BuildContext._extract_filtered_tests()
+            logging.info(f'If: {filtered_tests=}')
             if self.is_nightly:
                 # skip test button testing
                 logging.debug('Not running instance tests in nightly flow')
                 tests_for_iteration = []
+                logging.info('Nightly.....')
             else:
                 tests_for_iteration = [test for test in tests
                                        if not filtered_tests or test.get('playbookID', '') in filtered_tests]
-
+                logging.info(f'Else: {tests_for_iteration=}')
             tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
+            logging.info(f'Final result: {tests_for_iteration=}')
             return tests_for_iteration
 
         # START CHANGE ON LOCAL RUN #
+        logging.info('Local run???}')
         return [
             {
                 "playbookID": "Docker Hardening Test",
@@ -363,6 +368,7 @@ class Build:
         modified_module_instances = []
         new_module_instances = []
         testing_client = self.servers[0].client
+        logging.info(f'{tests_for_iteration=}')
         for test in tests_for_iteration:
             integrations = get_integrations_for_test(test, self.skipped_integrations_conf)
 
@@ -773,6 +779,7 @@ class XSIAMBuild(Build):
             * A list of new integrations names
         """
         tests_for_iteration = self.get_tests()
+        logging.info(f'In configure_and_test_integrations_pre_update: {tests_for_iteration=}')
         modified_module_instances, new_module_instances = self.configure_server_instances(
             tests_for_iteration,
             new_integrations,
@@ -1612,6 +1619,7 @@ def main():
         build.install_packs(pack_ids=pack_ids)
 
         new_integrations, modified_integrations = build.get_changed_integrations()
+        logging.info(f'{new_integrations=}, {modified_integrations=}')
 
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
                                                                                             modified_integrations)
