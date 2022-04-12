@@ -244,7 +244,7 @@ def test_module(client: Client) -> str:
     if 'error' in result:
         return 'Test Failed! eRRoR: ' + str(json.loads(result['error']['resp_body'])['message'])
     elif 'exception' in result:
-        return 'Test Failed! Exception: ' + str(result['exception'])
+        return 'Test Failed! Make sure the URL is correctly set. eRRoR: ' + str(result['exception'])
     else:
         return 'ok'
 

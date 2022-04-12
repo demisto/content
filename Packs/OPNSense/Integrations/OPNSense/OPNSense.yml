@@ -78,7 +78,7 @@ script:
       - inet6
       description: Alias protocol
     - name: updatefreq
-      description: Alias update frequency
+      description: Refresh Frequency (format A.B where A is day and B is hour, every 15 mins will be 0.01 for example)
     - name: counters
       auto: PREDEFINED
       predefined:
@@ -158,7 +158,7 @@ script:
       - "1"
       description: Alias enabled
     - name: updatefreq
-      description: Alias update frequency
+      description: Refresh Frequency (format A.B where A is day and B is hour, every 15 mins will be 0.01 for example)
     - name: counters
       auto: PREDEFINED
       predefined:
