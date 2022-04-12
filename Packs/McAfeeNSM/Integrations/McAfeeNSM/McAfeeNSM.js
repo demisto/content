@@ -37,6 +37,8 @@ function sendRequest(method, url_suffix, headers, body, params) {
         throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
     }
 
+    log('Response Status code: ' + res.StatusCode + '.\n Response Body: ' + JSON.stringify(res) + '.')
+
     return JSON.parse(res.Body);
 }
 
@@ -173,6 +175,7 @@ function alert_to_entry(title, alert) {
     };
     var links = []
     if (alert.description.reference.additionInfo !== undefined) {
+        log("The alert.description.reference.additionInfo is defined: " + alert.description.reference.additionInfo)
         links = alert.description.reference.additionInfo.split('<BR>');
     }
 
