@@ -20,7 +20,7 @@ detaileddescription: |-
 configuration:
 - display: Server URL (e.g. 'https://api.github.com/orgs/XXXXX/audit-log')
   name: url
-  defaultvalue: 'https://api.github.com/orgs/XXXXX/audit-log'
+  defaultvalue: 'https://api.github.com/orgs/demisto/audit-log'
   type: 0
   required: true
   hidden: true

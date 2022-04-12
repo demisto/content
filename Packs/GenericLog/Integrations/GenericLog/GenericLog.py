@@ -10,6 +10,7 @@ from requests.auth import HTTPBasicAuth
 
 urllib3.disable_warnings()
 
+
 def convert_to_github_date(value: Union[str, datetime, int]) -> str:
     """Converting int(epoch), str(3 days) or datetime to github's api time"""
     timestamp: Optional[datetime]
@@ -37,6 +38,7 @@ class Method(str, Enum):
 class Options(BaseModel):
     proxy: bool = False
 
+
 class Request(BaseModel):
     method: Method
     url: AnyUrl
@@ -59,6 +61,7 @@ class ReqParams(BaseModel):  # TODO: implement request params (if any)
         convert_to_github_date
     )
 
+
 class Args(BaseModel):
     limit: int = 10
 
@@ -73,10 +76,9 @@ class Client:
 
     def __del__(self):
         try:
-            self._session.close()
+            self.session.close()
         except AttributeError as err:
             demisto.debug(f'ignore exceptions raised due to session not used by the client. {err=}')
-            
 
     def call(self) -> requests.Response:
         try:
@@ -101,6 +103,7 @@ class Client:
             ensure_proxy_has_http_prefix()
         else:
             skip_proxy()
+
 
 class GetEvents:
     def __init__(self, client: Client) -> None:
@@ -151,7 +154,8 @@ class GetEvents:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     # Args is always stronger. Get last run even stronger
-    demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
+    demisto_params = demisto.params() | demisto.args() | demisto.getIntegrationContext()
+
     demisto_params['params'] = ReqParams.parse_obj(demisto_params)
     request = Request.parse_obj(demisto_params)
     # TODO: Implement authorization
@@ -172,8 +176,9 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
     else:
         args = Args(**demisto_params)
         events = get_events.run(args.limit)
+
         if events:
-            demisto.setLastRun(GetEvents.get_last_run(events))
+            demisto.setIntegrationContext(GetEvents.get_last_run(events))
         command_results = CommandResults(
             readable_output=tableToMarkdown('Github events', events, headerTransform=pascalToSpace),
             outputs_prefix='Github.Events',
