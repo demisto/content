@@ -202,10 +202,8 @@ class Build:
         self.id_set = get_id_set(id_set_path)
         self.test_pack_path = options.test_pack_path if options.test_pack_path else None
         self.tests_to_run = self.fetch_tests_list(options.tests_to_run)
-        logging.info(f'{self.tests_to_run}')
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
-        logging.info(f'{self.pack_ids_to_install}')
         self.service_account = options.service_account
 
     @staticmethod
@@ -331,7 +329,6 @@ class Build:
         tests: dict = self.tests
         if Build.run_environment == Running.CI_RUN:
             filtered_tests = BuildContext._extract_filtered_tests()
-            logging.info(f'If: {filtered_tests=}')
             if self.is_nightly:
                 # skip test button testing
                 logging.debug('Not running instance tests in nightly flow')
@@ -344,7 +341,6 @@ class Build:
                     tests_for_iteration = [test for test in tests
                                            if not filtered_tests or test.get('playbookID', '') in filtered_tests]
             tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
-            logging.info(f'Final result: {tests_for_iteration=}')
             return tests_for_iteration
 
         # START CHANGE ON LOCAL RUN #
@@ -369,7 +365,6 @@ class Build:
         modified_module_instances = []
         new_module_instances = []
         testing_client = self.servers[0].client
-        logging.info(f'{tests_for_iteration=}')
         for test in tests_for_iteration:
             integrations = get_integrations_for_test(test, self.skipped_integrations_conf)
 
@@ -781,7 +776,6 @@ class XSIAMBuild(Build):
             * A list of new integrations names
         """
         tests_for_iteration = self.get_tests()
-        logging.info(f'In configure_and_test_integrations_pre_update: {tests_for_iteration=}')
         modified_module_instances, new_module_instances = self.configure_server_instances(
             tests_for_iteration,
             new_integrations,
@@ -1621,7 +1615,6 @@ def main():
         build.install_packs(pack_ids=pack_ids)
 
         new_integrations, modified_integrations = build.get_changed_integrations()
-        logging.info(f'{new_integrations=}, {modified_integrations=}')
 
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
                                                                                             modified_integrations)
