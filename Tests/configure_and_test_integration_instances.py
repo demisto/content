@@ -183,6 +183,7 @@ class Build:
 
     def __init__(self, options):
         self._proxy = None
+        self.is_xsiam = False
         self.servers = []
         self.server_numeric_version = ''
         self.git_sha1 = options.git_sha1
@@ -328,7 +329,6 @@ class Build:
         """
         server_numeric_version: str = self.server_numeric_version
         tests: dict = self.tests
-        logging.info(f'Starting get_tests: {server_numeric_version=}, {tests=}')
         if Build.run_environment == Running.CI_RUN:
             filtered_tests = BuildContext._extract_filtered_tests()
             logging.info(f'If: {filtered_tests=}')
@@ -336,17 +336,18 @@ class Build:
                 # skip test button testing
                 logging.debug('Not running instance tests in nightly flow')
                 tests_for_iteration = []
-                logging.info('Nightly.....')
             else:
-                tests_for_iteration = [test for test in tests
-                                       if not filtered_tests or test.get('playbookID', '') in filtered_tests]
-                logging.info(f'Else: {tests_for_iteration=}')
+                # if not filtered_tests in XSIAM, we not running tests at all
+                if self.is_xsiam and not filtered_tests:
+                    tests_for_iteration = []
+                else:
+                    tests_for_iteration = [test for test in tests
+                                           if not filtered_tests or test.get('playbookID', '') in filtered_tests]
             tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
             logging.info(f'Final result: {tests_for_iteration=}')
             return tests_for_iteration
 
         # START CHANGE ON LOCAL RUN #
-        logging.info('Local run???}')
         return [
             {
                 "playbookID": "Docker Hardening Test",
@@ -705,6 +706,7 @@ class XSIAMBuild(Build):
         global SET_SERVER_KEYS
         SET_SERVER_KEYS = False
         super().__init__(options)
+        self.is_xsiam = True
         self.xsiam_machine = options.xsiam_machine
         self.xsiam_servers = get_json_file(options.xsiam_servers_path)
         self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
