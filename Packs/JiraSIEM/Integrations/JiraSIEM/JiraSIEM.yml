@@ -49,23 +49,44 @@ display: 'Jira SIEM'
 name: Jira SIEM
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
+  - deprecated: false
+    description: ''
     execution: false
-    name: baseintegration-dummy
+    name: fetch-events
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: Jira.id
+      description: 'The ID of the audit record'
+      type: Number
+    - contextPath: Jira.summary
+      description: 'The summary of the audit record'
       type: String
+    - contextPath: Jira.remoteAddress
+      description: 'The URL of the computer where the creation of the audit record was initiated'
+      type: String
+    - contextPath: Jira.authorKey
+      description: 'The key of the user who created the audit record'
+      type: String
+    - contextPath: Jira.created
+      description: 'The date and time on which the audit record was created'
+      type: String
+    - contextPath: Jira.category
+      description: 'The category of the audit record'
+      type: String
+    - contextPath: Jira.eventSource
+      description: 'The event the audit record originated from'
+      type: String
+    - contextPath: Jira.description
+      description: 'The description of the audit record'
+      type: String
+    - contextPath: Jira.objectItem
+      description: 'Details of an item associated with the changed record'
+      type: Unknown
+    - contextPath: Jira.changedValues
+      description: 'The list of values changed in the record event'
+      type: Unknown
+    - contextPath: Jira.associatedItems
+      description: 'The list of items associated with the changed record'
+      type: Unknown
   isfetch: false
   runonce: false
   script: '-'
