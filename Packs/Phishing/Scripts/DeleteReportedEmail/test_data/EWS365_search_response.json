@@ -1,0 +1,22 @@
+[
+  {
+    "author": "author",
+    "body": "",
+    "datetimeCreated": "2022-03-14T13:03:45Z",
+    "datetimeReceived": "2022-03-14T13:03:45Z",
+    "datetimeSent": "2022-03-14T13:03:26Z",
+    "hasAttachments": "False",
+    "importance": "Normal",
+    "isRead": "False",
+    "itemId": "item_id",
+    "lastModifiedTime": "2022-03-14T13:03:46Z",
+    "mailbox": "mailbox",
+    "messageId": "message_id",
+    "receivedBy": "receiver",
+    "sender": "sender",
+    "size": "50650",
+    "subject": "subject",
+    "textBody": "",
+    "toRecipients": ["recipient"]
+  }
+]
