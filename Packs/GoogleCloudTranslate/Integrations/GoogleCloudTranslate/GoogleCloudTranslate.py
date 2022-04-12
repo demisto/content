@@ -45,7 +45,7 @@ class Client:
                 a supported target for the translation.
         """
         parent = f"projects/{self.project_id}/locations/global"
-        result = self.client.get_supported_languages(parent)
+        result = self.client.get_supported_languages(parent=parent)
 
         return [
             dict(
