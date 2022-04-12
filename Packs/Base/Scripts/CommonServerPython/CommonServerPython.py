@@ -6112,10 +6112,22 @@ class CommandResults:
     :rtype: ``None``
     """
 
-    def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
-                 mark_as_note=False, scheduled_command=None, relationships=None, entry_type=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int) -> None  # noqa: E501
+    def __init__(self, outputs_prefix=None,
+                 outputs_key_field=None,
+                 outputs=None,
+                 indicators=None,
+                 readable_output=None,
+                 raw_response=None,
+                 indicators_timeline=None,
+                 indicator=None,
+                 ignore_auto_extract=False,
+                 mark_as_note=False,
+                 scheduled_command=None,
+                 relationships=None,
+                 entry_type=None,
+                 content_format=None,
+                 ):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, str) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -6145,15 +6157,17 @@ class CommandResults:
             raise TypeError('outputs_key_field must be of type str or list')
 
         self.outputs = outputs
-
         self.raw_response = raw_response
         self.readable_output = readable_output
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
         self.scheduled_command = scheduled_command
-
         self.relationships = relationships
+
+        if content_format is not None and not EntryFormat.is_valid_type(content_format):
+            raise TypeError('content_format {} is invalid, see CommonServerPython.EntryFormat'.format(content_format))
+        self.content_format = content_format
 
     def to_context(self):
         outputs = {}  # type: dict
@@ -6210,9 +6224,13 @@ class CommandResults:
         if self.relationships:
             relationships = [relationship.to_entry() for relationship in self.relationships if relationship.to_entry()]
 
-        content_format = EntryFormat.JSON
-        if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
-            content_format = EntryFormat.TEXT
+        # using a local variable to avoid changing the object's attribute, see discussion on PR #18544.
+        content_format = self.content_format
+        if content_format is None:
+            if isinstance(raw_response, STRING_TYPES + (int,)):
+                content_format = EntryFormat.TEXT
+            else:
+                content_format = EntryFormat.JSON
 
         return_entry = {
             'Type': self.entry_type,
@@ -6221,7 +6239,7 @@ class CommandResults:
             'HumanReadable': human_readable,
             'EntryContext': outputs,
             'IndicatorTimeline': indicators_timeline,
-            'IgnoreAutoExtract': True if ignore_auto_extract else False,
+            'IgnoreAutoExtract': bool(ignore_auto_extract),
             'Note': mark_as_note,
             'Relationships': relationships,
         }
