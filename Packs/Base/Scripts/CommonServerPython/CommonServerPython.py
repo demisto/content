@@ -1764,7 +1764,7 @@ def FormatIso8601(t):
     return t.strftime("%Y-%m-%dT%H:%M:%S")
 
 
-def argToList(arg, separator=','):
+def argToList(arg, separator=',', transform=None):
     """
        Converts a string representation of args to a python list
 
@@ -1779,13 +1779,22 @@ def argToList(arg, separator=','):
     """
     if not arg:
         return []
+
+    result = []
     if isinstance(arg, list):
-        return arg
-    if isinstance(arg, STRING_TYPES):
+        result = arg
+    elif isinstance(arg, STRING_TYPES):
         if arg[0] == '[' and arg[-1] == ']':
-            return json.loads(arg)
-        return [s.strip() for s in arg.split(separator)]
-    return [arg]
+            result = json.loads(arg)
+        else:
+            result = [s.strip() for s in arg.split(separator)]
+    else:
+        result = [arg]
+
+    if transform:
+        return [transform(s) for s in result]
+
+    return result
 
 
 def remove_duplicates_from_list_arg(args, field):

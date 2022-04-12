@@ -80,8 +80,7 @@ def search_incidents(args: Dict):   # pragma: no cover
 
     # handle list of ids
     if args.get('id'):
-        ids = [str(i) for i in argToList(args.get('id'))]
-        args['id'] = ','.join(ids)
+        args['id'] = ','.join(argToList(args.get('id'), transform=str))
 
     res: List = execute_command('getIncidents', args, extract_contents=False)
     incident_found: bool = check_if_found_incident(res)

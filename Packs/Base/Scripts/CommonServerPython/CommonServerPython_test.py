@@ -1045,6 +1045,7 @@ def test_argToList():
     test5 = 1
     test6 = '1'
     test7 = True
+    test8 = [1, 2, 3]
 
     results = [argToList(test1), argToList(test2), argToList(test2, ','), argToList(test3), argToList(test4, ';')]
 
@@ -1052,8 +1053,10 @@ def test_argToList():
         assert expected == result, 'argToList test failed, {} is not equal to {}'.format(str(result), str(expected))
 
     assert argToList(test5) == [1]
+    assert argToList(test5, transform=str) == ['1']
     assert argToList(test6) == ['1']
     assert argToList(test7) == [True]
+    assert argToList(test8, transform=str) == ['1', '2', '3']
 
 
 @pytest.mark.parametrize('args, field, expected_output', [

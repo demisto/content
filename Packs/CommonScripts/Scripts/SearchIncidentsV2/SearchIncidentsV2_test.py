@@ -127,6 +127,17 @@ def get_incidents_mock(command, args, extract_contents=True, fail_on_error=True)
     ({'id': '1,2'}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
 ])
 def test_filter_events(mocker, args, filtered_args, expected_result):
+    """
+    Given:
+        - The script args.
+
+    When:
+        - Running the search_incidents function.
+
+    Then:
+        - Validating the outputs as expected.
+        - Validating the filtered args that was sent to the api is as expected.
+    """
     import SearchIncidentsV2
     execute_mock = mocker.patch.object(SearchIncidentsV2, 'execute_command', side_effect=get_incidents_mock)
     _, res, _ = SearchIncidentsV2.search_incidents(args)
