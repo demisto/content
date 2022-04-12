@@ -10,7 +10,7 @@ args:
 - defaultValue:
   description: The mailbox from which emails are sent from the 3rd party integration.
   name: service_mail
-  required: true
+  required: false
 - name: mail_sender_instance
   required: true
   description: Name of the mail sender instance name for transmitting emails

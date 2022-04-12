@@ -31,7 +31,7 @@ def fetch_email_threads(incident_id):
         return threads
 
     except Exception as e:
-        print(f'Exception in fetch_email_threads: {e}')
+        return_error(f'An exception occurred while fetching email threads: {e}')
 
 
 def format_threads(email_threads):
@@ -42,7 +42,7 @@ def format_threads(email_threads):
         md (str): Markdown formatted table
     """
     try:
-        thread_summary_rows = {}
+        thread_summary_rows: Dict = {}
         for thread_entry in email_threads:
             # Loop through thread entries.
             # Trim off thread ID code for readability
@@ -94,7 +94,7 @@ def format_threads(email_threads):
         return md
 
     except Exception as e:
-        print(f'Exception in format_threads: {e}')
+        return_error(f'An exception occurred while generating the thread summary table: {e}')
 
 
 def main():

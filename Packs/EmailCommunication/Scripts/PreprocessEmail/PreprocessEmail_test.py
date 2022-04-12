@@ -2,7 +2,6 @@ import json
 import demistomock as demisto
 import pytest
 from datetime import datetime
-import json
 
 
 def util_open_file(path):
@@ -333,8 +332,7 @@ EMAIL_THREADS = [{"Contents": {"context": {
         }
 
     ]
-    }}}
-]
+}}}]
 
 
 @pytest.mark.parametrize(
@@ -353,7 +351,7 @@ def test_main(return_incident_path, expected_return, create_context_called, mock
         email related incident.
     """
     import PreprocessEmail
-    from PreprocessEmail import main, create_thread_context
+    from PreprocessEmail import main
     incident = util_load_json('test_data/get_incident_details_result.json')
     mocker.patch.object(demisto, 'incident', return_value=incident)
     mocker.patch.object(PreprocessEmail, 'get_email_related_incident_id', return_value='123')

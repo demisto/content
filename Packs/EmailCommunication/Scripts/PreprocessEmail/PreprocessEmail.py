@@ -254,7 +254,7 @@ def get_email_related_incident_id(email_related_incident_code, email_original_su
     email code and original subject.
     """
 
-    query = f'(emailgeneratedcode:*{email_related_incident_code}*) or (emailgeneratedcodes:*{email_related_incident_code}*)'
+    query = f'(emailgeneratedcode:{email_related_incident_code}) or (emailgeneratedcodes:*{email_related_incident_code}*)'
 
     incidents_details = get_incident_by_query(query)
 

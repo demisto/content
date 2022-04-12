@@ -1,6 +1,4 @@
-import pytest
 from CommonServerPython import *
-import demistomock as demisto
 
 
 def util_open_file(path):

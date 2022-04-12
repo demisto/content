@@ -206,99 +206,224 @@ def test_create_thread_context(mocker):
 
 
 @pytest.mark.parametrize(
-    "new_thread, thread_input_type",
-    [('n/a', ''),
-     ('true', ''),
-     ('false', 'dict'),
-     ('false', 'list')]
+    "scenario",
+    [
+        'required_fields_missing',
+        'no_codes_present',
+        'codes_present'
+    ]
 )
-def test_main(new_thread, thread_input_type, mocker):
+def test_multi_thread_new(scenario, mocker):
     """
-    Unit test scenario - new_thread = 'n/a', thread_input_type = ''
+    Unit test scenario 1 - Required fields are missing
         Given
-         - Script is called to send an email message
+         - Script is called to send a new first-contact email message
         When
-         - new_thread = 'n/a', indicating use by the generic 'Email Communication' layout workflow replying to message
+         - Required fields 'new_email_subject', 'new_email_recipients', and 'new_email_body' are not provided
         Then
-         - validate that the new email is constructed and the send_reply function is called successfully
-    Unit test scenario - new_thread = 'true', thread_input_type = ''
+         - Validate that the function returns a meaningful error message
+    Unit test scenario 2 - No other email identifier codes are present
         Given
-         - Script is called to send an email message
+         - Script is called to send a new first-contact email message
         When
-         - new_thread = 'true', indicating use by incident types besides 'Email Communication' and sending a
-         first-contact outbound email message
+         - All required fields are provided
+         - There are no prior email identifier codes present on the incident
         Then
-         - validate that the new email is constructed and the send_new_email function is called successfully
-    Unit test scenario - new_thread = 'false', thread_input_type = 'dict'
+         - Validate that the function sets 'emailgeneratedcodes' to the new identifier value
+         - Validate that the function calls 'send_reply' with correct arguments set
+         - Validate that 'reset_fields' is called
+    Unit test scenario 3 - Incident already contains other unique identifier codes for other threads
         Given
-         - Script is called to send an email message
+         - Script is called to send a new first-contact email message
         When
-         - new_thread = 'false', indicating use by incident types besides 'Email Communication' and sending a
-         reply to an existing email chain
-         - 'EmailThreads' context key is type dict, indicating an attempt to reply to an email chain that has never
-         received a reply from the end user and we must send a new email message rather than reply to one
+         - All required fields are provided
+         - There are at least one prior email identifier codes present on the incident
         Then
-         - validate that the new email is constructed and resend_first_contact is called successfully
-    Unit test scenario - new_thread = 'false', thread_input_type = 'list'
-        Given
-         - Script is called to send an email message
-        When
-         - new_thread = 'false', indicating use by incident types besides 'Email Communication' and sending a
-         reply to an existing email chain
-         - 'EmailThreads' context key is type list, indicating there is at least one reply to the first-contact email
-        Then
-         - validate that the new email is constructed, re-using correct items from the existing email thread entries
-         - validate that send_reply is called successfully
-         - validate that create_thread_context is successfully called
+         - Validate that the function sets 'emailgeneratedcodes' with the new code appended to the prior one
+         - Validate that the function calls 'send_reply' with correct arguments set
+         - Validate that 'reset_fields' is called
     """
-    def executeCommand_side_effects(command, args):
-        if command == "setIncident":
-            return True
-
+    from SendEmailReply import multi_thread_new
     import SendEmailReply
-    from SendEmailReply import main
-    incident = util_load_json('test_data/incident_data.json')
-    email_threads = util_load_json('test_data/email_threads.json')
-    mocker.patch.object(demisto, 'incident', return_value=incident)
-    input_args = {'service_mail': 'soc-sender@example.com', 'files': {}, 'attachment': {},
-                  'mail_sender_instance': 'soc-sender@example.com', 'new_thread': new_thread}
-    mocker.patch.object(demisto, 'args', return_value=input_args)
-    mocker.patch.object(SendEmailReply, 'get_mailbox_from_incident_labels')
-    mocker.patch.object(SendEmailReply, 'get_email_recipients', return_value='user@example.com')
-    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand_side_effects)
-    mocker.patch.object(SendEmailReply, 'get_unique_code', return_value='12345678')
-    mocker.patch.object(SendEmailReply, 'get_email_cc', return_value='')
-    mocker.patch.object(SendEmailReply, 'get_reply_body', return_value=['Body text.', 'Body text.'])
+    return_error_mocker = mocker.patch.object(SendEmailReply, 'return_error', return_value=True)
+    mocker.patch.object(SendEmailReply, 'get_unique_code', return_value='87654321')
+    setIncident_mocker = mocker.patch.object(demisto, 'executeCommand', return_value=True)
     mocker.patch.object(SendEmailReply, 'get_entry_id_list', return_value=[])
-    mocker.patch.object(SendEmailReply, 'append_email_signature', return_value='Body text.  Signature.')
-    if thread_input_type == 'list' or '':
-        mocker.patch.object(SendEmailReply, 'get_email_threads', return_value=email_threads)
-    elif thread_input_type == 'dict':
-        mocker.patch.object(SendEmailReply, 'get_email_threads', return_value=email_threads[0])
-    send_reply_mocker = mocker.patch.object(SendEmailReply, 'send_reply',
-                                            return_value='Mail sent successfully. To: user@example.com')
-    mocker.patch.object(SendEmailReply, 'format_body', return_value='This is a test email.')
-    send_new_email_mocker = mocker.patch.object(SendEmailReply, 'send_new_email',
-                                                return_value='Mail sent successfully. To: user@example.com')
-    mocker.patch.object(SendEmailReply, 'reset_fields', return_value=None)
-    resend_first_contact_mocker = mocker.patch.object(SendEmailReply, 'resend_first_contact',
-                                                      return_value='Mail sent successfully. To: user@example.com')
-    create_thread_context_mocker = mocker.patch.object(SendEmailReply, 'create_thread_context')
+    mocker.patch.object(SendEmailReply, 'format_body', return_value='<html>Some HTML</html>')
+    send_new_email_mocker = mocker.patch.object(SendEmailReply, 'send_new_email', return_value=True)
+    reset_fields_mocker = mocker.patch.object(SendEmailReply, 'reset_fields', return_value=True)
+    if scenario == 'required_fields_missing':
+        # Test Scenario 1
+        expected = "The following required fields have not been set.  Please set them and try again. " \
+                   "['New Email Subject', 'New Email Recipients', 'New Email Body']"
+        multi_thread_new('', '', '', 1, '12345678', '', '', 'soc_sender@company.com', 'cc_user@company.com',
+                         'bcc_user@company.com', 'soc_sender@company.com', '')
+        call_args = return_error_mocker.call_args
+        assert call_args.args[0] == expected
+    if scenario == 'no_codes_present':
+        # Test Scenario 2
+        multi_thread_new('New Subject', 'end_user@company.com', 'Email Body', 1, '', '', '',
+                         'soc_sender@company.com', 'cc_user@company.com', 'bcc_user@company.com',
+                         'soc_sender@company.com', '')
+        setIncident_call_args = setIncident_mocker.call_args
+        send_new_email_mocker_args = send_new_email_mocker.call_args
+        assert setIncident_call_args.args[1] == {'id': 1, 'customFields': {'emailgeneratedcodes': '87654321'}}
+        valid_args = (1, 'New Subject', 'end_user@company.com', 'Email Body', 'soc_sender@company.com',
+                      'cc_user@company.com', 'bcc_user@company.com', '<html>Some HTML</html>', [], '87654321',
+                      'soc_sender@company.com', '')
+        assert send_new_email_mocker_args.args == valid_args
+        assert reset_fields_mocker.called is True
+    if scenario == 'codes_present':
+        # Test Scenario 3
+        multi_thread_new('New Subject', 'end_user@company.com', 'Email Body', 1, '12345678', '', '',
+                         'soc_sender@company.com', 'cc_user@company.com', 'bcc_user@company.com',
+                         'soc_sender@company.com', '')
+        setIncident_call_args = setIncident_mocker.call_args
+        send_new_email_mocker_args = send_new_email_mocker.call_args
+        assert setIncident_call_args.args[1] == {'id': 1, 'customFields': {'emailgeneratedcodes': '12345678,87654321'}}
+        valid_args = (1, 'New Subject', 'end_user@company.com', 'Email Body', 'soc_sender@company.com',
+                      'cc_user@company.com', 'bcc_user@company.com', '<html>Some HTML</html>', [], '87654321',
+                      'soc_sender@company.com', '')
+        assert send_new_email_mocker_args.args == valid_args
+        assert reset_fields_mocker.called is True
 
-    main()
-    if new_thread == 'n/a':
-        assert send_reply_mocker.called
-    elif new_thread == 'true':
-        assert send_new_email_mocker.called
-    elif new_thread == 'false' and thread_input_type == 'dict':
-        assert resend_first_contact_mocker.called
-    elif new_thread == 'false' and thread_input_type == 'list':
-        expected_reply = ('10', '<87692312> Test Email 4', 'user@example.com', 'This is a test email.',
-                          'soc-sender@example.com', '', '', 'This is a test email.', [],
-                          'AAMkAGRcOGZlZTEzLTkyZGDtNGJkNy1iOWMxLYM0NTAwODZhZjlxNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwA'
-                          'kkBJXBb0sRJWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=', '87692312',
-                          'soc-sender@example.com')
-        call_args = send_reply_mocker.call_args
-        assert call_args.args == expected_reply
-        assert send_reply_mocker.called
-        assert create_thread_context_mocker.called
+
+def test_collect_thread_details(mocker):
+    """
+    Unit test scenario
+        Given
+         - Function is called to gather details from existing email thread
+        When
+         - Multiple emails are present on the thread
+        Then
+         - Validate that the function returns the correct email details for use in an email reply
+    """
+    from SendEmailReply import collect_thread_details
+    expected = (True, 'AAMkAGRcOGZlZTEzLTkyZGDtNGJkNy1iOWMxLYM0NTAwODZhZjlxNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJXBb0'
+                      'sRJWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=', False, '87692312',
+                'Re: <87692312> Test Email 4', 'end_user@company.com, soc_sender@company.com',
+                'soc_sender@company.com', '', '', 3)
+    actual = collect_thread_details(util_load_json('test_data/email_threads.json'), '1')
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        'single_outbound',
+        'multiple_outbound',
+        'replies_present'
+    ]
+)
+def test_multi_thread_reply(scenario, mocker):
+    """
+    Unit test scenario 1 - Resend First-Contact - Single Outbound
+        Given
+         - Function is called to send a reply to an existing email thread
+        When
+         - The selected thread contains only an outbound message (no replies from recipients)
+        Then
+         - Validate that the function calls 'resend_first_contact' to send the message as a new outbound email
+         - Validate that 'first_contact_resent' is set to True
+    Unit test scenario 2 - Resend First-Contact - Multiple Outbound
+        Given
+         - Function is called to send a reply to an existing email thread
+        When
+         - The selected thread contains multiple outbound messages (no replies from recipients)
+        Then
+         - Validate that the function calls 'resend_first_contact' to send the message as a new outbound email
+         - Validate that 'first_contact_resent' is set to True
+    Unit test scenario 3 - Replies Present
+        Given
+         - Function is called to send a reply to an existing email thread
+        When
+         - The selected thread contains both outbound and inbound messages (there are replies from recipients)
+        Then
+         - Validate that the function calls 'send_reply' to reply to existing email thread
+         - Validate that the function calls 'create_thread_context' with correct arguments
+         - Validate that 'first_contact_resent' is set to False
+         - Validate that 'reset_fields' is called
+    """
+    from SendEmailReply import multi_thread_reply
+    import SendEmailReply
+
+    email_threads = util_load_json('test_data/email_threads.json')
+    resend_first_contact_mocker = mocker.patch.object(SendEmailReply, 'resend_first_contact', return_value=True)
+    reset_fields_mocker = mocker.patch.object(SendEmailReply, 'reset_fields', return_value=True)
+    mocker.patch.object(SendEmailReply, 'return_results', return_value=True)
+    mocker.patch.object(SendEmailReply, 'format_body', return_value='<html><body>Email body</body></html>')
+    mocker.patch.object(SendEmailReply, 'append_email_signature',
+                        return_value='<html><body>Email body+signature</body></html>')
+    reset_fields_mocker = mocker.patch.object(SendEmailReply, 'reset_fields', return_value=True)
+    send_reply_mocker = mocker.patch.object(SendEmailReply, 'send_reply', return_value=True)
+    create_context_mocker = mocker.patch.object(SendEmailReply, 'create_thread_context', return_value=True)
+
+    if scenario == 'single_outbound':
+        # Return only a single email thread entry
+        mocker.patch.object(SendEmailReply, 'get_email_threads', return_value=email_threads[0])
+        multi_thread_reply('Email body', 1, 0, '', '', 'cc_user@company.com', 'bcc_user@company.com',
+                           'soc_sender@company.com', 'soc_sender@company.com', '')
+        expected = (0, {'EmailBCC': '', 'EmailBody': 'Outbound test message from XSOAR to User.', 'EmailCC': '',
+                        'EmailCommsThreadId': '69433507', 'EmailCommsThreadNumber': '0',
+                        'EmailFrom': 'soc_sender@company.com', 'EmailHTML': 'Outbound test message from XSOAR to User.',
+                        'EmailReceived': '', 'EmailReplyTo': 'soc_sender@company.com',
+                        'EmailSubject': '<69433507> Test Email 2', 'EmailTo': 'end_user@company.com',
+                        'EmailAttachments': 'None', 'MessageDirection': 'outbound', 'MessageID': '',
+                        'MessageTime': '2022-02-04T20:56:53UTC'}, 1, '', '', '<html><body>Email body</body></html>',
+                    'cc_user@company.com', 'bcc_user@company.com', 'soc_sender@company.com',
+                    'soc_sender@company.com', '')
+        resend_first_contact_call_args = resend_first_contact_mocker.call_args
+        assert resend_first_contact_call_args.args == expected
+        assert reset_fields_mocker.called is True
+    elif scenario == 'multiple_outbound':
+        # Return all email thread entries
+        mocker.patch.object(SendEmailReply, 'get_email_threads', return_value=email_threads)
+        thread_details = (
+            True, 'AAMkAGRcOGZlZTEzLTkyZGDtNGJkNy1iOWMxLYM0NTAwODZhZjlxNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJXBb0'
+                  'sRJWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=', True, '69433507',
+            'Re: <69433507> Test Email 2', 'end_user@company.com, soc_sender@company.com',
+            'soc_sender@company.com', '', '', 2)
+        mocker.patch.object(SendEmailReply, 'collect_thread_details', return_value=thread_details)
+
+        # Execute the tested function
+        multi_thread_reply('Email body', 1, 0, '', '', 'cc_user@company.com', 'bcc_user@company.com',
+                           'soc_sender@company.com', 'soc_sender@company.com', '')
+
+        expected = (0, {'EmailBCC': '', 'EmailBody': 'Outbound test message from XSOAR to User.', 'EmailCC': '',
+                        'EmailCommsThreadId': '87692312', 'EmailCommsThreadNumber': '1',
+                        'EmailFrom': 'soc_sender@company.com', 'EmailHTML': 'Outbound test message from XSOAR to User.',
+                        'EmailReceived': '', 'EmailReplyTo': 'soc_sender@company.com',
+                        'EmailSubject': '<87692312> Test Email 4', 'EmailTo': 'end_user@company.com',
+                        'EmailAttachments': 'None', 'MessageDirection': 'outbound', 'MessageID': '',
+                        'MessageTime': '2022-02-04T20:56:53UTC'}, 1, '', '', '<html><body>Email body</body></html>',
+                    'cc_user@company.com', 'bcc_user@company.com', 'soc_sender@company.com',
+                    'soc_sender@company.com', '')
+        resend_first_contact_call_args = resend_first_contact_mocker.call_args
+        assert resend_first_contact_call_args.args == expected
+        assert reset_fields_mocker.called is True
+    elif scenario == 'replies_present':
+        thread_details = (
+            True, 'AAMkAGRcOGZlZTEzLTkyZGDtNGJkNy1iOWMxLYM0NTAwODZhZjlxNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJXBb0'
+            'sRJWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=', False, '87692312',
+            'Re: <87692312> Test Email 4', 'end_user@company.com, soc_sender@company.com',
+            'soc_sender@company.com', '', '', 2)
+        mocker.patch.object(SendEmailReply, 'collect_thread_details', return_value=thread_details)
+        # Return all email thread entries
+        mocker.patch.object(SendEmailReply, 'get_email_threads', return_value=email_threads)
+        send_reply_expected = (1, '<87692312> Test Email 4', 'end_user@company.com', 'Email body', 'soc_sender@company.com',
+                    'cc_user@company.com', 'bcc_user@company.com', '<html><body>Email body</body></html>', [],
+                    'AAMkAGRcOGZlZTEzLTkyZGDtNGJkNy1iOWMxLYM0NTAwODZhZjlxNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJXBb0sR'
+                    'JWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=', '87692312', 'soc_sender@company.com')
+        create_context_expected = ('87692312', 'cc_user@company.com', 'bcc_user@company.com', 'Email body',
+                                   'soc_sender@company.com', '<html><body>Email body+signature</body></html>', '', '',
+                                   'soc_sender@company.com', '<87692312> Test Email 4', 'end_user@company.com', 1, '')
+
+        # Execute the tested function
+        multi_thread_reply('Email body', 1, 1, '', '', 'cc_user@company.com', 'bcc_user@company.com',
+                           'soc_sender@company.com', 'soc_sender@company.com', '')
+
+        send_reply_call_args = send_reply_mocker.call_args
+        create_context_call_args = create_context_mocker.call_args
+        assert send_reply_call_args.args == send_reply_expected
+        assert create_context_call_args.args == create_context_expected
+        assert reset_fields_mocker.called is True

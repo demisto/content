@@ -1,5 +1,4 @@
 import pytest
-from CommonServerPython import *
 import json
 import demistomock as demisto
 
@@ -46,7 +45,6 @@ def test_html_cleanup(mocker):
         - Validate that the function returns a single HTML document
     """
     from DisplayEmailHtmlThread import html_cleanup
-    import DisplayEmailHtmlThread
 
     input_html = util_open_file('test_data/multiple_html_docs.txt')
     expected_html = util_open_file('test_data/cleaned_html.txt')
