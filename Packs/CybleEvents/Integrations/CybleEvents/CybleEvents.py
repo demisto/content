@@ -341,8 +341,8 @@ def fetch_alert_details(client, args):
     """
     eventtype = args.get('event_type', None)
     eventid = args.get('event_id', None)
-    offset = int(args.get('from', '0'))
-    limit = int(args.get('limit', LIMIT_EVENT_ITEMS))
+    offset = arg_to_number(args.get('from', '0'))
+    limit = arg_to_number(args.get('limit', LIMIT_EVENT_ITEMS))
 
     if offset < 0:
         raise ValueError(f"Parameter having negative value, from: {arg_to_number(args.get('from'))}'")
