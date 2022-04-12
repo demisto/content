@@ -1,6 +1,5 @@
 id: CIDRBiggerThanPrefix-test
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: CIDRBiggerThanPrefix-test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -111,6 +111,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -140,3 +141,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: Test playbook for CIDRBiggerThanPrefix script
