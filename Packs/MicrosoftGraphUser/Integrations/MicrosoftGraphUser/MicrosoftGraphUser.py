@@ -67,7 +67,7 @@ class MsGraphClient:
                  redirect_uri, auth_code, certificate_thumbprint: Optional[str] = None,
                  private_key: Optional[str] = None,
                  ):
-        grant_type = AUTHORIZATION_CODE if self_deployed else CLIENT_CREDENTIALS
+        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
         resource = None if self_deployed else ''
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
@@ -221,8 +221,6 @@ def test_function(client, _):
             # for self deployed app
             raise Exception("When using a self-deployed configuration, "
                             "Please enable the integration and run the !msgraph-user-test command in order to test it")
-        if not demisto.params().get('auth_code') or not demisto.params().get('redirect_uri'):
-            raise Exception("You must enter an authorization code in a self-deployed configuration.")
 
     client.ms_client.http_request(method='GET', url_suffix='users/')
     return response, None, None
@@ -419,6 +417,9 @@ def main():
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    if self_deployed and ((auth_code and not redirect_uri) or (not auth_code and redirect_uri)):
+        raise DemistoException('Please provide both Application redirect URI and Authorization code '
+                               'for Authorization Code flow, or None for the Client Credentials flow')
     elif not enc_key and not (certificate_thumbprint and private_key):
         raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
