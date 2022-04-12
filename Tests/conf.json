@@ -5113,10 +5113,12 @@
             "fromversion": "6.1.0"
         },
         {
+            "integrations": "CheckIfSubdomain",
             "playbookID": "CheckIfSubdomain-test",
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "CIDRBiggerThanPrefix",
             "playbookID": "CIDRBiggerThanPrefix-test",
             "fromversion": "5.5.0"
         }
