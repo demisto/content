@@ -1774,7 +1774,7 @@ def argToList(arg, separator=',', transform=None):
        :type separator: ``str``
        :param separator: A string separator to separate the strings, the default is a comma.
 
-       :type transform: ``collable``
+       :type transform: ``callable``
        :param transform: A function transformer to transfer the returned list arguments.
 
        :return: A python list of args
