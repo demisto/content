@@ -1,1280 +1,1813 @@
-The Rubrik Radar integration will fetch the Rubrik Radar Anomaly Event and is rich with commands to perform the on-demand scans, backups, recoveries and many more features to manage and protect the organizational data.
-This integration was integrated and tested with version 1.0.0 of RubrikPolaris
-
-## Configure Rubrik Radar on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Rubrik Radar.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Service Account JSON |  | False |
-    | Polaris Account (e.g. ${polarisAccount}.my.rubrik.com) |  | False |
-    | Email |  | False |
-    | Password |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | First fetch time | The time interval for the first fetch \(retroactive\). Examples of supported values can be found at https://dateparser.readthedocs.io/en/latest/\#relative-dates. | False |
-    | Fetch Limit (Maximum of 1000) | Maximum number of incidents to fetch every time. The maximum value is 1000. | False |
-    | Radar Critical Severity Level Mapping | When a Radar event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
-    | Radar Warning Severity Level Mapping | When a Radar event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
-    | Use system proxy settings | Whether to use XSOAR's system proxy settings to connect to the API. | False |
-    | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
-## Commands
-	@@ -32,7 +38,8 @@ Check the Radar Event for updates.
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| activitySeriesId | The ID of the Polaris Event Series. When used in combination with \"Rubrik Radar Anomaly\" incidents, this value will automatically be looked up using the incident context. Otherwise it is a required value.<br/><br/>Note: Users can retrieve the list of the activity series IDs by executing the \"rubrik-event-list\" command. | Required | 
-| clusterId | The ID of the CDM cluster. When used in combination with \"Rubrik Radar Anomaly\" incidents, this value will automatically be looked up using the incident context. Otherwise, it is a required value.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command. | Required | 
 
 
-#### Context Output
-	@@ -42,12 +49,17 @@ Check the Radar Event for updates.
-| Rubrik.Radar.EventComplete | Boolean | Flag that indicates whether Radar has finished analysing the object. | 
-| Rubrik.Radar.Message | Unknown | The text, ID, and timestamp of each message in the Activity Series. | 
-| Rubrik.Radar.ActivitySeriesId | String | The ID of the Rubrik Polaris Activity Series. | 
-| Rubrik.Radar.ClusterId | String | The ID of the cluster. | 
+RES_JSON_IA = {
+    "attack_techniques": [
+        {
+            "id": "T1047",
+            "label": "Windows Management Instrumentation"
+        },
+        {
+            "id": "T1003",
+            "label": "Credential Dumping"
+        },
+        {
+            "id": "T1124",
+            "label": "System Time Discovery"
+        },
+        {
+            "id": "T1045",
+            "label": "Software Packing"
+        },
+        {
+            "id": "T1145",
+            "label": "Private Keys"
+        },
+        {
+            "id": "T1046",
+            "label": "Network Service Scanning"
+        },
+        {
+            "id": "T1087",
+            "label": "Account Discovery"
+        },
+        {
+            "id": "T1165",
+            "label": "Startup Items"
+        },
+        {
+            "id": "T1143",
+            "label": "Hidden Window"
+        },
+        {
+            "id": "T1022",
+            "label": "Data Encrypted"
+        },
+        {
+            "id": "T1063",
+            "label": "Security Software Discovery"
+        },
+        {
+            "id": "T1041",
+            "label": "Exfiltration Over Command and Control Channel"
+        },
+        {
+            "id": "T1064",
+            "label": "Scripting"
+        },
+        {
+            "id": "T1482",
+            "label": "Domain Trust Discovery"
+        },
+        {
+            "id": "T1528",
+            "label": "Steal Application Access Token"
+        },
+        {
+            "id": "T1007",
+            "label": "System Service Discovery"
+        },
+        {
+            "id": "T1107",
+            "label": "File Deletion"
+        },
+        {
+            "id": "T1503",
+            "label": "Credentials from Web Browsers"
+        },
+        {
+            "id": "T1049",
+            "label": "System Network Connections Discovery"
+        },
+        {
+            "id": "T1083",
+            "label": "File and Directory Discovery"
+        },
+        {
+            "id": "T1081",
+            "label": "Credentials in Files"
+        },
+        {
+            "id": "T1060",
+            "label": "Registry Run Keys / Startup Folder"
+        },
+        {
+            "id": "T1082",
+            "label": "System Information Discovery"
+        },
+        {
+            "id": "T1179",
+            "label": "Hooking"
+        },
+        {
+            "id": "T1135",
+            "label": "Network Share Discovery"
+        },
+        {
+            "id": "T1113",
+            "label": "Screen Capture"
+        },
+        {
+            "id": "T1059",
+            "label": "Command-Line Interface"
+        },
+        {
+            "id": "T1078",
+            "label": "Valid Accounts"
+        },
+        {
+            "id": "T1056",
+            "label": "Input Capture"
+        },
+        {
+            "id": "T1012",
+            "label": "Query Registry"
+        },
+        {
+            "id": "T1035",
+            "label": "Service Execution"
+        },
+        {
+            "id": "T1112",
+            "label": "Modify Registry"
+        },
+        {
+            "id": "T1057",
+            "label": "Process Discovery"
+        },
+        {
+            "id": "T1010",
+            "label": "Application Window Discovery"
+        },
+        {
+            "id": "T1055",
+            "label": "Process Injection"
+        },
+        {
+            "id": "T1074",
+            "label": "Data Staged"
+        },
+        {
+            "id": "T1539",
+            "label": "Steal Web Session Cookie"
+        },
+        {
+            "id": "T1518",
+            "label": "Software Discovery"
+        },
+        {
+            "id": "T1119",
+            "label": "Automated Collection"
+        },
+        {
+            "id": "T1214",
+            "label": "Credentials in Registry"
+        },
+        {
+            "id": "T1016",
+            "label": "System Network Configuration Discovery"
+        },
+        {
+            "id": "T1050",
+            "label": "New Service"
+        },
+        {
+            "id": "T1070",
+            "label": "Indicator Removal on Host"
+        },
+        {
+            "id": "T1170",
+            "label": "Mshta"
+        },
+        {
+            "id": "T1071",
+            "label": "Standard Application Layer Protocol"
+        },
+        {
+            "id": "T1090",
+            "label": "Connection Proxy"
+        }
+    ],
+    "created_on": "2021-03-05T21:47:36.000Z",
+    "display_text": "Kazuar Revamped: BELUGASTURGEON Significantly Updates Its Espionage Backdoor",
+    "dynamic_properties": {},
+    "index_timestamp": "2022-02-09T14:18:19.333Z",
+    "key": "5ca1bcc4-843f-4a2b-9673-ec294e05a509",
+    "last_modified": "2021-07-14T09:17:37.000Z",
+    "last_published": "2021-03-05T21:47:36.000Z",
+    "attachment_links": ["/6a/7f/fb/0f7be51f6fd40e1361a2b22135cab45f12ce755af5d089e8cc5d086afa/USEIAOnOilPrices2021-02-08cropped.png","/6a/7f/fb/0f7be51f6fd40e1361a2b22135cab45f12ce755af5d089e8cc5d086afa/USEIAOnOilPrices2021-03-08cropped.png"],
+    "links": [
+        {
+            "created_on": "2017-05-04T17:45:51.000Z",
+            "display_text": "Kazuar",
+            "key": "Kazuar",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-05T21:47:36.000Z",
+            "relationship_last_published": "2021-03-05T21:47:36.000Z",
+            "type": "malware_family",
+            "uuid": "ef5a7376-0a81-4478-b15d-68369e7196bd",
+            "href": "/rest/fundamental/v0/ef5a7376-0a81-4478-b15d-68369e7196bd"
+        },
+        {
+            "created_on": "2020-08-07T20:08:29.000Z",
+            "display_text": "Russia-Linked BELUGASTURGEON Uses ComRATv4 to Target Government and Resources Organizations in Europe and Central Asia",
+            "key": "033355e6-e57e-4a02-bf3a-c9805d06a259",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-05T21:47:36.000Z",
+            "relationship_last_published": "2021-03-05T21:47:36.000Z",
+            "type": "intelligence_report",
+            "uuid": "9bf2fc44-570d-40ad-b81a-744141ed443e",
+            "href": "/rest/document/v0/9bf2fc44-570d-40ad-b81a-744141ed443e"
+        }
+    ],
+    "replication_id": 1626254257462000000,
+    "replication_id_ja": 1615483119339000000,
+    "sources_external": [
+        {
+            "datetime": "2017-05-02T23:00:00.000Z",
+            "description": "Kazuar: Multiplatform Espionage Backdoor with API Access",
+            "name": "Palo Alto Networks",
+            "reputation": 4,
+            "url": "https://unit42.paloaltonetworks.com/unit42-kazuar-multiplatform-espionage-backdoor-api-access/"
+        }
+    ],
+    "threat_types": [
+        "Cyber Espionage"
+    ],
+    "title": "Kazuar Revamped: BELUGASTURGEON Significantly Updates Its Espionage Backdoor",
+    "type": "intelligence_alert",
+    "uuid": "a487dfdc-08b4-4909-82ea-2d934c27d901",
+    "analysis": "## Key Findings and Judgements\n\n- From analyzing two Kazuar samples, iDefense determined that BELUGASTURGEON has significantly updated the backdoor's codebase when compared to traditional Kazuar samples.\n\n- The updated variant's core functionality supports new commands for espionage campaigns, including keylogging, credential theft, and system enumeration, without requiring additional plugins.\n\n- BELUGASTURGEON operators can now communicate between Kazuar instances  using task forwarding over named pipes without needing Internet connectivity; these enhancements offer functionality similar to that in Carbon and Uroborus.\n\n- Multiple Kazuar infections can now exist on one compromised system but target different users due to updates in Kazuar's mutex generation function.\n\n- HTTP(S) command-and-control (C2) communications now use primary, backup, and last-chance C2 servers to maintain persistence on a compromised device even if some of BELUGASTURGEON's infrastructure is unavailable.\n\n- Because Kazuar can now load from a Windows Registry key into memory, an infection file does not exist on the device and the chance of detection is reduced.\n\n- A comparison of the samples from August 2020 and February 2021 reveal differences in the Kazuar command set and configuration settings. Based on the discovery times of these samples and the changes between them, iDefense assesses the new Kazuar variant is under active development and BELUGASTURGEON will continue to use it for espionage campaigns.\n\n## Overview\n[Kazuar](#/node/malware_family/view/ef5a7376-0a81-4478-b15d-68369e7196bd) is a .NET backdoor the [BELUGASTURGEON (a.k.a. Turla, Snake, Waterbug, Venomous Bear)](#/node/threat_group/view/fb53e479-54e1-4827-abb4-ae1ae1db53e2) threat group has been using in espionage campaigns since at least 2017. [The Kazuar variant that Palo Alto Networks detailed in May 2017](https://unit42.paloaltonetworks.com/unit42-kazuar-multiplatform-espionage-backdoor-api-access/) has commands typical of many backdoors, such as reading, writing, copying, moving, and deleting files on the compromised system; executing commands from the command line; taking screenshots; and capturing webcam images. The version is extensible using a plugin framework to achieve additional functionality. The remote API allows BELUGASTURGEON operators to direct the backdoor to act as a web server and listen for inbound HTTP requests. iDefense identified this version of Kazuar used in various BELUGASTURGEON activity, including a [2020 campaign against the Cypriot government](#/node/intelligence_alert/view/6cc805d7-cb77-443d-afea-d052916fa602).\n\nSince its discovery in 2017, developers have been enhancing Kazuar. In 2019, security researcher [Juan Andrés Guerrero-Saade identified](https://www.epicturla.com/blog/sysinturla) Kazuar samples branded to look like the Microsoft SysInternals tool [DebugView](https://docs.microsoft.com/en-us/sysinternals/downloads/debugview). In addition to cosmetic changes, the Kazuar developers moved to a custom packer instead of  obfuscating Kazuar's code with [ConfuserEx](https://yck1509.github.io/ConfuserEx/). \n\nIn the campaign against the Cypriot government, BELUGASTURGEON operators implemented a novel C2 configuration where the Kazuar backdoor receives commands from URLs pointing to internal nodes in the Cypriot government network. [Another Kazuar sample acted as a transfer agent](#/node/malicious_event/view/2c3490cd-c4bb-4aef-b75f-641b76dcff01), proxying commands between the sample with the novel C2 configuration and the C2 server. Despite these developments, the underlying Kazuar codebase, including the backdoor's command set and configuration, remained mostly unchanged.\n## New Kazuar Functionality \nIn February 2021, Defense analyzed two Kazuar samples and noted significant changes in the codebase,  command set, and configuration functionality to warrant classifying the samples as a new variant of the Kazuar backdoor. One sample, shared by an industry partner, was first seen in August 2020; the second sample was uploaded to a third-party malware repository in February 2021. \n\nThe new variant persists on the system by storing the packed Kazuar binary in the Windows Registry and loading itself into memory at runtime without writing an infection file to disk. The variant offers new credential stealing and keylogging functionality, executes payloads in a range of file formats, and enumerates a wide range of system information about the compromised device. \n\nThe backdoor has a built-in command that forwards tasks to other Kazuar instances in a compromised network via named pipes. The ability to communicate among Kazuar instances as well as the overall extended functionality implemented without plugins allows Kazuar to achieve the functionality of some of BELUGASTURGEON's more sophisticated backdoors, such as [Carbon](#/node/malware_family/view/5c48cd58-180b-4d02-b344-5756f3a6fb33) or [Uroborus](#/node/malware_family/view/7c5fc18d-bab8-4928-a716-9b0c5a92a022).\n\nThe new Kazuar variant appears intended for Windows systems as developers have removed the UNIX-related code found in the earlier variant. Other functionality removed includes the remote HTTP API that is replaced with the task forwarding functionality allowing operators to configure Kazuar instances to listen for tasks from other \"remote\" Kazuar instances. \n\nIndications the Kazuar variant is under active development include an Agent Label value, discussed in more detail in the *Configuration Comparison* section, that is likely a version number incremented when there is a new iteration of the backdoor. iDefense also identified changes in the commands and configuration between the sample from August 2020 and February 2021. \n\niDefense analyzed the following samples of the new Kazuar variant:\n\n- **Filename (packed):**  Agent.Protected.exe  \n - **SHA-256 (packed):**  182d5b53a308f8f3904314463f6718fa2705b7438f751581513188d94a9832cd   \n\n - **Filename (unpacked):**  Agent.Original.exe  \n\n     - **SHA-256 (unpacked):**  41cc68bbe6b21a21040a904f3f573fb6e902ea6dc32766f0e7cce3c7318cf2cb  \n     - **File Size (unpacked):** 267 KB  \n     - **Agent Label:**  AGN-AB-03  \n     - **First Seen:** August 2020 (identified by industry partner)\n\n* **Filename (packed):**  Relieved.exe  \n\n - **SHA-256 (packed):**  60f47db216a58d60ca04826c1075e05dd8e6e647f11c54db44c4cc2dd6ee73b9  \n\n  - **Filename (unpacked):**  Musky.exe  \n\n     - **SHA-256 (unpacked):**  1cd4d611dee777a2defb2429c456cb4338bcdd6f536c8d7301f631c59e0ab6b4     \n     - **File Size (unpacked):** 291 KB  \n     - **Agent Label:** AGN-AB-13  \n     - **First Seen:** 15 February 2021 (uploaded to third-party malware repository)  \n\n\nThe following sections examine the differences between the new variant and the traditional Kazuar variant and the areas of active development in the new variant.\n## Codebase Comparisons \niDefense compared the codebase of the  version of Kazuar [detailed by Palo Alto Networks in May 2017](https://unit42.paloaltonetworks.com/unit42-kazuar-multiplatform-espionage-backdoor-api-access/), which will be referred to as the “traditional” variant,  and two samples of Kazuar from August 2020 and February 2021, the “new” variant,  and identified the following significant variations.\n#### Installation and Persistence\n\n**Traditional Kazuar Variant**\n\nThe traditional version of Kazuar is written to disk on the compromised machine. To maintain persistence on the machine, BELUGASTURGEON  adds  a Windows shortcut (LNK) file to the Windows startup folder or adds a subkey to one of the following Windows Registry keys:\n\n- HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\n- HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce\n- HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\n- HKCU\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell\n- HKCU\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\load\n\nOnce the LNK file or Registry key is configured, the Kazuar binary launches at user logon. Operators can configure the persistence method using the “autorun” command.\n\n**New Kazuar Variant**\n\nRather than write the binary to disk, the new Kazuar variant installs itself directly in the Windows Registry. For the sample with Agent Label AGN-AB-03, BELUGASTURGEON operators created a Registry subkey under `HKLM\\SOFTWARE\\Microsoft\\ActiveSync` with the name \"Jhkr.\" The subkey data contains an obfuscated VBScript that, when deobfuscated, is likely a modified version of the publicly available [VBSMeter](https://github.com/Cn33liz/VBSMeter). (VBSMeter is a Meterpreter stager for C# assemblies embedded in VBScript.)\n\nThe packed Kazuar binary is stored in one of the VBScript parameters. When launched, the VBScript  checks for a compatible version of the .NET framework installed on the compromised machine, Base64-decodes the packed Kazuar binary from the parameter, deserializes it, and invokes the packed binary in memory. The VBScript then writes the TXT log file ~TMP0666.tmp into the user's `%Temp%` directory. The packing algorithm is simple: XOR decode and decompress the encoded payload that is initially stored in an array. \n\nKazuar sample AGN-AB-13 is loaded from the Registry key `HKCU\\SOFTWARE\\Microsoft\\Arrases\\Canoed`. iDefense was unable to obtain the value of the Registry key to confirm the same VBScript loaded the sample into memory but assesses this is likely. \n\nThe same packing algorithm encodes the samples in the Registry key. The packed sample writes any unpacking errors to log file `%Temp%\\~TMP0666.txt`, as shown in Exhibit 1. This logging functionality was not present in the packed AGN-AB-03 sample, only in the VBScript used to load the sample.\n\n![alt text](/rest/files/download/34/05/ab/e72860f9a0223f242f42e8301dded7b91c3ed03c611fe4892218edc845/exhibit1.PNG)  \n_Exhibit 1: Packing Algorithm and Logging Functionality for Packed Kazuar Sample_\n\niDefense has not yet determined how BELUGASTURGEON operators gain initial access to the machine and install the Registry keys containing the new variant of Kazuar.\n\n#### Initialization\n\n\n###### Mutex \n\n**Traditional Kazuar Variant**\n\nWhen launched, the traditional Kazuar version gathers system information and generates a [mutex](https://docs.microsoft.com/en-us/windows/win32/sync/mutex-objects)  that ensures only one instance of Kazuar is running on the compromised machine. The mutex is generated using the following steps:\n\n- Obtain the MD5 hash of a string “[username]=>singleton-instance-mutex”\n- Encrypt this MD5 hash using an XOR algorithm and the volume serial number \n- Generate a GUID from the result  and append it to the string “Global\\\\”\n\nExhibit 2 shows how the traditional Kazuar variant generates the mutex. [According to Palo Alto Networks](https://unit42.paloaltonetworks.com/unit42-kazuar-multiplatform-espionage-backdoor-api-access/), if the variant cannot obtain the system’s storage serial number, it uses a default version of 0xFB1C1A. \n\n![alt text](/rest/files/download/4c/0b/15/a539a2cb938e5d10409cc8d119cfd79400a5e03f37badb37de5e24b0ec/Exhibit2.PNG)   \n_Exhibit 2: Traditional Kazuar Variant Mutex Generation_\n\n**New Kazuar Variant**\n\nThe new variant of Kazuar generates its mutex by XOR-encoding the System Universal Unique Identifier (UUID) value with the current process ID (PID), which has been XOR-encoded with two hardcoded values, as shown in Exhibit 3. The resulting mutex no longer has the prefix  “Global\\\\” indicating it is a local mutex and multiple Kazuar infections can co-exist for different users on one compromised device.\n\n![alt text](/rest/files/download/6d/d8/60/c2914f57d474b1af992bb235466556128510fb251f416728a646a3eb67/Exhibit3.PNG)   \n_Exhibit 3: New Kazuar Variant Mutex Generation_\n\n###### Files Written\n\n**Traditional Kazuar Variant**\n\nThe traditional Kazuar variant writes folders that store the files it generates during execution. The variant writes the folders in the %LocalAppData% directory under a path beginning with \"Microsoft\" and selected from a hardcoded list (see Exhibit 4). The filenames are encoded on disk by calculating the FNV-1a hash of the filename string and XOR-encoding the  hash with the volume serial number and the hardcoded constant 0xBADA55, as shown in Exhibit 5.\n\n ![alt text](/rest/files/download/76/e7/5e/5aae52246f80c7a335e9b32222b09d8c417f9bf9dc931a256626cff650/Exhibit4.PNG)   \n_Exhibit 4: Directory Location for Configuration Files, Traditional Kazuar_\n\n![alt text](/rest/files/download/67/8d/04/34b9f163f8295a86bd222a9d798bbfc0930a34d1c4823af74db2b2b5ba/Exhibit5.PNG)   \n_Exhibit 5: Filename Encoding for Traditional Kazuar_\n\nThe traditional version of Kazuar creates the following folder structure: \n\n- **base:** Folder containing the following subfolders:\n   - **sys:** Folder containing configuration settings in the following files:\n        - 'serv'  – Stores the C2 servers. \n        - 'arun' – Stores the autorun method. \n        - 'remo' – Stores the remote type. \n        - 'cont' – Stores the date of last contact with the C2 server. \n        - 'uuid' – Stores the compromised device's System UUID.\n        - 'tran' – Stores the transport type.\n       - 'intv' – Stores the transport interval.\n\n - **log:** Folder containing logs and debug information.\n - **plg:** Folder containing plugins used to extend Kazuar's functionality.\n - **tsk:** Folder tasks for Kazuar to run.\n - **res:** Folder containing results of processed tasks.\n\n**New Kazuar Variant**\n\nLikewise, the new variant of Kazuar writes files to disk during execution under the `%LocalAppData%` directory selecting paths from a hardcoded list beginning with \"Microsoft\"; however, that list is longer in the new version, as shown in Exhibit 6.\n\n![alt text](/rest/files/download/47/2f/cd/d9b75728ce7e443002d93d1e34bb40ae6b11dc7612f2a43f03f842a8ce/Exhibit6.PNG)   \n_Exhibit 6: Directory Location for Configuration Files, New Kazuar_\n\nExhibit 7 shows the filename-encoding function for the new variant of Kazuar. Rather than generating 8-digit hex strings, as done previously, the new version generates 15-digit alphanumeric strings for filenames and folders. Filenames are also appended with a 3-digit file extension. The System UUID is used as a seed and the process involves a series of XOR encodings and a [custom implementation of the FNV-1a hashing algorithm](https://securelist.com/sunburst-backdoor-kazuar/99981/).\n\n![alt text](/rest/files/download/04/30/8d/ba1b97d2f491900af81e852f9076ae8911770c73517a25003a2d30bf16/Exhibit7.PNG)   \n_Exhibit 7: Filename Encoding for New Kazuar_\n\nThe list below contains the file tree of folders and files the new variant creates along with the encoded and decoded filenames. There is still a base folder and folders to contain the log messages and tasks. Kazuar's configuration data is now stored under the \"config\" folder, similar to the \"sys\" folder in the previous variant. (See the *Configuration Comparison* section below for more details.) The \"keys\" file under the \"logs\" folder stores keystrokes captured when the new keylogger is enabled. \n\n```\n%LOCALAPPDATA%\\MICROSOFT\\OFFICE\\VISIO\\ROT3BMLH2ZGRF9X9 (base)\n|\n|_ i4px5nL5PqksWMb.wgw (logs)\n|\n|_ 2YpvIxMopuiQqHsmc   (task)\n|\n|_ i4px5nL5PqksWMb     (logs)\n|          |_ T9j8NFq6Bwtna1B0ej.rub   (keys)\n|       \n|_Tk7Zu3EKOMqtjTnw     (config)\n        |_ 8c9lq3nL3Vv0bGX.apa   (solve_threads)\n        |_ E8rHL1RRAujyu.cea     (keylog_enabled)\n        |_ MTDLUlXsgIf.yni       (transport)\n        |_ O1a1lIxAqUskBdQUf.ebd (amsi_bypass)\n        |_ OiF6UrrFDBhgcwa.qgg   (inject_mode)\n        |_ QQECzNniEHuKHih2f.oli (delegate_enabled)\n        |_ TqTHomCER6vz.zks      (agent_label)\n        |_ tLkhmS2L3cg5.flo      (remote)\n        \n```\n\n###### Execution Paths\n\n**Traditional Kazuar Variant**\n\nUpon launching, the traditional version of Kazuar can take one of four paths of execution, [as described by Palo Alto Networks](https://unit42.paloaltonetworks.com/unit42-kazuar-multiplatform-espionage-backdoor-api-access/):\n\n- If launched with the **install** command-line argument, uses .NET Framework’s InstallHelper method to install itself as a service.\n- If started in a non-user interactive environment (i.e., no user interface), installs itself as a service using the .NET ServiceBase Class.\n- If executed with the **single** command-line argument or if running in a Mac or UNIX environment, launches an infinite loop that reads tasks from the **tsk** folder and resolves them until none remain. \n- If no arguments are provided and if running in a Windows environment, saves a DLL and injects it into the explorer.exe process. The DLL executable loads the malware’s executable and runs it within memory of the explorer.exe process. The Kazuar binary code refers to the DLL as \"the shellcode.\"\n\nAs shown in Exhibit 8, the process injection function of the traditional Kazuar variant proceeds as follows:\n- Makes a FindWindow API call to get a handle to the Shell\\_TrayWnd (Windows taskbar) process\n- Calls GetWindowThreadProcessID to get the thread ID of the Shell\\_TrayWnd window\n- Checks if the DLL loader exists in the base folder:\n    - If it does not exist, it writes it (encoded version hardcoded in Kazuar binary)\n- Once DLL loader exists, calls LoadLibrary to load the DLL\n- Calls GetProcAddress to find the address of the DLL loader-exported Install function \n- Calls SetWindowsHookEx to hook the Shell\\_TrayWnd window; the hook runs the \"Install\" function of the DLL loader when the Shell\\_TrayWnd window gets a message in the queue with WH\\_GETMESSAGE on the thread of the target window\n- Calls PostMessage  to post a message in the thread to trigger the hook instantly and load the DLL immediately\n- Sleeps for 0.1 seconds then calls UnhookWindowsHookEx to remove the hook and exit the program; execution is now passed to the injected DLL loader in explorer.exe\n\n ![alt text](/rest/files/download/66/f3/7a/9414dd315d65a3b16ba48441cfcee331075b5729c959991157bd27161c/Exhibit9.PNG)   \n _Exhibit 8: Process Injection of Traditional Kazuar Into explorer.exe Process_\n\n**New Kazuar Variant**\n\nThe new Kazuar variant has four execution paths that depend on the configured **inject_mode** parameter rather than passed as a command-line argument:\n\n- If **inject_mode** is **single**, Kazuar sets a mode variable to \"solver\" if started in user interactive mode or \"system\" if not. Kazuar checks if the current process is mshta.exe (Microsoft HTML application host). If so, Kazuar enumerates all top-level windows on the screen and then hooks and hides the windows. iDefense assesses this is to determine the results of the code run from mshta.exe. \n\n Kazuar then sets up the REMO (remote), KEYL (keylogger), or SOLV (task solving) threads. Also sets the MIND thread that monitors for processes with names containing:\n  - cmdvrt32.dll (Comodo Antivirus) \n  - sbiedll.dll (Sandboxie)\n  - sxin.dll (360 Total Security)\n  - process monitor\n   - wireshark\n   - fiddler\n\n- If **inject_mode** is **remote**, Kazuar repeats the same process as above but only starts the REMO thread to listen for tasks from other Kazuar instances.\n\n- If started in **non-interactive mode**, Kazuar sets up REMO and INJE (injection) threads and then sleeps.\n\n- If none of the above conditions matches, Kazuar checks if it is already running in explorer.exe. If not, it repeats the check to see if it is running the  process mshta.exe and performs the same subsequent activity. Kazuar then injects into explorer.exe using the same method as the traditional Kazuar, described above.\n\nThe new Kazuar variant has three other **inject_mode** values used to inject into transport processes (i.e., used to communicate with the C2 server): \n\n-  If **inject_mode** is **inject**, Kazuar reads the transport processes from the transport configuration file as targets for injection. If there is no transport process present, Kazuar uses the default browser process; if defined, it uses iexplore.exe. \n\n Kazuar checks for the mutex in the target transport process to see if Kazuar is already running. If not, Kazuar opens the transport process using the OpenProcess API call and checks whether it is running under WOW64 with IsWow64Process. \n\n Kazuar then creates a new memory section with RWX protection using NtCreateSection, maps a view of the previously created section to the local Kazuar process with RW protection, and maps the section to the transport process with RX permissions. Kazuar writes the shellcode to the mapped section in the local process and creates a remote thread in the transport process using CreateRemoteThread, pointing the thread to the mapped view to trigger the shellcode.\n\n- If **inject_mode** is **zombify**, Kazuar injects into the user's default browser; if this fails, it injects into svchost.exe. Kazuar uses the [early bird technique](https://www.ired.team/offensive-security/code-injection-process-injection/early-bird-apc-queue-code-injection) to inject itself into the selected process\n\n-  If **inject_mode** is **combined**, Kazuar first attempts to inject using the **inject** process; if this fails, it attempts the **zombify** process.\n\n\n###### AMSI Bypass \n\n**New Kazuar Variant**\n\nBefore selecting an execution path, the new Kazuar variant calls a function that bypasses the [Antimalware Scan Interface (AMSI)](https://docs.microsoft.com/en-us/windows/win32/amsi/antimalware-scan-interface-portal)—a way for any Windows application to integrate with the installed antimalware product. The AMSI bypass function is shown in Exhibit 9; it was not available in the traditional Kazuar variant.\n\n![alt text](/rest/files/download/e3/46/cb/9adb5488dfda273e37ca6462009bebae7cef14770849d088cc9afc26e1/amsi.PNG)  \n_Exhibit 9: New Kazuar Variant's AMSI Bypass Function_\n\n[ESET previously reported](https://www.welivesecurity.com/2019/05/29/turla-powershell-usage/) on BELUGASTURGEON using AMSI bypass functionality in its PowerShell loaders, and [iDefense has previously analyzed](#/node/intelligence_report/view/9bf2fc44-570d-40ad-b81a-744141ed443e) PowerShell scripts containing AMSI bypass functionality to load BELUGASTURGEON's [securlsa.chk](#/node/malware_family/view/e55ad229-6484-4be3-bf3e-568c96a05b82) backdoor.\n\nThe Kazuar function patches the beginning of [AmsiScanBuffer](https://docs.microsoft.com/en-us/windows/win32/api/amsi/nf-amsi-amsiscanbuffer) to always return 80070057, which [translates to](https://docs.microsoft.com/en-us/windows/win32/seccrypto/common-hresult-values) E\\_INVALIDARG (one or more arguments not valid). The previous PowerShell scripts always patched this buffer to return 1 (AMSI\\_RESULT\\_NOT\\_DETECTED). The new return value is the same value used by the open-source .NET exploitation library [SharpSploit](https://github.com/cobbr/SharpSploit/blob/1407108e638cde3e181c27cb269c8427723884b0/SharpSploit/Evasion/Amsi.cs) suggesting Kazuar developers adapted this functionality from open-source tooling.\n\n## Command Set Comparison\n\n**Traditional Kazuar Variant**\n\nThe following commands, [documented by Palo Alto Networks](https://unit42.paloaltonetworks.com/unit42-kazuar-multiplatform-espionage-backdoor-api-access/) and verified by iDefense, are available in the traditional Kazuar variant: \n\n- **log:** Logs a specified debug message.  \n- **get:** Uploads files from a specified directory. Palo Alto Networks indicated operators can upload files based on their modified, accessed, and created timestamps.  \n- **put:** Writes a payload to the specified file.  \n- **cmd:**  Executes the specified command, writes the output to a temporary file, and uploads the temporary file to the C2 server.    \n- **sleep:** Sleeps for the specified time.  \n- **upgrade:** Changes the current executable’s file extension to .old and writes the newly provided executable in its place.  \n- **scrshot:** Takes a screenshot of the visible screen and saves it to the specified filename or a filename using the format: [year]-[month]-[day]-[hour]-[minute]-[second]-[millisecond].jpg. Then uploads the file to the C2 server.  \n- **camshot:** Creates a Window called “WebCapt” to capture an image from an attached webcam, copies the image to the clipboard, and writes the image to a specified file or a filename using the format: [year]-[month]-[day]-[hour]-[minute]-[second]-[millisecond].jpg. Then uploads the file to the C2 server.  \n- **uuid:** Sets the unique agent identifier by providing a specific GUID.  \n- **interval:** Sets the transport intervals (minimum and maximum time intervals) between C2 communications.  \n- **server:** Sets the C2 servers by providing a list of URLs.  \n- **transport:** Sets the transport processes by providing a list of processes where Kazuar injected its code and executed within.  \n- **autorun:** Sets the autorun type—DISABLED, WINLOGON, POLICIES, HKCURUN, RUNONCE, LOADKEY, or STARTUP—as discussed earlier. Kazuar accept the following strings for this command:  \n    - **remote:** Configures remote API settings by specifying URI prefix and port to listen on. While the port used varied between the analyzed samples, iDefense only observed the HTTP prefix used, which instructs Kazuar to act as an HTTP server. The threat actor can then interact with the compromised system using inbound HTTP requests.  \n    - **info:** Gathers system information referred to as: Agent information, System information, User information, Local groups and members, Installed software, Special folders, Environment variables, Network adapters, Active network connections, Logical drives, Running processes, and Opened windows.  \n- **copy:** Copies the specified file to a specified location. Also allows the C2 infrastructure to supply a flag to overwrite the destination file, if it already exists.  \n- **move:** Moves the specified file to a specified location. Also allows the C2 infrastructure to supply a flag to delete the destination file, if it exists.  \n- **remove:** Deletes a specified file. Allows the C2 infrastructure to supply a flag to securely delete a file by overwriting the file with random data before deleting the file.  \n- **finddir:** Finds a specified directory and lists its files including the created and modified timestamps, the size, and file path for each of the files in the directory.  \n- **kill:** Kills a process by name or by process identifier (PID).  \n- **tasklisk:** Lists running processes. Uses a WMI query of `select * from Win32_Process` for a Windows system but can also run `ps -eo comm,pid,ppid,user,start,tty,args` to obtain running processes from a UNIX system.  \n- **suicide:** Likely uninstalls Kazuar, but it is not implemented in the referenced samples.  \n- **plugin:** Installs plugin by loading a provided Assembly, saving it to a file whose name is the MD5 hash of the Assembly’s name, and calling the Start method.  \n- **plugout:** Removes a plugin based on the Assembly’s name.  \n- **pluglist:** Gets a list of plugins and determines whether they are “working” or “stopped.”  \n- **run:** Runs a specified executable with supplied arguments and saves its output to a temporary file. Then loads the temporary file to the C2 server.  \n\nIn this Kazuar variant, the C2 server sends the tasks as XML-formatted data containing an action identifier or integer; the numeric action ID is  then translated into the corresponding command from the above set.\n\n**New Kazuar Variant**\n\nThe new Kazuar variant replaces these numeric action IDs with strings for the command names. The following commands have similar functionality in the new variant as they did in the traditional variant:\n\n- **info**\n- **scrshot**\n- **run**\n- **move**\n- **get**\n- **log**\n- **put**\n- **sleep**\n- **kill**\n- **copy**\n\nDevelopers added the following commands to the new variant:\n\n- **steal:** Steal passwords, history, or proxy lists from the following services: FileZilla, Chromium, Mozilla, Outlook, WinSCP, Git, or from the system.  \n- **config:** Set and update Kazuar configuration values, as described in the *Configuration Comparison* section below.  \n- **delegate:** Forward command to remote Kazuar instance using a named pipe and store result in delegated .zip file, as described in the *Command-and-Control Communication* section below under named pipe communications.\n- **psh:**  Execute PowerShell command.\n- **regwrite:** Create Registry key.\n- **regdelete:** Delete Registry key.\n- **vbs:** Execute VBS script with cscript.exe.\n- **regquery:** Query Registry key.\n- **find:** Enumerate a directory; replaces **finddir** command in traditional Kazuar.\n- **forensic:** Enumerate Registry autorun keys, the Program Compatibility Assistant, and the Windows Explorer User Assist Registry keys to determine which program(s) has run on the compromised device.\n- **http:** Execute an HTTP request and save the response to file http<3digits>.rsp.\n- **jsc:** Execute a JavaScript file with cscript.exe.\n- **del:** Delete a file; replaces **remove** command in traditional Kazuar.\n- **unattend:** Enumerate the compromised device's [unattend.xml](https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/update-windows-settings-and-scripts-create-your-own-answer-file-sxs), sysprep.xml, and web.config files to obtain credentials.\n- **schlist:** Enumerate list of scheduled tasks using the [TaskService](https://docs.microsoft.com/en-us/windows/win32/taskschd/taskservice) object.\n- **wmiquery:** Execute a WMI query.\n- **wmicall:** Execute a WMI method.\n\nDevelopers removed several commands from the traditional Kazuar variant while incorporating the functionality into other commands or configuration settings:\n- The **upgrade** and **suicide** commands are replaced by the Registry editing commands (‘regdelete’ and ‘regwrite’)  now that  Kazuar is stored in a Registry key. \n- The values previously configured by the **uuid**, **jnterval**, **server**, and **transport** commands are now configured using the **config** command. \n- The list of running processes previously obtained with **tasklist** is now returned by **info** along with much more system information. \n- The **autorun** command is not required to configure persistence mechanisms now the Kazuar binary is stored in the Registry. \n- The **plugin** command is no longer necessary since much of the prior information-stealing functionality is implemented within the newer Kazuar. \n- The **remote** command (i.e., HTTP API functionality) has been replaced with task delegation. \n\nThe only functionality apparently not replicated in the new variant is the **camshot** command to take web cam snapshots.\n\nThe commands **schlist**, **wmiquery**, and **wmicall** were present in Kazuar sample AGN-AB-13 but not AGN-AB-03, suggesting the command set of the new variant is under development.\n\n## Configuration Comparison\n\n**Traditional Kazuar Variant**\n\nThe values configured in the traditional Kazuar variant's configuration are:\n\n- **Agent identifier:** Unique agent identifier (GUID format).  \n- **Executable path:**  Path of Kazuar binary on disk.  \n- **Storage path:** Base directory containing Kazuar configuration files.\n- **Fake visible name:** Kazuar filename.\n- **Description label:**  Empty in samples analyzed.\n- **Machine seed:** Seed value derived from System Directory.\n- **Parallel tasks:** Number of tasks to run in parallel.\n- **Last contact:** Last contact from C2 server.\n- **Autorun type:**  Persistence method (LNK file or Registry keys, as described in *Installation and Persistence* section).\n- **Transport interval:** Interval between C2 communications.\n- **Command servers:** C2 servers.\n- **Transport processes:** Process to injected into for C2 communications.\n\n**New Kazuar Variant**\n\nThe updated configuration reflects the broader range of functionality implemented in the new Kazuar variant. The values configured in the new variant's configuration are:\n\n- **Agent label:** Unique Agent Label of format `AGN-AB-<2 digits>`, iterated as updates are made to Kazuar.\n- **Agent UUID:** Unique agent identifier (GUID format).  \n- **Local seed:** Seed value derived from System UUID.\n- **Last contact:** Last contact from C2 server.\n- **Transport type:**  Protocol used for C2 communications; set to \"HTTP\" in both analyzed samples.\n- **Transport main interval:**  Interval between C2 communications.\n- **Transport failed interval:** Interval between failed C2 connections before attempting a retry.\n- **Transport proxy:**  C2 communication proxy; specifies URL, port, and variable to specify when proxy is enabled. This value was empty for both samples iDefense analyzed.\n- **Max server fails:** Number of failed attempts before quitting.\n- **Main servers:**  Primary C2 servers.\n- **Reserved servers:** Backup C2 servers.\n- **Agent regkey:** Registry key where packed Kazuar binary is stored.\n- **Storage root:** Base directory containing Kazuar configuration files.\n- **Config path:** Path to Kazuar configuration directory.\n- **Logs path:**: Path to Kazuar logs file.\n- **Keylogger path:** Path to Kazuar keylogger output file.\n- **Logs size:**  Current size of logs file.\n- **Inject mode:** Inject mode to define execution path and injection method (described in *Installation and Persistence* section).\n- **Solving threads:** Number of threads to run in parallel to solve tasks.\n- **Solving tries:** Maximum number of attempts to solve a task.\n- **Sending tries:** Maximum number of attempts to send task result to C2 server.\n- **Keylogger enabled:** Whether keylogger functionality is enabled (boolean).\n- **Task delegation enabled:** Whether task delegation functionality is enabled (boolean).\n- **AMSI bypass enabled:** Whether AMSI bypass functionality is enabled (boolean).\n- **Delegate system pipe:**  Pipe used to delegate tasks in system mode; also see  *Command-and-Control Communication* section.\n- **Delegate solver pipe:** Pipe used to delegate tasks in solver mode.\n- **Delegate sender pipe:** Pipe used to delegate tasks in sender mode.\n\nIndicating the new Kazuar version is under development, the following values are present in the new Kazuar variant sample AGN-AB-13 but not AGN-AB-03:\n- **Agent regkey**\n- **Delegate system pipe** \n- **Delegate solver pipe** \n- **Delegate sender pipe**\n\n## Command-and-Control Communication\n\n**Traditional Kazuar Variant**\n\nThe traditional Kazuar variant uses its C2 channel to send tasks to the backdoor, receive the results, and exfiltrate data. The variant can use multiple protocols, such as HTTP, HTTPS, FTP, or FTPS, as determined by the prefixes of the hardcoded C2 URLs. [iDefense identified one sample](#/node/intelligence_alert/view/6cc805d7-cb77-443d-afea-d052916fa602) that uses the \"file://\" prefix to communicate across internal nodes in a compromised network, likely via SMB using another Kazuar sample as a transfer agent to forward tasks and results between the C2 server and the first Kazuar sample.\n\n**New Kazuar Variant**\n\nThe new Kazuar samples do not support FTP communications; instead, C2 communications are performed over HTTP(S). Exhibit 10 shows the function that defines the C2 servers:\n\n![alt text](/rest/files/download/e2/97/51/d4d171d120ec49db0128d5c6119399eeb12bf245227e82708290fcf6c3/c2.PNG)  \n_Exhibit 10: Defining C2 Servers in New Kazuar Variant_\n\nThe first two URLs in Exhibit 10 are the \"Main servers\" referred to in the sample's configuration; they act as the primary C2 servers. The third URL is the \"Reserved server\" that Kazuar uses as a backup, if it cannot reach the primary C2s. The fourth URL is the \"Last Chance URL\" that Kazuar uses if communication with the primary and backup C2 servers is lost. \n\nFor sample AGN-AB-03, shown in Exhibit 10, a dummy value (\"www.google.com\") is provided; in sample AGN-AB-13, no value is configured for the \"Last Chance URL.\" However, Kazuar operators can set this to any value. iDefense assesses the operators may choose to use a legitimate web service, such as Pastebin, which allows them to maintain persistence if their own C2 infrastructure is unavailable. [BELUGASTURGEON has previously used a Pastebin project](#/node/intelligence_alert/view/92154a2c-f077-4f16-92d5-2349984ad03e) for C2 communications with its Carbon backdoor.\n\nThe C2 servers identified in the two analyzed samples are:\n\n**AGN-AB-13:**\n - Main servers:\n    - `https://www.rezak[.]com/wp-includes/pomo/pomo.php`\n    - `https://www.hetwittezwaantje[.]nl/wp-includes/rest-api/class-wp-rest-client.php`\n - Reserved server:\n    - `https://aetapet[.]com/wp-includes/IXR/class-IXR-response.php`\n\n**AGN-AB-03:**\n - Main servers:\n    - `https://www.actvoi[.]org/wordpress/wp-includes/fonts/icons/`\n    - `https://www.datalinkelv[.]com/wp-includes/js/pomo/`\n    - `https://www.actvoi.org/wordpress/wp-includes/fonts/`\n - Reserved server:\n    - `https://www.downmags[.]org/wp-includes/pomo/wp/`\n\nIn the new version of Kazuar, HTTP requests are authenticated using an .AspNet.Cookies header rather than an AuthToken cookie. Tasks are forwarded to remote Kazuar instances using the task delegation functionality instead of the remote HTTP API. The task delegation functionality uses named pipes to communicate between Kazuar samples. Exhibit 11 shows the function to generate the pipe name used for communications.\n\n![alt text](/rest/files/download/15/51/62/fe277b22a617898a35647dfe6e6b2d4943dfbeb7e4380c01058995d960/pipe.PNG)   \n_Exhibit 11: New Kazuar Variant Task Delegation Named Pipe_\n\nThe pipe names are GUID values derived from the string `pipename-[system/solver/sender]-AgentLabel` where the values for system, solver, or sender are set based on the **inject_mode**, as described in the *Installation and Persistence* section. \n- **sender** corresponds to the Kazuar instance sending the task.\n- **solver** is set for the Kazuar instance receiving tasks. \n- **system** corresponds to a Kazuar instance started in non-interactive mode. \n\nExhibit 12 shows the function used to send tasks to and receive task results from remote Kazuar instances.\n\n![alt text](/rest/files/download/ac/ec/11/ad97d520210ac43da1c7edd6d91fc4cb59f3e8dd459016a0d335bd0686/pipe2.PNG)  \n_Exhibit 12: New Kazuar Variant Task Delegation Functionality_\n\nTo generate a name for the named pipe, Kazuar uses the `pipename-mode AgentLabel`  format described above replacing \"mode\" with system, solver, or sender as described above and connecting the values for CreateNamedPipe with ConnectNamedPipe. Messages sent over the pipe are encrypted and must begin with PING, PONG, TASK, RESULT, or ERROR. The PING prefix acts as a handshake and expects a PONG response, the TASK prefix is used to send tasks, and the RESULT and ERROR prefixes respond with the results of tasks or any errors.\n\n## Outlook\nAlthough BELUGASTURGEON has made high-level updates to the Kazuar backdoor over the years, the samples from August 2019 and February 2020 represent the first significant update to the malware's codebase since its discovery three years ago. The developers removed the requirement for a plugin framework by incorporating functionality that allows for a wide range of espionage activity such as keylogging, credential stealing, and forensics. Storing the sample as a Registry key rather than on disk decreases the risk of detection in comparison to the older variant.\n\nAdding task delegation functionality makes Kazuar a peer of the group's more sophisticated Carbon and Uroborus backdoors. The group's relatively clumsy prior method of chaining together proxy commands from a C2 server to a Kazuar instance on an internal node without network connection meant task files were written to disk on the internal proxy node. The new functionality forwards tasks directly over named pipes, as done in the group's other backdoors.\n\nDifferences between the August 2019 and February 2020 samples—with the addition of commands and updated configuration specifications—clearly indicate Kazuar is under active development and will continue to be used by BELUGASTURGEON in espionage campaigns.",
+    "mitigation": "Check logs for the following indicators of compromise:\n- `182d5b53a308f8f3904314463f6718fa2705b7438f751581513188d94a9832cd` (Kazuar packed)\n- `60f47db216a58d60ca04826c1075e05dd8e6e647f11c54db44c4cc2dd6ee73b9` (Kazuar packed)\n-  `41cc68bbe6b21a21040a904f3f573fb6e902ea6dc32766f0e7cce3c7318cf2cb` (Kazuar unpacked)\n- `1cd4d611dee777a2defb2429c456cb4338bcdd6f536c8d7301f631c59e0ab6b4` (Kazuar unpacked)\n- https://www[.]rezak[.]com/wp-includes/pomo/pomo[.]php\n- https://www[.]hetwittezwaantje[.]nl/wp-includes/rest-api/class-wp-rest-client[.]php\n- https://aetapet[.]com/wp-includes/IXR/class-IXR-response[.]php\n- https://www.actvoi[.]org/wordpress/wp-includes/fonts/icons/\n- https://www.datalinkelv[.]com/wp-includes/js/pomo/9https://www.actvoi.org/wordpress/wp-includes/fonts/\n- https://www.downmags[.]org/wp-includes/pomo/wp/\n\nKazuar developers configure the C2 URIs for each sample; instead monitor for the following more generic indicators:\n-\tRepeated connections to WordPress sites not commonly visited by users in the network, particularly when the URI contains `/wp-includes/pomo/`. \n-\tNamed pipes with names matching the format `///pipe//<GUID>` particularly when used by explorer.exe.\n\nThe following YARA rule matches the analyzed Kazuar samples and may be used for detection or hunting purposes only:\n\n```\nrule new_kazuar_unpacked {\n    meta:\n        desc = \"Detects functions used by new Kazuar Variant.\"\n        author = \"iDefense\"\n        hash1 = \"41cc68bbe6b21a21040a904f3f573fb6e902ea6dc32766f0e7cce3c7318cf2cb\"\n        hash2 = \"1cd4d611dee777a2defb2429c456cb4338bcdd6f536c8d7301f631c59e0ab6b4\"\n\n    strings:\n\n    $a1 = \"Agent.Original.exe\" wide ascii\n    $a2 = \"Musky.exe\" wide ascii\n    $b_amsi = { 28 [4] 3A 01 00 00 00 2A 72 [4] 28 [4] 28 [4] 0A 06 7E [4] 28 [4] 39 [4] 2A 06 72 [4] 28 [4] 28 [4] 0B 07 7E [4] 28 [4] 39 [4] 2A 28 [4] 39 [4] 1C 8D [4] 25 D0 [4] 28 [4] 0C 38 [4] 1E 8D [4] 25 D0 [4] 28 [4] 0C 16 0D 08 8E 69 6A 28 }\n    $b_encoding1 = { 020A061F09594576000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??00000038E70000001F412A1F422A1F432A1F442A1F452A1F462A1F472A1F482A1F492A1F4A2A1F4B2A1F4C2A1F4D2A1F4E2A1F4F2A1F502A1F512A1F522A1F532A1F542A1F552A1F562A1F572A1F582A1F592A1F5A2A1F612A1F622A1F632A1F642A1F652A1F662A1F672A1F682A1F692A1F6A2A1F6B2A1F6C2A1F6D2A1F6E2A1F6F2A1F702A1F712A1F722A1F732A1F742A1F752A1F762A1F772A1F782A1F792A1F7A2A1F7E2A1F252A1F3A2A1F2E2A1F202A1F7C2A1F7B2A1F7D2A1F2D2A1F3D2A1F3C2A1F3E2A1F5C2A1F0A2A1F092A1F302A1F312A1F322A1F332A1F342A1F352A1F362A1F372A1F382A1F392A022A}\n    $b_encoding2 = {73[4]0A160B38[4]02076F[4]28[4]0C0608D16f[4]260717580B07026F[4]3f[4]066F[4]2A}\n    $b_pipename = {03 28 [4] 39 07 00 00 00 28 [4] 10 01 02 6F [4] 0A 72 [4] 28 [4] 06 72 [4] 28 [4] 03 28 [4] 0B 28 [4] 07 6F [4] 0C 28 [4] 08 6F [4] 0D 1F 2A 13 04 1F 11 13 05 1F 15 13 06 16 13 08 38 [4] 11 04 11 05 5A 20 [4] 20 [4] 61 5F D2 13 04 11 04 11 06 58 20 [4] 20 [4] 61 5F D2 13 04 09 11 08 8F [4] 25 47 11 04 61 D2 52 11 08 17 58 13 08 11 08 09 8E 69 3F [4] 12 07 09 28 [4] 12 07 72 [4] 28 [4] 28 [4] 6F [4] 2A}\n\n    condition: uint16(0) == 0x5a4d and (1 of ($a*) and 3 of ($b_*)) or (4 of ($b_*)) and filesize < 350KB\n}\n```",
+    "severity": 4,
+    "abstract": "In February 2021, iDefense analyzed two samples of BELUGASTURGEON's Kazuar backdoor and identified significant codebase differences when compared to older Kazuar samples. Although BELUGASTURGEON has been making high-level changes to Kazuar and using the backdoor in espionage campaigns since at least 2017, the August 2020 and February 2021 samples contain the first significant updates to the malware's codebase since the malware family was identified.\n\nThe updated Kazuar variant introduces commands that support a range of espionage activity, including keylogging, credential stealing, and forensics, without requiring a plugin framework as in prior  Kazuar samples. Using task forwarding, BELUGASTURGEON operators can now communicate with Kazuar instances without using Internet connectivity; this enhanced peer-to-peer (P2P) functionality advances Kazuar to the level of some of BELUGASTURGEON's more sophisticated backdoors.\n\nWhen comparing the two August 2020 and February 2021 Kazuar samples, iDefense identified command set and configuration updates that indicate Kazuar is under active development for future use in BELUGASTURGEON espionage campaigns."
+}
 
 
-#### Command Example
-```!rubrik-radar-analysis-status activitySeriesId="" clusterId="cc19573c-db6c-418a-9d48-067a256543ba"```
-#### Human Readable Output
-### Radar Analysis Status
-|Activity Series ID|Cluster ID|Message|Event Complete|
-|---|---|---|---|
-| ec9c48ce-5faf-474a-927c-33667355aecd | cc19573c-db6c-418a-9d48-067a256543ba | Completed backup of the transaction log for SQL Server database 'AdventureWorks2012' from 'sx1-sql12-1\MSSQLSERVER'. | True |
-	@@ -63,22 +75,1669 @@ Find data classification hits on an object.
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| objectName | The name of the Rubrik object to check for sensitive hits.  When used in combination with "Rubrik Radar Anomaly" incidents, this value will automatically be looked up using the incident context. Otherwise it is a required value.<br/><br/>Note: Users can get the list of the object names by executing the "rubrik-polaris-object-list" or "rubrik-polaris-object-search" command. | Optional | 
-| searchTimePeriod | The number of days in the past to look for sensitive hits. If no value is provided, then today's data will be returned and, if there is no data for today then the argument will default to 7 days.<br/> Default is 7. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Rubrik.Sonar.totalHits | String | The total number of data classification hits found on the provided object. | 
-| Rubrik.Sonar.id | String | ID of the sensitive hits object. | 
-| Rubrik.Sonar.policy_hits | Unknown | Information of the policy analyzer group of the sensitive hits object. | 
-| Rubrik.Sonar.filesWithHits | Number | The total number of files with hits of the object. | 
-| Rubrik.Sonar.openAccessFiles | Number | The total number of open access files of the object. | 
-| Rubrik.Sonar.openAccessFilesWithHits | Number | The total number of open access files with hits of the object. | 
-| Rubrik.Sonar.openAccessFolders | Number | The total number of open access folders of the object. | 
-| Rubrik.Sonar.staleFiles | Number | The total number of stale files of the object. | 
-| Rubrik.Sonar.staleFilesWithHits | Number | The total number of stale files with hits of the object. | 
-| Rubrik.Sonar.openAccessStaleFiles | Number | The total number of open access stale files of the object. | 
-| Rubrik.Radar.Message | Unknown | The text, ID, and timestamp of each message in the Activity Series. | 
-| Rubrik.Radar.ActivitySeriesId | String | The ID of the Rubrik Polaris Activity Series. | 
-#### Command Example
-```!rubrik-sonar-sensitive-hits objectName="sx1-radar15"```
-#### Human Readable Output
-### Sensitive Hits
-|ID|Total Hits|
-|---|---|
-| afc0f6f0-148a-54c5-9927-c24c7cde1608 | 49684 |
-### rubrik-cdm-cluster-location
-***
-Find the CDM GeoLocation of a CDM Cluster.
-#### Base Command
-`rubrik-cdm-cluster-location`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| clusterId | The ID of the CDM cluster. When used in combination with "Rubrik Radar Anomaly" incidents, this value will automatically be looked up using the incident context. Otherwise, it is a required value.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Required | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Rubrik.CDM.Cluster.Location | String | The GeoLocation of the Rubrik CDM Cluster. | 
-| Rubrik.CDM.ClusterId | String | The ID of the cluster. | 
-#### Command Example
-```!rubrik-cdm-cluster-location clusterId="cc19573c-db6c-418a-9d48-067a256543ba"```
-#### Human Readable Output
-### CDM Cluster Location
-|Location|
-|---|
-| San Francisco, CA, USA |
-### rubrik-cdm-cluster-connection-state
-***
-Find the CDM Connection State of a CDM Cluster.
-#### Base Command
-`rubrik-cdm-cluster-connection-state`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| clusterId | The ID of the CDM cluster. When used in combination with "Rubrik Radar Anomaly" incidents, this value will automatically be looked up using the incident context. Otherwise, it is a required value.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Required | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Rubrik.CDM.Cluster.ConnectionState | String | The Connection State of the Rubrik CDM Cluster. | 
-| Rubrik.CDM.ClusterId | String | The ID of the cluster. | 
-#### Command Example
-```!rubrik-cdm-cluster-connection-state clusterId="cc19573c-db6c-418a-9d48-067a256543ba"```
-#### Human Readable Output
-### CDM Cluster Connection State
-|Connection State|
-|---|
-| Connected |
-### rubrik-polaris-object-search
-***
-Search for Rubrik discovered objects of any type, return zero or more matches.
-#### Base Command
-`rubrik-polaris-object-search`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| limit | Number of results to retrieve in the response. Maximum size allowed is 1000. Default is 50. | Optional | 
-| object_name | The name of the object to search for. | Required | 
-| sort_by | Specify the field to use for sorting the response.<br/><br/>Note: Supported values are "ID" and "NAME" only. For any other values, the obtained result is sorted or not is not confirmed. Default is ID. | Optional | 
-| sort_order | Specify the order to sort the data in.<br/><br/>Possible values are: "ASC", "DESC". Default is ASC. | Optional | 
-| next_page_token | The next page cursor to retrieve the next set of results. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.GlobalSearchObject.id | String | The ID of the object. | 
-| RubrikPolaris.GlobalSearchObject.name | String | The name of the object. | 
-| RubrikPolaris.GlobalSearchObject.objectType | String | The type of the object. | 
-| RubrikPolaris.GlobalSearchObject.physicalPath.fid | String | The FID of the physical path of the object. | 
-| RubrikPolaris.GlobalSearchObject.physicalPath.name | String | The name of the physical path where the object relies. | 
-| RubrikPolaris.GlobalSearchObject.physicalPath.objectType | String | The object type of the physical path where the object relies. | 
-| RubrikPolaris.GlobalSearchObject.azureRegion | String | The azure region of the object. | 
-| RubrikPolaris.GlobalSearchObject.awsRegion | String | The aws region of the object. | 
-| RubrikPolaris.GlobalSearchObject.emailAddress | String | The email address of the object. | 
-| RubrikPolaris.GlobalSearchObject.isRelic | Boolean | Whether the object is relic \(historical\) or not. | 
-| RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.id | String | The effective SLA domain ID of the object. | 
-| RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.name | String | The effective SLA domain name of the object. | 
-| RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.description | String | The effective SLA domain description of the object. | 
-| RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.fid | String | The FID of the object's effective SLA domain. | 
-| RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.cluster.id | String | The cluster ID of the object's effective SLA domain. | 
-| RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.cluster.name | String | The cluster name of the object's effective SLA domain. | 
-| RubrikPolaris.GlobalSearchObject.physicalChildConnection.count | String | The count of physical child connection of the object. | 
-| RubrikPolaris.GlobalSearchObject.physicalChildConnection.edges.node.id | String | The ID of physical child connection of the object. | 
-| RubrikPolaris.GlobalSearchObject.physicalChildConnection.edges.node.name | String | The name of the physical child connection of the object. | 
-| RubrikPolaris.GlobalSearchObject.physicalChildConnection.edges.node.replicatedObjects.cluster.id | String | The cluster ID of the replicated objects of physical child connection of the object. | 
-| RubrikPolaris.GlobalSearchObject.physicalChildConnection.edges.node.replicatedObjects.cluster.name | String | The cluster name of the replicated objects of physical child connection of the object. | 
-| RubrikPolaris.GlobalSearchObject.cluster.id | String | The cluster ID related to the object. | 
-| RubrikPolaris.GlobalSearchObject.cluster.name | String | The name of the cluster related to the object. | 
-| RubrikPolaris.GlobalSearchObject.primaryClusterLocation.id | String | The primary cluster location ID of the object. | 
-| RubrikPolaris.GlobalSearchObject.gcpZone | String | The gcp zone of the object. | 
-| RubrikPolaris.GlobalSearchObject.gcpRegion | String | The gcp region of the object. | 
-| RubrikPolaris.GlobalSearchObject.gcpNativeProject.name | String | The gcp native project name of the object. | 
-| RubrikPolaris.PageToken.GlobalSearchObject.next_page_token | String | Next page token. | 
-| RubrikPolaris.PageToken.GlobalSearchObject.name | String | Name of the command. | 
-| RubrikPolaris.PageToken.GlobalSearchObject.has_next_page | Boolean | Whether the result has the next page or not. | 
-#### Command Example
-```!rubrik-polaris-object-search object_name="admin" limit=2```
-#### Human Readable Output
-### Global Objects
-|Object ID|Object Name|Type|SLA Domain|
-|---|---|---|---|
-| 0f667954-9052-42c8-ac20-2149da4d0ec4 | Hoang-Admin Nguyen | O365Mailbox | UNPROTECTED |
-| 3e5d0800-71f6-4e42-badc-ae8b98c8a808 | Admin o365 | O365Mailbox | UNPROTECTED |
- Note: To retrieve the next set of results use, "next_page_token" = xyz
-### rubrik-sonar-policies-list
-***
-Retrieve the list of all the available Sonar policies.
-#### Base Command
-`rubrik-sonar-policies-list`
-#### Input
-There are no input arguments for this command.
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.SonarPolicy.id | String | Unique ID of the policy. | 
-| RubrikPolaris.SonarPolicy.name | String | Name of the policy. | 
-| RubrikPolaris.SonarPolicy.description | String | Descriptive name of the policy. | 
-| RubrikPolaris.SonarPolicy.creator.email | String | Email of the user who created the policy. | 
-| RubrikPolaris.SonarPolicy.totalObjects | Number | Number of total objects present in the policy. | 
-| RubrikPolaris.SonarPolicy.numAnalyzers | Number | Number of analyzers present in the policy. | 
-| RubrikPolaris.SonarPolicy.objectStatuses.id | String | ID of the object present in the policy. | 
-| RubrikPolaris.SonarPolicy.objectStatuses.latestSnapshotResult.snapshotFid | String | Snapshot ID of the object present in the policy. | 
-| RubrikPolaris.SonarPolicy.objectStatuses.policyStatuses.policyId | String | Policy ID. | 
-| RubrikPolaris.SonarPolicy.objectStatuses.policyStatuses.status | String | Policy status. | 
-#### Command Example
-```!rubrik-sonar-policies-list ```
-#### Human Readable Output
-### Sonar Policies
-|ID|Name|Description|Analyzers|Objects|Creator Email|
-|---|---|---|---|---|---|
-| bdb8c043-ee89-43ef-a3e2-73e94b5b3900 | CCPA | California Consumer Privacy Act | 5 | 3 | dummy.email@rubrik.com |
-| 53e447ed-9114-4fcd-b5a6-7ac759980fde | GLBA | U.S. Gramm-Leach-Bliley Act | 4 | 3 |  |
-### rubrik-sonar-policy-analyzer-groups-list
-***
-List the analyzer group policies.
-#### Base Command
-`rubrik-sonar-policy-analyzer-groups-list`
-#### Input
-There are no input arguments for this command.
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.SonarAnalyzerGroup.id | String | The analyzer group ID. | 
-| RubrikPolaris.SonarAnalyzerGroup.name | String | The name of the analyzer group. | 
-| RubrikPolaris.SonarAnalyzerGroup.groupType | String | The analyzer group type. | 
-| RubrikPolaris.SonarAnalyzerGroup.analyzers.id | String | The ID of the analyzers belong to the group. | 
-| RubrikPolaris.SonarAnalyzerGroup.analyzers.name | String | The name of the analyzers belong to the group. | 
-| RubrikPolaris.SonarAnalyzerGroup.analyzers.analyzerType | String | The type of the analyzers belong to the group. | 
-#### Command Example
-```!rubrik-sonar-policy-analyzer-groups-list ```
-#### Human Readable Output
-### Sonar Policy Analyzer Groups
-|ID|Name|Group Type|Analyzers|
-|---|---|---|---|
-| 97c6a54a-acfc-5ab2-a24a-6a7f3a9a1553 | GLBA | GLBA | id: ed30dfa0-334f-55ff-a1b7-03b6bdd7849b, Name: Credit Card, Analyzer Type: CREDIT_CARD<br/><br/>id: 3e60a612-3e97-5f03-b3a1-cfb7a6a67e8f, Name: US Bank Acct, Analyzer Type: US_BANK_ACCT<br/><br/>id: 03b3dc9e-81c1-561c-8235-17cf2fc1c729, Name: US ITIN, Analyzer Type: US_ITIN<br/><br/>id: d5ce3ae5-f530-562a-85b1-4a84264a350a, Name: US SSN, Analyzer Type: US_SSN |
-| 543dd5e0-c72c-50e2-a3d9-1688343f472c | HIPAA | HIPAA | id: 9da675b3-944b-5da3-a2da-ed149d300075, Name: US/UK Passport, Analyzer Type: PASSPORT<br/><br/>id: 18665533-c28c-5a40-b747-4b6508fecdfa, Name: US NPI, Analyzer Type: US_HEALTHCARE_NPI<br/><br/>id: 03b3dc9e-81c1-561c-8235-17cf2fc1c729, Name: US ITIN, Analyzer Type: US_ITIN<br/><br/>id: d5ce3ae5-f530-562a-85b1-4a84264a350a, Name: US SSN, Analyzer Type: US_SSN<br/><br/>id: 6bcc8e4e-0ec9-5538-b91d-a506dac47ec6, Name: US DEA, Analyzer Type: DEA_NUMBER |
-| 16bd3864-bad6-513b-b38d-a108e648cf4a |  | PCI_DSS |  |
-| c8c8072a-9454-5e68-9a23-bbcb9824838e | U.S. Financials | US_FINANCE | id: bb9a929b-3f29-5d3f-a768-de74e8ee5a9c, Name: n/a, Analyzer Type: CUSIP_NUMBER |
-### rubrik-polaris-vm-object-metadata-get
-***
-Retrieve details for a Vsphere object based on the provided object ID.
-#### Base Command
-`rubrik-polaris-vm-object-metadata-get`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| object_id | The ID of the object to get details.<br/><br/>Note: Users can get the list of the object IDs by executing the "rubrik-polaris-vm-objects-list" command. | Required | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.VSphereVm.id | String | Unique ID of the object. | 
-| RubrikPolaris.VSphereVm.metadata.authorizedOperations | Unknown | List of operations performed by the object. | 
-| RubrikPolaris.VSphereVm.metadata.name | String | The name of the object. | 
-| RubrikPolaris.VSphereVm.metadata.isRelic | Boolean | Whether the object is relic or not. | 
-| RubrikPolaris.VSphereVm.metadata.effectiveSlaDomain.id | String | ID of the SLA domain. | 
-| RubrikPolaris.VSphereVm.metadata.effectiveSlaDomain.name | String | Name of the SLA domain. | 
-| RubrikPolaris.VSphereVm.metadata.effectiveSlaDomain.cluster.id | String | ID of the cluster of the SLA domain. | 
-| RubrikPolaris.VSphereVm.metadata.effectiveSlaDomain.cluster.name | String | Name of the cluster of the SLA domain. | 
-| RubrikPolaris.VSphereVm.metadata.effectiveSlaSourceObject.fid | String | SLA Source object FID. | 
-| RubrikPolaris.VSphereVm.metadata.effectiveSlaSourceObject.name | String | SLA source object name. | 
-| RubrikPolaris.VSphereVm.metadata.effectiveSlaSourceObject.objectType | String | SLA source object type. | 
-| RubrikPolaris.VSphereVm.metadata.protectionDate | String | Protection date of the object. | 
-| RubrikPolaris.VSphereVm.metadata.reportSnappable.id | String | The ID of the snappable for a particular report related to an object. Snappable supports backups or filesets of physical machines using the rubrik connector. | 
-| RubrikPolaris.VSphereVm.metadata.reportSnappable.logicalBytes | Number | Logical bytes of snappable report. | 
-| RubrikPolaris.VSphereVm.metadata.reportSnappable.physicalBytes | Number | The physical byte of the snappable for a particular report related to an object. | 
-| RubrikPolaris.VSphereVm.metadata.reportSnappable.archiveStorage | Number | The archived storage of the snappable for a particular report related to an object. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.id | String | Unique ID of the cluster which is the datastore for the recovered virtual machine. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.name | String | Cluster name of the VM to which the object belongs. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.status | String | Cluster status of the VM to which the object belongs. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.version | String | Cluster version of the VM to which the object belongs. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.lastConnectionTime | String | Last time when the vm was connected to the cluster. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.defaultAddress | String | Default address where the cluster is stored. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.clusterNodeConnection.nodes.id | String | Node ID of the node connection related to cluster. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.clusterNodeConnection.nodes.status | String | Node status of the node connection related to cluster. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.clusterNodeConnection.nodes.ipAddress | String | IP address of the node connection related to cluster. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.state.connectedState | String | Connected state of the cluster. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.state.clusterRemovalState | String | State of the cluster if it is registered for removal or not. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.passesConnectivityCheck | Boolean | Whether the cluster passes connectivity check or not. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.globalManagerConnectivityStatus.urls.url | String | URL of Global Manager Connectivity Status. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.globalManagerConnectivityStatus.urls.isReachable | Boolean | Whether the url in global Manager Connectivity Status is reachable or not. | 
-| RubrikPolaris.VSphereVm.metadata.cluster.connectivityLastUpdated | String | Date time when the connectivity status of the cluster is lastly updated. | 
-| RubrikPolaris.VSphereVm.metadata.primaryClusterLocation.id | String | The location ID of the primary cluster to which the object belongs. | 
-| RubrikPolaris.VSphereVm.metadata.primaryClusterLocation.name | String | The location name of the primary cluster to which the object belongs. | 
-| RubrikPolaris.VSphereVm.metadata.arrayIntegrationEnabled | Boolean | Whether the array integration is enabled or not. | 
-| RubrikPolaris.VSphereVm.metadata.snapshotConsistencyMandate | String | Data consistency in recovery points is the snapshot consistency mandate. It is broadly classified into 3 categories: inconsistent, crash-consistent, app-consistent. | 
-| RubrikPolaris.VSphereVm.metadata.agentStatus.agentStatus | String | The status of an agent related to an object. In Rubrik agents are connectors also known as Rubrik Backup Service. | 
-| RubrikPolaris.VSphereVm.metadata.logicalPath.fid | String | The logical path ID of the node to which the object belongs. | 
-| RubrikPolaris.VSphereVm.metadata.logicalPath.objectType | String | The logical object type of the node to which the object belongs. | 
-| RubrikPolaris.VSphereVm.metadata.logicalPath.name | String | The logical name of the node to which the object belongs. | 
-| RubrikPolaris.VSphereVm.metadata.physicalPath.fid | String | The physical path of where the VM resides. | 
-| RubrikPolaris.VSphereVm.metadata.physicalPath.objectType | String | The physical path object type of the VM. | 
-| RubrikPolaris.VSphereVm.metadata.physicalPath.name | String | The physical Name of the VM. | 
-| RubrikPolaris.VSphereVm.metadata.vsphereTagPath.fid | String | FID of Vsphere tag. | 
-| RubrikPolaris.VSphereVm.metadata.vsphereTagPath.objectType | String | Object type of Vsphere tag. | 
-| RubrikPolaris.VSphereVm.metadata.vphereTagPath.name | String | Name of Vsphere tag. | 
-| RubrikPolaris.VSphereVm.metadata.oldestSnapshot.id | String | The ID of the oldest snapshot. | 
-| RubrikPolaris.VSphereVm.metadata.oldestSnapshot.date | String | The date when the oldest snapshot was generated. | 
-| RubrikPolaris.VSphereVm.metadata.oldestSnapshot.isIndexed | Boolean | Whether the oldest snapshot is indexed or not. | 
-| RubrikPolaris.VSphereVm.metadata.totalSnapshots.count | Number | Total snapshot counts. | 
-| RubrikPolaris.VSphereVm.metadata.replicatedObjects.id | String | The ID of the object which is replicated in the VM. | 
-| RubrikPolaris.VSphereVm.metadata.replicatedObjects.primaryClusterLocation.id | String | The primary cluster location ID where the replicated object resides. | 
-| RubrikPolaris.VSphereVm.metadata.replicatedObjects.primaryClusterLocation.name | String | The primary cluster location name where the replicated object resides. | 
-| RubrikPolaris.VSphereVm.metadata.replicatedObjects.cluster.name | String | The cluster name where the replicated object resides. | 
-| RubrikPolaris.VSphereVm.metadata.replicatedObjects.cluster.id | String | The cluster ID where the replicated object resides. | 
-| RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.id | String | ID of the newest archived snapshot. | 
-| RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.date | String | The date when the newest archived snapshot was generated. | 
-| RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.isIndexed | Boolean | Whether the newest archived snapshot is indexed or not. | 
-| RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.archivalLocations.id | String | ID of the archival location of the newest archived snapshot. | 
-| RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.archivalLocations.name | String | Name of the archival location of the newest archival snapshot. | 
-| RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.id | String | The ID of the newest replicated snapshot. | 
-| RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.date | String | The date when the newest replicated snapshot was generated. | 
-| RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.isIndexed | Boolean | Whether the newest replicated snapshot is indexed or not. | 
-| RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.replicationLocations.id | String | The ID of the replication locations of the newest replicated snapshot. | 
-| RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.replicationLocations.name | String | The name of the replication locations of the newest replicated snapshot. | 
-| RubrikPolaris.VSphereVm.metadata.newestSnapshot.id | String | The ID of the newest snapshot. | 
-| RubrikPolaris.VSphereVm.metadata.newestSnapshot.date | String | The date when the newest snapshot was generated. | 
-| RubrikPolaris.VSphereVm.metadata.newestSnapshot.isIndexed | Boolean | Whether the newest snapshot is indexed or not. | 
-| RubrikPolaris.VSphereVm.metadata.onDemandSnapshotCount | Number | Count of how many on demand snapshot created in a VM. | 
-| RubrikPolaris.VSphereVm.metadata.vmwareToolsInstalled | Boolean | Whether the Vmware tools are installed or not. | 
-| RubrikPolaris.VSphereVm.metadata.cdmLink | String | The Cloud Data Management link to navigate to the VM on cloud. | 
-#### Command Example
-```!rubrik-polaris-vm-object-metadata-get object_id="e060116b-f9dc-56a1-82a6-1b968d2f6cef"```
-#### Human Readable Output
-### VM Object Data
-|Object ID|Name|Snappable ID|SLA Domain|Cluster Name|Total Snapshots|Oldest Snapshot Date|Latest Snapshot Date|
-|---|---|---|---|---|---|---|---|
-| e060116b-f9dc-56a1-82a6-1b968d2f6cef | Kali-VM | VirtualMachine:::ae4484c6-b4c0-4ce8-b2ba-206a4184540b-vm-521 | DO_NOT_PROTECT | sand2-rbk01 | 42 | 2019-04-24T16:21:12.000Z | 2020-02-12T14:00:36.000Z |
-### rubrik-polaris-vm-objects-list
-***
-Retrieve a list of all the objects of the Vsphere Vm known to the Rubrik.
-#### Base Command
-`rubrik-polaris-vm-objects-list`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| is_relic | Filter based on whether VM objects are moved to relic/archive or not.<br/><br/>Possible values are: "True", "False". | Optional | 
-| is_replicated | Filter based on whether VM objects are replicated or not.<br/><br/>Possible values are: "True", "False". | Optional | 
-| limit | Number of results to retrieve in the response. Maximum size allowed is 1000. Default is 50. | Optional | 
-| sort_by | Specify the field to use for sorting the response.<br/><br/>Note: Supported values are "ID" and "NAME" only. For any other values, the obtained result is sorted or not is not confirmed. Default is ID. | Optional | 
-| sort_order | Specify the order to sort the data in.<br/><br/>Possible values are: "ASC", "DESC". Default is ASC. | Optional | 
-| next_page_token | The next page cursor to retrieve the next set of results. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.VSphereVm.id | String | Unique ID of the object. | 
-| RubrikPolaris.VSphereVm.name | String | Name of the node to which the object belongs. | 
-| RubrikPolaris.VSphereVm.objectType | String | Object type of the node to which the object belongs. | 
-| RubrikPolaris.VSphereVm.replicatedObjectCount | Number | Number of objects replicated in the node in which the object relies. | 
-| RubrikPolaris.VSphereVm.cluster.id | String | ID of the cluster which is the datastore for the recovered virtual machine. | 
-| RubrikPolaris.VSphereVm.cluster.name | String | Cluster name of the node to which the object belongs. | 
-| RubrikPolaris.VSphereVm.cluster.version | String | Cluster version of the node to which the object belongs. | 
-| RubrikPolaris.VSphereVm.cluster.status | String | Cluster status of the node to which the object belongs. | 
-| RubrikPolaris.VSphereVm.effectiveSlaDomain.id | String | ID of the SLA domain which is simply a set of policies that define at what frequencies backups should be performed of the protected objects within Rubrik and for how long they should be either locally or a replication partner or on the archival location. | 
-| RubrikPolaris.VSphereVm.effectiveSlaDomain.name | String | Descriptive name of the SLA domain. | 
-| RubrikPolaris.VSphereVm.effectiveSlaDomain.description | String | Description of the SLA domain. | 
-| RubrikPolaris.VSphereVm.effectiveSlaDomain.fid | String | FID of the SLA domain. | 
-| RubrikPolaris.VSphereVm.effectiveSlaDomain.cluster.id | String | ID of the cluster related to the effective SLA domain. | 
-| RubrikPolaris.VSphereVm.effectiveSlaDomain.cluster.name | String | Name of the cluster related to the effective SLA domain. | 
-| RubrikPolaris.VSphereVm.effectiveSlaSourceObject.fid | String | SLA source object FID. | 
-| RubrikPolaris.VSphereVm.effectiveSlaSourceObject.name | String | SLA source object name. | 
-| RubrikPolaris.VSphereVm.effectiveSlaSourceObject.objectType | String | SLA source object type. | 
-| RubrikPolaris.VSphereVm.slaAssignment | String | A SLA rule when referred at assignment is SLA assignment. | 
-| RubrikPolaris.VSphereVm.isRelic | Boolean | Whether the object is relic or not. | 
-| RubrikPolaris.VSphereVm.authorizedOperations | Unknown | List of operations that can be performed on the object. | 
-| RubrikPolaris.VSphereVm.primaryClusterLocation.id | String | The location ID of the primary cluster to which the object belongs. | 
-| RubrikPolaris.VSphereVm.primaryClusterLocation.name | String | The location name of the primary cluster to which the object belongs. | 
-| RubrikPolaris.VSphereVm.logicalPath.fid | String | The logical path ID of the node to which the object belongs. | 
-| RubrikPolaris.VSphereVm.logicalPath.name | String | The logical path name of the node to which the object belongs. | 
-| RubrikPolaris.VSphereVm.logicalPath.objectType | String | The logical object type of the node to which the object belongs. | 
-| RubrikPolaris.VSphereVm.snapshotDistribution.id | String | Rubrik uses a snapshot for powerful data protection. Snapshot distribution ID is the ID of the snapshot distribution node related to a particular object. | 
-| RubrikPolaris.VSphereVm.snapshotDistribution.onDemandCount | Number | The demand count of distribution of snapshot related to an object. | 
-| RubrikPolaris.VSphereVm.snapshotDistribution.retrievedCount | Number | The retrieved count of distribution of snapshot related to an object. | 
-| RubrikPolaris.VSphereVm.snapshotDistribution.scheduledCount | Number | The scheduled count of distribution of snapshot related to an object. | 
-| RubrikPolaris.VSphereVm.snapshotDistribution.totalCount | Number | The total count of distribution of snapshot related to an object. | 
-| RubrikPolaris.VSphereVm.reportSnappable.id | String | The ID of the snappable for a particular report related to an object. Snapple supports backups or filesets of physical machines using the rubrik connector. | 
-| RubrikPolaris.VSphereVm.reportSnappable.archieveStorage | Number | The archived storage of the snappable for a particular report related to an object. | 
-| RubrikPolaris.VSphereVm.reportSnappable.physicalBytes | Number | The physical byte of the snappable for a particular report related to an object. | 
-| RubrikPolaris.VSphereVm.vmwareToolsInstalled | Boolean | Whether the vm tools are installed or not. | 
-| RubrikPolaris.VSphereVm.agentStatus.agentStatus | String | The status of an agent related to an object. The Rubrik agents are connectors also known as Rubrik Backup Service. | 
-| RubrikPolaris.VSphereVm.agentStatus.disconnectReason | String | Displays the reason if the agent disconnects. | 
-| RubrikPolaris.PageToken.VSphereVm.next_page_token | String | Next page token. | 
-| RubrikPolaris.PageToken.VSphereVm.name | String | Name of the command. | 
-| RubrikPolaris.PageToken.VSphereVm.has_next_page | Boolean | Whether the result has the next page or not. | 
-#### Command Example
-```!rubrik-polaris-vm-objects-list limit=2```
-#### Human Readable Output
-### Objects List
-|Object ID|Name|Snappable ID|Cluster|Object Type|SLA Domain|Assignment|Snapshots|RBS Status|Source Storage|Archival Storage|
-|---|---|---|---|---|---|---|---|---|---|---|
-| 0242e84c-773a-5877-b955-1d52765ac852 | sx1-ganebala-l1 | VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-206037 | sand1-rbk01 | VmwareVirtualMachine | DO_NOT_PROTECT | Direct | 0 | Unregistered | 0 | 0 |
-| 0556f691-b750-556c-baea-800dbb2920e7 | linux-a-Fri Feb 15 2019 04:43:40 GMT+0000 (Greenwich Mean Time)-9P4t | VirtualMachine:::d2f41f4b-5d53-4063-a618-25046a0f4c7d-vm-35806 | sand1-rbk01 | VmwareVirtualMachine | UNPROTECTED | Unassigned | 34 | Unregistered | 0 | 1.115023609 GB |
- Note: To retrieve the next set of results use, "next_page_token" = xyz
-### rubrik-sonar-ondemand-scan
-***
-Trigger an on-demand scan of a system. Supports "Vsphere VM" object type only.
-Note: To know the scan status use the "rubrik-sonar-ondemand-scan-status" command. To download the completed request use the "rubrik-sonar-ondemand-scan-result" command.
-#### Base Command
-`rubrik-sonar-ondemand-scan`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| scan_name | Name of the scan. If not provided, it defaults to "&lt;today's date&gt; Classification". | Optional | 
-| sonar_policy_analyzer_groups | List of sonar policies to scan.<br/><br/>Note: Users can get the list of analyzer groups by executing the "rubrik-sonar-policy-analyzer-groups-list" command. <br/><br/>Format Accepted: <br/>[<br/>        {<br/>            "id": "543dd5e0-c72c-50e2-a3d9-1688343f472c",<br/>            "name": "HIPAA",<br/>            "groupType": "HIPAA",<br/>            "analyzers": [<br/>                {<br/>                    "id": "9da675b3-944b-5da3-a2da-ed149d300075",<br/>                    "name": "US/UK Passport",<br/>                    "analyzerType": "PASSPORT"<br/>                },<br/>                {<br/>                    "id": "18665533-c28c-5a40-b747-4b6508fecdfa",<br/>                    "name": "US NPI",<br/>                    "analyzerType": "US_HEALTHCARE_NPI"<br/>                }<br/>            ]<br/>      }<br/>]. | Required | 
-| objects_to_scan | List of VM object IDs to scan.<br/><br/>Note: Users can get the list of VM object IDs by executing the "rubrik-polaris-vm-objects-list" command. | Required | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.SonarOndemandScan.crawlId | String | Unique crawl ID. | 
-#### Command Example
-```!rubrik-sonar-ondemand-scan scan_name="GLBA Scan for new user" sonar_policy_analyzer_groups='[{"id":"97c6a54a-acfc-5ab2-a24a-6a7f3a9a1553","name":"GLBA","groupType":"GLBA","analyzers":[{"id":"ed30dfa0-334f-55ff-a1b7-03b6bdd7849b","name":"CreditCard","analyzerType":"CREDIT_CARD"},{"id":"3e60a612-3e97-5f03-b3a1-cfb7a6a67e8f","name":"USBankAcct","analyzerType":"US_BANK_ACCT"},{"id":"03b3dc9e-81c1-561c-8235-17cf2fc1c729","name":"USITIN","analyzerType":"US_ITIN"},{"id":"d5ce3ae5-f530-562a-85b1-4a84264a350a","name":"USSSN","analyzerType":"US_SSN"}]}]' objects_to_scan="0887e71c-56ac-59f7-8763-54b726e64dd6, a82e888c-2440-5af9-8c2a-447a97f6746c"```
-#### Human Readable Output
-### Sonar On-Demand Scan
-|Crawl ID|
-|---|
-| bb4eedc0-594b-4566-b06d-24de0bf752ca |
-### rubrik-sonar-ondemand-scan-status
-***
-Retrieve the status of a scanned system.
-Note: To download the completed request use the "rubrik-sonar-ondemand-scan-result" command.
-#### Base Command
-`rubrik-sonar-ondemand-scan-status`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| crawl_id | ID for which scanning status is to be obtained.<br/><br/>Note: Users can get the crawl ID by executing the "rubrik-sonar-ondemand-scan" command. | Required | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.SonarOndemandScan.crawlId | String | Crawl ID of the scan for which the rubrik-sonar-ondemand-scan command is hit. | 
-| RubrikPolaris.SonarOndemandScan.Status.error | String | Error description if any. | 
-| RubrikPolaris.SonarOndemandScan.Status.snappable.id | String | Snappable ID of the scanned object. | 
-| RubrikPolaris.SonarOndemandScan.Status.snappable.name | String | Snappable Name of the scanned object. | 
-| RubrikPolaris.SonarOndemandScan.Status.snappable.objectType | String | Snappable object type of the scanned object. | 
-| RubrikPolaris.SonarOndemandScan.Status.snapshotTime | Number | Time when the snapshot is taken. | 
-| RubrikPolaris.SonarOndemandScan.Status.status | String | Status of the scanning or scanned object. | 
-| RubrikPolaris.SonarOndemandScan.Status.progress | Number | Count of objects that are in progress. | 
-| RubrikPolaris.SonarOndemandScan.Status.totalHits | Number | Number of total hits obtained from an object that is scanned. | 
-| RubrikPolaris.SonarOndemandScan.Status.analyzerGroupResults.analyzerGroup.groupType | String | Group type of the analyzer. | 
-| RubrikPolaris.SonarOndemandScan.Status.analyzerGroupResults.analyzerGroup.id | String | Group ID of the analyzer. | 
-| RubrikPolaris.SonarOndemandScan.Status.analyzerGroupResults.analyzerGroup.name | String | Group Name of the analyzer. | 
-| RubrikPolaris.SonarOndemandScan.Status.analyzerGroupResults.analyzerResults.hits.totalHits | Number | Number of total hits obtained from an analyzer that is scanned. | 
-| RubrikPolaris.SonarOndemandScan.Status.analyzerGroupResults.analyzerResults.hits.violations | Number | Number of violations obtained from an analyzer that is scanned. | 
-| RubrikPolaris.SonarOndemandScan.Status.analyzerGroupResults.analyzerResults.hits.permittedHits | Number | Number of permitted hits obtained from an analyzer that is scanned. | 
-| RubrikPolaris.SonarOndemandScan.Status.analyzerGroupResults.analyzerResults.analyzer.id | String | ID of the analyzer that is scanned. | 
-| RubrikPolaris.SonarOndemandScan.Status.analzerGroupResults.analyzerResults.analyzer.name | String | Name of the analyzer that is scanned. | 
-| RubrikPolaris.SonarOndemandScan.Status.analyzerGroupResults.analyzerResults.analyzer.analyzerType | String | Type of the analyzer that is scanned. | 
-| RubrikPolaris.SonarOndemandScan.Status.analyzerGroupResults.hits.totalHits | Number | Number of total hits obtained from an analyzer group. | 
-| RubrikPolaris.SonarOndemandScan.Status.analyzerGroupResults.hits.violations | Number | Number of violations obtained from an analyzer group. | 
-| RubrikPolaris.SonarOndemandScan.Status.analyzerGroupResults.hits.permittedHits | Number | Number of permitted hits obtained from an analyzer group. | 
-| RubrikPolaris.SonarOndemandScan.Status.analyzerGroupResults.hits.violationsDelta | Number | Number of violation delta obtained from an analyzer group. | 
-| RubrikPolaris.SonarOndemandScan.Status.analyzerGroupResults.hits.totalHitsDelta | Number | Number of total hits delta obtained from an analyzer group. | 
-| RubrikPolaris.SonarOndemandScan.Status.cluster.id | String | Cluster ID in which the object is getting scanned. | 
-| RubrikPolaris.SonarOndemandScan.Status.cluster.name | String | Cluster name in which the object is getting scanned. | 
-| RubrikPolaris.SonarOndemandScan.Status.cluster.type | String | Cluster type in which the object is getting scanned. | 
-#### Command Example
-```!rubrik-sonar-ondemand-scan-status crawl_id="bb4eedc0-594b-4566-b06d-24de0bf752ca" ```
-#### Human Readable Output
-### Sonar On-Demand Scan Status
-Final status of scan with crawl ID bb4eedc0-594b-4566-b06d-24de0bf752ca is IN_PROGRESS
-|Object ID|Object Name|Scan Status|
-|---|---|---|
-| 6e307121-e5dc-5e6a-9a6b-37e1c9afd6b1 | AllTheThings | COMPLETE |
-| a82e888c-2440-5af9-8c2a-447a97f6746c | /tmp | IN_PROGRESS |
-### rubrik-polaris-vm-object-snapshot-list
-***
-Search for a Rubrik snapshot of an object based on the provided snapshot ID, exact timestamp, or specific value like earliest/latest, or closest before/after a timestamp.
-#### Base Command
-`rubrik-polaris-vm-object-snapshot-list`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| object_id | The object ID for which the snapshots are to be searched.<br/><br/>Note: Users can get the list of the object IDs by executing the "rubrik-polaris-vm-objects-list" command. | Required | 
-| snapshot_group_by | Grouping the snapshots on the basis of the selected value.<br/><br/>Possible values are: "Month", "Day", "Year", "Week", "Hour", "Quarter". Default is Day. | Optional | 
-| missed_snapshot_group_by | Grouping the missed snapshots on the basis of the selected value.<br/><br/>Possible values are: "Month", "Day", "Year", "Week", "Hour", "Quarter". Default is Day. | Optional | 
-| start_date | The start date to get snapshots from.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Required | 
-| end_date | The end date to get snapshots until.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Required | 
-| timezone_offset | The timezone offset from UTC changes to match the configured time zone. Use this argument to filter the data according to the provided timezone offset.<br/><br/>Formats accepted: 1, 1.5, 2, 2.5, 5.5, etc. | Required | 
-| cluster_connected | Whether the cluster is connected or not.<br/><br/>Possible values are: "True", "False". Default is True. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.VSphereVm.id | String | Unique ID of the object. | 
-| RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.groupByInfo.unit | String | Unit of snapshot group by connection nodes. | 
-| RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.groupByInfo.start | String | Start date of snapshot group by connection nodes. | 
-| RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.groupByInfo.end | String | End date of snapshot group by connection nodes. | 
-| RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.count | Number | Count of snapshot connections related to the object. | 
-| RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.nodes.id | String | ID of snapshot connection related to the object. | 
-| RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.nodes.isIndexed | Boolean | Whether the node is indexed or not. | 
-| RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.nodes.isUnindexable | Boolean | Whether the node is unindexable or not. | 
-#### Command Example
-```!rubrik-polaris-vm-object-snapshot-list object_id="86db05d1-292f-5973-b616-2ae3977f4428" start_date="2020-05-19T18:30:00.000000Z" end_date="2020-05-20T18:30:00.000000Z" timezone_offset=5.5 ```
-#### Human Readable Output
-### VM Object Snapshots
-|Snapshot Details|Snapshot IDs|
-|---|---|
-| Total Snapshots: 2<br/>Date Range: From 2020-05-19T22:30:00.000Z to 2020-05-20T22:29:59.999Z | 33060f59-9c99-5c48-8305-8d1edfe402d2,<br/>57eac609-9529-5cb5-845a-b7cc78998222 |
-### rubrik-sonar-ondemand-scan-result
-***
-Retrieve the download link for the requested scanned file.
-#### Base Command
-`rubrik-sonar-ondemand-scan-result`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| crawl_id | ID for which file needs to be downloaded.<br/><br/>Note: Users can get the crawl_id by executing the "rubrik-sonar-ondemand-scan" command. | Required | 
-| file_type | The type of the file that needs to be downloaded.<br/><br/>Possible values are: "ANY", "HITS", "STALE", "OPEN_ACCESS", "STALE_HITS", "OPEN_ACCESS_HITS". | Required | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.SonarOndemandScan.crawlId | String | Crawl ID of the file that needs to be downloaded. | 
-| RubrikPolaris.SonarOndemandScan.Result.downloadLink | String | Link to download the file when scan status is complete. | 
-#### Command Example
-```!rubrik-sonar-ondemand-scan-result crawl_id="bb4eedc0-594b-4566-b06d-24de0bf752ca" file_type="HITS" ```
-#### Human Readable Output
-### Sonar On-Demand Scan Result
-|Scan result CSV Download Link|
-|---|
-| Download the [CSV](dummy-download-link) file to see the result. |
-### rubrik-radar-anomaly-csv-analysis
-***
-Request for the analysis and retrieve the download link for the Radar CSV analyzed file.
-#### Base Command
-`rubrik-radar-anomaly-csv-analysis`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| cluster_id | The unique ID of the cluster.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Required | 
-| snapshot_id | The snapshot ID.<br/><br/>Note: Users can retrieve the list of snapshot IDs by executing the "rubrik-polaris-vm-object-snapshot-list" command. | Required | 
-| object_id | The VM object ID.<br/><br/>Note: Users can retrieve the list of object IDs by executing the "rubrik-polaris-vm-objects-list" command. | Required | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.RadarAnomalyCSV.clusterId | String | Cluster ID of the CSV. | 
-| RubrikPolaris.RadarAnomalyCSV.snapshotId | String | Snapshot ID of the CSV. | 
-| RubrikPolaris.RadarAnomalyCSV.objectId | String | Object ID of the CSV. | 
-| RubrikPolaris.RadarAnomalyCSV.investigationCsvDownloadLink.downloadLink | String | The download link of the CSV analysis. | 
-#### Command Example
-```!rubrik-radar-anomaly-csv-analysis cluster_id="cc19573c-db6c-418a-9d48-067a256543ba" snapshot_id="7b71d588-911c-4165-b6f3-103a1684d2a3" object_id="868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-4335"```
-#### Human Readable Output
-### Radar Anomaly CSV Analysis
-|CSV Download Link|
-|---|
-| Download the analyzed [CSV](dummy_link) file. |
-### rubrik-sonar-csv-download
-***
-Request to download the Sonar CSV Snapshot results file.
-Note: To know the ID and status of the download, use the "rubrik-user-downloads-list" command. To download the file, use the "rubrik-sonar-csv-result-download" command.
-#### Base Command
-`rubrik-sonar-csv-download`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| snapshot_id | ID of the snapshot.<br/><br/>Note: Users can retrieve the list of snapshot IDs by executing the "rubrik-polaris-vm-object-snapshot-list"  command. | Required | 
-| object_id | Object ID.<br/><br/>Note: Users can retrieve the list of object IDs by executing "rubrik-polaris-vm-objects-list" command. | Required | 
-| file_type | The type of the file that needs to be downloaded.<br/><br/>Possible values are: "ANY", "HITS", "STALE", "OPEN_ACCESS", "STALE_HITS", "OPEN_ACCESS_HITS". | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.SonarCSVDownload.snapshotId | String | Snapshot ID of the CSV requested to download. | 
-| RubrikPolaris.SonarCSVDownload.objectId | String | Object ID of the CSV requested to download. | 
-| RubrikPolaris.SonarCSVDownload.downloadSnapshotResultsCsv.isSuccessful | Boolean | The status of the download. | 
-#### Command Example
-```!rubrik-sonar-csv-download snapshot_id="c38ec074-0c45-5c72-b611-3322cbd46776" object_id="ac0a6844-a2fc-52b0-bb71-6a55f43677be" ```
-#### Human Readable Output
-### Sonar CSV Download
-|Download Status|
-|---|
-| Success |
-### rubrik-gps-snapshot-files-list
-***
-Retrieve the list of the available files that can be downloaded.
-Note: To initiate the file download request use the "rubrik-gps-snapshot-files-download" command.
-#### Base Command
-`rubrik-gps-snapshot-files-list`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| snapshot_id | The Snapshot ID of the file that needs to be downloaded.<br/><br/>Note: Users can retrieve the list of the snapshot IDs by executing the "rubrik-polaris-vm-object-snapshot-list" command. | Required | 
-| path | The path of the folder to list the sub-files. If not provided the root directory files will be returned.<br/><br/>Format accepted : "/&lt;directory name&gt;/&lt;sub directory name or file name&gt;"<br/><br/>Example: "/C:", "/C:/Users". | Optional | 
-| search_prefix | Provide a keyword to search in the file names.<br/><br/>Example: "admin". | Optional | 
-| limit | Number of results to retrieve in the response. Maximum size allowed is 1000. Default is 50. | Optional | 
-| next_page_token | The next page cursor to retrieve the next set of results. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.GPSSnapshotFile.snapshotId | String | Snapshot ID provided as an argument to retrieve the files. | 
-| RubrikPolaris.GPSSnapshotFile.node.absolutePath | String | The absolute path of the file. | 
-| RubrikPolaris.GPSSnapshotFile.node.displayPath | String | The display path of the file. | 
-| RubrikPolaris.GPSSnapshotFile.node.path | String | The path of the file. | 
-| RubrikPolaris.GPSSnapshotFile.node.filename | String | The name of the file. | 
-| RubrikPolaris.GPSSnapshotFile.node.fileMode | String | The mode of the file. | 
-| RubrikPolaris.GPSSnapshotFile.node.size | String | The size of the file. | 
-| RubrikPolaris.GPSSnapshotFile.node.lastModified | String | The last modified time of the file. | 
-| RubrikPolaris.PageToken.GPSSnapshotFile.next_page_token | String | Next page token. | 
-| RubrikPolaris.PageToken.GPSSnapshotFile.name | String | Name of the command. | 
-| RubrikPolaris.PageToken.GPSSnapshotFile.has_next_page | Boolean | Whether the result has the next page or not. | 
-#### Command Example
-```!rubrik-gps-snapshot-files-list snapshot_id=90858c2f-e572-5b9c-b455-ba309d50c1a2 ```
-#### Human Readable Output
-### GPS Snapshot Files
-|File Name|Absolute Path|Path|File Mode|Last Modified|
-|---|---|---|---|---|
-| C: | /C: | C: | DIRECTORY | 2020-10-05T18:56:18.000Z |
-| disk_0_part_1 | /disk_0_part_1 |  | DIRECTORY | 2018-06-14T00:47:18.000Z |
-Note: To retrieve the next set of results use, "next_page_token" = xyz
-### rubrik-gps-vm-export
-***
-Request to initiate an export of a snapshot of a virtual machine.
-Note: To know about the exported VM's status, use the "rubrik-gps-async-result" command.
-#### Base Command
-`rubrik-gps-vm-export`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| vm_name | Name given to the VM that runs the snapshot. If not provided the name will be "&lt;Snapshot VM Name&gt; &lt;MM/DD of snapshot creation&gt; &lt;hh/mm of snapshot creation&gt; &lt;Num&gt;". | Optional | 
-| object_id | The VM object ID whose snapshot needs to be exported.<br/><br/>Note: Users can get the list of object IDs by executing the "rubrik-polaris-vm-objects-list" command. | Required | 
-| snapshot_id | The ID of the snapshot that is to be exported.<br/><br/>Note: Users can get the list of snapshot IDs by executing the "rubrik-polaris-vm-object-snapshot-list" command. | Required | 
-| datastore_id | The ID of the datastore which will be used by the new VM.<br/><br/>Note: Users can get the list of  datastore IDs by executing the "rubrik-gps-vm-datastore-list" command. | Required | 
-| host_id | The ID of the Vsphere ESXi host on which the new VM will be made. Either host_id or host_compute_cluster_id must be provided.<br/><br/>Note: Users can get the list of host IDs by executing the "rubrik-gps-vm-host-list" command. | Optional | 
-| host_compute_cluster_id | The ID of the VSphere Compute Cluster of a host. Either host_id or host_compute_cluster_id must be provided. <br/><br/>Note: Users can get the list of Compute Cluster IDs by executing the "rubrik-gps-vm-host-list" command. The ID must belong to the VSphereComputeCluster objectType. | Optional | 
-| power_on | Whether to turn on the new VM or not.<br/><br/>Possible values are: "True", "False". | Optional | 
-| keep_mac_addresses | Whether the mac addresses of network devices of the new VM be removed or not.<br/><br/>Possible values are: "True", "False". | Optional | 
-| remove_network_devices | Whether the network devices on the original VM be kept or not.<br/><br/>Possible values are: "True", "False". | Optional | 
-| recover_tags | Whether to keep vSphere tags associated with the original VM or not.<br/><br/>Possible values are: "True", "False". | Optional | 
-| disable_network | Whether to disable networking on the new VM or not.<br/><br/>Possible values are: "True", "False". | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.GPSVMSnapshotExport.id | String | Snapshot export request ID. | 
-#### Command Example
-```!rubrik-gps-vm-export object_id=d39e956f-a3c9-5307-865b-58ed045b59c5 snapshot_id=07fa66e1-137a-5473-8a8e-825547075d7b datastore_id=5fe3a92a-d848-5325-a1a2-ef6cf7a16376 host_compute_cluster_id=0dc88a78-0d46-57d7-86c6-f1bd97ff979f```
-#### Human Readable Output
-### GPS VM Export
-|Snapshot Export Request ID|
-|---|
-| dummy_id |
-### rubrik-user-downloads-list
-***
-Retrieve the user downloads. This would return the current and past download history.
-Note: To download the requested Sonar CSV Snapshot results file use the "rubrik-sonar-csv-result-download" command.
-#### Base Command
-`rubrik-user-downloads-list`
-#### Input
-There are no input arguments for this command.
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.UserDownload.id | Number | The ID of the download. | 
-| RubrikPolaris.UserDownload.name | String | The name of the download. | 
-| RubrikPolaris.UserDownload.status | String | The status of the download. | 
-| RubrikPolaris.UserDownload.progress | Number | The progress of the download. | 
-| RubrikPolaris.UserDownload.identifier | String | The identifier of the download or the type of download requested. | 
-| RubrikPolaris.UserDownload.createTime | String | The creation time of the download. | 
-| RubrikPolaris.UserDownload.completeTime | String | The completion time of the download. | 
-#### Command Example
-```!rubrik-user-downloads-list ```
-#### Human Readable Output
-### User Downloads
-|Download ID|Name|Status|Identifier|Creation Time|Completion Time|
-|---|---|---|---|---|---|
-| 156 | GDIT-billing-test-oct10 | COMPLETED | SONAR_DOWNLOAD | 2021-10-06T07:25:51.676432470Z | 2021-10-06T07:25:51.856374014Z |
-### rubrik-gps-sla-domain-list
-***
-Enumerates the available SLA Domains to apply to the on-demand snapshot as a retention policy.
-#### Base Command
-`rubrik-gps-sla-domain-list`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the SLA Domain to search for. | Optional | 
-| cluster_id | Cluster, the SLA domain is managed by.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Optional | 
-| object_type | Filters SLA domain based on the provided object types. Supports comma separated values. <br/><br/>Possible values are: "FILESET_OBJECT_TYPE", "VSPHERE_OBJECT_TYPE". | Optional | 
-| show_cluster_slas_only | Whether to show Cluster SLAs and not Global SLAs. "False" value will result in showing only Global SLAs. <br/><br/>Possible values are: "True", "False". Default is True. | Optional | 
-| sort_by | Specify the field to use for sorting the response.<br/><br/>Possible values are: "NAME", "PROTECTED_OBJECT_COUNT". Default is NAME. | Optional | 
-| sort_order | Specify the order to sort the data in.<br/><br/>Possible values are: "ASC", "DESC". Default is ASC. | Optional | 
-| limit | The number of results to retrieve in the response. Maximum allowed size is 1000. Default is 50. | Optional | 
-| next_page_token | The next page cursor to retrieve the next set of results. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.GPSSLADomain.name | String | Name of the SLA domain. | 
-| RubrikPolaris.GPSSLADomain.id | String | ID of the SLA domain. | 
-| RubrikPolaris.GPSSLADomain.description | String | Description of the SLA domain. | 
-| RubrikPolaris.GPSSLADomain.protectedObjectCount | Number | Number of objects under the SLA Domain. | 
-| RubrikPolaris.GPSSLADomain.baseFrequency.duration | Number | Base snapshot frequency duration. | 
-| RubrikPolaris.GPSSLADomain.baseFrequency.unit | String | Base snapshot frequency unit \(HOURS, DAYS etc\). | 
-| RubrikPolaris.GPSSLADomain.archivalSpec.archivalLocationName | String | Location where the archives are stored. | 
-| RubrikPolaris.GPSSLADomain.archivalSpecs.storageSetting.id | String | ID of the archival target. | 
-| RubrikPolaris.GPSSLADomain.archivalSpecs.storageSetting.name | String | Name of the archival target. | 
-| RubrikPolaris.GPSSLADomain.archivalSpecs.storageSetting.groupType | String | Group type of the archival target. | 
-| RubrikPolaris.GPSSLADomain.archivalSpecs.storageSetting.targetType | String | Target type of the archival target. | 
-| RubrikPolaris.GPSSLADomain.replicationSpec.replicationType | String | Enum value representing the type of replication. Values: UNKNOWN_REPLICATION_TYPE, UNIDIRECTIONAL_REPLICATION_TO_CLUSTER, REPLICATION_TO_CLOUD_REGION, REPLICATION_TO_CLOUD_LOCATION. | 
-| RubrikPolaris.GPSSLADomain.replicationSpec.specificReplicationSpec.unidirectionalSpec.replicationTargetName | String | Cloud replication target name. | 
-| RubrikPolaris.GPSSLADomain.replicationSpec.specificReplicationSpec.cloudRegionSpec.replicationTargetRegion | String | Cloud replication target region. | 
-| RubrikPolaris.GPSSLADomain.replicationSpec.specificReplicationSpec.cloudRegionSpec.cloudProvider | String | Cloud replication service provider. Values:  AWS, AZURE. | 
-| RubrikPolaris.GPSSLADomain.replicationSpec.specificReplicationSpec.cloudLocationSpec.targetMapping.id | String | ID of the cloud target where replication takes place. | 
-| RubrikPolaris.GPSSLADomain.replicationSpec.specificReplicationSpec.cloudLocationSpec.targetMapping.name | String | Name of the cloud target where replication takes place. | 
-| RubrikPolaris.GPSSLADomain.replicationSpecsV2.cluster.id | String | ID of the cluster where replication takes place. | 
-| RubrikPolaris.GPSSLADomain.replicationSpecsV2.cluster.name | String | Name of the cluster where replication takes place. | 
-| RubrikPolaris.GPSSLADomain.replicationSpecsV2.awsTarget.accountId | String | Account ID on AWS where the replication happens. | 
-| RubrikPolaris.GPSSLADomain.replicationSpecsV2.awsTarget.accountName | String | Account name on AWS where the replication happens. | 
-| RubrikPolaris.GPSSLADomain.replicationSpecsV2.awsTarget.region | String | Account region on AWS where the replication happens. | 
-| RubrikPolaris.GPSSLADomain.replicationSpecsV2.azureTarget.region | String | Account region on Azure where the replication happens. | 
-| RubrikPolaris.GPSSLADomain.replicationSpecsV2.retentionDuration.duration | Number | Replication retention duration. | 
-| RubrikPolaris.GPSSLADomain.replicationSpecsV2.retentionDuration.unit | String | Replication retention duration unit. | 
-| RubrikPolaris.GPSSLADomain.replicationSpecsV2.targetMapping.id | String | ID of the object target where replication takes place. | 
-| RubrikPolaris.GPSSLADomain.replicationSpecsV2.targetMapping.name | String | Name of the object target where replication takes place. | 
-| RubrikPolaris.GPSSLADomain.localRetentionLimit.duration | Number | Local retention limit duration. | 
-| RubrikPolaris.GPSSLADomain.localRetentionLimit.unit | String | Local retention limit duration unit. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.minute.basicSchedule.frequency | Number | Snapshot frequency every minute. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.minute.basicSchedule.retention | Number | Snapshot retention value per minute snapshots. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.minute.basicSchedule.retentionUnit | String | Snapshot retention time unit per minute snapshots. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.hourly.basicSchedule.frequency | Number | Snapshot hourly frequency. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.hourly.basicSchedule.retention | Number | Snapshot retention value per hour snapshots. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.hourly.basicSchedule.retentionUnit | String | Snapshot retention time unit per hour snapshots. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.daily.basicSchedule.frequency | Number | Snapshot daily frequency. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.daily.basicSchedule.retention | Number | Snapshot retention value per day snapshots. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.daily.basicSchedule.retentionUnit | String | Snapshot retention unit per day snapshots. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.weekly.basicSchedule.frequency | Number | Snapshot weekly frequency. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.weekly.basicSchedule.retention | Number | Snapshot retention value per week snapshots. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.weekly.basicSchedule.retentionUnit | String | Snapshot retention unit per week snapshots. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.weekly.dayOfWeek | String | Starting day of the weekly snapshot. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.monthly.basicSchedule.frequency | Number | Snapshot monthly frequency. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.monthly.basicSchedule.retention | Number | Snapshot retention value per month snapshots. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.monthly.basicSchedule.retentionUnit | String | Snapshot retention unit per month snapshots. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.monthly.dayOfMonth | String | Starting day of the month snapshot. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.quarterly.basicSchedule.frequency | Number | Snapshot quarterly frequency. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.quarterly.basicSchedule.retention | Number | Snapshot retention value per quarter snapshots. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.quarterly.basicSchedule.retentionUnit | String | Snapshot retention unit per quarter snapshots. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.quarterly.dayOfQuarter | String | Starting day of the quarterly snapshot. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.quarterly.quarterStartMonth | String | Starting month of the quarterly snapshot. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.yearly.basicSchedule.frequency | Number | Snapshot yearly frequency. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.yearly.basicSchedule.retention | Number | Snapshot retention value per year snapshots. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.yearly.basicSchedule.retentionUnit | String | Snapshot retention unit per year snapshots. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.yearly.dayOfYear | String | Starting day of the yearly snapshot. | 
-| RubrikPolaris.GPSSLADomain.snapshotSchedule.yearly.yearStartMonth | String | Starting month of the yearly snapshot. | 
-| RubrikPolaris.GPSSLADomain.objectSpecificConfigs.awsRdsConfig.logRetention.duration | Number | Duration of retentioning AWS Relational database logs. | 
-| RubrikPolaris.GPSSLADomain.objectSpecificConfigs.awsRdsConfig.logRetention.unit | String | Unit of duration of retentioning AWS Relational database logs. | 
-| RubrikPolaris.GPSSLADomain.objectSpecificConfigs.sapHanaConfig.incrementalFrequency.duration | Number | Duration of retentioning SAP HANA incremental backups. | 
-| RubrikPolaris.GPSSLADomain.objectSpecificConfigs.sapHanaConfig.incrementalFrequency.unit | String | Unit of duration of retentioning SAP HANA incremental backups. | 
-| RubrikPolaris.GPSSLADomain.objectSpecificConfigs.sapHanaConfig.differentialFrequency.duration | Number | Duration of retentioning SAP HANA differential backups. | 
-| RubrikPolaris.GPSSLADomain.objectSpecificConfigs.sapHanaConfig.differentialFrequency.unit | String | Unit of duration of retentioning SAP HANA differential backups. | 
-| RubrikPolaris.GPSSLADomain.objectSpecificConfigs.sapHanaConfig.logRetention.duration | Number | Duration of retensioning SAP HANA Database logs. | 
-| RubrikPolaris.GPSSLADomain.objectSpecificConfigs.sapHanaConfig.logRetention.unit | String | Unit of duration of retentioning SAP HANA Database logs. | 
-| RubrikPolaris.GPSSLADomain.objectSpecificConfigs.vmwareVmConfig.logRetentionSeconds | Number | Seconds of retentioning VMWare virtual machine logs. | 
-| RubrikPolaris.GPSSLADomain.objectTypes | Unknown | List of object types associated with this SLA Domain. | 
-| RubrikPolaris.PageToken.GPSSLADomain.next_page_token | String | Next page token. | 
-| RubrikPolaris.PageToken.GPSSLADomain.name | String | Name of the command. | 
-| RubrikPolaris.PageToken.GPSSLADomain.has_next_page | Boolean | Whether the result has the next page or not. | 
-#### Command Example
-```!rubrik-gps-sla-domain-list cluster_id=4d4a41d5-8910-4e4d-9dca-0798f5fc6d61 limit=2```
-#### Human Readable Output
-### GPS SLA Domains
-|SLA Domain ID|SLA Domain Name|Base Frequency|Protected Object Count|Archival Location|Description|Replication Target 1|Replication Target 2|
-|---|---|---|---|---|---|---|---|
-| 00000000-0000-0000-0000-000000000002 | Bronzecd | 1 Days | 0 | AWS S3:bucket-1234 | Rubrik default Bronze level SLA Domain policy | sand2-rbk01 | sand2-rbk02 |
-| 00000000-0000-0000-0000-000000000000 | Gold | 4 Hours | 0 |  | Rubrik default Gold level SLA Domain policy | sand2-rbk01 |  |
- Note: To retrieve the next set of results use, "next_page_token" = xyz
-### rubrik-sonar-csv-result-download
-***
-Retrieve the download link for the requested Sonar CSV Snapshot file.
-#### Base Command
-`rubrik-sonar-csv-result-download`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| download_id | The ID of the download, requested using "rubrik-sonar-csv-download" command.<br/><br/>Note: Users can retrieve the list of downloads containing ID by executing the "rubrik-user-downloads-list" command. | Required | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.SonarCSVDownload.downloadId | String | The download ID of the download request. | 
-| RubrikPolaris.SonarCSVDownload.getDownloadUrl.url | String | The link of the file that needs to be downloaded. | 
-#### Command Example
-```!rubrik-sonar-csv-result-download download_id=65```
-#### Human Readable Output
-### Sonar CSV Result
-|Download URL|
-|---|
-| Download the [CSV](dummy_link) file to see the result. |
-### rubrik-gps-vm-snapshot-create
-***
-Triggers an on-demand snapshot of a system.
-Note: To know about the status of the on-demand snapshot creation, use the "rubrik-gps-async-result" command.
-#### Base Command
-`rubrik-gps-vm-snapshot-create`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| object_id | The ID of the object whose snapshot is to be created. <br/><br/>Note: Users can get the list of object IDs by executing the "rubrik-polaris-vm-objects-list" command. | Required | 
-| sla_domain_id | The ID of the SLA domain retention policy to be applied on the object.<br/><br/>Note: Users can get the list of SLA Domain IDs by executing the "rubrik-gps-sla-domain-list" command. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.GPSOndemandSnapshot.id | String | ID of the requested snapshot. | 
-| RubrikPolaris.GPSOndemandSnapshot.status | String | Status of the requested snapshot. | 
-#### Command Example
-```!rubrik-gps-vm-snapshot-create object_id=ac0a6844-a2fc-52b0-bb71-6a55f43677be```
-#### Human Readable Output
-### GPS VM Snapshot
-|On-Demand Snapshot Request ID|Status|
-|---|---|
-| dummy_id | QUEUED |
-### rubrik-gps-snapshot-files-download
-***
-Request to download the snapshot file from the backup.
-Note: To know about the file information and which file can be downloaded, use the "rubrik-gps-snapshot-files-list" command. To know about the status of the downloadable files, use the "rubrik-gps-async-result" command.
-#### Base Command
-`rubrik-gps-snapshot-files-download`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| snapshot_id | The Snapshot ID of the file that needs to be downloaded.<br/><br/>Note: Users can retrieve the list of the snapshot IDs by executing the "rubrik-polaris-vm-object-snapshot-list" command. | Required | 
-| file_path | The absolute path of the file to be downloaded. A list of files can be downloaded as a zip folder. Multiple file paths can be separated with comma(,).<br/><br/>Note: Users can retrieve the list of the files with absolute path by executing the "rubrik-gps-snapshot-files-list" command.<br/><br/>Format accepted: "/&lt;directory name&gt;/&lt;sub directory name or file name&gt;"<br/><br/>Example: "/C:/PerfLogs/Admin", "/C:/Windows/Microsoft.NET". | Required | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.GPSSnapshotFileDownload.id | String | The ID of the download. | 
-| RubrikPolaris.GPSSnapshotFileDownload.status | String | Status of the download. | 
-| RubrikPolaris.GPSSnapshotFileDownload.links.href | String | Link of the download. | 
-| RubrikPolaris.GPSSnapshotFileDownload.links.rel | String | Relationship of the download. | 
-#### Command Example
-```!rubrik-gps-snapshot-files-download snapshot_id=3765b5b5-827b-5588-8c34-5cb737a28685 file_path="/.autorelabel" ```
-#### Human Readable Output
-### Snapshot File Request ID
-|ID|Status|
-|---|---|
-| dummy_id | QUEUED |
-### rubrik-gps-vm-livemount
-***
-Performs a live mount of a virtual machine snapshot.
-Note: To know about the live mount status, use the "rubrik-gps-async-result" command.
-#### Base Command
-`rubrik-gps-vm-livemount`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| snapshot_id | The ID of the snapshot that is to be mounted.<br/><br/>Note: Users can get the snapshot ID by executing the "rubrik-polaris-vm-object-snapshot-list" command. | Required | 
-| host_id | The ID of the Vsphere ESXi host on which the new VM will be mounted.<br/><br/>Note: Users can get the list of host IDs by executing the "rubrik-gps-vm-host-list" command. | Optional | 
-| vm_name | Name given to the VM that runs the snapshot. If not provided the name will be "&lt;Snapshot VM Name&gt; &lt;MM/DD of snapshot creation&gt; &lt;hh/mm of snapshot creation&gt; &lt;Num&gt;". | Optional | 
-| power_on | Whether to power on the mount or not.<br/><br/>Possible values are: "True", "False". Default is True. | Optional | 
-| keep_mac_addresses | Whether the mac addresses of network devices be removed or not.<br/><br/>Possible values are: "True", "False". Default is False. | Optional | 
-| remove_network_devices | Whether the network devices of the original VM be kept.<br/><br/>Possible values are: "True", "False". Default is False. | Optional | 
-| disable_network | Whether to disable networking on the mount or not.<br/><br/>Possible values are: "True", "False". | Optional | 
-| recover_tags | Whether to keep vSphere tags associated with the VM or not.<br/><br/>Possible values are: "True", "False". Default is True. | Optional | 
-| datastore_name | The name of the datastore that the live mount uses.<br/><br/>Note: Users can get the datastore name by executing the "rubrik-gps-vm-datastore-list" command. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.GPSVMLiveMount.id | String | ID of the Live mount request. | 
-#### Command Example
-```!rubrik-gps-vm-livemount snapshot_id=d680b484-0084-5231-a05d-18e9cd5402fc vm_name=live-mount-demo ```
-#### Human Readable Output
-### GPS VM Livemount
-|VM Live Mount Request ID|
-|---|
-| dummy_id |
-### rubrik-gps-vm-host-list
-***
-Retrieve the list of available Vsphere Hosts.
-#### Base Command
-`rubrik-gps-vm-host-list`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | The name of the host to search for. | Optional | 
-| cluster_id | To list hosts from the specific cluster.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Optional | 
-| limit | Number of results to retrieve in the response. Maximum size allowed is 1000. Default is 50. | Optional | 
-| next_page_token | The next page cursor to retrieve the next set of results. | Optional | 
-| sort_by | Specify the field to use for sorting the response.<br/><br/>Note: Supported values are "ID" and "NAME" only. For any other values, the obtained result is sorted or not is not confirmed. Default is ID. | Optional | 
-| sort_order | Specify the order to sort the data in.<br/><br/>Possible values are: "ASC", "DESC". Default is ASC. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.GPSVMHost.id | String | ID of the Vsphere host. | 
-| RubrikPolaris.GPSVMHost.name | String | Name of the Vsphere host. | 
-| RubrikPolaris.GPSVMHost.physicalPath.fid | String | ID of a physical path of a node. | 
-| RubrikPolaris.GPSVMHost.physicalPath.name | String | Name of a physical path of a node. | 
-| RubrikPolaris.GPSVMHost.physicalPath.objectType | String | Type of a physical path of a node, for example, VSphereComputeCluster, VSphereDatacenter etc. | 
-| RubrikPolaris.PageToken.GPSVMHost.next_page_token | String | Next page token. | 
-| RubrikPolaris.PageToken.GPSVMHost.name | String | Name of the command. | 
-| RubrikPolaris.PageToken.GPSVMHost.has_next_page | Boolean | Whether the result has the next page or not. | 
-#### Command Example
-```!rubrik-gps-vm-host-list ```
-#### Human Readable Output
-### GPS VM Hosts
-|VSphere Host ID|Name|Physical Host|
-|---|---|---|
-| f57bfebf-c7c9-5310-a5fd-1f0aeea5ba25 | sjc-40302-sand1-esx02.rubrikdemo.com | {'id': '72480b29-0eaa-57a9-8c5c-45b7e1c2c826', 'name': 'Sandbox-1 SJC Cluster', 'objectType': 'VSphereComputeCluster'},<br/>{'id': '3f3a92de-c7f3-57f7-989f-3731db83aeab', 'name': 'Sandbox-1 Datacenter', 'objectType': 'VSphereDatacenter'},<br/>{'id': '415859e2-fd22-53ea-8de1-041d99298fe3', 'name': 'sand1-vcsa.rubrikdemo.com', 'objectType': 'VSphereVCenter'} |
-### rubrik-gps-vm-datastore-list
-***
-Retrieve the list of the available datastores on a Vsphere Host.
-#### Base Command
-`rubrik-gps-vm-datastore-list`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | The name of the datastore to search for. | Optional | 
-| host_id | The ID of a Vsphere host whose datastores are to be listed.<br/><br/>Note: Users can get the list of host IDs by executing the "rubrik-gps-vm-host-list" command. | Required | 
-| limit | Number of results to retrieve in the response. Maximum size allowed is 1000. Default is 50. | Optional | 
-| next_page_token | The next page cursor to retrieve the next set of results. | Optional | 
-| sort_by | Specify the field to use for sorting the response.<br/><br/>Note: Supported values are "ID" and "NAME" only. For any other values, the obtained result is sorted or not is not confirmed. Default is ID. | Optional | 
-| sort_order | Specify the order to sort the data in.<br/><br/>Possible values are: "ASC", "DESC". Default is ASC. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.GPSVMHost.id | String | ID of the Vsphere host. | 
-| RubrikPolaris.GPSVMHost.Datastore.id | String | ID of the Vsphere datastore. | 
-| RubrikPolaris.GPSVMHost.Datastore.name | String | Name of the Vsphere datastore. | 
-| RubrikPolaris.GPSVMHost.Datastore.capacity | Number | Datastore capacity in bytes. | 
-| RubrikPolaris.GPSVMHost.Datastore.isLocal | Boolean | Whether the datastore is local or remote. | 
-| RubrikPolaris.GPSVMHost.Datastore.freeSpace | Number | Free space on the datastore in bytes. | 
-| RubrikPolaris.GPSVMHost.Datastore.datastoreType | String | Type of datastore, for example, "NFS",  "VMFS" etc. | 
-| RubrikPolaris.PageToken.GPSVMHost.Datastore.next_page_token | String | Next page token. | 
-| RubrikPolaris.PageToken.GPSVMHost.Datastore.name | String | Name of the command. | 
-| RubrikPolaris.PageToken.GPSVMHost.Datastore.has_next_page | Boolean | Whether the result has the next page or not. | 
-#### Command Example
-```!rubrik-gps-vm-datastore-list ```
-#### Human Readable Output
-### GPS VM Datastores
-|VSphere Datastore ID|Name|Capacity|Free Space|Datastore Type|
-|---|---|---|---|---|
-| dummy_datastore_id | dummy-repo | 0.53362190336 TB | 0.188318314496 TB | NFS |
-### rubrik-event-list
-***
-Retrieve the list of events.
-#### Base Command
-`rubrik-event-list`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| activity_status | Filter the events based on the provided activity statuses. Supports comma separated values.<br/><br/>Possible values are: "TaskFailure", "Canceling", "TaskSuccess", "Info", "Failure", "Running", "Queued", "Warning", "Canceled", "Success". | Optional | 
-| activity_type | Filter the events based on provided activity types. Supports comma separated values.<br/><br/>Possible values are: "Sync", "LocalRecovery", "TestFailover", "Anomaly", "RadarAnalysis", "Archive", "VolumeGroup", "VCenter", "Index", "CloudNativeVirtualMachine", "StormResource", "HostEvent", "Recovery", "Conversion", "CloudNativeVm", "EmbeddedEvent", "Maintenance", "Failover", "AuthDomain", "LegalHold", "Vcd", "Instantiate", "Configuration", "Fileset", "Discovery", "System", "Hdfs", "Classification", "StorageArray", "Storage", "Backup", "Hardware", "HypervServer", "HypervScvmm", "Diagnostic", "UnknownEventType", "Upgrade", "NutanixCluster", "Replication", "AwsEvent", "Support", "CloudNativeSource", "Download", "Connection", "ResourceOperations". | Optional | 
-| severity | Filter the events based on provided severities. Supports comma separated values.<br/><br/>Possible values are: "Critical", "Warning", "Info". | Optional | 
-| object_name | Filter out events based on object name.<br/><br/>Note: Users can get the object names by executing the "rubrik-polaris-vm-objects-list" or "rubrik-polaris-object-search" command. | Optional | 
-| object_type | Filter the events based on provided object types. Supports comma separated values.<br/><br/>Possible values are: "ShareFileset", "NutanixVm", "VolumeGroup", "HypervVm", "LinuxFileset", "WindowsFileset", "VmwareVm", "ManagedVolume", "CASSANDRA_KEYSPACE", "KuprNamespace", "O365Group", "StorageLocation", "AwsNativeEbsVolume", "O365Mailbox", "JobInstance", "Storm", "Ldap", "Db2Database", "AwsEventType", "AzureNativeVm", "Db2Instance", "SmbDomain", "VmwareComputeCluster", "AwsAccount", "SupportBundle", "AwsNativeRdsInstance", "O365Site", "ObjectProtection", "PolarisEc2Instance", "CASSANDRA_SOURCE", "AwsNativeEc2Instance", "PolarisEbsVolume", "CapacityBundle", "DataLocation", "PolarisAccount", "NasHost", "FailoverClusterApp", "OracleHost", "Host", "OracleDb", "CloudNativeVirtualMachine", "WindowsHost", "O365Team", "Certificate", "PublicCloudMachineInstance", "GcpNativeDisk", "AwsNativeAccount", "CloudNativeVm", "Envoy", "LinuxHost", "AuthDomain", "VcdVapp", "Vcd", "SapHanaDb", "ComputeInstance", "AzureNativeDisk", "Mssql", "SlaDomain", "SnapMirrorCloud", "Cluster", "O365Calendar", "O365SharePointDrive", "SapHanaSystem", "Oracle", "O365Onedrive", "Hdfs", "Ec2Instance", "GcpNativeProject", "UnknownObjectType", "SamlSso", "StorageArray", "AzureSqlDatabase", "Vcenter", "HypervServer", "HypervScvmm", "AppBlueprint", "StorageArrayVolumeGroup", "O365SharePointList", "Upgrade", "NutanixCluster", "AzureNativeSubscription", "User", "Exocompute", "KuprCluster", "OracleRac", "AzureSqlManagedInstance", "CASSANDRA_COLUMN_FAMILY", "O365Organization", "GcpNativeGceInstance". | Optional | 
-| cluster_id | Filter the events based on provided cluster IDs. Supports comma separated values.<br/><br/>Note: Users can get the list of cluster IDs by executing the "rubrik-gps-cluster-list" command. | Optional | 
-| start_date | The start date to fetch updated events from.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
-| end_date | The end date to fetch updated events until.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
-| limit | Number of results to retrieve in the response. Maximum size allowed is 1000. Default is 50. | Optional | 
-| next_page_token | The next page cursor to retrieve the next set of results. | Optional | 
-| sort_by | Specify the field to use for sorting the response.<br/><br/>Note: Possible values are: "LastUpdated", "Location", "ObjectType", "ClusterName", "ObjectName", "StartTime", "ActivityType", "Severity", "ActivityStatus". Default is LastUpdated. | Optional | 
-| sort_order | Specify the order to sort the data in.<br/><br/>Possible values are: "Asc", "Desc". Default is Desc. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.Event.id | Number | ID of the event. | 
-| RubrikPolaris.Event.startTime | String | Start time of the event. | 
-| RubrikPolaris.Event.fid | String | FID of the event. | 
-| RubrikPolaris.Event.activitySeriesId | String | Activity Series ID of the event. | 
-| RubrikPolaris.Event.lastUpdated | String | Date time when the event was last updated. | 
-| RubrikPolaris.Event.lastActivityType | String | Last Activity Type of the event. | 
-| RubrikPolaris.Event.lastActivityStatus | String | Last Activity Status of the event. | 
-| RubrikPolaris.Event.location | String | Location of the event. | 
-| RubrikPolaris.Event.objectId | String | ID of the object. | 
-| RubrikPolaris.Event.objectName | String | Name of the object. | 
-| RubrikPolaris.Event.objectType | String | Type of the object. | 
-| RubrikPolaris.Event.severity | String | Severity of the event. | 
-| RubrikPolaris.Event.progress | String | Progress of the event. | 
-| RubrikPolaris.Event.cluster.id | String | The ID of the cluster. | 
-| RubrikPolaris.Event.cluster.name | String | The name of the cluster. | 
-| RubrikPolaris.Event.activityConnection.nodes.id | String | ID of the activity connection. | 
-| RubrikPolaris.Event.activityConnection.nodes.message | String | Message of the activity connection. | 
-| RubrikPolaris.Event.activityConnection.nodes.severity | String | Severity of the activity connection. | 
-| RubrikPolaris.Event.activityConnection.nodes.time | String | Date time when the activity connection was last updated. | 
-| RubrikPolaris.PageToken.Event.next_page_token | String | Next page token. | 
-| RubrikPolaris.PageToken.Event.name | String | Name of the command. | 
-| RubrikPolaris.PageToken.Event.has_next_page | Boolean | Whether the result has the next page or not. | 
-#### Command Example
-```!rubrik-event-list limit=1```
-#### Human Readable Output
-### Events
-|Event ID|Activity Series ID|Cluster ID|Object ID|Object Name|Severity|Start Time|Last Updated|Last Activity Type|Last Activity Status|
-|---|---|---|---|---|---|---|---|---|---|
-| 7739500 | 422d17c0-737d-44df-98a0-a7fa9f714c0d | cc19573c-db6c-418a-9d48-067a256543ba | Fileset:::f2666679-5b94-4116-9cbf-6ab69e575522 | AllTheThings | Info | 2021-10-25T12:15:36.911Z | 2021-10-25T12:16:10.212Z | Index | Success |
- Note: To retrieve the next set of results use, "next_page_token" = xyz
-### rubrik-polaris-object-list
-***
-Retrieve the list of Rubrik objects, based on the provided filters.
-#### Base Command
-`rubrik-polaris-object-list`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| type_filter | Filter the objects based on the provided object types. Supports comma separated values.<br/><br/>Possible values are: "ShareFileset", "NutanixVirtualMachine", "VolumeGroup", "HypervVirtualMachine", "LinuxFileset", "WindowsFileset", "VmwareVirtualMachine", "FilesetTemplate", "VcdOrgVdc", "ManagedVolume", "KuprNamespace", "O365Group", "AwsNativeEbsVolume", "OracleDatabase", "O365Mailbox", "AzureNativeResourceGroup", "AZURE_SQL_MANAGED_INSTANCE_DB", "Db2Database", "AzureNativeVm", "VcdOrg", "Db2Instance", "PhysicalHost", "AwsNativeRdsInstance", "CassandraKeyspace", "AzureSqlManagedInstanceServer", "O365Site", "PolarisEc2Instance", "O365User", "AwsNativeEc2Instance", "PolarisEbsVolume", "MssqlInstance", "O365Org", "FailoverClusterApp", "OracleHost", "MongoCollection", "SapHanaDatabase", "AllSubHierarchyType", "NasSystem", "O365Teams", "VSphereFolder", "VSphereResourcePool", "GcpNativeDisk", "AwsNativeAccount", "VSphereDatacenter", "VSphereComputeCluster", "HypervCluster", "CassandraSource", "VSphereTag", "VcdVapp", "NasVolume", "NasNamespace", "Vcd", "VcdVimServer", "AZURE_SQL_DATABASE_DB", "MssqlDatabaseBatchMaintenance", "VcdCatalog", "O365File", "HypervSCVMM", "Blueprint", "AzureSqlDatabaseServer", "FeldsparSite", "CloudNativeTagRule", "Mssql", "HostShare", "SnapMirrorCloud", "O365Calendar", "O365SharePointDrive", "VSphereNetwork", "Fileset", "SapHanaSystem", "MongoSource", "O365Onedrive", "Hdfs", "Ec2Instance", "WindowsCluster", "GcpNativeProject", "VSphereDatastore", "HypervServer", "VSphereHost", "HostFailoverCluster", "AppBlueprint", "MssqlAvailabilityGroup", "CassandraColumnFamily",  "GcpNativeGCEInstance", "StorageArrayVolumeGroup", "O365SharePointList", "NutanixCluster", "AzureNativeManagedDisk", "AzureNativeSubscription", "VSPHERE_DATASTORE_CLUSTER", "VSphereVCenter", "NasShare", "KuprCluster", "AppflowsBlueprint", "OracleRac", "MongoDb", "VSphereTagCategory", "WindowsVolumeGroup". | Optional | 
-| cluster_id | Filter the objects based on the provided cluster IDs. Supports comma separated values.<br/><br/>Note: Users can get the list of cluster IDs by executing the "rubrik-gps-cluster-list" command. | Optional | 
-| limit | Number of results to retrieve in the response. Maximum size allowed is 1000. Default is 50. | Optional | 
-| next_page_token | The next page cursor to retrieve the next set of results. | Optional | 
-| sort_by | Specify the field to use for sorting the response.<br/><br/>Note: Supported values are "ID" and "NAME" only. For any other values, the obtained result is sorted or not is not confirmed. Default is ID. | Optional | 
-| sort_order | Specify the order to sort the data in.<br/><br/>Possible values are: "ASC", "DESC". Default is ASC. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.Object.id | String | ID of the object. | 
-| RubrikPolaris.Object.effectiveSlaDomain.name | String | Name of the SLA domain of the object. | 
-| RubrikPolaris.Object.effectiveSlaDomain.id | String | ID of the SLA domain of the object. | 
-| RubrikPolaris.Object.effectiveSlaDomain.description | String | Description of the SLA domain of the object. | 
-| RubrikPolaris.Object.effectiveSlaDomain.cluster.id | String | Cluster ID of effective SLA domain of the object. | 
-| RubrikPolaris.Object.effectiveSlaDomain.cluster.name | String | Cluster name of effective SLA domain of the object. | 
-| RubrikPolaris.Object.effectiveSlaDomain.fid | String | FID of effective SLA domain of the object. | 
-| RubrikPolaris.Object.isPassthrough | Boolean | Whether the object is passthrough or not. | 
-| RubrikPolaris.Object.cluster.id | String | Cluster ID of the object. | 
-| RubrikPolaris.Object.cluster.name | String | Cluster name of the object. | 
-| RubrikPolaris.Object.primaryClusterLocation.id | String | ID of the primary cluster location of the object. | 
-| RubrikPolaris.Object.logicalPath.name | String | Name of the logical path of the object. | 
-| RubrikPolaris.Object.logicalPath.objectType | String | Object Type of the logical path of the object. | 
-| RubrikPolaris.Object.physicalPath.name | String | Name of the physical path of the object. | 
-| RubrikPolaris.Object.physicalPath.objectType | String | Object Type of the physical path of the object. | 
-| RubrikPolaris.Object.name | String | Name of the object. | 
-| RubrikPolaris.Object.objectType | String | Type of the object. | 
-| RubrikPolaris.PageToken.Object.has_next_page | Boolean | Whether the result has the next page or not. | 
-| RubrikPolaris.PageToken.Object.name | String | Name of the command. | 
-| RubrikPolaris.PageToken.Object.next_page_token | String | Next page token. | 
-#### Command Example
-```!rubrik-polaris-object-list limit=1```
-#### Human Readable Output
-### Objects
-|Object ID|Object Name|Object Type|Location|Cluster Name|SLA Domain Name|
-|---|---|---|---|---|---|
-| 0014037c-70ae-4c53-b1cf-df6926b88968 | Christian LeCorre | O365User | Rubrik Demo\EMEA Users\AMER Users | x | UNPROTECTED |
- Note: To retrieve the next set of results use, "next_page_token" = xyz
-### rubrik-polaris-object-snapshot-list
-***
-Retrieve Rubrik snapshot(s) of an object, based on the provided object ID.
-#### Base Command
-`rubrik-polaris-object-snapshot-list`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| object_id | The object ID for which the snapshots are to be searched.<br/><br/>Note: Users can get the list of the object IDs by executing the "rubrik-polaris-object-list" command. | Required | 
-| start_date | The start date to get snapshots from.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.<br/><br/>Note: start_date and end_date both or none must be initialized. | Optional | 
-| end_date | The end date to get snapshots until.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.<br/><br/>Note: start_date and end_date both or none must be initialized. | Optional | 
-| limit | Number of results to retrieve in the response. Maximum size allowed is 1000. Default is 50. | Optional | 
-| next_page_token | The next page cursor to retrieve the next set of results. | Optional | 
-| snapshot_type | List of snapshot types to filter snapshots. Supports comma separated values.<br/><br/>Possible values are: "SCHEDULED", "ON_DEMAND", "DOWNLOADED". | Optional | 
-| sort_order | Specify the order to sort the data in.<br/><br/>Possible values are: "Asc", "Desc". Default is Asc. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.Object.id | String | ID of the object. | 
-| RubrikPolaris.Object.Snapshot.id | String | ID of the snapshot. | 
-| RubrikPolaris.Object.Snapshot.date | String | Date of the snapshot. | 
-| RubrikPolaris.Object.Snapshot.isArchivalCopy | Boolean | Whether the snapshot is an archival copy or not. | 
-| RubrikPolaris.Object.Snapshot.isReplica | Boolean | Whether the snapshot is a replica or not. | 
-| RubrikPolaris.Object.Snapshot.isOnDemandSnapshot | Boolean | Whether the snapshot is on demand or not. | 
-| RubrikPolaris.Object.Snapshot.isDownloadedSnapshot | Boolean | Whether the snapshot is downloaded or not. | 
-| RubrikPolaris.Object.Snapshot.cluster.id | String | Cluster ID of the snapshot. | 
-| RubrikPolaris.Object.Snapshot.cluster.name | String | Cluster name of the snapshot. | 
-| RubrikPolaris.Object.Snapshot.cluster.version | String | Cluster version of the snapshot. | 
-| RubrikPolaris.Object.Snapshot.cluster.status | String | Cluster status of the snapshot. | 
-| RubrikPolaris.Object.Snapshot.slaDomain.name | String | Name of the SLA domain of the snapshot. | 
-| RubrikPolaris.Object.Snapshot.slaDomain.fid | String | FID of the SLA domain of the snapshot. | 
-| RubrikPolaris.Object.Snapshot.slaDomain.cluster.id | String | Cluster ID of the SLA domain of the snapshot. | 
-| RubrikPolaris.Object.Snapshot.slaDomain.cluster.name | String | Cluster name of the SLA domain of the snapshot. | 
-| RubrikPolaris.Object.Snapshot.slaDomain.id | String | ID of the SLA domain of the snapshot. | 
-| RubrikPolaris.Object.Snapshot.snapshotRetentionInfo.archivalInfos.name | String | Archival name of snapshot retention of the snapshot. | 
-| RubrikPolaris.Object.Snapshot.snapshotRetentionInfo.archivalInfos.isExpirationDateCalculated | String | Whether archival expiration date of snapshot retention of the snapshot is calculated or not. | 
-| RubrikPolaris.Object.Snapshot.snapshotRetentionInfo.archivalInfos.expirationTime | String | Archival expiration time of snapshot retention of the snapshot. | 
-| RubrikPolaris.Object.Snapshot.snapshotRetentionInfo.localInfo.name | String | Name of snapshot retention of the snapshot. | 
-| RubrikPolaris.Object.Snapshot.snapshotRetentionInfo.localInfo.isExpirationDateCalculated | Boolean | Whether the expiration date is calculated or not. | 
-| RubrikPolaris.Object.Snapshot.snapshotRetentionInfo.localInfo.expirationTime | String | Expiration time of snapshot retention of the snapshot. | 
-| RubrikPolaris.PageToken.Object.Snapshot.has_next_page | Boolean | Whether the result has the next page or not. | 
-| RubrikPolaris.PageToken.Object.Snapshot.name | String | Name of the command. | 
-| RubrikPolaris.PageToken.Object.Snapshot.next_page_token | String | Next Page Token. | 
-#### Command Example
-```!rubrik-polaris-object-snapshot-list object_id=06515737-388a-57aa-9c8e-54b3f1ee5d8b limit=1```
-#### Human Readable Output
-### Object Snapshots
-|Snapshot ID|Creation Date|Cluster Name|SLA Domain Name|
-|---|---|---|---|
-| a7adc499-b896-5ad6-bfc2-0aae0ed99459 | 2021-10-28T19:35:52.000Z | sand2-rbk01 | 12hr-30d-AWS |
- Note: To retrieve the next set of results use, "next_page_token" = xyz
-### rubrik-radar-ioc-scan
-***
-Triggers an IOC scan of a system.
-Note: To know the results of the scan use the "rubrik-radar-ioc-scan-results" command and to list the running/completed IOC scans on a cluster use the "rubrik-radar-ioc-scan-list" command.
-#### Base Command
-`rubrik-radar-ioc-scan`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| cluster_id | ID of the cluster on which to perform a scan.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Required | 
-| object_id | Object ID of the system on which to perform the scan. Supports comma separated values.<br/><br/>Note: Users can get the list of object IDs by executing the "rubrik-polaris-vm-objects-list" command. | Required | 
-| scan_name | Name of the scan. Default is PAXSOAR-1.1.0.| Optional | 
-| ioc_type | The type of the indicator to scan for.<br/><br/>Possible values are: "INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME", "INDICATOR_OF_COMPROMISE_TYPE_HASH", "INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE".<br/><br/>Note: To provide multiple IOCs use the argument "advance_ioc". | Optional | 
-| ioc_value | Value of the indicator to scan for.<br/><br/>Note: To provide multiple IOCs use the argument "advance_ioc". | Optional | 
-| advance_ioc | Json encoded Indicators Of Compromise to scan. Json keys signify the type of IOC and the corresponding list of values are the values of the IOC's. If provided, will ignore the ioc_type and ioc_value arguments.<br/><br/>Possible keys to indicate type of indicator: <br/>INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME, INDICATOR_OF_COMPROMISE_TYPE_HASH, INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE<br/><br/>Format Accepted:<br/>{<br/>"&lt;ioc_type1&gt;": ["&lt;ioc_value1&gt;", "&lt;ioc_value2&gt;"],<br/>"&lt;ioc_type2&gt;": "&lt;ioc_value2&gt;"<br/>}<br/><br/>Example:<br/>{<br/>"INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME": ["C:\Users\Malware_Executible.ps1", "\bin\Malware_Executible"],<br/>"INDICATOR_OF_COMPROMISE_TYPE_HASH": ["e5c1b9c44be582f895eaea3d3738c5b4", "f541b9844be897f895eaea3d3738cfb2"],<br/>"INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE": "rule match_everything {condition:true}"<br/>}. | Optional | 
-| start_date | Filter the snapshots from the provided date. Any snapshots taken before the provided date-time will be excluded.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.<br/><br/>Examples of more supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates. | Optional | 
-| end_date | Filter the snapshots until the provided date. Any snapshots taken after the provided date-time will be excluded.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.<br/><br/>Examples of more supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates. | Optional | 
-| max_snapshots_per_object | Maximum number of snapshots to scan per object. | Optional | 
-| snapshot_id | Provide comma separated snapshot IDs on which to perform a scan separated by colon for each object ID (in the same order). Supports comma separated values.<br/><br/>Format accepted:<br/>object_1_snapshot_id_1, object_1_snapshot_id_2: object_2_snapshot_id_1<br/><br/>Example:<br/>B405e8c0-1fcd-401c-a6f6-42f758aad6df, e179eb47-534b-4624-b155-f33d188902e2: 1e1681bf-4479-4339-a4bb-59901598caa5<br/><br/>Note: Users can retrieve the list of snapshot IDs by executing the "rubrik-polaris-vm-object-snapshot-list" command.<br/><br/>Note: Do not provide "snapshot_start_date", "snapshot_end_date" and, "max_snapshots_per_object" arguments if snapshot ID is provided. | Optional | 
-| paths_to_include | Paths to include in the scan. Supports comma separated values.<br/><br/>Format accepted:<br/>path_to_include_1, path_to_include_2. | Optional | 
-| paths_to_exclude | Paths to exclude from the scan. Supports comma separated values.<br/><br/>Format accepted:<br/>path_to_exclude_1, path_to_exclude_2. | Optional | 
-| paths_to_exempt | Paths to exempt from exclusion. Supports comma separated values.<br/><br/>Format accepted:<br/>path_to_exempt_1, path_to_exempt_2. | Optional | 
-| requested_hash_types | The type of hash values of the matched files to return in the result. Supports comma separated values.<br/><br/>Possible values are: "HASH_TYPE_M_D5", "HASH_TYPE_SH_A1", "HASH_TYPE_SH_A256". | Optional |
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.RadarIOCScan.id | String | ID of the IOC scan. | 
-| RubrikPolaris.RadarIOCScan.status | String | Status of the IOC scan trigger request. | 
-#### Command Example
-```!rubrik-radar-ioc-scan scan_name="Revil Ransomware Scan" ioc_type="INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME" ioc_value="revil.exe" cluster_id="052bf7af-93a3-44e9-a7d7-bc8dad4d6b43" object_id="868aa03d-4145-4cb1-808b-e10c4f7a3741" ```
-#### Human Readable Output
-### Radar IOC Scan
-|Scan ID|Status|
-|---|---|
-| dummy-ioc-id | RUNNING |
-### rubrik-radar-ioc-scan-results
-***
-Retrieves the results of IOC scan of a system.
-Note: To initiate a scan use the "rubrik-radar-ioc-scan" command and to list the running/completed scans on a cluster use the "rubrik-radar-ioc-scan-list" command.
-#### Base Command
-`rubrik-radar-ioc-scan-results`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| scan_id | ID of the IOC scan whose results are to be retrieved.<br/><br/>Note: Users can get the scan ID by executing the "rubrik-radar-ioc-scan" command. | Required | 
-| cluster_id | ID of the cluster on which the scan was performed.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Required | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.RadarIOCScan.id | String | ID of the IOC scan. | 
-| RubrikPolaris.RadarIOCScan.status | String | Overall status of the scan. | 
-| RubrikPolaris.RadarIOCScan.indicatorsOfCompromise.iocType | String | Type of IOC that was scanned. | 
-| RubrikPolaris.RadarIOCScan.indicatorsOfCompromise.iocValue | String | Value of the IOC that was scanned. | 
-| RubrikPolaris.RadarIOCScan.results.objectId | String | ID of the system that was scanned. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.status | String | Status of the scan on the snapshot. Values: MALWARE_SCAN_IN_SNAPSHOT_STATUS_PENDING, MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED, MALWARE_SCAN_IN_SNAPSHOT_STATUS_ERROR. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.snapshotDate | String | The date-time at which the snapshot was taken. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.snapshotId | String | ID of the snapshot that was scanned. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.scanStats.numFiles | Number | Number of files encountered during scan. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.scanStats.numFilesScanned | Number | Number of files that were scanned on that snapshot. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.scanStats.totalFilesScannedSizeBytes | Number | The total file size of the files scanned. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.matches.indicatorIndex | Number | Index of indicator in inputs for the scan. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.matches.paths.aclDetails | String | JSON encoded file access control list \(ACL\) information. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.matches.paths.creationTime | String | File creation date-time. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.matches.paths.modificationTime | String | File modification date-time. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.matches.paths.path | String | File path that matched the malware Indicator Of Compromise. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.matches.paths.yaraMatchDetails.name | String | The name of the matching YARA rule. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.matches.paths.yaraMatchDetails.tags | Unknown | Optional YARA tags. Described in https://yara.readthedocs.io/en/latest/writingrules.html\#rule-tags. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.matches.paths.requestedHashDetails.hashType | String | Hash algorithm type. | 
-| RubrikPolaris.RadarIOCScan.results.snapshotResults.matches.paths.requestedHashDetails.hashValue | String | Hash value of the content at path. | 
-#### Command Example
-```!rubrik-radar-ioc-scan-results scan_id="bf687fcf-84d7-47f6-8bd1-54e8cf439680" cluster_id="052bf7af-93a3-44e9-a7d7-bc8dad4d6b43"```
-#### Human Readable Output
-### Radar IOC Scan Results
-Scan ID: bf687fcf-84d7-47f6-8bd1-54e8cf439680
-Status: FINISHED
-|Snapshot ID|Snapshot Date|Object ID|Snapshot Scan Status|Scan Statistics|Matches|
-|---|---|---|---|---|---|
-| b7d6b871-796e-4e7c-99cf-328007c9d5c1 | 2021-10-29T07:03:30.669Z | VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-81407 | MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED | Number of Files: 142630, Number of Files Scanned: 0, Total Files Scanned In Bytes: 0 | 1 |
-| 3779a895-94bf-437e-b63a-61e73e215901 | 2021-10-28T07:00:09.297Z | VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-81407 | MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED | Number of Files: 142630, Number of Files Scanned: 0, Total Files Scanned In Bytes: 0 | 1 |
-| a871683f-f4fa-475f-806c-58f06e6782dc | 2021-10-26T07:04:07.139Z | VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-81407 | MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED | Number of Files: 142630, Number of Files Scanned: 0, Total Files Scanned In Bytes: 0 | 1 |
-| 129f22f4-0359-4e7d-aa53-9edf4e33cff1 | 2021-10-29T12:01:43.383Z | VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-72277 | MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED | Number of Files: 142138, Number of Files Scanned: 0, Total Files Scanned In Bytes: 0 | 1 |
-| b9264942-c71c-4b91-b9a7-74a7ba0f6166 | 2021-10-29T08:01:39.388Z | VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-72277 | MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED | Number of Files: 142138, Number of Files Scanned: 0, Total Files Scanned In Bytes: 0 | 1 |
-| 9f12b533-b740-4fb9-af94-4411b0aee01d | 2021-10-29T00:01:04.357Z | VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-72277 | MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED | Number of Files: 142139, Number of Files Scanned: 0, Total Files Scanned In Bytes: 0 | 1 |
-### rubrik-gps-async-result
-***
-Retrieve the result of an asynchronous request. This command will retrieve the result of requests made by commands "rubrik-gps-snapshot-files-download", "rubrik-gps-vm-livemount", "rubrik-gps-vm-export", "rubrik-gps-vm-snapshot-create", and "rubrik-gps-vm-recover-files".
-#### Base Command
-`rubrik-gps-async-result`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| request_id | ID of the request.<br/><br/>Note: Users can get the request ID by executing any of the commands that make a request. Possible commands are mentioned in the command description. | Required | 
-| cluster_id | ID of the cluster on which request was made.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Required | 
-| cluster_ip_address | IP address of the cluster node to access the download link. Only required to retrieve the results of the command "rubrik-gps-snapshot-files-download".<br/><br/>Note: Users can retrieve the list of the IP addresses by executing the "rubrik-gps-cluster-list" command. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.GPSAsyncResult.id | String | The ID of the request. | 
-| RubrikPolaris.GPSAsyncResult.status | String | Status of the request. | 
-| RubrikPolaris.GPSAsyncResult.nodeId | String | ID of the node. | 
-| RubrikPolaris.GPSAsyncResult.progress | Number | Progress of the request in range 0 to 100. | 
-| RubrikPolaris.GPSAsyncResult.error.message | String | JSON stringified message object when an error occurs. | 
-| RubrikPolaris.GPSAsyncResult.links.href | String | Link to a resource. | 
-| RubrikPolaris.GPSAsyncResult.links.rel | String | Type of the resource pointed by the link. | 
-#### Command Example
-```!rubrik-gps-async-result request_id="EXPORT_VMWARE_SNAPSHOT_6e101218-141f-4101-b334-3c1bf440bfee_466b7d74-0d13-4e54-9a57-2ea4d7b00a0c:::0" cluster_id="052bf7af-93a3-44e9-a7d7-bc8dad4d6b43" ```
-#### Human Readable Output
-### GPS Asynchronous Request Result
-|ID|Status|Node ID|Links|
-|---|---|---|---|
-| dummy_id | FAILED | cluster:::RVMHM219S004941 | [self](dummy_link)<br/> |
-### rubrik-gps-cluster-list
-***
-Retrieve the list of the available rubrik clusters.
-#### Base Command
-`rubrik-gps-cluster-list`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| type | Filter out clusters based on their type. Supports comma separated values.<br/><br/>Possible values are: "Cloud", "Robo", "ExoCompute", "OnPrem", "Polaris", "Unknown". | Optional | 
-| name | Filter out clusters based on name. Supports comma separated values. | Optional | 
-| limit | Number of results to retrieve in the response. Maximum size allowed is 1000. Default is 50. | Optional | 
-| next_page_token | The next page cursor to retrieve the next set of results. | Optional | 
-| sort_by | Specify the field to use for sorting the response.<br/><br/>Possible values are: "ClusterName", "ClusterType", "RegisteredAt", "ESTIMATED_RUNWAY". Default is ClusterName. | Optional | 
-| sort_order | Specify the order to sort the data in.<br/><br/>Possible values are: "Asc", "Desc". Default is Asc. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.GPSCluster.id | String | ID of the cluster. | 
-| RubrikPolaris.GPSCluster.name | String | Name of the cluster. | 
-| RubrikPolaris.GPSCluster.type | String | Type of the cluster. Values are Cloud, Robo, ExoCompute, OnPrem, Unknown, Polaris. | 
-| RubrikPolaris.GPSCluster.status | String | Status of the cluster. Values are Connected, Disconnected, Initializing. | 
-| RubrikPolaris.GPSCluster.version | String | Version of the cluster. | 
-| RubrikPolaris.GPSCluster.defaultAddress | String | Default address assigned to the cluster. | 
-| RubrikPolaris.GPSCluster.cdmUpgradeInfo.clusterStatus.message | String | Message about the cluster upgrade/current condition. | 
-| RubrikPolaris.GPSCluster.cdmUpgradeInfo.clusterStatus.status | String | Upgrade/current status of the cluster. It provides information like -- upgrading, upgrade scheduled, stable, downloading packages, pre-checks running and many more. | 
-| RubrikPolaris.GPSCluster.cdmUpgradeInfo.overallProgress | Number | Progress \(in percentage\) of an upgrade, if running. | 
-| RubrikPolaris.GPSCluster.cdmUpgradeInfo.scheduleUpgradeAt | String | Shows the date-time of a scheduled upgrade. | 
-| RubrikPolaris.GPSCluster.cdmUpgradeInfo.downloadedVersion | String | The version that was downloaded but not yet installed. | 
-| RubrikPolaris.GPSCluster.cdmUpgradeInfo.version | String | The current version of the cluster. | 
-| RubrikPolaris.GPSCluster.productType | String | The product type. Values are CDM, DATOS, POLARIS. | 
-| RubrikPolaris.GPSCluster.estimatedRunway | Number | Estimated number of days remaining before additional data storage space is required on the cluster. | 
-| RubrikPolaris.GPSCluster.snapshotCount | Number | The total number of snapshots that are taken of different objects in the cluster. | 
-| RubrikPolaris.GPSCluster.geoLocation.address | String | Geological address of the cluster. | 
-| RubrikPolaris.GPSCluster.lastConnectionTime | String | Time when the cluster was last polled. | 
-| RubrikPolaris.GPSCluster.metric.totalCapacity | Number | Total storage capacity of the cluster in Bytes. | 
-| RubrikPolaris.GPSCluster.metric.availableCapacity | Number | Available storage capacity of the cluster in Bytes. | 
-| RubrikPolaris.GPSCluster.snappableConnection.count | Number | The number of objects in the cluster whose snapshots can be taken. | 
-| RubrikPolaris.GPSCluster.state.connectedState | String | Status of the cluster. Values are Connected, Disconnected, Initializing. | 
-| RubrikPolaris.GPSCluster.state.clusterRemovalState | String | State of the cluster when it is being removed from the platform. Values are DATA_DELETING, WAITING_FOR_DATA_DELETION, UNREGISTERED, FAILED, DISCONNECTING, REGISTERED. | 
-| RubrikPolaris.GPSCluster.clusterNodeConnection.nodes.id | String | ID of a node in a cluster. | 
-| RubrikPolaris.GPSCluster.clusterNodeConnection.nodes.status | String | Status of a node in a cluster. | 
-| RubrikPolaris.GPSCluster.clusterNodeConnection.nodes.ipAddress | String | IP Address of a node in a cluster. | 
-| RubrikPolaris.GPSCluster.passesConnectivityCheck | Boolean | Whether the cluster passes the connectivity check. | 
-| RubrikPolaris.GPSCluster.globalManagerConnectivityStatus.urls.url | String | URL of a global manager of the cluster. | 
-| RubrikPolaris.GPSCluster.globalManagerConnectivityStatus.urls.isReachable | Boolean | Whether the global manager is reachable. | 
-| RubrikPolaris.GPSCluster.connectivityLastUpdated | String | The date-time of when the cluster was last polled for connectivity. | 
-| RubrikPolaris.GPSCluster.lambdaFeatureHistory.wasRadarEverEnabled | Boolean | Whether Polaris Radar was ever enabled on the cluster. | 
-| RubrikPolaris.GPSCluster.lambdaFeatureHistory.wasSonarEverEnabled | Boolean | Whether Polaris Sonar was ever enabled on the cluster. | 
-| RubrikPolaris.PageToken.GPSCluster.has_next_page | Boolean | Whether the result has the next page or not. | 
-| RubrikPolaris.PageToken.GPSCluster.name | String | Name of the command. | 
-| RubrikPolaris.PageToken.GPSCluster.next_page_token | String | Next page token. | 
-#### Command Example
-```!rubrik-gps-cluster-list name="sand1"```
-#### Human Readable Output
-### GPS Clusters
-|Cluster ID|Cluster Name|Connection Status|Cluster Location|Total Capacity|Free Space|Protected Objects|Cluster Version|IP Address|
-|---|---|---|---|---|---|---|---|---|
-| cc19573c-db6c-418a-9d48-067a256543ba | sand1-rbk01 | Connected | San Francisco, CA, USA | 52.605821063168 TB | 45.484602130432 TB | 205 | 7.0.0-EA1-14307 | X.X.X.X, X.X.X.X |
-### rubrik-radar-ioc-scan-list
-***
-Lists the running/completed IOC scans on a cluster.
-Note: To know the results of the scan use the "rubrik-radar-ioc-scan-results" command. To initiate a scan use the "rubrik-radar-ioc-scan" command.
-#### Base Command
-`rubrik-radar-ioc-scan-list`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| cluster_id | ID of the cluster whose IOC scans are to be listed.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Required | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.RadarIOCScan.id | String | ID of the IOC scan. | 
-| RubrikPolaris.RadarIOCScan.startTime | String | Start time of the scan. | 
-| RubrikPolaris.RadarIOCScan.endTime | String | End time of the scan. | 
-| RubrikPolaris.RadarIOCScan.snapshots.id | String | Object ID of the system. | 
-| RubrikPolaris.RadarIOCScan.snapshots.snapshots | Unknown | List of snapshot IDs that are included in the scan. | 
-#### Command Example
-```!rubrik-radar-ioc-scan-list cluster_id="052bf7af-93a3-44e9-a7d7-bc8dad4d6b43"```
-#### Human Readable Output
-### Radar IOC Scans
-|Scan ID|Start Time|End Time|Scanned Objects|
-|---|---|---|---|
-| fcac511b-20b4-472d-9b65-9198cff8cd49 | 2021-10-12T04:52:08.777Z | Not Finished | VirtualMachine:::90da5ffb-432f-4dac-8c73-39260ff5493e-vm-5952003d-f95c-4ae0-bf9b-b5a80b210935 |
-| ad435ff1-617b-468a-b5d3-736fa0e278b0 | 2021-10-28T06:05:53.059Z | 2021-10-28T07:16:16.715Z | VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-72277, VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-72279 |
-### rubrik-gps-vm-recover-files
-***
-Recovers files from a snapshot backup, back into a system.
-Note: To know about the recovery status, use the "rubrik-gps-async-result" command.
-#### Base Command
-`rubrik-gps-vm-recover-files`
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| cluster_id | ID of the cluster where the snapshot resides.<br/><br/>Note: Users can get the cluster ID by executing the "rubrik-gps-cluster-list" command. | Required | 
-| snapshot_id | ID of the snapshot from which to recover files.<br/><br/>Note: Users can get the snapshot ID by executing the "rubrik-polaris-vm-object-snapshot-list" command. | Required | 
-| paths_to_recover | Comma separated paths of files and directories that will be recovered from the snapshot.<br/><br/>Note: Users can get the list of paths in a snapshot by executing the "rubrik-gps-snapshot-files-list" command. | Required | 
-| restore_path | Path on the destination object on which recovery will be done. | Required | 
-| destination_object_id | ID of the object where the files will be restored into. If not provided, Rubrik will use the snapshots object.<br/><br/>Note: Users can get the object ID by executing the "rubrik-polaris-vm-objects-list" command. | Optional | 
-#### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RubrikPolaris.GPSVMRecoverFiles.id | String | Recover files request ID. | 
-#### Command Example
-```!rubrik-gps-vm-recover-files cluster_id="052bf7af-93a3-44e9-a7d7-bc8dad4d6b43" snapshot_id="e2a0ffa8-82a3-518b-8532-0608a0e7380f" path_to_recover="/bin,/boot" restore_path="/tmp/backup1"```
-#### Human Readable Output
-### GPS VM Recover Files
-|Recover Files Request ID|
-|---|
-| dummy_id |
+RES_JSON_IR = {
+    "created_on": "2021-03-26T20:09:55.000Z",
+    "display_text": "Russian Responses to Geopolitical Challenges Include Cyber-Threat Activity against Energy Industry Entities",
+    "dynamic_properties": {},
+    "index_timestamp": "2022-02-22T23:42:04.231Z",
+    "key": "749eebc0-8d03-4384-a4c5-5e309735b311",
+    "last_modified": "2022-02-08T18:27:58.000Z",
+    "last_published": "2021-03-26T20:09:55.000Z",
+    "links": [
+        {
+            "created_on": "2022-01-07T19:02:52.000Z",
+            "display_text": "Feared Russian Invasion of Ukraine Could Have Global Impacts in Cyberspace",
+            "key": "b4511cfd-3d13-4092-9275-35b058c246ec",
+            "relationship": "mentions",
+            "relationship_created_on": "2022-01-07T19:02:52.000Z",
+            "relationship_last_published": "2022-01-07T19:02:52.000Z",
+            "type": "intelligence_alert",
+            "uuid": "edcb0ff2-6598-45fb-ae1c-4eb273032f56",
+            "href": "/rest/document/v0/edcb0ff2-6598-45fb-ae1c-4eb273032f56"
+        },
+        {
+            "created_on": "2021-01-06T16:53:13.000Z",
+            "display_text": "Suspected Russian Breaches of US Government and Critical Infrastructure Align with Russian Strategic Interests",
+            "key": "d01c0e25-ed38-4312-b679-8854bf29b5d2",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_report",
+            "uuid": "eb77c712-fcfd-48f6-9533-baa18131fb62",
+            "href": "/rest/document/v0/eb77c712-fcfd-48f6-9533-baa18131fb62"
+        },
+        {
+            "created_on": "2022-02-22T21:33:12.000Z",
+            "display_text": "SITREP: Ukraine Crisis",
+            "key": "0ae44727-6fef-4dcb-9928-8eed0c3bcd3e",
+            "relationship": "mentions",
+            "relationship_created_on": "2022-02-22T23:39:39.000Z",
+            "relationship_last_published": "2022-02-22T23:39:39.000Z",
+            "type": "intelligence_alert",
+            "uuid": "f1862833-80de-4880-a180-11fad373e896",
+            "href": "/rest/document/v0/f1862833-80de-4880-a180-11fad373e896"
+        },
+        {
+            "created_on": "2016-07-21T22:42:19.000Z",
+            "display_text": "Texaco",
+            "key": "Texaco",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "target_organization",
+            "uuid": "d9e7c8b1-bce2-43fa-a3ae-bc1caa0f0d22",
+            "href": "/rest/fundamental/v0/d9e7c8b1-bce2-43fa-a3ae-bc1caa0f0d22"
+        },
+        {
+            "created_on": "2015-08-21T00:00:00.000Z",
+            "display_text": "CSX",
+            "key": "CSX",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "target_organization",
+            "uuid": "4c1ea572-f5d7-46b7-870e-e81821f5316c",
+            "href": "/rest/fundamental/v0/4c1ea572-f5d7-46b7-870e-e81821f5316c"
+        },
+        {
+            "created_on": "2007-04-12T00:00:00.000Z",
+            "display_text": "Turkmenistan",
+            "key": "Turkmenistan",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "a130bfe9-390d-4c83-b75e-c1f050e41820",
+            "href": "/rest/fundamental/v0/a130bfe9-390d-4c83-b75e-c1f050e41820"
+        },
+        {
+            "created_on": "2003-09-27T00:00:00.000Z",
+            "display_text": "Germany",
+            "key": "Germany",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "ee03c799-980c-4998-8240-dc400eebe325",
+            "href": "/rest/fundamental/v0/ee03c799-980c-4998-8240-dc400eebe325"
+        },
+        {
+            "created_on": "2003-12-15T00:00:00.000Z",
+            "display_text": "Denmark",
+            "key": "Denmark",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "f77916a1-655f-4424-91c9-124a289c6abd",
+            "href": "/rest/fundamental/v0/f77916a1-655f-4424-91c9-124a289c6abd"
+        },
+        {
+            "created_on": "2012-08-13T16:42:49.000Z",
+            "display_text": "Iran",
+            "key": "Iran",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "516a2391-b1b6-42e2-adce-ad3410cb15f8",
+            "href": "/rest/fundamental/v0/516a2391-b1b6-42e2-adce-ad3410cb15f8"
+        },
+        {
+            "created_on": "2016-06-16T16:04:46.000Z",
+            "display_text": "Guccifer",
+            "key": "Guccifer",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "threat_actor",
+            "uuid": "1e01d510-6b3a-47a7-ab95-967105695d1f",
+            "href": "/rest/fundamental/v0/1e01d510-6b3a-47a7-ab95-967105695d1f"
+        },
+        {
+            "created_on": "2015-08-03T15:06:38.000Z",
+            "display_text": "JACKMACKEREL",
+            "key": "JACKMACKEREL",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "threat_group",
+            "uuid": "24a38270-949f-442a-aac6-53a99ef1ea70",
+            "href": "/rest/fundamental/v0/24a38270-949f-442a-aac6-53a99ef1ea70"
+        },
+        {
+            "created_on": "2017-06-16T16:02:30.000Z",
+            "display_text": "SANDFISH",
+            "key": "SANDFISH",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "threat_group",
+            "uuid": "40d2cf30-237a-467b-826d-390f12cc27f0",
+            "href": "/rest/fundamental/v0/40d2cf30-237a-467b-826d-390f12cc27f0"
+        },
+        {
+            "created_on": "2019-06-17T12:07:03.000Z",
+            "display_text": "ZANDER",
+            "key": "ZANDER",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "threat_group",
+            "uuid": "a363a7ca-1d5d-4477-9ce9-e9259cb888e4",
+            "href": "/rest/fundamental/v0/a363a7ca-1d5d-4477-9ce9-e9259cb888e4"
+        },
+        {
+            "created_on": "2016-09-13T16:26:36.000Z",
+            "display_text": "Fancy Bears Hack Team",
+            "key": "Fancy Bears Hack Team",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "threat_group",
+            "uuid": "ec08d6ad-5c32-44b9-bde3-bdfe9e1c76c5",
+            "href": "/rest/fundamental/v0/ec08d6ad-5c32-44b9-bde3-bdfe9e1c76c5"
+        },
+        {
+            "created_on": "2013-03-25T18:40:44.000Z",
+            "display_text": "BLACK GHOST KNIFEFISH",
+            "key": "BLACK GHOST KNIFEFISH",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "threat_group",
+            "uuid": "27332f70-302c-491a-85f2-3714218296b8",
+            "href": "/rest/fundamental/v0/27332f70-302c-491a-85f2-3714218296b8"
+        },
+        {
+            "created_on": "2018-01-30T19:03:24.000Z",
+            "display_text": "GandCrab",
+            "key": "GandCrab",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malware_family",
+            "uuid": "8f5bc13f-ee79-4ee6-9cf2-d9a6318b5ed4",
+            "href": "/rest/fundamental/v0/8f5bc13f-ee79-4ee6-9cf2-d9a6318b5ed4"
+        },
+        {
+            "created_on": "2018-12-04T19:10:02.000Z",
+            "display_text": "Defense & Public Safety",
+            "key": "Defense & Public Safety",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "vertical",
+            "uuid": "b0b0d8bd-1c9f-4062-9c51-f33a79c736af",
+            "href": "/rest/fundamental/v0/b0b0d8bd-1c9f-4062-9c51-f33a79c736af"
+        },
+        {
+            "created_on": "2021-02-15T15:38:34.000Z",
+            "display_text": "SANDFISH Continues to Exploit Exim Mail Transfer Agents",
+            "key": "82319acb-65eb-48b3-bbb3-61b34f53addf",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_alert",
+            "uuid": "55004ca2-e598-460f-bb0c-8ef6f37b7bca",
+            "href": "/rest/document/v0/55004ca2-e598-460f-bb0c-8ef6f37b7bca"
+        },
+        {
+            "created_on": "2020-07-24T21:03:43.000Z",
+            "display_text": "US Officials Warn of Threats to Critical Infrastructure and Political Entities",
+            "key": "c0373503-7624-441a-b59b-b2163fc04ea7",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_alert",
+            "uuid": "575c5eef-0784-46cd-bf67-8e256d0c2fc7",
+            "href": "/rest/document/v0/575c5eef-0784-46cd-bf67-8e256d0c2fc7"
+        },
+        {
+            "created_on": "2020-10-28T17:35:45.000Z",
+            "display_text": "Russia-Linked BLACK GHOST KNIFEFISH Continues NTLM Harvesting Campaign, 2019 to 2020",
+            "key": "580f8d37-f834-4331-ad79-c05fd96e0f78",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_alert",
+            "uuid": "c3ad35ce-1443-4ef2-b3e2-1a3548605528",
+            "href": "/rest/document/v0/c3ad35ce-1443-4ef2-b3e2-1a3548605528"
+        },
+        {
+            "created_on": "2017-01-07T16:26:16.000Z",
+            "display_text": "Aggressive Defensiveness: Russian Information Operations against the US Political System",
+            "key": "48d85d37-8adf-41c2-9bbe-d23b335a3bc3",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_alert",
+            "uuid": "79e6008d-ddd4-472d-b574-5ad1a769e096",
+            "href": "/rest/document/v0/79e6008d-ddd4-472d-b574-5ad1a769e096"
+        },
+        {
+            "created_on": "2018-04-17T19:57:28.000Z",
+            "display_text": "Joint US-UK Threat Alert Warns of Russian Government Targeting of Network Infrastructure Devices Worldwide",
+            "key": "fa7dd2fa-84ca-4066-90fb-04f91b39c07b",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_alert",
+            "uuid": "21ab89f6-1ac1-4cc3-83f6-233a5d7473cf",
+            "href": "/rest/document/v0/21ab89f6-1ac1-4cc3-83f6-233a5d7473cf"
+        },
+        {
+            "created_on": "2020-08-19T19:31:42.000Z",
+            "display_text": "Roundup of Notable Ransomware Events with a Focus on Energy and Utility Sectors (January 2020 – August 2020)",
+            "key": "3129d754-caf2-425f-8684-3b5edc581776",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_report",
+            "uuid": "999b6c55-3cb8-4372-affb-bcc9c47dd95b",
+            "href": "/rest/document/v0/999b6c55-3cb8-4372-affb-bcc9c47dd95b"
+        },
+        {
+            "created_on": "2021-06-16T18:23:09.000Z",
+            "display_text": "iDefense Global Research Intelligence Digest for 16 June 2021",
+            "key": "b0dcf12f-1107-4ecc-ae1e-b558f26c0198",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-06-16T18:23:09.000Z",
+            "relationship_last_published": "2021-06-16T18:23:09.000Z",
+            "type": "intelligence_alert",
+            "uuid": "1c808eb6-0bfb-4468-8f16-321b51855c3e",
+            "href": "/rest/document/v0/1c808eb6-0bfb-4468-8f16-321b51855c3e"
+        },
+        {
+            "created_on": "2020-08-10T15:46:02.000Z",
+            "display_text": "DoppelPaymer",
+            "key": "DoppelPaymer",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malware_family",
+            "uuid": "7403e958-17b1-4928-b876-7269da5f76b6",
+            "href": "/rest/fundamental/v0/7403e958-17b1-4928-b876-7269da5f76b6"
+        },
+        {
+            "created_on": "2006-02-16T00:00:00.000Z",
+            "display_text": "Noble",
+            "key": "Noble",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "target_organization",
+            "uuid": "3781e538-9ff4-4c1e-823e-288698c926d3",
+            "href": "/rest/fundamental/v0/3781e538-9ff4-4c1e-823e-288698c926d3"
+        },
+        {
+            "created_on": "2016-11-23T15:14:22.000Z",
+            "display_text": "Odebrecht",
+            "key": "Odebrecht",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "target_organization",
+            "uuid": "c7bb4db8-d2af-4aff-97b0-b397b0419296",
+            "href": "/rest/fundamental/v0/c7bb4db8-d2af-4aff-97b0-b397b0419296"
+        },
+        {
+            "created_on": "2017-01-11T14:52:30.000Z",
+            "display_text": "NATO",
+            "key": "NATO",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "target_organization",
+            "uuid": "830eece9-82bd-4cb8-ab2a-123e855377eb",
+            "href": "/rest/fundamental/v0/830eece9-82bd-4cb8-ab2a-123e855377eb"
+        },
+        {
+            "created_on": "2018-12-04T19:10:01.000Z",
+            "display_text": "Noble Energy",
+            "key": "Noble Energy",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "target_organization",
+            "uuid": "72937e93-85c9-4c27-8ee7-fc565f7609c8",
+            "href": "/rest/fundamental/v0/72937e93-85c9-4c27-8ee7-fc565f7609c8"
+        },
+        {
+            "created_on": "2003-08-01T00:00:00.000Z",
+            "display_text": "China",
+            "key": "China",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "917ef603-93eb-4830-9dc3-8a4e4828b4c3",
+            "href": "/rest/fundamental/v0/917ef603-93eb-4830-9dc3-8a4e4828b4c3"
+        },
+        {
+            "created_on": "2003-08-01T00:00:00.000Z",
+            "display_text": "Mexico",
+            "key": "Mexico",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "a664e2ae-5c24-454f-a75b-3d24e9d80938",
+            "href": "/rest/fundamental/v0/a664e2ae-5c24-454f-a75b-3d24e9d80938"
+        },
+        {
+            "created_on": "2008-05-29T21:29:21.000Z",
+            "display_text": "United Kingdom",
+            "key": "United Kingdom",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "05d70c8e-c9e1-48a2-a30e-0228996d5df2",
+            "href": "/rest/fundamental/v0/05d70c8e-c9e1-48a2-a30e-0228996d5df2"
+        },
+        {
+            "created_on": "2021-03-03T16:08:19.000Z",
+            "display_text": "CLOP",
+            "key": "CLOP",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "threat_group",
+            "uuid": "d6f3dc92-0f8e-4a5c-b216-744976b0a5a9",
+            "href": "/rest/fundamental/v0/d6f3dc92-0f8e-4a5c-b216-744976b0a5a9"
+        },
+        {
+            "created_on": "2015-07-31T18:42:50.000Z",
+            "display_text": "SNAKEMACKEREL",
+            "key": "SNAKEMACKEREL",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "threat_group",
+            "uuid": "065336a6-651d-4f80-b8c2-9347f4486912",
+            "href": "/rest/fundamental/v0/065336a6-651d-4f80-b8c2-9347f4486912"
+        },
+        {
+            "created_on": "2016-10-19T17:39:17.000Z",
+            "display_text": "BELUGASTURGEON",
+            "key": "BELUGASTURGEON",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "threat_group",
+            "uuid": "fb53e479-54e1-4827-abb4-ae1ae1db53e2",
+            "href": "/rest/fundamental/v0/fb53e479-54e1-4827-abb4-ae1ae1db53e2"
+        },
+        {
+            "created_on": "2015-07-31T17:14:39.000Z",
+            "display_text": "Federal Security Service of the Russian Federation (Федеральная служба безопасности Российской Федерации)",
+            "key": "Federal Security Service of the Russian Federation (Федеральная служба безопасности Российской Федерации)",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "threat_group",
+            "uuid": "d96f3b14-462b-4ab4-aa04-23c7a2996611",
+            "href": "/rest/fundamental/v0/d96f3b14-462b-4ab4-aa04-23c7a2996611"
+        },
+        {
+            "created_on": "2017-01-03T18:16:36.000Z",
+            "display_text": "Main Directorate of the General Staff of the Armed Forces of the Russian Federation (GRU)",
+            "key": "Main Directorate of the General Staff of the Armed Forces of the Russian Federation (GRU)",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "threat_group",
+            "uuid": "675cb6f9-ecab-4c3f-a5c2-9d163d707500",
+            "href": "/rest/fundamental/v0/675cb6f9-ecab-4c3f-a5c2-9d163d707500"
+        },
+        {
+            "created_on": "2017-06-15T18:06:42.000Z",
+            "display_text": "CRASHOVERRIDE",
+            "key": "CRASHOVERRIDE",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malware_family",
+            "uuid": "88704197-8308-4837-bd44-d2d46bd1ac1d",
+            "href": "/rest/fundamental/v0/88704197-8308-4837-bd44-d2d46bd1ac1d"
+        },
+        {
+            "created_on": "2018-01-02T01:07:28.000Z",
+            "display_text": "Triton",
+            "key": "Triton",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malware_family",
+            "uuid": "68ff5563-b940-4d0e-9bc2-535990747f9b",
+            "href": "/rest/fundamental/v0/68ff5563-b940-4d0e-9bc2-535990747f9b"
+        },
+        {
+            "created_on": "2015-07-24T16:45:47.000Z",
+            "display_text": "Media",
+            "key": "Media",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "vertical",
+            "uuid": "bb9bdd2d-180e-41d2-b5c8-08a2062998ca",
+            "href": "/rest/fundamental/v0/bb9bdd2d-180e-41d2-b5c8-08a2062998ca"
+        },
+        {
+            "created_on": "2018-12-04T19:10:01.000Z",
+            "display_text": "Oil & Gas",
+            "key": "Oil & Gas",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "vertical",
+            "uuid": "0aa7b554-b07f-42b4-a904-92da408d9be5",
+            "href": "/rest/fundamental/v0/0aa7b554-b07f-42b4-a904-92da408d9be5"
+        },
+        {
+            "created_on": "2017-06-28T18:14:43.000Z",
+            "display_text": "GreyEnergy",
+            "key": "GreyEnergy",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "threat_campaign",
+            "uuid": "b0585685-aaac-44b4-b93b-733d30eaeb6e",
+            "href": "/rest/fundamental/v0/b0585685-aaac-44b4-b93b-733d30eaeb6e"
+        },
+        {
+            "created_on": "2021-03-23T17:35:09.000Z",
+            "display_text": "What Happened to SANDFISH’s GreyEnergy?",
+            "key": "882ed9d3-9d7c-4004-9f3c-cf72300eced1",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_alert",
+            "uuid": "f0289fe9-c076-437b-984f-71f17d6f7950",
+            "href": "/rest/document/v0/f0289fe9-c076-437b-984f-71f17d6f7950"
+        },
+        {
+            "created_on": "2019-10-22T19:26:22.000Z",
+            "display_text": "iDefense Global Research Intelligence Digest for October 22, 2019",
+            "key": "08595e22-0390-43ec-968d-c910e5c4d621",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_alert",
+            "uuid": "6f668357-bd6a-4a04-876d-20bd840e0788",
+            "href": "/rest/document/v0/6f668357-bd6a-4a04-876d-20bd840e0788"
+        },
+        {
+            "created_on": "2017-06-27T20:55:03.000Z",
+            "display_text": "Global Petya Ransomware Outbreak Cripples Major Companies Worldwide",
+            "key": "10c18a7a-741f-43ba-b0a9-24fd42684ccf",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_alert",
+            "uuid": "e4cac05c-83a4-40e3-b8b2-190c7c405ee0",
+            "href": "/rest/document/v0/e4cac05c-83a4-40e3-b8b2-190c7c405ee0"
+        },
+        {
+            "created_on": "2021-03-10T20:56:12.000Z",
+            "display_text": "CLOP Ransomware Operators Leak CGG Data on Name-and-Shame Site on 1 March 2021",
+            "key": "a626ee22-fe70-4ca6-a18b-0270fb0229c5",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malicious_event",
+            "uuid": "c069f7c1-7b22-4713-a1d9-b1ba041602e8",
+            "href": "/rest/fundamental/v0/c069f7c1-7b22-4713-a1d9-b1ba041602e8"
+        },
+        {
+            "created_on": "2021-03-10T16:32:46.000Z",
+            "display_text": "CLOP Ransomware Operators Leak CSX Documents on Name-and-Shame Site on 2 March 2021",
+            "key": "4b0cd263-8e2b-4a0e-b6f8-7d9b7d623d6c",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malicious_event",
+            "uuid": "0e1a64c4-e283-457b-b615-9863436b0dbd",
+            "href": "/rest/fundamental/v0/0e1a64c4-e283-457b-b615-9863436b0dbd"
+        },
+        {
+            "created_on": "2018-11-06T20:59:09.000Z",
+            "display_text": "Account GandCrab Burnishes Patriotic Credentials By Showing Sympathy for Syria",
+            "key": "3b4e7772-29e4-424a-9b41-3b9d6759c7f6",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malicious_event",
+            "uuid": "ff63b317-2de3-4ba3-828a-d294eab5b91f",
+            "href": "/rest/fundamental/v0/ff63b317-2de3-4ba3-828a-d294eab5b91f"
+        },
+        {
+            "created_on": "2021-03-23T17:41:46.000Z",
+            "display_text": "US and Russia Trade Threats, Raising Fears of Further Cyber Threat Activity",
+            "key": "762ebeea-4cc1-45c4-af25-67ddcccb8602",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-30T23:18:03.000Z",
+            "relationship_last_published": "2021-03-30T23:18:03.000Z",
+            "type": "intelligence_alert",
+            "uuid": "3ee020e9-c64f-4c3f-8162-73f80ad85863",
+            "href": "/rest/document/v0/3ee020e9-c64f-4c3f-8162-73f80ad85863"
+        },
+        {
+            "created_on": "2021-04-21T17:48:14.000Z",
+            "display_text": "iDefense Global Research Intelligence Digest for 21 April 2021",
+            "key": "e348ab03-75d3-46ba-b00c-7a965da65f5d",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-04-21T17:48:14.000Z",
+            "relationship_last_published": "2021-04-21T17:48:14.000Z",
+            "type": "intelligence_alert",
+            "uuid": "2149d045-5085-419f-a1c8-1b6acb2d9609",
+            "href": "/rest/document/v0/2149d045-5085-419f-a1c8-1b6acb2d9609"
+        },
+        {
+            "created_on": "2021-10-08T01:20:03.000Z",
+            "display_text": "Arrest of Russian Cybersecurity Firm's Founder Highlights Russia’s Complex and Dangerous Business Environment",
+            "key": "fe0c6c41-9a7e-492a-a268-700b0d41ed6b",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-10-08T01:20:03.000Z",
+            "relationship_last_published": "2021-10-08T01:20:03.000Z",
+            "type": "intelligence_alert",
+            "uuid": "7af3126f-2f88-4941-bf09-3521cb7889b7",
+            "href": "/rest/document/v0/7af3126f-2f88-4941-bf09-3521cb7889b7"
+        },
+        {
+            "created_on": "2004-08-17T00:00:00.000Z",
+            "display_text": "Turkey",
+            "key": "Turkey",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "9da2b237-dfde-4c8e-a0c1-158cbb15aa3f",
+            "href": "/rest/fundamental/v0/9da2b237-dfde-4c8e-a0c1-158cbb15aa3f"
+        },
+        {
+            "created_on": "2003-12-15T00:00:00.000Z",
+            "display_text": "Norway",
+            "key": "Norway",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "0ab9aefb-1ccd-4151-957a-eff18b13b0af",
+            "href": "/rest/fundamental/v0/0ab9aefb-1ccd-4151-957a-eff18b13b0af"
+        },
+        {
+            "created_on": "2021-01-12T00:12:11.000Z",
+            "display_text": "SolarWinds Supply-Chain Campaign C2 Infrastructure Analysis",
+            "key": "2c18e53c-7dae-4edb-a126-6e3c09ed3003",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_alert",
+            "uuid": "7128fb11-2753-4f4d-aa51-2c13731f7dbe",
+            "href": "/rest/document/v0/7128fb11-2753-4f4d-aa51-2c13731f7dbe"
+        },
+        {
+            "created_on": "2019-11-20T18:17:09.000Z",
+            "display_text": "Ransomware Attack Hit Mexican Oil Company at Sensitive Time",
+            "key": "d67e0be4-5b61-4e57-8c17-0bf09ed5b8f3",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malicious_event",
+            "uuid": "05982e7e-b7d0-4203-a8a9-dd46ea769854",
+            "href": "/rest/fundamental/v0/05982e7e-b7d0-4203-a8a9-dd46ea769854"
+        },
+        {
+            "created_on": "2021-02-25T00:14:03.000Z",
+            "display_text": "DoppelPaymer Ransomware Reportedly Impacts Kia Motors, February 2021",
+            "key": "7d996ac8-262b-46c4-880d-bed6126b66e4",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malicious_event",
+            "uuid": "d009718a-25f6-491f-95f2-528d0a3d3f63",
+            "href": "/rest/fundamental/v0/d009718a-25f6-491f-95f2-528d0a3d3f63"
+        },
+        {
+            "created_on": "2021-04-19T15:20:14.000Z",
+            "display_text": "iDefense Global Research Intelligence Digest for 19 April 2021",
+            "key": "287df877-37b1-4ef1-8ecc-6bbc8c3b82e2",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-04-19T15:20:14.000Z",
+            "relationship_last_published": "2021-04-19T15:20:14.000Z",
+            "type": "intelligence_alert",
+            "uuid": "09b14293-ce79-4515-9041-de4cefe3cb6b",
+            "href": "/rest/document/v0/09b14293-ce79-4515-9041-de4cefe3cb6b"
+        },
+        {
+            "created_on": "2021-06-21T19:07:23.000Z",
+            "display_text": "Biden-Putin Summit May Produce a Lull but Is No Magic Bullet against Russian Cyber-Threat Activity",
+            "key": "e25f00ee-1b1a-4c35-ae5c-fece153143f6",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-06-21T19:07:23.000Z",
+            "relationship_last_published": "2021-06-21T19:07:23.000Z",
+            "type": "intelligence_alert",
+            "uuid": "28f24dd5-9c13-4116-8fbd-7e395f6aeee0",
+            "href": "/rest/document/v0/28f24dd5-9c13-4116-8fbd-7e395f6aeee0"
+        },
+        {
+            "created_on": "2021-09-16T16:25:36.000Z",
+            "display_text": "iDefense Global Research Intelligence Digest for 16 September 2021",
+            "key": "de33f9be-318e-49b9-acfe-3c8ea3ce91e1",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-09-16T16:25:36.000Z",
+            "relationship_last_published": "2021-09-16T16:25:36.000Z",
+            "type": "intelligence_alert",
+            "uuid": "69d0098b-9113-4914-a692-5b42d79f88ad",
+            "href": "/rest/document/v0/69d0098b-9113-4914-a692-5b42d79f88ad"
+        },
+        {
+            "created_on": "2021-11-05T21:25:11.000Z",
+            "display_text": "COP26 Climate Talks Convene amid Ongoing Energy-Related Espionage and Information Campaigns",
+            "key": "cd5bbb2d-9a0b-4553-934e-4d8a6b91b556",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-11-05T21:25:11.000Z",
+            "relationship_last_published": "2021-11-05T21:25:11.000Z",
+            "type": "intelligence_alert",
+            "uuid": "422c1698-1d2f-46c5-b581-3ec7893b9401",
+            "href": "/rest/document/v0/422c1698-1d2f-46c5-b581-3ec7893b9401"
+        },
+        {
+            "created_on": "2021-12-02T21:51:25.000Z",
+            "display_text": "Cyber Threats to the Energy Sector",
+            "key": "2b867306-ddb0-4ab8-be2a-4ac93cb2cb91",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-12-02T21:51:25.000Z",
+            "relationship_last_published": "2021-12-02T21:54:25.000Z",
+            "type": "intelligence_report",
+            "uuid": "c023236c-e981-45c4-94e4-38426e364a1f",
+            "href": "/rest/document/v0/c023236c-e981-45c4-94e4-38426e364a1f"
+        },
+        {
+            "created_on": "2016-01-25T10:37:24.000Z",
+            "display_text": "OPEC",
+            "key": "OPEC",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "target_organization",
+            "uuid": "b09a4448-fc15-4540-882b-03cfd3cebf98",
+            "href": "/rest/fundamental/v0/b09a4448-fc15-4540-882b-03cfd3cebf98"
+        },
+        {
+            "created_on": "2018-12-04T19:10:01.000Z",
+            "display_text": "Schlumberger",
+            "key": "Schlumberger",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "target_organization",
+            "uuid": "edcf95d2-a28a-4667-930f-9dc103716c23",
+            "href": "/rest/fundamental/v0/edcf95d2-a28a-4667-930f-9dc103716c23"
+        },
+        {
+            "created_on": "2018-12-04T19:10:01.000Z",
+            "display_text": "Chevron",
+            "key": "Chevron",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "target_organization",
+            "uuid": "c52f6188-5bf5-4c5d-a83d-6e2eca9cd4b6",
+            "href": "/rest/fundamental/v0/c52f6188-5bf5-4c5d-a83d-6e2eca9cd4b6"
+        },
+        {
+            "created_on": "2016-06-30T18:42:30.000Z",
+            "display_text": "YouTube",
+            "key": "YouTube",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "target_organization",
+            "uuid": "0249a9ed-d2ac-4a0a-a2f2-85abe57ae4e7",
+            "href": "/rest/fundamental/v0/0249a9ed-d2ac-4a0a-a2f2-85abe57ae4e7"
+        },
+        {
+            "created_on": "2012-11-27T15:41:47.000Z",
+            "display_text": "Syria",
+            "key": "Syria",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "1e25cb18-113a-41c7-ab12-de2976728eae",
+            "href": "/rest/fundamental/v0/1e25cb18-113a-41c7-ab12-de2976728eae"
+        },
+        {
+            "created_on": "2006-12-22T00:00:00.000Z",
+            "display_text": "Azerbaijan",
+            "key": "Azerbaijan",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "c7a27c94-d97a-420a-8858-9288b184c62e",
+            "href": "/rest/fundamental/v0/c7a27c94-d97a-420a-8858-9288b184c62e"
+        },
+        {
+            "created_on": "2003-12-15T00:00:00.000Z",
+            "display_text": "Netherlands",
+            "key": "Netherlands",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "4b4e3c26-44b9-40ce-947d-a399f53f9c7f",
+            "href": "/rest/fundamental/v0/4b4e3c26-44b9-40ce-947d-a399f53f9c7f"
+        },
+        {
+            "created_on": "2018-02-20T17:16:22.000Z",
+            "display_text": "GandCrab",
+            "key": "GandCrab",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "threat_group",
+            "uuid": "8538b5a4-bc67-4222-9310-0c9118b0af22",
+            "href": "/rest/fundamental/v0/8538b5a4-bc67-4222-9310-0c9118b0af22"
+        },
+        {
+            "created_on": "2018-02-12T16:41:05.000Z",
+            "display_text": "Foreign Intelligence Service of the Russian Federation (Служба Внешней Разведки Российской Федерации)",
+            "key": "Foreign Intelligence Service of the Russian Federation (Служба Внешней Разведки Российской Федерации)",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "threat_group",
+            "uuid": "11759430-3417-4772-9723-43bb38fe2280",
+            "href": "/rest/fundamental/v0/11759430-3417-4772-9723-43bb38fe2280"
+        },
+        {
+            "created_on": "2018-10-15T13:42:56.000Z",
+            "display_text": "Exaramel",
+            "key": "Exaramel",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malware_family",
+            "uuid": "5cc66934-6ff0-4c37-84eb-4cc62ba28255",
+            "href": "/rest/fundamental/v0/5cc66934-6ff0-4c37-84eb-4cc62ba28255"
+        },
+        {
+            "created_on": "2021-03-12T17:13:00.000Z",
+            "display_text": "GreyEnergy",
+            "key": "GreyEnergy",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malware_family",
+            "uuid": "c34f2ace-6438-4920-9167-027907689eaa",
+            "href": "/rest/fundamental/v0/c34f2ace-6438-4920-9167-027907689eaa"
+        },
+        {
+            "created_on": "2018-12-04T19:09:56.000Z",
+            "display_text": "Industrial",
+            "key": "Industrial",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "vertical",
+            "uuid": "fb065f1a-2619-47e8-98fa-30415e3edb9f",
+            "href": "/rest/fundamental/v0/fb065f1a-2619-47e8-98fa-30415e3edb9f"
+        },
+        {
+            "created_on": "2008-05-20T21:02:50.000Z",
+            "display_text": "Western Asia",
+            "key": "Western Asia",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "region",
+            "uuid": "53b59355-e4e6-40c7-ba89-002cabec9781",
+            "href": "/rest/fundamental/v0/53b59355-e4e6-40c7-ba89-002cabec9781"
+        },
+        {
+            "created_on": "2021-02-20T18:56:36.000Z",
+            "display_text": "SITREP: Accellion FTA",
+            "key": "87fc1b24-2f1a-40b6-8282-2594335a50a3",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_alert",
+            "uuid": "c68c3558-7540-4a74-9af3-5b1d243f852e",
+            "href": "/rest/document/v0/c68c3558-7540-4a74-9af3-5b1d243f852e"
+        },
+        {
+            "created_on": "2020-01-20T20:08:16.000Z",
+            "display_text": "Putin Power Transfer Plan Marks New Uncertainties in Balance between Globalism and “Sovereignty”",
+            "key": "0def1e52-2034-4a7f-b535-aa3b6c143cc1",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_alert",
+            "uuid": "fffd1701-8cd3-4237-b11b-31270d686f61",
+            "href": "/rest/document/v0/fffd1701-8cd3-4237-b11b-31270d686f61"
+        },
+        {
+            "created_on": "2020-06-09T07:52:43.000Z",
+            "display_text": "iDefense Global Research Intelligence Digest for June 8, 2020",
+            "key": "bdb05bba-049d-4056-906f-3349336d52f1",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_alert",
+            "uuid": "6613f584-7728-4bd4-9dd7-103aef9b30ec",
+            "href": "/rest/document/v0/6613f584-7728-4bd4-9dd7-103aef9b30ec"
+        },
+        {
+            "created_on": "2018-11-27T16:09:30.000Z",
+            "display_text": "Anonymous Yet Familiar: The Use of False Personas by Russian Cyberinformation Operations",
+            "key": "e9e43a5a-caa5-458d-9bc4-3c483cf0394d",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_report",
+            "uuid": "bd237f19-3b9f-4ea1-8f32-b9edd4667126",
+            "href": "/rest/document/v0/bd237f19-3b9f-4ea1-8f32-b9edd4667126"
+        },
+        {
+            "created_on": "2020-09-11T21:01:17.000Z",
+            "display_text": "Cyprus at Center of Eastern Mediterranean Gas Dispute",
+            "key": "Cyprus at Center of Eastern Mediterranean Gas Dispute",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "global_event",
+            "uuid": "d8e7c996-cfc3-4050-8b51-46a1dc517896",
+            "href": "/rest/fundamental/v0/d8e7c996-cfc3-4050-8b51-46a1dc517896"
+        },
+        {
+            "created_on": "2021-04-07T22:11:42.000Z",
+            "display_text": "iDefense Global Research Intelligence Digest for 7 April 2021",
+            "key": "aaeb9511-6a7b-4c8f-a882-cfc0d8b4f321",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-04-07T22:11:42.000Z",
+            "relationship_last_published": "2021-04-07T22:11:42.000Z",
+            "type": "intelligence_alert",
+            "uuid": "ca097435-e5a7-4f11-9704-888617088676",
+            "href": "/rest/document/v0/ca097435-e5a7-4f11-9704-888617088676"
+        },
+        {
+            "created_on": "2021-04-19T18:02:29.000Z",
+            "display_text": "Amid Russia-Ukraine Hostilities and US Sanctions Pressure, Russian Media Chief Predicts Cyber War",
+            "key": "f7fc303e-994f-4802-b4a0-ca2a591673c3",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-04-19T18:02:29.000Z",
+            "relationship_last_published": "2021-04-19T18:02:29.000Z",
+            "type": "intelligence_alert",
+            "uuid": "31be69cd-647e-4209-828c-33659d288aa3",
+            "href": "/rest/document/v0/31be69cd-647e-4209-828c-33659d288aa3"
+        },
+        {
+            "created_on": "2004-07-07T00:00:00.000Z",
+            "display_text": "Russian Federation",
+            "key": "Russian Federation",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "97807e5c-65d2-4023-ba96-c44cb0c16dc5",
+            "href": "/rest/fundamental/v0/97807e5c-65d2-4023-ba96-c44cb0c16dc5"
+        },
+        {
+            "created_on": "2021-11-13T01:22:43.000Z",
+            "display_text": "Ransomware Attacks on US Critical Infrastructure Align with Russian Strategy",
+            "key": "d6ee5344-fa61-4eb3-81e1-0cec21b731b0",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-11-13T01:22:43.000Z",
+            "relationship_last_published": "2021-11-13T01:22:43.000Z",
+            "type": "intelligence_alert",
+            "uuid": "a7f69280-dbcc-4426-b3e9-f851f0603e94",
+            "href": "/rest/document/v0/a7f69280-dbcc-4426-b3e9-f851f0603e94"
+        },
+        {
+            "created_on": "2007-04-12T00:00:00.000Z",
+            "display_text": "Kazakhstan",
+            "key": "Kazakhstan",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2022-01-10T21:09:04.000Z",
+            "type": "country",
+            "uuid": "cb1de5ae-ec20-4ac1-9561-46425fce81b8",
+            "href": "/rest/fundamental/v0/cb1de5ae-ec20-4ac1-9561-46425fce81b8"
+        },
+        {
+            "created_on": "2022-02-02T18:54:34.000Z",
+            "display_text": "Cyber Threats Target NATO Countries’ Transportation and Energy Infrastructure Amid Tension with Russia",
+            "key": "5f56287d-89ad-4f5d-b7e9-2a9267193e0a",
+            "relationship": "mentions",
+            "relationship_created_on": "2022-02-02T18:54:34.000Z",
+            "relationship_last_published": "2022-02-02T18:54:34.000Z",
+            "type": "malicious_event",
+            "uuid": "ffd3f586-f9f9-4538-b906-45f80a358662",
+            "href": "/rest/fundamental/v0/ffd3f586-f9f9-4538-b906-45f80a358662"
+        },
+        {
+            "created_on": "2016-12-29T10:08:23.000Z",
+            "display_text": "Syria",
+            "key": "Syria",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "target_organization",
+            "uuid": "50eac797-06e6-48ec-afd3-cc972ec6c3c9",
+            "href": "/rest/fundamental/v0/50eac797-06e6-48ec-afd3-cc972ec6c3c9"
+        },
+        {
+            "created_on": "2018-12-04T19:10:01.000Z",
+            "display_text": "LukOil",
+            "key": "LukOil",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "target_organization",
+            "uuid": "766e636d-2889-4a24-9af3-b3b30b5fce27",
+            "href": "/rest/fundamental/v0/766e636d-2889-4a24-9af3-b3b30b5fce27"
+        },
+        {
+            "created_on": "2015-11-09T16:45:06.000Z",
+            "display_text": "NASA",
+            "key": "NASA",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "target_organization",
+            "uuid": "243a1daf-21cf-413f-b1c5-83081336f47b",
+            "href": "/rest/fundamental/v0/243a1daf-21cf-413f-b1c5-83081336f47b"
+        },
+        {
+            "created_on": "2017-01-23T12:49:36.000Z",
+            "display_text": "Total",
+            "key": "Total",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "target_organization",
+            "uuid": "72ab7eb0-8977-4686-8218-e9231271184e",
+            "href": "/rest/fundamental/v0/72ab7eb0-8977-4686-8218-e9231271184e"
+        },
+        {
+            "created_on": "2008-05-07T00:00:00.000Z",
+            "display_text": "Cyprus",
+            "key": "Cyprus",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "b4934110-edb0-4d29-8d42-b035f627f4af",
+            "href": "/rest/fundamental/v0/b4934110-edb0-4d29-8d42-b035f627f4af"
+        },
+        {
+            "created_on": "2005-02-08T00:00:00.000Z",
+            "display_text": "Libya",
+            "key": "Libya",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "a8aeac54-fc9a-434c-a9ba-1aeebf76721b",
+            "href": "/rest/fundamental/v0/a8aeac54-fc9a-434c-a9ba-1aeebf76721b"
+        },
+        {
+            "created_on": "2006-05-23T00:00:00.000Z",
+            "display_text": "Armenia",
+            "key": "Armenia",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "198ddfe4-1edb-4dec-97aa-72328ed212f1",
+            "href": "/rest/fundamental/v0/198ddfe4-1edb-4dec-97aa-72328ed212f1"
+        },
+        {
+            "created_on": "2003-08-06T00:00:00.000Z",
+            "display_text": "Ukraine",
+            "key": "Ukraine",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "e614cbe1-3a7d-4dfe-8e3d-56cae2165af6",
+            "href": "/rest/fundamental/v0/e614cbe1-3a7d-4dfe-8e3d-56cae2165af6"
+        },
+        {
+            "created_on": "2003-10-16T00:00:00.000Z",
+            "display_text": "Saudi Arabia",
+            "key": "Saudi Arabia",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "country",
+            "uuid": "ca8e002d-dbc1-4ffc-a964-202a2d042c40",
+            "href": "/rest/fundamental/v0/ca8e002d-dbc1-4ffc-a964-202a2d042c40"
+        },
+        {
+            "created_on": "2020-04-28T14:37:47.000Z",
+            "display_text": "CLOP",
+            "key": "CLOP",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malware_family",
+            "uuid": "dbba5596-7033-49e1-a731-7d54734463c4",
+            "href": "/rest/fundamental/v0/dbba5596-7033-49e1-a731-7d54734463c4"
+        },
+        {
+            "created_on": "2018-12-04T19:10:10.000Z",
+            "display_text": "Utilities",
+            "key": "Utilities",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "vertical",
+            "uuid": "e7e29d66-df14-4875-a8fe-98dd80151eee",
+            "href": "/rest/fundamental/v0/e7e29d66-df14-4875-a8fe-98dd80151eee"
+        },
+        {
+            "created_on": "2015-07-31T10:35:10.000Z",
+            "display_text": "Asia",
+            "key": "Asia",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "region",
+            "uuid": "e2aa2414-9adb-447e-ae83-32e3d6afee04",
+            "href": "/rest/fundamental/v0/e2aa2414-9adb-447e-ae83-32e3d6afee04"
+        },
+        {
+            "created_on": "2015-07-31T17:09:12.000Z",
+            "display_text": "NATO",
+            "key": "NATO",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "region",
+            "uuid": "e0d04538-588a-4304-9974-832b7670bca7",
+            "href": "/rest/fundamental/v0/e0d04538-588a-4304-9974-832b7670bca7"
+        },
+        {
+            "created_on": "2019-06-21T22:43:06.000Z",
+            "display_text": "Brinkmanship over Iran and Maneuvering over Upcoming G-20 Summit Could Spark Espionage or Disruptive Attacks",
+            "key": "051e541d-05e3-40d1-a867-81300e4573dd",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_alert",
+            "uuid": "84c2db1a-6c35-41b6-9f98-ce44840db791",
+            "href": "/rest/document/v0/84c2db1a-6c35-41b6-9f98-ce44840db791"
+        },
+        {
+            "created_on": "2020-08-11T20:34:54.000Z",
+            "display_text": "iDefense Global Research Intelligence Digest for August 11, 2020",
+            "key": "e5fe7a49-0a0b-406a-aa88-d41de43adc89",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "intelligence_alert",
+            "uuid": "5a23f8ed-8038-4727-bb4d-5016c57e10f5",
+            "href": "/rest/document/v0/5a23f8ed-8038-4727-bb4d-5016c57e10f5"
+        },
+        {
+            "created_on": "2021-03-04T20:00:52.000Z",
+            "display_text": "CLOP Ransomware Operators Leak Qualys Documents on Name-and-Shame Site on 3 and 4 March 2021",
+            "key": "1e4a812a-dc96-45a7-b2c4-13e866ae8393",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malicious_event",
+            "uuid": "61e45fd4-b540-4de0-a81d-4cc8af952a60",
+            "href": "/rest/fundamental/v0/61e45fd4-b540-4de0-a81d-4cc8af952a60"
+        },
+        {
+            "created_on": "2020-02-29T23:22:36.000Z",
+            "display_text": "Alleged DoppelPaymer Actors Seek to Blackmail Mexican Oil Company with Document Leak",
+            "key": "847d1ba4-3f84-4b83-943a-944993cbf934",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malicious_event",
+            "uuid": "238857cc-12f3-4fac-820a-c59dc58c27da",
+            "href": "/rest/fundamental/v0/238857cc-12f3-4fac-820a-c59dc58c27da"
+        },
+        {
+            "created_on": "2017-12-21T19:23:58.000Z",
+            "display_text": "TRITON ICS Malware Framework Targets Critical Infrastructure",
+            "key": "d4e7170a-3485-4668-ad7d-3c2b0b43ea4c",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malicious_event",
+            "uuid": "2200deae-56e0-4835-b454-8060bd0be50e",
+            "href": "/rest/fundamental/v0/2200deae-56e0-4835-b454-8060bd0be50e"
+        },
+        {
+            "created_on": "2018-11-03T11:26:30.000Z",
+            "display_text": "US Indictment Reveals SNAKEMACKEREL Targeting of Westinghouse Electric",
+            "key": "28aa3b56-6fcb-4e0d-9c91-bcae3b798882",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-26T20:09:55.000Z",
+            "relationship_last_published": "2021-03-26T20:09:55.000Z",
+            "type": "malicious_event",
+            "uuid": "aff26f9b-2f45-483c-996a-e058fc02a84a",
+            "href": "/rest/fundamental/v0/aff26f9b-2f45-483c-996a-e058fc02a84a"
+        },
+        {
+            "created_on": "2021-03-31T19:20:13.000Z",
+            "display_text": "iDefense Global Research Intelligence Digest for 31 March 2021",
+            "key": "d0bff8ef-b21a-4a64-8541-2afba89eeafa",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-03-31T19:20:13.000Z",
+            "relationship_last_published": "2021-03-31T19:20:13.000Z",
+            "type": "intelligence_alert",
+            "uuid": "bb117f7c-c0b6-43ae-9468-463ae58e2853",
+            "href": "/rest/document/v0/bb117f7c-c0b6-43ae-9468-463ae58e2853"
+        },
+        {
+            "created_on": "2021-06-02T22:08:57.000Z",
+            "display_text": "iDefense Global Research Intelligence Digest for 2 June 2021",
+            "key": "61641afe-698f-417a-802d-23197d0fe76d",
+            "relationship": "mentions",
+            "relationship_created_on": "2021-06-02T22:08:57.000Z",
+            "relationship_last_published": "2021-06-02T22:08:57.000Z",
+            "type": "intelligence_alert",
+            "uuid": "5bcf3272-5207-433c-a550-320968c1587a",
+            "href": "/rest/document/v0/5bcf3272-5207-433c-a550-320968c1587a"
+        }
+    ],
+    "replication_id": 1644344878539000048,
+    "sources_external": [
+        {
+            "datetime": "2020-12-18T05:00:00.000Z",
+            "description": "-\tСергей Нарышкин: О том как статъ настоящим разведчиком (Sergey Naryshkin: On how to become a real spy)  hxxps://aif[.]ru/society/safety/100_let_svr_sergey_naryshkin_o_tom_kak_stat_nastoyashchim_razvedchikom",
+            "name": "Argumenty i fakty",
+            "reputation": 4
+        },
+        {
+            "datetime": "2021-02-27T05:00:00.000Z",
+            "description": "Когда-то император Александр III сказал замечательную по своей емкости фразу: ....hxxps://t[.]me/nstarikovru/20816/",
+            "name": "Nikolay Starikov",
+            "reputation": 3
+        },
+        {
+            "datetime": "2019-11-01T04:00:00.000Z",
+            "description": "Why Chinese farmers have crossed border into Russia's Far East",
+            "name": "British Broadcasting Corporation",
+            "reputation": 4,
+            "url": "https://www.bbc.com/news/world-europe-50185006"
+        },
+        {
+            "datetime": "2021-03-11T05:00:00.000Z",
+            "description": "Support for Russia's Ruling Party Drops to Pre-Crimea Low – Poll",
+            "name": "Moscow Times",
+            "reputation": 4,
+            "url": "https://www.themoscowtimes.com/2021/03/11/support-for-russias-ruling-party-drops-to-pre-crimea-low-poll-a73211"
+        },
+        {
+            "datetime": "2021-03-25T04:00:00.000Z",
+            "description": "Kremlin’s ‘Vaccine Diplomacy’ in Action: Tools, Strengths, Intermediary Results",
+            "name": "Jamestown Foundation",
+            "reputation": 4,
+            "url": "https://jamestown.org/program/kremlins-vaccine-diplomacy-in-action-tools-strengths-intermediary-results/"
+        },
+        {
+            "datetime": "2018-11-30T05:00:00.000Z",
+            "description": "Watch Vladimir Putin and Crown Prince Mohammed bin Salman Embrace at the G-20",
+            "name": "Time",
+            "reputation": 4,
+            "url": "https://time.com/5467935/putin-bin-salman-g20/"
+        },
+        {
+            "datetime": "2021-03-09T05:00:00.000Z",
+            "description": "Vilifying Germany; Wooing Germany",
+            "name": "EU vs Disinfo",
+            "reputation": 4,
+            "url": "https://euvsdisinfo.eu/villifying-germany-wooing-germany/"
+        },
+        {
+            "datetime": "2021-03-15T04:00:00.000Z",
+            "description": "The Iran-Russia Cyber Agreement and U.S. Strategy in the Middle East",
+            "name": "Council on Foreign Relations",
+            "reputation": 4,
+            "url": "https://www.cfr.org/blog/iran-russia-cyber-agreement-and-us-strategy-middle-east"
+        },
+        {
+            "datetime": "2017-07-08T04:00:00.000Z",
+            "description": "Chinese in the Russian Far East: a geopolitical time bomb?",
+            "name": "South China Morning Post",
+            "reputation": 4,
+            "url": "https://www.scmp.com/week-asia/geopolitics/article/2100228/chinese-russian-far-east-geopolitical-time-bomb"
+        },
+        {
+            "datetime": "2021-02-08T05:00:00.000Z",
+            "description": "Russia-Iran cooperation poses challenges for US cyber strategy, global norms",
+            "name": "C4ISR",
+            "reputation": 4,
+            "url": "https://www.c4isrnet.com/thought-leadership/2021/02/08/russia-iran-cooperation-poses-challenges-for-us-cyber-strategy-global-norms/"
+        },
+        {
+            "datetime": "2016-05-11T04:00:00.000Z",
+            "description": "Putin’s Hydra: Inside Russia’s Intelligence Services",
+            "name": "European Council on Foreign Relations",
+            "reputation": 4,
+            "url": "https://ecfr.eu/wp-content/uploads/ECFR_169_-_PUTINS_HYDRA_INSIDE_THE_RUSSIAN_INTELLIGENCE_SERVICES_1513.pdf"
+        },
+        {
+            "datetime": "2019-10-18T04:00:00.000Z",
+            "description": "Cybersecurity Advisory, Turla Group Exploits Iranian APT to Expand Coverage of Victims",
+            "name": "National Security Agency, National Cyber Security Centre",
+            "reputation": 5,
+            "url": "https://media.defense.gov/2019/Oct/18/2002197242/-1/-1/0/NSA_CSA_TURLA_20191021%20VER%203%20-%20COPY.PDF"
+        },
+        {
+            "datetime": "2020-12-12T05:00:00.000Z",
+            "description": "Netherlands kicks out two Russian diplomats as Denmark charges Russian citizen with espionage",
+            "name": "EuroNews",
+            "reputation": 4,
+            "url": "https://www.euronews.com/2020/12/09/russian-citizen-charged-with-spying-on-energy-technology-in-denmark"
+        },
+        {
+            "datetime": "2018-10-03T04:00:00.000Z",
+            "description": "US v Aleksei Sergeyevich Morenets et al",
+            "name": "US Department of Justice",
+            "reputation": 5,
+            "url": "https://www.justice.gov/opa/page/file/1098481/download"
+        },
+        {
+            "datetime": "2017-09-15T04:00:00.000Z",
+            "description": "International Security and Estonia",
+            "name": "Estonian Foreign Intelligence Service",
+            "reputation": 5,
+            "url": "https://www.valisluureamet.ee/pdf/raport-2018-ENG-web.pdf"
+        },
+        {
+            "datetime": "2021-03-04T05:00:00.000Z",
+            "description": "China’s 5-year plan includes goals to open Arctic Silk Road",
+            "name": "Reuters",
+            "reputation": 4,
+            "url": "https://reuters.com/article/us-china-parliament-polar-idUSKBN2AX09F"
+        },
+        {
+            "datetime": "2019-05-01T04:00:00.000Z",
+            "description": "How Russian Trolls Are Using American Businesses as Their Weapons",
+            "name": "Inc",
+            "reputation": 4,
+            "url": "https://www.inc.com/magazine/201905/tom-foster/russian-trolls-facebook-social-media-attacks-brands-hoax-fake-disinformation.html"
+        },
+        {
+            "datetime": "2021-03-22T04:00:00.000Z",
+            "description": "Russia and Europe hxxps://www.levada[.]ru/en/2021/03/22/russia-and-europe/",
+            "name": "Levada",
+            "reputation": 4
+        },
+        {
+            "datetime": "2014-09-12T04:00:00.000Z",
+            "description": "Announcement of Expanded Treasury Sanctions within the Russian Financial Services, Energy and Defense or Related Materiel Sectors",
+            "name": "US Treasury",
+            "reputation": 5,
+            "url": "https://www.treasury.gov/press-center/press-releases/Pages/jl2629.aspx"
+        },
+        {
+            "datetime": "2009-01-01T05:00:00.000Z",
+            "description": "Map_of_the_Arctic_region_showing_the_Northeast_Passage,_the_Northern_Sea_Route_and_Northwest_Passage,_and_bathymetry",
+            "name": "Arctic Council",
+            "reputation": 5,
+            "url": "https://commons.wikimedia.org/wiki/File:Map_of_the_Arctic_region_showing_the_Northeast_Passage,_the_Northern_Sea_Route_and_Northwest_Passage,_and_bathymetry.png"
+        },
+        {
+            "datetime": "2021-02-23T05:00:00.000Z",
+            "description": "Q4 2020 Doxxing Victim Trends: Industrial Sector Emerges as Primary Ransom “Non-Payor”",
+            "name": "Coveware",
+            "reputation": 4,
+            "url": "https://www.coveware.com/blog/2021/2/18/q4-doxxing-victim-trends-industrial-sector-emerges-as-primary-ransom-non-payor"
+        },
+        {
+            "datetime": "2019-01-18T05:00:00.000Z",
+            "description": "Who Are Russia's Main Allies? hxxps://www.rbth[.]com/lifestyle/329861-who-are-russia-allies",
+            "name": "Russia Behind the Headlines",
+            "reputation": 3
+        },
+        {
+            "datetime": "2021-02-23T05:00:00.000Z",
+            "description": "Detailed plans of military spy plane are leaked on the dark web by hackers after Canadian manufacturer Bombardier 'refused to pay ransom'",
+            "name": "Daily Mail",
+            "reputation": 4,
+            "url": "https://www.dailymail.co.uk/news/article-9293153/Bombardier-latest-company-hacked-group-using-ransomware-called-Clop.html"
+        },
+        {
+            "datetime": "2020-12-16T05:00:00.000Z",
+            "description": "How Russia Wins the Climate Crisis",
+            "name": "New York Times",
+            "reputation": 4,
+            "url": "https://www.nytimes.com/interactive/2020/12/16/magazine/russia-climate-migration-crisis.html"
+        },
+        {
+            "datetime": "2020-12-07T05:00:00.000Z",
+            "description": "Russia Strives for an Oil and Gas Resurgence",
+            "name": "Jamestown",
+            "reputation": 4,
+            "url": "https://jamestown.org/program/russia-strives-for-an-oil-and-gas-resurgence/"
+        },
+        {
+            "datetime": "2021-03-19T04:00:00.000Z",
+            "description": "Berlin Assassination: New Evidence on Suspected FSB Hitman Passed to German Investigators",
+            "name": "Bellingcat",
+            "reputation": 4,
+            "url": "https://www.bellingcat.com/news/2021/03/19/berlin-assassination-new-evidence-on-suspected-fsb-hitman-passed-to-german-investigators/"
+        },
+        {
+            "datetime": "2020-03-27T04:00:00.000Z",
+            "description": "Russia’s Chinese Dream in the Era of COVID-19",
+            "name": "Wilson Center",
+            "reputation": 4,
+            "url": "https://www.wilsoncenter.org/blog-post/russias-chinese-dream-era-covid-19"
+        },
+        {
+            "datetime": "2019-06-20T04:00:00.000Z",
+            "description": "Waterbug: Espionage Group Rolls Out Brand-New Toolset in Attacks Against Governments",
+            "name": "Symantec",
+            "reputation": 4,
+            "url": "https://www.symantec.com/blogs/threat-intelligence/waterbug-espionage-governments"
+        },
+        {
+            "datetime": "2021-01-12T05:00:00.000Z",
+            "description": "What drives crude oil prices?",
+            "name": "US Energy Information Administration",
+            "reputation": 5,
+            "url": "https://www.eia.gov/finance/markets/crudeoil/reports_presentations/crude.pdf"
+        },
+        {
+            "datetime": "2018-04-20T04:00:00.000Z",
+            "description": "US-CERT/CISA Alert (TA18-106A): Russian State-Sponsored Cyber Actors Targeting Network Infrastructure Devices",
+            "name": "US Cybersecurity and Infrastructure Security Agency",
+            "reputation": 5,
+            "url": "https://us-cert.cisa.gov/ncas/alerts/TA18-106A"
+        },
+        {
+            "datetime": "2020-12-17T05:00:00.000Z",
+            "description": "Russia: The EU prolongs economic sanctions for another six months",
+            "name": "European Union",
+            "reputation": 5,
+            "url": "https://www.consilium.europa.eu/en/press/press-releases/2020/12/17/russia-the-eu-prolongs-economic-sanctions-for-another-six-months"
+        },
+        {
+            "datetime": "2021-01-15T05:00:00.000Z",
+            "description": "Interview: Media Lawyer Says Russia's New Laws 'Are Burying Civil Society",
+            "name": "Radio Free Europe/Radio Liberty",
+            "reputation": 4,
+            "url": "https://www.rferl.org/a/russia-foreign-agents-law-interview-media-lawyer-civil-societ-rfe/31048094.html"
+        },
+        {
+            "datetime": "2021-02-04T05:00:00.000Z",
+            "description": "Dissatisfaction With Putin Surges Among Young Russians – Levada Poll",
+            "name": "Moscow Times",
+            "reputation": 4,
+            "url": "https://www.themoscowtimes.com/2021/02/04/dissatisfaction-with-putin-surges-among-young-russians-levada-poll-a72835"
+        },
+        {
+            "datetime": "2021-02-06T05:00:00.000Z",
+            "description": "Rising Poverty and Falling Incomes Fuel Russia's Navalny",
+            "name": "Financial Times",
+            "reputation": 4,
+            "url": "https://amp.ft.com/content/24b45679-ed22-4df7-89ab-f3d5fad71c95"
+        },
+        {
+            "datetime": "2020-03-12T04:00:00.000Z",
+            "description": "Tracking Turla: New backdoor delivered via Armenian watering holes",
+            "name": "ESET",
+            "reputation": 4,
+            "url": "https://www.welivesecurity.com/2020/03/12/tracking-turla-new-backdoor-armenian-watering-holes/"
+        },
+        {
+            "datetime": "2018-03-16T04:00:00.000Z",
+            "description": "Alert (TA18-074A): Russian Government Cyber Activity Targeting Energy and Other Critical Infrastructure Sectors",
+            "name": "US Cybersecurity and Infrastructure Security Agency",
+            "reputation": 5,
+            "url": "https://us-cert.cisa.gov/ncas/alerts/TA18-074A"
+        },
+        {
+            "datetime": "2020-10-23T04:00:00.000Z",
+            "description": "Treasury Sanctions Russian Government Research Institution Connected to the Triton Malware",
+            "name": "US Treasury Department",
+            "reputation": 5,
+            "url": "https://home.treasury.gov/news/press-releases/sm1162"
+        },
+        {
+            "datetime": "2021-03-30T04:00:00.000Z",
+            "description": "В Минобороны рассказали, как победить США в \"ментальной войне\"  hxxps://ria[.]ru/20210330/ssha-1603481759.html",
+            "name": "RIA"
+        },
+        {
+            "datetime": "2019-10-23T04:00:00.000Z",
+            "description": "Past and future of integrity based attacks in ics environments",
+            "name": "Dragos",
+            "reputation": 4,
+            "url": "https://www.slideshare.net/JoeSlowik/past-and-future-of-integrity-based-attacks-in-ics-environments"
+        },
+        {
+            "datetime": "2021-03-17T04:00:00.000Z",
+            "description": "Biden: Putin will ‘pay a price’ for interfering in 2020 election",
+            "name": "Politico",
+            "reputation": 4,
+            "url": "https://www.politico.com/news/2021/03/17/biden-putin-election-interference-476656"
+        },
+        {
+            "datetime": "2021-01-14T05:00:00.000Z",
+            "description": "Who Is Responsible for Mitigating the Effects of Climate Change in Russia?",
+            "name": "Center for Strategic and International Studies",
+            "reputation": 4,
+            "url": "https://www.csis.org/analysis/who-responsible-mitigating-effects-climate-change-Russia"
+        },
+        {
+            "datetime": "2019-10-21T04:00:00.000Z",
+            "description": "Joint Advisory: Turla group exploits Iranian APT to expand coverage of victims",
+            "name": "UK National Cyber Security Centre (NCSC) and US National Security Agency",
+            "reputation": 5,
+            "url": "https://www.ncsc.gov.uk/news/turla-group-exploits-iran-apt-to-expand-coverage-of-victims"
+        },
+        {
+            "datetime": "2019-10-21T04:00:00.000Z",
+            "description": "Hacking the hackers: Russian group hijacked Iranian spying operation, officials say",
+            "name": "Reuters",
+            "reputation": 4,
+            "url": "https://www.reuters.com/article/us-russia-cyber/hacking-the-hackers-russian-group-hijacked-iranian-spying-operation-officials-say-idUSKBN1X00AK"
+        },
+        {
+            "datetime": "2021-02-15T05:00:00.000Z",
+            "description": "Russia Blackmails and Courts Europe",
+            "name": "Jamestown",
+            "reputation": 4,
+            "url": "https://jamestown.org/program/russia-blackmails-and-courts-europe/"
+        },
+        {
+            "datetime": "2021-02-07T05:00:00.000Z",
+            "description": "Vladimir Putin’s Russia is destabilising itself from within",
+            "name": "Tatyana Stanovaya for the Financial Times",
+            "reputation": 4,
+            "url": "https://www.ft.com/content/94aeb690-ec2d-472d-adf7-212930c2d394"
+        },
+        {
+            "datetime": "2015-04-16T04:00:00.000Z",
+            "description": "Putin agrees with emperor that Russia's only allies are Army and Navy hxxps://tass[.]com/Russia/789866",
+            "name": "TASS",
+            "reputation": 3
+        },
+        {
+            "datetime": "2020-12-14T05:00:00.000Z",
+            "description": "Deepening Leadership Confusion Exacerbates Russia’s Multiple Crises",
+            "name": "Jamestown",
+            "reputation": 4,
+            "url": "https://jamestown.org/program/deepening-leadership-confusion-exacerbates-russias-multiple-crises/"
+        },
+        {
+            "datetime": "2020-11-12T05:00:00.000Z",
+            "description": "Overview of United States sanctions on Russian persons (individuals, entities, and vessels).",
+            "name": "US Commerce Department",
+            "reputation": 5,
+            "url": "https://www.trade.gov/country-commercial-guides/russia-sanctions"
+        },
+        {
+            "datetime": "2020-10-19T04:00:00.000Z",
+            "description": "Six Russian GRU Officers Charged in Connection with Worldwide Deployment of Destructive Malware and Other Disruptive Actions in Cyberspace",
+            "name": "US Department of Justice",
+            "reputation": 5,
+            "url": "https://www.justice.gov/opa/pr/six-russian-gru-officers-charged-connection-worldwide-deployment-destructive-malware-and"
+        },
+        {
+            "datetime": "2019-10-21T04:00:00.000Z",
+            "name": "UK National Cyber Security Centre (NCSC)",
+            "reputation": 5,
+            "url": "https://www.ncsc.gov.uk/news/turla-group-behind-cyber-attack"
+        },
+        {
+            "datetime": "2020-02-20T05:00:00.000Z",
+            "description": "UK condemns Russia's GRU over Georgia cyber-attacks",
+            "name": "UK Government",
+            "reputation": 5,
+            "url": "https://www.gov.uk/government/news/uk-condemns-russias-gru-over-georgia-cyber-attacks"
+        },
+        {
+            "datetime": "2018-04-05T04:00:00.000Z",
+            "description": "Satellite images show huge Russian military buildup in the Arctic",
+            "name": "CNN",
+            "reputation": 4,
+            "url": "https://www.cnn.com/2021/04/05/europe/russia-arctic-nato-military-intl-cmd/index.html"
+        },
+        {
+            "datetime": "2020-12-03T05:00:00.000Z",
+            "description": "Russian, Chinese intelligence targeting Norwegian oil secrets: report",
+            "name": "Reuters",
+            "reputation": 4,
+            "url": "https://www.reuters.com/article/us-norway-oil-security/russian-chinese-intelligence-targeting-norwegian-oil-secrets-report-idUSKBN28D2M7"
+        }
+    ],
+    "threat_types": [
+        "Cyber Espionage",
+        "Cyber Crime"
+    ],
+    "title": "Russian Responses to Geopolitical Challenges Include Cyber-Threat Activity against Energy Industry Entities",
+    "type": "intelligence_report",
+    "uuid": "bdc9d16f-6040-4894-8544-9c98986a41fd",
+    "analysis": "##Key Findings and Judgements\n\n- The Russian government faces global and domestic challenges intensified by global warming, unrest in neighboring states, the rise of renewable energy, and international sanctions; these challenges aggravate poverty and discontent within Russia.\n\n- Russia’s government pursues its state strategies through a variety of means including cyber-threat operations that involve espionage, disruptive activity, and disinformation.\n- To mitigate the risks of Russian cyber-threats, organizations can implement best practices that are informed by intelligence.\n\n## An Oil and Gas Superpower Faces a Changing World \n\nFluctuating demand for fossil fuels, aggravated during the pandemic, and complicated relationships with the OPEC+ petroleum exporters’ consortium have contributed to unpredictability in the prices of Russia’s main exports—oil and gas. Geopolitical tensions and upheavals have influenced oil price volatility over the decades (Exhibit 1) and will likely continue to do so in the future.\n\n![USEIA on Oil Prices](/rest/files/download/6a/7f/fb/0f7be51f6fd40e1361a2b22135cab45f12ce755af5d089e8cc5d086afa/USEIAOnOilPrices2021-02-08cropped.png)  \n_Exhibit 1: Factors Affecting Crude Oil Prices; from the US Energy Information Administration, 12 January 2021_\n\n####Climate Change: Challenges and Opportunities \n\nClimate change brings challenges and opportunities for Russia, including the following: \n\n- **Move from fossil fuels:** Governments and major corporations are vowing to cut carbon dioxide emissions in various ways, such as by developing renewable energy sources and switching to electric cars. These changes could curtail demand for fossil fuels, push down prices, and cut Russian revenues. Russia’s energy strategy for 2035 portrays these shifts as [a major challenge](https://jamestown.org/program/russia-strives-for-an-oil-and-gas-resurgence/). \n\n- **Melting permafrost:** Melting permafrost is remaking Russia’s northern landscape as roads and pipelines sink and buckle. An oil tank at metals giant Norilsk Nickel leaked in 2020, causing a devastating oil spill and [costing the company US$2 billion in fines]( https://www.themoscowtimes.com/2021/02/19/nornickel-will-not-appeal-record-2bln-fine-for-arctic-oil-spill-a72980). \n\n- **Arctic shipping and Siberian agriculture:** Climate change is opening opportunities mixed with challenges for Russia. The melting Arctic has created new shipping routes (see Exhibit 2). Russian ships can carry more traffic on the Northern Sea Route, and the country can leverage its advantage in number of icebreakers, but countries are increasingly [competing with Russia](https://news.usni.org/2021/01/05/new-arctic-strategy-calls-for-regular-presence-as-a-way-to-compete-with-russia-china) to use the Arctic for resources, transport, and [military](https://www.cnn.com/2021/04/05/europe/russia-arctic-nato-military-intl-cmd/index.html ) advantage.  \n\n Some analysts suggest [Russia’s agriculture will improve]( https://asiatimes.com/2021/02/could-russia-dominate-world-agriculture/) with the thaw of the Siberian wastelands; however, Russia’s shrinking population would require the country to welcome migrants, most likely from China, to support the expanding agriculture, and many Russians are [suspicious of Chinese encroachment]( https://www.bbc.com/news/world-europe-50185006).  Russia’s government has [not seriously developed its renewable energy]( https://www.csis.org/analysis/climate-change-will-reshape-russia), as China has.\n\n ![Arctic Map](/rest/files/download/0f/6c/6f/91de9ef8d8d38345dc270f8915d9faa496a00b5babe2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg)  \n _Exhibit 2. “Map of the Arctic Region Showing the Northeast Passage, the Northern Sea Route, and Northwest Passage and Bathymetry NOAA.” Arctic Council, 2009. Public Domain_ \n\n##Global Challenges and Domestic Stability \n \nRussia has faced international condemnation and mounting economic sanctions for its human-rights violations, especially after seizing Crimea from Ukraine in 2014 and interfering in US and other elections. These international travails jeopardize Russia's domestic stability, [as summarized]( https://www.ft.com/content/94aeb690-ec2d-472d-adf7-212930c2d394) by respected Russian political commentator Tatyana Stanovaya: \n \n```\nPutin’s original success was rooted in his regime’s ability to deliver steady improvements in living standards while inspiring Russians with exploits on the world stage. Now the regime is ruling largely by scaring people and fostering the impression that Mother Russia is once again a “besieged fortress.” \n```\n\n####Decline in living standards\n\nSanctions have hindered many Russian entities, including oil and gas producers, from expanding their operations. Many of Russia’s neighbors, including Turkmenistan, Azerbaijan, and Kazakhstan, compete with Russia to export oil and gas, and some neighbors, such as Ukraine, are overtly hostile. For years, Russia has sought to protect its energy exports and revenue by using pipelines that bypass Ukraine. Nord-Stream 2, the latest such pipeline, faces US sanctions.\n\nThe COVID-19 pandemic has contributed to a 3.1 percent drop in Russia’s GDP in 2020 and a [8.6 percent fall](https://amp.ft.com/content/24b45679-ed22-4df7-89ab-f3d5fad71c95) in Russian household consumption. Low oil prices, sanctions, and the COVID-19 pandemic have strained the economy and consumer confidence causing the government to impose price controls on sugar and vegetable oil.\n\nEconomic burdens are contributing to public discontent. YouTube videos of the lavish lifestyles of Russia’s top leaders, such as opposition leader Alexey Navalny’s recent video about “Putin’s Palace” in southern Russia, helped [inspire thousands of people](https://www.themoscowtimes.com/2021/02/04/dissatisfaction-with-putin-surges-among-young-russians-levada-poll-a72835) to protest Navalny’s arrest in January 2021. Russia’s ruling party will face a test with the September 2021 parliamentary elections; party support has [dropped to an eight-year low](https://www.themoscowtimes.com/2021/03/11/support-for-russias-ruling-party-drops-to-pre-crimea-low-poll-a73211), according to a February 2021 survey by the independent Levada polling agency. \n\n####Exploits on the world stage \n\nDuring the COVID-19 pandemic, Russia has been using “[vaccine diplomacy]( https://jamestown.org/program/kremlins-vaccine-diplomacy-in-action-tools-strengths-intermediary-results/)” to boost its image on the world stage.  Russia’s role in ending a conflict between Azerbaijan and Armenia had mixed success in promoting its image as a peacemaker. These small triumphs will likely do little, however, to outweigh Russia’s pariah status or boost Russians’ patriotic pride.\n\n#### Besieged fortress \n\nHaving failed to inspire its people with patriotism through improvements in living standards and exploits on the world stage, Putin’s government has chosen to [stifle public protest](https://www.rferl.org/a/russia-foreign-agents-law-interview-media-lawyer-civil-societ-rfe/31048094.html). Laws in 2021 suppress independent journalists and opposition activists, labeling them as agents of foreign powers, and police have arrested thousands of rally participants.  \n\nPutin's regime is attempting to promote patriotism by “fostering the impression that Mother Russia is once again a ‘besieged fortress’,\" as Stanovaya put it. Officials and state media frequently describe the outside world, particularly the US and Europe, as constantly seeking to undermine and humiliate Russia. \n\nIn an interview in late 2020, Russia’s foreign intelligence service chief, Sergey Naryshkin, portrayed international sanctions for Russian human-rights violations as “hybrid wars,” referring to undeclared wars using diplomatic and psychological means. Naryshkin and other officials have repeatedly portrayed protests in Russia and neighboring countries as schemes by foreign powers to weaken Russia.  \n\n####\"Frenemies\"\n\nFacing ostracism and pressure from sanctions, which affect its oil and gas and other industries, Russia is forced to work with counterparts it does not necessarily trust:\n \n- **China:** Russia and China concluded the 30-year, $400 billion “Power of Siberia” gas pipeline deal in May 2014, just after Russia annexed Crimea from Ukraine and incurred international wrath. Although gas started flowing in 2019, [suspicion surrounds this cooperation](https://www.scmp.com/week-asia/geopolitics/article/2100228/chinese-russian-far-east-geopolitical-time-bomb). Some Russian commentators fear being relegated to the position of a junior partner and raw materials supplier to China. Also, many local residents distrust Chinese migrants, and popular culture occasionally resurrects the specter of hordes of Chinese soldiers coming over the border.\n\n- **Saudi Arabia:** Starting in 2016, Russia and Saudi Arabia agreed to limit oil and gas production to maintain high prices, as well as entering other cooperative agreements. At the G-20 summit in late 2018, Putin and Saudi crown prince Mohamad Bin-Salman even famously [exchanged a high-five](https://time.com/5467935/putin-bin-salman-g20/),  as both men faced harsh international criticisms for human-rights violations. \n\n However, Russia targets its “frenemies” as well as its adversaries. The US and UK governments have accused Russia of carrying out intrusions using [Triton](/#/node/malicious_event/view/2200deae-56e0-4835-b454-8060bd0be50e) and [Neuron/Nautilus](/#/node/intelligence_alert/view/6f668357-bd6a-4a04-876d-20bd840e0788) malware against computer networks in Saudi Arabia. These campaigns were likely intended to gain visibility into and leverage over Saudi policies, particularly regarding oil production levels and prices but also involving the Saudi relationship with other players in the Middle East. \n\n- **Turkey:** Turkey and Russia have a long complicated relationship with signs of both cooperation and conflict in areas surrounding oil and gas. Turkey is a member of the NATO military alliance but buys Russian anti-aircraft weapons and works sporadically with Russia. In 2020, Turkey carried out controversial [gas drilling in the eastern Mediterranean](/#/node/global_event/view/d8e7c996-cfc3-4050-8b51-46a1dc517896), occasionally opposed Russia in conflicts in Syria and Libya, and supported Azerbaijan in a [conflict with Armenia](/#/node/global_event/view/8d7758be-40ec-4b6c-b2fc-cd007183640d) that could have endangered regional oil and gas infrastructure.\n\n- **Iran:** Russia’s equally [complex relationship with Iran](/#/node/intelligence_alert/view/84c2db1a-6c35-41b6-9f98-ce44840db791) has encompassed military cooperation in Syria and agreements on information security cooperation.  At the same time, Russian group BELUGASTURGEON stole hacking tools and infrastructure from an Iranian threat group and used them against Saudi targets in a [false flag operation](/#/node/intelligence_alert/view/6f668357-bd6a-4a04-876d-20bd840e0788) that framed Iran.\n\n####Russian Strategies\n\nOne of Russia’s 19th-century emperors famously said, “Russia has just two allies: its army and its navy.” Putin directly quoted that in 2015, half in jest, but the quote remains popular.  This sense of isolation colors Russia’s strategic worldview. (For more detail on Russian motives and strategies, see the report [Making Sense of Russian Cyberthreat Activity](#/node/intelligence_report/view/30e6397e-69cb-48e9-9017-eafb0d761d24).) \n\n\nRussian strategists perceive the country as engaged in a constant battle in the arena of [psychological or information warfare against US and Western powers](/#/node/intelligence_alert/view/79e6008d-ddd4-472d-b574-5ad1a769e096). Russian officials and state media portray foreign culture, TV and movies, and rhetoric about democracy as ill-disguised attempts to humiliate and weaken Russia. This view allows them to rationalize using propaganda, trolls, and disinformation to discredit and divide other countries, as they [did in 2016]( /#/node/intelligence_report/view/1373c4a9-baab-4fc1-a33b-f7b152a5f933), in the [2020 US elections](https://www.dni.gov/files/ODNI/documents/assessments/ICA-declass-16MAR21.pdf), and elsewhere. \n\nThe sense of hostility toward the West coexists with a desire to be part of Europe and the global economy, to be a “normal” country, and to restore the great power status the Soviet Union enjoyed. As part of that love-hate relationship with the West, Russian policy has long [balanced globalism and isolationism]( /#/node/intelligence_alert/view/fffd1701-8cd3-4237-b11b-31270d686f61). Over the years, Russian officials and businesses have sought to preserve Russian positions in global markets and attract global investors, but as the sanctions have tightened, Russia has increasingly emphasized import substitution policies and preparations for working alone. Events in 2020 to 2021 seem to favor isolationism. Independent Russian pollster Levada found in a February 2021 survey that only 29 percent of respondents consider Russia a European country, down from 52 percent in 2008. \n\nThe [increased sanctions](https://www.bellingcat.com/news/2021/03/19/berlin-assassination-new-evidence-on-suspected-fsb-hitman-passed-to-german-investigators/) from the US and EU in 2020 for human-rights concerns have heightened international tensions.  Media reporting suggests US officials are discussing additional sanctions for Russia’s suspected involvement in the [SolarWinds espionage campaign](/#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4). In a 16 March 2021 interview, US President [Joe Biden warned](https://www.politico.com/news/2021/03/17/biden-putin-election-interference-476656) that Putin would “pay a price” for Russian influence operations in the 2020 US election. [He also said, “I do,”](/#/node/intelligence_alert/view/3ee020e9-c64f-4c3f-8162-73f80ad85863) when asked whether he considered Putin a killer,  prompting Russia’s foreign ministry to recall its ambassador from Washington for the first time since 1998.\n\nGiven these priorities and circumstances, iDefense assesses that Putin and strategists strive for: \n-\tA loyal population \n-\tSome restoration of Russia’s Soviet-era influence and prestige\n-\tAn end to sanctions\n\n#### Aspirations in the Energy Sector \n\nThese overall goals and strategies have implications for Russian policies in the energy sector. iDefense assesses that Russian aspirations include: \n- [Preserving Russian markets for oil and gas](https://jamestown.org/program/russia-strives-for-an-oil-and-gas-resurgence/) \n- Meeting challenges from rival trends such as liquefied natural gas, shale gas, and renewables\n- Maintaining control over pipelines\n- Gaining visibility into and leverage over decision-making in oil and gas markets and policies worldwide\n- Obtaining foreign energy-related technologies that have both civilian and military uses, as evident in reports from [Norway](https://www.reuters.com/article/us-norway-oil-security/russian-chinese-intelligence-targeting-norwegian-oil-secrets-report-idUSKBN28D2M7), the [Netherlands, and Denmark]( https://www.euronews.com/2020/12/09/russian-citizen-charged-with-spying-on-energy-technology-in-denmark)  \n- Slowing energy sector development in  adversary countries, sometimes by [encouraging environmental activists there](https://www.inc.com/magazine/201905/tom-foster/russian-trolls-facebook-social-media-attacks-brands-hoax-fake-disinformation.html ) \n\nTo pursue these goals, Russian strategists can choose among a variety of options, including diplomatic, economic and soft power; military action; and asymmetric approaches, such as cyber-threat activity and cyber-enabled information operations.\n\n##Cyber-Threat Capabilities\n\nCyber-threat groups that US and other governments have linked to Russia have helped Russia advance its state strategies through espionage, disruptive activity, and disinformation. Russia’s military and security agencies occasionally perform operations using tools, techniques, and personnel drawn from the Russian-speaking cybercriminal underground. \n\n####Energy Backdooring: BLACK GHOST KNIFEFISH\n\nThe US government has linked [BLACK GHOST KNIFEFISH](/#/node/threat_group/view/27332f70-302c-491a-85f2-3714218296b8) (a.k.a. Dragonfly, Berserk Bear, Energetic Bear) to the Russian government. The group is known for targeting energy entities in multiple countries. \n\nIn March 2018, the US Department of Homeland Security’s Cybersecurity and Infrastructure Security Agency, or CISA, [wrote](/#/node/intelligence_alert/view/c79d8446-28a9-4b20-a5bb-d9ac5ff4a6de):\n\n```\nRussian government cyber actors…targeted small commercial facilities’ networks…gained remote access into energy sector networks…conducted network reconnaissance, moved laterally, and collected information pertaining to Industrial Control Systems (ICS)…DHS was able to reconstruct screenshot fragments of a Human Machine Interface (HMI) that the threat actors accessed. (See Exhibit 4.)\n```\n\n![Dragonfly Screenshots](/rest/files/download/27/f6/e2/72a551319a5908267b8a45e616313115f032bc8442bdf38430cc12f1e6/DragonflyScreenshotsFromUSCERTMarch152018cropped.png)  \n_Exhibit 4: Reconstructed HMI Screenshot Fragments, US CISA Alert (TA18-074A): Russian Government Cyber Activity Targeting Energy and Other Critical Infrastructure Sectors, 16 March 2018_ \n\n\nAn April 2018 [US and UK government alert warned]( /#/node/intelligence_alert/view/21ab89f6-1ac1-4cc3-83f6-233a5d7473cf) of Russian government-supported cyber-threat operations matching activity that iDefense tracks as BLACK GHOST KNIFEFISH. The activity targeted network infrastructure devices (such as routers, switches, firewalls, and network intrusion detection systems) enabled with the generic routing encapsulation protocol, Cisco Smart Install feature, or simple network management protocol. The threat actors conducted man-in-the-middle attacks for espionage, to steal intellectual property, and potentially to prepare for future disruptive or destructive activity. \n\nSigns of cooperation exist between BLACK GHOST KNIFEFISH and BELUGASTURGEON (a.k.a. Turla), which US and UK officials say is “widely reported to be associated with Russian actors” and which Estonian and Czech authorities have [identified with](https://www.reuters.com/article/us-russia-cyber/hacking-the-hackers-russian-group-hijacked-iranian-spying-operation-officials-say-idUSKBN1X00AK)  Russia’s [Federal Security Service](/#/node/threat_group/view/d96f3b14-462b-4ab4-aa04-23c7a2996611) (FSB). BELUGASTURGEON’s targets are mostly political entities but have included the [Armenian natural resources ministry](https://www.welivesecurity.com/2020/03/12/tracking-turla-new-backdoor-armenian-watering-holes), and, as mentioned above, the threat group carried out false flag operations framing Iranian threat actors.\n\n####Military Hackers: SANDFISH and SNAKEMACKEREL\n\nRussia's cyber-threat capabilities include groups the US government has linked to Russia's military intelligence agency, the GRU.\n\nThe US and other governments have attributed numerous destructive operations, including the Ukrainian blackout of 2015 and the Crashoverride series of attacks in 2016, to a group that iDefense tracks as [SANDFISH](/#/node/threat_group/view/40d2cf30-237a-467b-826d-390f12cc27f0) (a.k.a. SANDWORM).\n\nThe Ukrainian blackouts fit Russia's strategic goals of weakening Ukraine. The electricity blackout from the December 2016 Crashoverride operation was merely the [culmination of a two-week series of attacks]( /#/node/intelligence_alert/view/f7c3ae17-869a-4025-9edb-a6e8c4ca7a3e) that also disrupted operations at the State Treasury; the Finance Ministry, Defense Ministry, and other government entities; an Internet provider; and the railways. Ukrainian citizens could not receive pensions or buy rail tickets. The attempt to disrupt Ukrainian everyday life was likely intended to discredit the leadership of its then-president, who was particularly hostile to Russia.\n\nSANDFISH has also targeted oil and gas companies in Ukraine and Azerbaijan [using GreyEnergy malware]( /#/node/intelligence_alert/view/f0289fe9-c076-437b-984f-71f17d6f7950). SANDFISH tools Exaramel and PAS Shell appeared in a campaign that ran from 2017 to 2020 and compromised French IT and web-hosting companies [running Centreon monitoring software]( /#/node/intelligence_alert/view/55004ca2-e598-460f-bb0c-8ef6f37b7bca). French energy giant Total is one of Centreon's customers. \n\nAs for the military hacker group [SNAKEMACKEREL](/#/node/threat_group/view/065336a6-651d-4f80-b8c2-9347f4486912) (a.k.a. APT28, FancyBear), in May 2020, the [US FBI reportedly warned](/#/node/intelligence_alert/view/575c5eef-0784-46cd-bf67-8e256d0c2fc7) that the group had been targeting US government agencies and educational institutions since December 2018. According to a July 2020 report from the news source Wired, a SNAKEMACKEREL IP address from the FBI alert matched one from an earlier Department of Energy (DOE) advisory, drawing speculation that SNAKEMACKEREL had targeted an entity in the US energy sector—a departure in targeting for the group. The DOE-named IP address might have represented infrastructure that both SNAKEMACKEREL and SANDFISH used. The threat actors sent spear-phishing emails to  personal and work email accounts and leveraged password-spraying and brute-force tactics to compromise victims’ mail servers, Microsoft Office 365 and email accounts, and VPN servers, according to Wired. \n\nEarlier, in 2014 and 2015, SNAKEMACKEREL operators also conducted a spear-phishing campaign [against Westinghouse Electric Company](/#/node/malicious_event/view/aff26f9b-2f45-483c-996a-e058fc02a84a), according to a US indictment.\n\nIf SNAKEMACKEREL successfully breached a US energy entity or Westinghouse, Russian intelligence might have gained insight into upcoming deals with countries of interest to Russia. Westinghouse supplies uranium to Ukraine and has bid for contracts to build nuclear power plants for Saudi Arabia.\n\nSNAKEMACKEREL and SANDFISH seek deniability by disguising themselves as criminals or hacktivists:\n- During the [PetyaA/NotPetya campaign](/#/node/intelligence_alert/view/e4cac05c-83a4-40e3-b8b2-190c7c405ee0) against Ukraine in 2017 that US officials attributed to SANDFISH, the perpetrators pretended to be criminal ransomware actors. \n- When conducting hack-and-leak operations, these GRU actors often [hid behind pseudo-hacktivist personas](/#/node/intelligence_report/view/bd237f19-3b9f-4ea1-8f32-b9edd4667126), such as Guccifer 2.0 and Fancy Bears Hack Team, to discredit and divide societies in the US and other countries and entities seen as hostile to Russia. \n\n\n####Threatening Industrial Safety Systems: ZANDER\n\nRussia's cyber-threat capabilities may also include a group iDefense calls [ZANDER]( /#/node/threat_group/view/a363a7ca-1d5d-4477-9ce9-e9259cb888e4), which the US government has linked to Russia’s [Central Research Institute for Chemistry and Mechanics](/#/node/threat_group/view/99890a07-ddca-491d-ae7e-ae22a53db690) (TsNIIKhM). \n\nIf successful, the August 2017 Triton malware attack on the operational technology systems of a refinery in Saudi Arabia [could have endangered human lives](https://www.slideshare.net/JoeSlowik/past-and-future-of-integrity-based-attacks-in-ics-environments).  Researchers attributed the activity to TsNIIKHM, an institute subordinate to the Russian defense ministry’s Federal Service for Technical and Export Control. Having sufficient confidence in this attribution, on 23 October 2020, the US Treasury Department added TsNIIKhM to its Specially Designated Nationals sanctions list in connection with the August 2017 Triton attack.\n\nThe Triton attack was likely meant to create a backdoor for potential disruptive activity, gain leverage over a key company in the petroleum sector, and potentially discredit or influence Saudi policies regarding oil production levels and prices as well as Saudi relationships with other Middle Eastern countries. \n\nZANDER has also targeted the electricity sector. Since late 2018, they have been searching for remote login portals and vulnerabilities in the networks of at least 20 targets in electricity generation, transmission, and distribution systems in the US and Asia Pacific, according to E-ISAC and Dragos reports from June 2019. \n\n####JACKMACKEREL\n\nAnother Russian cyber-threat group with impact on the energy sector is [JACKMACKEREL]( /#/node/threat_group/view/24a38270-949f-442a-aac6-53a99ef1ea70) (a.k.a. Cozy Bear, the Dukes, APT 29). The Estonian government has linked this group with both the FSB and the SVR, Russia’s [Foreign Intelligence Service](/#/node/threat_group/view/11759430-3417-4772-9723-43bb38fe2280).\n\nSome analysts attribute the SolarWinds operation of 2020 to JACKMACKEREL. However, iDefense has [compared the malware and infrastructure](/#/node/intelligence_alert/view/7128fb11-2753-4f4d-aa51-2c13731f7dbe) used in the SolarWinds operation with JACKMACKEREL tools and found some important differences. In April 2021, the US government formally attributed the SolarWinds campaign to the SVR, linking the SVR to the APT29 threat group. In the absence of further detail, [Accenture iDefense cannot currently verify this attribution](/#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4) and is tracking this activity as action from the distinct threat group FireEye calls UNC2452.\n\nRegardless of exact attribution of the SolarWinds operation, the SVR is certainly involved with Russian cyber-threat activity and conducts espionage and pressure campaigns to promote Russia’s economic and political interests abroad. \n\n[Past SVR activities include](PUTINS_HYDRA_INSIDE_THE_RUSSIAN_INTELLIGENCE_SERVICES_1513.pdf) pilfering renewable energy technologies, stealing commercial information such as tenders, or coercing cooperation from people who allocate contracts, according to reports analyzing Russian intelligence services. Stealing commercial information and coercing people can help boost Russian competitiveness in winning oil and gas contracts, while stealing technologies can help Russia compete with or weaken companies developing renewable energy.\n\nThe intelligence service responsible for the SolarWinds operation [specifically targeted](/#/node/intelligen) US Department of Energy entities, including Sandia and Los Alamos national laboratories in New Mexico and Washington, the Office of Secure Transportation at the National Nuclear Security Administration, and DOE’s Richland field office, as well as the Federal Energy Regulatory Commission. In addition, researchers have identified Chevron Texaco as one of 23 entities the threat actors targeted for follow-on activity. These breaches could potentially provide valuable information on the resilience of the US electric grid and nuclear power plants as well as providing insight into Chevron Texaco’s business plans and agreements in contested areas such as the eastern Mediterranean. Note that Cyprus contracted with Chevron subsidiary Noble Energy to drill gas in Cyprus-controlled zones.\n\n####Hybrid Ransomware Operations and EvilCorp \n\nIn addition to the straightforward state-sponsored espionage or disruptive activity discussed above, Russian-state threat groups sometimes hide behind the mask of criminal ransomware. An iDefense compendium of ransomware or data leak [events affecting the energy and utility sectors]( /#/node/intelligence_report/view/999b6c55-3cb8-4372-affb-bcc9c47dd95b) includes breaches of NorskHydro, the Norwegian metals and energy company, and of Mexican oil company Pemex. iDefense has grounds to characterize these with low-to-medium confidence as “[hybrid ransomware]( /#/node/intelligence_report/view/034b4162-239d-438e-8e85-490103b83e5d)” operations. Such operations involve cybercriminals and intelligence services cooperating for mutual benefit, or they are intended to disrupt operations or destroy or exfiltrate data rather than only to extort a ransom payment. Most famously, the June 2017 Petya.A/NotPetya attack in Ukraine was a Russian-state operation disguised as criminal ransomware.\n \nRussian-state cyber-threat operations sometimes draw on tools and personnel from the Russian-speaking cybercrime world, as iDefense has extensively documented and as  [American](/#/node/intelligence_alert/view/575c5eef-0784-46cd-bf67-8e256d0c2fc7) and [Canadian](/#/node/intelligence_alert/view/9fe9f478-a5bb-405d-846a-b6baac07c431) governments have noted. \n\nRussian cyber-criminals [have worked with FSB operatives](/#/node/intelligence_alert/view/0f78f6ba-f0aa-4078-b70a-674cd12d2643) and [received protection](/#/node/intelligence_alert/view/6c403e44-c382-4ed6-aabf-23d0d353c0ba) from highly placed people. When caught by Russian law enforcement, they [are often pressured](/#/node/intelligence_alert/view/130d2acb-9778-4b22-96a8-5c47115f2659) to participate in Russian intelligence missions or consider geopolitical factors in future targeting.\n \nFor example, ransomware operator GandCrab promised in October 2018 to provide decryption keys to people in Russia’s war-torn ally Syria but vowed never to release keys to victims in other countries, as “we need to [continue punitive proceedings]( /#/node/malicious_event/view/ff63b317-2de3-4ba3-828a-d294eab5b91f) against certain countries.” Self-proclaimed hacker and onetime government contractor [Pavel Sitnikov](/#/node/threat_actor/view/ca0ed890-16a4-460c-aa44-69c23914c2b0) in December 2020 stated, “ransomware and special services are inseparable.”  \n\nThe EvilCorp group (a.k.a. [HighRollers](/#/node/threat_group/view/8eb76c68-4d9a-4397-8cc6-e779f9ee8b50), TA505, Dridex Group) exemplifies the intersection between criminal and intelligence activity. According to the US Treasury Department, EvilCorp leader [Maksim Yakubets](/#/node/threat_actor/view/df442e94-f0df-4ec1-9d35-57bedf1a9223) has done contract work for the FSB, and investigative journalists report he is married to an active FSB veteran.\n\nEvilCorp played a role in DoppelPaymer and Clop (a.k.a. Cl0p) ransomware operations. On 10 December 2020, the FBI warned the US private sector that [DoppelPaymer actors were targeting critical infrastructure](/#/node/intelligence_alert/view/8c5412b6-f114-47a4-afd1-5e5f0a88d10b) including the 911 emergency service, according to media accounts. The DoppelPaymer actors have breached and leaked information on numerous companies involved in defense or national security as well as public safety work. DoppelPaymer actors leaked data from [numerous aerospace and defense contractors](/#/node/malicious_event/view/238857cc-12f3-4fac-820a-c59dc58c27da) including Schlumberger Technology, Hyundai’s [Kia Motors](/#/node/malicious_event/view/d009718a-25f6-491f-95f2-528d0a3d3f63), [Boyce Technologies ](/#/node/intelligence_alert/view/5a23f8ed-8038-4727-bb4d-5016c57e10f5), and NASA contractor [Digital Management Inc.]( /#/node/intelligence_alert/view/6613f584-7728-4bd4-9dd7-103aef9b30ec)\n\nThe November 2019 DoppelPaymer [ransomware attack on the Mexican national oil company Pemex]( /#/node/malicious_event/view/238857cc-12f3-4fac-820a-c59dc58c27da) appears to have combined financial and  political motivations. EvilCorp had an incentive to retaliate against or discredit Pemex and Mexican President Andrés Manuel López Obrador (a.k.a. AMLO): EvilCorp leader Yakubets’ father-in-law, retired from Russian intelligence, runs a private security company that provided security for Russian company Lukoil. The Mexican government shunned Lukoil and other foreign investors when attempting to build a self-sufficient Mexican oil industry. During the spring 2018 presidential campaign, pro-AMLO Pemex employees rallied holding signs showing feet kicking the logos of companies like Lukoil. Leaked Pemex documents could also provide evidence in [trials of former Pemex officials]( /#/node/malicious_event/view/05982e7e-b7d0-4203-a8a9-dd46ea769854) for their dealings with scandal-plagued Brazilian company Odebrecht.  This provides an example of a Russian-state malicious actor targeting an oil and gas entity for apparent financial profit and to support Russian national interests.\n\nEnergy companies were also victims in cloud provider [Accellion’s File Transfer Appliance software breach]( /#/node/intelligence_alert/view/c68c3558-7540-4a74-9af3-5b1d243f852e). Some victims received extortion emails from actors threatening to publish stolen data on the “CL0P^_- LEAKS\" .onion website. Clop actors have stolen information with national security value, such as specifications for Bombardier’s military spy plane.  Samples of data from [geophysical services company CGG]( /#/node/malicious_event/view/c069f7c1-7b22-4713-a1d9-b1ba041602e8) and [transportation company CSX]( /#/node/malicious_event/view/0e1a64c4-e283-457b-b615-9863436b0dbd) were also leaked on the site. \n\nRansomware negotiator [Coveware’s analysis](https://www.coveware.com/blog/2021/2/18/q4-doxxing-victim-trends-industrial-sector-emerges-as-primary-ransom-non-payor) of leaks of victim data on ransomware operators’ sites in the last quarter of 2020 indicates the Clop group focused on the energy and technology sectors, whereas the industrial sector suffered most leaks on other groups’ sites. Clop’s geographic targeting also overlaps with Russian-state priorities, according to Coveware’s analysis: 43 percent of Clop leaks were from victims in Germany.   Russia [has aimed hostile rhetoric](https://euvsdisinfo.eu/villifying-germany-wooing-germany/) against that country’s leadership for spearheading EU sanctions against Russia.",
+    "conclusion": "To protect against state-sponsored or state-directed cyberthreat activity, iDefense suggests that organizations consider: \n\n * Assessing the threat landscape of critical infrastructure and high-value organizations \nto determine the likelihood of nation-state actors targeting them to steal intellectual property or fulfill strategic requirements.\n\n * Understanding the strategic priorities of China, Iran, North Korea, and Russia to identify high-value data targets and at-risk technologies, information, and business operations.\n\n * Strengthening the organization's cyber defenses through network defense operations, network architecture and design, third-party relationships, software and hardware procurement, user training and security culture building, travel and communication policies, employee vetting and insider threat mitigation, and security partnerships including information-sharing communities, government partners, and contracted security and threat intelligence services.\n\n * Evaluating the organization's key mission and business drivers that align to adversarial states’ priorities.\n\n * Reviewing and updating the organization's knowledge of sanctions lists to ensure critical and high-value organizations only interact and engage with approved and relevant individuals and entities.\n\n * Implementing a proactive cybersecurity strategy and legal framework that defines and addresses changing roles and responsibilities for all parties involved in any security incident.\n\n * Implementing the latest patches for Internet-facing servers, systems, databases, and applications.\n\n * Conducting due diligence on third-party contractors.\n\n * Using multi-factor authentication for corporate network access where possible.\n\nTo counter Russian and other cyber-threats, organizations can focus on specific user-level and system-level defense actions and strategies. This can include educating employees to:\n\n- Resist clickbait \n- Resist over-sharing information online and in emails\n- Doubt questionable links or attachments\n- Check for spoofed URLs and email sender addresses (posing as officials, suppliers, or job seekers)\n\nOrganizations may also consider policies to:\n- Disallow emails with embedded macros \n- Audit network and processes for anomalies\n- Practice red/purple teaming\n- Use IP and port allow- and block-listing  \n- Back up data offsite\n- Disable SMBv1 and RDP if possible",
+    "report_type": "Report",
+    "summary": "The oil and gas sector is central to Russia's revenue stream as well as the Russian government's economic relationships with the rest of the world. President Vladimir Putin’s government has pursued multiple strategies, including cyber-threat activity, in response to the global and domestic challenges Russia faces in a changing world. Russian-state espionage and disinformation operations as well as disruptive or destructive activity that can occur under the guise of criminal activity or hacktivism have historically targeted organizations in the energy industry and will likely continue to do so."
+}
+
+
+expected_output_ia = {
+    'DBot': [{'Indicator': 'a487dfdc-08b4-4909-82ea-2d934c27d901', 'Type': 'ACTI Intelligence Alert', 'Vendor': 'ACTI Threat Intelligence Report', 'Score': 2, 'Reliability': 'B - Usually reliable'}],
+    'IA': [{'value': 'a487dfdc-08b4-4909-82ea-2d934c27d901', 'created_on': '2021-03-05T21:47:36.000Z', 'display_text': 'Kazuar Revamped: BELUGASTURGEON Significantly Updates Its Espionage Backdoor', 'dynamic_properties': {}, 'index_timestamp': '2022-02-09T14:18:19.333Z', 'last_modified': '2021-07-14T09:17:37.000Z', 'last_published': '2021-03-05T21:47:36.000Z', 'links': [{'created_on': '2017-05-04T17:45:51.000Z', 'display_text': 'Kazuar', 'key': 'Kazuar', 'relationship': 'mentions', 'relationship_created_on': '2021-03-05T21:47:36.000Z', 'relationship_last_published': '2021-03-05T21:47:36.000Z', 'type': 'malware_family', 'uuid': 'ef5a7376-0a81-4478-b15d-68369e7196bd', 'href': '/rest/fundamental/v0/ef5a7376-0a81-4478-b15d-68369e7196bd'}, {'created_on': '2020-08-07T20:08:29.000Z', 'display_text': 'Russia-Linked BELUGASTURGEON Uses ComRATv4 to Target Government and Resources Organizations in Europe and Central Asia', 'key': '033355e6-e57e-4a02-bf3a-c9805d06a259', 'relationship': 'mentions', 'relationship_created_on': '2021-03-05T21:47:36.000Z', 'relationship_last_published': '2021-03-05T21:47:36.000Z', 'type': 'intelligence_report', 'uuid': '9bf2fc44-570d-40ad-b81a-744141ed443e', 'href': '/rest/document/v0/9bf2fc44-570d-40ad-b81a-744141ed443e'}], 'threat_types': '\n- Cyber Espionage', 'title': 'Kazuar Revamped: BELUGASTURGEON Significantly Updates Its Espionage Backdoor', 'type': 'intelligence_alert', 'uuid': 'a487dfdc-08b4-4909-82ea-2d934c27d901', 'analysis': '## Key Findings and Judgements\n\n- From analyzing two Kazuar samples, iDefense determined that BELUGASTURGEON has significantly updated the backdoor\'s codebase when compared to traditional Kazuar samples.\n\n- The updated variant\'s core functionality supports new commands for espionage campaigns, including keylogging, credential theft, and system enumeration, without requiring additional plugins.\n\n- BELUGASTURGEON operators can now communicate between Kazuar instances  using task forwarding over named pipes without needing Internet connectivity; these enhancements offer functionality similar to that in Carbon and Uroborus.\n\n- Multiple Kazuar infections can now exist on one compromised system but target different users due to updates in Kazuar\'s mutex generation function.\n\n- HTTP(S) command-and-control (C2) communications now use primary, backup, and last-chance C2 servers to maintain persistence on a compromised device even if some of BELUGASTURGEON\'s infrastructure is unavailable.\n\n- Because Kazuar can now load from a Windows Registry key into memory, an infection file does not exist on the device and the chance of detection is reduced.\n\n- A comparison of the samples from August 2020 and February 2021 reveal differences in the Kazuar command set and configuration settings. Based on the discovery times of these samples and the changes between them, iDefense assesses the new Kazuar variant is under active development and BELUGASTURGEON will continue to use it for espionage campaigns.\n\n## Overview\n[Kazuar](https://intelgraph.idefense.com/#/node/malware_family/view/ef5a7376-0a81-4478-b15d-68369e7196bd) is a .NET backdoor the [BELUGASTURGEON (a.k.a. Turla, Snake, Waterbug, Venomous Bear)](https://intelgraph.idefense.com/#/node/threat_group/view/fb53e479-54e1-4827-abb4-ae1ae1db53e2) threat group has been using in espionage campaigns since at least 2017. [The Kazuar variant that Palo Alto Networks detailed in May 2017](https://unit42.paloaltonetworks.com/unit42-kazuar-multiplatform-espionage-backdoor-api-access/) has commands typical of many backdoors, such as reading, writing, copying, moving, and deleting files on the compromised system; executing commands from the command line; taking screenshots; and capturing webcam images. The version is extensible using a plugin framework to achieve additional functionality. The remote API allows BELUGASTURGEON operators to direct the backdoor to act as a web server and listen for inbound HTTP requests. iDefense identified this version of Kazuar used in various BELUGASTURGEON activity, including a [2020 campaign against the Cypriot government](https://intelgraph.idefense.com/#/node/intelligence_alert/view/6cc805d7-cb77-443d-afea-d052916fa602).\n\nSince its discovery in 2017, developers have been enhancing Kazuar. In 2019, security researcher [Juan Andrés Guerrero-Saade identified](https://www.epicturla.com/blog/sysinturla) Kazuar samples branded to look like the Microsoft SysInternals tool [DebugView](https://docs.microsoft.com/en-us/sysinternals/downloads/debugview). In addition to cosmetic changes, the Kazuar developers moved to a custom packer instead of  obfuscating Kazuar\'s code with [ConfuserEx](https://yck1509.github.io/ConfuserEx/). \n\nIn the campaign against the Cypriot government, BELUGASTURGEON operators implemented a novel C2 configuration where the Kazuar backdoor receives commands from URLs pointing to internal nodes in the Cypriot government network. [Another Kazuar sample acted as a transfer agent](https://intelgraph.idefense.com/#/node/malicious_event/view/2c3490cd-c4bb-4aef-b75f-641b76dcff01), proxying commands between the sample with the novel C2 configuration and the C2 server. Despite these developments, the underlying Kazuar codebase, including the backdoor\'s command set and configuration, remained mostly unchanged.\n## New Kazuar Functionality \nIn February 2021, Defense analyzed two Kazuar samples and noted significant changes in the codebase,  command set, and configuration functionality to warrant classifying the samples as a new variant of the Kazuar backdoor. One sample, shared by an industry partner, was first seen in August 2020; the second sample was uploaded to a third-party malware repository in February 2021. \n\nThe new variant persists on the system by storing the packed Kazuar binary in the Windows Registry and loading itself into memory at runtime without writing an infection file to disk. The variant offers new credential stealing and keylogging functionality, executes payloads in a range of file formats, and enumerates a wide range of system information about the compromised device. \n\nThe backdoor has a built-in command that forwards tasks to other Kazuar instances in a compromised network via named pipes. The ability to communicate among Kazuar instances as well as the overall extended functionality implemented without plugins allows Kazuar to achieve the functionality of some of BELUGASTURGEON\'s more sophisticated backdoors, such as [Carbon](https://intelgraph.idefense.com/#/node/malware_family/view/5c48cd58-180b-4d02-b344-5756f3a6fb33) or [Uroborus](https://intelgraph.idefense.com/#/node/malware_family/view/7c5fc18d-bab8-4928-a716-9b0c5a92a022).\n\nThe new Kazuar variant appears intended for Windows systems as developers have removed the UNIX-related code found in the earlier variant. Other functionality removed includes the remote HTTP API that is replaced with the task forwarding functionality allowing operators to configure Kazuar instances to listen for tasks from other "remote" Kazuar instances. \n\nIndications the Kazuar variant is under active development include an Agent Label value, discussed in more detail in the *Configuration Comparison* section, that is likely a version number incremented when there is a new iteration of the backdoor. iDefense also identified changes in the commands and configuration between the sample from August 2020 and February 2021. \n\niDefense analyzed the following samples of the new Kazuar variant:\n\n- **Filename (packed):**  Agent.Protected.exe  \n - **SHA-256 (packed):**  182d5b53a308f8f3904314463f6718fa2705b7438f751581513188d94a9832cd   \n\n - **Filename (unpacked):**  Agent.Original.exe  \n\n     - **SHA-256 (unpacked):**  41cc68bbe6b21a21040a904f3f573fb6e902ea6dc32766f0e7cce3c7318cf2cb  \n     - **File Size (unpacked):** 267 KB  \n     - **Agent Label:**  AGN-AB-03  \n     - **First Seen:** August 2020 (identified by industry partner)\n\n* **Filename (packed):**  Relieved.exe  \n\n - **SHA-256 (packed):**  60f47db216a58d60ca04826c1075e05dd8e6e647f11c54db44c4cc2dd6ee73b9  \n\n  - **Filename (unpacked):**  Musky.exe  \n\n     - **SHA-256 (unpacked):**  1cd4d611dee777a2defb2429c456cb4338bcdd6f536c8d7301f631c59e0ab6b4     \n     - **File Size (unpacked):** 291 KB  \n     - **Agent Label:** AGN-AB-13  \n     - **First Seen:** 15 February 2021 (uploaded to third-party malware repository)  \n\n\nThe following sections examine the differences between the new variant and the traditional Kazuar variant and the areas of active development in the new variant.\n## Codebase Comparisons \niDefense compared the codebase of the  version of Kazuar [detailed by Palo Alto Networks in May 2017](https://unit42.paloaltonetworks.com/unit42-kazuar-multiplatform-espionage-backdoor-api-access/), which will be referred to as the “traditional” variant,  and two samples of Kazuar from August 2020 and February 2021, the “new” variant,  and identified the following significant variations.\n#### Installation and Persistence\n\n**Traditional Kazuar Variant**\n\nThe traditional version of Kazuar is written to disk on the compromised machine. To maintain persistence on the machine, BELUGASTURGEON  adds  a Windows shortcut (LNK) file to the Windows startup folder or adds a subkey to one of the following Windows Registry keys:\n\n- HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\n- HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce\n- HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\n- HKCU\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell\n- HKCU\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\load\n\nOnce the LNK file or Registry key is configured, the Kazuar binary launches at user logon. Operators can configure the persistence method using the “autorun” command.\n\n**New Kazuar Variant**\n\nRather than write the binary to disk, the new Kazuar variant installs itself directly in the Windows Registry. For the sample with Agent Label AGN-AB-03, BELUGASTURGEON operators created a Registry subkey under `HKLM\\SOFTWARE\\Microsoft\\ActiveSync` with the name "Jhkr." The subkey data contains an obfuscated VBScript that, when deobfuscated, is likely a modified version of the publicly available [VBSMeter](https://github.com/Cn33liz/VBSMeter). (VBSMeter is a Meterpreter stager for C# assemblies embedded in VBScript.)\n\nThe packed Kazuar binary is stored in one of the VBScript parameters. When launched, the VBScript  checks for a compatible version of the .NET framework installed on the compromised machine, Base64-decodes the packed Kazuar binary from the parameter, deserializes it, and invokes the packed binary in memory. The VBScript then writes the TXT log file ~TMP0666.tmp into the user\'s `%Temp%` directory. The packing algorithm is simple: XOR decode and decompress the encoded payload that is initially stored in an array. \n\nKazuar sample AGN-AB-13 is loaded from the Registry key `HKCU\\SOFTWARE\\Microsoft\\Arrases\\Canoed`. iDefense was unable to obtain the value of the Registry key to confirm the same VBScript loaded the sample into memory but assesses this is likely. \n\nThe same packing algorithm encodes the samples in the Registry key. The packed sample writes any unpacking errors to log file `%Temp%\\~TMP0666.txt`, as shown in Exhibit 1. This logging functionality was not present in the packed AGN-AB-03 sample, only in the VBScript used to load the sample.\n\n![alt text](/rest/files/download/34/05/ab/e72860f9a0223f242f42e8301dded7b91c3ed03c611fe4892218edc845/exhibit1.PNG)  \n_Exhibit 1: Packing Algorithm and Logging Functionality for Packed Kazuar Sample_\n\niDefense has not yet determined how BELUGASTURGEON operators gain initial access to the machine and install the Registry keys containing the new variant of Kazuar.\n\n#### Initialization\n\n\n###### Mutex \n\n**Traditional Kazuar Variant**\n\nWhen launched, the traditional Kazuar version gathers system information and generates a [mutex](https://docs.microsoft.com/en-us/windows/win32/sync/mutex-objects)  that ensures only one instance of Kazuar is running on the compromised machine. The mutex is generated using the following steps:\n\n- Obtain the MD5 hash of a string “[username]=>singleton-instance-mutex”\n- Encrypt this MD5 hash using an XOR algorithm and the volume serial number \n- Generate a GUID from the result  and append it to the string “Global\\\\”\n\nExhibit 2 shows how the traditional Kazuar variant generates the mutex. [According to Palo Alto Networks](https://unit42.paloaltonetworks.com/unit42-kazuar-multiplatform-espionage-backdoor-api-access/), if the variant cannot obtain the system’s storage serial number, it uses a default version of 0xFB1C1A. \n\n![alt text](/rest/files/download/4c/0b/15/a539a2cb938e5d10409cc8d119cfd79400a5e03f37badb37de5e24b0ec/Exhibit2.PNG)   \n_Exhibit 2: Traditional Kazuar Variant Mutex Generation_\n\n**New Kazuar Variant**\n\nThe new variant of Kazuar generates its mutex by XOR-encoding the System Universal Unique Identifier (UUID) value with the current process ID (PID), which has been XOR-encoded with two hardcoded values, as shown in Exhibit 3. The resulting mutex no longer has the prefix  “Global\\\\” indicating it is a local mutex and multiple Kazuar infections can co-exist for different users on one compromised device.\n\n![alt text](/rest/files/download/6d/d8/60/c2914f57d474b1af992bb235466556128510fb251f416728a646a3eb67/Exhibit3.PNG)   \n_Exhibit 3: New Kazuar Variant Mutex Generation_\n\n###### Files Written\n\n**Traditional Kazuar Variant**\n\nThe traditional Kazuar variant writes folders that store the files it generates during execution. The variant writes the folders in the %LocalAppData% directory under a path beginning with "Microsoft" and selected from a hardcoded list (see Exhibit 4). The filenames are encoded on disk by calculating the FNV-1a hash of the filename string and XOR-encoding the  hash with the volume serial number and the hardcoded constant 0xBADA55, as shown in Exhibit 5.\n\n ![alt text](/rest/files/download/76/e7/5e/5aae52246f80c7a335e9b32222b09d8c417f9bf9dc931a256626cff650/Exhibit4.PNG)   \n_Exhibit 4: Directory Location for Configuration Files, Traditional Kazuar_\n\n![alt text](/rest/files/download/67/8d/04/34b9f163f8295a86bd222a9d798bbfc0930a34d1c4823af74db2b2b5ba/Exhibit5.PNG)   \n_Exhibit 5: Filename Encoding for Traditional Kazuar_\n\nThe traditional version of Kazuar creates the following folder structure: \n\n- **base:** Folder containing the following subfolders:\n   - **sys:** Folder containing configuration settings in the following files:\n        - \'serv\'  – Stores the C2 servers. \n        - \'arun\' – Stores the autorun method. \n        - \'remo\' – Stores the remote type. \n        - \'cont\' – Stores the date of last contact with the C2 server. \n        - \'uuid\' – Stores the compromised device\'s System UUID.\n        - \'tran\' – Stores the transport type.\n       - \'intv\' – Stores the transport interval.\n\n - **log:** Folder containing logs and debug information.\n - **plg:** Folder containing plugins used to extend Kazuar\'s functionality.\n - **tsk:** Folder tasks for Kazuar to run.\n - **res:** Folder containing results of processed tasks.\n\n**New Kazuar Variant**\n\nLikewise, the new variant of Kazuar writes files to disk during execution under the `%LocalAppData%` directory selecting paths from a hardcoded list beginning with "Microsoft"; however, that list is longer in the new version, as shown in Exhibit 6.\n\n![alt text](/rest/files/download/47/2f/cd/d9b75728ce7e443002d93d1e34bb40ae6b11dc7612f2a43f03f842a8ce/Exhibit6.PNG)   \n_Exhibit 6: Directory Location for Configuration Files, New Kazuar_\n\nExhibit 7 shows the filename-encoding function for the new variant of Kazuar. Rather than generating 8-digit hex strings, as done previously, the new version generates 15-digit alphanumeric strings for filenames and folders. Filenames are also appended with a 3-digit file extension. The System UUID is used as a seed and the process involves a series of XOR encodings and a [custom implementation of the FNV-1a hashing algorithm](https://securelist.com/sunburst-backdoor-kazuar/99981/).\n\n![alt text](/rest/files/download/04/30/8d/ba1b97d2f491900af81e852f9076ae8911770c73517a25003a2d30bf16/Exhibit7.PNG)   \n_Exhibit 7: Filename Encoding for New Kazuar_\n\nThe list below contains the file tree of folders and files the new variant creates along with the encoded and decoded filenames. There is still a base folder and folders to contain the log messages and tasks. Kazuar\'s configuration data is now stored under the "config" folder, similar to the "sys" folder in the previous variant. (See the *Configuration Comparison* section below for more details.) The "keys" file under the "logs" folder stores keystrokes captured when the new keylogger is enabled. \n\n```\n%LOCALAPPDATA%\\MICROSOFT\\OFFICE\\VISIO\\ROT3BMLH2ZGRF9X9 (base)\n|\n|_ i4px5nL5PqksWMb.wgw (logs)\n|\n|_ 2YpvIxMopuiQqHsmc   (task)\n|\n|_ i4px5nL5PqksWMb     (logs)\n|          |_ T9j8NFq6Bwtna1B0ej.rub   (keys)\n|       \n|_Tk7Zu3EKOMqtjTnw     (config)\n        |_ 8c9lq3nL3Vv0bGX.apa   (solve_threads)\n        |_ E8rHL1RRAujyu.cea     (keylog_enabled)\n        |_ MTDLUlXsgIf.yni       (transport)\n        |_ O1a1lIxAqUskBdQUf.ebd (amsi_bypass)\n        |_ OiF6UrrFDBhgcwa.qgg   (inject_mode)\n        |_ QQECzNniEHuKHih2f.oli (delegate_enabled)\n        |_ TqTHomCER6vz.zks      (agent_label)\n        |_ tLkhmS2L3cg5.flo      (remote)\n        \n```\n\n###### Execution Paths\n\n**Traditional Kazuar Variant**\n\nUpon launching, the traditional version of Kazuar can take one of four paths of execution, [as described by Palo Alto Networks](https://unit42.paloaltonetworks.com/unit42-kazuar-multiplatform-espionage-backdoor-api-access/):\n\n- If launched with the **install** command-line argument, uses .NET Framework’s InstallHelper method to install itself as a service.\n- If started in a non-user interactive environment (i.e., no user interface), installs itself as a service using the .NET ServiceBase Class.\n- If executed with the **single** command-line argument or if running in a Mac or UNIX environment, launches an infinite loop that reads tasks from the **tsk** folder and resolves them until none remain. \n- If no arguments are provided and if running in a Windows environment, saves a DLL and injects it into the explorer.exe process. The DLL executable loads the malware’s executable and runs it within memory of the explorer.exe process. The Kazuar binary code refers to the DLL as "the shellcode."\n\nAs shown in Exhibit 8, the process injection function of the traditional Kazuar variant proceeds as follows:\n- Makes a FindWindow API call to get a handle to the Shell\\_TrayWnd (Windows taskbar) process\n- Calls GetWindowThreadProcessID to get the thread ID of the Shell\\_TrayWnd window\n- Checks if the DLL loader exists in the base folder:\n    - If it does not exist, it writes it (encoded version hardcoded in Kazuar binary)\n- Once DLL loader exists, calls LoadLibrary to load the DLL\n- Calls GetProcAddress to find the address of the DLL loader-exported Install function \n- Calls SetWindowsHookEx to hook the Shell\\_TrayWnd window; the hook runs the "Install" function of the DLL loader when the Shell\\_TrayWnd window gets a message in the queue with WH\\_GETMESSAGE on the thread of the target window\n- Calls PostMessage  to post a message in the thread to trigger the hook instantly and load the DLL immediately\n- Sleeps for 0.1 seconds then calls UnhookWindowsHookEx to remove the hook and exit the program; execution is now passed to the injected DLL loader in explorer.exe\n\n ![alt text](/rest/files/download/66/f3/7a/9414dd315d65a3b16ba48441cfcee331075b5729c959991157bd27161c/Exhibit9.PNG)   \n _Exhibit 8: Process Injection of Traditional Kazuar Into explorer.exe Process_\n\n**New Kazuar Variant**\n\nThe new Kazuar variant has four execution paths that depend on the configured **inject_mode** parameter rather than passed as a command-line argument:\n\n- If **inject_mode** is **single**, Kazuar sets a mode variable to "solver" if started in user interactive mode or "system" if not. Kazuar checks if the current process is mshta.exe (Microsoft HTML application host). If so, Kazuar enumerates all top-level windows on the screen and then hooks and hides the windows. iDefense assesses this is to determine the results of the code run from mshta.exe. \n\n Kazuar then sets up the REMO (remote), KEYL (keylogger), or SOLV (task solving) threads. Also sets the MIND thread that monitors for processes with names containing:\n  - cmdvrt32.dll (Comodo Antivirus) \n  - sbiedll.dll (Sandboxie)\n  - sxin.dll (360 Total Security)\n  - process monitor\n   - wireshark\n   - fiddler\n\n- If **inject_mode** is **remote**, Kazuar repeats the same process as above but only starts the REMO thread to listen for tasks from other Kazuar instances.\n\n- If started in **non-interactive mode**, Kazuar sets up REMO and INJE (injection) threads and then sleeps.\n\n- If none of the above conditions matches, Kazuar checks if it is already running in explorer.exe. If not, it repeats the check to see if it is running the  process mshta.exe and performs the same subsequent activity. Kazuar then injects into explorer.exe using the same method as the traditional Kazuar, described above.\n\nThe new Kazuar variant has three other **inject_mode** values used to inject into transport processes (i.e., used to communicate with the C2 server): \n\n-  If **inject_mode** is **inject**, Kazuar reads the transport processes from the transport configuration file as targets for injection. If there is no transport process present, Kazuar uses the default browser process; if defined, it uses iexplore.exe. \n\n Kazuar checks for the mutex in the target transport process to see if Kazuar is already running. If not, Kazuar opens the transport process using the OpenProcess API call and checks whether it is running under WOW64 with IsWow64Process. \n\n Kazuar then creates a new memory section with RWX protection using NtCreateSection, maps a view of the previously created section to the local Kazuar process with RW protection, and maps the section to the transport process with RX permissions. Kazuar writes the shellcode to the mapped section in the local process and creates a remote thread in the transport process using CreateRemoteThread, pointing the thread to the mapped view to trigger the shellcode.\n\n- If **inject_mode** is **zombify**, Kazuar injects into the user\'s default browser; if this fails, it injects into svchost.exe. Kazuar uses the [early bird technique](https://www.ired.team/offensive-security/code-injection-process-injection/early-bird-apc-queue-code-injection) to inject itself into the selected process\n\n-  If **inject_mode** is **combined**, Kazuar first attempts to inject using the **inject** process; if this fails, it attempts the **zombify** process.\n\n\n###### AMSI Bypass \n\n**New Kazuar Variant**\n\nBefore selecting an execution path, the new Kazuar variant calls a function that bypasses the [Antimalware Scan Interface (AMSI)](https://docs.microsoft.com/en-us/windows/win32/amsi/antimalware-scan-interface-portal)—a way for any Windows application to integrate with the installed antimalware product. The AMSI bypass function is shown in Exhibit 9; it was not available in the traditional Kazuar variant.\n\n![alt text](/rest/files/download/e3/46/cb/9adb5488dfda273e37ca6462009bebae7cef14770849d088cc9afc26e1/amsi.PNG)  \n_Exhibit 9: New Kazuar Variant\'s AMSI Bypass Function_\n\n[ESET previously reported](https://www.welivesecurity.com/2019/05/29/turla-powershell-usage/) on BELUGASTURGEON using AMSI bypass functionality in its PowerShell loaders, and [iDefense has previously analyzed](https://intelgraph.idefense.com/#/node/intelligence_report/view/9bf2fc44-570d-40ad-b81a-744141ed443e) PowerShell scripts containing AMSI bypass functionality to load BELUGASTURGEON\'s [securlsa.chk](https://intelgraph.idefense.com/#/node/malware_family/view/e55ad229-6484-4be3-bf3e-568c96a05b82) backdoor.\n\nThe Kazuar function patches the beginning of [AmsiScanBuffer](https://docs.microsoft.com/en-us/windows/win32/api/amsi/nf-amsi-amsiscanbuffer) to always return 80070057, which [translates to](https://docs.microsoft.com/en-us/windows/win32/seccrypto/common-hresult-values) E\\_INVALIDARG (one or more arguments not valid). The previous PowerShell scripts always patched this buffer to return 1 (AMSI\\_RESULT\\_NOT\\_DETECTED). The new return value is the same value used by the open-source .NET exploitation library [SharpSploit](https://github.com/cobbr/SharpSploit/blob/1407108e638cde3e181c27cb269c8427723884b0/SharpSploit/Evasion/Amsi.cs) suggesting Kazuar developers adapted this functionality from open-source tooling.\n\n## Command Set Comparison\n\n**Traditional Kazuar Variant**\n\nThe following commands, [documented by Palo Alto Networks](https://unit42.paloaltonetworks.com/unit42-kazuar-multiplatform-espionage-backdoor-api-access/) and verified by iDefense, are available in the traditional Kazuar variant: \n\n- **log:** Logs a specified debug message.  \n- **get:** Uploads files from a specified directory. Palo Alto Networks indicated operators can upload files based on their modified, accessed, and created timestamps.  \n- **put:** Writes a payload to the specified file.  \n- **cmd:**  Executes the specified command, writes the output to a temporary file, and uploads the temporary file to the C2 server.    \n- **sleep:** Sleeps for the specified time.  \n- **upgrade:** Changes the current executable’s file extension to .old and writes the newly provided executable in its place.  \n- **scrshot:** Takes a screenshot of the visible screen and saves it to the specified filename or a filename using the format: [year]-[month]-[day]-[hour]-[minute]-[second]-[millisecond].jpg. Then uploads the file to the C2 server.  \n- **camshot:** Creates a Window called “WebCapt” to capture an image from an attached webcam, copies the image to the clipboard, and writes the image to a specified file or a filename using the format: [year]-[month]-[day]-[hour]-[minute]-[second]-[millisecond].jpg. Then uploads the file to the C2 server.  \n- **uuid:** Sets the unique agent identifier by providing a specific GUID.  \n- **interval:** Sets the transport intervals (minimum and maximum time intervals) between C2 communications.  \n- **server:** Sets the C2 servers by providing a list of URLs.  \n- **transport:** Sets the transport processes by providing a list of processes where Kazuar injected its code and executed within.  \n- **autorun:** Sets the autorun type—DISABLED, WINLOGON, POLICIES, HKCURUN, RUNONCE, LOADKEY, or STARTUP—as discussed earlier. Kazuar accept the following strings for this command:  \n    - **remote:** Configures remote API settings by specifying URI prefix and port to listen on. While the port used varied between the analyzed samples, iDefense only observed the HTTP prefix used, which instructs Kazuar to act as an HTTP server. The threat actor can then interact with the compromised system using inbound HTTP requests.  \n    - **info:** Gathers system information referred to as: Agent information, System information, User information, Local groups and members, Installed software, Special folders, Environment variables, Network adapters, Active network connections, Logical drives, Running processes, and Opened windows.  \n- **copy:** Copies the specified file to a specified location. Also allows the C2 infrastructure to supply a flag to overwrite the destination file, if it already exists.  \n- **move:** Moves the specified file to a specified location. Also allows the C2 infrastructure to supply a flag to delete the destination file, if it exists.  \n- **remove:** Deletes a specified file. Allows the C2 infrastructure to supply a flag to securely delete a file by overwriting the file with random data before deleting the file.  \n- **finddir:** Finds a specified directory and lists its files including the created and modified timestamps, the size, and file path for each of the files in the directory.  \n- **kill:** Kills a process by name or by process identifier (PID).  \n- **tasklisk:** Lists running processes. Uses a WMI query of `select * from Win32_Process` for a Windows system but can also run `ps -eo comm,pid,ppid,user,start,tty,args` to obtain running processes from a UNIX system.  \n- **suicide:** Likely uninstalls Kazuar, but it is not implemented in the referenced samples.  \n- **plugin:** Installs plugin by loading a provided Assembly, saving it to a file whose name is the MD5 hash of the Assembly’s name, and calling the Start method.  \n- **plugout:** Removes a plugin based on the Assembly’s name.  \n- **pluglist:** Gets a list of plugins and determines whether they are “working” or “stopped.”  \n- **run:** Runs a specified executable with supplied arguments and saves its output to a temporary file. Then loads the temporary file to the C2 server.  \n\nIn this Kazuar variant, the C2 server sends the tasks as XML-formatted data containing an action identifier or integer; the numeric action ID is  then translated into the corresponding command from the above set.\n\n**New Kazuar Variant**\n\nThe new Kazuar variant replaces these numeric action IDs with strings for the command names. The following commands have similar functionality in the new variant as they did in the traditional variant:\n\n- **info**\n- **scrshot**\n- **run**\n- **move**\n- **get**\n- **log**\n- **put**\n- **sleep**\n- **kill**\n- **copy**\n\nDevelopers added the following commands to the new variant:\n\n- **steal:** Steal passwords, history, or proxy lists from the following services: FileZilla, Chromium, Mozilla, Outlook, WinSCP, Git, or from the system.  \n- **config:** Set and update Kazuar configuration values, as described in the *Configuration Comparison* section below.  \n- **delegate:** Forward command to remote Kazuar instance using a named pipe and store result in delegated .zip file, as described in the *Command-and-Control Communication* section below under named pipe communications.\n- **psh:**  Execute PowerShell command.\n- **regwrite:** Create Registry key.\n- **regdelete:** Delete Registry key.\n- **vbs:** Execute VBS script with cscript.exe.\n- **regquery:** Query Registry key.\n- **find:** Enumerate a directory; replaces **finddir** command in traditional Kazuar.\n- **forensic:** Enumerate Registry autorun keys, the Program Compatibility Assistant, and the Windows Explorer User Assist Registry keys to determine which program(s) has run on the compromised device.\n- **http:** Execute an HTTP request and save the response to file http<3digits>.rsp.\n- **jsc:** Execute a JavaScript file with cscript.exe.\n- **del:** Delete a file; replaces **remove** command in traditional Kazuar.\n- **unattend:** Enumerate the compromised device\'s [unattend.xml](https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/update-windows-settings-and-scripts-create-your-own-answer-file-sxs), sysprep.xml, and web.config files to obtain credentials.\n- **schlist:** Enumerate list of scheduled tasks using the [TaskService](https://docs.microsoft.com/en-us/windows/win32/taskschd/taskservice) object.\n- **wmiquery:** Execute a WMI query.\n- **wmicall:** Execute a WMI method.\n\nDevelopers removed several commands from the traditional Kazuar variant while incorporating the functionality into other commands or configuration settings:\n- The **upgrade** and **suicide** commands are replaced by the Registry editing commands (‘regdelete’ and ‘regwrite’)  now that  Kazuar is stored in a Registry key. \n- The values previously configured by the **uuid**, **jnterval**, **server**, and **transport** commands are now configured using the **config** command. \n- The list of running processes previously obtained with **tasklist** is now returned by **info** along with much more system information. \n- The **autorun** command is not required to configure persistence mechanisms now the Kazuar binary is stored in the Registry. \n- The **plugin** command is no longer necessary since much of the prior information-stealing functionality is implemented within the newer Kazuar. \n- The **remote** command (i.e., HTTP API functionality) has been replaced with task delegation. \n\nThe only functionality apparently not replicated in the new variant is the **camshot** command to take web cam snapshots.\n\nThe commands **schlist**, **wmiquery**, and **wmicall** were present in Kazuar sample AGN-AB-13 but not AGN-AB-03, suggesting the command set of the new variant is under development.\n\n## Configuration Comparison\n\n**Traditional Kazuar Variant**\n\nThe values configured in the traditional Kazuar variant\'s configuration are:\n\n- **Agent identifier:** Unique agent identifier (GUID format).  \n- **Executable path:**  Path of Kazuar binary on disk.  \n- **Storage path:** Base directory containing Kazuar configuration files.\n- **Fake visible name:** Kazuar filename.\n- **Description label:**  Empty in samples analyzed.\n- **Machine seed:** Seed value derived from System Directory.\n- **Parallel tasks:** Number of tasks to run in parallel.\n- **Last contact:** Last contact from C2 server.\n- **Autorun type:**  Persistence method (LNK file or Registry keys, as described in *Installation and Persistence* section).\n- **Transport interval:** Interval between C2 communications.\n- **Command servers:** C2 servers.\n- **Transport processes:** Process to injected into for C2 communications.\n\n**New Kazuar Variant**\n\nThe updated configuration reflects the broader range of functionality implemented in the new Kazuar variant. The values configured in the new variant\'s configuration are:\n\n- **Agent label:** Unique Agent Label of format `AGN-AB-<2 digits>`, iterated as updates are made to Kazuar.\n- **Agent UUID:** Unique agent identifier (GUID format).  \n- **Local seed:** Seed value derived from System UUID.\n- **Last contact:** Last contact from C2 server.\n- **Transport type:**  Protocol used for C2 communications; set to "HTTP" in both analyzed samples.\n- **Transport main interval:**  Interval between C2 communications.\n- **Transport failed interval:** Interval between failed C2 connections before attempting a retry.\n- **Transport proxy:**  C2 communication proxy; specifies URL, port, and variable to specify when proxy is enabled. This value was empty for both samples iDefense analyzed.\n- **Max server fails:** Number of failed attempts before quitting.\n- **Main servers:**  Primary C2 servers.\n- **Reserved servers:** Backup C2 servers.\n- **Agent regkey:** Registry key where packed Kazuar binary is stored.\n- **Storage root:** Base directory containing Kazuar configuration files.\n- **Config path:** Path to Kazuar configuration directory.\n- **Logs path:**: Path to Kazuar logs file.\n- **Keylogger path:** Path to Kazuar keylogger output file.\n- **Logs size:**  Current size of logs file.\n- **Inject mode:** Inject mode to define execution path and injection method (described in *Installation and Persistence* section).\n- **Solving threads:** Number of threads to run in parallel to solve tasks.\n- **Solving tries:** Maximum number of attempts to solve a task.\n- **Sending tries:** Maximum number of attempts to send task result to C2 server.\n- **Keylogger enabled:** Whether keylogger functionality is enabled (boolean).\n- **Task delegation enabled:** Whether task delegation functionality is enabled (boolean).\n- **AMSI bypass enabled:** Whether AMSI bypass functionality is enabled (boolean).\n- **Delegate system pipe:**  Pipe used to delegate tasks in system mode; also see  *Command-and-Control Communication* section.\n- **Delegate solver pipe:** Pipe used to delegate tasks in solver mode.\n- **Delegate sender pipe:** Pipe used to delegate tasks in sender mode.\n\nIndicating the new Kazuar version is under development, the following values are present in the new Kazuar variant sample AGN-AB-13 but not AGN-AB-03:\n- **Agent regkey**\n- **Delegate system pipe** \n- **Delegate solver pipe** \n- **Delegate sender pipe**\n\n## Command-and-Control Communication\n\n**Traditional Kazuar Variant**\n\nThe traditional Kazuar variant uses its C2 channel to send tasks to the backdoor, receive the results, and exfiltrate data. The variant can use multiple protocols, such as HTTP, HTTPS, FTP, or FTPS, as determined by the prefixes of the hardcoded C2 URLs. [iDefense identified one sample](https://intelgraph.idefense.com/#/node/intelligence_alert/view/6cc805d7-cb77-443d-afea-d052916fa602) that uses the "file://" prefix to communicate across internal nodes in a compromised network, likely via SMB using another Kazuar sample as a transfer agent to forward tasks and results between the C2 server and the first Kazuar sample.\n\n**New Kazuar Variant**\n\nThe new Kazuar samples do not support FTP communications; instead, C2 communications are performed over HTTP(S). Exhibit 10 shows the function that defines the C2 servers:\n\n![alt text](/rest/files/download/e2/97/51/d4d171d120ec49db0128d5c6119399eeb12bf245227e82708290fcf6c3/c2.PNG)  \n_Exhibit 10: Defining C2 Servers in New Kazuar Variant_\n\nThe first two URLs in Exhibit 10 are the "Main servers" referred to in the sample\'s configuration; they act as the primary C2 servers. The third URL is the "Reserved server" that Kazuar uses as a backup, if it cannot reach the primary C2s. The fourth URL is the "Last Chance URL" that Kazuar uses if communication with the primary and backup C2 servers is lost. \n\nFor sample AGN-AB-03, shown in Exhibit 10, a dummy value ("www.google.com") is provided; in sample AGN-AB-13, no value is configured for the "Last Chance URL." However, Kazuar operators can set this to any value. iDefense assesses the operators may choose to use a legitimate web service, such as Pastebin, which allows them to maintain persistence if their own C2 infrastructure is unavailable. [BELUGASTURGEON has previously used a Pastebin project](https://intelgraph.idefense.com/#/node/intelligence_alert/view/92154a2c-f077-4f16-92d5-2349984ad03e) for C2 communications with its Carbon backdoor.\n\nThe C2 servers identified in the two analyzed samples are:\n\n**AGN-AB-13:**\n - Main servers:\n    - `https://www.rezak[.]com/wp-includes/pomo/pomo.php`\n    - `https://www.hetwittezwaantje[.]nl/wp-includes/rest-api/class-wp-rest-client.php`\n - Reserved server:\n    - `https://aetapet[.]com/wp-includes/IXR/class-IXR-response.php`\n\n**AGN-AB-03:**\n - Main servers:\n    - `https://www.actvoi[.]org/wordpress/wp-includes/fonts/icons/`\n    - `https://www.datalinkelv[.]com/wp-includes/js/pomo/`\n    - `https://www.actvoi.org/wordpress/wp-includes/fonts/`\n - Reserved server:\n    - `https://www.downmags[.]org/wp-includes/pomo/wp/`\n\nIn the new version of Kazuar, HTTP requests are authenticated using an .AspNet.Cookies header rather than an AuthToken cookie. Tasks are forwarded to remote Kazuar instances using the task delegation functionality instead of the remote HTTP API. The task delegation functionality uses named pipes to communicate between Kazuar samples. Exhibit 11 shows the function to generate the pipe name used for communications.\n\n![alt text](/rest/files/download/15/51/62/fe277b22a617898a35647dfe6e6b2d4943dfbeb7e4380c01058995d960/pipe.PNG)   \n_Exhibit 11: New Kazuar Variant Task Delegation Named Pipe_\n\nThe pipe names are GUID values derived from the string `pipename-[system/solver/sender]-AgentLabel` where the values for system, solver, or sender are set based on the **inject_mode**, as described in the *Installation and Persistence* section. \n- **sender** corresponds to the Kazuar instance sending the task.\n- **solver** is set for the Kazuar instance receiving tasks. \n- **system** corresponds to a Kazuar instance started in non-interactive mode. \n\nExhibit 12 shows the function used to send tasks to and receive task results from remote Kazuar instances.\n\n![alt text](/rest/files/download/ac/ec/11/ad97d520210ac43da1c7edd6d91fc4cb59f3e8dd459016a0d335bd0686/pipe2.PNG)  \n_Exhibit 12: New Kazuar Variant Task Delegation Functionality_\n\nTo generate a name for the named pipe, Kazuar uses the `pipename-mode AgentLabel`  format described above replacing "mode" with system, solver, or sender as described above and connecting the values for CreateNamedPipe with ConnectNamedPipe. Messages sent over the pipe are encrypted and must begin with PING, PONG, TASK, RESULT, or ERROR. The PING prefix acts as a handshake and expects a PONG response, the TASK prefix is used to send tasks, and the RESULT and ERROR prefixes respond with the results of tasks or any errors.\n\n## Outlook\nAlthough BELUGASTURGEON has made high-level updates to the Kazuar backdoor over the years, the samples from August 2019 and February 2020 represent the first significant update to the malware\'s codebase since its discovery three years ago. The developers removed the requirement for a plugin framework by incorporating functionality that allows for a wide range of espionage activity such as keylogging, credential stealing, and forensics. Storing the sample as a Registry key rather than on disk decreases the risk of detection in comparison to the older variant.\n\nAdding task delegation functionality makes Kazuar a peer of the group\'s more sophisticated Carbon and Uroborus backdoors. The group\'s relatively clumsy prior method of chaining together proxy commands from a C2 server to a Kazuar instance on an internal node without network connection meant task files were written to disk on the internal proxy node. The new functionality forwards tasks directly over named pipes, as done in the group\'s other backdoors.\n\nDifferences between the August 2019 and February 2020 samples—with the addition of commands and updated configuration specifications—clearly indicate Kazuar is under active development and will continue to be used by BELUGASTURGEON in espionage campaigns.', 'sources_external': [{'datetime': '2017-05-02T23:00:00.000Z', 'description': 'Kazuar: Multiplatform Espionage Backdoor with API Access', 'name': 'Palo Alto Networks', 'reputation': 4, 'url': 'https://unit42.paloaltonetworks.com/unit42-kazuar-multiplatform-espionage-backdoor-api-access/'}], 'mitigation': 'Check logs for the following indicators of compromise:\n- `182d5b53a308f8f3904314463f6718fa2705b7438f751581513188d94a9832cd` (Kazuar packed)\n- `60f47db216a58d60ca04826c1075e05dd8e6e647f11c54db44c4cc2dd6ee73b9` (Kazuar packed)\n-  `41cc68bbe6b21a21040a904f3f573fb6e902ea6dc32766f0e7cce3c7318cf2cb` (Kazuar unpacked)\n- `1cd4d611dee777a2defb2429c456cb4338bcdd6f536c8d7301f631c59e0ab6b4` (Kazuar unpacked)\n- https://www[.]rezak[.]com/wp-includes/pomo/pomo[.]php\n- https://www[.]hetwittezwaantje[.]nl/wp-includes/rest-api/class-wp-rest-client[.]php\n- https://aetapet[.]com/wp-includes/IXR/class-IXR-response[.]php\n- https://www.actvoi[.]org/wordpress/wp-includes/fonts/icons/\n- https://www.datalinkelv[.]com/wp-includes/js/pomo/9https://www.actvoi.org/wordpress/wp-includes/fonts/\n- https://www.downmags[.]org/wp-includes/pomo/wp/\n\nKazuar developers configure the C2 URIs for each sample; instead monitor for the following more generic indicators:\n-\tRepeated connections to WordPress sites not commonly visited by users in the network, particularly when the URI contains `/wp-includes/pomo/`. \n-\tNamed pipes with names matching the format `///pipe//<GUID>` particularly when used by explorer.exe.\n\nThe following YARA rule matches the analyzed Kazuar samples and may be used for detection or hunting purposes only:\n\n```\nrule new_kazuar_unpacked {\n    meta:\n        desc = "Detects functions used by new Kazuar Variant."\n        author = "iDefense"\n        hash1 = "41cc68bbe6b21a21040a904f3f573fb6e902ea6dc32766f0e7cce3c7318cf2cb"\n        hash2 = "1cd4d611dee777a2defb2429c456cb4338bcdd6f536c8d7301f631c59e0ab6b4"\n\n    strings:\n\n    $a1 = "Agent.Original.exe" wide ascii\n    $a2 = "Musky.exe" wide ascii\n    $b_amsi = { 28 [4] 3A 01 00 00 00 2A 72 [4] 28 [4] 28 [4] 0A 06 7E [4] 28 [4] 39 [4] 2A 06 72 [4] 28 [4] 28 [4] 0B 07 7E [4] 28 [4] 39 [4] 2A 28 [4] 39 [4] 1C 8D [4] 25 D0 [4] 28 [4] 0C 38 [4] 1E 8D [4] 25 D0 [4] 28 [4] 0C 16 0D 08 8E 69 6A 28 }\n    $b_encoding1 = { 020A061F09594576000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??000000??00000038E70000001F412A1F422A1F432A1F442A1F452A1F462A1F472A1F482A1F492A1F4A2A1F4B2A1F4C2A1F4D2A1F4E2A1F4F2A1F502A1F512A1F522A1F532A1F542A1F552A1F562A1F572A1F582A1F592A1F5A2A1F612A1F622A1F632A1F642A1F652A1F662A1F672A1F682A1F692A1F6A2A1F6B2A1F6C2A1F6D2A1F6E2A1F6F2A1F702A1F712A1F722A1F732A1F742A1F752A1F762A1F772A1F782A1F792A1F7A2A1F7E2A1F252A1F3A2A1F2E2A1F202A1F7C2A1F7B2A1F7D2A1F2D2A1F3D2A1F3C2A1F3E2A1F5C2A1F0A2A1F092A1F302A1F312A1F322A1F332A1F342A1F352A1F362A1F372A1F382A1F392A022A}\n    $b_encoding2 = {73[4]0A160B38[4]02076F[4]28[4]0C0608D16f[4]260717580B07026F[4]3f[4]066F[4]2A}\n    $b_pipename = {03 28 [4] 39 07 00 00 00 28 [4] 10 01 02 6F [4] 0A 72 [4] 28 [4] 06 72 [4] 28 [4] 03 28 [4] 0B 28 [4] 07 6F [4] 0C 28 [4] 08 6F [4] 0D 1F 2A 13 04 1F 11 13 05 1F 15 13 06 16 13 08 38 [4] 11 04 11 05 5A 20 [4] 20 [4] 61 5F D2 13 04 11 04 11 06 58 20 [4] 20 [4] 61 5F D2 13 04 09 11 08 8F [4] 25 47 11 04 61 D2 52 11 08 17 58 13 08 11 08 09 8E 69 3F [4] 12 07 09 28 [4] 12 07 72 [4] 28 [4] 28 [4] 6F [4] 2A}\n\n    condition: uint16(0) == 0x5a4d and (1 of ($a*) and 3 of ($b_*)) or (4 of ($b_*)) and filesize < 350KB\n}\n```', 'severity': 4, 'abstract': "In February 2021, iDefense analyzed two samples of BELUGASTURGEON's Kazuar backdoor and identified significant codebase differences when compared to older Kazuar samples. Although BELUGASTURGEON has been making high-level changes to Kazuar and using the backdoor in espionage campaigns since at least 2017, the August 2020 and February 2021 samples contain the first significant updates to the malware's codebase since the malware family was identified.\n\nThe updated Kazuar variant introduces commands that support a range of espionage activity, including keylogging, credential stealing, and forensics, without requiring a plugin framework as in prior  Kazuar samples. Using task forwarding, BELUGASTURGEON operators can now communicate with Kazuar instances without using Internet connectivity; this enhanced peer-to-peer (P2P) functionality advances Kazuar to the level of some of BELUGASTURGEON's more sophisticated backdoors.\n\nWhen comparing the two August 2020 and February 2021 Kazuar samples, iDefense identified command set and configuration updates that indicate Kazuar is under active development for future use in BELUGASTURGEON espionage campaigns.", 'attachment_links': '\n- https://intelgraph.idefense.com/rest/files/download/6a/7f/fb/0f7be51f6fd40e1361a2b22135cab45f12ce755af5d089e8cc5d086afa/USEIAOnOilPrices2021-02-08cropped.png\n- https://intelgraph.idefense.com/rest/files/download/6a/7f/fb/0f7be51f6fd40e1361a2b22135cab45f12ce755af5d089e8cc5d086afa/USEIAOnOilPrices2021-03-08cropped.png'}]
+}
+
+
+expected_output_ir = {
+
+    "DBot": [{'Indicator': 'bdc9d16f-6040-4894-8544-9c98986a41fd', 'Type': 'ACTI Intelligence Report', 'Vendor': 'ACTI Threat Intelligence Report', 'Score': 0, 'Reliability': 'B - Usually reliable'}],
+    'IR': [{'value': 'bdc9d16f-6040-4894-8544-9c98986a41fd', 'created_on': '2021-03-26T20:09:55.000Z', 'display_text': 'Russian Responses to Geopolitical Challenges Include Cyber-Threat Activity against Energy Industry Entities', 'dynamic_properties': {}, 'index_timestamp': '2022-02-22T23:42:04.231Z', 'last_modified': '2022-02-08T18:27:58.000Z', 'last_published': '2021-03-26T20:09:55.000Z', 'links': [{'created_on': '2022-01-07T19:02:52.000Z', 'display_text': 'Feared Russian Invasion of Ukraine Could Have Global Impacts in Cyberspace', 'key': 'b4511cfd-3d13-4092-9275-35b058c246ec', 'relationship': 'mentions', 'relationship_created_on': '2022-01-07T19:02:52.000Z', 'relationship_last_published': '2022-01-07T19:02:52.000Z', 'type': 'intelligence_alert', 'uuid': 'edcb0ff2-6598-45fb-ae1c-4eb273032f56', 'href': '/rest/document/v0/edcb0ff2-6598-45fb-ae1c-4eb273032f56'}, {'created_on': '2021-01-06T16:53:13.000Z', 'display_text': 'Suspected Russian Breaches of US Government and Critical Infrastructure Align with Russian Strategic Interests', 'key': 'd01c0e25-ed38-4312-b679-8854bf29b5d2', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_report', 'uuid': 'eb77c712-fcfd-48f6-9533-baa18131fb62', 'href': '/rest/document/v0/eb77c712-fcfd-48f6-9533-baa18131fb62'}, {'created_on': '2022-02-22T21:33:12.000Z', 'display_text': 'SITREP: Ukraine Crisis', 'key': '0ae44727-6fef-4dcb-9928-8eed0c3bcd3e', 'relationship': 'mentions', 'relationship_created_on': '2022-02-22T23:39:39.000Z', 'relationship_last_published': '2022-02-22T23:39:39.000Z', 'type': 'intelligence_alert', 'uuid': 'f1862833-80de-4880-a180-11fad373e896', 'href': '/rest/document/v0/f1862833-80de-4880-a180-11fad373e896'}, {'created_on': '2016-07-21T22:42:19.000Z', 'display_text': 'Texaco', 'key': 'Texaco', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'target_organization', 'uuid': 'd9e7c8b1-bce2-43fa-a3ae-bc1caa0f0d22', 'href': '/rest/fundamental/v0/d9e7c8b1-bce2-43fa-a3ae-bc1caa0f0d22'}, {'created_on': '2015-08-21T00:00:00.000Z', 'display_text': 'CSX', 'key': 'CSX', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'target_organization', 'uuid': '4c1ea572-f5d7-46b7-870e-e81821f5316c', 'href': '/rest/fundamental/v0/4c1ea572-f5d7-46b7-870e-e81821f5316c'}, {'created_on': '2007-04-12T00:00:00.000Z', 'display_text': 'Turkmenistan', 'key': 'Turkmenistan', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': 'a130bfe9-390d-4c83-b75e-c1f050e41820', 'href': '/rest/fundamental/v0/a130bfe9-390d-4c83-b75e-c1f050e41820'}, {'created_on': '2003-09-27T00:00:00.000Z', 'display_text': 'Germany', 'key': 'Germany', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': 'ee03c799-980c-4998-8240-dc400eebe325', 'href': '/rest/fundamental/v0/ee03c799-980c-4998-8240-dc400eebe325'}, {'created_on': '2003-12-15T00:00:00.000Z', 'display_text': 'Denmark', 'key': 'Denmark', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': 'f77916a1-655f-4424-91c9-124a289c6abd', 'href': '/rest/fundamental/v0/f77916a1-655f-4424-91c9-124a289c6abd'}, {'created_on': '2012-08-13T16:42:49.000Z', 'display_text': 'Iran', 'key': 'Iran', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': '516a2391-b1b6-42e2-adce-ad3410cb15f8', 'href': '/rest/fundamental/v0/516a2391-b1b6-42e2-adce-ad3410cb15f8'}, {'created_on': '2016-06-16T16:04:46.000Z', 'display_text': 'Guccifer', 'key': 'Guccifer', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'threat_actor', 'uuid': '1e01d510-6b3a-47a7-ab95-967105695d1f', 'href': '/rest/fundamental/v0/1e01d510-6b3a-47a7-ab95-967105695d1f'}, {'created_on': '2015-08-03T15:06:38.000Z', 'display_text': 'JACKMACKEREL', 'key': 'JACKMACKEREL', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'threat_group', 'uuid': '24a38270-949f-442a-aac6-53a99ef1ea70', 'href': '/rest/fundamental/v0/24a38270-949f-442a-aac6-53a99ef1ea70'}, {'created_on': '2017-06-16T16:02:30.000Z', 'display_text': 'SANDFISH', 'key': 'SANDFISH', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'threat_group', 'uuid': '40d2cf30-237a-467b-826d-390f12cc27f0', 'href': '/rest/fundamental/v0/40d2cf30-237a-467b-826d-390f12cc27f0'}, {'created_on': '2019-06-17T12:07:03.000Z', 'display_text': 'ZANDER', 'key': 'ZANDER', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'threat_group', 'uuid': 'a363a7ca-1d5d-4477-9ce9-e9259cb888e4', 'href': '/rest/fundamental/v0/a363a7ca-1d5d-4477-9ce9-e9259cb888e4'}, {'created_on': '2016-09-13T16:26:36.000Z', 'display_text': 'Fancy Bears Hack Team', 'key': 'Fancy Bears Hack Team', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'threat_group', 'uuid': 'ec08d6ad-5c32-44b9-bde3-bdfe9e1c76c5', 'href': '/rest/fundamental/v0/ec08d6ad-5c32-44b9-bde3-bdfe9e1c76c5'}, {'created_on': '2013-03-25T18:40:44.000Z', 'display_text': 'BLACK GHOST KNIFEFISH', 'key': 'BLACK GHOST KNIFEFISH', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'threat_group', 'uuid': '27332f70-302c-491a-85f2-3714218296b8', 'href': '/rest/fundamental/v0/27332f70-302c-491a-85f2-3714218296b8'}, {'created_on': '2018-01-30T19:03:24.000Z', 'display_text': 'GandCrab', 'key': 'GandCrab', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malware_family', 'uuid': '8f5bc13f-ee79-4ee6-9cf2-d9a6318b5ed4', 'href': '/rest/fundamental/v0/8f5bc13f-ee79-4ee6-9cf2-d9a6318b5ed4'}, {'created_on': '2018-12-04T19:10:02.000Z', 'display_text': 'Defense & Public Safety', 'key': 'Defense & Public Safety', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'vertical', 'uuid': 'b0b0d8bd-1c9f-4062-9c51-f33a79c736af', 'href': '/rest/fundamental/v0/b0b0d8bd-1c9f-4062-9c51-f33a79c736af'}, {'created_on': '2021-02-15T15:38:34.000Z', 'display_text': 'SANDFISH Continues to Exploit Exim Mail Transfer Agents', 'key': '82319acb-65eb-48b3-bbb3-61b34f53addf', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_alert', 'uuid': '55004ca2-e598-460f-bb0c-8ef6f37b7bca', 'href': '/rest/document/v0/55004ca2-e598-460f-bb0c-8ef6f37b7bca'}, {'created_on': '2020-07-24T21:03:43.000Z', 'display_text': 'US Officials Warn of Threats to Critical Infrastructure and Political Entities', 'key': 'c0373503-7624-441a-b59b-b2163fc04ea7', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_alert', 'uuid': '575c5eef-0784-46cd-bf67-8e256d0c2fc7', 'href': '/rest/document/v0/575c5eef-0784-46cd-bf67-8e256d0c2fc7'}, {'created_on': '2020-10-28T17:35:45.000Z', 'display_text': 'Russia-Linked BLACK GHOST KNIFEFISH Continues NTLM Harvesting Campaign, 2019 to 2020', 'key': '580f8d37-f834-4331-ad79-c05fd96e0f78', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_alert', 'uuid': 'c3ad35ce-1443-4ef2-b3e2-1a3548605528', 'href': '/rest/document/v0/c3ad35ce-1443-4ef2-b3e2-1a3548605528'}, {'created_on': '2017-01-07T16:26:16.000Z', 'display_text': 'Aggressive Defensiveness: Russian Information Operations against the US Political System', 'key': '48d85d37-8adf-41c2-9bbe-d23b335a3bc3', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_alert', 'uuid': '79e6008d-ddd4-472d-b574-5ad1a769e096', 'href': '/rest/document/v0/79e6008d-ddd4-472d-b574-5ad1a769e096'}, {'created_on': '2018-04-17T19:57:28.000Z', 'display_text': 'Joint US-UK Threat Alert Warns of Russian Government Targeting of Network Infrastructure Devices Worldwide', 'key': 'fa7dd2fa-84ca-4066-90fb-04f91b39c07b', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_alert', 'uuid': '21ab89f6-1ac1-4cc3-83f6-233a5d7473cf', 'href': '/rest/document/v0/21ab89f6-1ac1-4cc3-83f6-233a5d7473cf'}, {'created_on': '2020-08-19T19:31:42.000Z', 'display_text': 'Roundup of Notable Ransomware Events with a Focus on Energy and Utility Sectors (January 2020 – August 2020)', 'key': '3129d754-caf2-425f-8684-3b5edc581776', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_report', 'uuid': '999b6c55-3cb8-4372-affb-bcc9c47dd95b', 'href': '/rest/document/v0/999b6c55-3cb8-4372-affb-bcc9c47dd95b'}, {'created_on': '2021-06-16T18:23:09.000Z', 'display_text': 'iDefense Global Research Intelligence Digest for 16 June 2021', 'key': 'b0dcf12f-1107-4ecc-ae1e-b558f26c0198', 'relationship': 'mentions', 'relationship_created_on': '2021-06-16T18:23:09.000Z', 'relationship_last_published': '2021-06-16T18:23:09.000Z', 'type': 'intelligence_alert', 'uuid': '1c808eb6-0bfb-4468-8f16-321b51855c3e', 'href': '/rest/document/v0/1c808eb6-0bfb-4468-8f16-321b51855c3e'}, {'created_on': '2020-08-10T15:46:02.000Z', 'display_text': 'DoppelPaymer', 'key': 'DoppelPaymer', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malware_family', 'uuid': '7403e958-17b1-4928-b876-7269da5f76b6', 'href': '/rest/fundamental/v0/7403e958-17b1-4928-b876-7269da5f76b6'}, {'created_on': '2006-02-16T00:00:00.000Z', 'display_text': 'Noble', 'key': 'Noble', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'target_organization', 'uuid': '3781e538-9ff4-4c1e-823e-288698c926d3', 'href': '/rest/fundamental/v0/3781e538-9ff4-4c1e-823e-288698c926d3'}, {'created_on': '2016-11-23T15:14:22.000Z', 'display_text': 'Odebrecht', 'key': 'Odebrecht', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'target_organization', 'uuid': 'c7bb4db8-d2af-4aff-97b0-b397b0419296', 'href': '/rest/fundamental/v0/c7bb4db8-d2af-4aff-97b0-b397b0419296'}, {'created_on': '2017-01-11T14:52:30.000Z', 'display_text': 'NATO', 'key': 'NATO', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'target_organization', 'uuid': '830eece9-82bd-4cb8-ab2a-123e855377eb', 'href': '/rest/fundamental/v0/830eece9-82bd-4cb8-ab2a-123e855377eb'}, {'created_on': '2018-12-04T19:10:01.000Z', 'display_text': 'Noble Energy', 'key': 'Noble Energy', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'target_organization', 'uuid': '72937e93-85c9-4c27-8ee7-fc565f7609c8', 'href': '/rest/fundamental/v0/72937e93-85c9-4c27-8ee7-fc565f7609c8'}, {'created_on': '2003-08-01T00:00:00.000Z', 'display_text': 'China', 'key': 'China', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': '917ef603-93eb-4830-9dc3-8a4e4828b4c3', 'href': '/rest/fundamental/v0/917ef603-93eb-4830-9dc3-8a4e4828b4c3'}, {'created_on': '2003-08-01T00:00:00.000Z', 'display_text': 'Mexico', 'key': 'Mexico', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': 'a664e2ae-5c24-454f-a75b-3d24e9d80938', 'href': '/rest/fundamental/v0/a664e2ae-5c24-454f-a75b-3d24e9d80938'}, {'created_on': '2008-05-29T21:29:21.000Z', 'display_text': 'United Kingdom', 'key': 'United Kingdom', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': '05d70c8e-c9e1-48a2-a30e-0228996d5df2', 'href': '/rest/fundamental/v0/05d70c8e-c9e1-48a2-a30e-0228996d5df2'}, {'created_on': '2021-03-03T16:08:19.000Z', 'display_text': 'CLOP', 'key': 'CLOP', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'threat_group', 'uuid': 'd6f3dc92-0f8e-4a5c-b216-744976b0a5a9', 'href': '/rest/fundamental/v0/d6f3dc92-0f8e-4a5c-b216-744976b0a5a9'}, {'created_on': '2015-07-31T18:42:50.000Z', 'display_text': 'SNAKEMACKEREL', 'key': 'SNAKEMACKEREL', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'threat_group', 'uuid': '065336a6-651d-4f80-b8c2-9347f4486912', 'href': '/rest/fundamental/v0/065336a6-651d-4f80-b8c2-9347f4486912'}, {'created_on': '2016-10-19T17:39:17.000Z', 'display_text': 'BELUGASTURGEON', 'key': 'BELUGASTURGEON', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'threat_group', 'uuid': 'fb53e479-54e1-4827-abb4-ae1ae1db53e2', 'href': '/rest/fundamental/v0/fb53e479-54e1-4827-abb4-ae1ae1db53e2'}, {'created_on': '2015-07-31T17:14:39.000Z', 'display_text': 'Federal Security Service of the Russian Federation (Федеральная служба безопасности Российской Федерации)', 'key': 'Federal Security Service of the Russian Federation (Федеральная служба безопасности Российской Федерации)', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'threat_group', 'uuid': 'd96f3b14-462b-4ab4-aa04-23c7a2996611', 'href': '/rest/fundamental/v0/d96f3b14-462b-4ab4-aa04-23c7a2996611'}, {'created_on': '2017-01-03T18:16:36.000Z', 'display_text': 'Main Directorate of the General Staff of the Armed Forces of the Russian Federation (GRU)', 'key': 'Main Directorate of the General Staff of the Armed Forces of the Russian Federation (GRU)', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'threat_group', 'uuid': '675cb6f9-ecab-4c3f-a5c2-9d163d707500', 'href': '/rest/fundamental/v0/675cb6f9-ecab-4c3f-a5c2-9d163d707500'}, {'created_on': '2017-06-15T18:06:42.000Z', 'display_text': 'CRASHOVERRIDE', 'key': 'CRASHOVERRIDE', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malware_family', 'uuid': '88704197-8308-4837-bd44-d2d46bd1ac1d', 'href': '/rest/fundamental/v0/88704197-8308-4837-bd44-d2d46bd1ac1d'}, {'created_on': '2018-01-02T01:07:28.000Z', 'display_text': 'Triton', 'key': 'Triton', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malware_family', 'uuid': '68ff5563-b940-4d0e-9bc2-535990747f9b', 'href': '/rest/fundamental/v0/68ff5563-b940-4d0e-9bc2-535990747f9b'}, {'created_on': '2015-07-24T16:45:47.000Z', 'display_text': 'Media', 'key': 'Media', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'vertical', 'uuid': 'bb9bdd2d-180e-41d2-b5c8-08a2062998ca', 'href': '/rest/fundamental/v0/bb9bdd2d-180e-41d2-b5c8-08a2062998ca'}, {'created_on': '2018-12-04T19:10:01.000Z', 'display_text': 'Oil & Gas', 'key': 'Oil & Gas', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'vertical', 'uuid': '0aa7b554-b07f-42b4-a904-92da408d9be5', 'href': '/rest/fundamental/v0/0aa7b554-b07f-42b4-a904-92da408d9be5'}, {'created_on': '2017-06-28T18:14:43.000Z', 'display_text': 'GreyEnergy', 'key': 'GreyEnergy', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'threat_campaign', 'uuid': 'b0585685-aaac-44b4-b93b-733d30eaeb6e', 'href': '/rest/fundamental/v0/b0585685-aaac-44b4-b93b-733d30eaeb6e'}, {'created_on': '2021-03-23T17:35:09.000Z', 'display_text': 'What Happened to SANDFISH’s GreyEnergy?', 'key': '882ed9d3-9d7c-4004-9f3c-cf72300eced1', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_alert', 'uuid': 'f0289fe9-c076-437b-984f-71f17d6f7950', 'href': '/rest/document/v0/f0289fe9-c076-437b-984f-71f17d6f7950'}, {'created_on': '2019-10-22T19:26:22.000Z', 'display_text': 'iDefense Global Research Intelligence Digest for October 22, 2019', 'key': '08595e22-0390-43ec-968d-c910e5c4d621', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_alert', 'uuid': '6f668357-bd6a-4a04-876d-20bd840e0788', 'href': '/rest/document/v0/6f668357-bd6a-4a04-876d-20bd840e0788'}, {'created_on': '2017-06-27T20:55:03.000Z', 'display_text': 'Global Petya Ransomware Outbreak Cripples Major Companies Worldwide', 'key': '10c18a7a-741f-43ba-b0a9-24fd42684ccf', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_alert', 'uuid': 'e4cac05c-83a4-40e3-b8b2-190c7c405ee0', 'href': '/rest/document/v0/e4cac05c-83a4-40e3-b8b2-190c7c405ee0'}, {'created_on': '2021-03-10T20:56:12.000Z', 'display_text': 'CLOP Ransomware Operators Leak CGG Data on Name-and-Shame Site on 1 March 2021', 'key': 'a626ee22-fe70-4ca6-a18b-0270fb0229c5', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malicious_event', 'uuid': 'c069f7c1-7b22-4713-a1d9-b1ba041602e8', 'href': '/rest/fundamental/v0/c069f7c1-7b22-4713-a1d9-b1ba041602e8'}, {'created_on': '2021-03-10T16:32:46.000Z', 'display_text': 'CLOP Ransomware Operators Leak CSX Documents on Name-and-Shame Site on 2 March 2021', 'key': '4b0cd263-8e2b-4a0e-b6f8-7d9b7d623d6c', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malicious_event', 'uuid': '0e1a64c4-e283-457b-b615-9863436b0dbd', 'href': '/rest/fundamental/v0/0e1a64c4-e283-457b-b615-9863436b0dbd'}, {'created_on': '2018-11-06T20:59:09.000Z', 'display_text': 'Account GandCrab Burnishes Patriotic Credentials By Showing Sympathy for Syria', 'key': '3b4e7772-29e4-424a-9b41-3b9d6759c7f6', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malicious_event', 'uuid': 'ff63b317-2de3-4ba3-828a-d294eab5b91f', 'href': '/rest/fundamental/v0/ff63b317-2de3-4ba3-828a-d294eab5b91f'}, {'created_on': '2021-03-23T17:41:46.000Z', 'display_text': 'US and Russia Trade Threats, Raising Fears of Further Cyber Threat Activity', 'key': '762ebeea-4cc1-45c4-af25-67ddcccb8602', 'relationship': 'mentions', 'relationship_created_on': '2021-03-30T23:18:03.000Z', 'relationship_last_published': '2021-03-30T23:18:03.000Z', 'type': 'intelligence_alert', 'uuid': '3ee020e9-c64f-4c3f-8162-73f80ad85863', 'href': '/rest/document/v0/3ee020e9-c64f-4c3f-8162-73f80ad85863'}, {'created_on': '2021-04-21T17:48:14.000Z', 'display_text': 'iDefense Global Research Intelligence Digest for 21 April 2021', 'key': 'e348ab03-75d3-46ba-b00c-7a965da65f5d', 'relationship': 'mentions', 'relationship_created_on': '2021-04-21T17:48:14.000Z', 'relationship_last_published': '2021-04-21T17:48:14.000Z', 'type': 'intelligence_alert', 'uuid': '2149d045-5085-419f-a1c8-1b6acb2d9609', 'href': '/rest/document/v0/2149d045-5085-419f-a1c8-1b6acb2d9609'}, {'created_on': '2021-10-08T01:20:03.000Z', 'display_text': "Arrest of Russian Cybersecurity Firm's Founder Highlights Russia’s Complex and Dangerous Business Environment", 'key': 'fe0c6c41-9a7e-492a-a268-700b0d41ed6b', 'relationship': 'mentions', 'relationship_created_on': '2021-10-08T01:20:03.000Z', 'relationship_last_published': '2021-10-08T01:20:03.000Z', 'type': 'intelligence_alert', 'uuid': '7af3126f-2f88-4941-bf09-3521cb7889b7', 'href': '/rest/document/v0/7af3126f-2f88-4941-bf09-3521cb7889b7'}, {'created_on': '2004-08-17T00:00:00.000Z', 'display_text': 'Turkey', 'key': 'Turkey', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': '9da2b237-dfde-4c8e-a0c1-158cbb15aa3f', 'href': '/rest/fundamental/v0/9da2b237-dfde-4c8e-a0c1-158cbb15aa3f'}, {'created_on': '2003-12-15T00:00:00.000Z', 'display_text': 'Norway', 'key': 'Norway', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': '0ab9aefb-1ccd-4151-957a-eff18b13b0af', 'href': '/rest/fundamental/v0/0ab9aefb-1ccd-4151-957a-eff18b13b0af'}, {'created_on': '2021-01-12T00:12:11.000Z', 'display_text': 'SolarWinds Supply-Chain Campaign C2 Infrastructure Analysis', 'key': '2c18e53c-7dae-4edb-a126-6e3c09ed3003', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_alert', 'uuid': '7128fb11-2753-4f4d-aa51-2c13731f7dbe', 'href': '/rest/document/v0/7128fb11-2753-4f4d-aa51-2c13731f7dbe'}, {'created_on': '2019-11-20T18:17:09.000Z', 'display_text': 'Ransomware Attack Hit Mexican Oil Company at Sensitive Time', 'key': 'd67e0be4-5b61-4e57-8c17-0bf09ed5b8f3', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malicious_event', 'uuid': '05982e7e-b7d0-4203-a8a9-dd46ea769854', 'href': '/rest/fundamental/v0/05982e7e-b7d0-4203-a8a9-dd46ea769854'}, {'created_on': '2021-02-25T00:14:03.000Z', 'display_text': 'DoppelPaymer Ransomware Reportedly Impacts Kia Motors, February 2021', 'key': '7d996ac8-262b-46c4-880d-bed6126b66e4', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malicious_event', 'uuid': 'd009718a-25f6-491f-95f2-528d0a3d3f63', 'href': '/rest/fundamental/v0/d009718a-25f6-491f-95f2-528d0a3d3f63'}, {'created_on': '2021-04-19T15:20:14.000Z', 'display_text': 'iDefense Global Research Intelligence Digest for 19 April 2021', 'key': '287df877-37b1-4ef1-8ecc-6bbc8c3b82e2', 'relationship': 'mentions', 'relationship_created_on': '2021-04-19T15:20:14.000Z', 'relationship_last_published': '2021-04-19T15:20:14.000Z', 'type': 'intelligence_alert', 'uuid': '09b14293-ce79-4515-9041-de4cefe3cb6b', 'href': '/rest/document/v0/09b14293-ce79-4515-9041-de4cefe3cb6b'}, {'created_on': '2021-06-21T19:07:23.000Z', 'display_text': 'Biden-Putin Summit May Produce a Lull but Is No Magic Bullet against Russian Cyber-Threat Activity', 'key': 'e25f00ee-1b1a-4c35-ae5c-fece153143f6', 'relationship': 'mentions', 'relationship_created_on': '2021-06-21T19:07:23.000Z', 'relationship_last_published': '2021-06-21T19:07:23.000Z', 'type': 'intelligence_alert', 'uuid': '28f24dd5-9c13-4116-8fbd-7e395f6aeee0', 'href': '/rest/document/v0/28f24dd5-9c13-4116-8fbd-7e395f6aeee0'}, {'created_on': '2021-09-16T16:25:36.000Z', 'display_text': 'iDefense Global Research Intelligence Digest for 16 September 2021', 'key': 'de33f9be-318e-49b9-acfe-3c8ea3ce91e1', 'relationship': 'mentions', 'relationship_created_on': '2021-09-16T16:25:36.000Z', 'relationship_last_published': '2021-09-16T16:25:36.000Z', 'type': 'intelligence_alert', 'uuid': '69d0098b-9113-4914-a692-5b42d79f88ad', 'href': '/rest/document/v0/69d0098b-9113-4914-a692-5b42d79f88ad'}, {'created_on': '2021-11-05T21:25:11.000Z', 'display_text': 'COP26 Climate Talks Convene amid Ongoing Energy-Related Espionage and Information Campaigns', 'key': 'cd5bbb2d-9a0b-4553-934e-4d8a6b91b556', 'relationship': 'mentions', 'relationship_created_on': '2021-11-05T21:25:11.000Z', 'relationship_last_published': '2021-11-05T21:25:11.000Z', 'type': 'intelligence_alert', 'uuid': '422c1698-1d2f-46c5-b581-3ec7893b9401', 'href': '/rest/document/v0/422c1698-1d2f-46c5-b581-3ec7893b9401'}, {'created_on': '2021-12-02T21:51:25.000Z', 'display_text': 'Cyber Threats to the Energy Sector', 'key': '2b867306-ddb0-4ab8-be2a-4ac93cb2cb91', 'relationship': 'mentions', 'relationship_created_on': '2021-12-02T21:51:25.000Z', 'relationship_last_published': '2021-12-02T21:54:25.000Z', 'type': 'intelligence_report', 'uuid': 'c023236c-e981-45c4-94e4-38426e364a1f', 'href': '/rest/document/v0/c023236c-e981-45c4-94e4-38426e364a1f'}, {'created_on': '2016-01-25T10:37:24.000Z', 'display_text': 'OPEC', 'key': 'OPEC', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'target_organization', 'uuid': 'b09a4448-fc15-4540-882b-03cfd3cebf98', 'href': '/rest/fundamental/v0/b09a4448-fc15-4540-882b-03cfd3cebf98'}, {'created_on': '2018-12-04T19:10:01.000Z', 'display_text': 'Schlumberger', 'key': 'Schlumberger', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'target_organization', 'uuid': 'edcf95d2-a28a-4667-930f-9dc103716c23', 'href': '/rest/fundamental/v0/edcf95d2-a28a-4667-930f-9dc103716c23'}, {'created_on': '2018-12-04T19:10:01.000Z', 'display_text': 'Chevron', 'key': 'Chevron', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'target_organization', 'uuid': 'c52f6188-5bf5-4c5d-a83d-6e2eca9cd4b6', 'href': '/rest/fundamental/v0/c52f6188-5bf5-4c5d-a83d-6e2eca9cd4b6'}, {'created_on': '2016-06-30T18:42:30.000Z', 'display_text': 'YouTube', 'key': 'YouTube', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'target_organization', 'uuid': '0249a9ed-d2ac-4a0a-a2f2-85abe57ae4e7', 'href': '/rest/fundamental/v0/0249a9ed-d2ac-4a0a-a2f2-85abe57ae4e7'}, {'created_on': '2012-11-27T15:41:47.000Z', 'display_text': 'Syria', 'key': 'Syria', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': '1e25cb18-113a-41c7-ab12-de2976728eae', 'href': '/rest/fundamental/v0/1e25cb18-113a-41c7-ab12-de2976728eae'}, {'created_on': '2006-12-22T00:00:00.000Z', 'display_text': 'Azerbaijan', 'key': 'Azerbaijan', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': 'c7a27c94-d97a-420a-8858-9288b184c62e', 'href': '/rest/fundamental/v0/c7a27c94-d97a-420a-8858-9288b184c62e'}, {'created_on': '2003-12-15T00:00:00.000Z', 'display_text': 'Netherlands', 'key': 'Netherlands', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': '4b4e3c26-44b9-40ce-947d-a399f53f9c7f', 'href': '/rest/fundamental/v0/4b4e3c26-44b9-40ce-947d-a399f53f9c7f'}, {'created_on': '2018-02-20T17:16:22.000Z', 'display_text': 'GandCrab', 'key': 'GandCrab', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'threat_group', 'uuid': '8538b5a4-bc67-4222-9310-0c9118b0af22', 'href': '/rest/fundamental/v0/8538b5a4-bc67-4222-9310-0c9118b0af22'}, {'created_on': '2018-02-12T16:41:05.000Z', 'display_text': 'Foreign Intelligence Service of the Russian Federation (Служба Внешней Разведки Российской Федерации)', 'key': 'Foreign Intelligence Service of the Russian Federation (Служба Внешней Разведки Российской Федерации)', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'threat_group', 'uuid': '11759430-3417-4772-9723-43bb38fe2280', 'href': '/rest/fundamental/v0/11759430-3417-4772-9723-43bb38fe2280'}, {'created_on': '2018-10-15T13:42:56.000Z', 'display_text': 'Exaramel', 'key': 'Exaramel', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malware_family', 'uuid': '5cc66934-6ff0-4c37-84eb-4cc62ba28255', 'href': '/rest/fundamental/v0/5cc66934-6ff0-4c37-84eb-4cc62ba28255'}, {'created_on': '2021-03-12T17:13:00.000Z', 'display_text': 'GreyEnergy', 'key': 'GreyEnergy', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malware_family', 'uuid': 'c34f2ace-6438-4920-9167-027907689eaa', 'href': '/rest/fundamental/v0/c34f2ace-6438-4920-9167-027907689eaa'}, {'created_on': '2018-12-04T19:09:56.000Z', 'display_text': 'Industrial', 'key': 'Industrial', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'vertical', 'uuid': 'fb065f1a-2619-47e8-98fa-30415e3edb9f', 'href': '/rest/fundamental/v0/fb065f1a-2619-47e8-98fa-30415e3edb9f'}, {'created_on': '2008-05-20T21:02:50.000Z', 'display_text': 'Western Asia', 'key': 'Western Asia', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'region', 'uuid': '53b59355-e4e6-40c7-ba89-002cabec9781', 'href': '/rest/fundamental/v0/53b59355-e4e6-40c7-ba89-002cabec9781'}, {'created_on': '2021-02-20T18:56:36.000Z', 'display_text': 'SITREP: Accellion FTA', 'key': '87fc1b24-2f1a-40b6-8282-2594335a50a3', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_alert', 'uuid': 'c68c3558-7540-4a74-9af3-5b1d243f852e', 'href': '/rest/document/v0/c68c3558-7540-4a74-9af3-5b1d243f852e'}, {'created_on': '2020-01-20T20:08:16.000Z', 'display_text': 'Putin Power Transfer Plan Marks New Uncertainties in Balance between Globalism and “Sovereignty”', 'key': '0def1e52-2034-4a7f-b535-aa3b6c143cc1', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_alert', 'uuid': 'fffd1701-8cd3-4237-b11b-31270d686f61', 'href': '/rest/document/v0/fffd1701-8cd3-4237-b11b-31270d686f61'}, {'created_on': '2020-06-09T07:52:43.000Z', 'display_text': 'iDefense Global Research Intelligence Digest for June 8, 2020', 'key': 'bdb05bba-049d-4056-906f-3349336d52f1', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_alert', 'uuid': '6613f584-7728-4bd4-9dd7-103aef9b30ec', 'href': '/rest/document/v0/6613f584-7728-4bd4-9dd7-103aef9b30ec'}, {'created_on': '2018-11-27T16:09:30.000Z', 'display_text': 'Anonymous Yet Familiar: The Use of False Personas by Russian Cyberinformation Operations', 'key': 'e9e43a5a-caa5-458d-9bc4-3c483cf0394d', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_report', 'uuid': 'bd237f19-3b9f-4ea1-8f32-b9edd4667126', 'href': '/rest/document/v0/bd237f19-3b9f-4ea1-8f32-b9edd4667126'}, {'created_on': '2020-09-11T21:01:17.000Z', 'display_text': 'Cyprus at Center of Eastern Mediterranean Gas Dispute', 'key': 'Cyprus at Center of Eastern Mediterranean Gas Dispute', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'global_event', 'uuid': 'd8e7c996-cfc3-4050-8b51-46a1dc517896', 'href': '/rest/fundamental/v0/d8e7c996-cfc3-4050-8b51-46a1dc517896'}, {'created_on': '2021-04-07T22:11:42.000Z', 'display_text': 'iDefense Global Research Intelligence Digest for 7 April 2021', 'key': 'aaeb9511-6a7b-4c8f-a882-cfc0d8b4f321', 'relationship': 'mentions', 'relationship_created_on': '2021-04-07T22:11:42.000Z', 'relationship_last_published': '2021-04-07T22:11:42.000Z', 'type': 'intelligence_alert', 'uuid': 'ca097435-e5a7-4f11-9704-888617088676', 'href': '/rest/document/v0/ca097435-e5a7-4f11-9704-888617088676'}, {'created_on': '2021-04-19T18:02:29.000Z', 'display_text': 'Amid Russia-Ukraine Hostilities and US Sanctions Pressure, Russian Media Chief Predicts Cyber War', 'key': 'f7fc303e-994f-4802-b4a0-ca2a591673c3', 'relationship': 'mentions', 'relationship_created_on': '2021-04-19T18:02:29.000Z', 'relationship_last_published': '2021-04-19T18:02:29.000Z', 'type': 'intelligence_alert', 'uuid': '31be69cd-647e-4209-828c-33659d288aa3', 'href': '/rest/document/v0/31be69cd-647e-4209-828c-33659d288aa3'}, {'created_on': '2004-07-07T00:00:00.000Z', 'display_text': 'Russian Federation', 'key': 'Russian Federation', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': '97807e5c-65d2-4023-ba96-c44cb0c16dc5', 'href': '/rest/fundamental/v0/97807e5c-65d2-4023-ba96-c44cb0c16dc5'}, {'created_on': '2021-11-13T01:22:43.000Z', 'display_text': 'Ransomware Attacks on US Critical Infrastructure Align with Russian Strategy', 'key': 'd6ee5344-fa61-4eb3-81e1-0cec21b731b0', 'relationship': 'mentions', 'relationship_created_on': '2021-11-13T01:22:43.000Z', 'relationship_last_published': '2021-11-13T01:22:43.000Z', 'type': 'intelligence_alert', 'uuid': 'a7f69280-dbcc-4426-b3e9-f851f0603e94', 'href': '/rest/document/v0/a7f69280-dbcc-4426-b3e9-f851f0603e94'}, {'created_on': '2007-04-12T00:00:00.000Z', 'display_text': 'Kazakhstan', 'key': 'Kazakhstan', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2022-01-10T21:09:04.000Z', 'type': 'country', 'uuid': 'cb1de5ae-ec20-4ac1-9561-46425fce81b8', 'href': '/rest/fundamental/v0/cb1de5ae-ec20-4ac1-9561-46425fce81b8'}, {'created_on': '2022-02-02T18:54:34.000Z', 'display_text': 'Cyber Threats Target NATO Countries’ Transportation and Energy Infrastructure Amid Tension with Russia', 'key': '5f56287d-89ad-4f5d-b7e9-2a9267193e0a', 'relationship': 'mentions', 'relationship_created_on': '2022-02-02T18:54:34.000Z', 'relationship_last_published': '2022-02-02T18:54:34.000Z', 'type': 'malicious_event', 'uuid': 'ffd3f586-f9f9-4538-b906-45f80a358662', 'href': '/rest/fundamental/v0/ffd3f586-f9f9-4538-b906-45f80a358662'}, {'created_on': '2016-12-29T10:08:23.000Z', 'display_text': 'Syria', 'key': 'Syria', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'target_organization', 'uuid': '50eac797-06e6-48ec-afd3-cc972ec6c3c9', 'href': '/rest/fundamental/v0/50eac797-06e6-48ec-afd3-cc972ec6c3c9'}, {'created_on': '2018-12-04T19:10:01.000Z', 'display_text': 'LukOil', 'key': 'LukOil', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'target_organization', 'uuid': '766e636d-2889-4a24-9af3-b3b30b5fce27', 'href': '/rest/fundamental/v0/766e636d-2889-4a24-9af3-b3b30b5fce27'}, {'created_on': '2015-11-09T16:45:06.000Z', 'display_text': 'NASA', 'key': 'NASA', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'target_organization', 'uuid': '243a1daf-21cf-413f-b1c5-83081336f47b', 'href': '/rest/fundamental/v0/243a1daf-21cf-413f-b1c5-83081336f47b'}, {'created_on': '2017-01-23T12:49:36.000Z', 'display_text': 'Total', 'key': 'Total', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'target_organization', 'uuid': '72ab7eb0-8977-4686-8218-e9231271184e', 'href': '/rest/fundamental/v0/72ab7eb0-8977-4686-8218-e9231271184e'}, {'created_on': '2008-05-07T00:00:00.000Z', 'display_text': 'Cyprus', 'key': 'Cyprus', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': 'b4934110-edb0-4d29-8d42-b035f627f4af', 'href': '/rest/fundamental/v0/b4934110-edb0-4d29-8d42-b035f627f4af'}, {'created_on': '2005-02-08T00:00:00.000Z', 'display_text': 'Libya', 'key': 'Libya', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': 'a8aeac54-fc9a-434c-a9ba-1aeebf76721b', 'href': '/rest/fundamental/v0/a8aeac54-fc9a-434c-a9ba-1aeebf76721b'}, {'created_on': '2006-05-23T00:00:00.000Z', 'display_text': 'Armenia', 'key': 'Armenia', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': '198ddfe4-1edb-4dec-97aa-72328ed212f1', 'href': '/rest/fundamental/v0/198ddfe4-1edb-4dec-97aa-72328ed212f1'}, {'created_on': '2003-08-06T00:00:00.000Z', 'display_text': 'Ukraine', 'key': 'Ukraine', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': 'e614cbe1-3a7d-4dfe-8e3d-56cae2165af6', 'href': '/rest/fundamental/v0/e614cbe1-3a7d-4dfe-8e3d-56cae2165af6'}, {'created_on': '2003-10-16T00:00:00.000Z', 'display_text': 'Saudi Arabia', 'key': 'Saudi Arabia', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'country', 'uuid': 'ca8e002d-dbc1-4ffc-a964-202a2d042c40', 'href': '/rest/fundamental/v0/ca8e002d-dbc1-4ffc-a964-202a2d042c40'}, {'created_on': '2020-04-28T14:37:47.000Z', 'display_text': 'CLOP', 'key': 'CLOP', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malware_family', 'uuid': 'dbba5596-7033-49e1-a731-7d54734463c4', 'href': '/rest/fundamental/v0/dbba5596-7033-49e1-a731-7d54734463c4'}, {'created_on': '2018-12-04T19:10:10.000Z', 'display_text': 'Utilities', 'key': 'Utilities', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'vertical', 'uuid': 'e7e29d66-df14-4875-a8fe-98dd80151eee', 'href': '/rest/fundamental/v0/e7e29d66-df14-4875-a8fe-98dd80151eee'}, {'created_on': '2015-07-31T10:35:10.000Z', 'display_text': 'Asia', 'key': 'Asia', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'region', 'uuid': 'e2aa2414-9adb-447e-ae83-32e3d6afee04', 'href': '/rest/fundamental/v0/e2aa2414-9adb-447e-ae83-32e3d6afee04'}, {'created_on': '2015-07-31T17:09:12.000Z', 'display_text': 'NATO', 'key': 'NATO', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'region', 'uuid': 'e0d04538-588a-4304-9974-832b7670bca7', 'href': '/rest/fundamental/v0/e0d04538-588a-4304-9974-832b7670bca7'}, {'created_on': '2019-06-21T22:43:06.000Z', 'display_text': 'Brinkmanship over Iran and Maneuvering over Upcoming G-20 Summit Could Spark Espionage or Disruptive Attacks', 'key': '051e541d-05e3-40d1-a867-81300e4573dd', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_alert', 'uuid': '84c2db1a-6c35-41b6-9f98-ce44840db791', 'href': '/rest/document/v0/84c2db1a-6c35-41b6-9f98-ce44840db791'}, {'created_on': '2020-08-11T20:34:54.000Z', 'display_text': 'iDefense Global Research Intelligence Digest for August 11, 2020', 'key': 'e5fe7a49-0a0b-406a-aa88-d41de43adc89', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'intelligence_alert', 'uuid': '5a23f8ed-8038-4727-bb4d-5016c57e10f5', 'href': '/rest/document/v0/5a23f8ed-8038-4727-bb4d-5016c57e10f5'}, {'created_on': '2021-03-04T20:00:52.000Z', 'display_text': 'CLOP Ransomware Operators Leak Qualys Documents on Name-and-Shame Site on 3 and 4 March 2021', 'key': '1e4a812a-dc96-45a7-b2c4-13e866ae8393', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malicious_event', 'uuid': '61e45fd4-b540-4de0-a81d-4cc8af952a60', 'href': '/rest/fundamental/v0/61e45fd4-b540-4de0-a81d-4cc8af952a60'}, {'created_on': '2020-02-29T23:22:36.000Z', 'display_text': 'Alleged DoppelPaymer Actors Seek to Blackmail Mexican Oil Company with Document Leak', 'key': '847d1ba4-3f84-4b83-943a-944993cbf934', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malicious_event', 'uuid': '238857cc-12f3-4fac-820a-c59dc58c27da', 'href': '/rest/fundamental/v0/238857cc-12f3-4fac-820a-c59dc58c27da'}, {'created_on': '2017-12-21T19:23:58.000Z', 'display_text': 'TRITON ICS Malware Framework Targets Critical Infrastructure', 'key': 'd4e7170a-3485-4668-ad7d-3c2b0b43ea4c', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malicious_event', 'uuid': '2200deae-56e0-4835-b454-8060bd0be50e', 'href': '/rest/fundamental/v0/2200deae-56e0-4835-b454-8060bd0be50e'}, {'created_on': '2018-11-03T11:26:30.000Z', 'display_text': 'US Indictment Reveals SNAKEMACKEREL Targeting of Westinghouse Electric', 'key': '28aa3b56-6fcb-4e0d-9c91-bcae3b798882', 'relationship': 'mentions', 'relationship_created_on': '2021-03-26T20:09:55.000Z', 'relationship_last_published': '2021-03-26T20:09:55.000Z', 'type': 'malicious_event', 'uuid': 'aff26f9b-2f45-483c-996a-e058fc02a84a', 'href': '/rest/fundamental/v0/aff26f9b-2f45-483c-996a-e058fc02a84a'}, {'created_on': '2021-03-31T19:20:13.000Z', 'display_text': 'iDefense Global Research Intelligence Digest for 31 March 2021', 'key': 'd0bff8ef-b21a-4a64-8541-2afba89eeafa', 'relationship': 'mentions', 'relationship_created_on': '2021-03-31T19:20:13.000Z', 'relationship_last_published': '2021-03-31T19:20:13.000Z', 'type': 'intelligence_alert', 'uuid': 'bb117f7c-c0b6-43ae-9468-463ae58e2853', 'href': '/rest/document/v0/bb117f7c-c0b6-43ae-9468-463ae58e2853'}, {'created_on': '2021-06-02T22:08:57.000Z', 'display_text': 'iDefense Global Research Intelligence Digest for 2 June 2021', 'key': '61641afe-698f-417a-802d-23197d0fe76d', 'relationship': 'mentions', 'relationship_created_on': '2021-06-02T22:08:57.000Z', 'relationship_last_published': '2021-06-02T22:08:57.000Z', 'type': 'intelligence_alert', 'uuid': '5bcf3272-5207-433c-a550-320968c1587a', 'href': '/rest/document/v0/5bcf3272-5207-433c-a550-320968c1587a'}], 'threat_types': '\n- Cyber Espionage\n- Cyber Crime', 'title': 'Russian Responses to Geopolitical Challenges Include Cyber-Threat Activity against Energy Industry Entities', 'type': 'intelligence_report', 'uuid': 'bdc9d16f-6040-4894-8544-9c98986a41fd', 'analysis': '## Key Findings and Judgements\n\n- The Russian government faces global and domestic challenges intensified by global warming, unrest in neighboring states, the rise of renewable energy, and international sanctions; these challenges aggravate poverty and discontent within Russia.\n\n- Russia’s government pursues its state strategies through a variety of means including cyber-threat operations that involve espionage, disruptive activity, and disinformation.\n- To mitigate the risks of Russian cyber-threats, organizations can implement best practices that are informed by intelligence.\n\n## An Oil and Gas Superpower Faces a Changing World \n\nFluctuating demand for fossil fuels, aggravated during the pandemic, and complicated relationships with the OPEC+ petroleum exporters’ consortium have contributed to unpredictability in the prices of Russia’s main exports—oil and gas. Geopolitical tensions and upheavals have influenced oil price volatility over the decades (Exhibit 1) and will likely continue to do so in the future.\n\n![USEIA on Oil Prices](/rest/files/download/6a/7f/fb/0f7be51f6fd40e1361a2b22135cab45f12ce755af5d089e8cc5d086afa/USEIAOnOilPrices2021-02-08cropped.png)  \n_Exhibit 1: Factors Affecting Crude Oil Prices; from the US Energy Information Administration, 12 January 2021_\n\n#### Climate Change: Challenges and Opportunities \n\nClimate change brings challenges and opportunities for Russia, including the following: \n\n- **Move from fossil fuels:** Governments and major corporations are vowing to cut carbon dioxide emissions in various ways, such as by developing renewable energy sources and switching to electric cars. These changes could curtail demand for fossil fuels, push down prices, and cut Russian revenues. Russia’s energy strategy for 2035 portrays these shifts as [a major challenge](https://jamestown.org/program/russia-strives-for-an-oil-and-gas-resurgence/). \n\n- **Melting permafrost:** Melting permafrost is remaking Russia’s northern landscape as roads and pipelines sink and buckle. An oil tank at metals giant Norilsk Nickel leaked in 2020, causing a devastating oil spill and [costing the company US$2 billion in fines]( https://www.themoscowtimes.com/2021/02/19/nornickel-will-not-appeal-record-2bln-fine-for-arctic-oil-spill-a72980). \n\n- **Arctic shipping and Siberian agriculture:** Climate change is opening opportunities mixed with challenges for Russia. The melting Arctic has created new shipping routes (see Exhibit 2). Russian ships can carry more traffic on the Northern Sea Route, and the country can leverage its advantage in number of icebreakers, but countries are increasingly [competing with Russia](https://news.usni.org/2021/01/05/new-arctic-strategy-calls-for-regular-presence-as-a-way-to-compete-with-russia-china) to use the Arctic for resources, transport, and [military](https://www.cnn.com/2021/04/05/europe/russia-arctic-nato-military-intl-cmd/index.html ) advantage.  \n\n Some analysts suggest [Russia’s agriculture will improve]( https://asiatimes.com/2021/02/could-russia-dominate-world-agriculture/) with the thaw of the Siberian wastelands; however, Russia’s shrinking population would require the country to welcome migrants, most likely from China, to support the expanding agriculture, and many Russians are [suspicious of Chinese encroachment]( https://www.bbc.com/news/world-europe-50185006).  Russia’s government has [not seriously developed its renewable energy]( https://www.csis.org/analysis/climate-change-will-reshape-russia), as China has.\n\n ![Arctic Map](/rest/files/download/0f/6c/6f/91de9ef8d8d38345dc270f8915d9faa496a00b5babe2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg)  \n _Exhibit 2. “Map of the Arctic Region Showing the Northeast Passage, the Northern Sea Route, and Northwest Passage and Bathymetry NOAA.” Arctic Council, 2009. Public Domain_ \n\n## Global Challenges and Domestic Stability \n \nRussia has faced international condemnation and mounting economic sanctions for its human-rights violations, especially after seizing Crimea from Ukraine in 2014 and interfering in US and other elections. These international travails jeopardize Russia\'s domestic stability, [as summarized]( https://www.ft.com/content/94aeb690-ec2d-472d-adf7-212930c2d394) by respected Russian political commentator Tatyana Stanovaya: \n \n```\nPutin’s original success was rooted in his regime’s ability to deliver steady improvements in living standards while inspiring Russians with exploits on the world stage. Now the regime is ruling largely by scaring people and fostering the impression that Mother Russia is once again a “besieged fortress.” \n```\n\n#### Decline in living standards\n\nSanctions have hindered many Russian entities, including oil and gas producers, from expanding their operations. Many of Russia’s neighbors, including Turkmenistan, Azerbaijan, and Kazakhstan, compete with Russia to export oil and gas, and some neighbors, such as Ukraine, are overtly hostile. For years, Russia has sought to protect its energy exports and revenue by using pipelines that bypass Ukraine. Nord-Stream 2, the latest such pipeline, faces US sanctions.\n\nThe COVID-19 pandemic has contributed to a 3.1 percent drop in Russia’s GDP in 2020 and a [8.6 percent fall](https://amp.ft.com/content/24b45679-ed22-4df7-89ab-f3d5fad71c95) in Russian household consumption. Low oil prices, sanctions, and the COVID-19 pandemic have strained the economy and consumer confidence causing the government to impose price controls on sugar and vegetable oil.\n\nEconomic burdens are contributing to public discontent. YouTube videos of the lavish lifestyles of Russia’s top leaders, such as opposition leader Alexey Navalny’s recent video about “Putin’s Palace” in southern Russia, helped [inspire thousands of people](https://www.themoscowtimes.com/2021/02/04/dissatisfaction-with-putin-surges-among-young-russians-levada-poll-a72835) to protest Navalny’s arrest in January 2021. Russia’s ruling party will face a test with the September 2021 parliamentary elections; party support has [dropped to an eight-year low](https://www.themoscowtimes.com/2021/03/11/support-for-russias-ruling-party-drops-to-pre-crimea-low-poll-a73211), according to a February 2021 survey by the independent Levada polling agency. \n\n#### Exploits on the world stage \n\nDuring the COVID-19 pandemic, Russia has been using “[vaccine diplomacy]( https://jamestown.org/program/kremlins-vaccine-diplomacy-in-action-tools-strengths-intermediary-results/)” to boost its image on the world stage.  Russia’s role in ending a conflict between Azerbaijan and Armenia had mixed success in promoting its image as a peacemaker. These small triumphs will likely do little, however, to outweigh Russia’s pariah status or boost Russians’ patriotic pride.\n\n#### Besieged fortress \n\nHaving failed to inspire its people with patriotism through improvements in living standards and exploits on the world stage, Putin’s government has chosen to [stifle public protest](https://www.rferl.org/a/russia-foreign-agents-law-interview-media-lawyer-civil-societ-rfe/31048094.html). Laws in 2021 suppress independent journalists and opposition activists, labeling them as agents of foreign powers, and police have arrested thousands of rally participants.  \n\nPutin\'s regime is attempting to promote patriotism by “fostering the impression that Mother Russia is once again a ‘besieged fortress’," as Stanovaya put it. Officials and state media frequently describe the outside world, particularly the US and Europe, as constantly seeking to undermine and humiliate Russia. \n\nIn an interview in late 2020, Russia’s foreign intelligence service chief, Sergey Naryshkin, portrayed international sanctions for Russian human-rights violations as “hybrid wars,” referring to undeclared wars using diplomatic and psychological means. Naryshkin and other officials have repeatedly portrayed protests in Russia and neighboring countries as schemes by foreign powers to weaken Russia.  \n\n#### "Frenemies"\n\nFacing ostracism and pressure from sanctions, which affect its oil and gas and other industries, Russia is forced to work with counterparts it does not necessarily trust:\n \n- **China:** Russia and China concluded the 30-year, $400 billion “Power of Siberia” gas pipeline deal in May 2014, just after Russia annexed Crimea from Ukraine and incurred international wrath. Although gas started flowing in 2019, [suspicion surrounds this cooperation](https://www.scmp.com/week-asia/geopolitics/article/2100228/chinese-russian-far-east-geopolitical-time-bomb). Some Russian commentators fear being relegated to the position of a junior partner and raw materials supplier to China. Also, many local residents distrust Chinese migrants, and popular culture occasionally resurrects the specter of hordes of Chinese soldiers coming over the border.\n\n- **Saudi Arabia:** Starting in 2016, Russia and Saudi Arabia agreed to limit oil and gas production to maintain high prices, as well as entering other cooperative agreements. At the G-20 summit in late 2018, Putin and Saudi crown prince Mohamad Bin-Salman even famously [exchanged a high-five](https://time.com/5467935/putin-bin-salman-g20/),  as both men faced harsh international criticisms for human-rights violations. \n\n However, Russia targets its “frenemies” as well as its adversaries. The US and UK governments have accused Russia of carrying out intrusions using [Triton](https://intelgraph.idefense.com/#/node/malicious_event/view/2200deae-56e0-4835-b454-8060bd0be50e) and [Neuron/Nautilus](https://intelgraph.idefense.com/#/node/intelligence_alert/view/6f668357-bd6a-4a04-876d-20bd840e0788) malware against computer networks in Saudi Arabia. These campaigns were likely intended to gain visibility into and leverage over Saudi policies, particularly regarding oil production levels and prices but also involving the Saudi relationship with other players in the Middle East. \n\n- **Turkey:** Turkey and Russia have a long complicated relationship with signs of both cooperation and conflict in areas surrounding oil and gas. Turkey is a member of the NATO military alliance but buys Russian anti-aircraft weapons and works sporadically with Russia. In 2020, Turkey carried out controversial [gas drilling in the eastern Mediterranean](https://intelgraph.idefense.com/#/node/global_event/view/d8e7c996-cfc3-4050-8b51-46a1dc517896), occasionally opposed Russia in conflicts in Syria and Libya, and supported Azerbaijan in a [conflict with Armenia](https://intelgraph.idefense.com/#/node/global_event/view/8d7758be-40ec-4b6c-b2fc-cd007183640d) that could have endangered regional oil and gas infrastructure.\n\n- **Iran:** Russia’s equally [complex relationship with Iran](https://intelgraph.idefense.com/#/node/intelligence_alert/view/84c2db1a-6c35-41b6-9f98-ce44840db791) has encompassed military cooperation in Syria and agreements on information security cooperation.  At the same time, Russian group BELUGASTURGEON stole hacking tools and infrastructure from an Iranian threat group and used them against Saudi targets in a [false flag operation](https://intelgraph.idefense.com/#/node/intelligence_alert/view/6f668357-bd6a-4a04-876d-20bd840e0788) that framed Iran.\n\n#### Russian Strategies\n\nOne of Russia’s 19th-century emperors famously said, “Russia has just two allies: its army and its navy.” Putin directly quoted that in 2015, half in jest, but the quote remains popular.  This sense of isolation colors Russia’s strategic worldview. (For more detail on Russian motives and strategies, see the report [Making Sense of Russian Cyberthreat Activity](https://intelgraph.idefense.com/#/node/intelligence_report/view/30e6397e-69cb-48e9-9017-eafb0d761d24).) \n\n\nRussian strategists perceive the country as engaged in a constant battle in the arena of [psychological or information warfare against US and Western powers](https://intelgraph.idefense.com/#/node/intelligence_alert/view/79e6008d-ddd4-472d-b574-5ad1a769e096). Russian officials and state media portray foreign culture, TV and movies, and rhetoric about democracy as ill-disguised attempts to humiliate and weaken Russia. This view allows them to rationalize using propaganda, trolls, and disinformation to discredit and divide other countries, as they [did in 2016]( https://intelgraph.idefense.com/#/node/intelligence_report/view/1373c4a9-baab-4fc1-a33b-f7b152a5f933), in the [2020 US elections](https://www.dni.gov/files/ODNI/documents/assessments/ICA-declass-16MAR21.pdf), and elsewhere. \n\nThe sense of hostility toward the West coexists with a desire to be part of Europe and the global economy, to be a “normal” country, and to restore the great power status the Soviet Union enjoyed. As part of that love-hate relationship with the West, Russian policy has long [balanced globalism and isolationism]( https://intelgraph.idefense.com/#/node/intelligence_alert/view/fffd1701-8cd3-4237-b11b-31270d686f61). Over the years, Russian officials and businesses have sought to preserve Russian positions in global markets and attract global investors, but as the sanctions have tightened, Russia has increasingly emphasized import substitution policies and preparations for working alone. Events in 2020 to 2021 seem to favor isolationism. Independent Russian pollster Levada found in a February 2021 survey that only 29 percent of respondents consider Russia a European country, down from 52 percent in 2008. \n\nThe [increased sanctions](https://www.bellingcat.com/news/2021/03/19/berlin-assassination-new-evidence-on-suspected-fsb-hitman-passed-to-german-investigators/) from the US and EU in 2020 for human-rights concerns have heightened international tensions.  Media reporting suggests US officials are discussing additional sanctions for Russia’s suspected involvement in the [SolarWinds espionage campaign](https://intelgraph.idefense.com/#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4). In a 16 March 2021 interview, US President [Joe Biden warned](https://www.politico.com/news/2021/03/17/biden-putin-election-interference-476656) that Putin would “pay a price” for Russian influence operations in the 2020 US election. [He also said, “I do,”](https://intelgraph.idefense.com/#/node/intelligence_alert/view/3ee020e9-c64f-4c3f-8162-73f80ad85863) when asked whether he considered Putin a killer,  prompting Russia’s foreign ministry to recall its ambassador from Washington for the first time since 1998.\n\nGiven these priorities and circumstances, iDefense assesses that Putin and strategists strive for: \n-\tA loyal population \n-\tSome restoration of Russia’s Soviet-era influence and prestige\n-\tAn end to sanctions\n\n#### Aspirations in the Energy Sector \n\nThese overall goals and strategies have implications for Russian policies in the energy sector. iDefense assesses that Russian aspirations include: \n- [Preserving Russian markets for oil and gas](https://jamestown.org/program/russia-strives-for-an-oil-and-gas-resurgence/) \n- Meeting challenges from rival trends such as liquefied natural gas, shale gas, and renewables\n- Maintaining control over pipelines\n- Gaining visibility into and leverage over decision-making in oil and gas markets and policies worldwide\n- Obtaining foreign energy-related technologies that have both civilian and military uses, as evident in reports from [Norway](https://www.reuters.com/article/us-norway-oil-security/russian-chinese-intelligence-targeting-norwegian-oil-secrets-report-idUSKBN28D2M7), the [Netherlands, and Denmark]( https://www.euronews.com/2020/12/09/russian-citizen-charged-with-spying-on-energy-technology-in-denmark)  \n- Slowing energy sector development in  adversary countries, sometimes by [encouraging environmental activists there](https://www.inc.com/magazine/201905/tom-foster/russian-trolls-facebook-social-media-attacks-brands-hoax-fake-disinformation.html ) \n\nTo pursue these goals, Russian strategists can choose among a variety of options, including diplomatic, economic and soft power; military action; and asymmetric approaches, such as cyber-threat activity and cyber-enabled information operations.\n\n## Cyber-Threat Capabilities\n\nCyber-threat groups that US and other governments have linked to Russia have helped Russia advance its state strategies through espionage, disruptive activity, and disinformation. Russia’s military and security agencies occasionally perform operations using tools, techniques, and personnel drawn from the Russian-speaking cybercriminal underground. \n\n#### Energy Backdooring: BLACK GHOST KNIFEFISH\n\nThe US government has linked [BLACK GHOST KNIFEFISH](https://intelgraph.idefense.com/#/node/threat_group/view/27332f70-302c-491a-85f2-3714218296b8) (a.k.a. Dragonfly, Berserk Bear, Energetic Bear) to the Russian government. The group is known for targeting energy entities in multiple countries. \n\nIn March 2018, the US Department of Homeland Security’s Cybersecurity and Infrastructure Security Agency, or CISA, [wrote](https://intelgraph.idefense.com/#/node/intelligence_alert/view/c79d8446-28a9-4b20-a5bb-d9ac5ff4a6de):\n\n```\nRussian government cyber actors…targeted small commercial facilities’ networks…gained remote access into energy sector networks…conducted network reconnaissance, moved laterally, and collected information pertaining to Industrial Control Systems (ICS)…DHS was able to reconstruct screenshot fragments of a Human Machine Interface (HMI) that the threat actors accessed. (See Exhibit 4.)\n```\n\n![Dragonfly Screenshots](/rest/files/download/27/f6/e2/72a551319a5908267b8a45e616313115f032bc8442bdf38430cc12f1e6/DragonflyScreenshotsFromUSCERTMarch152018cropped.png)  \n_Exhibit 4: Reconstructed HMI Screenshot Fragments, US CISA Alert (TA18-074A): Russian Government Cyber Activity Targeting Energy and Other Critical Infrastructure Sectors, 16 March 2018_ \n\n\nAn April 2018 [US and UK government alert warned]( https://intelgraph.idefense.com/#/node/intelligence_alert/view/21ab89f6-1ac1-4cc3-83f6-233a5d7473cf) of Russian government-supported cyber-threat operations matching activity that iDefense tracks as BLACK GHOST KNIFEFISH. The activity targeted network infrastructure devices (such as routers, switches, firewalls, and network intrusion detection systems) enabled with the generic routing encapsulation protocol, Cisco Smart Install feature, or simple network management protocol. The threat actors conducted man-in-the-middle attacks for espionage, to steal intellectual property, and potentially to prepare for future disruptive or destructive activity. \n\nSigns of cooperation exist between BLACK GHOST KNIFEFISH and BELUGASTURGEON (a.k.a. Turla), which US and UK officials say is “widely reported to be associated with Russian actors” and which Estonian and Czech authorities have [identified with](https://www.reuters.com/article/us-russia-cyber/hacking-the-hackers-russian-group-hijacked-iranian-spying-operation-officials-say-idUSKBN1X00AK)  Russia’s [Federal Security Service](https://intelgraph.idefense.com/#/node/threat_group/view/d96f3b14-462b-4ab4-aa04-23c7a2996611) (FSB). BELUGASTURGEON’s targets are mostly political entities but have included the [Armenian natural resources ministry](https://www.welivesecurity.com/2020/03/12/tracking-turla-new-backdoor-armenian-watering-holes), and, as mentioned above, the threat group carried out false flag operations framing Iranian threat actors.\n\n#### Military Hackers: SANDFISH and SNAKEMACKEREL\n\nRussia\'s cyber-threat capabilities include groups the US government has linked to Russia\'s military intelligence agency, the GRU.\n\nThe US and other governments have attributed numerous destructive operations, including the Ukrainian blackout of 2015 and the Crashoverride series of attacks in 2016, to a group that iDefense tracks as [SANDFISH](https://intelgraph.idefense.com/#/node/threat_group/view/40d2cf30-237a-467b-826d-390f12cc27f0) (a.k.a. SANDWORM).\n\nThe Ukrainian blackouts fit Russia\'s strategic goals of weakening Ukraine. The electricity blackout from the December 2016 Crashoverride operation was merely the [culmination of a two-week series of attacks]( https://intelgraph.idefense.com/#/node/intelligence_alert/view/f7c3ae17-869a-4025-9edb-a6e8c4ca7a3e) that also disrupted operations at the State Treasury; the Finance Ministry, Defense Ministry, and other government entities; an Internet provider; and the railways. Ukrainian citizens could not receive pensions or buy rail tickets. The attempt to disrupt Ukrainian everyday life was likely intended to discredit the leadership of its then-president, who was particularly hostile to Russia.\n\nSANDFISH has also targeted oil and gas companies in Ukraine and Azerbaijan [using GreyEnergy malware]( https://intelgraph.idefense.com/#/node/intelligence_alert/view/f0289fe9-c076-437b-984f-71f17d6f7950). SANDFISH tools Exaramel and PAS Shell appeared in a campaign that ran from 2017 to 2020 and compromised French IT and web-hosting companies [running Centreon monitoring software]( https://intelgraph.idefense.com/#/node/intelligence_alert/view/55004ca2-e598-460f-bb0c-8ef6f37b7bca). French energy giant Total is one of Centreon\'s customers. \n\nAs for the military hacker group [SNAKEMACKEREL](https://intelgraph.idefense.com/#/node/threat_group/view/065336a6-651d-4f80-b8c2-9347f4486912) (a.k.a. APT28, FancyBear), in May 2020, the [US FBI reportedly warned](https://intelgraph.idefense.com/#/node/intelligence_alert/view/575c5eef-0784-46cd-bf67-8e256d0c2fc7) that the group had been targeting US government agencies and educational institutions since December 2018. According to a July 2020 report from the news source Wired, a SNAKEMACKEREL IP address from the FBI alert matched one from an earlier Department of Energy (DOE) advisory, drawing speculation that SNAKEMACKEREL had targeted an entity in the US energy sector—a departure in targeting for the group. The DOE-named IP address might have represented infrastructure that both SNAKEMACKEREL and SANDFISH used. The threat actors sent spear-phishing emails to  personal and work email accounts and leveraged password-spraying and brute-force tactics to compromise victims’ mail servers, Microsoft Office 365 and email accounts, and VPN servers, according to Wired. \n\nEarlier, in 2014 and 2015, SNAKEMACKEREL operators also conducted a spear-phishing campaign [against Westinghouse Electric Company](https://intelgraph.idefense.com/#/node/malicious_event/view/aff26f9b-2f45-483c-996a-e058fc02a84a), according to a US indictment.\n\nIf SNAKEMACKEREL successfully breached a US energy entity or Westinghouse, Russian intelligence might have gained insight into upcoming deals with countries of interest to Russia. Westinghouse supplies uranium to Ukraine and has bid for contracts to build nuclear power plants for Saudi Arabia.\n\nSNAKEMACKEREL and SANDFISH seek deniability by disguising themselves as criminals or hacktivists:\n- During the [PetyaA/NotPetya campaign](https://intelgraph.idefense.com/#/node/intelligence_alert/view/e4cac05c-83a4-40e3-b8b2-190c7c405ee0) against Ukraine in 2017 that US officials attributed to SANDFISH, the perpetrators pretended to be criminal ransomware actors. \n- When conducting hack-and-leak operations, these GRU actors often [hid behind pseudo-hacktivist personas](https://intelgraph.idefense.com/#/node/intelligence_report/view/bd237f19-3b9f-4ea1-8f32-b9edd4667126), such as Guccifer 2.0 and Fancy Bears Hack Team, to discredit and divide societies in the US and other countries and entities seen as hostile to Russia. \n\n\n#### Threatening Industrial Safety Systems: ZANDER\n\nRussia\'s cyber-threat capabilities may also include a group iDefense calls [ZANDER]( https://intelgraph.idefense.com/#/node/threat_group/view/a363a7ca-1d5d-4477-9ce9-e9259cb888e4), which the US government has linked to Russia’s [Central Research Institute for Chemistry and Mechanics](https://intelgraph.idefense.com/#/node/threat_group/view/99890a07-ddca-491d-ae7e-ae22a53db690) (TsNIIKhM). \n\nIf successful, the August 2017 Triton malware attack on the operational technology systems of a refinery in Saudi Arabia [could have endangered human lives](https://www.slideshare.net/JoeSlowik/past-and-future-of-integrity-based-attacks-in-ics-environments).  Researchers attributed the activity to TsNIIKHM, an institute subordinate to the Russian defense ministry’s Federal Service for Technical and Export Control. Having sufficient confidence in this attribution, on 23 October 2020, the US Treasury Department added TsNIIKhM to its Specially Designated Nationals sanctions list in connection with the August 2017 Triton attack.\n\nThe Triton attack was likely meant to create a backdoor for potential disruptive activity, gain leverage over a key company in the petroleum sector, and potentially discredit or influence Saudi policies regarding oil production levels and prices as well as Saudi relationships with other Middle Eastern countries. \n\nZANDER has also targeted the electricity sector. Since late 2018, they have been searching for remote login portals and vulnerabilities in the networks of at least 20 targets in electricity generation, transmission, and distribution systems in the US and Asia Pacific, according to E-ISAC and Dragos reports from June 2019. \n\n#### JACKMACKEREL\n\nAnother Russian cyber-threat group with impact on the energy sector is [JACKMACKEREL]( https://intelgraph.idefense.com/#/node/threat_group/view/24a38270-949f-442a-aac6-53a99ef1ea70) (a.k.a. Cozy Bear, the Dukes, APT 29). The Estonian government has linked this group with both the FSB and the SVR, Russia’s [Foreign Intelligence Service](https://intelgraph.idefense.com/#/node/threat_group/view/11759430-3417-4772-9723-43bb38fe2280).\n\nSome analysts attribute the SolarWinds operation of 2020 to JACKMACKEREL. However, iDefense has [compared the malware and infrastructure](https://intelgraph.idefense.com/#/node/intelligence_alert/view/7128fb11-2753-4f4d-aa51-2c13731f7dbe) used in the SolarWinds operation with JACKMACKEREL tools and found some important differences. In April 2021, the US government formally attributed the SolarWinds campaign to the SVR, linking the SVR to the APT29 threat group. In the absence of further detail, [Accenture iDefense cannot currently verify this attribution](https://intelgraph.idefense.com/#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4) and is tracking this activity as action from the distinct threat group FireEye calls UNC2452.\n\nRegardless of exact attribution of the SolarWinds operation, the SVR is certainly involved with Russian cyber-threat activity and conducts espionage and pressure campaigns to promote Russia’s economic and political interests abroad. \n\n[Past SVR activities include](PUTINS_HYDRA_INSIDE_THE_RUSSIAN_INTELLIGENCE_SERVICES_1513.pdf) pilfering renewable energy technologies, stealing commercial information such as tenders, or coercing cooperation from people who allocate contracts, according to reports analyzing Russian intelligence services. Stealing commercial information and coercing people can help boost Russian competitiveness in winning oil and gas contracts, while stealing technologies can help Russia compete with or weaken companies developing renewable energy.\n\nThe intelligence service responsible for the SolarWinds operation [specifically targeted](https://intelgraph.idefense.com/#/node/intelligence_report/view/eb77c712-fcfd-48f6-9533-baa18131fb62) US Department of Energy entities, including Sandia and Los Alamos national laboratories in New Mexico and Washington, the Office of Secure Transportation at the National Nuclear Security Administration, and DOE’s Richland field office, as well as the Federal Energy Regulatory Commission. In addition, researchers have identified Chevron Texaco as one of 23 entities the threat actors targeted for follow-on activity. These breaches could potentially provide valuable information on the resilience of the US electric grid and nuclear power plants as well as providing insight into Chevron Texaco’s business plans and agreements in contested areas such as the eastern Mediterranean. Note that Cyprus contracted with Chevron subsidiary Noble Energy to drill gas in Cyprus-controlled zones.\n\n#### Hybrid Ransomware Operations and EvilCorp \n\nIn addition to the straightforward state-sponsored espionage or disruptive activity discussed above, Russian-state threat groups sometimes hide behind the mask of criminal ransomware. An iDefense compendium of ransomware or data leak [events affecting the energy and utility sectors]( https://intelgraph.idefense.com/#/node/intelligence_report/view/999b6c55-3cb8-4372-affb-bcc9c47dd95b) includes breaches of NorskHydro, the Norwegian metals and energy company, and of Mexican oil company Pemex. iDefense has grounds to characterize these with low-to-medium confidence as “[hybrid ransomware]( https://intelgraph.idefense.com/#/node/intelligence_report/view/034b4162-239d-438e-8e85-490103b83e5d)” operations. Such operations involve cybercriminals and intelligence services cooperating for mutual benefit, or they are intended to disrupt operations or destroy or exfiltrate data rather than only to extort a ransom payment. Most famously, the June 2017 Petya.A/NotPetya attack in Ukraine was a Russian-state operation disguised as criminal ransomware.\n \nRussian-state cyber-threat operations sometimes draw on tools and personnel from the Russian-speaking cybercrime world, as iDefense has extensively documented and as  [American](https://intelgraph.idefense.com/#/node/intelligence_alert/view/575c5eef-0784-46cd-bf67-8e256d0c2fc7) and [Canadian](https://intelgraph.idefense.com/#/node/intelligence_alert/view/9fe9f478-a5bb-405d-846a-b6baac07c431) governments have noted. \n\nRussian cyber-criminals [have worked with FSB operatives](https://intelgraph.idefense.com/#/node/intelligence_alert/view/0f78f6ba-f0aa-4078-b70a-674cd12d2643) and [received protection](https://intelgraph.idefense.com/#/node/intelligence_alert/view/6c403e44-c382-4ed6-aabf-23d0d353c0ba) from highly placed people. When caught by Russian law enforcement, they [are often pressured](https://intelgraph.idefense.com/#/node/intelligence_alert/view/130d2acb-9778-4b22-96a8-5c47115f2659) to participate in Russian intelligence missions or consider geopolitical factors in future targeting.\n \nFor example, ransomware operator GandCrab promised in October 2018 to provide decryption keys to people in Russia’s war-torn ally Syria but vowed never to release keys to victims in other countries, as “we need to [continue punitive proceedings]( https://intelgraph.idefense.com/#/node/malicious_event/view/ff63b317-2de3-4ba3-828a-d294eab5b91f) against certain countries.” Self-proclaimed hacker and onetime government contractor [Pavel Sitnikov](https://intelgraph.idefense.com/#/node/threat_actor/view/ca0ed890-16a4-460c-aa44-69c23914c2b0) in December 2020 stated, “ransomware and special services are inseparable.”  \n\nThe EvilCorp group (a.k.a. [HighRollers](https://intelgraph.idefense.com/#/node/threat_group/view/8eb76c68-4d9a-4397-8cc6-e779f9ee8b50), TA505, Dridex Group) exemplifies the intersection between criminal and intelligence activity. According to the US Treasury Department, EvilCorp leader [Maksim Yakubets](https://intelgraph.idefense.com/#/node/threat_actor/view/df442e94-f0df-4ec1-9d35-57bedf1a9223) has done contract work for the FSB, and investigative journalists report he is married to an active FSB veteran.\n\nEvilCorp played a role in DoppelPaymer and Clop (a.k.a. Cl0p) ransomware operations. On 10 December 2020, the FBI warned the US private sector that [DoppelPaymer actors were targeting critical infrastructure](https://intelgraph.idefense.com/#/node/intelligence_alert/view/8c5412b6-f114-47a4-afd1-5e5f0a88d10b) including the 911 emergency service, according to media accounts. The DoppelPaymer actors have breached and leaked information on numerous companies involved in defense or national security as well as public safety work. DoppelPaymer actors leaked data from [numerous aerospace and defense contractors](https://intelgraph.idefense.com/#/node/malicious_event/view/238857cc-12f3-4fac-820a-c59dc58c27da) including Schlumberger Technology, Hyundai’s [Kia Motors](https://intelgraph.idefense.com/#/node/malicious_event/view/d009718a-25f6-491f-95f2-528d0a3d3f63), [Boyce Technologies ](https://intelgraph.idefense.com/#/node/intelligence_alert/view/5a23f8ed-8038-4727-bb4d-5016c57e10f5), and NASA contractor [Digital Management Inc.]( https://intelgraph.idefense.com/#/node/intelligence_alert/view/6613f584-7728-4bd4-9dd7-103aef9b30ec)\n\nThe November 2019 DoppelPaymer [ransomware attack on the Mexican national oil company Pemex]( https://intelgraph.idefense.com/#/node/malicious_event/view/238857cc-12f3-4fac-820a-c59dc58c27da) appears to have combined financial and  political motivations. EvilCorp had an incentive to retaliate against or discredit Pemex and Mexican President Andrés Manuel López Obrador (a.k.a. AMLO): EvilCorp leader Yakubets’ father-in-law, retired from Russian intelligence, runs a private security company that provided security for Russian company Lukoil. The Mexican government shunned Lukoil and other foreign investors when attempting to build a self-sufficient Mexican oil industry. During the spring 2018 presidential campaign, pro-AMLO Pemex employees rallied holding signs showing feet kicking the logos of companies like Lukoil. Leaked Pemex documents could also provide evidence in [trials of former Pemex officials]( https://intelgraph.idefense.com/#/node/malicious_event/view/05982e7e-b7d0-4203-a8a9-dd46ea769854) for their dealings with scandal-plagued Brazilian company Odebrecht.  This provides an example of a Russian-state malicious actor targeting an oil and gas entity for apparent financial profit and to support Russian national interests.\n\nEnergy companies were also victims in cloud provider [Accellion’s File Transfer Appliance software breach]( https://intelgraph.idefense.com/#/node/intelligence_alert/view/c68c3558-7540-4a74-9af3-5b1d243f852e). Some victims received extortion emails from actors threatening to publish stolen data on the “CL0P^_- LEAKS" .onion website. Clop actors have stolen information with national security value, such as specifications for Bombardier’s military spy plane.  Samples of data from [geophysical services company CGG]( https://intelgraph.idefense.com/#/node/malicious_event/view/c069f7c1-7b22-4713-a1d9-b1ba041602e8) and [transportation company CSX]( https://intelgraph.idefense.com/#/node/malicious_event/view/0e1a64c4-e283-457b-b615-9863436b0dbd) were also leaked on the site. \n\nRansomware negotiator [Coveware’s analysis](https://www.coveware.com/blog/2021/2/18/q4-doxxing-victim-trends-industrial-sector-emerges-as-primary-ransom-non-payor) of leaks of victim data on ransomware operators’ sites in the last quarter of 2020 indicates the Clop group focused on the energy and technology sectors, whereas the industrial sector suffered most leaks on other groups’ sites. Clop’s geographic targeting also overlaps with Russian-state priorities, according to Coveware’s analysis: 43 percent of Clop leaks were from victims in Germany.   Russia [has aimed hostile rhetoric](https://euvsdisinfo.eu/villifying-germany-wooing-germany/) against that country’s leadership for spearheading EU sanctions against Russia.', 'sources_external': [{'datetime': '2020-12-18T05:00:00.000Z', 'description': '-\tСергей Нарышкин: О том как статъ настоящим разведчиком (Sergey Naryshkin: On how to become a real spy)  hxxps://aif[.]ru/society/safety/100_let_svr_sergey_naryshkin_o_tom_kak_stat_nastoyashchim_razvedchikom', 'name': 'Argumenty i fakty', 'reputation': 4}, {'datetime': '2021-02-27T05:00:00.000Z', 'description': 'Когда-то император Александр III сказал замечательную по своей емкости фразу: ....hxxps://t[.]me/nstarikovru/20816/', 'name': 'Nikolay Starikov', 'reputation': 3}, {'datetime': '2019-11-01T04:00:00.000Z', 'description': "Why Chinese farmers have crossed border into Russia's Far East", 'name': 'British Broadcasting Corporation', 'reputation': 4, 'url': 'https://www.bbc.com/news/world-europe-50185006'}, {'datetime': '2021-03-11T05:00:00.000Z', 'description': "Support for Russia's Ruling Party Drops to Pre-Crimea Low – Poll", 'name': 'Moscow Times', 'reputation': 4, 'url': 'https://www.themoscowtimes.com/2021/03/11/support-for-russias-ruling-party-drops-to-pre-crimea-low-poll-a73211'}, {'datetime': '2021-03-25T04:00:00.000Z', 'description': 'Kremlin’s ‘Vaccine Diplomacy’ in Action: Tools, Strengths, Intermediary Results', 'name': 'Jamestown Foundation', 'reputation': 4, 'url': 'https://jamestown.org/program/kremlins-vaccine-diplomacy-in-action-tools-strengths-intermediary-results/'}, {'datetime': '2018-11-30T05:00:00.000Z', 'description': 'Watch Vladimir Putin and Crown Prince Mohammed bin Salman Embrace at the G-20', 'name': 'Time', 'reputation': 4, 'url': 'https://time.com/5467935/putin-bin-salman-g20/'}, {'datetime': '2021-03-09T05:00:00.000Z', 'description': 'Vilifying Germany; Wooing Germany', 'name': 'EU vs Disinfo', 'reputation': 4, 'url': 'https://euvsdisinfo.eu/villifying-germany-wooing-germany/'}, {'datetime': '2021-03-15T04:00:00.000Z', 'description': 'The Iran-Russia Cyber Agreement and U.S. Strategy in the Middle East', 'name': 'Council on Foreign Relations', 'reputation': 4, 'url': 'https://www.cfr.org/blog/iran-russia-cyber-agreement-and-us-strategy-middle-east'}, {'datetime': '2017-07-08T04:00:00.000Z', 'description': 'Chinese in the Russian Far East: a geopolitical time bomb?', 'name': 'South China Morning Post', 'reputation': 4, 'url': 'https://www.scmp.com/week-asia/geopolitics/article/2100228/chinese-russian-far-east-geopolitical-time-bomb'}, {'datetime': '2021-02-08T05:00:00.000Z', 'description': 'Russia-Iran cooperation poses challenges for US cyber strategy, global norms', 'name': 'C4ISR', 'reputation': 4, 'url': 'https://www.c4isrnet.com/thought-leadership/2021/02/08/russia-iran-cooperation-poses-challenges-for-us-cyber-strategy-global-norms/'}, {'datetime': '2016-05-11T04:00:00.000Z', 'description': 'Putin’s Hydra: Inside Russia’s Intelligence Services', 'name': 'European Council on Foreign Relations', 'reputation': 4, 'url': 'https://ecfr.eu/wp-content/uploads/ECFR_169_-_PUTINS_HYDRA_INSIDE_THE_RUSSIAN_INTELLIGENCE_SERVICES_1513.pdf'}, {'datetime': '2019-10-18T04:00:00.000Z', 'description': 'Cybersecurity Advisory, Turla Group Exploits Iranian APT to Expand Coverage of Victims', 'name': 'National Security Agency, National Cyber Security Centre', 'reputation': 5, 'url': 'https://media.defense.gov/2019/Oct/18/2002197242/-1/-1/0/NSA_CSA_TURLA_20191021%20VER%203%20-%20COPY.PDF'}, {'datetime': '2020-12-12T05:00:00.000Z', 'description': 'Netherlands kicks out two Russian diplomats as Denmark charges Russian citizen with espionage', 'name': 'EuroNews', 'reputation': 4, 'url': 'https://www.euronews.com/2020/12/09/russian-citizen-charged-with-spying-on-energy-technology-in-denmark'}, {'datetime': '2018-10-03T04:00:00.000Z', 'description': 'US v Aleksei Sergeyevich Morenets et al', 'name': 'US Department of Justice', 'reputation': 5, 'url': 'https://www.justice.gov/opa/page/file/1098481/download'}, {'datetime': '2017-09-15T04:00:00.000Z', 'description': 'International Security and Estonia', 'name': 'Estonian Foreign Intelligence Service', 'reputation': 5, 'url': 'https://www.valisluureamet.ee/pdf/raport-2018-ENG-web.pdf'}, {'datetime': '2021-03-04T05:00:00.000Z', 'description': 'China’s 5-year plan includes goals to open Arctic Silk Road', 'name': 'Reuters', 'reputation': 4, 'url': 'https://reuters.com/article/us-china-parliament-polar-idUSKBN2AX09F'}, {'datetime': '2019-05-01T04:00:00.000Z', 'description': 'How Russian Trolls Are Using American Businesses as Their Weapons', 'name': 'Inc', 'reputation': 4, 'url': 'https://www.inc.com/magazine/201905/tom-foster/russian-trolls-facebook-social-media-attacks-brands-hoax-fake-disinformation.html'}, {'datetime': '2021-03-22T04:00:00.000Z', 'description': 'Russia and Europe hxxps://www.levada[.]ru/en/2021/03/22/russia-and-europe/', 'name': 'Levada', 'reputation': 4}, {'datetime': '2014-09-12T04:00:00.000Z', 'description': 'Announcement of Expanded Treasury Sanctions within the Russian Financial Services, Energy and Defense or Related Materiel Sectors', 'name': 'US Treasury', 'reputation': 5, 'url': 'https://www.treasury.gov/press-center/press-releases/Pages/jl2629.aspx'}, {'datetime': '2009-01-01T05:00:00.000Z', 'description': 'Map_of_the_Arctic_region_showing_the_Northeast_Passage,_the_Northern_Sea_Route_and_Northwest_Passage,_and_bathymetry', 'name': 'Arctic Council', 'reputation': 5, 'url': 'https://commons.wikimedia.org/wiki/File:Map_of_the_Arctic_region_showing_the_Northeast_Passage,_the_Northern_Sea_Route_and_Northwest_Passage,_and_bathymetry.png'}, {'datetime': '2021-02-23T05:00:00.000Z', 'description': 'Q4 2020 Doxxing Victim Trends: Industrial Sector Emerges as Primary Ransom “Non-Payor”', 'name': 'Coveware', 'reputation': 4, 'url': 'https://www.coveware.com/blog/2021/2/18/q4-doxxing-victim-trends-industrial-sector-emerges-as-primary-ransom-non-payor'}, {'datetime': '2019-01-18T05:00:00.000Z', 'description': "Who Are Russia's Main Allies? hxxps://www.rbth[.]com/lifestyle/329861-who-are-russia-allies", 'name': 'Russia Behind the Headlines', 'reputation': 3}, {'datetime': '2021-02-23T05:00:00.000Z', 'description': "Detailed plans of military spy plane are leaked on the dark web by hackers after Canadian manufacturer Bombardier 'refused to pay ransom'", 'name': 'Daily Mail', 'reputation': 4, 'url': 'https://www.dailymail.co.uk/news/article-9293153/Bombardier-latest-company-hacked-group-using-ransomware-called-Clop.html'}, {'datetime': '2020-12-16T05:00:00.000Z', 'description': 'How Russia Wins the Climate Crisis', 'name': 'New York Times', 'reputation': 4, 'url': 'https://www.nytimes.com/interactive/2020/12/16/magazine/russia-climate-migration-crisis.html'}, {'datetime': '2020-12-07T05:00:00.000Z', 'description': 'Russia Strives for an Oil and Gas Resurgence', 'name': 'Jamestown', 'reputation': 4, 'url': 'https://jamestown.org/program/russia-strives-for-an-oil-and-gas-resurgence/'}, {'datetime': '2021-03-19T04:00:00.000Z', 'description': 'Berlin Assassination: New Evidence on Suspected FSB Hitman Passed to German Investigators', 'name': 'Bellingcat', 'reputation': 4, 'url': 'https://www.bellingcat.com/news/2021/03/19/berlin-assassination-new-evidence-on-suspected-fsb-hitman-passed-to-german-investigators/'}, {'datetime': '2020-03-27T04:00:00.000Z', 'description': 'Russia’s Chinese Dream in the Era of COVID-19', 'name': 'Wilson Center', 'reputation': 4, 'url': 'https://www.wilsoncenter.org/blog-post/russias-chinese-dream-era-covid-19'}, {'datetime': '2019-06-20T04:00:00.000Z', 'description': 'Waterbug: Espionage Group Rolls Out Brand-New Toolset in Attacks Against Governments', 'name': 'Symantec', 'reputation': 4, 'url': 'https://www.symantec.com/blogs/threat-intelligence/waterbug-espionage-governments'}, {'datetime': '2021-01-12T05:00:00.000Z', 'description': 'What drives crude oil prices?', 'name': 'US Energy Information Administration', 'reputation': 5, 'url': 'https://www.eia.gov/finance/markets/crudeoil/reports_presentations/crude.pdf'}, {'datetime': '2018-04-20T04:00:00.000Z', 'description': 'US-CERT/CISA Alert (TA18-106A): Russian State-Sponsored Cyber Actors Targeting Network Infrastructure Devices', 'name': 'US Cybersecurity and Infrastructure Security Agency', 'reputation': 5, 'url': 'https://us-cert.cisa.gov/ncas/alerts/TA18-106A'}, {'datetime': '2020-12-17T05:00:00.000Z', 'description': 'Russia: The EU prolongs economic sanctions for another six months', 'name': 'European Union', 'reputation': 5, 'url': 'https://www.consilium.europa.eu/en/press/press-releases/2020/12/17/russia-the-eu-prolongs-economic-sanctions-for-another-six-months'}, {'datetime': '2021-01-15T05:00:00.000Z', 'description': "Interview: Media Lawyer Says Russia's New Laws 'Are Burying Civil Society", 'name': 'Radio Free Europe/Radio Liberty', 'reputation': 4, 'url': 'https://www.rferl.org/a/russia-foreign-agents-law-interview-media-lawyer-civil-societ-rfe/31048094.html'}, {'datetime': '2021-02-04T05:00:00.000Z', 'description': 'Dissatisfaction With Putin Surges Among Young Russians – Levada Poll', 'name': 'Moscow Times', 'reputation': 4, 'url': 'https://www.themoscowtimes.com/2021/02/04/dissatisfaction-with-putin-surges-among-young-russians-levada-poll-a72835'}, {'datetime': '2021-02-06T05:00:00.000Z', 'description': "Rising Poverty and Falling Incomes Fuel Russia's Navalny", 'name': 'Financial Times', 'reputation': 4, 'url': 'https://amp.ft.com/content/24b45679-ed22-4df7-89ab-f3d5fad71c95'}, {'datetime': '2020-03-12T04:00:00.000Z', 'description': 'Tracking Turla: New backdoor delivered via Armenian watering holes', 'name': 'ESET', 'reputation': 4, 'url': 'https://www.welivesecurity.com/2020/03/12/tracking-turla-new-backdoor-armenian-watering-holes/'}, {'datetime': '2018-03-16T04:00:00.000Z', 'description': 'Alert (TA18-074A): Russian Government Cyber Activity Targeting Energy and Other Critical Infrastructure Sectors', 'name': 'US Cybersecurity and Infrastructure Security Agency', 'reputation': 5, 'url': 'https://us-cert.cisa.gov/ncas/alerts/TA18-074A'}, {'datetime': '2020-10-23T04:00:00.000Z', 'description': 'Treasury Sanctions Russian Government Research Institution Connected to the Triton Malware', 'name': 'US Treasury Department', 'reputation': 5, 'url': 'https://home.treasury.gov/news/press-releases/sm1162'}, {'datetime': '2021-03-30T04:00:00.000Z', 'description': 'В Минобороны рассказали, как победить США в "ментальной войне"  hxxps://ria[.]ru/20210330/ssha-1603481759.html', 'name': 'RIA'}, {'datetime': '2019-10-23T04:00:00.000Z', 'description': 'Past and future of integrity based attacks in ics environments', 'name': 'Dragos', 'reputation': 4, 'url': 'https://www.slideshare.net/JoeSlowik/past-and-future-of-integrity-based-attacks-in-ics-environments'}, {'datetime': '2021-03-17T04:00:00.000Z', 'description': 'Biden: Putin will ‘pay a price’ for interfering in 2020 election', 'name': 'Politico', 'reputation': 4, 'url': 'https://www.politico.com/news/2021/03/17/biden-putin-election-interference-476656'}, {'datetime': '2021-01-14T05:00:00.000Z', 'description': 'Who Is Responsible for Mitigating the Effects of Climate Change in Russia?', 'name': 'Center for Strategic and International Studies', 'reputation': 4, 'url': 'https://www.csis.org/analysis/who-responsible-mitigating-effects-climate-change-Russia'}, {'datetime': '2019-10-21T04:00:00.000Z', 'description': 'Joint Advisory: Turla group exploits Iranian APT to expand coverage of victims', 'name': 'UK National Cyber Security Centre (NCSC) and US National Security Agency', 'reputation': 5, 'url': 'https://www.ncsc.gov.uk/news/turla-group-exploits-iran-apt-to-expand-coverage-of-victims'}, {'datetime': '2019-10-21T04:00:00.000Z', 'description': 'Hacking the hackers: Russian group hijacked Iranian spying operation, officials say', 'name': 'Reuters', 'reputation': 4, 'url': 'https://www.reuters.com/article/us-russia-cyber/hacking-the-hackers-russian-group-hijacked-iranian-spying-operation-officials-say-idUSKBN1X00AK'}, {'datetime': '2021-02-15T05:00:00.000Z', 'description': 'Russia Blackmails and Courts Europe', 'name': 'Jamestown', 'reputation': 4, 'url': 'https://jamestown.org/program/russia-blackmails-and-courts-europe/'}, {'datetime': '2021-02-07T05:00:00.000Z', 'description': 'Vladimir Putin’s Russia is destabilising itself from within', 'name': 'Tatyana Stanovaya for the Financial Times', 'reputation': 4, 'url': 'https://www.ft.com/content/94aeb690-ec2d-472d-adf7-212930c2d394'}, {'datetime': '2015-04-16T04:00:00.000Z', 'description': "Putin agrees with emperor that Russia's only allies are Army and Navy hxxps://tass[.]com/Russia/789866", 'name': 'TASS', 'reputation': 3}, {'datetime': '2020-12-14T05:00:00.000Z', 'description': 'Deepening Leadership Confusion Exacerbates Russia’s Multiple Crises', 'name': 'Jamestown', 'reputation': 4, 'url': 'https://jamestown.org/program/deepening-leadership-confusion-exacerbates-russias-multiple-crises/'}, {'datetime': '2020-11-12T05:00:00.000Z', 'description': 'Overview of United States sanctions on Russian persons (individuals, entities, and vessels).', 'name': 'US Commerce Department', 'reputation': 5, 'url': 'https://www.trade.gov/country-commercial-guides/russia-sanctions'}, {'datetime': '2020-10-19T04:00:00.000Z', 'description': 'Six Russian GRU Officers Charged in Connection with Worldwide Deployment of Destructive Malware and Other Disruptive Actions in Cyberspace', 'name': 'US Department of Justice', 'reputation': 5, 'url': 'https://www.justice.gov/opa/pr/six-russian-gru-officers-charged-connection-worldwide-deployment-destructive-malware-and'}, {'datetime': '2019-10-21T04:00:00.000Z', 'name': 'UK National Cyber Security Centre (NCSC)', 'reputation': 5, 'url': 'https://www.ncsc.gov.uk/news/turla-group-behind-cyber-attack'}, {'datetime': '2020-02-20T05:00:00.000Z', 'description': "UK condemns Russia's GRU over Georgia cyber-attacks", 'name': 'UK Government', 'reputation': 5, 'url': 'https://www.gov.uk/government/news/uk-condemns-russias-gru-over-georgia-cyber-attacks'}, {'datetime': '2018-04-05T04:00:00.000Z', 'description': 'Satellite images show huge Russian military buildup in the Arctic', 'name': 'CNN', 'reputation': 4, 'url': 'https://www.cnn.com/2021/04/05/europe/russia-arctic-nato-military-intl-cmd/index.html'}, {'datetime': '2020-12-03T05:00:00.000Z', 'description': 'Russian, Chinese intelligence targeting Norwegian oil secrets: report', 'name': 'Reuters', 'reputation': 4, 'url': 'https://www.reuters.com/article/us-norway-oil-security/russian-chinese-intelligence-targeting-norwegian-oil-secrets-report-idUSKBN28D2M7'}], 'conclusion': "To protect against state-sponsored or state-directed cyberthreat activity, iDefense suggests that organizations consider: \n\n * Assessing the threat landscape of critical infrastructure and high-value organizations \nto determine the likelihood of nation-state actors targeting them to steal intellectual property or fulfill strategic requirements.\n\n * Understanding the strategic priorities of China, Iran, North Korea, and Russia to identify high-value data targets and at-risk technologies, information, and business operations.\n\n * Strengthening the organization's cyber defenses through network defense operations, network architecture and design, third-party relationships, software and hardware procurement, user training and security culture building, travel and communication policies, employee vetting and insider threat mitigation, and security partnerships including information-sharing communities, government partners, and contracted security and threat intelligence services.\n\n * Evaluating the organization's key mission and business drivers that align to adversarial states’ priorities.\n\n * Reviewing and updating the organization's knowledge of sanctions lists to ensure critical and high-value organizations only interact and engage with approved and relevant individuals and entities.\n\n * Implementing a proactive cybersecurity strategy and legal framework that defines and addresses changing roles and responsibilities for all parties involved in any security incident.\n\n * Implementing the latest patches for Internet-facing servers, systems, databases, and applications.\n\n * Conducting due diligence on third-party contractors.\n\n * Using multi-factor authentication for corporate network access where possible.\n\nTo counter Russian and other cyber-threats, organizations can focus on specific user-level and system-level defense actions and strategies. This can include educating employees to:\n\n- Resist clickbait \n- Resist over-sharing information online and in emails\n- Doubt questionable links or attachments\n- Check for spoofed URLs and email sender addresses (posing as officials, suppliers, or job seekers)\n\nOrganizations may also consider policies to:\n- Disallow emails with embedded macros \n- Audit network and processes for anomalies\n- Practice red/purple teaming\n- Use IP and port allow- and block-listing  \n- Back up data offsite\n- Disable SMBv1 and RDP if possible", 'summary': "The oil and gas sector is central to Russia's revenue stream as well as the Russian government's economic relationships with the rest of the world. President Vladimir Putin’s government has pursued multiple strategies, including cyber-threat activity, in response to the global and domestic challenges Russia faces in a changing world. Russian-state espionage and disinformation operations as well as disruptive or destructive activity that can occur under the guise of criminal activity or hacktivism have historically targeted organizations in the energy industry and will likely continue to do so."}]
+
+}
