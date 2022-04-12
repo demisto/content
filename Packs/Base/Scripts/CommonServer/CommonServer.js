@@ -435,63 +435,51 @@ function createContext(data, id) {
     return createContextSingle(data);
 }
 
-/*
+/**
  * Append data to the investigation context
  * @param {string} key - context path (required)
  * @param {any} data - Data to be added to the context (required)
- * @param {bool} dedup - True if de-duplication is required. Default is False.
- * @return {None} No data returned 
+ * @param {bool} dedup - True if de-duplication is required.
+ * @return {None} No data returned
 */
-function appendContext(key, data, dedup=False){
+function appendContext(key, data, dedup){
     var new_val;
-    return "bka";
-    // if (!data){
-    //   return;
-    // }
-    // existing = invContext().key;
-    // if (existing){
-    //     if (existing instanceof String || existing instanceof Unicode){
-    //         if (data instanceof String || data instanceof Unicode){
-    //             new_val = data + ',' + existing;
-    //         }
-    //         else{
-    //             new_val = data + existing;  // will raise a self explanatory TypeError
-    //         }
-    //     }
+    if (!data){
+      return;
+    }
+    existing = dq(invContext, key);
+    if (existing){
+        if (existing instanceof String || typeof existing === 'string'){
+            if (data instanceof String || typeof data === 'string'){
+                new_val = [existing, data];
+            } else{
+              throw 'different data types encountered - tried to append {0} to string type.'.format(typeof data);
+            }
+        } else if(existing instanceof Object){
+            if(data instanceof Object){
+                new_val = [JSON.stringify(existing), JSON.stringify(data)];  // type: ignore[assignment]
+            } else{
+              throw 'different data types encountered - tried to append {0} to object type.'.format(typeof data);
+            }
+        } else if(existing instanceof Array){
+            if(data instanceof Array){
+                existing.concat(data);  // type: ignore[assignment]
+            } else{
+              throw 'different data types encountered - tried to append {0} to Array type.'.format(typeof data);
+            }
+            new_val = existing;
+        } else{
+            new_val = [existing, data];
+        }
 
-    //     else if(existing instanceof obj){
-    //         if(data instanceof obj){
-    //             new_val = [existing, data];  // type: ignore[assignment]
-    //         }
-    //         else{
-    //             new_val = data + existing;  // will raise a self explanatory TypeError
-    //         }   
-    //     }
+        if (dedup && new_val instanceof Array){
+            new_val = Array.from(new Set(new_val));
+        }
 
-    //     else if(existing instanceof Array){
-    //         if(data instanceof Array){
-    //             existing.concat(data);  // type: ignore[assignment]
-    //         }
-    //         else{
-    //             new_val = data + existing;  // will raise a self explanatory TypeError
-    //         }
-    //         new_val = existing;
-    //     }
-
-    //     else{
-    //         new_val = [existing, data];
-    //     }
-
-    //     if (dedup && new_val instanceof Array){
-    //         new_val = Array.from(new Set(new_val));
-    //     }
-
-    //     setContext(key , new_val);
-    // }
-
-    // else{
-    //   setContext(key , data);  
-    // }
+        setContext(key , new_val);
+    } else{
+      setContext(key , data);
+    }
 }
 
 var isFunction = function(functionToCheck) {
