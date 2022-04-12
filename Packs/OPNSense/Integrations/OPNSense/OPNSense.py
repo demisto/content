@@ -242,9 +242,9 @@ def alias_reformat_result(data):
 def test_module(client: Client) -> str:
     result = client.test_module()
     if 'error' in result:
-        return 'Test Failed! eRRoR: ' + str(json.loads(result['error']['resp_body'])['message'])
+        return 'Test Failed! Error: ' + str(json.loads(result['error']['resp_body'])['message'])
     elif 'exception' in result:
-        return 'Test Failed! Make sure the URL is correctly set. eRRoR: ' + str(result['exception'])
+        return 'Test Failed! Make sure the URL is correctly set. Error: ' + str(result['exception'])
     else:
         return 'ok'
 
