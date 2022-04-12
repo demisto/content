@@ -1,5 +1,5 @@
-Palo Alto Networks Enterprise DLP discovers and protects company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
-This integration was integrated and tested with version 2.0 of Palo Alto Networks Enterprise DLP
+The Palo Alto Networks Enterprise DLP integration discovers and protects company data across every data channel and repository.   Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.  
+This integration was integrated and tested with Palo Alto Networks Enterprise DLP version 2.0.
 
 ## Configure Palo Alto Networks Enterprise DLP on Cortex XSOAR
 
@@ -9,8 +9,8 @@ This integration was integrated and tested with version 2.0 of Palo Alto Network
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Access Token | Access token generated in the Enterprise DLP UI | True |
-    | Refresh Token | Refresh token generated in the Enterprise DLP UI | True |
+    | Access Token | The access token generated in the Enterprise DLP UI. | True |
+    | Refresh Token | The refresh token generated in the Enterprise DLP UI. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Long running instance |  | False |
@@ -37,7 +37,7 @@ Fetches DLP reports associated with a report ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | report_id | DLP report ID. | Required | 
-| fetch_snippets | If True, includes snippets with the reports. Possible values are: true, false. Default is false. | Optional | 
+| fetch_snippets | If True, includes snippets with the reports. Default is False. | Optional | 
 
 
 #### Context Output
@@ -134,8 +134,7 @@ Resets the fetch incidents last run value, which resets the fetch to its initial
 `pan-dlp-reset-last-run`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no inputs for this command.
 
 
 #### Context Output
