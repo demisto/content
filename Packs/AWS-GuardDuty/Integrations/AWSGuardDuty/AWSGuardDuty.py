@@ -26,7 +26,7 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def create_entry(title, data, ec, raw_response):
+def create_entry(title, data, ec, raw_response=None):
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
