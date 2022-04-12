@@ -88,7 +88,7 @@ class Client(BaseClient):
     def discovery_scan_create(self, **args):
         url_suffix = '/discovery/runs'
         label = args.get('label', '')
-        ranges = list(args.get('ranges', '').split(','))
+        ranges = argToList(args.get('ranges', ''))
         settings = {
             "scan_kind": "IP",
             "scope": "",
@@ -144,7 +144,7 @@ def test_module(client):
         if 'forbidden' in exception_text or 'authorization' in exception_text:
             return 'Authorization Error: make sure API Key is correctly set'
         else:
-            raise e
+            raise
 
 
 def discovery_search_custom_command(client: Client, **args) -> CommandResults:
@@ -182,10 +182,7 @@ def discovery_search_command(client: Client, **args) -> CommandResults:
         results = item['results']
         count += item.get('count', 0)
         for result in results:
-            keys = list(result.keys())
-            for k in keys:
-                if not result[k]:
-                    del result[k]
+            remove_nulls_from_dictionary(result)
             output['data'].append(result)
     output['count'] = count
 
@@ -363,7 +360,7 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
     except Exception as e:
-        demisto.error(traceback.format_exc())
+        demisto.error(fix_traceback_line_numbers(traceback.format_exc()))
         return_error("\n".join(("Failed to execute {command} command.",
                                 "Error:",
                                 str(e))))
