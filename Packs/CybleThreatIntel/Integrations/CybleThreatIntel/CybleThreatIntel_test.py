@@ -70,7 +70,7 @@ def test_response_failure(requests_mock):
     response = get_test_response(client=client, method='POST', params=args)
 
     assert isinstance(response, str)
-    assert response == 'fail'
+    assert response == 'Access token missing.'
 
 
 def test_module_failure(requests_mock):
@@ -98,7 +98,7 @@ def test_module_failure(requests_mock):
     response = get_test_response(client=client, method='POST', params=args)
 
     assert isinstance(response, str)
-    assert response == 'fail'
+    assert response == 'Failed to fetch feed!!'
 
 
 @pytest.mark.parametrize(
@@ -203,7 +203,7 @@ def test_failure_cyble_vision_fetch_taxii(requests_mock):
     assert isinstance(response, dict)
 
     # each result entry is a list
-    assert response['error'] == 'Failed to fetch feed!!'
+    assert response == {}
 
 
 def test_failure_fetch_taxii(requests_mock):

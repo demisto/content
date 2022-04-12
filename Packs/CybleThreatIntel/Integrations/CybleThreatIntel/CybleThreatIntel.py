@@ -9,7 +9,8 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-
+date_format = "%Y-%m-%d"
+time_format = "%H:%M:%S"
 
 class Client(BaseClient):
     """
@@ -31,10 +32,10 @@ class Client(BaseClient):
             'token': args.get('token', ''),
             'page': arg_to_number(args.get('page', 1)),
             'limit': arg_to_number(args.get('limit', 1)),
-            'start_date': args.get('start_date', ''),
-            'end_date': args.get('end_date', ''),
-            'start_time': args.get('start_time', '00:00:00'),
-            'end_time': args.get('end_time', '00:00:00'),
+            'start_date': datetime.strptime(args.get('start_date'), date_format).date(),
+            'end_date': datetime.strptime(args.get('end_date'), date_format).date(),
+            'start_time': datetime.strptime(args.get('start_time', '00:00:00'), time_format).time(),
+            'end_time': datetime.strptime(args.get('end_time', '00:00:00'), time_format).time(),
         }
 
         url = urljoin(self._base_url, taxiiurl)
@@ -45,7 +46,7 @@ class Client(BaseClient):
             if 'count' in resp.keys():
                 taxii_data = resp
             else:
-                taxii_data = {"error": "Failed to fetch feed!!"}
+                taxii_data = resp
         except Exception as e:
             demisto.error("[{}] exception seen for response [{}]".format(e, resp))
         return taxii_data
@@ -59,13 +60,17 @@ def get_test_response(client, method, params):
     :param params: Parameters for requests
     :return: Test Response Success or Failure
     """
-    ret_val = 'fail'
+    ret_val = 'ok'
     payload = params
     taxii_url = r'/taxii/stix-data/v21/get'
     if params.get('token'):
         result = client.get_taxii(method, taxii_url, payload)
-        if not result.get('error'):
-            ret_val = 'ok'
+        if result.get('message') or False:
+            ret_val = result
+        elif not len(result):
+            ret_val = "Failed to fetch feed!!"
+    else:
+        ret_val = 'Access token missing.'
 
     return ret_val
 
@@ -83,10 +88,10 @@ def cyble_fetch_taxii(client, method, args):
         'token': args.get('token', ''),
         'page': arg_to_number(args.get('page', 1)),
         'limit': arg_to_number(args.get('limit', 1)),
-        'start_date': args.get('start_date', ''),
-        'end_date': args.get('end_date', ''),
+        'start_date': args.get('start_date'),
+        'end_date': args.get('end_date'),
         'start_time': args.get('start_time', '00:00:00'),
-        'end_time': args.get('end_time', '00:00:00'),
+        'end_time': args.get('end_time', '00:00:00')
     }
 
     taxii_url = r'/taxii/stix-data/v21/get'
@@ -100,7 +105,7 @@ def cyble_fetch_taxii(client, method, args):
         temp_list.append(eachone.get('indicator'))
 
     md = tableToMarkdown('Indicator Details:', temp_list,
-                         headers=['name', 'indicator_types', 'pattern', 'modified'])
+                             headers=['name', 'indicator_types', 'pattern', 'modified'])
     command_results = CommandResults(
         readable_output=md,
         outputs_prefix='CybleIntel.Threat',
@@ -173,9 +178,9 @@ def main():
         args = demisto.args()
         args['token'] = token
         if 'start_date' not in args.keys():
-            args['start_date'] = datetime.today().strftime('%Y-%m-%d')
+            args['start_date'] = datetime.today().strftime(date_format)
         if 'end_date' not in args.keys():
-            args['end_date'] = datetime.today().strftime('%Y-%m-%d')
+            args['end_date'] = datetime.today().strftime(date_format)
 
         if demisto.command() == 'test-module':
             return_results(get_test_response(client, 'POST', args))
