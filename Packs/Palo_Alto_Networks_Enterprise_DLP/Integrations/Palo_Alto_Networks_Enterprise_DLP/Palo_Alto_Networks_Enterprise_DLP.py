@@ -424,10 +424,6 @@ def long_running_execution_command(params: Dict):
     while True:
         try:
             integration_context = demisto.getIntegrationContext()
-            # last_fetch_time = integration_context.get(LAST_FETCH_TIME)
-            # now = math.floor(datetime.now().timestamp())
-            # last_fetch_time = now - 30 if not last_fetch_time else last_fetch_time
-            # end_time = now
             access_token = integration_context.get(ACCESS_TOKEN)
             access_token = params.get('access_token') if not access_token else access_token
             client = Client(url, refresh_token, access_token, params.get('insecure'), params.get('proxy'))
@@ -439,7 +435,6 @@ def long_running_execution_command(params: Dict):
             if not is_reset_triggered():
                 demisto.createIncidents(incidents)
                 new_ctx = {
-                    # LAST_FETCH_TIME: end_time,
                     ACCESS_TOKEN: client.access_token,
                     'samples': incidents
                 }
