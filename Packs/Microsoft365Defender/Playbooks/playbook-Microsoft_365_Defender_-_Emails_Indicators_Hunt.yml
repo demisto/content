@@ -2,10 +2,10 @@ id: Microsoft 365 Defender - Emails Indicators Hunt
 version: -1
 name: Microsoft 365 Defender - Emails Indicators Hunt
 description: |-
-  This playbook will retrieve emails data based on the "URLDomain", "SHA256" and "IPAddress" inputs.
-  SHA256 - Emails with attachments matching the "SHA256" input will be retrieved.
-  URLDomain - Emails containing URLs (in the body) which the "URLDomain" input is their substring will be retrieved.
-  IPAddress - Emails with "SenderIPv4"/SenderIPv6" matching the "IPAddress" input will be retrieved.
+  This playbook retrieves email data based on the "URLDomain", "SHA256" and "IPAddress" inputs.
+  SHA256 - Emails with attachments matching the "SHA256" input are retrieved.
+  URLDomain - If the "URLDomain" value is found as a substring of URL(s) in the body of the email, the email is retrieved.
+  IPAddress - Emails with "SenderIPv4"/SenderIPv6" matching the "IPAddress" input are retrieved.
 starttaskid: "0"
 tasks:
   "0":
@@ -46,7 +46,7 @@ tasks:
       version: -1
       name: Check if Microsoft 365 Defender is enabled
       description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -85,7 +85,7 @@ tasks:
     task:
       id: bd6a47d6-4489-41d7-8393-06283dc94183
       version: -1
-      name: URLDomain input exist?
+      name: URLDomain input exists?
       type: condition
       iscommand: false
       brand: ""
@@ -93,11 +93,11 @@ tasks:
     nexttasks:
       '#default#':
       - "4"
-      URLDomain Exist:
+      URLDomain Exists:
       - "11"
     separatecontext: false
     conditions:
-    - label: URLDomain Exist
+    - label: URLDomain Exists
       condition:
       - - operator: isNotEmpty
           left:
@@ -126,7 +126,7 @@ tasks:
     task:
       id: 2f8b7939-3372-47f8-8eb2-4e1e1c6e6965
       version: -1
-      name: SHA256 input exist?
+      name: SHA256 input exists?
       type: condition
       iscommand: false
       brand: ""
@@ -134,11 +134,11 @@ tasks:
     nexttasks:
       '#default#':
       - "4"
-      SHA256 Exist:
+      SHA256 Exists:
       - "12"
     separatecontext: false
     conditions:
-    - label: SHA256 Exist
+    - label: SHA256 Exists
       condition:
       - - operator: isNotEmpty
           left:
@@ -450,7 +450,7 @@ tasks:
     task:
       id: 4dc4109d-47e8-4f09-8dd0-407cffbbddae
       version: -1
-      name: IPAddress input exist?
+      name: IPAddress input exists?
       type: condition
       iscommand: false
       brand: ""
@@ -458,11 +458,11 @@ tasks:
     nexttasks:
       '#default#':
       - "4"
-      IPAddress Exist:
+      IPAddress Exists:
       - "14"
     separatecontext: false
     conditions:
-    - label: IPAddress Exist
+    - label: IPAddress Exists
       condition:
       - - operator: isNotEmpty
           left:
@@ -597,7 +597,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -653,7 +653,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -753,7 +753,7 @@ inputs:
   value: {}
   required: false
   description: Domain or URL to search within emails. Can be a single domain or URL
-    or an array of domains or URLs to search. The search will look for the exact Domain
+    or an array of domains or URLs to search. The search looks for the exact Domain
     or URL.
   playbookInputQuery:
 - key: SHA256
@@ -765,25 +765,25 @@ inputs:
   value: {}
   required: false
   description: The source or destination IP address to search. Can be a single address
-    or an array of list of addresses.
+    or an array of IP addresses.
   playbookInputQuery:
 - key: Timeout
   value:
     simple: "60"
   required: false
-  description: The time limit in seconds for the http request to run. Default is 60.
+  description: The time limit in seconds for the HTTP request to run. Default is 60.
   playbookInputQuery:
 - key: SearchTimeframe
   value:
     simple: "7"
   required: false
-  description: Number of days in the past to search in. Default is 7.
+  description: Number of days past to search. Default is 7.
   playbookInputQuery:
 - key: ResultsLimit
   value:
     simple: "50"
   required: false
-  description: Number of retrieved entries.  Enter -1 for unlimited query. 50 is the
+  description: Number of retrieved entries. Enter -1 for unlimited query. 50 is the
     default.
   playbookInputQuery:
 outputs:
@@ -803,7 +803,7 @@ outputs:
   description: Delivery location.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.AuthenticationDetails
-  description: Authentication details (SPF, DKIM, DMARC, CompAuth)
+  description: Authentication details (SPF, DKIM, DMARC, CompAuth).
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.DeliveryAction
   description: Delivery action.
@@ -839,16 +839,16 @@ outputs:
   description: Sender IPv4
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.ConfidenceLevel
-  description: Confidence level
+  description: Confidence level.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.ThreatTypes
-  description: Threat types
+  description: Threat types.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.SHA256
-  description: SHA256 of the attachments (if exist in the email).
+  description: SHA256 of the attachments (if exists in the email).
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.Url
-  description: Urls found in the email's body.
+  description: URLs found in the email's body.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.UrlCount
   description: Number of URLs found in the email's body.
