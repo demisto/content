@@ -26,11 +26,11 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def create_entry(title, data, ec):
+def create_entry(title, data, ec, raw_response):
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
-        'Contents': data,
+        'Contents': raw_response,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
         'EntryContext': ec
@@ -53,7 +53,7 @@ def create_detector(client, args):
             'DetectorId': response['DetectorId']
         })
         ec = {'AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId)': data}
-        return create_entry('AWS GuardDuty Detectors', data, ec)
+        return create_entry('AWS GuardDuty Detectors', data, ec, data)
 
     except Exception as e:
         return raise_error(e)
@@ -80,7 +80,7 @@ def get_detector(client, args):
             'UpdatedAt': response['UpdatedAt'],
         })
         ec = {'AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId)': data}
-        return create_entry('AWS GuardDuty Detectors', data, ec)
+        return create_entry('AWS GuardDuty Detectors', data, ec, data)
 
     except Exception as e:
         return raise_error(e)
@@ -108,7 +108,7 @@ def list_detectors(client, args):
             'DetectorId': detector[0]
         })
         ec = {'AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId)': data}
-        return create_entry('AWS GuardDuty Detectors', data, ec)
+        return create_entry('AWS GuardDuty Detectors', data, ec, data)
     except Exception as e:
         return raise_error(e)
 
@@ -132,7 +132,7 @@ def create_ip_set(client, args):
             'IpSetId': response['IpSetId']
         })
         ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet(val.IpSetId === obj.IpSetId)": data}
-        return create_entry('AWS GuardDuty IPSets', data, ec)
+        return create_entry('AWS GuardDuty IPSets', data, ec, data)
 
     except Exception as e:
         return e  # raise_error(e)
@@ -187,8 +187,9 @@ def get_ip_set(client, args):
             'Name': response['Name'],
             'Status': response['Status']
         })
+
         ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet(val.IpSetId === obj.IpSetId)": data}
-        return create_entry('AWS GuardDuty IPSets', data, ec)
+        return create_entry('AWS GuardDuty IPSets', data, ec, data)
 
     except Exception as e:
         return raise_error(e)
@@ -206,7 +207,7 @@ def list_ip_sets(client, args):
                 'IpSetId': ipset
             })
         ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet(val.IpSetId === obj.IpSetId)": data}
-        return create_entry('AWS GuardDuty IPSets', data, ec)
+        return create_entry('AWS GuardDuty IPSets', data, ec, data)
 
     except Exception as e:
         return raise_error(e)
@@ -233,7 +234,7 @@ def create_threat_intel_set(client, args):
         ec = {
             "AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet"
             "(val.ThreatIntelSetId === obj.ThreatIntelSetId)": data}
-        return create_entry('AWS GuardDuty ThreatIntel Set', data, ec)
+        return create_entry('AWS GuardDuty ThreatIntel Set', data, ec, data)
 
     except Exception as e:
         return raise_error(e)
@@ -270,7 +271,7 @@ def get_threat_intel_set(client, args):
         ec = {
             "AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet"
             "(val.ThreatIntelSetId === obj.ThreatIntelSetId)": data}
-        return create_entry('AWS GuardDuty ThreatIntel Set', data, ec)
+        return create_entry('AWS GuardDuty ThreatIntel Set', data, ec, data)
 
     except Exception as e:
         return raise_error(e)
@@ -290,7 +291,7 @@ def list_threat_intel_sets(client, args):
         ec = {
             "AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet"
             "(val.ThreatIntelSetId === obj.ThreatIntelSetId)": data}
-        return create_entry('AWS GuardDuty IPSets', data, ec)
+        return create_entry('AWS GuardDuty IPSets', data, ec, data)
 
     except Exception as e:
         return raise_error(e)
@@ -352,7 +353,7 @@ def list_findings(client, args):
                 data.append({'FindingId': finding})
 
         ec = {"AWS.GuardDuty.Findings": data}
-        return create_entry('AWS GuardDuty Findings', data, ec)
+        return create_entry('AWS GuardDuty Findings', data, ec, data)
 
     except Exception as e:
         return raise_error(e)
@@ -380,8 +381,7 @@ def get_findings(client, args):
         output = json.dumps(response['Findings'], cls=DatetimeEncoder)
         raw = json.loads(output)
         ec = {"AWS.GuardDuty.Findings(val.FindingId === obj.Id)": raw}
-        return create_entry('AWS GuardDuty Findings', data, ec)
-
+        return create_entry('AWS GuardDuty Findings', data, ec, raw)
     except Exception as e:
         return raise_error(e)
 
@@ -495,7 +495,7 @@ def list_members(client, args):
         response = client.list_members(DetectorId=args.get('detectorId'))
 
         ec = {"AWS.GuardDuty.Members(val.AccountId === obj.AccountId)": response['Members']}
-        return create_entry('AWS GuardDuty Members', response['Members'], ec)
+        return create_entry('AWS GuardDuty Members', response['Members'], ec, response['Members'])
 
     except Exception as e:
         return raise_error(e)
@@ -516,7 +516,7 @@ def get_members(client, args):
 
         ec = {"AWS.GuardDuty.Members(val.AccountId === obj.AccountId)": filtered_members} \
             if filtered_members else None
-        return create_entry('AWS GuardDuty Members', filtered_members, ec)
+        return create_entry('AWS GuardDuty Members', filtered_members, ec, filtered_members)
 
     except Exception as e:
         return raise_error(e)
