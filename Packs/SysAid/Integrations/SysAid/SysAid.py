@@ -328,7 +328,7 @@ def calculate_offset(page_size: int, page_number: int) -> int:
     return page_size * (page_number - 1)
 
 
-def readable_paging_heading(page_size: Union[str, int] = None, page_number: Union[str, int] = None):
+def create_paging_header(page_size: Union[str, int] = None, page_number: Union[str, int] = None):
     if page_number or page_size:
         return 'Showing' + (f' {page_size}' if page_size else '') + ' results' + \
                (f' from page {page_number}' if page_number else '') + ':\n'
@@ -503,7 +503,7 @@ def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         response = client.asset_list_with_id_request(asset_id, fields)
     else:
         response = client.asset_list_request(fields, offset, limit)
-        heading = readable_paging_heading(limit, page_number)
+        heading = create_paging_header(limit, page_number)
     headers = ['id', 'name', 'info']
     readable_response = create_readable_response(response, asset_list_handler, 'valueCaption')
     command_results = CommandResults(
@@ -538,11 +538,11 @@ def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=readable_paging_heading(limit, page_number) + tableToMarkdown('Asset Results:',
-                                                                                      readable_response,
-                                                                                      headers=headers,
-                                                                                      removeNull=True,
-                                                                                      headerTransform=pascalToSpace)
+        readable_output=create_paging_header(limit, page_number) + tableToMarkdown('Asset Results:',
+                                                                                   readable_response,
+                                                                                   headers=headers,
+                                                                                   removeNull=True,
+                                                                                   headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -584,10 +584,10 @@ def user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=readable_paging_heading(limit, page_number) + tableToMarkdown('Filter Results:',
-                                                                                      response,
-                                                                                      headers=headers,
-                                                                                      removeNull=True)
+        readable_output=create_paging_header(limit, page_number) + tableToMarkdown('Filter Results:',
+                                                                                   response,
+                                                                                   headers=headers,
+                                                                                   removeNull=True)
     )
 
     return command_results
@@ -609,10 +609,10 @@ def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=readable_paging_heading(limit, page_number) + tableToMarkdown('User Results:',
-                                                                                      response,
-                                                                                      headers=headers,
-                                                                                      removeNull=True)
+        readable_output=create_paging_header(limit, page_number) + tableToMarkdown('User Results:',
+                                                                                   response,
+                                                                                   headers=headers,
+                                                                                   removeNull=True)
     )
 
     return command_results
@@ -640,11 +640,11 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=readable_paging_heading(limit, page_number) + tableToMarkdown('Service Record Results:',
-                                                                                      readable_response,
-                                                                                      headers=headers,
-                                                                                      removeNull=True,
-                                                                                      headerTransform=pascalToSpace)
+        readable_output=create_paging_header(limit, page_number) + tableToMarkdown('Service Record Results:',
+                                                                                   readable_response,
+                                                                                   headers=headers,
+                                                                                   removeNull=True,
+                                                                                   headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -672,11 +672,11 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=readable_paging_heading(limit, page_number) + tableToMarkdown('Service Record Results:',
-                                                                                      readable_response,
-                                                                                      headers=headers,
-                                                                                      removeNull=True,
-                                                                                      headerTransform=pascalToSpace)
+        readable_output=create_paging_header(limit, page_number) + tableToMarkdown('Service Record Results:',
+                                                                                   readable_response,
+                                                                                   headers=headers,
+                                                                                   removeNull=True,
+                                                                                   headerTransform=pascalToSpace)
     )
 
     return command_results

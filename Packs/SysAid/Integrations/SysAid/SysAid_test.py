@@ -365,7 +365,7 @@ def test_calculate_offset(page_size, page_number, offset):
 
 
 @pytest.mark.parametrize('page_number, page_size, expected_output', input_data.paging_heading_args)
-def test_readable_paging_heading(page_number, page_size, expected_output):
+def test_create_paging_header(page_number, page_size, expected_output):
     """
     Given:
         - 'page_number' and 'page_size' arguments are or aren't given to commands that have paging
@@ -374,8 +374,8 @@ def test_readable_paging_heading(page_number, page_size, expected_output):
     Then:
         - Returns the right sentence to write in the beginning of the readable output
     """
-    from SysAid import readable_paging_heading
-    assert readable_paging_heading(page_size, page_number) == expected_output
+    from SysAid import create_paging_header
+    assert create_paging_header(page_size, page_number) == expected_output
 
 
 @pytest.mark.parametrize('fields_input, fields_output', input_data.set_returned_fields_args)
