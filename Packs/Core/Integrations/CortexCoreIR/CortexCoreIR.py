@@ -1186,7 +1186,7 @@ def retrieve_file_details_command(client: Client, args):
                 retrived_files_count += 1
                 obj['file_link'] = link
                 file_link = "download" + link.split("download")[1]
-                file = client.get_file_by_url_suffix(file_link=file_link)
+                file = client.get_file_by_url_suffix(url_suffix=file_link)
                 file_results.append(fileResult(filename=f'{endpoint}_{retrived_files_count}.zip', data=file))
             result.append(obj)
 
