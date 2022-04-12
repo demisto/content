@@ -14,7 +14,7 @@ This is a script that can sort a list of dictionaries by any key of the dictiona
 | **Argument Name** | **Description** |
 | --- | --- |
 | value | The list of dictionaries to sort |
-| key | Name of the dictionary key to sort the list by. Will do a default sort  if none is provided |
+| key | Name of the dictionary key to sort the list by, required |
 | reverse | Set to true if to sort the list in reverse order. Defaults to False. |
 
 ## Outputs
