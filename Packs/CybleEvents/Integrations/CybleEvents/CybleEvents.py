@@ -344,9 +344,9 @@ def fetch_alert_details(client, args):
     offset = arg_to_number(args.get('from', '0'))
     limit = arg_to_number(args.get('limit', LIMIT_EVENT_ITEMS))
 
-    if offset < 0:
+    if offset and offset < 0:
         raise ValueError(f"Parameter having negative value, from: {arg_to_number(args.get('from'))}'")
-    if limit <= 0 or limit > LIMIT_EVENT_ITEMS:
+    if limit and (limit <= 0 or limit > LIMIT_EVENT_ITEMS):
         raise ValueError(f"Limit should a positive number upto 50, limit: {arg_to_number(args.get('limit', '1'))}")
     if not eventtype:
         raise ValueError('Event Type not specified')
