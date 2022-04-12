@@ -90,8 +90,8 @@ class Client(BaseClient):
         self._username = username
         self._password = password
         self._max_fetch = max_fetch
+        self._headers = {'Content-Type': 'application/json'}
         self._token = self._get_token()
-        self._headers = {'Authorization': self._token, 'Content-Type': 'application/json'}
 
     def _get_token(self) -> str:
         """
@@ -101,13 +101,18 @@ class Client(BaseClient):
             str: token that will be added to authorization header.
         """
         integration_context = get_integration_context()
-        token = integration_context.get('token', '')
+        token = integration_context.get('token', self._generate_token())
+        self._headers['Authorization'] = token
+
         try:
-            current_timestamp = datetime.now().timestamp()
+            # check if token is valid.
+            current_timestamp = int(datetime.now().timestamp())
             self.get_security_events(f"{current_timestamp}")
-        except :
-            # todo check if un authorized
+
+        except DemistoException:
             token = self._generate_token()
+            self._headers['Authorization'] = token
+
         return token
 
     def _generate_token(self) -> str:
