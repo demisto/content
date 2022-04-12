@@ -53,7 +53,7 @@ This playbook does not use any sub-playbooks.
 | Microsoft365Defender.RetrievedEmails.SenderFromAddress | Sender address. | string |
 | Microsoft365Defender.RetrievedEmails.Timestamp | Timestamp. | string |
 | Microsoft365Defender.RetrievedEmails.SenderDisplayName | Sender display name. | string |
-| Microsoft365Defender.RetrievedEmails.SenderIPv4 | Sender IPv4 | string |
+| Microsoft365Defender.RetrievedEmails.SenderIPv4 | Sender IPv4. | string |
 | Microsoft365Defender.RetrievedEmails.ConfidenceLevel | Confidence level. | string |
 | Microsoft365Defender.RetrievedEmails.ThreatTypes | Threat types. | string |
 | Microsoft365Defender.RetrievedEmails.SHA256 | SHA256 of the attachments \(if exists in the email\). | string |
