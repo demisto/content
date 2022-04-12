@@ -5162,7 +5162,55 @@ try:
         demisto.results(get_blacklist_command(**demisto.args()))
     elif demisto.command() == 'abuseipdb-get-categories':
         demisto.results(get_categories_command(**demisto.args()))  # type:ignore
-
+    if demisto.command() == 'test-module':
+        # Tests connectivity and credentails on login
+        test_module(reliability)
+    elif demisto.command() == 'ip':
+        demisto.results(check_ip_command(reliability, **demisto.args()))
+    elif demisto.command() == 'abuseipdb-check-cidr-block':
+        demisto.results(check_block_command(reliability, **demisto.args()))
+    elif demisto.command() == 'abuseipdb-report-ip':
+        demisto.results(report_ip_command(**demisto.args()))
+    elif demisto.command() == 'abuseipdb-get-blacklist':
+        demisto.results(get_blacklist_command(**demisto.args()))
+    elif demisto.command() == 'abuseipdb-get-categories':
+        demisto.results(get_categories_command(**demisto.args()))  # type:ignore    if demisto.command() == 'test-module':
+        # Tests connectivity and credentails on login
+        test_module(reliability)
+    elif demisto.command() == 'ip':
+        demisto.results(check_ip_command(reliability, **demisto.args()))
+    elif demisto.command() == 'abuseipdb-check-cidr-block':
+        demisto.results(check_block_command(reliability, **demisto.args()))
+    elif demisto.command() == 'abuseipdb-report-ip':
+        demisto.results(report_ip_command(**demisto.args()))
+    elif demisto.command() == 'abuseipdb-get-blacklist':
+        demisto.results(get_blacklist_command(**demisto.args()))
+    elif demisto.command() == 'abuseipdb-get-categories':
+        demisto.results(get_categories_command(**demisto.args()))  # type:ignore    if demisto.command() == 'test-module':
+        # Tests connectivity and credentails on login
+        test_module(reliability)
+    elif demisto.command() == 'ip':
+        demisto.results(check_ip_command(reliability, **demisto.args()))
+    elif demisto.command() == 'abuseipdb-check-cidr-block':
+        demisto.results(check_block_command(reliability, **demisto.args()))
+    elif demisto.command() == 'abuseipdb-report-ip':
+        demisto.results(report_ip_command(**demisto.args()))
+    elif demisto.command() == 'abuseipdb-get-blacklist':
+        demisto.results(get_blacklist_command(**demisto.args()))
+    elif demisto.command() == 'abuseipdb-get-categories':
+        demisto.results(get_categories_command(**demisto.args()))  # type:ignore    if demisto.command() == 'test-module':
+        # Tests connectivity and credentails on login
+        test_module(reliability)
+    elif demisto.command() == 'ip':
+        demisto.results(check_ip_command(reliability, **demisto.args()))
+    elif demisto.command() == 'abuseipdb-check-cidr-block':
+        demisto.results(check_block_command(reliability, **demisto.args()))
+    elif demisto.command() == 'abuseipdb-report-ip':
+        demisto.results(report_ip_command(**demisto.args()))
+    elif demisto.command() == 'abuseipdb-get-blacklist':
+        demisto.results(get_blacklist_command(**demisto.args()))
+    elif demisto.command() == 'abuseipdb-get-categories':
+        demisto.results(get_categories_command(**demisto.args()))  # type:ignore
 except Exception as e:
     LOG.print_log()
     return_error(e.message)
