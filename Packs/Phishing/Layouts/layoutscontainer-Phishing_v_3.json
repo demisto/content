@@ -685,7 +685,7 @@
                         "query": {
                             "notTags": [],
                             "tags": [
-                                "DBOT_URL_PHISHING_MALICIOUS"
+                            "DBOT_URL_PHISHING_MALICIOUS"
                             ]
                         },
                         "queryType": "warRoomFilter",
