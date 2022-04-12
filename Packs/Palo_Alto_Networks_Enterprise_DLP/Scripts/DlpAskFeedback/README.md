@@ -1,4 +1,4 @@
-Sends a message via Slack to the user whose file upload violated DLP policies and triggered the incident.
+This script sends a message via Slack to the user whose file upload violated DLP policies and triggered the incident.
 
 ## Script Data
 ---
@@ -12,12 +12,11 @@ Sends a message via Slack to the user whose file upload violated DLP policies an
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* send-notification
+***send-notification***
 
 ## Used In
 ---
-This script is used in the following playbooks and scripts.
-* DLP Incident Feedback Loop
+This script is used in the **DLP Incident Feedback Loop** playbook.
 
 ## Inputs
 ---
@@ -27,7 +26,7 @@ This script is used in the following playbooks and scripts.
 | file_name | The name of the file that triggered the incident. |
 | data_profile_name | The name of the DLP data profile that detected the violation. |
 | app_name | The application that performed the upload. |
-| task | A manual task that this task can close. |
+| task | A manual task this task can close. |
 | user_display_name | The user name displayed in the Slack message. |
 | user_id | The user ID to identify the recipient in Slack. |
 | snippets | The snippets of the violation. |
