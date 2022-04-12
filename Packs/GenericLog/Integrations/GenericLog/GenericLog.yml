@@ -23,6 +23,7 @@ configuration:
   defaultvalue: 'https://api.github.com/orgs/XXXXX/audit-log'
   type: 0
   required: true
+  hidden: true
 - display: HTTP Method
   name: method
   type: 15
@@ -35,12 +36,20 @@ configuration:
   - PUT
   - PATCH
   - HEAD
+  hidden: true
 - display: Headers
   name: headers
-  defaultvalue: '{"Authorization": "Bearer XXXXXXXXX", "Accept": "application/vnd.github.v3+json"}'
+  defaultvalue: '{"Accept": "application/vnd.github.v3+json"}'
   type: 0
   required: true
-  additionalinfo: Authorization Token
+  additionalinfo: ''
+  hidden: true
+- display: ""
+  displaypassword: API Key
+  name: api_key
+  type: 9
+  required: true
+  hiddenusername: true
 - display: Use system proxy settings
   name: proxy
   type: 8
