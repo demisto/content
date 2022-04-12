@@ -443,7 +443,7 @@ def parse_freeze_device_response(response: dict):
     human_readable_errors = []
     if errors:
         for error in errors:
-            human_readable_errors.append({'Failed UIDs': ','.join(error.get('detail', []).get('deviceUids')),
+            human_readable_errors.append({'Failed UID': ','.join(error.get('detail', []).get('deviceUids')),
                                           'Error Message': error.get('message', '')})
         outputs['Errors'] = errors
         outputs['FailedDeviceUIDs'] = human_readable_errors
@@ -455,11 +455,7 @@ def device_freeze_request_command(args, client) -> CommandResults:
     res = client.api_request_absolute('POST', '/v2/device-freeze/requests', body=json.dumps(payload),
                                       success_status_code=[201])
     outputs = parse_freeze_device_response(res)
-
-    title = f'{INTEGRATION} device freeze requests results'
-    if outputs.get('FailedDeviceUIDs'):
-        title = f'Partly {title}'
-    human_readable = tableToMarkdown(title, outputs,
+    human_readable = tableToMarkdown(f'{INTEGRATION} device freeze requests results', outputs,
                                      headers=['FailedDeviceUIDs', 'RequestUID', 'SucceededDeviceUIDs'], removeNull=True,
                                      json_transform_mapping={'FailedDeviceUIDs': JsonTransformer()},)
 
