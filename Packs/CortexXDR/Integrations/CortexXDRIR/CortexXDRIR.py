@@ -233,7 +233,7 @@ def filter_and_save_unseen_incident(incidents: List) -> List:
     for incident in incidents:
         incident_id = incident.get('incident_id')
         if incident_id in fetched_starred_incidents:
-            demisto.debug(f'incident (ID {incident_id} was already fetched in the past.')
+            demisto.debug(f'incident (ID {incident_id}) was already fetched in the past.')
             continue
         fetched_starred_incidents[incident_id] = True
         filtered_incidents.append(incident)
