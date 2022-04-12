@@ -5111,6 +5111,14 @@
             ],
             "playbookID": "GoogleSheets-Test",
             "fromversion": "6.1.0"
+        },
+        {
+            "playbookID": "CheckIfSubdomain-test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "CIDRBiggerThanPrefix-test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
