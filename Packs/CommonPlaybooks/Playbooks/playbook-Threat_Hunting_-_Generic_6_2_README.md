@@ -67,7 +67,7 @@ This playbook does not use any commands.
 | Microsoft365Defender.RetrievedEmails.SenderFromDomain | Sender domain. | string |
 | Microsoft365Defender.RetrievedEmails.EmailDirection | Email direction \(inbound/outbound\). | string |
 | Microsoft365Defender.RetrievedEmails.DeliveryLocation | Delivery location. | string |
-| Microsoft365Defender.RetrievedEmails.AuthenticationDetails | Authentication details \(SPF, DKIM, DMARC, CompAuth\) | string |
+| Microsoft365Defender.RetrievedEmails.AuthenticationDetails | Authentication details \(SPF, DKIM, DMARC, CompAuth\). | string |
 | Microsoft365Defender.RetrievedEmails.DeliveryAction | Email subject. | string |
 | Microsoft365Defender.RetrievedEmails.AttachmentCount | Number of attachments. | string |
 | Microsoft365Defender.RetrievedEmails.ThreatNames | Threat names. | string |
