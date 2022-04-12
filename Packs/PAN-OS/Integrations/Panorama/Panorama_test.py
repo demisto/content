@@ -719,6 +719,80 @@ def test_prettify_rule():
     assert prettify_rule == expected_prettify_rule
 
 
+class TestPcap:
+
+    @staticmethod
+    def test_list_pcaps_flow_with_no_existing_pcaps(mocker):
+        """
+        Given -
+            a response which indicates there are no pcap files on the firewall.
+
+        When -
+            listing all the available pcap files.
+
+        Then -
+            make sure that a message which indicates there are no Pcaps is printed out.
+        """
+        from Panorama import panorama_list_pcaps_command
+        no_pcaps_response = MockedResponse(
+            text='<?xml version="1.0"?>\n<response status="success">\n  '
+                 '<result>\n    <dir-listing/>\n  </result>\n</response>\n',
+            status_code=200,
+        )
+
+        mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
+        results_mocker = mocker.patch.object(demisto, "results")
+        panorama_list_pcaps_command({'pcapType': 'filter-pcap'})
+        assert results_mocker.called
+        assert results_mocker.call_args.args[0] == 'PAN-OS has no Pcaps of type: filter-pcap.'
+
+    @staticmethod
+    def test_get_specific_pcap_flow_which_does_not_exist(mocker):
+        """
+        Given -
+           a response which indicates there are no pcap files on the firewall.
+
+        When -
+           trying to download a pcap file.
+
+        Then -
+           make sure that the error message from the api is actually returned.
+        """
+        from Panorama import panorama_get_pcap_command
+        no_pcaps_response = MockedResponse(
+            text='<?xml version="1.0"?>\n<response status="error">\n  <msg>\n    '
+                 '<line>test.pcap not present</line>\n  </msg>\n</response>\n',
+            status_code=200,
+            headers={'Content-Type': 'application/xml'}
+        )
+        mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
+        with pytest.raises(Exception, match='line: test.pcap not present'):
+            panorama_get_pcap_command({'pcapType': 'filter-pcap', 'from': 'test'})
+
+    @staticmethod
+    def test_get_filter_pcap_without_from_argument(mocker):
+        """
+        Given -
+           a filter-pcap type without 'from' argument
+
+        When -
+           trying to download a filter pcap file.
+
+        Then -
+           make sure that the error message which states that the 'from' argument should be returned is presented.
+        """
+        from Panorama import panorama_get_pcap_command
+        no_pcaps_response = MockedResponse(
+            text='<?xml version="1.0"?>\n<response status="error">\n  <msg>\n    '
+                 '<line>test.pcap not present</line>\n  </msg>\n</response>\n',
+            status_code=200,
+            headers={'Content-Type': 'application/xml'}
+        )
+        mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
+        with pytest.raises(Exception, match='cannot download filter-pcap without the from argument'):
+            panorama_get_pcap_command({'pcapType': 'filter-pcap'})
+
+
 class TestPanoramaEditRuleCommand:
     EDIT_SUCCESS_RESPONSE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
 
@@ -835,10 +909,11 @@ class TestPanoramaEditRuleCommand:
 
 
 class MockedResponse:
-    def __init__(self, text, status_code, reason):
+    def __init__(self, text, status_code, reason='', headers=None):
         self.status_code = status_code
         self.text = text
         self.reason = reason
+        self.headers = headers
 
 
 @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
