@@ -283,6 +283,7 @@ slack-notify-nightly-build:
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
+    - section_start "Lock XSIAM Machine"
     - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
@@ -290,14 +291,21 @@ slack-notify-nightly-build:
     - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
     - source XSIAMEnvVariables
     - echo "XSIAM chosen_machine_id is $XSIAM_CHOSEN_MACHINE_ID"
+    - section_end "Lock XSIAM Machine"
+
     # todo: add script that destroy instanses
+    - section_start "Clean XSIAM Machine"
     - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
     - echo "Copying prod bucket to $XSIAM_CHOSEN_MACHINE_ID bucket."
     - gsutil -m cp -r "gs://$GCS_PRODUCTION_V2_BUCKET/content" "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID/" > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine.log" 2>&1
+    - section_end "Clean XSIAM Machine"
 
+    - section_start "Install Packs and run Test-Module"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
-    - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
+    - section_end "Install Packs and run Test-Module"
 
+    - section_start "Run Tests"
+    - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
       if [[ -f ./Tests/failed_tests.txt ]]; then
@@ -307,7 +315,7 @@ slack-notify-nightly-build:
       if [[ -f ./Tests/succeeded_tests.txt ]]; then
         cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
       fi
-
+    - section_end "Run Tests"
     - exit $EXIT_CODE
   after_script:
     - echo "Job finished, removing lock file"
