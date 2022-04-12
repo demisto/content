@@ -1,4 +1,5 @@
-This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: - Splunk
+This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: 
+- Splunk
 - Qradar
 - Pan-os 
 - Cortex data lake 
@@ -32,9 +33,9 @@ This playbook does not use any commands.
 | SHA256 | The SHA256 hash file or an array of hashes to search. |  | Optional |
 | Hostname | The hostname of the machine on which the file is located. |  | Optional |
 | SHA1 | The SHA1 hash file or an array of hashes to search. |  | Optional |
-| IPAddress | The source or destination IP address to search. Can be a single address or an array of list of addresses.<br/> |  | Optional |
+| IPAddress | The source or destination IP address to search. Can be a single address or an array of IP addresses.<br/> |  | Optional |
 | URLDomain | Domain or URL to search. Can be a single domain or URL or an array of domains or URLs to search. By default, the LIKE clause is used. |  | Optional |
-| InternalRange | A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, uses the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
+| InternalRange | A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, uses the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
 | InternalDomainName | The organization's internal domain name. This is provided for the script IsInternalHostName that checks if the detected hostnames are internal or external, if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If there is more than one domain, use the \| character to separate values such as \(paloaltonetworks.com\|test.com\). |  | Optional |
 | InternalHostRegex | Provided for the script IsInternalHostName that checks if the detected host names are internal or external, if the hosts match the organization's naming convention. For example, the host testpc1 will have the following regex \\w\{6\}\\d\{1\} |  | Optional |
 | QRadarTimeFrame | The time frame to search in QRadar. | LAST 7 DAYS | Optional |
