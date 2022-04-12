@@ -594,18 +594,19 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
 
 
 def search_and_install_packs_and_their_dependencies(pack_ids: list,
-                                                    client: demisto_client):
+                                                    client: demisto_client, hostname: str = ''):
     """ Searches for the packs from the specified list, searches their dependencies, and then
     installs them.
     Args:
         pack_ids (list): A list of the pack ids to search and install.
         client (demisto_client): The client to connect to.
+        hostname (str): Hostname of instance. Using for logs.
 
     Returns (list, bool):
         A list of the installed packs' ids, or an empty list if is_nightly == True.
         A flag that indicates if the operation succeeded or not.
     """
-    host = client.api_client.configuration.host
+    host = hostname if hostname else client.api_client.configuration.host
 
     logging.info(f'Starting to search and install packs in server: {host}')
 

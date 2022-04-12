@@ -184,6 +184,7 @@ class Build:
     def __init__(self, options):
         self._proxy = None
         self.is_xsiam = False
+        self.xsiam_machine = None
         self.servers = []
         self.server_numeric_version = ''
         self.git_sha1 = options.git_sha1
@@ -307,7 +308,8 @@ class Build:
         installed_content_packs_successfully = True
         for server in self.servers:
             try:
-                _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client)
+                hostname = self.xsiam_machine if self.is_xsiam else ''
+                _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname)
                 if not flag:
                     raise Exception('Failed to search and install packs.')
             except Exception:
