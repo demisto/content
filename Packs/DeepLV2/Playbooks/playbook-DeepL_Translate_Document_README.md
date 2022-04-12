@@ -7,15 +7,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * GenericPolling
 
 ### Integrations
-* DeepLCopy
+* DeepL
 
 ### Scripts
 * Set
 
 ### Commands
-* deepl-get-document
-* deepl-submit-document
 * deepl-check-document-status
+* deepl-submit-document
+* deepl-get-document
 
 ## Playbook Inputs
 ---

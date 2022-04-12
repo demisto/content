@@ -1,10 +1,10 @@
 This integration uses DeepL (https://www.deepl.com/) to translate text or files
-This integration was integrated and tested with version xx of DeepL_copy
+This integration was integrated and tested with version xx of DeepL
 
-## Configure DeepL_copy on Cortex XSOAR
+## Configure DeepL on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for DeepL_copy.
+2. Search for DeepL.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |

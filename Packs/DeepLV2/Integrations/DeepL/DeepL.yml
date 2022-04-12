@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: DeepL_copy
+  id: DeepL
   version: -1
 configuration:
 - display: Server URL (e.g. https://api-free.deepl.com)
@@ -24,14 +24,14 @@ contentitemexportablefields:
     definitionid: ""
     fromServerVersion: ""
     itemVersion: ""
-    packID: 0910a794-d974-4839-85fc-5da3da1c4b3c
+    packID: 4507f943-3e14-4476-86da-835f775c57a3
     propagationLabels:
     - all
     toServerVersion: ""
 description: This integration uses DeepL (https://www.deepl.com/) to translate text
   or files
-display: DeepL_copy
-name: DeepL_copy
+display: DeepL
+name: DeepL
 script:
   commands:
   - arguments: []
