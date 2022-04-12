@@ -107,6 +107,10 @@ def _extract_analysis_info(res: dict, dbot_score_type: str, reliability: DBotSco
                 last_published = result_content.get('last_published', '')
                 last_published_format = parse_date_string(last_published, DATE_FORMAT)
                 last_seen = result_content.get('last_seen', '')
+                malware_family = result_content.get('malware_family', '')
+                threat_campaigns = result_content.get('threat_campaigns', '')
+                threat_actors = result_content.get('threat_actors', '')
+                threat_groups = result_content.get('threat_groups', '')
                 if last_seen:
                     last_seen_format = parse_date_string(last_seen, DATE_FORMAT)
                 else:
@@ -120,6 +124,27 @@ def _extract_analysis_info(res: dict, dbot_score_type: str, reliability: DBotSco
                     'LastPublished': str(last_published_format),
                     'LastSeen': str(last_seen_format)
                 }
+                if malware_family:
+                    analysis_info['MalwareFamily'] = malware_family
+
+                if threat_campaigns:
+                    threatCampaigns = []
+                    for threatCampaign in threat_campaigns:
+                        threatCampaigns.append(threatCampaign['display_text'])
+                    analysis_info['ThreatCampaigns'] = threatCampaigns
+
+                if threat_actors:
+                    threatActors = []
+                    for threatActor in threat_actors:
+                        threatActors.append(threatActor['display_text'])
+                    analysis_info['ThreatActors'] = threatActors
+
+                if threat_groups:
+                    threatGroups = []
+                    for threatGroup in threat_groups:
+                        threatGroups.append(threatGroup['display_text'])
+                    analysis_info['ThreatGroups'] = threatGroups
+
                 analysis_results.append({'analysis_info': analysis_info, 'dbot': dbot})
 
     return analysis_results
@@ -336,6 +361,10 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
         last_published = res.get('last_published', '')
         last_published_format = parse_date_string(last_published, DATE_FORMAT)
         last_seen = res.get('last_seen', '')
+        malware_family = res.get('malware_family', '')
+        threat_campaigns = res.get('threat_campaigns', '')
+        threat_actors = res.get('threat_actors', '')
+        threat_groups = res.get('threat_groups', '')
         if last_seen:
             last_seen_format = parse_date_string(last_seen, DATE_FORMAT)
         else:
@@ -349,6 +378,28 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
             'LastPublished': str(last_published_format),
             'LastSeen': str(last_seen_format)
         }
+
+        if malware_family:
+            analysis_info['MalwareFamily'] = malware_family
+
+        if threat_campaigns:
+            threatCampaigns = []
+            for threatCampaign in threat_campaigns:
+                threatCampaigns.append(threatCampaign['display_text'])
+            analysis_info['ThreatCampaigns'] = threatCampaigns
+
+        if threat_actors:
+            threatActors = []
+            for threatActor in threat_actors:
+                threatActors.append(threatActor['display_text'])
+            analysis_info['ThreatActors'] = threatActors
+
+        if threat_groups:
+            threatGroups = []
+            for threatGroup in threat_groups:
+                threatGroups.append(threatGroup['display_text'])
+            analysis_info['ThreatGroups'] = threatGroups
+            
         analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         context = iair_to_context(analysis_info)
 
