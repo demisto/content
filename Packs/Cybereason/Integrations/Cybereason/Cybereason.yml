@@ -840,6 +840,24 @@ script:
       required: true
     description: Block a file only in particular machine
     name: cybereason-block-file
+  - arguments:
+    - description: Filter for Fetching Malwares by Malware needsAttention.
+      name: needsAttention
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+    - description: Filter for Fetching Malwares by Malware Type. (Possible filter values for Type are "KnownMalware,UnknownMalware,FilelessMalware,ApplicationControlMalware,RansomwareMalware").
+      name: type
+    - description: Filter for Fetching Malwares by Malware Status. (Possible filter values for Status are "Done,Excluded,Detected,Prevented,Remediated,DeleteOnRestart,Quarantined").
+      name: status
+    - description: Filter for Fetching Malwares by Timestamp. Enter the time (in epoch).
+      name: timestamp
+    - description: Filter for Fetching Malwares by Malware Limit.
+      name: limit
+      required: true
+    description: Malware query with options and values to filter
+    name: cybereason-malware-query
   isfetch: true
   runonce: false
   script: '-'
