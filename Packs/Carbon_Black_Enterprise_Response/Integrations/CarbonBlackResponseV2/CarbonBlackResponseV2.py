@@ -239,7 +239,7 @@ class Client(BaseClient):
 
     def get_formatted_ProcessEventDetail(self, process_json: dict):
         complex_fields = {'filemod_complete': filemod_complete, 'modload_complete': modload_complete,
-                          'regmod_complete': regmod_complete, 'crossproc_complete': crossproc_complete
+                          'regmod_complete': regmod_complete, 'crossproc_complete': crossproc_complete,
                           'netconn_complete':netconn_complete}
         formatted_json = {}
         for field in process_json:
