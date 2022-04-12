@@ -201,10 +201,8 @@ class Build:
         self.id_set = get_id_set(id_set_path)
         self.test_pack_path = options.test_pack_path if options.test_pack_path else None
         self.tests_to_run = self.fetch_tests_list(options.tests_to_run)
-        logging.info(f'{self.tests_to_run=}')
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
-        logging.info(f'{self.pack_ids_to_install=}')
         self.service_account = options.service_account
 
     @staticmethod
@@ -236,8 +234,7 @@ class Build:
             tests_from_file = filter_file.readlines()
             for test_from_file in tests_from_file:
                 test_clean = test_from_file.rstrip()
-                if test_clean:
-                    tests_to_run.append(test_clean)
+                tests_to_run.append(test_clean)
         return tests_to_run
 
     @abstractmethod
