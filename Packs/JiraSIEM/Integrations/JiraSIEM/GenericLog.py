@@ -5,6 +5,7 @@ from CommonServerPython import *
 import demistomock as demisto
 from pydantic import BaseModel, AnyUrl, Json
 import requests
+from requests.auth import HTTPBasicAuth
 import dateparser
 
 
@@ -22,15 +23,17 @@ class Request(BaseModel):
     url: AnyUrl
     headers: Optional[Union[Json[dict], dict]]
     params: Optional[Union[Json[dict], dict]]
-    verify = True
+    verify: bool = True
     data: str = None
+    auth: Optional[HTTPBasicAuth]
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
-class Params(BaseModel):
+class Params(BaseModel):  # The params class should be in the DOTO section since each vendor has separate params
     per_page: str = '100'
-    include: str
-    order: str = 'asc'
-    after: str
+    _from: str = ''
 
 
 class Client:
@@ -42,8 +45,8 @@ class Client:
         self.request.params = self.params
         return requests.request(**self.request.dict())
 
-    def set_after(self, after: int):
-        self.params.after = after
+    def set_last_fetch(self, last_fetch: str):
+        self.params._from = last_fetch
 
 
 class GetLogs:
@@ -69,13 +72,13 @@ class GetLogs:
         while True:
             yield logs
             last = logs.pop()
-            self.client.set_after(
-                self.datetime_to_github_timestamp(
-                    dateparser.parse((str(last['@timestamp'])))))
+            self.client.set_last_fetch(
+                last['created']
+            )
 
             response = self.client.call()
-
             logs: list = response.json()
+
             try:
                 logs.pop(0)
                 assert logs
@@ -91,40 +94,38 @@ class GetLogs:
                 return stored[:limit]
         return stored
 
-    @classmethod
-    def datetime_to_github_timestamp(cls, datet: datetime) -> str:
-        da = datet.timestamp() * 1000
-        return cls.encode_b64(da)
+    # @classmethod
+    # def datetime_to_github_timestamp(cls, datet: datetime) -> str:
+    #     da = datet.timestamp() * 1000
+    #     return cls.encode_b64(da)
 
-    @staticmethod
-    def encode_b64(timestamp) -> str:
-        str_bytes = f'{timestamp}|'.encode('ascii')
-        base64_bytes = base64.b64encode(str_bytes)
-        return base64_bytes.decode('ascii')
+    # @staticmethod
+    # def encode_b64(timestamp) -> str:
+    #     str_bytes = f'{timestamp}|'.encode('ascii')
+    #     base64_bytes = base64.b64encode(str_bytes)
+    #     return base64_bytes.decode('ascii')
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
-
+def main():
     params = demisto.params()
+    params['auth'] = HTTPBasicAuth(params.get('username'), params.get('password'))
     request = Request(**params)
 
     if not (last_run := demisto.getLastRun()):
         last_run = dateparser.parse(params['first_fetch'])
     else:
-        last_run = dateparser.parse(last_run.get('from_time'))
+        last_run = dateparser.parse(last_run.get('last_run'))
 
-    params['after'] = GetLogs.datetime_to_github_timestamp(last_run)
-
-    print(f'last_run = {last_run}')
+    params['_from'] = last_run  # Should change the function name to generic
 
     req_params = Params(**params)
     client = Client(request, req_params)
-
     get_logs = GetLogs(client, last_run)
+
     limit = int(params.get('limit', '1000'))
     command = demisto.command()
-    if command == 'test-module':
 
+    if command == 'test-module':
         limit = 1
         get_logs.get_logs(limit)
         demisto.results('ok')
@@ -145,3 +146,7 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
             raw_response=logs,
         )
         return_results(command_results)
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
