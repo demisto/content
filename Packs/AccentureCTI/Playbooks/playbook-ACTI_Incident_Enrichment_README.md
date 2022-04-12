@@ -1,12 +1,11 @@
-This playbook automatically queries Accenture's IntelGraph API to pull context for IOC and intelligence reports into XSOAR incidents.
+This playbook automatically queries Accenture IntelGraph API to pull context for IOC and associated intelligence reports into XSOAR incidents.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* ACTI Create Report-Indicator Associations
-* ACTI Report Enrichment
 * ACTI Indicator Enrichment
+* Create Relationships
 
 ### Integrations
 This playbook does not use any integrations.
@@ -27,5 +26,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![ACTI Incident Enrichment](https://user-images.githubusercontent.com/40510780/161069599-02554a2d-59e9-4c95-85ea-b55bde25b499.png)<br>
-![image](https://user-images.githubusercontent.com/40510780/161070366-55cf4093-46a2-4b40-bd5b-c4e3b3ce084c.png)
+![ACTI Incident Enrichment](Insert the link to your image here)

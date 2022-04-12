@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a87b5873-01bd-44bc-8f94-955d7359c2f1
+    taskid: a9d496ac-764a-46be-88a2-61923870e6b9
     type: start
     task:
-      id: a87b5873-01bd-44bc-8f94-955d7359c2f1
+      id: a9d496ac-764a-46be-88a2-61923870e6b9
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 90ce0228-1b31-4ff4-89f4-0895316417c9
+    taskid: efe21c25-a55f-4000-87f9-2c19ceedeedb
     type: title
     task:
-      id: 90ce0228-1b31-4ff4-89f4-0895316417c9
+      id: efe21c25-a55f-4000-87f9-2c19ceedeedb
       version: -1
       name: Enrich Indicator using ACTI integrations
       type: title
@@ -65,10 +65,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f8570361-12ea-4791-8898-73d185e82b2f
+    taskid: f3758ee6-8dc4-4064-87b8-4448eaec2098
     type: regular
     task:
-      id: f8570361-12ea-4791-8898-73d185e82b2f
+      id: f3758ee6-8dc4-4064-87b8-4448eaec2098
       version: -1
       name: Extracting indicators from incident
       description: Extract all indicators according to server indicators configuration
@@ -99,10 +99,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: b5bf504b-c41c-47f6-89ea-a8aafb74ea47
+    taskid: 5b6006fb-ce66-4c4a-8658-720f8b2ea86d
     type: title
     task:
-      id: b5bf504b-c41c-47f6-89ea-a8aafb74ea47
+      id: 5b6006fb-ce66-4c4a-8658-720f8b2ea86d
       version: -1
       name: Done
       type: title
@@ -114,61 +114,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 820d4867-5543-45ab-80ce-c0589975c921
-    type: playbook
-    task:
-      id: 820d4867-5543-45ab-80ce-c0589975c921
-      version: -1
-      name: ACTI Report Enrichment
-      playbookName: ACTI Report Enrichment
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      Domain:
-        simple: ${Domain}
-      IP:
-        simple: ${IP}
-      URL:
-        simple: ${URL}
-      ia_uuid:
-        complex:
-          root: ${intelligence_alerts}
-          transformers:
-          - operator: uniq
-      ir_uuid:
-        complex:
-          root: ${intelligence_reports}
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-      forEach: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -180,12 +126,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 0904a666-1d14-4f68-852c-033fcb552c48
+    taskid: da31e1f5-ca0f-4b89-87dc-48d0e36eb9be
     type: playbook
     task:
-      id: 0904a666-1d14-4f68-852c-033fcb552c48
+      id: da31e1f5-ca0f-4b89-87dc-48d0e36eb9be
       version: -1
-      name: ACTI Create Report-Indicator Associations
+      name: Create Relationships
       playbookName: ACTI Create Report-Indicator Associations
       type: playbook
       iscommand: false
@@ -234,7 +180,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
     note: false
@@ -246,10 +192,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 59eb5179-c3da-4ef1-8907-584db3e1b3a4
+    taskid: d094d918-daf9-47c9-861f-ee02e481fa93
     type: playbook
     task:
-      id: 59eb5179-c3da-4ef1-8907-584db3e1b3a4
+      id: d094d918-daf9-47c9-861f-ee02e481fa93
       version: -1
       name: ACTI Indicator Enrichment
       playbookName: ACTI Indicator Enrichment
@@ -259,7 +205,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "6"
+      - "8"
     scriptarguments:
       Domain_Pre_Enrich:
         simple: ${ExtractedIndicators.Domain}
@@ -292,7 +238,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1070,
+        "height": 895,
         "width": 380,
         "x": 50,
         "y": 65
