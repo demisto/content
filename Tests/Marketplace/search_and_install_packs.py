@@ -346,7 +346,7 @@ def install_packs(client: demisto_client,
                                                                             _request_timeout=request_timeout)
         if status_code == 204 and not response_data:
             pass
-        if 200 <= status_code < 300:
+        elif 200 <= status_code < 300:
             packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for
                           pack in
                           ast.literal_eval(response_data)]
