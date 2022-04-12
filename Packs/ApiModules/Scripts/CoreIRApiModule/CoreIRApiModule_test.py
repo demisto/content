@@ -20,5 +20,3 @@ def test_update_incident():
                                     status='new',
                                     unassign_user="user",
                                     assigned_user_mail="user")
-
-
