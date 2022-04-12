@@ -7159,4 +7159,3 @@ def test_content_type(content_format, outputs, expected_type):
         content_format=content_format,
     )
     assert command_results.to_context()['ContentsFormat'] == expected_type
-    assert command_results.content_format == expected_type
