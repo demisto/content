@@ -1,0 +1,148 @@
+id: URLhaus_test_playbook
+version: -1
+name: URLhaus_test_playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 50bb2dcb-572a-4a4c-8848-1194af374b7c
+    type: start
+    task:
+      id: 50bb2dcb-572a-4a4c-8848-1194af374b7c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5a95999b-14a3-472a-8aec-5ea5c4cd3599
+    type: regular
+    task:
+      id: 5a95999b-14a3-472a-8aec-5ea5c4cd3599
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d13b8060-f189-4701-842b-d9b32c151368
+    type: regular
+    task:
+      id: d13b8060-f189-4701-842b-d9b32c151368
+      version: -1
+      name: urlhaus-get-indicators
+      description: Retrieves a limited number of the indicators.
+      script: URLhaus Feed|||urlhaus-get-indicators
+      type: regular
+      iscommand: true
+      brand: URLhaus Feed
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: cc530424-4c0e-4c8d-80a0-06c7a425716e
+    type: regular
+    task:
+      id: cc530424-4c0e-4c8d-80a0-06c7a425716e
+      version: -1
+      name: CloseInvestigationAsDuplicate
+      description: Close the current investigation as duplicate to other investigation.
+      scriptName: CloseInvestigationAsDuplicate
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 635,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: A playbook to test URLhaus feed

@@ -426,7 +426,7 @@ def feed_main(feed_name, params=None, prefix=''):   # pragma: no cover
         f'{prefix}get-indicators': get_indicators_command
     }
     try:
-        if command == 'fetch-indicators':
+        if command == 'fetch-indicators' or 'get-indicators' in command:
             indicators, no_update = fetch_indicators_command(
                 client,
                 params.get('indicator_type'),
@@ -434,7 +434,6 @@ def feed_main(feed_name, params=None, prefix=''):   # pragma: no cover
                 params.get('limit'),
                 params.get('create_relationships')
             )
-
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
             if is_demisto_version_ge('6.5.0'):
                 if not indicators:
