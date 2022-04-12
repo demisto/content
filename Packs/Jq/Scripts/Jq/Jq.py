@@ -5,8 +5,6 @@ import demistomock as demisto  # noqa: F401
 import pyjq
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('jq', 'start', __line__())
-
 
 ''' MAIN FUNCTION '''
 
@@ -35,6 +33,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-
-register_module_line('jq', 'end', __line__())
