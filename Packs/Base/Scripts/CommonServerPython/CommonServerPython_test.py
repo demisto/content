@@ -7145,6 +7145,23 @@ def test_create_indicator_result_with_dbotscore_unknown(mocker, args, expected):
         assert 'Results:' in results.readable_output
 
 
+@pytest.mark.parametrize('content_format,outputs,expected_type', ((None, {}, 'json'),
+                                                                  (None, 'foo', 'text'),
+                                                                  (None, 1, 'text'),
+                                                                  ('html', '', 'html'),
+                                                                  ('html', {}, 'html')))
+def test_content_type(content_format, outputs, expected_type):
+    from CommonServerPython import CommandResults, EntryFormat
+    command_results = CommandResults(
+        outputs=outputs,
+        readable_output='human_readable',
+        outputs_prefix='prefix',
+        content_format=content_format,
+    )
+    assert command_results.to_context()['ContentsFormat'] == expected_type
+
+
+
 class TestSendEventsToXSIAMTest:
     from test_data.send_events_to_xsiam_data import events_dict
     test_data = events_dict
