@@ -9697,6 +9697,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
     :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
         events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
 
+    :return: None
+    :rtype: ``None``
     """
     data = events
     amount_of_events = 0
