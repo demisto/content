@@ -12,6 +12,7 @@ requests.packages.urllib3.disable_warnings()
 date_format = "%Y-%m-%d"
 time_format = "%H:%M:%S"
 
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -104,8 +105,7 @@ def cyble_fetch_taxii(client, method, args):
     for eachone in result.get('result', []):
         temp_list.append(eachone.get('indicator'))
 
-    md = tableToMarkdown('Indicator Details:', temp_list,
-                             headers=['name', 'indicator_types', 'pattern', 'modified'])
+    md = tableToMarkdown('Indicator Details:', temp_list, headers=['name', 'indicator_types', 'pattern', 'modified'])
     command_results = CommandResults(
         readable_output=md,
         outputs_prefix='CybleIntel.Threat',
