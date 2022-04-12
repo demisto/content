@@ -1,0 +1,17 @@
+{
+    "name": "SortListOfDictsByKey",
+    "description": "A simple transformation allowing users to sort a list of dictionaries based on one of the dictionary key. User may also specify the sorting order.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Dibyendu Das",
+    "url": "",
+    "email": "",
+    "created": "2022-04-12T20:09:52Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "dib-das"
+    ]
+}

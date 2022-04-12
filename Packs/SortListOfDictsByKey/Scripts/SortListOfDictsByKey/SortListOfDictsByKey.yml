@@ -1,0 +1,50 @@
+args:
+- description: The list of dictionaries to sort
+  isArray: true
+  name: value
+  required: true
+- description: Name of the dictionary key to sort the list by. Will do a default sort  if
+    none is provided
+  name: key
+  required: true
+- auto: PREDEFINED
+  default: true
+  defaultValue: "False"
+  description: Set to true if to sort the list in reverse order. Defaults to False.
+  name: reverse
+  predefined:
+  - "True"
+  - "False"
+comment: This is a script that can sort a list of dictionaries by any key of the dictionary,
+  in ascending or descending order
+commonfields:
+  id: e1101805-e91d-4f44-874a-782282cd4307
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 99b10dcb-fbad-47fc-8aa6-218921f20906
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.4.27798
+enabled: true
+engineinfo: {}
+name: SortListOfDictsByKey
+outputs:
+- contextPath: SortedList
+  description: The sorted list of dictionaries
+  type: unknown
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Transformer
+- General
+- transformer
+- general
+type: python
