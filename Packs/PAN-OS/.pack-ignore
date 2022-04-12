@@ -21,3 +21,6 @@ ignore=auto-test
 
 [file:PCAP_Parsing_And_Indicator_Enrichment_Test.yml]
 ignore=auto-test
+
+[known_words]
+pcaps
