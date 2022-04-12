@@ -278,19 +278,13 @@ slack-notify-nightly-build:
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
     SERVER_TYPE: "XSIAM"
-#  needs: ["prepare-testing-bucket-mpv2"]
-  needs: []
+  needs: ["prepare-testing-bucket-mpv2"]
   stage: run-instances
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-# todo: uncomment it:
-#    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
-#    # todo: delete next 3 lines
-    - echo -e "" > "$ARTIFACTS_FOLDER/filter_file.txt"
-    - echo -e "" > "/builds/xsoar/content/artifacts/filter_file.txt"
-    - echo -e "" > "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-    - echo "Authing to GCP"
+    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
+    - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
     - echo "Auth done successfully"
     - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
@@ -302,8 +296,6 @@ slack-notify-nightly-build:
     - gsutil -m cp -r "gs://$GCS_PRODUCTION_V2_BUCKET/content" "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID/" > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine.log" 2>&1
 
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
-    # todo: delete first line
-    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
 
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
