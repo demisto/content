@@ -1,172 +1,157 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
+from enum import Enum
+import urllib3
+from CommonServerPython import *
 import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-
+from pydantic import BaseConfig, BaseModel, AnyUrl, Json, validator, Field
 import requests
-import traceback
-from typing import Dict, Any
+from requests.auth import HTTPBasicAuth
+import dateparser
+from datetime import datetime
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
-
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
-''' CLIENT CLASS '''
+urllib3.disable_warnings()
 
 
-class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
-
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 
-''' HELPER FUNCTIONS '''
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
-''' COMMAND FUNCTIONS '''
-
-
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+class Method(str, Enum):
+    GET = 'GET'
+    POST = 'POST'
+    PUT = 'PUT'
+    HEAD = 'HEAD'
+    PATCH = 'PATCH'
+    DELETE = 'DELETE'
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
+class Args(BaseModel):
+    from_: str = Field(
+        datetime.strftime(dateparser.parse(demisto.params().get('from', '3 days')), DATETIME_FORMAT),
+        alias='from'
     )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
+    limit: int = 1000
+    offset: int = 0
 
 
-''' MAIN FUNCTION '''
+class ReqParams(BaseModel):
+    from_: str = Field(
+        datetime.strftime(dateparser.parse(demisto.params().get('from', '3 days')), DATETIME_FORMAT),
+        alias='from'
+    )
+    limit: int = 1000
+    offset: int = 0
 
 
-def main() -> None:
-    """main function, parses params and runs command functions
+class Request(BaseModel):
+    method: Method
+    url: AnyUrl
+    headers: Union[Json, dict] = {}
+    params: Optional[ReqParams]
+    verify: bool = True
+    proxies: bool = True
+    data: Optional[str]
+    auth: Optional[HTTPBasicAuth]
 
-    :return:
-    :rtype:
-    """
-
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
-    try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
-
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
-
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
-
-    # Log exceptions and return errors
-    except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+    class Config(BaseConfig):
+        arbitrary_types_allowed = True
 
 
-''' ENTRY POINT '''
+class Client:
+    def __init__(self, request: Request, session=requests.Session()):
+        self.request = request
+        self.session = session
+        self._set_proxy()
+        self._set_cert_verification()
+
+    def __del__(self):
+        try:
+            self.session.close()
+        except AttributeError as err:
+            demisto.debug(f'Ignore exceptions raised due to session not used by the client. {err}')
+
+    def call(self) -> requests.Response:
+        try:
+            response = self.session.request(**self.request.dict(by_alias=True))
+            response.raise_for_status()
+            return response
+        except Exception as exc:
+            msg = f'Something went wrong with the http call {exc}'
+            LOG(msg)
+            raise DemistoException(msg) from exc
+
+    def prepare_next_run(self, offset: int):
+        self.request.params.offset = offset
+
+    def _set_cert_verification(self):
+        if not self.request.verify:
+            skip_cert_verification()
+            self.session.verify = False
+
+    def _set_proxy(self):
+        if self.request.proxies:
+            ensure_proxy_has_http_prefix()
+        else:
+            skip_proxy()
+
+
+class GetEvents:
+    def __init__(self, client: Client) -> None:
+        self.client = client
+
+    def call(self):
+        resp = self.client.call()
+        return resp.json().get('records', [])
+
+    def _iter_events(self):
+        events = self.call()
+        offset = 0
+
+        while events:  # Run as long there are logs
+            yield events
+
+            offset += self.client.request.params.limit
+            self.client.prepare_next_run(offset)
+            events = self.call()
+
+    def run(self, limit=100):
+        stored = []
+        for logs in self._iter_events():
+            stored.extend(logs)
+            if len(stored) >= limit:
+                return stored[:limit]
+        return stored
+
+    @staticmethod
+    def get_last_run(logs) -> dict:
+        last_time = logs[0].get('created').removesuffix('+0000')
+        return {'from': last_time}
+
+
+def main():
+    # Args is always stronger. Get last run even stronger
+    demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
+    credentials = demisto_params.get('credentials', {})
+    demisto_params['auth'] = HTTPBasicAuth(credentials.get('identifier'), credentials.get('password'))
+    demisto_params['params'] = ReqParams.parse_obj(demisto_params)
+    request = Request.parse_obj(demisto_params)
+    client = Client(request)
+    get_events = GetEvents(client)
+    command = demisto.command()
+
+    if command == 'test-module':
+        get_events.run(limit=1)
+        demisto.results('ok')
+    else:
+        events = get_events.run(limit=demisto_params.get('max_fetch', 100))
+        if events:
+            demisto.setLastRun(GetEvents.get_last_run(events))
+        command_results = CommandResults(
+            readable_output=tableToMarkdown('Jira records', events, headerTransform=pascalToSpace),
+            outputs_prefix='Jira.Records',
+            outputs_key_field='id',
+            outputs=events,
+            raw_response=events,
+        )
+        return_results(command_results)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
