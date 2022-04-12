@@ -10,10 +10,10 @@ configuration:
   type: 8
 - additionalinfo: Received from the authorization process or from the self-deployed
     configuration process.
-  display: ID / Client ID
+  display: ID / (Client ID :For client credentials flow)
   name: auth_id
   required: true
-  type: 4
+  type: 0
 - additionalinfo: Received from the authorization process or from the self-deployed
     configuration process (find the tenant ID in your app overview page in the Azure
     portal)
@@ -23,10 +23,10 @@ configuration:
   type: 4
 - additionalinfo: Received from the authorization process or from the self-deployed
     configuration process.
-  display: Key / Client Secret
-  name: enc_key
+  display: Key / (Client Secret :For client credential flow)
+  name: credentials
   required: false
-  type: 4
+  type: 9
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint

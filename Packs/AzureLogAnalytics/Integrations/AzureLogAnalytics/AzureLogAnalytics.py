@@ -30,15 +30,15 @@ class Client:
                  subscription_id, resource_group_name, workspace_name, verify, proxy, certificate_thumbprint,
                  private_key, client_credentials):
 
-        tenant_id = refresh_token if self_deployed else ''
+        tenant_id = refresh_token if self_deployed or client_credentials else ''
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
             f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}'
         self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
-            auth_id=auth_and_token_url,
+            auth_id=auth_and_token_url,  # client_id for client credential
             refresh_token=refresh_token,
-            enc_key=enc_key,
+            enc_key=enc_key,  # client_secret for client credential
             redirect_uri=redirect_uri,
             token_retrieval_url='https://login.microsoftonline.com/{tenant_id}/oauth2/token',
             grant_type=CLIENT_CREDENTIALS if client_credentials else AUTHORIZATION_CODE,  # disable-secrets-detection
@@ -149,7 +149,7 @@ def tags_arg_to_request_format(tags):
 
 
 def test_connection(client, params):
-    if params.get('self_deployed', False) and not params.get('auth_code'):
+    if params.get('self_deployed', False) and not params.get('client_credentials') and not params.get('auth_code'):
         return_error('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
     try:
@@ -319,9 +319,11 @@ def main():
     try:
         self_deployed = params.get('self_deployed', False)
         client_credentials = params.get('client_credentials', False)
-        enc_key = params.get('enc_key')
+        enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')  # client_secret
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
+        if client_credentials and not enc_key:
+            raise DemistoException("Client Secret must be provided for client credentials flow.")
         if not self_deployed and not enc_key:
             raise DemistoException('Key must be provided. For further information see '
                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
@@ -330,9 +332,9 @@ def main():
 
         client = Client(
             self_deployed=self_deployed,
-            auth_and_token_url=params.get('auth_id'),
-            refresh_token=params.get('refresh_token'),
-            enc_key=enc_key,
+            auth_and_token_url=params.get('auth_id'),  # client_id
+            refresh_token=params.get('refresh_token'),  # tenant_id
+            enc_key=enc_key,  # client_secret
             redirect_uri=params.get('redirect_uri', ''),
             auth_code=params.get('auth_code'),
             subscription_id=params.get('subscriptionID'),
