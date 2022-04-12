@@ -988,7 +988,4 @@ inputs:
     be tagged to be ignored by the EDL.
   playbookInputQuery: null
 fromversion: 5.5.0
-outputs:
-- {}
-- {}
 quiet: true
