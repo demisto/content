@@ -219,7 +219,7 @@ def test_nginx_web_server(port: int, params: Dict):
                 time.sleep(0.5)
                 protocol = 'https' if params.get('key') else 'http'
                 res = requests.get(f'{protocol}://localhost:{port}/nginx-test',
-                                   verify=False, proxies={"http": "", "https": ""})  # guardrails-disable-line nosec
+                                   verify=False, proxies={"http": "", "https": ""})  # guardrails-disable-line # nosec
                 res.raise_for_status()
                 welcome = 'Welcome to nginx'
                 if welcome not in res.text:
