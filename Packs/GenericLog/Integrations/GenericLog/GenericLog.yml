@@ -83,7 +83,11 @@ script:
   commands:
   - name: fetch-events
     arguments:
-    - name: limit
+    - name: after
+      defaultvalue: '1 day'
+      description: fetch events from this time. Can be date, epoch or words (3 days)
+    - name: limit.
+      defaultvalue: 10
       description: How many events to fetch
     description: Hello command - prints hello to anyone.
   dockerimage: demisto/fastapi:1.0.0.28061
