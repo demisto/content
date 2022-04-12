@@ -1,4 +1,5 @@
 import dateparser
+import struct
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
@@ -68,6 +69,15 @@ class filemod_complete(ProcessEventDetail):
             entry['file_type'] = self.FILE_TYPE.get(entry.get('file_type', ''), '')
         return self.fields
 
+class netconn_complete():
+    def __init__(self, fields):
+        self.fields = fields
+
+    def format(self):
+        for entry in self.fields:
+            entry['remote_ip'] = socket.inet_ntoa(struct.pack('>i', entry['remote_ip']))
+            entry['local_ip'] = socket.inet_ntoa(struct.pack('>i', entry['local_ip']))
+        return self.fields
 
 class modload_complete(ProcessEventDetail):
     FIELDS = ['event_time', 'loaded_module_md5', 'loaded_module_full_path']
@@ -229,7 +239,8 @@ class Client(BaseClient):
 
     def get_formatted_ProcessEventDetail(self, process_json: dict):
         complex_fields = {'filemod_complete': filemod_complete, 'modload_complete': modload_complete,
-                          'regmod_complete': regmod_complete, 'crossproc_complete': crossproc_complete}
+                          'regmod_complete': regmod_complete, 'crossproc_complete': crossproc_complete
+                          'netconn_complete':netconn_complete}
         formatted_json = {}
         for field in process_json:
             if field in complex_fields:
