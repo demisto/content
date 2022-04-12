@@ -1,4 +1,4 @@
-Collects feedback from user about blocked files.
+This playbook collects feedback from the user about blocked files.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
