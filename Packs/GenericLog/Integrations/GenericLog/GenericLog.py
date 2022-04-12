@@ -3,7 +3,14 @@ from enum import Enum
 import urllib3
 from CommonServerPython import *
 import demistomock as demisto
-from pydantic import BaseConfig, BaseModel, AnyUrl, Json, validator
+from pydantic import (
+    BaseConfig,
+    BaseModel,
+    AnyUrl,
+    Field,
+    Json,
+    validator,
+)
 import requests
 import dateparser
 from requests.auth import HTTPBasicAuth
@@ -11,7 +18,23 @@ from requests.auth import HTTPBasicAuth
 urllib3.disable_warnings()
 
 
-def convert_to_github_date(value: Union[str, datetime, int]) -> str:
+class Method(str, Enum):
+    GET = 'GET'
+    POST = 'POST'
+    PUT = 'PUT'
+    HEAD = 'HEAD'
+    PATCH = 'PATCH'
+    DELETE = 'DELETE'
+
+
+class Options(BaseModel):
+    """Add here any option you need to add to the logic"""
+
+    proxy: bool = False
+    limit: int = 100
+
+
+def get_github_timestamp_format(value):
     """Converting int(epoch), str(3 days) or datetime to github's api time"""
     timestamp: Optional[datetime]
     if isinstance(value, int):
@@ -26,24 +49,27 @@ def convert_to_github_date(value: Union[str, datetime, int]) -> str:
     return base64_bytes.decode('ascii')
 
 
-class Method(str, Enum):
-    GET = 'GET'
-    POST = 'POST'
-    PUT = 'PUT'
-    HEAD = 'HEAD'
-    PATCH = 'PATCH'
-    DELETE = 'DELETE'
+class ReqParams(
+    BaseModel
+):  # TODO: implement request params or any API-specific model (if any)
+    include: str
+    order: str = 'asc'
+    after: str
+    per_page: int = 100  # Maximum is 100
+    # validators
+    _normalize_after = validator('after', pre=True, allow_reuse=True)(
+        get_github_timestamp_format
+    )
 
-
-class Options(BaseModel):
-    proxy: bool = False
+    class Config:
+        validate_assignment = True
 
 
 class Request(BaseModel):
     method: Method
     url: AnyUrl
-    headers: Union[Json, dict] = {}
-    params: Optional[BaseModel]
+    headers: Json[dict] = dict()  # type: ignore [type-arg, assignment]
+    params: ReqParams
     verify: bool = True
     data: Optional[str] = None
     auth: Optional[HTTPBasicAuth]
@@ -52,22 +78,30 @@ class Request(BaseModel):
         arbitrary_types_allowed = True
 
 
-class ReqParams(BaseModel):  # TODO: implement request params (if any)
-    include: str
-    order: str = 'asc'
-    after: str
-    per_page: int = 100  # Maximum is 100
-    _normalize_after = validator('after', pre=True, allow_reuse=True)(
-        convert_to_github_date
-    )
+class Credentials(BaseModel):
+    password: str
+    identifier: Optional[str]
 
 
-class Args(BaseModel):
-    limit: int = 10
+def set_authorization(request: Request, auth_credendtials):
+    """Automatic authorization.
+    Supports {Authorization: Bearer __token__}
+    or Basic Auth.
+    """
+    creds = Credentials.parse_obj(auth_credendtials)
+    if creds.password and creds.identifier:
+        request.auth = HTTPBasicAuth(creds.identifier, creds.password)
+    auth = {'Authorization': f'Bearer {creds.password}'}
+    if request.headers:
+        request.headers |= auth  # type: ignore[assignment, operator]
+    else:
+        request.headers = auth  # type: ignore[assignment]
 
 
 class Client:
-    def __init__(self, request: Request, options: Options, session = requests.Session()):
+    def __init__(
+        self, request: Request, options: Options, session=requests.Session()
+    ):
         self.request = request
         self.options = options
         self.session = session
@@ -78,7 +112,9 @@ class Client:
         try:
             self.session.close()
         except AttributeError as err:
-            demisto.debug(f'ignore exceptions raised due to session not used by the client. {err=}')
+            demisto.debug(
+                f'ignore exceptions raised due to session not used by the client. {err=}'
+            )
 
     def call(self) -> requests.Response:
         try:
@@ -92,9 +128,11 @@ class Client:
 
     def set_from_time_filter(self, after: Any):
         """TODO: set the next time to fetch"""
-        self.request.params.after = convert_to_github_date(after)  # type: ignore[union-attr]
-    
-    def _skip_cert_verification(self, skip_cert_verification=skip_cert_verification):
+        self.request.params.after = after
+
+    def _skip_cert_verification(
+        self, skip_cert_verification=skip_cert_verification
+    ):
         if not self.request.validate:
             skip_cert_verification()
 
@@ -106,8 +144,9 @@ class Client:
 
 
 class GetEvents:
-    def __init__(self, client: Client) -> None:
+    def __init__(self, client: Client, options: Options) -> None:
         self.client = client
+        self.options = options
 
     def call(self):
         resp = self.client.call()
@@ -134,18 +173,18 @@ class GetEvents:
                 break
             # endregion
 
-    def run(self, limit=10):
+    def run(self):
         stored = []
         for logs in self._iter_events():
             stored.extend(logs)
-            if len(stored) >= limit:
-                return stored[:limit]
+            if len(stored) >= self.options.limit:
+                return stored[: self.options.limit]
         return stored
 
     @staticmethod
-    def get_last_run(logs) -> dict:
+    def get_last_run(events) -> dict:
         """TODO: Implement the last run (from previous logs)"""
-        last_time = logs[-1].get('@timestamp') / 1000
+        last_time = events[-1].get('@timestamp') / 1000
         next_fetch_time = datetime.fromtimestamp(last_time) + timedelta(
             seconds=1
         )
@@ -153,34 +192,36 @@ class GetEvents:
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    # Args is always stronger. Get last run even stronger
-    demisto_params = demisto.params() | demisto.args() | demisto.getIntegrationContext()
+    # Args is always stronger. Get getIntegrationContext even stronger
+    demisto_params = (
+        demisto.params() | demisto.args() | demisto.getIntegrationContext()
+    )
 
     demisto_params['params'] = ReqParams.parse_obj(demisto_params)
     request = Request.parse_obj(demisto_params)
-    # TODO: Implement authorization
-    request.headers[  # type: ignore[index] 
-        'Authorization'
-    ] = f"Bearer {demisto_params['api_key']['password']}"
+
+    # TODO: If you're not using basic auth or Bearer __token_, you should implement your own
+    set_authorization(request, demisto_params['auth_credendtials'])
 
     options = Options.parse_obj(demisto_params)
 
     client = Client(request, options)
 
-    get_events = GetEvents(client)
+    get_events = GetEvents(client, options)
 
     command = demisto.command()
     if command == 'test-module':
-        get_events.run(limit=1)
+        get_events.run()
         demisto.results('ok')
     else:
-        args = Args(**demisto_params)
-        events = get_events.run(args.limit)
+        events = get_events.run()
 
         if events:
             demisto.setIntegrationContext(GetEvents.get_last_run(events))
         command_results = CommandResults(
-            readable_output=tableToMarkdown('Github events', events, headerTransform=pascalToSpace),
+            readable_output=tableToMarkdown(
+                'Github events', events, headerTransform=pascalToSpace
+            ),
             outputs_prefix='Github.Events',
             outputs_key_field='@timestamp',
             outputs=events,

@@ -20,10 +20,9 @@ detaileddescription: |-
 configuration:
 - display: Server URL (e.g. 'https://api.github.com/orgs/XXXXX/audit-log')
   name: url
-  defaultvalue: 'https://api.github.com/orgs/demisto/audit-log'
+  defaultvalue: 'https://api.github.com/orgs/${ORGANIZATION}/audit-log'
   type: 0
   required: true
-  hidden: true
 - display: HTTP Method
   name: method
   type: 15
@@ -46,7 +45,7 @@ configuration:
   hidden: true
 - display: ""
   displaypassword: API Key
-  name: api_key
+  name: auth_credendtials
   type: 9
   required: true
   hiddenusername: true
@@ -72,16 +71,20 @@ configuration:
 - display: include
   name: include
   type: 0
-  defaultvalue: web
+  defaultvalue: all
   required: false
+  options:
+    - web
+    - git
+    - all
 script:
   script: ""
   type: python
   commands:
-  - name: github-fetch-logs
+  - name: fetch-events
     arguments:
     - name: limit
-      description: How many logs to fetch
+      description: How many events to fetch
     description: Hello command - prints hello to anyone.
   dockerimage: demisto/fastapi:1.0.0.28061
   runonce: false
