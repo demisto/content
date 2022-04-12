@@ -275,10 +275,10 @@ def format_incidents(resp, eventTypes):
                 event_type = eventTypes.get(e_type)
                 alert_details = {
                     "name": "Cyble Intel Alert on {}".format(event_type),
-                    "cybleeventstype": "{}".format(e_type),
+                    "eventtype": "{}".format(e_type),
                     "severity": INCIDENT_SEVERITY.get(alert_priority.lower()),
                     "occurred": "{}".format(alert_created_at),
-                    "cybleeventsid": "{}".format(alert_id),
+                    "eventid": "{}".format(alert_id),
                     "cybleeventsname": "Incident of {} type".format(event_type),
                     "cybleeventsbucket": "{}".format(alert_bucket_name),
                     "cybleeventskeyword": "{}".format(alert_keyword),
@@ -325,7 +325,7 @@ def cyble_fetch_alerts(client, method, args):
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='CybleEvents.Events',
-        outputs_key_field=['cybleeventsid', 'cybleeventstype'],
+        outputs_key_field=['eventid', 'eventtype'],
         outputs=incidents
     )
 

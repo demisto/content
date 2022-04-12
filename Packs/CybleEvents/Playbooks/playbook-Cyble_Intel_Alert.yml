@@ -49,9 +49,9 @@ tasks:
       brand: ''
     scriptarguments:
       event_id:
-        simple: ${incident.cybleeventid}
+        simple: ${incident.eventid}
       event_type:
-        simple: ${incident.cybleeventtype}
+        simple: ${incident.eventtype}
     continueonerror: true
     separatecontext: false
     view: |-

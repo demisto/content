@@ -77,17 +77,17 @@ specific service type. So users would see, in certain cases, more events than th
 
 #### Context Output
 
-| **Path**                              | **Type** | **Description** |
-|---------------------------------------| --- | --- |
-| CybleEvents.Events.cybleeventsid      | String | Returns the event ID | 
-| CybleEvents.Events.cybleeventstype    | String | Returns the event type | 
-| CybleEvents.Events.severity           | Number | Returns the event severity | 
-| CybleEvents.Events.occurred           | Date | Returns the event occurred timeline | 
-| CybleEvents.Events.name               | String | Returns the alert title | 
-| CybleEvents.Events.cybleeventsname    | String | Returns the event name | 
-| CybleEvents.Events.cybleeventsbucket  | String | Returns the event bucket name | 
+| **Path**                            | **Type** | **Description** |
+|-------------------------------------| --- | --- |
+| CybleEvents.Events.eventid     | String | Returns the event ID | 
+| CybleEvents.Events.eventtype   | String | Returns the event type | 
+| CybleEvents.Events.severity         | Number | Returns the event severity | 
+| CybleEvents.Events.occurred         | Date | Returns the event occurred timeline | 
+| CybleEvents.Events.name             | String | Returns the alert title | 
+| CybleEvents.Events.cybleeventsname  | String | Returns the event name | 
+| CybleEvents.Events.cybleeventsbucket | String | Returns the event bucket name | 
 | CybleEvents.Events.cybleeventskeyword | String | Returns the event keyword | 
-| CybleEvents.Events.cybleeventsalias   | String | Returns the event type alias name | 
+| CybleEvents.Events.cybleeventsalias | String | Returns the event type alias name | 
 
 ### cyble-vision-fetch-event-detail
 
