@@ -59,7 +59,6 @@ class ReqParams(BaseModel):  # TODO: implement request params (if any)
         convert_to_github_date
     )
 
-
 class Args(BaseModel):
     limit: int = 10
 
@@ -113,26 +112,26 @@ class GetEvents:
 
     def _iter_events(self):
         # region First Call
-        logs = self.call()
+        events = self.call()
         # endregion
         # region Yield Response
-        while True and logs:  # Run as long there are logs
-            yield logs
+        while True and events:  # Run as long there are logs
+            yield events
             # endregion
             # region Prepare Next Iteration (Paging)
-            last = logs.pop()
+            last = events.pop()
             self.client.set_from_time_filter(last['@timestamp'])
             # endregion
             # region Do next call
-            logs = self.call()
+            events = self.call()
             try:
-                logs.pop(0)
+                events.pop(0)
             except (IndexError):
                 demisto.info('empty list, breaking')
                 break
             # endregion
 
-    def get_events(self, limit=10):
+    def run(self, limit=10):
         stored = []
         for logs in self._iter_events():
             stored.extend(logs)
@@ -164,15 +163,22 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
 
     client = Client(request, options)
 
-    get_logs = GetEvents(client)
+    get_events = GetEvents(client)
 
     command = demisto.command()
     if command == 'test-module':
-        get_logs.get_events(limit=1)
+        get_events.run(limit=1)
         demisto.results('ok')
     else:
         args = Args(**demisto_params)
-        logs = get_logs.get_events(args.limit)
-        if logs:
-            demisto.setLastRun(GetEvents.get_last_run(logs))
-        demisto.results({'github': logs})
+        events = get_events.run(args.limit)
+        if events:
+            demisto.setLastRun(GetEvents.get_last_run(events))
+        command_results = CommandResults(
+            readable_output=tableToMarkdown('Github events', events, headerTransform=pascalToSpace),
+            outputs_prefix='Github.Events',
+            outputs_key_field='@timestamp',
+            outputs=events,
+            raw_response=events,
+        )
+        return_results(command_results)

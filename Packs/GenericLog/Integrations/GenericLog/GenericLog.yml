@@ -64,11 +64,6 @@ configuration:
   type: 0
   defaultvalue: 10
   required: false
-- display: Maximum of objects to fetch
-  name: max_fetch
-  defaultvalue: "10"
-  type: 0
-  required: true
 - display: First fetch time interval
   name: after
   type: 0
