@@ -59,7 +59,7 @@ tasks:
       entity_a_type:
         simple: IP
       entity_b:
-        simple: ${inputs.IA}${inputs.IR}
+        simple: ${inputs.IA},${inputs.IR}
       entity_b_type:
         simple: Report
       relationship:
@@ -105,7 +105,7 @@ tasks:
       entity_a_type:
         simple: Domain
       entity_b:
-        simple: ${inputs.IA}${inputs.IR}
+        simple: ${inputs.IA},${inputs.IR}
       entity_b_type:
         simple: Report
       relationship:
@@ -151,7 +151,7 @@ tasks:
       entity_a_type:
         simple: URL
       entity_b:
-        simple: ${inputs.IA}${inputs.IR}
+        simple: ${inputs.IA},${inputs.IR}
       entity_b_type:
         simple: Report
       relationship:
