@@ -6215,14 +6215,17 @@ class CommandResults:
         if self.relationships:
             relationships = [relationship.to_entry() for relationship in self.relationships if relationship.to_entry()]
 
-        if self.content_format is None:
-            self.content_format = EntryFormat.JSON
+        # using a local variable to avoid changing the object's attribute, see discussion on PR #18544.
+        content_format = self.content_format
+        if content_format is None:
             if isinstance(raw_response, STRING_TYPES + (int,)):
-                self.content_format = EntryFormat.TEXT
+                content_format = EntryFormat.TEXT
+            else:
+                content_format = EntryFormat.JSON
 
         return_entry = {
             'Type': self.entry_type,
-            'ContentsFormat': self.content_format,
+            'ContentsFormat': content_format,
             'Contents': raw_response,
             'HumanReadable': human_readable,
             'EntryContext': outputs,
