@@ -10,7 +10,8 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
-		"Netwitness Incident"
+		"Netwitness Incident",
+		"Symantec DLP Discover Incident"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -36,6 +37,9 @@
 	"selectValues": null,
 	"sla": 0,
 	"system": false,
+	"systemAssociatedTypes": [
+        "Symantec DLP Discover Incident"
+    ],
 	"systemAssociatedTypes": null,
 	"threshold": 72,
 	"type": "shortText",
@@ -46,4 +50,3 @@
 	"version": -1,
 	"fromVersion": "5.0.0"
 }
-
