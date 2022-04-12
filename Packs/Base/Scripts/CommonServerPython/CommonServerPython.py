@@ -9691,7 +9691,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
     :param vendor: The vendor corresponding to the integration that originated the events.
 
     :type product: ``str``
-    :parm product: The product corresponding to the integration that originated the events.
+    :param product: The product corresponding to the integration that originated the events.
 
     :type data_format: ``str``
     :param data_format: Should only be filled in case the 'events' parameter contains a string of raw

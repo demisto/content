@@ -51,4 +51,5 @@ CreateIndicatorRelationship
 CommonServerPython
 CommonServer
 mergeVersionedIntegrationContext
-SearchIndicatorRelationships 
+SearchIndicatorRelationships
+siam
