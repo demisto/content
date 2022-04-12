@@ -242,7 +242,7 @@ There is no context output for this command.
         "EntryID": "930@6e069bc4-2a1e-43ea-8ed3-ea558e458651",
         "Extension": "png",
         "Info": "application/png",
-        "Name": "889@6e069bc4-2a1e-43ea-8ed3-ea558e4586751.pdf",
+        "Name": "image.png",
         "Size": 21856,
         "Type": "png document, version 1.4"
     }
