@@ -201,8 +201,10 @@ class Build:
         self.id_set = get_id_set(id_set_path)
         self.test_pack_path = options.test_pack_path if options.test_pack_path else None
         self.tests_to_run = self.fetch_tests_list(options.tests_to_run)
+        logging.info(f'{self.tests_to_run}')
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
+        logging.info(f'{self.pack_ids_to_install}')
         self.service_account = options.service_account
 
     @staticmethod
