@@ -1381,7 +1381,7 @@ class CoreClient(BaseClient):
     def get_file_by_url_suffix(self, url_suffix):
         reply = self._http_request(
             method='GET',
-            url_suffix=file_link,
+            url_suffix=url_suffix,
             timeout=self.timeout,
             resp_type='content'
         )
