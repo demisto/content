@@ -719,6 +719,80 @@ def test_prettify_rule():
     assert prettify_rule == expected_prettify_rule
 
 
+class TestPcap:
+
+    @staticmethod
+    def test_list_pcaps_flow_with_no_existing_pcaps(mocker):
+        """
+        Given -
+            a response which indicates there are no pcap files on the firewall.
+
+        When -
+            listing all the available pcap files.
+
+        Then -
+            make sure that a message which indicates there are no Pcaps is printed out.
+        """
+        from Panorama import panorama_list_pcaps_command
+        no_pcaps_response = MockedResponse(
+            text='<?xml version="1.0"?>\n<response status="success">\n  '
+                 '<result>\n    <dir-listing/>\n  </result>\n</response>\n',
+            status_code=200,
+        )
+
+        mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
+        results_mocker = mocker.patch.object(demisto, "results")
+        panorama_list_pcaps_command({'pcapType': 'filter-pcap'})
+        assert results_mocker.called
+        assert results_mocker.call_args.args[0] == 'PAN-OS has no Pcaps of type: filter-pcap.'
+
+    @staticmethod
+    def test_get_specific_pcap_flow_which_does_not_exist(mocker):
+        """
+        Given -
+           a response which indicates there are no pcap files on the firewall.
+
+        When -
+           trying to download a pcap file.
+
+        Then -
+           make sure that the error message from the api is actually returned.
+        """
+        from Panorama import panorama_get_pcap_command
+        no_pcaps_response = MockedResponse(
+            text='<?xml version="1.0"?>\n<response status="error">\n  <msg>\n    '
+                 '<line>test.pcap not present</line>\n  </msg>\n</response>\n',
+            status_code=200,
+            headers={'Content-Type': 'application/xml'}
+        )
+        mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
+        with pytest.raises(Exception, match='line: test.pcap not present'):
+            panorama_get_pcap_command({'pcapType': 'filter-pcap', 'from': 'test'})
+
+    @staticmethod
+    def test_get_filter_pcap_without_from_argument(mocker):
+        """
+        Given -
+           a filter-pcap type without 'from' argument
+
+        When -
+           trying to download a filter pcap file.
+
+        Then -
+           make sure that the error message which states that the 'from' argument should be returned is presented.
+        """
+        from Panorama import panorama_get_pcap_command
+        no_pcaps_response = MockedResponse(
+            text='<?xml version="1.0"?>\n<response status="error">\n  <msg>\n    '
+                 '<line>test.pcap not present</line>\n  </msg>\n</response>\n',
+            status_code=200,
+            headers={'Content-Type': 'application/xml'}
+        )
+        mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
+        with pytest.raises(Exception, match='cannot download filter-pcap without the from argument'):
+            panorama_get_pcap_command({'pcapType': 'filter-pcap'})
+
+
 class TestPanoramaEditRuleCommand:
     EDIT_SUCCESS_RESPONSE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
 
@@ -782,12 +856,64 @@ class TestPanoramaEditRuleCommand:
         with pytest.raises(DemistoException):
             Panorama.panorama_edit_rule_command(args)
 
+    @staticmethod
+    def test_edit_rule_to_disabled_flow(mocker):
+        """
+        Given -
+            arguments to change a pre-rule to 'disabled'
+
+        When -
+            running panorama_edit_rule_command function.
+
+        Then -
+            make sure the entire command flow succeeds.
+        """
+        from Panorama import panorama_edit_rule_command
+        args = {
+            "rulename": "test",
+            "element_to_change": "disabled",
+            "element_value": "yes",
+            "behaviour": "replace",
+            "pre_post": "pre-rulebase"
+        }
+        mocker.patch("Panorama.http_request", return_value=TestPanoramaEditRuleCommand.EDIT_SUCCESS_RESPONSE)
+        results_mocker = mocker.patch.object(demisto, "results")
+        panorama_edit_rule_command(args)
+        assert results_mocker.called
+
+    @staticmethod
+    def test_edit_rule_to_disabled_with_no_element_value(mocker):
+        """
+        Given -
+            arguments to change a pre-rule to 'disabled' when the element value should be set to 'no'
+
+        When -
+            running panorama_edit_rule_command function.
+
+        Then -
+            make sure that the `params['element']` contains the 'no' element value.
+        """
+        from Panorama import panorama_edit_rule_command
+        args = {
+            "rulename": "test",
+            "element_to_change": "disabled",
+            "element_value": "no",
+            "behaviour": "replace",
+            "pre_post": "pre-rulebase"
+        }
+        http_req_mocker = mocker.patch(
+            "Panorama.http_request", return_value=TestPanoramaEditRuleCommand.EDIT_SUCCESS_RESPONSE
+        )
+        panorama_edit_rule_command(args)
+        assert http_req_mocker.call_args.kwargs.get('body').get('element') == '<disabled>no</disabled>'
+
 
 class MockedResponse:
-    def __init__(self, text, status_code, reason):
+    def __init__(self, text, status_code, reason='', headers=None):
         self.status_code = status_code
         self.text = text
         self.reason = reason
+        self.headers = headers
 
 
 @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
@@ -1040,12 +1166,39 @@ MOCK_FIREWALL_2_SERIAL = "222222222222222"
 MOCK_FIREWALL_3_SERIAL = "333333333333333"
 
 
+def mock_software_object():
+    """Mocks PanDevice.software"""
+
+    class MockSoftwareObject:
+        versions = {
+            "9.1.0": {
+                "version": "9.1.0",
+                "filename": "Pan-9.1.0",
+                "size": 150,
+                "size_kb": 150000,
+                "release_notes": "https://releasenotes.paloaltonetworks.com",
+                "downloaded": True,
+                "current": True,
+                "latest": True,
+                "uploaded": True
+            }
+        }
+
+        def check(self):
+            pass
+
+        def download(self, *args, **kwargs):
+            pass
+
+    return MockSoftwareObject()
+
+
 @pytest.fixture
 def mock_firewall():
     mock_firewall = MagicMock(spec=Firewall)
     mock_firewall.serial = MOCK_FIREWALL_1_SERIAL
     mock_firewall.hostname = None
-
+    mock_firewall.software = mock_software_object()
     return mock_firewall
 
 
@@ -1054,6 +1207,7 @@ def mock_panorama():
     mock_panorama = MagicMock(spec=Panorama)
     mock_panorama.serial = MOCK_PANORAMA_SERIAL
     mock_panorama.hostname = None
+    mock_panorama.software = mock_software_object()
     return mock_panorama
 
 
@@ -1088,6 +1242,9 @@ def mock_topology(mock_panorama, mock_firewall):
     topology.ha_active_devices = {
         MOCK_PANORAMA_SERIAL: mock_panorama,
         MOCK_FIREWALL_1_SERIAL: mock_firewall
+    }
+    topology.ha_pair_serials = {
+        MOCK_FIREWALL_1_SERIAL: MOCK_FIREWALL_2_SERIAL,
     }
     return topology
 
@@ -1292,6 +1449,7 @@ class TestPanoramaCommand:
 class TestUniversalCommand:
     """Test all the commands relevant to both Panorama and Firewall devices"""
     SHOW_SYSTEM_INFO_XML = "test_data/show_system_info.xml"
+    SHOW_JOB_XML = "test_data/show_jobs_all.xml"
 
     @patch("Panorama.run_op_command")
     def test_get_system_info(self, patched_run_op_command, mock_topology):
@@ -1310,6 +1468,47 @@ class TestUniversalCommand:
             for value in result_dataclass.__dict__.values():
                 assert value
 
+    def test_get_available_software(self, mock_topology):
+        """
+        Test we can convert result from PanDevice.software.check() into the correct dataclasses
+        This does not use patching, but instead the mock objects themselves from mock_topology
+        """
+        from Panorama import UniversalCommand
+
+        result = UniversalCommand.get_available_software(mock_topology)
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+    @patch("Panorama.run_op_command")
+    def test_get_jobs(self, patched_run_op_command, mock_topology):
+        """Given the output XML for show jobs all assert it is parsed into the dataclasses correctly."""
+        from Panorama import UniversalCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_JOB_XML)
+
+        result = UniversalCommand.show_jobs(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result:
+            for key, value in result_dataclass.__dict__.items():
+                # Nullable Values
+                if key not in ["description", "user"]:
+                    assert value
+
+    def test_download_software(self, mock_topology):
+        """
+        Test the download software function returns the correct data.
+        The pan-os-python download software actually doesn't return any output itself unless it errors, so we just check our
+        dataclass is set correctly within the function and retuned.
+        """
+        from Panorama import UniversalCommand
+
+        result = UniversalCommand.download_software(mock_topology, "9.1.0")
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
 
 class TestFirewallCommand:
     """Test all the commands relevant only to Firewall instances"""
@@ -1317,6 +1516,9 @@ class TestFirewallCommand:
     SHOW_ARP_XML = "test_data/show_arp_all.xml"
     SHOW_ROUTING_SUMMARY_XML = "test_data/show_routing_summary.xml"
     SHOW_ROUTING_ROUTE_XML = "test_data/show_routing_route.xml"
+    SHOW_GLOBAL_COUNTERS_XML = "test_data/show_counter_global.xml"
+    SHOW_BGP_PEERS_XML = "test_data/show_routing_protocol_bgp_peer.xml"
+    SHOW_HA_STATE_XML = "test_data/show_ha_state_enabled.xml"
 
     @patch("Panorama.run_op_command")
     def test_get_arp_table(self, patched_run_op_command, mock_topology):
@@ -1366,3 +1568,53 @@ class TestFirewallCommand:
         for result_dataclass in result.summary_data:
             for value in result_dataclass.__dict__.values():
                 assert value
+
+    @patch("Panorama.run_op_command")
+    def test_get_counters(self, patched_run_op_command, mock_topology):
+        """Given the output XML for show counters, assert it is parsed into the dataclasses correctly."""
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_GLOBAL_COUNTERS_XML)
+        result = FirewallCommand.get_counter_global(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result.result_data:
+            for value in result_dataclass.__dict__.values():
+                # Attribute may be int 0
+                assert value is not None
+
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+    @patch("Panorama.run_op_command")
+    def test_get_bgp_peers(self, patched_run_op_command, mock_topology):
+        """
+        Given the output XML for show routing protocol bgp peers,
+        assert it is parsed into the dataclasses correctly.
+        """
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_BGP_PEERS_XML)
+        result = FirewallCommand.get_bgp_peers(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result.result_data:
+            for value in result_dataclass.__dict__.values():
+                # Attribute may be int 0
+                assert value is not None
+
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                # Attribute may be int 0
+                assert value is not None
+
+    @patch("Panorama.run_op_command")
+    def test_get_ha_status(self, patched_run_op_command, mock_topology):
+        """Given the XML output for a HA firewall, ensure the dataclasses are parsed correctly"""
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_HA_STATE_XML)
+        result = FirewallCommand.get_ha_status(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result:
+            for value in result_dataclass.__dict__.values():
+                # Attribute may be int 0
+                assert value is not None

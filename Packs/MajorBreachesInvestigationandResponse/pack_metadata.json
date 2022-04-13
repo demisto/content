@@ -71,6 +71,10 @@
         "CVE_2021_40444": {
             "mandatory": false,
             "display_name": "CVE-2021-40444 - MSHTML RCE"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
         }
     },
     "marketplaces": [
