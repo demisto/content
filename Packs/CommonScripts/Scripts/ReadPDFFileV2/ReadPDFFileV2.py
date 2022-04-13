@@ -10,6 +10,7 @@ import errno
 import shutil
 import json
 from typing import List
+from pikepdf import Pdf
 
 URL_EXTRACTION_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+' \
                        r'[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
@@ -142,14 +143,27 @@ def get_pdf_text(file_path, pdf_text_output_path):
     return text
 
 
-def get_pdf_htmls_content(pdf_path, output_folder):
-    """Creates an html file and images from the pdf in output_folder and returns the text content of the html files"""
+def create_html_and_image_files_from_pdf(pdf_path, output_folder):
+    """
+    Creates an html file and image files from the pdf in the output_folder.
+
+    Args:
+        pdf_path (str): The path of the PDF file.
+        output_folder (str): The folder to create the HTML and image files in.
+
+    Returns: None
+    """
     pdf_html_output_path = f'{output_folder}/PDF.html'
     user_password = demisto.args().get('userPassword')
     if user_password:
         run_shell_command('pdftohtml', '-upw', user_password, pdf_path, pdf_html_output_path)
     else:
         run_shell_command('pdftohtml', pdf_path, pdf_html_output_path)
+
+
+def get_pdf_htmls_content(pdf_path, output_folder):
+    """Creates an html file and images from the pdf in output_folder and returns the text content of the html files"""
+    create_html_and_image_files_from_pdf(pdf_path, output_folder)
     html_file_names = get_files_names_in_path(output_folder, '*.html')
     html_content = ''
     for file_name in html_file_names:
@@ -254,31 +268,43 @@ def get_urls_from_binary_file(file_path):
     return binary_file_urls
 
 
-def get_urls_and_emails_from_pdf_file(file_path):
+def get_urls_and_emails_from_pdf_file(file_path, output_folder):
     """
     Extracts the URLs and Emails from the pdf file using PyPDF2 package.
     Args:
-        file_path (str): the path of the PDF file.
+        file_path (str): The path of the PDF file.
 
     Returns: A set includes the URLs and emails that were found.
 
     """
     urls_and_emails_set = set()
-    pdf_file = open(file_path, 'rb')
+    user_password = str(demisto.args().get('userPassword'))
+
+    if user_password:  # file is encrypted
+        pdf_file = Pdf.open(file_path, password=user_password)
+        pdf_file.save(f'{output_folder}/extractable.pdf')
+        pdf_file = open(f'{output_folder}/extractable.pdf', 'rb')
+    else:
+        pdf_file = open(file_path, 'rb')
+
     pdf = PyPDF2.PdfFileReader(pdf_file)
+    # if pdf.isEncrypted:
+    #     try:
+    #         pdf.decrypt(user_password)
+    #     except: # Cannot decrypt file with PyPDF2
+    #         with Pdf.open()
     pages = pdf.getNumPages()
     for page in range(pages):
         page_sliced = pdf.getPage(page)
         page_object = page_sliced.getObject()
         if annots := page_object.get('/Annots'):
-            for ann in annots:
-                ann_object = ann.getObject()
-                if a := ann_object.get('/A'):
+            for annot in annots:
+                annot_object = annot.getObject()
+                if a := annot_object.get('/A'):
                     url = a.get('/URI')
                     urls_and_emails_set.add(url)
 
     return urls_and_emails_set
-    # TODO: improve the writing and the argument names here
 
 
 def get_urls_and_emails_from_pdf_html_content(cpy_file_path, output_folder):
@@ -323,27 +349,23 @@ def main():
                 # Get metadata:
                 metadata = get_pdf_metadata(cpy_file_path)
 
-                # Get urls from the binary file
-                binary_file_urls = get_urls_from_binary_file(cpy_file_path)
-
                 # Get text:
                 pdf_text_output_path = f'{output_folder}/PDFText.txt'
                 text = get_pdf_text(cpy_file_path, pdf_text_output_path)
 
                 # Get URLS + emails:
-                urls_and_emails_set = get_urls_and_emails_from_pdf_file(cpy_file_path)
-                unified_set = urls_and_emails_set.union(binary_file_urls)
+                urls_and_emails_set = get_urls_and_emails_from_pdf_file(cpy_file_path, output_folder)
 
                 # Separate urls from email addresses:
                 emails_set = set()
-                for extracted_object in unified_set:
+                for extracted_object in urls_and_emails_set:
                     if email_match := re.search(EMAIL_REGXEX, extracted_object):
                         # the extracted object is an email
                         emails_set.add(email_match.group(0))
 
-                        if url_match := re.search(URL_EXTRACTION_REGEX, extracted_object):
+                        if re.search(URL_EXTRACTION_REGEX, extracted_object):
                             # the extracted object contains both url and email
-                            urls_ec.append({"Data": extracted_object})  # TODO: verify with ben that this is all a url
+                            urls_ec.append({"Data": extracted_object})
                     else:
                         # the extracted object is a url
                         urls_ec.append({"Data": extracted_object})
@@ -352,7 +374,7 @@ def main():
                     emails_ec.append(email)
 
                 # Get images:
-                get_pdf_htmls_content(cpy_file_path, output_folder)
+                create_html_and_image_files_from_pdf(cpy_file_path, output_folder)
                 images = get_images_paths_in_path(output_folder)
             except Exception as e:
                 demisto.results({

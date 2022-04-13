@@ -181,3 +181,10 @@ def test_get_urls_from_binary_file():
     from ReadPDFFileV2 import get_urls_from_binary_file
     urls = get_urls_from_binary_file(f'{CWD}/text-with-images.pdf')
     assert len(urls) == 10
+
+
+def test_get_urls_from_pdf_file(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'userPassword': 1234567})
+    from ReadPDFFileV2 import get_urls_and_emails_from_pdf_file
+    urls = get_urls_and_emails_from_pdf_file(f'{CWD}/protected.pdf', f'{CWD}')
+    assert len(urls) == 7
