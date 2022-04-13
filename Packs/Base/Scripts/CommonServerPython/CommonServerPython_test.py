@@ -19,7 +19,7 @@ from CommonServerPython import set_to_integration_context_with_retries, xml2json
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, EntryFormat
 import CommonServerPython
 
 try:
@@ -6695,7 +6695,7 @@ class TestFetchWithLookBack:
             'created': (datetime.utcnow() - timedelta(minutes=23)).strftime('%Y-%m-%dT%H:%M:%S')
         }
     ]
-    
+
     def example_fetch_incidents(self):
         """
         An example fetch for testing
@@ -7150,8 +7150,8 @@ def test_create_indicator_result_with_dbotscore_unknown(mocker, args, expected):
                                                                   (None, 1, 'text'),
                                                                   ('html', '', 'html'),
                                                                   ('html', {}, 'html')))
-def test_content_type(content_format, outputs, expected_type):
-    from CommonServerPython import CommandResults, EntryFormat
+def test_content_format(content_format, outputs, expected_type):
+    from CommonServerPython import CommandResults
     command_results = CommandResults(
         outputs=outputs,
         readable_output='human_readable',
@@ -7159,3 +7159,17 @@ def test_content_type(content_format, outputs, expected_type):
         content_format=content_format,
     )
     assert command_results.to_context()['ContentsFormat'] == expected_type
+
+
+@pytest.mark.parametrize('readable_output_format,expected_type', (('html', EntryFormat.HTML),
+                                                                (None, EntryFormat.MARKDOWN))
+                         )
+def test_human_readable_format(readable_output_format, expected_type):
+    from CommonServerPython import CommandResults
+    command_results = CommandResults(
+        outputs='',
+        readable_output='human_readable',
+        outputs_prefix='prefix',
+        readable_output_format=readable_output_format
+    )
+    assert command_results.to_context()['ReadableContentsFormat'] == expected_type

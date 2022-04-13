@@ -6096,6 +6096,12 @@ class CommandResults:
     :type scheduled_command: ``ScheduledCommand``
     :param scheduled_command: manages the way the command should be polled.
 
+    :type content_format: ``str``
+    :param content_format: entry format of the content. Only used when HumanReadable is not provided.
+
+    :type readable_output_format: ``str``
+    :param content_format: entry format of the content.
+
     :return: None
     :rtype: ``None``
     """
@@ -6117,7 +6123,7 @@ class CommandResults:
                  content_format=None,
                  readable_output_format=None
                  ):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, str) -> None  # noqa: E501
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, str, str) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -6155,8 +6161,10 @@ class CommandResults:
         self.scheduled_command = scheduled_command
         self.relationships = relationships
 
-        if content_format is not None and not EntryFormat.is_valid_type(content_format):
-            raise TypeError('content_format {} is invalid, see CommonServerPython.EntryFormat'.format(content_format))
+        for format_ in (content_format, readable_output_format):
+            if format_ is not None and not EntryFormat.is_valid_type(format_):
+                raise TypeError('format_ {} is invalid, see CommonServerPython.EntryFormat'.format(format_))
+
         self.content_format = content_format
         self.readable_output_format = readable_output_format
 
