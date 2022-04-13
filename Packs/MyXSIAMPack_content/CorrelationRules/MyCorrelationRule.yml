@@ -1,23 +1,40 @@
-global_rule_id: some-guid
-alert_category: PERSISTENCE
-alert_description: host $agent_id reached $dest_count destinations
+alert_category: User Defined
+alert_description: My alert description
 alert_fields:
-  { 'hash': 'the_hash_field_in_my_query' }
-crontab: mandatory when execution mode is SCHEDULED. the cron schedule for this query
-description: My correlation description
+  actor_image: null
+  actor_path: auth_domain
+  cmd: actor_type
+  domain: null
+  hash: action_country
+  hostname: null
+  local_ip: null
+  remote_ip: action_app_id_risk
+  remote_port: null
+  username: null
+alert_name: My Alert Name
+alert_source: Some alert source
+crontab: '*/10 * * * *'
 dataset: alerts
-drilldown_query_timeframe: QUERY
-execution_mode: SCHEDULED
-investigation_query_link: dataset = xdr_data | filter agent_id=$the_agent_id_field_in_the_result
+description: Based on network connections and event id 4625
+drilldown_query_timeframe: ALERT
+global_rule_id: 93935bcc-b8c3-11ec-82b2-acde48001122
+investigation_query_link: 'dataset = xdr_data | filter agent_id=$agent_id '
 mapping_strategy: CUSTOM
-mitre_defs: { }
-name: My rule name
-search_window: 1 day
-severity: SEV_010_INFO
-suppression_duration: 4 hours
+mitre_defs:
+  TA0001 - Initial Access:
+  - T1078 - Valid Accounts
+  - 'T1078.004 - Valid Accounts: Cloud Accounts'
+  TA0005 - Defense Evasion:
+  - 'T1027.001 - Obfuscated Files or Information: Binary Padding'
+  - T1006 - Direct Volume Access
+  TA0008 - Lateral Movement:
+  - 'T1021.001 - Remote Services: Remote Desktop Protocol'
+name: Fortigate + AD - Scanning and Bruteforce from the
+search_window: 1 hours
+severity: User Defined
+suppression_duration: 5 hours
 suppression_enabled: true
-suppression_fields:
-  - MyField1
-  - MyField2
-xql_query: dataset = xdr_data | filter agent_id=$the_agent_id_field_in_the_result
-fromversion: 3.3.0
+suppression_fields: action_app_id_risk
+user_defined_category: action_category_of_app_id
+user_defined_severity: sso_severity
+xql_query: 'dataset = xdr_data | fields action_app_id_risk,action_country,actor_type,agent_id,agent_version,auth_domain,sso_severity,action_category_of_app_id | limit 1'
