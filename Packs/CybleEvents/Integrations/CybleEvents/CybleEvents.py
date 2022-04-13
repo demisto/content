@@ -8,7 +8,7 @@ import requests
 import urllib3
 from datetime import date, datetime
 
-# Disable insecure warnings
+# Disable insecure warnings.
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
