@@ -1,9 +1,9 @@
 commonfields:
-  id: Github SIEM
+  id: Github AuditLog
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: Github SIEM
-display: Github SIEM
+name: Github AuditLog
+display: Github AuditLog
 category: Analytics & SIEM
 description: This is the Hello World integration for getting started.
 detaileddescription: |-
@@ -70,13 +70,13 @@ configuration:
   required: false
 - display: include
   name: include
-  type: 0
   defaultvalue: all
+  type: 15
   required: false
   options:
-    - web
-    - git
-    - all
+  - all
+  - web
+  - git
 script:
   script: ""
   type: python
