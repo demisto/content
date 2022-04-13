@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: '"Entry ID" of the uploaded logo in XSOAR'
+  description: '"Entry ID" of the uploaded logo in Cortex XSOAR.'
   isArray: false
   name: logoImageId
   required: false
