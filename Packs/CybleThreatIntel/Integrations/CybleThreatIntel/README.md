@@ -1,5 +1,5 @@
 Cyble Threat Intel is an integration which will help Existing Cyble Vision users. This integration would allow users to
-access the API avaialable as part of Vision Licensing and integrate the data into XSOAR.
+access the TAXII feed avaialable as part of Vision Licensing and integrate the data into XSOAR.
 
 ## Configure Cyble Threat Intel on Cortex XSOAR
 
