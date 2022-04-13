@@ -45,7 +45,7 @@ class netconn_complete():
 
     def format(self):
         for entry in self.fields:
-            if isinstance(entry['remote_ip'], int) and isinstance(entry['local_ip']):
+            if isinstance(entry['remote_ip'], int) and isinstance(entry['local_ip'], int):
                 entry['remote_ip'] = socket.inet_ntoa(struct.pack('>l', entry['remote_ip']))
                 entry['local_ip'] = socket.inet_ntoa(struct.pack('>l', entry['local_ip']))
         return self.fields
