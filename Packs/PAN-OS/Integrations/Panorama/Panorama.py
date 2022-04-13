@@ -2817,7 +2817,7 @@ def prettify_rules(rules: Union[List[dict], dict]):
 
 
 @logger
-def panorama_list_rules(xpath: str, args:dict):
+def panorama_list_rules(xpath: str, args: dict):
     tag = args.get('tag')
     params = {
         'action': 'get',
@@ -2839,7 +2839,7 @@ def panorama_list_rules(xpath: str, args:dict):
     return result['response']['result']['entry']
 
 
-def panorama_list_rules_command(args:dict):
+def panorama_list_rules_command(args: dict):
     """
     List security rules
     """
@@ -4140,14 +4140,14 @@ def panorama_query_traffic_logs_command(args: dict):
 
 
 @logger
-def panorama_get_traffic_logs(job_id: str, args: dict= {}):
+def panorama_get_traffic_logs(job_id: str, args: dict = {}):
     params = {
         'action': 'get',
         'type': 'log',
         'job-id': job_id,
         'key': API_KEY
     }
-    update_target(args)
+    update_target(args, params)
     result = http_request(
         URL,
         'GET',
@@ -4454,7 +4454,7 @@ def panorama_query_logs_command(args: dict):
     })
 
 
-def panorama_check_logs_status_command(args:dict):
+def panorama_check_logs_status_command(args: dict):
     """
     Check query logs status
     """
@@ -5221,7 +5221,7 @@ def panorama_show_device_version_command(args: dict):
 
 
 @logger
-def panorama_download_latest_content_update_content(args:dict):
+def panorama_download_latest_content_update_content(args: dict):
     params = {
         'type': 'op',
         'cmd': '<request><content><upgrade><download><latest/></download></upgrade></content></request>',
@@ -5237,7 +5237,7 @@ def panorama_download_latest_content_update_content(args:dict):
     return result
 
 
-def panorama_download_latest_content_update_command(args:dict):
+def panorama_download_latest_content_update_command(args: dict):
     """
     Download content and show message in war room
     """
@@ -5429,7 +5429,7 @@ def panorama_check_latest_panos_software_command(target: Optional[str] = None):
 
 
 @logger
-def panorama_download_panos_version(args:dict):
+def panorama_download_panos_version(args: dict):
     target_version = str(args['target_version'])
     params = {
         'type': 'op',
@@ -5618,7 +5618,7 @@ def panorama_install_panos_status_command(args: dict):
     })
 
 
-def panorama_device_reboot_command(args :dict):
+def panorama_device_reboot_command(args: dict):
     params = {
         'type': 'op',
         'cmd': '<request><restart><system></system></restart></request>',

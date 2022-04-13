@@ -1778,8 +1778,6 @@ script:
     - description: Job ID to check.
       name: job_id
       required: true
-    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
-      name: target
     description: Returns commit status for a configuration.
     deprecated: true
     name: panorama-commit-status
@@ -1800,8 +1798,6 @@ script:
     - description: Job ID to check.
       name: job_id
       required: true
-    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
-      name: target
     description: Returns the push status for a configuration.
     deprecated: true
     name: panorama-push-status
@@ -3664,6 +3660,7 @@ script:
       - 'true'
       - 'false'
     - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
+      name: target
     description: Commits a configuration to the Palo Alto firewall or Panorama, but
       does not validate if the commit was successful. Committing to Panorama does
       not push the configuration to the firewalls. To push the configuration, run
@@ -4423,6 +4420,8 @@ script:
       description: URL to check.
       isArray: true
       name: url
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
+      name: target
     description: Gets a URL category from URL filtering. This command is only available
       on Firewall devices.
     name: pan-os-get-url-category
@@ -5226,6 +5225,8 @@ script:
     - description: Job ID to check.
       name: job_id
       required: true
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
+      name: target
     description: Returns commit status for a configuration.
     name: pan-os-commit-status
     outputs:
@@ -5245,6 +5246,8 @@ script:
     - description: Job ID to check.
       name: job_id
       required: true
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
+      name: target
     description: Returns the push status for a configuration.
     name: pan-os-push-status
     outputs:
