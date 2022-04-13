@@ -38,7 +38,7 @@ else
 fi
 
 # test if any of the lint libraries has been updated
-# TODO changed for testing, should change back!
+# TODO changed for testing, should change back!!
 
 DIFF_RES=$(git diff  "$DIFF_COMPARE" -- dev-requirements-py*  | grep -E '\+(flake8|mypy|demisto-sdk|bandit|vulture)' )
 
