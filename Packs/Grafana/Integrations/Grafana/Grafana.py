@@ -201,7 +201,9 @@ def set_time_to_epoch_millisecond(time_to_set: Optional[str] = None):
     For annotation creation, sets the time to epoch numbers in millisecond resolution - if it was filled.
     """
     if time_to_set:
-        return int(dateparser.parse(time_to_set).timestamp()) * 1000
+        time_to_set_date = dateparser.parse(time_to_set)
+        assert time_to_set_date is not None
+        return int(time_to_set_date.timestamp()) * 1000
 
 
 def change_key(response: dict, prev_key: str, new_key: str):
@@ -251,23 +253,28 @@ def set_state(states: str = ''):
 
 
 def calculate_fetch_start_time(last_fetch: str = None, first_fetch: str = FETCH_DEFAULT_TIME):
-    first_fetch_datetime = dateparser.parse(first_fetch).replace(tzinfo=utc, microsecond=0)
+    parsed_date = dateparser.parse(first_fetch)
+    assert parsed_date is not None
+    first_fetch_datetime = parsed_date.replace(tzinfo=utc, microsecond=0)
     if last_fetch is None:
         return first_fetch_datetime
 
-    last_fetch = dateparser.parse(last_fetch).replace(tzinfo=utc, microsecond=0)
+    parsed_date = dateparser.parse(last_fetch)
+    assert parsed_date is not None, f'could not parse {last_fetch}'
+    last_fetch = parsed_date.replace(tzinfo=utc, microsecond=0)
     return max(last_fetch, first_fetch_datetime)
 
 
 def filter_alerts_by_time(alerts: List[Dict[str, Any]], last_fetch: datetime):
     # ignoring microsecond because date_to_timestamp doesn't know how to handle it
-    return [alert for alert in alerts if dateparser.parse(alert['newStateDate']).replace(tzinfo=utc, microsecond=0) >= last_fetch]
+    return [alert for alert in alerts
+            if dateparser.parse(alert['newStateDate']).replace(tzinfo=utc, microsecond=0) >= last_fetch]  # type: ignore
 
 
 def filter_alerts_by_id(alerts: List[Dict[str, Any]], last_fetch: datetime, last_id_fetched: int):
     # only for alerts with the same newStateDate as last_fetch
     return [alert for alert in alerts
-            if dateparser.parse(alert['newStateDate']).replace(tzinfo=utc, microsecond=0) != last_fetch
+            if dateparser.parse(alert['newStateDate']).replace(tzinfo=utc, microsecond=0) != last_fetch  # type: ignore
             or alert['id'] > last_id_fetched]
 
 
@@ -277,7 +284,9 @@ def reduce_incidents_to_limit(alerts: List[Dict[str, Any]], limit: int, last_fet
     if incidents_count > 0:
         alerts = alerts[:limit]
         last_fetched_alert = alerts[incidents_count - 1]
-        last_fetch = dateparser.parse(last_fetched_alert['newStateDate']).replace(tzinfo=utc, microsecond=0)
+        new_state_date = dateparser.parse(last_fetched_alert['newStateDate'])
+        assert new_state_date is not None, f"could not parse {last_fetched_alert['newStateDate']}"
+        last_fetch = new_state_date.replace(tzinfo=utc, microsecond=0)
         last_id_fetched = last_fetched_alert['id']
     return last_fetch, last_id_fetched, alerts
 
@@ -287,7 +296,8 @@ def parse_alerts(alerts: List[Dict[str, Any]], limit: int, last_fetch: datetime,
     alerts = filter_alerts_by_id(alerts, last_fetch, last_id_fetched)
 
     # sorting alerts by date and then by id
-    alerts.sort(key=lambda alert: (dateparser.parse(alert['newStateDate']).replace(tzinfo=utc), alert['id']))
+    alerts.sort(key=lambda alert: (dateparser.parse(alert['newStateDate']).replace(tzinfo=utc),  # type: ignore
+                                   alert['id']))
 
     last_fetch, last_id_fetched, alerts = reduce_incidents_to_limit(alerts, limit, last_fetch, last_id_fetched)
 

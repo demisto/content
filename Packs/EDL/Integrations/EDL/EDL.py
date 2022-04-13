@@ -95,7 +95,7 @@ class RequestArguments:
     FILTER_FIELDS_ON_FORMAT_JSON = "name,type"
 
     def __init__(self,
-                 query: str,
+                 query: str = '',
                  out_format: str = FORMAT_TEXT,
                  limit: int = 10000,
                  offset: int = 0,

@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 INCIDENT_FIELD_NAME = "name"
 INCIDENT_FIELD_MACHINE_NAME = "cliName"
 INCIDENT_FIELD_SYSTEM = "system"
+INCIDENT_FIELD_UNMAPPED = "unmapped"
 
 SAMPLES_INCOMING = 'incomingSamples'
 SAMPLES_SCHEME = 'scheme'
@@ -264,7 +265,7 @@ class DateValidator:
             date_formats_options += list(
                 itertools.product(day_options, delimeters, months_options, delimeters, year_options))
 
-        self.date_formats_options = map(lambda x: "".join(x), date_formats_options)
+        self.date_formats_options = list(map(lambda x: "".join(x), date_formats_options))
 
     def try_parsing_date(self, text):
         for fmt in self.date_formats_options:
@@ -326,7 +327,7 @@ class Validator:
         self.date_validator = DateValidator()
 
     def validate_regex(self, pattern, value, json_field_name=None):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             return pattern.match(value) is not None
         return False
 
@@ -366,7 +367,7 @@ class Validator:
         return self.validate_regex(self.MAC_REGEX, value)
 
     def validate_hostname(self, field_name, hostname, json_field_name=None):
-        if not isinstance(hostname, basestring) or len(hostname) > 255:  # type: ignore
+        if not isinstance(hostname, str) or len(hostname) > 255:  # type: ignore
             return False
         if hostname[-1] == ".":  # type: ignore
             hostname = hostname[:-1]  # type: ignore
@@ -428,7 +429,7 @@ def remove_dups(seq):
 
 
 def split_by_non_alpha_numeric(_string):
-    return filter(lambda x: x, re.split('[^a-zA-Z0-9]', _string))
+    return list(filter(lambda x: x, re.split('[^a-zA-Z0-9]', _string)))
 
 
 def camel_case_split(identifier):
@@ -467,7 +468,7 @@ def normilize(value):
     parts = []  # type: List[str]
     for part in split_by_non_alpha_numeric(value):
         parts += camel_case_split(part)
-    terms = map(lemma_word, parts)
+    terms = list(map(lemma_word, parts))
     return remove_dups(terms)
 
 
@@ -486,8 +487,9 @@ def validate_value_with_validator(alias, value, json_field_name=None):
 def get_candidates(json_field_name):
     json_field_terms = normilize(json_field_name)
     aliases_terms = ALIASING_TERMS_MAP.items()
-    match_terms = map(lambda x: x[0],
-                      filter(lambda alias_terms: is_sublist_of_list(alias_terms[1], json_field_terms), aliases_terms))
+    match_terms = list(map(lambda x: x[0],
+                           filter(lambda alias_terms: is_sublist_of_list(alias_terms[1], json_field_terms),
+                                  aliases_terms)))
     return sorted(match_terms, reverse=True, key=number_of_terms)
 
 
@@ -495,8 +497,8 @@ def suggest_field_with_alias(json_field_name, json_field_value=None):
     norm_json_field_name = " ".join(normilize(json_field_name))
     candidates = get_candidates(json_field_name)
     if json_field_value is not None:
-        candidates = filter(lambda c: validate_value_with_validator(c, json_field_value, norm_json_field_name),
-                            candidates)
+        candidates = list(filter(lambda c: validate_value_with_validator(c, json_field_value, norm_json_field_name),
+                                 candidates))
     if len(candidates) > 0:
         alias = candidates[0]
         return ALIASING_MAP[alias], alias
@@ -704,8 +706,9 @@ def init():
     SCHEME_ONLY = demisto.args().get('incidentSamplesType') in [SAMPLES_OUTGOING, SAMPLES_SCHEME]
 
     fields = demisto.args().get('incidentFields', {})
+    fields = [x for x in fields if not x.get(INCIDENT_FIELD_UNMAPPED, False)]
     if fields and len(fields) > 0:
-        fields_names = map(lambda x: x['name'], fields)
+        fields_names = list(map(lambda x: x['name'], fields))
         SIEM_FIELDS = filter_by_dict_by_keys(SIEM_FIELDS, fields_names)
         for custom_field in filter(lambda x: not x['system'], fields):
             field_name = custom_field[INCIDENT_FIELD_NAME]
@@ -726,9 +729,9 @@ def main():
     init()
     incidents_samples = demisto.args().get('incidentSamples')
     if incidents_samples:
-        if isinstance(incidents_samples, basestring):
+        if isinstance(incidents_samples, str):
             incidents_samples = json.loads(incidents_samples)  # type: ignore
-        incidents = map(parse_incident_sample, incidents_samples)
+        incidents = list(map(parse_incident_sample, incidents_samples))
     else:
         return_error("Could not parse incident samples")
 
