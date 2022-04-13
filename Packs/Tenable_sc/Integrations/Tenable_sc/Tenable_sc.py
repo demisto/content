@@ -1042,7 +1042,7 @@ def create_query(scan_id, tool, query_filters=None):
 def delete_query(query_id):
     if not query_id:
         return_error('query id returned None')
-    path = f'query/{query_id}'
+    path = 'query/' + query_id
     send_request(path, method='delete')
 
 
