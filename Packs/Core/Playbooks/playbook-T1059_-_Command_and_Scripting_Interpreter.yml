@@ -77,7 +77,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "40"
+      - "51"
     separatecontext: false
     view: |-
       {
@@ -225,12 +225,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 7b94113b-de37-4ded-8dc7-1153b8317c29
+    taskid: 7122ef49-4fec-412a-86da-2f6fc9563561
     type: title
     task:
-      id: 7b94113b-de37-4ded-8dc7-1153b8317c29
+      id: 7122ef49-4fec-412a-86da-2f6fc9563561
       version: -1
-      name: Eradication
+      name: 'Remediation '
       type: title
       iscommand: false
       brand: ""
@@ -238,12 +238,13 @@ tasks:
     nexttasks:
       '#none#':
       - "42"
+      - "52"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1140,
-          "y": 1980
+          "y": 1960
         }
       }
     note: false
@@ -327,10 +328,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 78ae536b-f1b8-4494-86cb-a2ba5a9df31a
+    taskid: c56ccf1c-62e0-4bdc-8889-5ecf8f419c4f
     type: condition
     task:
-      id: 78ae536b-f1b8-4494-86cb-a2ba5a9df31a
+      id: c56ccf1c-62e0-4bdc-8889-5ecf8f419c4f
       version: -1
       name: Should close alert automatically?
       description: Whether to close the alert automatically or manually.
@@ -350,7 +351,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.AutoCloseAlert
+                root: inputs.ShouldCloseAutomatically
             iscontext: true
           right:
             value:
@@ -413,74 +414,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
-    taskid: fc68174f-2578-48cb-8e18-12fb1d87c33e
-    type: playbook
-    task:
-      id: fc68174f-2578-48cb-8e18-12fb1d87c33e
-      version: -1
-      name: Containment Plan
-      description: |-
-        This playbook handles all the containment actions available with Cortex XSIAM.
-        The playbook allows to contain the incident with one of the following tasks:
-        * Isolate endpoint
-        * Disable account
-        * Quarantine file
-        * Block indicators
-        * Clear user session (currently, the playbook supports only Okta)
-
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
-      playbookName: Containment Plan
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      AutoContainment:
-        simple: "False"
-      BlockIndicators:
-        simple: "false"
-      ClearUserSessions:
-        simple: "false"
-      EndpointID:
-        complex:
-          root: alert
-          accessor: agentid
-      FileContainment:
-        simple: "false"
-      HostAutoContainment:
-        simple: "False"
-      UserContainment:
-        simple: "false"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1140,
-          "y": 1250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 0dbea700-1b7e-42a8-8704-6a8bdc2485bb
+    taskid: 2650ee91-e541-4332-8cf9-8b27bef073fe
     type: playbook
     task:
-      id: 0dbea700-1b7e-42a8-8704-6a8bdc2485bb
+      id: 2650ee91-e541-4332-8cf9-8b27bef073fe
       version: -1
       name: Eradication Plan
       description: |-
@@ -500,7 +439,7 @@ tasks:
       - "49"
     scriptarguments:
       AutoEradicate:
-        simple: "true"
+        simple: "false"
       EndpointID:
         complex:
           root: alert
@@ -589,10 +528,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: f38b5161-ab42-4eb0-8ea0-a68ff973d8d8
+    taskid: c65f44a3-7339-4023-85d9-730440543e30
     type: playbook
     task:
-      id: f38b5161-ab42-4eb0-8ea0-a68ff973d8d8
+      id: c65f44a3-7339-4023-85d9-730440543e30
       version: -1
       name: Handle False Positive Alerts
       description: |
@@ -609,6 +548,9 @@ tasks:
         complex:
           root: alert
           accessor: initiatorsha256
+      ShouldCloseAutomatically:
+        complex:
+          root: inputs.ShouldCloseAutomatically
       alertName:
         complex:
           root: alert
@@ -828,6 +770,346 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: fb3b753b-416e-4a5d-8e72-cda87f3469e7
+    type: playbook
+    task:
+      id: fb3b753b-416e-4a5d-8e72-cda87f3469e7
+      version: -1
+      name: Containment Plan
+      description: |-
+        This playbook handles all the containment actions available with XSIAM.
+        The playbook allows to contain the incident with one of the following tasks:
+        * Isolate endpoint
+        * Disable account
+        * Quarantine file
+        * Block indicators
+        * Clear user session (currently, the playbook supports only Okta)
+
+        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+      playbookName: Containment Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      AutoContainment:
+        complex:
+          root: inputs.AutoContainment
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "true"
+      BlockIndicators:
+        simple: "True"
+      ClearUserSessions:
+        simple: "False"
+      Domain:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+      EndpointID:
+        complex:
+          root: alert
+          accessor: agentid
+      FileContainment:
+        simple: "False"
+      FileRemediation:
+        simple: Quarantine
+      HostAutoContainment:
+        complex:
+          root: inputs.PreHostContainment
+      IAMUserDomain:
+        simple: '@demisto.com'
+      IP:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+      URL:
+        complex:
+          root: ExtractedIndicators
+          accessor: URL
+      UserContainment:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      scriptArguments:
+        AutoContainment:
+          complex:
+            root: inputs.AutoContainment
+            transformers:
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: "true"
+        BlockIndicators:
+          simple: "True"
+        ClearUserSessions:
+          simple: "False"
+        EndpointID:
+          complex:
+            root: alert
+            accessor: agentid
+        FileContainment:
+          simple: "True"
+        FileHash:
+          complex:
+            root: alert
+            filters:
+            - - operator: isNotEqualString
+                left:
+                  value:
+                    simple: alert.initiatorpath
+                  iscontext: true
+                right:
+                  value:
+                    simple: c:\windows\explorer.exe
+                ignorecase: true
+            accessor: initiatorsha256
+            transformers:
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: alert.targetprocesssha256
+                  iscontext: true
+        FilePath:
+          complex:
+            root: alert.initiatorpath
+            filters:
+            - - operator: isNotEqualString
+                left:
+                  value:
+                    simple: alert.initiatorpath
+                  iscontext: true
+                right:
+                  value:
+                    simple: c:\windows\explorer.exe
+                ignorecase: true
+            transformers:
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: alert.targetprocesscmd
+                  iscontext: true
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: \"
+                replaceWith: {}
+            - operator: uniq
+        FileRemediation:
+          simple: Quarantine
+        HostAutoContainment:
+          simple: "false"
+        IAMUserDomain:
+          simple: '@demisto.com'
+        UserContainment:
+          simple: "False"
+        Username:
+          complex:
+            root: alert
+            accessor: username
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 478be987-29c6-4b0d-8a92-247a466ada2f
+    type: playbook
+    task:
+      id: 478be987-29c6-4b0d-8a92-247a466ada2f
+      version: -1
+      name: Containment Plan
+      description: |-
+        This playbook handles all the containment actions available with XSIAM.
+        The playbook allows to contain the incident with one of the following tasks:
+        * Isolate endpoint
+        * Disable account
+        * Quarantine file
+        * Block indicators
+        * Clear user session (currently, the playbook supports only Okta)
+
+        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+      playbookName: Containment Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      AutoContainment:
+        complex:
+          root: inputs.AutoContainment
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "false"
+      BlockIndicators:
+        simple: "True"
+      ClearUserSessions:
+        simple: "False"
+      EndpointID:
+        complex:
+          root: alert
+          accessor: agentid
+      FileContainment:
+        simple: "True"
+      FileHash:
+        complex:
+          root: foundIncidents.CustomFields
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          accessor: initiatorsha256
+      FilePath:
+        complex:
+          root: foundIncidents.CustomFields.initiatorpath
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          transformers:
+          - operator: uniq
+      FileRemediation:
+        complex:
+          root: inputs.FileRemediation
+      HostAutoContainment:
+        complex:
+          root: inputs.HostAutoContainment
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "false"
+      UserContainment:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      scriptArguments:
+        AutoContainment:
+          complex:
+            root: inputs.AutoContainment
+            transformers:
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: "false"
+        BlockIndicators:
+          simple: "True"
+        ClearUserSessions:
+          simple: "False"
+        EndpointID:
+          complex:
+            root: alert
+            accessor: agentid
+        FileContainment:
+          simple: "True"
+        FileHash:
+          complex:
+            root: foundIncidents.CustomFields
+            filters:
+            - - operator: isNotEqualString
+                left:
+                  value:
+                    simple: foundIncidents.CustomFields.initiatorpath
+                  iscontext: true
+                right:
+                  value:
+                    simple: c:\windows\explorer.exe
+                ignorecase: true
+            accessor: initiatorsha256
+        FilePath:
+          complex:
+            root: foundIncidents.CustomFields.initiatorpath
+            filters:
+            - - operator: isNotEqualString
+                left:
+                  value:
+                    simple: foundIncidents.CustomFields.initiatorpath
+                  iscontext: true
+                right:
+                  value:
+                    simple: c:\windows\explorer.exe
+                ignorecase: true
+            transformers:
+            - operator: uniq
+        FileRemediation:
+          complex:
+            root: inputs.FileRemediation
+        HostAutoContainment:
+          complex:
+            root: inputs.HostAutoContainment
+        IAMUserDomain:
+          simple: '@demisto.com'
+        UserContainment:
+          simple: "False"
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -839,19 +1121,19 @@ view: |-
       "39_14_yes": 0.5,
       "39_16_#default#": 0.46,
       "48_27_yes": 0.62,
-      "48_49_#default#": 0.56
+      "48_49_#default#": 0.47
     },
     "paper": {
       "dimensions": {
         "height": 3075,
-        "width": 1070,
+        "width": 1510,
         "x": 450,
         "y": 100
       }
     }
   }
 inputs:
-- key: CloseAlertAfterEradication
+- key: ShouldCloseAutomatically
   value:
     simple: "False"
   required: false
@@ -867,6 +1149,17 @@ inputs:
   value: {}
   required: false
   description: "Whether to execute automatically or manually the containment plan tasks:\n* Block indicators\n* Quarantine file\n* Disable user "
+  playbookInputQuery:
+- key: PreHostContainment
+  value:
+    simple: "True"
+  required: false
+  description: Isolate the host after the Analysis phase (command-line analysis)
+  playbookInputQuery:
+- key: FileRemediation
+  value: {}
+  required: false
+  description: ""
   playbookInputQuery:
 outputs: []
 tests:

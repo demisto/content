@@ -124,10 +124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: abf4d3c5-a76e-45d9-8a43-c789c3fb0c84
+    taskid: a213a937-f40d-4de4-8700-968bcc6808b8
     type: condition
     task:
-      id: abf4d3c5-a76e-45d9-8a43-c789c3fb0c84
+      id: a213a937-f40d-4de4-8700-968bcc6808b8
       version: -1
       name: Found additional indicators?
       description: Checks if indicators exist in the command line for which to enrich.
@@ -148,6 +148,12 @@ tasks:
             value:
               complex:
                 root: ExtractedIndicators
+                filters:
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: ExtractedIndicators.Attack_Pattern
+                      iscontext: true
             iscontext: true
           right:
             value: {}
@@ -383,10 +389,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 86109946-90f2-44e2-8635-0523946837f3
+    taskid: 6364c60a-7377-405b-8e60-356517a88274
     type: condition
     task:
-      id: 86109946-90f2-44e2-8635-0523946837f3
+      id: 6364c60a-7377-405b-8e60-356517a88274
       version: -1
       name: Check for suspicious parameters usage
       description: Checks for suspicious parameters usage.
@@ -571,7 +577,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: -Invoke-Expression
+              simple: Invoke-Expression
           ignorecase: true
         - operator: containsString
           left:
@@ -1248,10 +1254,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 1c334f65-0945-4e2c-8c20-40dd318bcf0f
+    taskid: d8a7413a-0fb9-438f-8704-deac078f6b8a
     type: regular
     task:
-      id: 1c334f65-0945-4e2c-8c20-40dd318bcf0f
+      id: d8a7413a-0fb9-438f-8704-deac078f6b8a
       version: -1
       name: Set Commandline
       description: Sets a value in context from the key entered.
@@ -1269,6 +1275,25 @@ tasks:
         complex:
           root: Core.DynamicAnalysis.internals.attributes
           accessor: content
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${Core.DynamicAnalysis.internals.attributes.scriptblock_text}
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${Core.DynamicAnalysis.internals.attributes.original_command_line}
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${alert.targetprocesscmd}
     separatecontext: false
     view: |-
       {
@@ -1430,10 +1455,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 75cbfc1f-45b8-483b-85d3-d4ae9ac01d79
+    taskid: 3ded5af2-6cac-429a-847c-eb703fb2a012
     type: condition
     task:
-      id: 75cbfc1f-45b8-483b-85d3-d4ae9ac01d79
+      id: 3ded5af2-6cac-429a-847c-eb703fb2a012
       version: -1
       name: Found indicators in the command-line?
       description: Checks if indicators exist in the command line.
@@ -1454,6 +1479,12 @@ tasks:
             value:
               complex:
                 root: ExtractedIndicators
+                filters:
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: ExtractedIndicators.Attack_Pattern
+                      iscontext: true
             iscontext: true
           right:
             value: {}
