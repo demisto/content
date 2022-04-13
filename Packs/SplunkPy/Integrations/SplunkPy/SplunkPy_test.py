@@ -1408,10 +1408,10 @@ def test_empty_string_as_app_param_value(mocker):
     # validate
     assert connection_args.get('app') == '-'
 
-
 OWNER_MAPPING = [{u'xsoar_user': u'test_xsoar', u'splunk_user': u'test_splunk', u'wait': True},
-                 {u'xsoar_user': u'', u'splunk_user': u'test_not_full', u'wait': True},
-                 {u'xsoar_user': u'test_not_full', u'splunk_user': u'', u'wait': True}]
+                 {u'xsoar_user': u'test_not_full', u'splunk_user': u'', u'wait': True},
+                 {u'xsoar_user': u'', u'splunk_user': u'test_not_full', u'wait': True},]
+
 
 MAPPER_CASES_XSOAR_TO_SPLUNK = [
     ('test_xsoar', 'test_splunk', None),
@@ -1495,8 +1495,8 @@ def test_owner_mapping_mechanism_splunk_to_xsoar(mocker, splunk_name, expected_x
         assert error_mock.call_args[0][0] == expected_msg
 
 COMMAND_CASES = [
-    ({'xsoar_username': 'test_xsoar'}, {}),
-    ({'xsoar_username': 'test_xsoar, Non existing'}, {}),
+    # ({'xsoar_username': 'test_xsoar'}, {'test_xsoar': u'test_splunk'}),
+    # ({'xsoar_username': 'test_xsoar, Non existing'}, {'Non existing': 'unassigned', 'test_xsoar': u'test_splunk'}),
     ({'xsoar_username': 'Non Existing,'}, {}),
     ({'xsoar_username': ['test_xsoar, Non existing']}, {})
 ]
@@ -1510,7 +1510,7 @@ def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs)
     """
 
     def mocked_get_record(col, value_to_search):
-        return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING)
+        return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING[:-1])
     service = mocker.patch('splunklib.client.connect', return_value=None)
 
     mapper = splunk.UserMappingObject(service, True, table_name='splunk_xsoar_users',
