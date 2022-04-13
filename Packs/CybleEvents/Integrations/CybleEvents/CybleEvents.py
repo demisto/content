@@ -334,7 +334,7 @@ def cyble_fetch_alerts(client, method, args):
 
 def fetch_alert_details(client, args):
     """
-    Fetch alert details using the arguments from server
+    Fetch alert details using the arguments from server.
     :param client: instace of client to communicate with server
     :param args: arguments for fetching alert details
     :return: alert details
