@@ -15,11 +15,11 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 INCIDENT_SEVERITY = {
     'unknown': 0,
-    'informational': 1,
-    'low': 2,
-    'medium': 3,
-    'high': 4,
-    'critical': 5
+    'informational': 0.5,
+    'low': 1,
+    'medium': 2,
+    'high': 3,
+    'critical': 4
 }
 
 LIMIT_EVENT_ITEMS = 50
