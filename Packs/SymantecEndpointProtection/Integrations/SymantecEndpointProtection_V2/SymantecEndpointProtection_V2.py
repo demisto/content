@@ -3,7 +3,7 @@ from CommonServerPython import *
 import requests
 import json
 import re
-from urllib.parse import quote
+import urllib
 import urllib3
 
 urllib3.disable_warnings()
@@ -95,7 +95,7 @@ def do_auth(server, crads, insecure, domain):
     url = fix_url(str(server)) + 'sepm/api/v1/identity/authenticate'
     body = {
         'username': crads.get('identifier') if crads.get('identifier') else '',
-        'password': quote(crads.get('password')) if crads.get('password') else '',
+        'password': urllib.quote(crads.get('password')) if crads.get('password') else '',
         'domain': domain if domain else ''
     }
     res = requests.post(url, headers={"Content-Type": "application/json"}, data=json.dumps(body), verify=not insecure)
