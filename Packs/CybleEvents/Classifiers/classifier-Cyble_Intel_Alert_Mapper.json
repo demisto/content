@@ -15,11 +15,11 @@
                     },
                     "simple": ""
                 },
-                "Cyble Events ID": {
+                "Event ID": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventsid",
+                        "root": "eventid",
                         "transformers": []
                     },
                     "simple": ""
@@ -42,11 +42,11 @@
                     },
                     "simple": ""
                 },
-                "Cyble Events Type": {
+                "Event Type": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventstype",
+                        "root": "eventtype",
                         "transformers": []
                     },
                     "simple": ""
@@ -101,11 +101,11 @@
                     },
                     "simple": ""
                 },
-                "Cyble Events ID": {
+                "Event ID": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventsid",
+                        "root": "eventid",
                         "transformers": []
                     },
                     "simple": ""
@@ -128,11 +128,11 @@
                     },
                     "simple": ""
                 },
-                "Cyble Events Type": {
+                "Event Type": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "cybleeventstype",
+                        "root": "eventtype",
                         "transformers": []
                     },
                     "simple": ""

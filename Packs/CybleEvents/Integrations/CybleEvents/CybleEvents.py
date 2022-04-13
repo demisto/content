@@ -15,11 +15,11 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 INCIDENT_SEVERITY = {
     'unknown': 0,
-    'informational': 1,
-    'low': 2,
-    'medium': 3,
-    'high': 4,
-    'critical': 5
+    'informational': 0.5,
+    'low': 1,
+    'medium': 2,
+    'high': 3,
+    'critical': 4
 }
 
 LIMIT_EVENT_ITEMS = 50
@@ -275,10 +275,10 @@ def format_incidents(resp, eventTypes):
                 event_type = eventTypes.get(e_type)
                 alert_details = {
                     "name": "Cyble Intel Alert on {}".format(event_type),
-                    "cybleeventstype": "{}".format(e_type),
+                    "eventtype": "{}".format(e_type),
                     "severity": INCIDENT_SEVERITY.get(alert_priority.lower()),
                     "occurred": "{}".format(alert_created_at),
-                    "cybleeventsid": "{}".format(alert_id),
+                    "eventid": "{}".format(alert_id),
                     "cybleeventsname": "Incident of {} type".format(event_type),
                     "cybleeventsbucket": "{}".format(alert_bucket_name),
                     "cybleeventskeyword": "{}".format(alert_keyword),
@@ -325,7 +325,7 @@ def cyble_fetch_alerts(client, method, args):
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='CybleEvents.Events',
-        outputs_key_field=['cybleeventsid', 'cybleeventstype'],
+        outputs_key_field=['eventid', 'eventtype'],
         outputs=incidents
     )
 

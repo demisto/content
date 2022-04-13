@@ -170,10 +170,10 @@ script:
       execution: false
       name: cyble-vision-fetch-alerts
       outputs:
-        - contextPath: CybleEvents.Events.cybleeventsid
+        - contextPath: CybleEvents.Events.eventid
           description: Returns the event ID
           type: String
-        - contextPath: CybleEvents.Events.cybleeventstype
+        - contextPath: CybleEvents.Events.eventtype
           description: Returns the event type
           type: String
         - contextPath: CybleEvents.Events.severity
