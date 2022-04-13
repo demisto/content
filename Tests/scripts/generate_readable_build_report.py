@@ -13,6 +13,7 @@ summary_file = os.path.join(ARTIFACTS_FOLDER, 'summary.html')
 def get_file_data(file_path: str):
     """
     """
+    #TODO change print to log
     try:
         if os.path.isfile(file_path):
             print(f'Extracting {file_path}')
@@ -51,7 +52,6 @@ def build_summary_report(validate_summary, unit_tests_summary):
 
 def test_get_failing_ut():
     file = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'failed_unit_tests.json'))
-    # file = open('failed_unit_tests.json', 'r')
     failed_ut = json.load(file)
     if failed_ut:
         # TODO change method of counting
@@ -82,7 +82,7 @@ def test_get_failing_validations():
 
 def generate_build_report(logging_manager):
     validate_pr_comment, validate_summary = test_get_failing_validations()
-    unit_tests_pr_comment, unit_tests_summary = test_get_failing_validations()
+    unit_tests_pr_comment, unit_tests_summary = test_get_failing_ut()
     pr_comment = create_pr_comment(validate_pr_comment, unit_tests_pr_comment)
     _add_pr_comment(pr_comment, logging_manager, 'here is a link to the full report')
     build_summary_report(validate_summary, unit_tests_summary)
