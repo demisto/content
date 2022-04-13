@@ -14,4 +14,4 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 dockerimage: demisto/flask-nginx:1.0.0.20328
-fromversion: 5.5.0
+fromversion: 5.5.1

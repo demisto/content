@@ -27,6 +27,7 @@ class ErrorHandler:
     def write(msg: str):
         demisto.error(f'wsgi error: {msg}')
 
+some_change = 'fff'
 
 DEMISTO_LOGGER: Handler = Handler()
 ERROR_LOGGER: ErrorHandler = ErrorHandler()
