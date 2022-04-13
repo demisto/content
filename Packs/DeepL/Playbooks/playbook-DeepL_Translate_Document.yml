@@ -1,33 +1,27 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: e4713df9-87d0-49f3-8146-dc5f9fe05939
     propagationLabels:
     - all
-    toServerVersion: ""
-id: 69560f28-d59f-4bd9-8a72-7026bb7fda1e
+id: DeepL Translate Document
 inputs:
 - description: EntryID of the File to be translated
   key: entry_id
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: BG,CS,DA,DE,EL,EN,ES,ET,FI,FR,HU,IT,JA,LT,LV,NL,PL,PT,RO,RU,SK,SL,SV,ZH
   key: source_lang
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: BG,CS,DA,DE,EL,EN-GB,EN-US,EN,ES,ET,FI,FR,HU,IT,JA,LT,LV,NL,PL,PT-PT,PT-BR,PT,RO,RU,SK,SL,SV,ZH
   key: target_lang
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: The name of the uploaded file. Can be used as an alternative to including
-    the file name in the file part's content disposition.
+- description: The name of the uploaded file. Can be used as an alternative to including the file name in the file part's content disposition.
   key: filename
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -35,19 +29,17 @@ inputs:
 
     values: default,more,less
   key: formality
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: 'Specify the glossary to use for the document translation. Important:
-    This requires the source_lang parameter to be set and the language pair of the
-    glossary has to match the language pair of the request.'
+- description: 'Specify the glossary to use for the document translation. Important: This requires the source_lang parameter to be set and the language pair of the glossary has to match the language pair of the request.'
   key: glossary_id
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: 'filename (Default is: ''TranslatedFile'')'
+- description: "filename (Default is: 'TranslatedFile')"
   key: translated_filename
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: DeepL Translate Document
@@ -55,27 +47,27 @@ outputs:
 - contextPath: TranslatedFile.EntryID
   description: Translated File EntryID
   type: unknown
-sourceplaybookid: 9d7faf0e-eae3-4f94-8cd4-047c68ef8631
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 12683762-dac1-4a70-808d-ba8886b6ee49
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: 12683762-dac1-4a70-808d-ba8886b6ee49
     timertriggers: []
     type: start
@@ -86,14 +78,14 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     note: false
     quietmode: 0
     scriptarguments:
@@ -124,19 +116,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Please note that with every submitted document of type .pptx, .docx
-        or .pdf you are billed a minimum of 50'000 characters with the DeepL API plan,
-        no matter how many characters are included in the document.  Because the request
-        includes a file upload, it must be an HTTP POST request containing multipart/form-data.
-        This call returns immediately after the document was uploaded and queued for
-        translation. Further requests must be sent to the API to get updates on the
-        translation progress or to download the translated document once the translation
-        is finished (see other document request types below).  Once the document is
-        fully uploaded, the translation starts immediately. Please be aware that the
-        uploaded document is automatically removed from the server after the translation
-        is done. You have to upload the document again in order to restart the translation.  The
-        maximum upload limit for any document is 10MB and 1.000.000 characters.
+      brand: ''
+      description: Please note that with every submitted document of type .pptx, .docx or .pdf you are billed a minimum of 50'000 characters with the DeepL API plan, no matter how many characters are included in the document.  Because the request includes a file upload, it must be an HTTP POST request containing multipart/form-data. This call returns immediately after the document was uploaded and queued for translation. Further requests must be sent to the API to get updates on the translation progress or to download the translated document once the translation is finished (see other document request types below).  Once the document is fully uploaded, the translation starts immediately. Please be aware that the uploaded document is automatically removed from the server after the translation is done. You have to upload the document again in order to restart the translation.  The maximum upload limit for any document is 10MB and 1.000.000 characters.
       id: ba640463-d64c-4595-8432-8039b8d46da9
       iscommand: true
       name: DeepL Submit Document
@@ -153,8 +134,8 @@ tasks:
           "y": 195
         }
       }
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -163,12 +144,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: c3e62761-de62-4fdb-828b-dc5e672baa37
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: c3e62761-de62-4fdb-828b-dc5e672baa37
     timertriggers: []
     type: title
@@ -179,14 +161,14 @@ tasks:
           "y": 1070
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     scriptarguments:
@@ -214,7 +196,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Get the translated document
       id: 2173539b-29c4-4603-8320-4659ad6cc997
       iscommand: true
@@ -232,19 +214,19 @@ tasks:
           "y": 720
         }
       }
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: TranslatedFile.EntryID
       value:
@@ -252,7 +234,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Set a value in context under the key you entered.
       id: 1f28935b-e0f3-49bd-8b23-3ef6fc783221
       iscommand: false
@@ -270,19 +252,19 @@ tasks:
           "y": 895
         }
       }
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     note: false
     quietmode: 0
     scriptarguments:
@@ -293,19 +275,19 @@ tasks:
       Ids:
         simple: ${DeepL.DocumentSubmission.document_id}
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: document_id
       PollingCommandName:
         simple: deepl-check-document-status
       Timeout:
-        simple: "10"
+        simple: '10'
       dt:
         simple: DeepL.DocumentStatus(val.status == "queued" || val.status == "translating").document_id
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -330,14 +312,14 @@ tasks:
           "y": 370
         }
       }
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
@@ -348,9 +330,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: The status of the document translation process can be checked by
-        sending a status request to the document specific status URL.
+      brand: ''
+      description: The status of the document translation process can be checked by sending a status request to the document specific status URL.
       id: d95ddd07-9871-40b8-80a3-01f00057b16d
       iscommand: true
       name: Check Submission Status
@@ -380,3 +361,7 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+description: ''
+fromversion: 5.0.0
