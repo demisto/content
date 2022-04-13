@@ -22,3 +22,5 @@ Internal Domains - If a domain is a subdomain of the domains configured in the "
 ## Playbook Image
 
 ---
+
+![Tag massive and internal IOCs to avoid EDL listing](../doc_files/Tag_massive_and_internal_IOCs_to_avoid_EDL_listing.png)
