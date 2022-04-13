@@ -39,15 +39,15 @@ class ProcessEventDetail:
 
     
 class netconn_complete():
-    # include the class in the format function
     def __init__(self, fields):
-		self.fields = fields
-		
+        self.fields = fields
+
 
     def format(self):
         for entry in self.fields:
-            entry['remote_ip'] = socket.inet_ntoa(struct.pack('>i', int(entry['remote_ip']))
-            entry['local_ip'] = socket.inet_ntoa(struct.pack('>i', int(entry['remote_ip']))
+            if isinstance(entry['remote_ip'], int) and isinstance(entry['local_ip']):
+                entry['remote_ip'] = socket.inet_ntoa(struct.pack('>l', entry['remote_ip']))
+                entry['local_ip'] = socket.inet_ntoa(struct.pack('>l', entry['local_ip']))
         return self.fields
     
 
