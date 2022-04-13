@@ -379,7 +379,7 @@ tasks:
       id: 7e128208-4a6e-4e8f-81b5-d9998af64a8a
       version: -1
       name: 'Found any malicious behavior? '
-      description: Checks if found malicious behavior.
+      description: Checks if malicious behavior was found.
       type: condition
       iscommand: false
       brand: ""
