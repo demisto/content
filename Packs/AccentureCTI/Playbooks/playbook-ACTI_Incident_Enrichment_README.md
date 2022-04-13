@@ -26,4 +26,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![ACTI Incident Enrichment](Insert the link to your image here)
+![ACTI Incident Enrichment](https://user-images.githubusercontent.com/40510780/163230651-e05f80a7-06da-4ec2-a5b1-29aa7878e6fa.png)
