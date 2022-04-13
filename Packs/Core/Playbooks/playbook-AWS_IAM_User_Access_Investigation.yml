@@ -33,8 +33,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 120
+          "x": 550,
+          "y": -70
         }
       }
     note: false
@@ -108,7 +108,7 @@ tasks:
     task:
       id: f452a1bf-3fc3-40db-8d4a-1666372f6a82
       version: -1
-      name: Decision making - true/false-positive alert
+      name: Manual decision making - true/false-positive alert
       description: Based on the collected data investigation and the verdict established
         by the "Enrichment for Verdict" playbook, is this a true positive event?
       type: condition
@@ -123,7 +123,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
+          "x": 220,
           "y": 920
         }
       }
@@ -183,8 +183,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 270
+          "x": 550,
+          "y": 80
         }
       }
     note: false
@@ -208,13 +208,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "21"
+      - "66"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 780
+          "x": 550,
+          "y": 600
         }
       }
     note: false
@@ -416,8 +416,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 610
+          "x": 550,
+          "y": 420
         }
       }
     note: false
@@ -452,8 +452,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 420
+          "x": 550,
+          "y": 230
         }
       }
     note: false
@@ -546,18 +546,71 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: ac7a9b9c-0d3c-494a-8def-9884ca58aadf
+    type: condition
+    task:
+      id: ac7a9b9c-0d3c-494a-8def-9884ca58aadf
+      version: -1
+      name: Is it a suspicious or Tor IP?
+      description: "Is it a suspicious or Tor IP?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: alert.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious API call from a Tor exit node
+        - operator: isEqualString
+          left:
+            value:
+              simple: IPVerdict
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "21_64_False Positive": 0.54,
-      "57_58_yes": 0.82
+      "21_8_True positive": 0.48,
+      "57_58_yes": 0.82,
+      "66_8_yes": 0.37
     },
     "paper": {
       "dimensions": {
-        "height": 1695,
+        "height": 1885,
         "width": 1250,
         "x": -90,
-        "y": 120
+        "y": -70
       }
     }
   }
