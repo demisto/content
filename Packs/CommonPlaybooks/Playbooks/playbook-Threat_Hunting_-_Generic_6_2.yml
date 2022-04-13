@@ -3,12 +3,9 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Threat Hunting - Generic
-description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations:
-- Splunk
-- Qradar
-- Pan-os
-- Cortex data lake 
-- Autofocus"
+description: "This playbook enables threat hunting for IOCs in your enterprise. It\
+  \ currently supports the following integrations: - Splunk\n- Qradar\n- Pan-os \n\
+  - Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
 starttaskid: "0"
 tasks:
   "0":
@@ -27,11 +24,12 @@ tasks:
       - "2"
       - "3"
       - "5"
+      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 440,
+          "x": 230,
           "y": 60
         }
       }
@@ -185,7 +183,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
+          "x": 230,
           "y": 440
         }
       }
@@ -204,8 +202,8 @@ tasks:
       id: 6f545ba4-aeb9-4c82-87d0-4e3a1f0b5826
       version: -1
       name: QRadar Indicator Hunting V2
-      description: 'This playbook queries the QRadar SIEM for indicators such as file hashes,
-        IP addresses, domains, or URLs. '
+      description: 'This playbook queries the QRadar SIEM for indicators such as file
+        hashes, IP addresses, domains, or URLs. '
       playbookName: QRadar Indicator Hunting V2
       type: playbook
       iscommand: false
@@ -255,6 +253,58 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: fc0a94ba-5e88-4e2a-8a37-8bb33de4dda9
+    type: playbook
+    task:
+      id: fc0a94ba-5e88-4e2a-8a37-8bb33de4dda9
+      version: -1
+      name: Microsoft 365 Defender - Emails Indicators Hunt
+      playbookName: Microsoft 365 Defender - Emails Indicators Hunt
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: inputs.IPAddress
+      ResultsLimit:
+        simple: "50"
+      SHA256:
+        complex:
+          root: inputs.SHA256
+      SearchTimeframe:
+        simple: "7"
+      Timeout:
+        simple: "60"
+      URLDomain:
+        complex:
+          root: inputs.URLDomain
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -262,8 +312,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 445,
-        "width": 1220,
-        "x": 20,
+        "width": 1640,
+        "x": -400,
         "y": 60
       }
     }
@@ -298,16 +348,16 @@ inputs:
 - key: URLDomain
   value: {}
   required: false
-  description: Domain or URL to search. Can be a single domain or URL or or an array of
-    domains or URLs to search. By default, the LIKE clause is used.
+  description: Domain or URL to search. Can be a single domain or URL or an array
+    of domains or URLs to search. By default, the LIKE clause is used.
   playbookInputQuery:
 - key: InternalRange
   value: {}
   required: false
-  description: 'A comma-separated list of internal IP ranges to check IP addresses against. The list
-    should be provided in CIDR notation. An example of a list
-    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
-    If a list is not provided, will use the default list provided in the IsIPInRanges
+  description: 'A comma-separated list of internal IP ranges to check IP addresses
+    against. The list should be provided in CIDR notation. An example of a list of
+    ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If
+    a list is not provided, uses the default list provided in the IsIPInRanges
     script (the known IPv4 private address ranges).'
   playbookInputQuery:
 - key: InternalDomainName
@@ -315,14 +365,14 @@ inputs:
   required: false
   description: The organization's internal domain name. This is provided for the script
     IsInternalHostName that checks if the detected hostnames are internal or external,
-    if the hosts contain the internal domains suffix. For example, demisto.com. If
+    if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If
     there is more than one domain, use the | character to separate values such as
-    (demisto.com|test.com)
+    (paloaltonetworks.com|test.com).
   playbookInputQuery:
 - key: InternalHostRegex
   value: {}
   required: false
-  description: This is provided for the script IsInternalHostName that checks if the
+  description: Provided for the script IsInternalHostName that checks if the
     detected host names are internal or external, if the hosts match the organization's
     naming convention. For example, the host testpc1 will have the following regex
     \w{6}\d{1}
@@ -393,7 +443,69 @@ outputs:
   description: External host names detected based on hosts in your assets table. Note
     that the data accuracy depends on how the asset mapping is configured in QRadar.
   type: string
+- contextPath: Microsoft365Defender.RetrievedEmails
+  description: Email objects containing relevant fields.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.InternetMessageId
+  description: Internet Message ID of the email.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderFromDomain
+  description: Sender domain.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.EmailDirection
+  description: Email direction (inbound/outbound).
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.DeliveryLocation
+  description: Delivery location.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.AuthenticationDetails
+  description: Authentication details (SPF, DKIM, DMARC, CompAuth)
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.DeliveryAction
+  description: Email subject.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.AttachmentCount
+  description: Number of attachments.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ThreatNames
+  description: Threat names.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.RecipientEmailAddress
+  description: Recipient email address.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.EmailAction
+  description: Email action.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.EmailLanguage
+  description: Email language.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderFromAddress
+  description: Sender address.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.Timestamp
+  description: Timestamp.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderDisplayName
+  description: Sender display name.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderIPv4
+  description: Sender IPv4.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ConfidenceLevel
+  description: Threat types.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SHA256
+  description: SHA256 of the attachments (if exist in the email).
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.Url
+  description: URLs found in the email's body.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.UrlCount
+  description: Number of URLs found in the email's body.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderIPv6
+  description: Sender IPv6.
+  type: string
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
-toversion: 6.1.9
+fromversion: 6.2.0
