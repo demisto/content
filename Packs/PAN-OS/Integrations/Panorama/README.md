@@ -2445,14 +2445,14 @@ Returns information for a Panorama PCAP file. The recommended maximum file size 
 | --- | --- | --- |
 | pcapType | Type of Packet Capture. | Required |
 | serialNumber | The serial number of the firewall to download the PCAP from. | Optional |
-| from | The file name for the PCAP type ('dlp-pcap', 'filters-pcap', or 'application-pcap'). | Optional | 
+| from | The file name for the PCAP type ('dlp-pcap', 'filter-pcap', or 'application-pcap'). Required for 'filter-pcap'. | Optional | 
 | localName | The new name for the PCAP file after downloading. If this argument is not specified, the file name is the PCAP file name set in the firewall. | Optional | 
 | serialNo | Serial number for the request. For further information, see the Panorama XML API Documentation. | Optional | 
-| searchTime | The Search time for the request. For example: "2019/12/26 00:00:00", "2020/01/10". For more information, see the Panorama XML API documentation. | Optional | 
-| pcapID | The ID of the PCAP for the request. For further information, see the Panorama XML API Documentation. | Optional | 
+| searchTime | The Search time for the request. For example: "2019/12/26 00:00:00", "2020/01/10". For more information, see the Panorama XML API documentation. Required for "threat-pcap". | Optional | 
+| pcapID | The ID of the PCAP for the request. For further information, see the Panorama XML API Documentation. Required for 'threat-pcap'. | Optional | 
 | password | Password for Panorama, needed for the 'dlp-pcap' PCAP type only. | Optional | 
-| deviceName | The Device Name on which the PCAP is stored. For further information, see the Panorama XML API Documentation. | Optional | 
-| sessionID | The Session ID of the PCAP. For further information, see the Panorama XML API Documentation. | Optional | 
+| deviceName | The Device Name on which the PCAP is stored. For further information, see the Panorama XML API Documentation. Required for 'threat-pcap' in pan-os firewalls < 9.0.7 versions. | Optional | 
+| sessionID | The Session ID of the PCAP. For further information, see the Panorama XML API Documentation. Required for 'threat-pcap' in pan-os firewalls < 9.0.7 versions. | Optional | 
 
 
 #### Context Output
