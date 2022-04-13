@@ -38,11 +38,13 @@
 <p> </p>
 <h2 id="h_8696566851031544538706749">Fetched Incidents Data</h2>
 <p>Cortex XSOAR fetches the first batch of Cybereason malops from the previous three days.<br> After the first batch of fetched malops, Cortex XSOAR fetches new Cybereason malops as soon as they are generated in Cybereason.</p>
-<p><strong>IMPORTANT</strong>: In order to properly fetch incidents, you need to set the pre-processing script to <em><strong>CybereasonPreProcessing</strong></em> for the incident type you configure in each integration instance. For example, if you select the Malware, you need to configure the pre-processing script for the Malware incident type to <em><strong>CybereasonPreProcessing</strong></em>.</p>
+<p><strong>IMPORTANT</strong>: In order to properly fetch incidents, you need to set the pre-processing script to <em><strong>CybereasonPreProcessing</strong></em> for the incident type you configure in each integration instance. For example, if you select incident type Malware, you need to create a pre-process rule for the Malware incident type to run script <em><strong>CybereasonPreProcessing</strong></em>.</p>
 <p><strong>Integration Instance Configuration</strong></p>
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/Cybereason_Cybereason_Fetched_Incidents_2.jpg" alt="Cybereason_Fetched_Incidents_2.jpg"></p>
-<p><strong>Malware Indicator Type Configuration</strong></p>
-<p><img src="https://raw.githubusercontent.com/demisto/content/adbe33e4dbaa55c40ea737851e421729e4858297/docs/images/Integrations/Cybereason_Cybereason_Fetched_Incidents_1.jpg" alt="Cybereason_Fetched_Incidents_1.jpg"></p>
+<p><strong>Pre-Process Rule for Malware Indicator Type</strong></p>
+
+![Screen Shot 2022-04-12 at 7 36 25 PM](https://user-images.githubusercontent.com/91506078/163082004-934a05d7-841d-47b1-a9d7-071cc32d4a60.png)
+
 <h2>Commands</h2>
 <p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
