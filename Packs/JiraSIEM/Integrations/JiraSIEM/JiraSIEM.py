@@ -96,7 +96,7 @@ class GetEvents:
     def __init__(self, client: Client) -> None:
         self.client = client
 
-    def call(self):
+    def call(self) -> list:
         resp = self.client.call()
         return resp.json().get('records', [])
 
@@ -111,17 +111,19 @@ class GetEvents:
             self.client.prepare_next_run(offset)
             events = self.call()
 
-    def run(self, mas_fetch=100):
+    def run(self, mas_fetch: int = 100) -> list[dict]:
         stored = []
         for logs in self._iter_events():
+            for log in logs:
+                log['created'] = log.get('created', '').removesuffix('+0000')+'Z'
             stored.extend(logs)
             if len(stored) >= mas_fetch:
                 return stored[:mas_fetch]
         return stored
 
     @staticmethod
-    def get_last_run(logs) -> dict:
-        last_time = logs[0].get('created').removesuffix('+0000')
+    def get_last_run(log: dict) -> dict:
+        last_time = log.get('created')
         return {'from': last_time}
 
 
@@ -142,7 +144,7 @@ def main():
     else:
         events = get_events.run(mas_fetch=int(demisto_params.get('max_fetch', 100)))
         if events:
-            demisto.setLastRun(GetEvents.get_last_run(events))
+            demisto.setLastRun(GetEvents.get_last_run(events[0]))
         command_results = CommandResults(
             readable_output=tableToMarkdown('Jira records', events, removeNull=True, headerTransform=pascalToSpace),
             outputs_prefix='Jira.Records',
