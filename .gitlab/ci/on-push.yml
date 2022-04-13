@@ -197,7 +197,7 @@ prepare-testing-bucket-mpv2:
       fi
     - |
       if [[ -f ./Tests/test_playbooks_report.json ]]; then
-        cp ./Tests/test_playbooks_report.json $ARTIFACTS_FOLDER/test_playbooks_report.json
+        cp ./Tests/test_playbooks_report.json $ARTIFACTS_FOLDER/test_playbooks_report_$INSTANCE_ROLE.json
       fi
 
     - |

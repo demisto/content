@@ -13,7 +13,7 @@ summary_file = os.path.join(ARTIFACTS_FOLDER, 'summary.html')
 def get_file_data(file_path: str):
     """
     """
-    #TODO change print to log
+    # TODO change print to log
     try:
         if os.path.isfile(file_path):
             print(f'Extracting {file_path}')
