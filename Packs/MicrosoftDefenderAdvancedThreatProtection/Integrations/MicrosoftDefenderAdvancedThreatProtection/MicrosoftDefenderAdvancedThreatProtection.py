@@ -4125,12 +4125,14 @@ def get_dbot_indicator(dbot_type, dbot_score, value):
 
 
 def get_indicator_dbot_object(indicator):
-    indicator_type = INDICATOR_TYPE_TO_DBOT_TYPE[indicator.get('indicatorType')]
-    indicator_value = indicator.get('indicatorValue')
-    dbot = Common.DBotScore(indicator=indicator_value, indicator_type=indicator_type,
-                            score=Common.DBotScore.NONE)  # type:ignore
-    return get_dbot_indicator(indicator_type, dbot, indicator_value)
-
+    indicator_type = INDICATOR_TYPE_TO_DBOT_TYPE.get(indicator.get('indicatorType'))
+    if indicator_type:
+        indicator_value = indicator.get('indicatorValue')
+        dbot = Common.DBotScore(indicator=indicator_value, indicator_type=indicator_type,
+                                score=Common.DBotScore.NONE)  # type:ignore
+        return get_dbot_indicator(indicator_type, dbot, indicator_value)
+    else:
+        return None
 
 def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves a list of devices affected by a vulnerability (by the given CVE ID).
