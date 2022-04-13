@@ -19,6 +19,15 @@
 /Utils/trigger_test_upload_flow.sh @Noy-Maimon
 /Utils/trigger_upload_packs_to_production.sh @Noy-Maimon
 
+# PANW Products
+/Packs/PrismaAccess/Integrations/* @anara
+/Packs/PrismaCloudCompute/Integrations/* @GuyAfik
+/Packs/PrismaCloud/Integrations/* @glicht
+/Packs/PrismaSaasSecurity/Integrations/* @yaakovpraisler
+/Packs/PaloAltoNetworksIoT/Integrations/* @bakatzir
+/Packs/PaloAltoNetworksIoT3rdParty/Integrations/* @bakatzir
+
+
 # Important Integrations
 /Packs/Jira/Integrations/JiraV2/* @demisto/content-leaders
 /Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders
