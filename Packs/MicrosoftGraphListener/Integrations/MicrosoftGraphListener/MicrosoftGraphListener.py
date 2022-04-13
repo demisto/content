@@ -209,12 +209,16 @@ class MsGraphClient:
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
                  ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit,
-                 auth_code, redirect_uri):
+                 auth_code, redirect_uri,
+                 certificate_thumbprint: Optional[str] = None,
+                 private_key: Optional[str] = None,
+                 ):
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token,
                                          auth_code=auth_code, redirect_uri=redirect_uri,
-                                         grant_type=AUTHORIZATION_CODE)
+                                         grant_type=AUTHORIZATION_CODE, certificate_thumbprint=certificate_thumbprint,
+                                         private_key=private_key)
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
@@ -915,7 +919,15 @@ def main():
     refresh_token = params.get('refresh_token', '')
     auth_and_token_url = params.get('auth_id', '')
     enc_key = params.get('enc_key', '')
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
     app_name = 'ms-graph-mail-listener'
+
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     # params related to mailbox to fetch incidents
     mailbox_to_fetch = params.get('mailbox_to_fetch', '')
@@ -933,8 +945,8 @@ def main():
 
     client = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
                            ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
-                           emails_fetch_limit, auth_code=params.get('auth_code', ''),
-                           redirect_uri=params.get('redirect_uri', ''))
+                           emails_fetch_limit, auth_code=params.get('auth_code', ''), private_key=private_key,
+                           redirect_uri=params.get('redirect_uri', ''), certificate_thumbprint=certificate_thumbprint)
     try:
         command = demisto.command()
         args = prepare_args(command, demisto.args())

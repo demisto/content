@@ -303,7 +303,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         }
     }
-    generic_mapping_fields.update(mapping_by_type.get(indicator_type, {}))
+    generic_mapping_fields.update(mapping_by_type.get(indicator_type, {}))  # type: ignore
     return generic_mapping_fields
 
 
@@ -484,14 +484,7 @@ def attack_pattern_reputation_command(client, args):
             if not mitre_data:
                 break
 
-            attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(mitre_data)))
-
-            custom_fields = attack_obj or {}
-            score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
             value = mitre_data.get('name')
-            md = f"## {[value]}:\n {custom_fields.get('description', '')}"
-
-            command_results.append(build_command_result(value, score, md, attack_obj))
 
         else:
             all_name = name.split(':')
@@ -530,15 +523,13 @@ def attack_pattern_reputation_command(client, args):
             if not mitre_data:
                 break
 
-            attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(mitre_data)))
+            value = f'{parent_name}: {mitre_data.get("name")}'
 
-            custom_fields = attack_obj or {}
-            score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
-            value_ = mitre_data.get('name')
-            value = f'{parent_name}: {value_}'
-            md = f"## {[value]}:\n {custom_fields.get('description', '')}"
-
-            command_results.append(build_command_result(value, score, md, attack_obj))
+        attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(mitre_data)))
+        custom_fields = attack_obj or {}
+        score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
+        md = f"## {[value]}: {attack_obj.get('mitreid')}\n {custom_fields.get('description', '')}"
+        command_results.append(build_command_result(value, score, md, attack_obj))
 
     return command_results
 

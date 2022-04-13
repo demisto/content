@@ -5,7 +5,7 @@ import io
 import ssl
 from datetime import timedelta, datetime
 
-import dateparser
+import dateparser  # type: ignore
 import pytz
 import requests
 import splunklib.client as client
@@ -130,7 +130,7 @@ def create_incident_custom_id(incident):
 
     extensive_log('[SplunkPyPreRelease] ID after all fields were added: {}'.format(incident_custom_id))
 
-    unique_id = hashlib.md5(incident_custom_id).hexdigest()
+    unique_id = hashlib.md5(incident_custom_id).hexdigest()  # nosec
     extensive_log('[SplunkPyPreRelease] Found incident ID is: {}'.format(unique_id))
     return unique_id
 
@@ -550,7 +550,7 @@ class Notable:
             return self.id
 
         notable_raw_data = self.data.get('_raw', '')
-        raw_hash = hashlib.md5(notable_raw_data).hexdigest()
+        raw_hash = hashlib.md5(notable_raw_data).hexdigest()    # nosec
 
         if self.time_is_missing and self.index_time:
             notable_custom_id = '{}_{}'.format(self.index_time, raw_hash)  # index_time stays in epoch to differentiate
@@ -1914,14 +1914,26 @@ def build_search_human_readable(args, parsed_search_results):
         if not isinstance(parsed_search_results[0], dict):
             headers = "results"
         else:
-            search_for_table_args = re.search(r' table (?P<table>.*)(\|)?', args.get('query', ''))
-            if search_for_table_args:
-                table_args = search_for_table_args.group('table')
-                table_args = table_args if '|' not in table_args else table_args.split(' |')[0]
-                chosen_fields = [field.strip('"')
-                                 for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field]
+            query = args.get('query', '')
+            table_args = re.findall(r' {} (?P<{}>[^|]*)'.format('table', 'table'), query)
+            rename_args = re.findall(r' {} (?P<{}>[^|]*)'.format('rename', 'rename'), query)
 
-                headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
+            chosen_fields = []
+            for arg_string in table_args:
+                for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', arg_string):
+                    if field:
+                        chosen_fields.append(field.strip('"'))
+
+            rename_dict = {}
+            for arg_string in rename_args:
+                for field in re.findall(r'((?:".*?")|(?:[^\s,]+))( AS )((?:".*?")|(?:[^\s,]+))', arg_string):
+                    if field:
+                        rename_dict[field[0].strip('"')] = field[-1].strip('"')
+
+            # replace renamed fields
+            chosen_fields = [rename_dict.get(field, field) for field in chosen_fields]
+
+            headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
     query = args['query'].replace('`', r'\`')
     human_readable = tableToMarkdown("Splunk Search results for query: {}".format(query),
@@ -1931,7 +1943,7 @@ def build_search_human_readable(args, parsed_search_results):
 
 def update_headers_from_field_names(search_result, chosen_fields):
     headers = []
-    search_result_keys = search_result[0].keys()
+    search_result_keys = set().union(*(d.keys() for d in search_result))  # type: Set
     for field in chosen_fields:
         if field[-1] == '*':
             temp_field = field.replace('*', '.*')

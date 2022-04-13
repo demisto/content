@@ -131,8 +131,9 @@ def test_convert_to_xsoar_incident_without_occurred():
     assert xsoar_incident == expected
 
 
+@pytest.mark.parametrize('last_run', ('2018-10-01T20:22:35.000Z', None))
 @freeze_time("2021-08-24 18:04:00")
-def test_fetch_incidents(mocker, client, requests_mock, demisto_mocker):
+def test_fetch_incidents(mocker, client, requests_mock, demisto_mocker, last_run):
     """
     Configures mocker instance, requests_mock, uses the demisto_mocker fixture.
         Given:
@@ -140,23 +141,27 @@ def test_fetch_incidents(mocker, client, requests_mock, demisto_mocker):
         When:
             - Fetching incidents
         Then:
-            - Returns list of xsoar incident
+            - Returns list of xsoar incidents and filter by created time
     """
     from SaasSecurity import main
 
     get_incidents = util_load_json('test_data/get-incidents.json')
     incidents_for_fetch = util_load_json('test_data/fech_incident_data.json')
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last_run_time': last_run})
     requests_mock.get('http://base_url/incident/api/incidents/delta', json=get_incidents)
 
     main()
 
     assert demisto.incidents.call_count == 1
     incidents = demisto.incidents.call_args[0][0]
-    assert len(incidents) == 8
-    assert incidents[0]['occurred'] == '2021-08-03T20:25:13Z'
-    assert incidents[1]['occurred'] == '2021-08-03T20:25:15Z'
-    assert incidents_for_fetch == incidents
+    if last_run:
+        assert len(incidents) == 8
+        assert incidents[0]['occurred'] == '2021-08-03T20:25:13Z'
+        assert incidents[1]['occurred'] == '2021-08-03T20:25:15Z'
+        assert incidents_for_fetch == incidents
+    else:
+        assert not incidents
 
 
 def test_get_incidents_command(client, requests_mock):

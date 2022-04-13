@@ -47,7 +47,10 @@ def mock_client():
     return KeyVaultClient(tenant_id=TENANT_ID, client_id=CLIENT_ID, client_secret=CLIENT_SECRET,
                           subscription_id=SUBSCRIPTION_ID,
                           resource_group_name=RESOURCE_GROUP_NAME,
-                          verify=False, proxy=False)
+                          verify=False, proxy=False,
+                          certificate_thumbprint=None,
+                          private_key=None,
+                          )
 
 
 def test_azure_key_vault_key_vault_create_or_update_command(requests_mock):

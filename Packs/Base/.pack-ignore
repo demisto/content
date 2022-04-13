@@ -46,3 +46,10 @@ ignore=SC101
 [file:SanePdfReport.yml]
 ignore=SC101
 
+[known_words]
+CreateIndicatorRelationship
+CommonServerPython
+CommonServer
+mergeVersionedIntegrationContext
+SearchIndicatorRelationships 
+CommandResults

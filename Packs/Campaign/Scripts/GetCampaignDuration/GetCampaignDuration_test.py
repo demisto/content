@@ -8,22 +8,26 @@ import pytest
 import demistomock as demisto
 
 CAMPAIGN_WITH_DURATION_RESULT = """
-                    <div class="demisto-duration vertical-strech">
-                        <div class="duration-widget">
-                            <div class="grid-container">
-                                <div class="duration-icon"><i class="wait icon home"></i></div>
-                                <div class="days-number">30</div>
-                                <div class="colon center aligned">:</div>
-                                <div class="hours-number">22</div>
-                                <div class="colon-2 center aligned">:</div>
-                                <div class="one column wide minutes-number">39</div>
-                                <div class="days-label time-unit title-h5 opacity-description">DAYS</div>
-                                <div class="hours-label time-unit title-h5 opacity-description">HOURS</div>
-                                <div class="minutes-label time-unit title-h5 opacity-description">MIN</div>
-                            </div>
-                        </div>
-                    </div>
-    """
+                <table>
+                <tr>
+                <th style="font-size: 25px;">&#128345;</th>
+                <th style="font-size: 30px;">30</th>
+                <th style="font-size: 30px;">:</th>
+                <th style="font-size: 30px;">22</th>
+                <th style="font-size: 30px;">:</th>
+                <th style="font-size: 30px;">39</th>
+                </tr>
+                <tr>
+                <td style="font-size: 15px; text-align: center"></td>
+                <td style="font-size: 15px; text-align: center">Days</td>
+                <td style="font-size: 15px; text-align: center"></td>
+                <td style="font-size: 15px; text-align: center">Hours</td>
+                <td style="font-size: 15px; text-align: center"></td>
+                <td style="font-size: 15px; text-align: center">Minutes</td>
+                </tr>
+                </table>
+        """
+
 
 CURRENT_TIME_MOCK = "05-08-2021 14:40:22"
 

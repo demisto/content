@@ -60,7 +60,7 @@ def main():
     try:
 
         campaign_recipients = get_campaign_recipients()
-        return_results(CommandResults(readable_output=campaign_recipients))
+        return_results(CommandResults(readable_output=campaign_recipients, raw_response=campaign_recipients))
 
     except Exception as err:
         return_error(str(err))

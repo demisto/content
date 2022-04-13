@@ -67,7 +67,7 @@ def test_params_working(mocker, params, expected_results):
     main()
     MsGraphClient.__init__.assert_called_with(False, expected_results[0], expected_results[1], expected_results[2],
                                               'ms-graph-mail', '/v1.0', True, False, (200, 201, 202, 204), '', 'Inbox',
-                                              '15 minutes', 50, 10, 'com')
+                                              '15 minutes', 50, 10, 'com', certificate_thumbprint='', private_key='')
 
 
 def test_build_mail_object():

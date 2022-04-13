@@ -127,6 +127,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 - Search a user's Gmail records: **gmail-search**
 - Search in all Gmail mailboxes: **gmail-search-all-mailboxes**
 - List all Google users: **gmail-list-users**
+- List all Labels for a given user: **gmail-list-labels**
 - Revoke a Google user's role: **gmail-revoke-user-role**
 - Create a new user: **gmail-create-user**
 - Delete mail from a mailbox: **gmail-delete-mail**
@@ -3471,6 +3472,62 @@ Lists all Google users in a domain.
 >|Type|ID|Username|DisplayName|Groups|CustomerId|Domain|Email|VisibleInDirectory|
 >|---|---|---|---|---|---|---|---|---|
 >| Google | 113493660192005193453 | user | user test | admin#directory#user | C03puekhd | domain.io | Address: user@domain.io | true |
+
+
+### gmail-list-labels
+***
+Lists all lables in a Users Gmail.
+
+
+#### Base Command
+
+`gmail-list-labels`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user-id | The user's email address. The special value '*me*' can be used to indicate the authenticated user. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GmailLabel.Name | String | The label name. | 
+| GmailLabel.ID | String | The label ID. | 
+| GmailLabel.UserID | String | The User ID the label belongs to. | 
+| GmailLabel.Type | String | The label type. | 
+| GmailLabel.LabelListVisibility | String | The label list visibility. | 
+| GmailLabel.MessageListVisibility | String | The label message list visibility. | 
+
+
+#### Command Example
+```!gmail-list-labels user-id=me```
+
+#### Context Example
+```
+{
+"GmailLabel":
+  [
+       {
+            "ID": "INBOX",
+            "LabelListVisibility": "labelHide",
+            "MessageListVisibility:: "hide",
+            "Name": "INBOX",
+            "Type": "system",
+            "UserID": "user@domain.io"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Labels for UserID me:
+>|Name|ID|Type|MessageListVisibility|LabelListVisibility|
+>|---|---|---|---|---|
+>| INBOX | INBOX | system | | |
+>| SPAM | SPAM | system | hide | labelShowIfUnread |
 
 
 ### gmail-revoke-user-role

@@ -1,0 +1,62 @@
+{
+    "total": 20,
+    "page": 2,
+    "pageSize": 10,
+    "count": 20,
+    "results": [
+        {
+            "id": 1,
+            "revid": 2,
+            "name": "test",
+            "description": "test description",
+            "managementIp": "test",
+            "lastUpdated": "2022-02-01T08:00:42.212Z",
+            "lastRevision": "2022-02-01T08:00:42.212Z",
+            "complexity": 1,
+            "totalSecRules": 10,
+            "ntwkObjCount": 2,
+            "svcObjCount": 2,
+            "userObjCount": 2,
+            "appObjCount": 2,
+            "profileObjCount": 2,
+            "scheduleObjCount": 2,
+            "natRuleCount": 2,
+            "routeCount": 2,
+            "zoneCount": 2,
+            "interfaceCount": 2,
+            "policyCount": 2,
+            "sci": 0,
+            "lastSciComputeData": "2022-01-01T09:00:00.211Z",
+            "deviceType": "test",
+            "product": "test",
+            "vendor": "test",
+            "controlStats": {
+                "additionalProp1": 0,
+                "additionalProp2": 0,
+                "additionalProp3": 0
+            },
+            "deviceStatus": {
+                "deviceId": 10,
+                "changeStatus": "test",
+                "changeLastUpdated": "2021-09-09T09:00:09.222Z",
+                "changeStatusDescription": "test",
+                "logStatus": "test",
+                "logLastUpdated": "2021-04-01T10:10:01.231Z",
+                "logStatusDescription": "test",
+                "retrievalStatus": "test",
+                "retrievalLastUpdated": "2021-10-10T10:10:10.222Z",
+                "retrievalStatusDescription": "test"
+            },
+            "managedType": "MANAGED",
+            "gpcStatus": "NOT_SUPPORTED",
+            "gpcSecurityRuleCount": 2,
+            "gpcServiceCount": 2,
+            "gpcServiceGroupCount": 4,
+            "gpcNetworkCount": 2,
+            "gpcNetworkGroupCount": 2,
+            "gpcPolicyCount": 2,
+            "gpcImplementDate": "2021-01-06T09:00:10.222Z",
+            "supportsManualRetrieval": true
+        }
+    ]
+}

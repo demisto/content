@@ -1,0 +1,26 @@
+<response status="success">
+    <result>
+        <max>1500</max>
+        <total>9</total>
+        <timeout>1800</timeout>
+        <dp>dp0</dp>
+        <entries>
+            <entry>
+                <status>  c  </status>
+                <ip>1.1.1.1</ip>
+                <mac>00:66:4b:da:ce:61</mac>
+                <ttl>1778</ttl>
+                <interface>ethernet1/1</interface>
+                <port>ethernet1/1</port>
+            </entry>
+            <entry>
+                <status>  c  </status>
+                <ip>1.1.1.1</ip>
+                <mac>00:0c:29:31:bf:8b</mac>
+                <ttl>996</ttl>
+                <interface>ethernet1/1</interface>
+                <port>ethernet1/1</port>
+            </entry>
+        </entries>
+    </result>
+</response>
