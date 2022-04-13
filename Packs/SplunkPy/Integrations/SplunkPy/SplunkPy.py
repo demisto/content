@@ -146,13 +146,14 @@ class UserMappingObject:
         xsoar_users = argToList(args.get('xsoar_username'))
         outputs = {}
         for user in xsoar_users:
-            splunk_user = self.get_splunk_user_by_xsoar(user)
+            splunk_user = self.get_splunk_user_by_xsoar(user) if user else None
             outputs[user] = splunk_user if splunk_user else 'Could not Find splunk user, check logs for more details.'
 
         return CommandResults(
-                outputs=outputs,
-                readable_output=tableToMarkdown('Xsoar-Splunk Username Mapping', outputs, headers='Splunk user')
-            )
+            outputs=outputs,
+            readable_output=tableToMarkdown('Xsoar-Splunk Username Mapping', outputs, headers='Splunk user')
+        )
+
 
 # =========== Regular Fetch Mechanism ===========
 def splunk_time_to_datetime(incident_ocurred_time):
@@ -577,17 +578,17 @@ class Notable:
     def submitted(self):
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
         return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and \
-            len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
 
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
         return all(enrichment.status == Enrichment.FAILED for enrichment in self.enrichments) and \
-            len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
 
     def handled(self):
         """ Returns an indicator on whether all notable's enrichments were handled or not """
         return all(enrichment.status in Enrichment.HANDLED for enrichment in self.enrichments) or \
-            any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
+               any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
 
     def get_submitted_enrichments(self):
         """ Returns indicators on whether each enrichment was submitted/failed or not initiated """
@@ -621,7 +622,7 @@ class Notable:
             return self.id
 
         notable_raw_data = self.data.get('_raw', '')
-        raw_hash = hashlib.md5(notable_raw_data).hexdigest()    # nosec
+        raw_hash = hashlib.md5(notable_raw_data).hexdigest()  # nosec
 
         if self.time_is_missing and self.index_time:
             notable_custom_id = '{}_{}'.format(self.index_time, raw_hash)  # index_time stays in epoch to differentiate

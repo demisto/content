@@ -564,7 +564,8 @@ def test_fetch_notables(mocker):
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
     mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
-    splunk.fetch_notables(service, enrich_notables=False)
+    mapper = splunk.UserMappingObject(service, False)
+    splunk.fetch_notables(service, enrich_notables=False, mapper=mapper)
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 1
@@ -842,7 +843,8 @@ def test_get_remote_data_command(mocker):
     mocker.patch.object(demisto, 'info')
     mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
     mocker.patch.object(demisto, 'results')
-    splunk.get_remote_data_command(Service(), args, close_incident=False)
+    service = Service()
+    splunk.get_remote_data_command(service, args, close_incident=False, mapper=splunk.UserMappingObject(service, False))
     results = demisto.results.call_args[0][0]
     assert demisto.results.call_count == 1
     assert results == [{'event_id': 'id', 'status': '1'}]
@@ -865,7 +867,8 @@ def test_get_remote_data_command_close_incident(mocker):
     mocker.patch.object(demisto, 'info')
     mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
     mocker.patch.object(demisto, 'results')
-    splunk.get_remote_data_command(Service(), args, close_incident=True)
+    service = Service()
+    splunk.get_remote_data_command(service, args, close_incident=True, mapper=splunk.UserMappingObject(service, False))
     results = demisto.results.call_args[0][0]
     assert demisto.results.call_count == 1
     assert results == [
@@ -957,7 +960,9 @@ def test_update_remote_system(args, params, call_count, success, mocker, request
     requests_mock.post(base_url + 'services/notable_update', json={'success': success, 'message': 'wow'})
     if not success:
         mocker.patch.object(demisto, 'error')
-    assert splunk.update_remote_system_command(args, params, Service(), None) == args['remoteId']
+    service = Service()
+    mapper = splunk.UserMappingObject(service, False)
+    assert splunk.update_remote_system_command(args, params, service, None, mapper=mapper) == args['remoteId']
     assert demisto.debug.call_count == call_count
     if not success:
         assert demisto.error.call_count == 1
@@ -1408,17 +1413,17 @@ def test_empty_string_as_app_param_value(mocker):
     # validate
     assert connection_args.get('app') == '-'
 
+
 OWNER_MAPPING = [{u'xsoar_user': u'test_xsoar', u'splunk_user': u'test_splunk', u'wait': True},
                  {u'xsoar_user': u'test_not_full', u'splunk_user': u'', u'wait': True},
-                 {u'xsoar_user': u'', u'splunk_user': u'test_not_full', u'wait': True},]
-
+                 {u'xsoar_user': u'', u'splunk_user': u'test_not_full', u'wait': True}, ]
 
 MAPPER_CASES_XSOAR_TO_SPLUNK = [
-    ('test_xsoar', 'test_splunk', None),
-    ('test_not_full', 'unassigned',
-     "Splunk user matching Xsoar's  is empty. Fix the record in splunk_xsoar_users lookup."),
-    ('unassigned', 'unassigned',
-     "Could not find splunk user matching xsoar's unassigned. Consider adding it to the splunk_xsoar_users lookup."),
+    # ('test_xsoar', 'test_splunk', None),
+    # ('test_not_full', 'unassigned',
+    #  "Splunk user matching Xsoar's  is empty. Fix the record in splunk_xsoar_users lookup."),
+    # ('unassigned', 'unassigned',
+    #  "Could not find splunk user matching xsoar's unassigned. Consider adding it to the splunk_xsoar_users lookup."),
     ('', 'unassigned',
      'Could not find splunk user matching xsoar\'s . Consider adding it to the splunk_xsoar_users lookup.'),
     ('not_in_table', 'unassigned',
@@ -1441,7 +1446,7 @@ def test_owner_mapping_mechanism_xsoar_to_splunk(mocker, xsoar_name, expected_sp
         """
 
     def mocked_get_record(col, value_to_search):
-        return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING)
+        return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING[:-1])
 
     service = mocker.patch('splunklib.client.connect', return_value=None)
     mapper = splunk.UserMappingObject(service, True, table_name='splunk_xsoar_users',
@@ -1494,12 +1499,18 @@ def test_owner_mapping_mechanism_splunk_to_xsoar(mocker, splunk_name, expected_x
     if error_mock.called:
         assert error_mock.call_args[0][0] == expected_msg
 
+
 COMMAND_CASES = [
-    # ({'xsoar_username': 'test_xsoar'}, {'test_xsoar': u'test_splunk'}),
-    # ({'xsoar_username': 'test_xsoar, Non existing'}, {'Non existing': 'unassigned', 'test_xsoar': u'test_splunk'}),
-    ({'xsoar_username': 'Non Existing,'}, {}),
-    ({'xsoar_username': ['test_xsoar, Non existing']}, {})
+    ({'xsoar_username': 'test_xsoar'},  # case normal single username was provided
+     {'test_xsoar': u'test_splunk'}),
+    ({'xsoar_username': 'test_xsoar, Non existing'},  # case normal multiple usernames were provided
+     {'Non existing': 'unassigned', 'test_xsoar': u'test_splunk'}),
+    ({'xsoar_username': 'Non Existing,'},  # case normal&empty multiple usernames were provided
+     {'': 'Could not Find splunk user, check logs for more details.', 'Non Existing': 'unassigned'}),
+    ({'xsoar_username': ['test_xsoar', 'Non existing']},  # case normal&missing multiple usernames were provided
+     {'Non existing': 'unassigned', 'test_xsoar': u'test_splunk'})
 ]
+
 
 @pytest.mark.parametrize('xsoar_names, expected_outputs', COMMAND_CASES)
 def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs):
@@ -1511,6 +1522,7 @@ def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs)
 
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING[:-1])
+
     service = mocker.patch('splunklib.client.connect', return_value=None)
 
     mapper = splunk.UserMappingObject(service, True, table_name='splunk_xsoar_users',
