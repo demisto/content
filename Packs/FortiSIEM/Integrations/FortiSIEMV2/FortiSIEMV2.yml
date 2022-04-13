@@ -1073,6 +1073,7 @@ script:
       type: String
   dockerimage: demisto/python3:3.10.4.27798
   feed: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
