@@ -147,9 +147,9 @@ def test_fetch_incidents(requests_mock):
     assert isinstance(response[0], dict)
 
     assert response[0]['name'] == 'Cyble Intel Alert on some_alias_2'
-    assert response[0]['severity'] == 3
+    assert response[0]['severity'] == 2
     assert response[0]['rawJSON'] == '{"name": "Cyble Intel Alert on some_alias_2", ' \
-                                     '"eventtype": "service_type_2", "severity": 3, ' \
+                                     '"eventtype": "service_type_2", "severity": 2, ' \
                                      '"occurred": "2022-03-07T00:01:24.242000Z", ' \
                                      '"eventid": "some_alert_id_1", "cybleeventsname": ' \
                                      '"Incident of some_alias_2 type", "cybleeventsbucket": ' \
@@ -247,7 +247,7 @@ def test_cyble_vision_fetch_alerts(requests_mock):
 
     assert response[0]['name'] == 'Cyble Intel Alert on some_alias_2'
     assert response[0]['eventtype'] == 'service_type_2'
-    assert response[0]['severity'] == 3
+    assert response[0]['severity'] == 2
     assert response[0]['occurred'] == '2022-03-07T00:01:24.242000Z'
     assert response[0]['eventid'] == 'some_alert_id_1'
     assert response[0]['cybleeventsname'] == 'Incident of some_alias_2 type'
