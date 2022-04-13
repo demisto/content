@@ -4,9 +4,8 @@ import requests
 import json
 import re
 import urllib
-import urllib3
 
-urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
 handle_proxy()
 
