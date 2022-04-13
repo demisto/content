@@ -25,7 +25,7 @@ class Method(str, Enum):
 
 class Args(BaseModel):
     from_: str = Field(
-        datetime.strftime(dateparser.parse(demisto.params().get('from', '3 days')), DATETIME_FORMAT),
+        datetime.strftime(dateparser.parse(demisto.params().get('first_fetch', '3 days')), DATETIME_FORMAT),
         alias='from'
     )
     limit: int = 1000
@@ -34,7 +34,7 @@ class Args(BaseModel):
 
 class ReqParams(BaseModel):
     from_: str = Field(
-        datetime.strftime(dateparser.parse(demisto.params().get('from', '3 days')), DATETIME_FORMAT),
+        datetime.strftime(dateparser.parse(demisto.params().get('first_fetch', '3 days')), DATETIME_FORMAT),
         alias='from'
     )
     limit: int = 1000
@@ -46,8 +46,8 @@ class Request(BaseModel):
     url: AnyUrl
     headers: Union[Json, dict] = {}
     params: Optional[ReqParams]
-    verify: bool = True
-    proxies: bool = True
+    insecure: bool = Field(not demisto.params().get('insecure', False), alias='verify')
+    proxy: bool = Field(demisto.params().get('proxy', False), alias='proxies')
     data: Optional[str]
     auth: Optional[HTTPBasicAuth]
 
@@ -82,12 +82,11 @@ class Client:
         self.request.params.offset = offset
 
     def _set_cert_verification(self):
-        if not self.request.verify:
+        if not self.request.insecure:
             skip_cert_verification()
-            self.session.verify = False
 
     def _set_proxy(self):
-        if self.request.proxies:
+        if self.request.proxy:
             ensure_proxy_has_http_prefix()
         else:
             skip_proxy()
@@ -112,12 +111,12 @@ class GetEvents:
             self.client.prepare_next_run(offset)
             events = self.call()
 
-    def run(self, limit=100):
+    def run(self, mas_fetch=100):
         stored = []
         for logs in self._iter_events():
             stored.extend(logs)
-            if len(stored) >= limit:
-                return stored[:limit]
+            if len(stored) >= mas_fetch:
+                return stored[:mas_fetch]
         return stored
 
     @staticmethod
@@ -138,14 +137,14 @@ def main():
     command = demisto.command()
 
     if command == 'test-module':
-        get_events.run(limit=1)
+        get_events.run(mas_fetch=1)
         demisto.results('ok')
     else:
-        events = get_events.run(limit=demisto_params.get('max_fetch', 100))
+        events = get_events.run(mas_fetch=int(demisto_params.get('max_fetch', 100)))
         if events:
             demisto.setLastRun(GetEvents.get_last_run(events))
         command_results = CommandResults(
-            readable_output=tableToMarkdown('Jira records', events, headerTransform=pascalToSpace),
+            readable_output=tableToMarkdown('Jira records', events, removeNull=True, headerTransform=pascalToSpace),
             outputs_prefix='Jira.Records',
             outputs_key_field='id',
             outputs=events,
