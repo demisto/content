@@ -227,6 +227,11 @@ def clear_trailing_whitespace(res):
 
 
 def filter_and_save_unseen_incident(incidents: List) -> List:
+    """
+    Filters incidents that were seen already and saves the unseen incidents to LastRun object.
+    :param incidents: List of incident - must be list
+    :return: the filtered incidents.
+    """
     last_run_obj = demisto.getLastRun()
     fetched_starred_incidents = last_run_obj.pop('fetched_starred_incidents', {})
     filtered_incidents = []
@@ -1510,6 +1515,9 @@ def get_incidents_command(client, args):
     starred = args.get('starred')
     starred_incidents_fetch_window = args.get('starred_incidents_fetch_window', '3 days')
     starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
+    if starred_incidents_fetch_window and not starred:
+        raise ValueError('In order to filter starred incidents you need to set both '
+                         'starred and starred_incidents_fetch_window arguments.')
 
     sort_by_modification_time = args.get('sort_by_modification_time')
     sort_by_creation_time = args.get('sort_by_creation_time')

@@ -58,7 +58,9 @@ You need to collect several pieces of information in order to configure the inte
     * __Server URL (copy URL from XDR - click ? to see more info.)__
     * __API Key ID__
     * __API Key__
+    * __Only fetch starred incidents__
     * __Maximum number of incidents per fetch__
+    * __tarred incidents fetch window (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
     * __First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
     * __HTTP Timeout__ (default is 120 seconds)
     * __Fetch incident alerts and artifacts__
@@ -141,7 +143,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ### 1. xdr-get-incidents
 ---
-Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created. If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported. This command requires at least one query argument.
+Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, the time the incident was created and whether the incident is starred or not. If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported. This command requires at least one query argument.
 
 ##### Base Command
 
@@ -162,7 +164,7 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 | page | Page number (for pagination). The default is 0 (the first page). | Optional | 
 | limit | Maximum number of incidents to return per page. The default and maximum is 100. | Optional | 
 | status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive, resolved_security_testing, resolved_other, resolved_auto | Optional |
-
+| starred | Whether incident is starred or not (Boolean value: true or false). | Optional |
 
 ##### Context Output
 
@@ -182,6 +184,7 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 | PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident. Can be "low", "medium", or "high". | 
 | PaloAltoNetworksXDR.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
 | PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Can be "new", "under_investigation", "resolved_known_issue", "resolved_duplicate", "resolved_false_positive", "resolved_true_positive", "resolved_security_testing", or "resolved_other". | 
+| PaloAltoNetworksXDR.Incident.starred | Boolean | Incident starred. |
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. | 
 | PaloAltoNetworksXDR.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
 | PaloAltoNetworksXDR.Incident.notes | String | Comments entered by the user regarding the incident. | 
