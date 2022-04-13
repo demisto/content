@@ -7161,7 +7161,12 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
             XPATH_SECURITY_RULES = "/config/shared/"
             DEVICE_GROUP = device_group_shared
         else:
-            XPATH_SECURITY_RULES = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
+            if target := args.get('target'):
+                print('here')
+                XPATH_SECURITY_RULES = "/config/devices/entry[@name=\'" + target + "\']/vsys/entry[@name=\'" + "vsys1" + "\']/rulebase/security/rules/entry/"
+            else:
+                XPATH_SECURITY_RULES = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
+
     else:
         XPATH_SECURITY_RULES = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/rulebase/security/rules/entry"
 
