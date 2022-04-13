@@ -6100,7 +6100,8 @@ class CommandResults:
     :rtype: ``None``
     """
 
-    def __init__(self, outputs_prefix=None,
+    def __init__(self,
+                 outputs_prefix=None,
                  outputs_key_field=None,
                  outputs=None,
                  indicators=None,
@@ -6114,6 +6115,7 @@ class CommandResults:
                  relationships=None,
                  entry_type=None,
                  content_format=None,
+                 readable_output_format=None
                  ):
         # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, str) -> None  # noqa: E501
         if raw_response is None:
@@ -6156,6 +6158,7 @@ class CommandResults:
         if content_format is not None and not EntryFormat.is_valid_type(content_format):
             raise TypeError('content_format {} is invalid, see CommonServerPython.EntryFormat'.format(content_format))
         self.content_format = content_format
+        self.readable_output_format = readable_output_format
 
     def to_context(self):
         outputs = {}  # type: dict
@@ -6224,6 +6227,7 @@ class CommandResults:
             'Type': self.entry_type,
             'ContentsFormat': content_format,
             'Contents': raw_response,
+            'ReadableContentsFormat': self.readable_output_format or EntryFormat.MARKDOWN,
             'HumanReadable': human_readable,
             'EntryContext': outputs,
             'IndicatorTimeline': indicators_timeline,
