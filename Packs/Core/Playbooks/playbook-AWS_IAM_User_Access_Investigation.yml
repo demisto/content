@@ -291,7 +291,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -303,6 +303,7 @@ tasks:
       id: 9bc32470-1e47-447a-8a0b-f41a4049394c
       version: -1
       name: Close the alert and finish the investigation?
+      description: "Close the alert and finish the investigation?"
       type: condition
       iscommand: false
       brand: ""
@@ -377,6 +378,26 @@ tasks:
       CloseReason:
         simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved -
           Known Issue
+      Domain:
+        complex:
+          root: alert
+          accessor: domainname
+      FileSHA256:
+        complex:
+          root: alert
+          accessor: initiatorsha256
+      IP:
+        complex:
+          root: alert
+          accessor: hostip
+      URL:
+        complex:
+          root: alert
+          accessor: url
+      User:
+        complex:
+          root: alert
+          accessor: username
       awsUser:
         complex:
           root: alert
@@ -402,7 +423,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -503,6 +524,7 @@ tasks:
       id: 62cfaa81-81fb-4166-8f73-e3e903c5e3c5
       version: -1
       name: Continue the investigation
+      description: "Continue the investigation."
       type: regular
       iscommand: false
       brand: ""

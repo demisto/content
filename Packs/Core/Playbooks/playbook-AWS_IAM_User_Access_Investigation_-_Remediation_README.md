@@ -43,4 +43,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![AWS IAM User Access Investigation - Remediation](Insert the link to your image here)
+![AWS IAM User Access Investigation - Remediation](https://raw.githubusercontent.com/demisto/content/7f0cc64e686e5c59d2b5fb9a4d1928df3d122b0d/Packs/Core/doc_files/AWS_IAM_User_Access_Investigation_-_Remediation.png)

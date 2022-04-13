@@ -98,7 +98,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -134,7 +134,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -496,7 +496,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -508,6 +508,7 @@ tasks:
       id: 8a94ae35-9772-4ab3-889a-b7e026c9ca3b
       version: -1
       name: Automatically delete user login profile?
+      description: "Automatically delete user login profile?"
       type: condition
       iscommand: false
       brand: ""
@@ -553,6 +554,7 @@ tasks:
       id: a7d78a6c-2ab2-4484-8c8d-7ae2caf9146b
       version: -1
       name: Delete user login profile - Manual
+      description: "Manually delete user login profile."
       type: regular
       iscommand: false
       brand: ""
