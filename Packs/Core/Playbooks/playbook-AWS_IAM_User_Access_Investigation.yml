@@ -1,24 +1,18 @@
-id: 573a320a-f6e1-4799-8619-c921fd0163d3
-version: 34
+id: AWS IAM User Access Investigation
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 4.2.9
-    fromServerVersion: 6.2.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: AWS IAM User Access Investigation
-description: "Investigate and respond to Cortex XDR Cloud alerts where an AWS IAM
-  user`s access key is used suspiciously to access the cloud environment. \nThe following
-  alerts are supported for AWS environments.\n- Penetration testing tool attempt\n-
-  Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n
-  This is a beta playbook, which lets you implement and test pre-release software.
-  At the moment we support AWS but are working towards multi-cloud support. Since
-  the playbook is beta, it might contain bugs. Updates to the playbook during the
-  beta phase might include non-backward compatible features. We appreciate your feedback
-  on the quality and usability of the content to help us identify issues, fix them,
-  and continually improve.\n"
+description: "Investigate and respond to Cortex XDR Cloud alerts where an AWS IAM\
+  \ user`s access key is used suspiciously to access the cloud environment. \nThe\
+  \ following alerts are supported for AWS environments.\n- Penetration testing tool\
+  \ attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor\
+  \ exit node\n This is a beta playbook, which lets you implement and test pre-release\
+  \ software. At the moment we support AWS but are working towards multi-cloud support.\
+  \ Since the playbook is beta, it might contain bugs. Updates to the playbook during\
+  \ the beta phase might include non-backward compatible features. We appreciate your\
+  \ feedback on the quality and usability of the content to help us identify issues,\
+  \ fix them, and continually improve.\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -31,6 +25,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -60,6 +55,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "54"
@@ -89,6 +85,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -113,8 +110,7 @@ tasks:
       version: -1
       name: Decision making - true/false-positive alert
       description: Based on the collected data investigation and the verdict established
-        by the "Enrichment for Verdict" playbook, is this a true positive
-        event?
+        by the "Enrichment for Verdict" playbook, is this a true positive event?
       type: condition
       iscommand: false
       brand: ""
@@ -149,6 +145,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -178,6 +175,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "61"
@@ -207,6 +205,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "21"
@@ -233,16 +232,17 @@ tasks:
       id: 65900bdd-a39d-4848-8edc-4a3026a5360c
       version: -1
       name: AWS IAM User Access Investigation - Remediation
-      description: "Investigate and respond to Cortex XDR Cloud alerts where an AWS
-        IAM user`s access key is used suspiciously to access the cloud environment.
-        \nThe following alerts are supported for AWS environments.\n- Penetration
-        testing tool attempt\n- Penetration testing tool activity\n- Suspicious API
-        call from a Tor exit node\n This is a beta playbook, which lets you implement
-        and test pre-release software. At the moment we support AWS but are working
-        towards multi-cloud support. Since the playbook is beta, it might contain
-        bugs. Updates to the playbook during the beta phase might include non-backward
-        compatible features. We appreciate your feedback on the quality and usability
-        of the content to help us identify issues, fix them, and continually improve.\n"
+      description: "Investigate and respond to Cortex XDR Cloud alerts where an AWS\
+        \ IAM user`s access key is used suspiciously to access the cloud environment.\
+        \ \nThe following alerts are supported for AWS environments.\n- Penetration\
+        \ testing tool attempt\n- Penetration testing tool activity\n- Suspicious\
+        \ API call from a Tor exit node\n This is a beta playbook, which lets you\
+        \ implement and test pre-release software. At the moment we support AWS but\
+        \ are working towards multi-cloud support. Since the playbook is beta, it\
+        \ might contain bugs. Updates to the playbook during the beta phase might\
+        \ include non-backward compatible features. We appreciate your feedback on\
+        \ the quality and usability of the content to help us identify issues, fix\
+        \ them, and continually improve.\n"
       playbookName: AWS IAM User Access Investigation - Remediation
       type: playbook
       iscommand: false
@@ -369,6 +369,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "50"
@@ -544,13 +545,13 @@ inputs:
     simple: "False"
   required: false
   description: True/False to automatically delete the user login profile if it exists.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AutoBlockIP
   value:
     simple: "False"
   required: false
   description: 'True/False to initiate block IP playbook automatically '
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IndicatorTag
   value: {}
   required: false
@@ -558,18 +559,20 @@ inputs:
     Tag name for bad reputation IP addresses investigated in the incident.
     Use it when the EDL service is configured to add indicators to block in PANW PAN-OS.
     If indicator verdict (Malicious/Bad) is used to add indicators to XSOAR EDL you don't need to use the tag. Indicators will be set as malicious automatically in the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: DAG
   value: {}
   required: false
   description: |-
     This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
     Specify the Dynamic Address Group tag name for IP handling.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ShouldCloseAutomatically
   value: {}
   required: false
   description: Should we close alerts as false positive automatically? Specify true/false.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: AWS IAM user access investigation
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
