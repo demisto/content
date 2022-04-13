@@ -49,7 +49,6 @@ class Email(object):
         self.labels = self._generate_labels()
         self.message_id = email_object.message_id
 
-
     @staticmethod
     def handle_message_slashes(message_bytes: bytes) -> bytes:
         """
