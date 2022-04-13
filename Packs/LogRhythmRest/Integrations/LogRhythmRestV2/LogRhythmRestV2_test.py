@@ -366,13 +366,13 @@ def test_case_evidence_list_request(requests_mock):
 def test_empty_alarmsSearchDetails(requests_mock):
     """
     Given:
-    - Alarm status and alarm ID to update.
+    - List of alarms.
 
     When:
-    - Running alarm_update_request.
+    - Running alarms_list_request with alarm_id filter which does not match.
 
     Then:
-    - Validate that update alarm request body created as expected.
+    - Validate that result is empty.
     """
     requests_mock.get(f'{BASE_URL}lr-alarm-api/alarms/', json=Empty_ALARMS_LIST_BY_ID)
     res, _ = CLIENT.alarms_list_request(created_after="x.x.x")
