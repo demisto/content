@@ -34,7 +34,3 @@ This playbook does not use any scripts.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | FortiSIEM.Event | The events that retrieved from the search query. | unknown |
-
-## Playbook Image
----
-![GenericPolling-FortiSIEM](./GenericPolling-FortiSIEM.png)
