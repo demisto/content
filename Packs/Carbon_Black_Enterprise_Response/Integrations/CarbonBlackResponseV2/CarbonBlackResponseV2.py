@@ -37,6 +37,19 @@ class ProcessEventDetail:
     def format(self):
         return self.fields
 
+    
+class netconn_complete():
+    # include the class in the format function
+    def __init__(self, fields):
+		self.fields = fields
+		
+
+    def format(self):
+        for entry in self.fields:
+            entry['remote_ip'] = socket.inet_ntoa(struct.pack('>i', int(entry['remote_ip']))
+            entry['local_ip'] = socket.inet_ntoa(struct.pack('>i', int(entry['remote_ip']))
+        return self.fields
+    
 
 class filemod_complete(ProcessEventDetail):
     FIELDS = ['operation_type', 'event_time', 'file_path', 'md5_after_last_write',
@@ -229,7 +242,7 @@ class Client(BaseClient):
 
     def get_formatted_ProcessEventDetail(self, process_json: dict):
         complex_fields = {'filemod_complete': filemod_complete, 'modload_complete': modload_complete,
-                          'regmod_complete': regmod_complete, 'crossproc_complete': crossproc_complete}
+                          'regmod_complete': regmod_complete, 'crossproc_complete': crossproc_complete, 'netconn_complete': netconn_complete}
         formatted_json = {}
         for field in process_json:
             if field in complex_fields:
