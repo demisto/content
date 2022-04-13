@@ -217,6 +217,9 @@ class TestHelperFunctions:
         import EDL as edl
         if not Path('/home/demisto').exists():
             edl.tldextractor = edl.tldextract.TLDExtract()
+        tlds = 'com\nco.uk'
+        requests_mock.get('https://publicsuffix.org/list/public_suffix_list.dat', text=tlds)
+        requests_mock.get('https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat', text=tlds)
         indicators = [{'value': '1.1.1.1/7', 'indicator_type': 'CIDR'},  # prefix=7
                       {"value": "1.1.1.1/12", "indicator_type": "CIDR"},  # prefix=12
                       {"value": "*.com", "indicator_type": "Domain"},  # tld
