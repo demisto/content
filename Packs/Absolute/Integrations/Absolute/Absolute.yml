@@ -109,7 +109,7 @@ script:
       secret: false
     - default: false
       description: The user-defined name for the Freeze message.
-      isArray: falseyuiyui
+      isArray: false
       name: message_name
       required: true
       secret: false
