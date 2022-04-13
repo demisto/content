@@ -11,6 +11,8 @@ ALARMS_LIST = {'alarmsSearchDetails': [{'alarmId': 2, 'alarmStatus': 1, 'dateIns
 
 ALARMS_LIST_BY_ID = {'alarmDetails': {'alarmId': 1, 'alarmStatus': 1, 'dateInserted': '2021-08-23T15:19:00'}}
 
+Empty_ALARMS_LIST_BY_ID = {'alarmsSearchDetails': None}
+
 CASES_LIST = [{'id': '525569EF-CA80-4901-BA8A-95D80851BACA'}, {'id': '75081347-EB56-4AEA-A6F9-A6EB6662F48E'}]
 
 HOSTS_LIST = [{'id': 1, 'name': 'host1'}, {'id': 2, 'name': 'host2'}, {'id': 3, 'name': 'host3'}]
@@ -360,3 +362,18 @@ def test_case_evidence_list_request(requests_mock):
     requests_mock.get(f'{BASE_URL}lr-case-api/cases/1/evidence', json={})
     CLIENT.case_evidence_list_request('1', '', 'alarm', 'pending')
     assert requests_mock.last_request.query == 'type=alarm&status=pending'
+
+def test_empty_alarmsSearchDetails(requests_mock):
+    """
+    Given:
+    - Alarm status and alarm ID to update.
+
+    When:
+    - Running alarm_update_request.
+
+    Then:
+    - Validate that update alarm request body created as expected.
+    """
+    requests_mock.get(f'{BASE_URL}lr-alarm-api/alarms/', json=Empty_ALARMS_LIST_BY_ID)
+    res, _ = CLIENT.alarms_list_request(created_after="x.x.x")
+    assert not res
