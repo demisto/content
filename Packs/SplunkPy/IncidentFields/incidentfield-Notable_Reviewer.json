@@ -1,20 +1,20 @@
-{
+[{
     "associatedToAll": false,
     "associatedTypes": [
         "Splunk Notable Generic"
     ],
     "caseInsensitive": true,
-    "cliName": "notablereviewer",
+    "cliName": "splunknotablereviewer",
     "closeForm": false,
     "content": true,
     "description": "The Splunk notable reviewer.",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_notablereviewer",
+    "id": "incident_splunknotablereviewer",
     "isReadOnly": false,
     "locked": false,
-    "name": "Notable Reviewer",
+    "name": "Splunk Notable Reviewer",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
@@ -30,4 +30,4 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0"
-}
+}]

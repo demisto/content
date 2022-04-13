@@ -142,6 +142,18 @@ class UserMappingObject:
 
         return splunk_user
 
+    def get_splunk_user_by_xsoar_command(self, args):
+        xsoar_users = argToList(args.get('xsoar_username'))
+        outputs = {}
+        for user in xsoar_users:
+            splunk_user = self.get_splunk_user_by_xsoar(user)
+            outputs[user] = splunk_user if splunk_user else 'Could not Find splunk user, check logs for more details.'
+
+        return CommandResults(
+                outputs=outputs,
+                readable_output=tableToMarkdown('Xsoar-Splunk Username Mapping', outputs, headers='Splunk user')
+            )
+
 # =========== Regular Fetch Mechanism ===========
 def splunk_time_to_datetime(incident_ocurred_time):
     incident_time_without_timezone = incident_ocurred_time.split('.')[0]
@@ -1309,8 +1321,9 @@ def update_remote_system_command(args, params, service, auth_token, mapper):
         changed_data = {field: None for field in OUTGOING_MIRRORED_FIELDS}
         for field in delta:
             if field == 'owner':
-                demisto.debug('Changing owner according to mapper')
-                changed_data['owner'] = mapper.get_splunk_user_by_xsoar(delta["owner"]) if mapper.should_map else delta["owner"]
+                new_owner = mapper.get_splunk_user_by_xsoar(delta["owner"]) if mapper.should_map else None
+                if new_owner:
+                    changed_data['owner'] = new_owner
             elif field in OUTGOING_MIRRORED_FIELDS:
                 changed_data[field] = delta[field]
 
@@ -2685,6 +2698,8 @@ def main():
     elif command == 'update-remote-system':
         demisto.info('########### MIRROR OUT #############')
         update_remote_system_command(demisto.args(), demisto.params(), service, auth_token, mapper)
+    elif command == 'splunk-get-username-by-xsoar-user':
+        return_results(mapper.get_splunk_user_by_xsoar_command(demisto.args()))
     else:
         raise NotImplementedError('Command not implemented: {}'.format(command))
 

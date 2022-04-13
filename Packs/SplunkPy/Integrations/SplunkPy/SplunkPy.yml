@@ -199,7 +199,7 @@ configuration:
   required: false
   type: 8
 - display: Users Lookup table name
-  additionalinfo: The name of the lookup table containing the user mapping data.
+  additionalinfo: The name of the lookup table in splunk, containing the username's mapping data.
   defaultvalue: splunk_xsoar_users
   name: user_map_lookup_name
   required: false
@@ -830,6 +830,17 @@ script:
   - name: splunk-reset-enriching-fetch-mechanism
     arguments: []
     description: Resets the enrichment mechanism of fetched notables.
+  - arguments:
+      - default: true
+        description: Xsoar username to match in splunk's usernames records.
+        isArray: true
+        name: xsoar_username
+        required: true
+        secret: false
+    deprecated: false
+    description: Returns the Splunk's username matching the given Xsoar's username.
+    execution: false
+    name: splunk-get-username-by-xsoar-user
   dockerimage: demisto/splunksdk:1.0.0.24033
   feed: false
   isfetch: true

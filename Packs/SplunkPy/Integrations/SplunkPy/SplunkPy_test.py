@@ -508,6 +508,7 @@ def test_get_kv_store_config(fields, expected_output, mocker):
 
 
 def test_fetch_incidents(mocker):
+    from SplunkPy import UserMappingObject
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
@@ -516,7 +517,8 @@ def test_fetch_incidents(mocker):
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
     mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
-    splunk.fetch_incidents(service)
+    mapper = UserMappingObject(service, False)
+    splunk.fetch_incidents(service, mapper)
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 1
@@ -1339,6 +1341,7 @@ def test_labels_with_non_str_values(mocker):
         - Validate the Labels created in the incident are well formatted to avoid server errors on json.Unmarshal
     """
 
+    from SplunkPy import UserMappingObject
     # prepare
     raw = {
         "message": "Authentication of user via Radius",
@@ -1371,7 +1374,8 @@ def test_labels_with_non_str_values(mocker):
 
     # run
     service = mocker.patch('splunklib.client.connect', return_value=None)
-    splunk.fetch_incidents(service)
+    mapper = UserMappingObject(service, False)
+    splunk.fetch_incidents(service, mapper)
     incidents = demisto.incidents.call_args[0][0]
 
     # validate
@@ -1489,3 +1493,31 @@ def test_owner_mapping_mechanism_splunk_to_xsoar(mocker, splunk_name, expected_x
     assert s_user == expected_xsoar
     if error_mock.called:
         assert error_mock.call_args[0][0] == expected_msg
+
+COMMAND_CASES = [
+    ({'xsoar_username': 'test_xsoar'}, {}),
+    ({'xsoar_username': 'test_xsoar, Non existing'}, {}),
+    ({'xsoar_username': 'Non Existing,'}, {}),
+    ({'xsoar_username': ['test_xsoar, Non existing']}, {})
+]
+
+@pytest.mark.parametrize('xsoar_names, expected_outputs', COMMAND_CASES)
+def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs):
+    """
+    Given: a list of xsoar users
+    When: trying to get splunk matching users
+    Then: validates correctness of list
+    """
+
+    def mocked_get_record(col, value_to_search):
+        return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING)
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+
+    mapper = splunk.UserMappingObject(service, True, table_name='splunk_xsoar_users',
+                                      xsoar_user_column_name='xsoar_user',
+                                      splunk_user_column_name='splunk_user')
+
+    mocker.patch.object(mapper, '_get_record', side_effect=mocked_get_record)
+    mapper.get_splunk_user_by_xsoar_command(xsoar_names)
+    res = mapper.get_splunk_user_by_xsoar_command(xsoar_names)
+    assert res.outputs == expected_outputs
