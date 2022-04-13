@@ -23,4 +23,4 @@ dockerimage: demisto/python3:3.10.4.27798
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
-- playbook-CIDRBiggerThanPrefix-test_Test
+- playbook-CIDRBiggerThanPrefix_Test
