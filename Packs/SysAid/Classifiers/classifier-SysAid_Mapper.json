@@ -1,0 +1,3555 @@
+{
+    "description": "Maps incoming SysAid incidents, requests, problems and changes fields.",
+    "feed": false,
+    "id": "SysAid Mapper",
+    "mapping": {
+        "SysAid Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Account Name": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "account_id"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Alert ID": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "alertID"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Asset ID": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "computer_id"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Assigned User": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "responsibility"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Classification": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "change_category"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Close Time": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "close_time"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "Closing Reason": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "closure_information"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Department": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "department"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Description": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "description"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Email": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "email_account"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Escalation": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "is_escalated"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Last Modified By": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "update_user"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Last Update Time": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "update_time"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "Location": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "location"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Manager Name": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "user_manager_name"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Created By": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "submit_user"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Priority": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "priority"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Status": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "status"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Urgency": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "urgency"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Subtype": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "sub_type"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Asset Name": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "computer_name"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Category": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "problem_type"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Company": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "company"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Due Date": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "due_date"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "SysAid Notes": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "notes"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Parent ID": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "parent_link"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Resolution": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "resolution"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Solution": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "solution"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Sub Category": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "problem_sub_type"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Tertiary Category": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "third_level_category"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Ticket Opened Date": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "insert_time"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "Title": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "title"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "impact"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "Urgent,Very High,Normal"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "Critical,Critical,Medium"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "SysAid Change": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Account Name": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "account_id"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Alert ID": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "alertID"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Asset ID": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "computer_id"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Assigned User": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "responsibility"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Classification": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "change_category"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Close Time": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "close_time"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "Closing Reason": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "closure_information"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Department": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "department"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Description": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "description"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Email": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "email_account"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Escalation": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "is_escalated"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Last Modified By": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "update_user"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Last Update Time": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "update_time"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "Location": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "location"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Manager Name": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "user_manager_name"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Created By": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "submit_user"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Priority": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "priority"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Status": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "status"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Urgency": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "urgency"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Subtype": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "sub_type"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Asset Name": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "computer_name"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Category": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "problem_type"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Company": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "company"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Due Date": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "due_date"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "SysAid Notes": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "notes"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Parent ID": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "parent_link"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Resolution": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "resolution"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Solution": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "solution"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Sub Category": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "problem_sub_type"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Tertiary Category": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "third_level_category"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Ticket Opened Date": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "insert_time"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "Title": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "title"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "impact"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "Urgent,Very High,Normal"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "Critical,Critical,Medium"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "SysAid Problem": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Account Name": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "account_id"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Alert ID": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "alertID"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Asset ID": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "computer_id"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Assigned User": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "responsibility"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Classification": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "change_category"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Close Time": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "close_time"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "Closing Reason": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "closure_information"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Department": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "department"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Description": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "description"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Email": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "email_account"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Escalation": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "is_escalated"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Last Modified By": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "update_user"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Last Update Time": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "update_time"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "Location": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "location"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Manager Name": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "user_manager_name"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Created By": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "submit_user"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Priority": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "priority"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Status": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "status"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Urgency": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "urgency"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Subtype": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "sub_type"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Asset Name": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "computer_name"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Category": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "problem_type"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Company": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "company"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Due Date": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "due_date"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "SysAid Notes": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "notes"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Parent ID": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "parent_link"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Resolution": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "resolution"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Solution": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "solution"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Sub Category": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "problem_sub_type"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Tertiary Category": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "third_level_category"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Ticket Opened Date": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "insert_time"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "Title": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "title"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "impact"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "Urgent,Very High,Normal"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "Critical,Critical,Medium"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "SysAid Request": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Account Name": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "account_id"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Alert ID": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "alertID"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Asset ID": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "computer_id"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Assigned User": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "responsibility"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Classification": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "change_category"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Close Time": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "close_time"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "Closing Reason": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "closure_information"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Department": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "department"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Description": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "description"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Email": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "email_account"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Escalation": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "is_escalated"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Last Modified By": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "update_user"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Last Update Time": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "update_time"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "Location": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "location"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Manager Name": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "user_manager_name"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Created By": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "submit_user"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Priority": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "priority"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Status": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "status"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Source Urgency": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "urgency"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Subtype": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "sub_type"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Asset Name": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "computer_name"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Category": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "problem_type"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Company": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "company"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Due Date": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "due_date"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "SysAid Notes": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "notes"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Parent ID": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "parent_link"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Resolution": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "resolution"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Solution": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "solution"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Sub Category": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "problem_sub_type"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "SysAid Tertiary Category": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "third_level_category"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "Ticket Opened Date": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "insert_time"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "Title": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "title"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "valueCaption",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "info.key"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "impact"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "info",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "Urgent,Very High,Normal"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "Critical,Critical,Medium"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "SysAid Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
