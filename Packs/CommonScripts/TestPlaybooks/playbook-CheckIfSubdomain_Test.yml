@@ -1,14 +1,14 @@
-id: CIDRBiggerThanPrefix-test
+id: CheckIfSubdomain_Test
 version: -1
-name: CIDRBiggerThanPrefix-test
+name: CheckIfSubdomain_Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1f30601b-0870-4181-8a51-78fa6671a353
+    taskid: 36eab6ca-cff2-49eb-8a97-20509b801801
     type: start
     task:
-      id: 1f30601b-0870-4181-8a51-78fa6671a353
+      id: 36eab6ca-cff2-49eb-8a97-20509b801801
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3b15a34c-8ead-443a-8e0d-1223e1135ead
+    taskid: 17d64fac-ed81-43f0-8345-e81539d45398
     type: regular
     task:
-      id: 3b15a34c-8ead-443a-8e0d-1223e1135ead
+      id: 17d64fac-ed81-43f0-8345-e81539d45398
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -67,13 +67,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 15c531c6-8711-4108-8b79-8768be34aade
+    taskid: 55f3e5f7-eeb4-4ee4-883c-297d8c25b252
     type: regular
     task:
-      id: 15c531c6-8711-4108-8b79-8768be34aade
+      id: 55f3e5f7-eeb4-4ee4-883c-297d8c25b252
       version: -1
-      name: CIDRBiggerThanPrefix
-      scriptName: CIDRBiggerThanPrefix
+      name: CheckIfSubdomain
+      description: Checks if given domains is a subdomain to one of the domains listed
+      scriptName: CheckIfSubdomain
       type: regular
       iscommand: false
       brand: ""
@@ -82,9 +83,9 @@ tasks:
       - "3"
     scriptarguments:
       left:
-        simple: "8"
+        simple: test.example.com
       right:
-        simple: 0.0.0.0/2
+        simple: example.com
     separatecontext: false
     view: |-
       {
@@ -97,15 +98,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 8675c821-f9e5-45f2-8648-dd14258943bd
+    taskid: 0b60d501-2f70-4793-8359-b1062da06126
     type: title
     task:
-      id: 8675c821-f9e5-45f2-8648-dd14258943bd
+      id: 0b60d501-2f70-4793-8359-b1062da06126
       version: -1
       name: Test Done
       type: title
@@ -142,4 +143,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: Test playbook for CIDRBiggerThanPrefix script
+description: Test playbook for CheckIfSubdomain script
