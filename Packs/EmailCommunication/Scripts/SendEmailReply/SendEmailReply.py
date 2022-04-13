@@ -37,9 +37,10 @@ def append_email_signature(html_body):
     return html_body
 
 
-def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, email_bcc, reply_html_body,
-               entry_id_list, email_latest_message, email_code, mail_sender_instance):
-    """Send email reply.-
+def validate_email_sent(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, email_bcc,
+                        reply_html_body, entry_id_list, email_latest_message, email_code, mail_sender_instance):
+    """
+    Validate that the email was actually sent, returns an error string if it wasn't sent successfully.
     Args:
         incident_id: The incident ID.
         email_subject: The email subject.
@@ -53,27 +54,21 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
         email_latest_message: The latest message ID in the email thread to reply to.
         email_code: The random code that was generated when the incident was created.
         mail_sender_instance: The name of the mail sender integration instance
+    Returns:
+        str: a message which indicates that the mail was sent successfully or an error message.
     """
-    # Get the custom email signature, if set, and append it to the message to be sent
-    reply_html_body = append_email_signature(reply_html_body)
+    email_reply = execute_reply_mail(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
+                                     reply_html_body, entry_id_list, email_latest_message, email_code,
+                                     mail_sender_instance)
 
-    email_reply = send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
-                                    email_bcc, reply_html_body, entry_id_list, email_latest_message, email_code,
-                                    mail_sender_instance)
+    if is_error(email_reply):
+        return f'Error:\n {get_error(email_reply)}'
 
-    status = email_reply[0].get('Contents', '')
-    if status != FAIL_STATUS_MSG and status:
-        msg = f'Mail sent successfully. To: {email_to}'
-        if email_cc:
-            msg += f' Cc: {email_cc}'
-    else:
-        msg = f'An error occurred while trying to send the mail: {status}'
-
-    return msg
+    return f'Mail sent successfully to {email_to}'
 
 
-def send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, email_bcc,
-                      reply_html_body, entry_id_list, email_latest_message, email_code, mail_sender_instance):
+def execute_reply_mail(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, email_bcc,
+                       reply_html_body, entry_id_list, email_latest_message, email_code, mail_sender_instance):
     if f'<{email_code}' not in email_subject:
         subject_with_id = f"<{email_code}> {email_subject}"
 
@@ -100,8 +95,7 @@ def send_mail_request(incident_id, email_subject, email_to, reply_body, service_
         "replyTo": service_mail,
         "using": mail_sender_instance
     }
-    email_reply = demisto.executeCommand("reply-mail", mail_content)
-    return email_reply
+    return demisto.executeCommand("reply-mail", mail_content)
 
 
 def get_email_threads(incident_id):
@@ -596,8 +590,9 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
         final_email_cc = get_email_cc(email_cc, add_cc)
         reply_body, reply_html_body = get_reply_body(notes, incident_id, attachments)
         entry_id_list = get_entry_id_list(incident_id, attachments, [], files)
-        result = send_reply(incident_id, email_subject, email_to_str, reply_body, service_mail, final_email_cc, '',
-                            reply_html_body, entry_id_list, email_latest_message, email_code, mail_sender_instance)
+        result = validate_email_sent(incident_id, email_subject, email_to_str, reply_body, service_mail,
+                                     final_email_cc, '', reply_html_body, entry_id_list, email_latest_message,
+                                     email_code, mail_sender_instance)
         return_results(result)
 
     except Exception as error:
@@ -843,9 +838,9 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
             reply_subject = reply_subject.lstrip("Re: ")
 
             # Send the email reply
-            result = send_reply(incident_id, reply_subject, final_reply_recipients, new_email_body, service_mail,
-                                final_email_cc, final_email_bcc, reply_html_body, entry_id_list, reply_to_message_id,
-                                reply_code, mail_sender_instance)
+            result = validate_email_sent(incident_id, reply_subject, final_reply_recipients, new_email_body,
+                                         service_mail, final_email_cc, final_email_bcc, reply_html_body, entry_id_list,
+                                         reply_to_message_id, reply_code, mail_sender_instance)
             return_results(result)
 
             if f'<{reply_code}' not in reply_subject:
