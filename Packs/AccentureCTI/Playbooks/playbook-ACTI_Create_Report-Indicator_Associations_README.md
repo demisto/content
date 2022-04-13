@@ -22,11 +22,11 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IP |  | ${IP.Address} | Optional |
-| IA |  | ${intelligence_alerts}.None | Optional |
-| IR |  | ${intelligence_reports}.None | Optional |
-| URL |  | ${URL.Data} | Optional |
-| Domain |  | ${Domain.Name} | Optional |
+| IP | IP address after enrichment. | ${IP.Address} | Optional |
+| IA | Intelligence Alert uuid(s). | ${intelligence_alerts}.None | Optional |
+| IR | Intelligence Report uuid(s). | ${intelligence_reports}.None | Optional |
+| URL | URL address after enrichment. | ${URL.Data} | Optional |
+| Domain | Domain name after enrichment. | ${Domain.Name} | Optional |
 
 ## Playbook Outputs
 ---
