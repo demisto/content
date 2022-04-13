@@ -920,11 +920,11 @@ def get_category_by_id(category_id):
 
 
 # Get the list of users from Zscaler, added by BG:
-def get_users_command():
-    name = demisto.args().get("name", None)
-    pageSize = demisto.args().get("pageSize")
-    pageNo = demisto.args().get("page", 1)
-    if(name is not None):
+def get_users_command(args):
+    name = args.get("name", None)
+    pageSize = args.get("pageSize")
+    pageNo = args.get("page", 1)
+    if name is not None:
         cmd_url = '/users?page={}&pageSize={}&name={}'.format(pageNo, pageSize, name)
     else:
         cmd_url = '/users?page={}&pageSize={}'.format(pageNo, pageSize)
@@ -947,17 +947,17 @@ def get_users_command():
 
 
 # Get the list of user departments from Zscaler, added by BG:
-def get_departments_command():
-    name = demisto.args().get("name", None)
-    pageSize = demisto.args().get("pageSize")
-    pageNo = demisto.args().get("page", 1)
-    if(name is not None):
+def get_departments_command(args):
+    name = args.get("name", None)
+    pageSize = args.get("pageSize")
+    pageNo = args.get("page", 1)
+    if name is not None:
         cmd_url = '/departments?page={}&pageSize={}&search={}&limitSearch=true'.format(pageNo, pageSize, name)
     else:
         cmd_url = '/departments?page={}&pageSize={}'.format(pageNo, pageSize)
     response = http_request('GET', cmd_url).json()
 
-    if(len(response) < 10):
+    if len(response) < 10:
         human_readable = tableToMarkdown("Departments ({})".format(len(response)), response)
     else:
         human_readable = "Retrieved {} departments".format(len(response))
@@ -974,17 +974,17 @@ def get_departments_command():
 
 
 # Get the list of user groups from Zscaler, added by BG:
-def get_usergroups_command():
-    name = demisto.args().get("name", None)
-    pageSize = demisto.args().get("pageSize")
-    pageNo = demisto.args().get("page", 1)
-    if(name is not None):
+def get_usergroups_command(args):
+    name = args.get("name", None)
+    pageSize = args.get("pageSize")
+    pageNo = args.get("page", 1)
+    if name is not None:
         cmd_url = '/groups?page={}&pageSize={}&search={}'.format(pageNo, pageSize, name)
     else:
         cmd_url = '/groups?page={}&pageSize={}'.format(pageNo, pageSize)
     response = http_request('GET', cmd_url).json()
 
-    if(len(response) < 10):
+    if len(response) < 10:
         human_readable = tableToMarkdown("User groups ({})".format(len(response)), response)
     else:
         human_readable = "Retrieved {} user groups".format(len(response))
@@ -1001,14 +1001,14 @@ def get_usergroups_command():
 
 
 # Update user info in Zscaler, added by BG:
-def set_user_command():
-    userId = demisto.args().get("id")
-    params = json.loads(demisto.args().get("user"))
+def set_user_command(args):
+    userId = args.get("id")
+    params = json.loads(args.get("user"))
     cmd_url = '/users/{}'.format(userId)
 
     response = http_request('PUT', cmd_url, json.dumps(params), DEFAULT_HEADERS)
     responseJson = response.json()
-    if(response.status_code == 200):
+    if response.status_code == 200:
         entry = {
             'Type': entryTypes['note'],
             'Contents': responseJson,
@@ -1080,13 +1080,13 @@ def main():
             elif command == 'zscaler-url-quota':
                 return_results(url_quota_command())
             elif command == 'zscaler-get-users':
-                return_results(get_users_command())
+                return_results(get_users_command(demisto.args()))
             elif command == 'zscaler-update-user':
-                return_results(set_user_command())
+                return_results(set_user_command(demisto.args()))
             elif command == 'zscaler-get-departments':
-                return_results(get_departments_command())
+                return_results(get_departments_command(demisto.args()))
             elif command == 'zscaler-get-usergroups':
-                return_results(get_usergroups_command())
+                return_results(get_usergroups_command(demisto.args()))
         except Exception as e:
             LOG(str(e))
             LOG.print_log()
