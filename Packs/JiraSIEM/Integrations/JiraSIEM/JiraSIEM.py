@@ -111,29 +111,19 @@ class GetEvents:
             self.client.prepare_next_run(offset)
             events = self.call()
 
-    @staticmethod
-    def log_to_incident(log: dict):
-        incident = {
-            'name': log['name'],  # name is required field, must be set
-            'occurred': log.get('created', '').removesuffix('+0000')+'Z',  # must be string of a format ISO8601
-            'rawJSON': json.dumps(log)
-        }
-        demisto.incidents()
-
     def run(self, mas_fetch: int = 100) -> list[dict]:
         stored = []
         for logs in self._iter_events():
-            for log in logs:
-                log['created'] = log.get('created', '').removesuffix('+0000')+'Z'
             stored.extend(logs)
             if len(stored) >= mas_fetch:
                 return stored[:mas_fetch]
         return stored
 
-    @staticmethod
-    def get_last_run(log: dict) -> dict:
-        last_time = log.get('created')
-        return {'from': last_time}
+
+def set_last_run(log: dict) -> dict:
+    last_time = log.get('created').removesuffix('+0000')
+    next_time = last_time[:-1] + str(int(last_time[-1])+1)
+    return {'from': next_time}
 
 
 def events_to_incidents(events: list):
@@ -168,7 +158,7 @@ def main():
         events = get_events.run(mas_fetch=int(demisto_params.get('max_fetch', 100)))
         if events:
             events_to_incidents(events)
-            demisto.setLastRun(GetEvents.get_last_run(events[0]))
+            demisto.setLastRun(set_last_run(events[0]))
         command_results = CommandResults(
             readable_output=tableToMarkdown('Jira records', events, removeNull=True, headerTransform=pascalToSpace),
             outputs_prefix='Jira.Records',
