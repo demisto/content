@@ -1,16 +1,17 @@
-This playbook helps to extract indicators from incident and block.
+This playbook extracts indicators from an incident and block them.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* ACTI Indicator Enrichment
 * ACTI Block Indicators with severity greater than equal to 5
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+* DeleteContext
 
 ### Commands
 * extractIndicators
@@ -25,4 +26,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![ACTI Block Indicators from an Incident](https://user-images.githubusercontent.com/40510780/161066115-8a67ee45-60ae-4447-bdc3-f3f327547038.png)
+![ACTI Block Indicators from an Incident](Insert the link to your image here)
