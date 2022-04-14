@@ -9,6 +9,7 @@ import Tests.scripts.awsinstancetool.aws_functions as aws_functions  # pylint: d
 from Tests.scripts.utils.log_util import install_logging
 
 
+# test
 def main():
     install_logging('Destroy_instances.log')
     circle_aritfact = sys.argv[1]
