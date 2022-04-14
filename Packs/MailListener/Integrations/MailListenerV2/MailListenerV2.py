@@ -24,6 +24,7 @@ class Email(object):
         self.mail_bytes = message_bytes
         try:
             email_object = parse_from_bytes(message_bytes)
+
         except UnicodeDecodeError as e:
             demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
                          '\nWill replace backslash and try to parse again')
@@ -231,7 +232,7 @@ def fetch_incidents(client: IMAPClient,
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
-    LOG('in fetch incidents function')
+    demisto.debug('in fetch incidents function')
     uid_to_fetch_from = last_run.get('last_uid', 1)
     time_to_fetch_from = parse(last_run.get('last_fetch', f'{first_fetch_time} UTC'), settings={'TIMEZONE': 'UTC'})
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
@@ -373,7 +374,7 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
     Returns:
         A list with arguments for the email search query
     """
-    LOG('in generate search query')
+    demisto.debug('in generate search query')
     permitted_from_addresses_list = argToList(permitted_from_addresses)
     permitted_from_domains_list = argToList(permitted_from_domains)
     messages_query = ''
@@ -479,9 +480,7 @@ def main():
         ssl_context.verify_mode = ssl.CERT_NONE
     LOG(f'Command being called is {demisto.command()}')
     try:
-        LOG('before creating client')
         with IMAPClient(mail_server_url, ssl=tls_connection, port=port, ssl_context=ssl_context) as client:
-            LOG('after creating client')
             client.login(username, password)
             client.select_folder(folder)
             if demisto.command() == 'test-module':
