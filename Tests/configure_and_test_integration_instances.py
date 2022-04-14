@@ -1617,14 +1617,10 @@ def main():
         build.install_packs(pack_ids=pack_ids)
 
         new_integrations, modified_integrations = build.get_changed_integrations()
-
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
                                                                                             modified_integrations)
-
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
-
         installed_content_packs_successfully = build.update_content_on_servers()
-
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)
         success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
