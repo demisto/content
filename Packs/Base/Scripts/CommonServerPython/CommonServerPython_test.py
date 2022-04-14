@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import dateparser
 import demistomock as demisto
 import copy
 import json
@@ -6661,38 +6662,38 @@ class TestFetchWithLookBack:
     INCIDENTS = [
         {
             'incident_id': 1,
-            'created': (datetime.utcnow() - timedelta(hours=3)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T08:00:00'
         },
         {
             'incident_id': 2,
-            'created': (datetime.utcnow() - timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:00:00'
         },
         {
             'incident_id': 3,
-            'created': (datetime.utcnow() - timedelta(minutes=29)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:31:00'
         },
         {
             'incident_id': 4,
-            'created': (datetime.utcnow() - timedelta(minutes=19)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:41:00'
         },
         {
             'incident_id': 5,
-            'created': (datetime.utcnow() - timedelta(minutes=9)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:51:00'
         }
     ]
 
     NEW_INCIDENTS = [
         {
             'incident_id': 6,
-            'created': (datetime.utcnow() - timedelta(minutes=49)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:11:00'
         },
         {
             'incident_id': 7,
-            'created': (datetime.utcnow() - timedelta(minutes=25)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:35:00'
         },
         {
             'incident_id': 8,
-            'created': (datetime.utcnow() - timedelta(minutes=23)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:37:00'
         }
     ]
     
@@ -6789,6 +6790,12 @@ class TestFetchWithLookBack:
 
         assert incidents_phase2 == result_phase2
 
+    def mock_dateparser(self, date_string, settings):
+        date_arr = date_string.split(' ')
+        if len(date_arr) > 1 and date_arr[0].isdigit():
+            return datetime(2022, 4, 1, 11, 0, 0) - timedelta(minutes=int(date_arr[0]))
+        return datetime(2022, 4, 1, 11, 0, 0) - (datetime(2022, 4, 1, 11, 0, 0) - datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S'))
+
     @pytest.mark.parametrize('params, result_phase1, result_phase2, result_phase3, expected_last_run_phase1, expected_last_run_phase2, new_incidents, index', [
         (
             {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS[2], INCIDENTS[3]], [NEW_INCIDENTS[0], INCIDENTS[4]], [],
@@ -6831,6 +6838,7 @@ class TestFetchWithLookBack:
         self.LAST_RUN = {}
         incidents = self.INCIDENTS[:]
 
+        mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
