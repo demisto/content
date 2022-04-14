@@ -19,7 +19,7 @@ def main():
     internal_domains = argToList(demisto.args()['right'])
     domains = argToList(demisto.args()['left'])
 
-    no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
+    no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=None)
 
     for domain in domains:
         for internal_domain in internal_domains:
