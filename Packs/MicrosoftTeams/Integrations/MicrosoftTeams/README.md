@@ -27,6 +27,10 @@ The web server for the integration runs within a long-running Docker container. 
      -----END PRIVATE KEY-----
     ```
  - Microsoft does not support self-signed certificates and requires a chain-trusted certificate issued by a trusted CA.
+ - The following domains are used by this integration:
+    - microsoft.com
+    - botframework.com
+    - microsoftonline.com
  
 ## Setup Examples
 
