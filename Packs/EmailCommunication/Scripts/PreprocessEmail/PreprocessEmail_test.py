@@ -14,6 +14,45 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+@pytest.mark.parametrize(
+    "list_response, expected_result",
+    [
+        (util_load_json('test_data/getList_querywindow_success.json'), 'success'),
+        (util_load_json('test_data/getList_querywindow_error.json'), 'fail')
+    ]
+)
+def test_get_query_window(list_response, expected_result, mocker):
+    """
+    Unit Test Scenario 1 - List exists
+        Given
+        - Query window value stored in XSOAR List
+        When
+        - List content is returned successfully
+        Then
+        - Validate that the function returns the correct window based on the list response
+    Unit Test Scenario 2 - List retrieval fails
+        Given
+        - Query window value stored in XSOAR List
+        When
+        - List retrieval results in an error
+        Then
+        - Validate that the function returns the default '60 days' window
+        - Validate that a debug message is saved indicating the list couldn't be fetched
+    """
+    from PreprocessEmail import get_query_window
+    mocker.patch.object(demisto, 'executeCommand', return_value=list_response)
+    debug_mocker = mocker.patch.object(demisto, 'debug')
+    result = get_query_window()
+    debug_mocker_call_args = debug_mocker.call_args
+    if expected_result == 'success':
+        assert result == '90 days'
+    elif expected_result == 'fail':
+        assert result == '60 days'
+        assert debug_mocker_call_args.args[0] == 'Error occurred while trying to load the `XSOAR - Email ' \
+                                                 'Communication Days To Query` list. Using the default query time - ' \
+                                                 '60 days'
+
+
 def test_set_email_reply():
     """Unit test
         Given
@@ -342,13 +381,24 @@ EMAIL_THREADS = [{"Contents": {"context": {
 )
 def test_main(return_incident_path, expected_return, create_context_called, mocker):
     """
+    Unit Test Scenario 1 - Email Communication Incident
         Given
         - A new incident of type Email Communication
         When
         - An email reply to an existing incident was sent
+        - The related incident the email is in response to is an Email Communication incident
         Then
-        - Return False to drop the newly created incident and attach the relevant data to the existing
+        - Validate script returns False to drop the newly created incident and attach the relevant data to the existing
         email related incident.
+    Unit Test Scenario 2 - Ransomware Incident
+        Given
+        - A new incident of type Email Communication
+        When
+        - An email reply to an existing incident was sent
+        - The related incident the email is in response to is a Ransomware incident using the 'Email Threads' layout
+        Then
+        - Validate script returns False to drop the newly created incident and attach the relevant data to the existing
+        email related incident's context
     """
     import PreprocessEmail
     from PreprocessEmail import main
@@ -363,11 +413,18 @@ def test_main(return_incident_path, expected_return, create_context_called, mock
     create_thread_context_mocker = mocker.patch('PreprocessEmail.create_thread_context')
     mocker.patch.object(demisto, 'results')
     main()
-    assert create_context_called == create_thread_context_mocker.called
-    assert expected_return == demisto.results.call_args[0][0]
+    assert create_thread_context_mocker.called == create_context_called
+    assert demisto.results.call_args[0][0] == expected_return
 
 
-def test_create_thread_context(mocker):
+@pytest.mark.parametrize(
+    "email_code, scenario",
+    [
+        ('87692312', 'thread_found'),
+        ('123', 'thread_notfound')
+    ]
+)
+def test_create_thread_context(email_code, scenario, mocker):
     """Unit test
         Given:
         - all required function arguments are provided
@@ -386,20 +443,34 @@ def test_create_thread_context(mocker):
 
     from PreprocessEmail import create_thread_context
 
-    # Email data to use both for function input and function output validation
-    test_email = EMAIL_THREADS[0]['Contents']['context']['EmailThreads'][3]
-
     # Mock function to get current time string to match the expected result
     mocker.patch('PreprocessEmail.get_utc_now',
-                 return_value=datetime.strptime(test_email['MessageTime'], "%Y-%m-%dT%H:%M:%SUTC"))
+                 return_value=datetime.strptime('2022-02-04T20:58:20UTC', "%Y-%m-%dT%H:%M:%SUTC"))
 
     execute_command_mocker = mocker.patch.object(demisto, 'executeCommand', side_effect=side_effect_function)
-    create_thread_context(test_email['EmailCommsThreadId'], test_email['EmailCC'], test_email['EmailBCC'],
-                          test_email['EmailBody'], test_email['EmailFrom'], test_email['EmailHTML'],
-                          test_email['MessageID'], test_email['EmailReceived'], test_email['EmailReplyTo'],
-                          test_email['EmailSubject'], test_email['EmailTo'], '123', '')
+    create_thread_context(email_code, 'cc_user@company.com', 'bcc_user@company.com',
+                          'Email body.', 'soc_sender@company.com', '<html>body><Email body.</body></html>',
+                          '10', 'soc_sender@company.com', 'soc_sender@company.com',
+                          'Email Subject', 'end_user@company.com', '123', '')
     call_args = execute_command_mocker.call_args
-    assert EMAIL_THREADS[0]['Contents']['context']['EmailThreads'][3] == call_args.args[1]['arguments']['value']
+    if scenario == 'thread_found':
+        expected = {'EmailCommsThreadId': '87692312', 'EmailCommsThreadNumber': '1', 'EmailCC': 'cc_user@company.com',
+                    'EmailBCC': 'bcc_user@company.com', 'EmailBody': 'Email body.',
+                    'EmailFrom': 'soc_sender@company.com', 'EmailHTML': '<html>body><Email body.</body></html>',
+                    'MessageID': '10', 'EmailReceived': 'soc_sender@company.com',
+                    'EmailReplyTo': 'soc_sender@company.com', 'EmailSubject': 'Email Subject',
+                    'EmailTo': 'end_user@company.com', 'EmailAttachments': "['None']",
+                    'MessageDirection': 'inbound', 'MessageTime': '2022-02-04T20:58:20UTC'}
+        assert call_args.args[1]['arguments']['value'] == expected
+    elif scenario == 'thread_notfound':
+        expected = {'EmailCommsThreadId': '123', 'EmailCommsThreadNumber': '2', 'EmailCC': 'cc_user@company.com',
+                    'EmailBCC': 'bcc_user@company.com', 'EmailBody': 'Email body.',
+                    'EmailFrom': 'soc_sender@company.com', 'EmailHTML': '<html>body><Email body.</body></html>',
+                    'MessageID': '10', 'EmailReceived': 'soc_sender@company.com',
+                    'EmailReplyTo': 'soc_sender@company.com', 'EmailSubject': 'Email Subject',
+                    'EmailTo': 'end_user@company.com', 'EmailAttachments': "['None']", 'MessageDirection': 'inbound',
+                    'MessageTime': '2022-02-04T20:58:20UTC'}
+        assert call_args.args[1]['arguments']['value'] == expected
 
 
 def test_get_email_related_incident_id_email_in_fields(mocker):

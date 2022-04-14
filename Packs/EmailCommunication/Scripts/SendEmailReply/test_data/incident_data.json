@@ -83,6 +83,9 @@
         "actionsoncampaignincidents": "Close",
         "emailnewrecipients": "test_recipient@example.com",
         "emailselectedthread": 1,
+        "emailto": "end_user@company.com",
+        "emaillatestmessage": "123456",
+        "emailgeneratedcode": "87654321",
         "remediationsla": {
             "breachTriggered": false,
             "endDate": "0001-01-01T00:00:00Z",

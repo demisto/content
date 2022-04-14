@@ -5,8 +5,7 @@ import random
 import re
 from datetime import datetime as dt
 
-ERROR_TEMPLATE = 'ERROR: PreprocessEmail - {function_name}: {reason}'
-FAIL_STATUS_MSG = "Command send-mail in module EWS Mail Sender requires argument to that is missing (7)"
+ERROR_TEMPLATE = 'ERROR: SendEmailReply - {function_name}: {reason}'
 
 
 def get_utc_now():
@@ -24,15 +23,15 @@ def append_email_signature(html_body):
     Args: (string) html_body
     Returns: (string) Original HTML body with HTML formatted email signature appended
     """
-    email_signature = demisto.executeCommand('getList', {'listName': 'XSOAR - Email Communication Signature'}
-                                             )[0]['Contents']
+    email_signature = demisto.executeCommand('getList', {'listName': 'XSOAR - Email Communication Signature'})
+
     if is_error(email_signature):
         demisto.debug('Error occurred while trying to load the `XSOAR - Email Communication Signature` list. No '
                       'signature added to email')
     else:
         # Find the position of the closing </html> tag and insert the signature there
         if re.search('(?i)</body>', html_body):
-            html_body = re.sub('(?i)</body>', f'\r\n{email_signature}\r\n</body>', html_body)
+            html_body = re.sub('(?i)</body>', f"\r\n{email_signature[0]['Contents']}\r\n</body>", html_body)
 
     return html_body
 
@@ -58,13 +57,19 @@ def validate_email_sent(incident_id, email_subject, email_to, reply_body, servic
         str: a message which indicates that the mail was sent successfully or an error message.
     """
     email_reply = execute_reply_mail(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
-                                     reply_html_body, entry_id_list, email_latest_message, email_code,
+                                     email_bcc, reply_html_body, entry_id_list, email_latest_message, email_code,
                                      mail_sender_instance)
 
     if is_error(email_reply):
         return f'Error:\n {get_error(email_reply)}'
 
-    return f'Mail sent successfully to {email_to}'
+    msg = f'Mail sent successfully. To: {email_to}'
+    if email_cc:
+        msg += f' Cc: {email_cc}'
+    if email_bcc:
+        msg += f' Bcc: {email_bcc}'
+
+    return msg
 
 
 def execute_reply_mail(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, email_bcc,
@@ -196,13 +201,14 @@ def send_new_email(incident_id, email_subject, email_to, email_body, service_mai
                                          email_bcc, email_html_body, entry_id_list, new_attachment_names, email_code,
                                          mail_sender_instance)
 
-    status = email_result[0].get('Contents', '')
-    if status != FAIL_STATUS_MSG and status:
-        msg = f'Mail sent successfully. To: {email_to}'
-        if email_cc:
-            msg += f' Cc: {email_cc}'
-    else:
-        msg = f'An error occurred while trying to send the mail: {status}'
+    if is_error(email_result):
+        return f'Error:\n {get_error(email_result)}'
+
+    msg = f'Mail sent successfully. To: {email_to}'
+    if email_cc:
+        msg += f' Cc: {email_cc}'
+    if email_bcc:
+        msg += f' Bcc: {email_bcc}'
 
     return msg
 
@@ -448,9 +454,9 @@ def get_query_window():
         query_time = user_defined_time[0].get('Contents')
         return f'{int(query_time)} days'
     except ValueError:
-        demisto.error('Invalid input for number of days to query in the `XSOAR - Email Communication Days To Query` '
-                      'list. Input should be a number only, representing the number of days to query back.\nUsing the '
-                      'default query time - 60 days')
+        return_error('Invalid input for number of days to query in the `XSOAR - Email Communication Days To Query` '
+                     'list. Input should be a number only, representing the number of days to query back.\nUsing the '
+                     'default query time - 60 days')
         return '60 days'
 
 
@@ -773,9 +779,6 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
             this was an 'outbound' message, as it is not possible for an an initial incoming message
             to be stored as a thread without an existing incident to link to.
             """
-            # Format any markdown in the email body as HTML
-            new_email_body = format_body(new_email_body)
-
             result = resend_first_contact(email_selected_thread, incident_email_threads, incident_id,
                                           new_email_attachments, files, new_email_body, add_cc, add_bcc,
                                           service_mail, mail_sender_instance, new_attachment_names)
@@ -801,10 +804,6 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
             if outbound_only is True:
                 # If this thread does not contain any inbound messages, then this is an update to the original
                 # first-contact message and must be sent as a new email message.
-
-                # Format any markdown in the email body as HTML
-                new_email_body = format_body(new_email_body)
-
                 result = resend_first_contact(email_selected_thread, incident_email_threads[last_thread_processed],
                                               incident_id, new_email_attachments, files, new_email_body, add_cc,
                                               add_bcc, service_mail, mail_sender_instance, new_attachment_names)
