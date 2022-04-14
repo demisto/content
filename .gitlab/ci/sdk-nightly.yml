@@ -221,6 +221,7 @@ demisto-sdk-nightly:destroy-instance:
   needs: []
   stage: destroy-instances
   script:
+    - echo "destroy-instance"
     # - !reference [.download-demisto-conf]
     # - |
     #   [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
