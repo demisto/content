@@ -141,7 +141,7 @@ function get_lists() {
         logout();
     }
 
-    lists = JSON.parse(x2j(res));
+    var lists = JSON.parse(x2j(res));
     list_names = [];
     
     for (var i in lists.feed.entry) {
