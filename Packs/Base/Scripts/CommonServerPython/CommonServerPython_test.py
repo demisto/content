@@ -7178,7 +7178,27 @@ class TestSendEventsToXSIAMTest:
     ])
     def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
         """
+        Test for the fetch fetch events function
+        Given:
+            Case a: a list containing dicts representing events.
+            Case b: a list containing strings representing events.
+            Case c: a string representing events (separated by a new line).
+            Case d: a string representing events (separated by a new line).
 
+        When:
+            Case a: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case b: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case c: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case d: Calling the send_events_to_xsiam function with a cef data format specification.
+
+        Then:
+            Case a: Ensure the events data was compressed correctly and that the data format was automatically identified
+            as json.
+            Case b: Ensure the events data was compressed correctly and that the data format was automatically identified
+            as text.
+            Case c: Ensure the events data was compressed correctly and that the data format was automatically identified
+            as text.
+            Case c: Ensure the events data was compressed correctly and that the data format remined as cef.
         """
         if not IS_PY3:
             return
