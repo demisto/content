@@ -9637,7 +9637,7 @@ def get_jobs(topology: Topology, device_filter_string: Optional[str] = None, sta
 
 
 def download_software(topology: Topology, version: str,
-                      device_filter_string: Optional[str] = None, sync: bool = False) -> DownloadSoftwareCommandResult:
+                      device_filter_string: Optional[str] = None, sync: Optional[bool] = False) -> DownloadSoftwareCommandResult:
     """
     Download The provided software version onto the device.
     :param topology: `Topology` instance !no-auto-argument
@@ -9651,7 +9651,7 @@ def download_software(topology: Topology, version: str,
 
 
 def install_software(topology: Topology, version: str,
-                     device_filter_string: str = None, sync: bool = False) -> InstallSoftwareCommandResult:
+                     device_filter_string: Optional[str] = None, sync: Optional[bool] = False) -> InstallSoftwareCommandResult:
     """
     Install the given software version onto the device. Download the software first with
     pan-os-platform-download-software
@@ -9662,11 +9662,7 @@ def install_software(topology: Topology, version: str,
     :param sync: If provided, runs the download synchronously - make sure 'execution-timeout' is increased.
     """
     _sync = argToBoolean(sync)
-    result: InstallSoftwareCommandResult = UniversalCommand.install_software(topology, version,
-                                                                             device_filter_str=device_filter_string,
-                                                                             sync=_sync)
-
-    return result
+    return UniversalCommand.install_software(topology, version, device_filter_str=device_filter_string, sync=_sync)
 
 
 def reboot(topology: Topology, hostid: str) -> RestartSystemCommandResult:
@@ -9676,9 +9672,7 @@ def reboot(topology: Topology, hostid: str) -> RestartSystemCommandResult:
     :param topology: `Topology` instance !no-auto-argument
     :param hostid: ID of host (serial or hostname) to reboot
     """
-    result: RestartSystemCommandResult = UniversalCommand.reboot(topology, hostid=hostid)
-
-    return result
+    return UniversalCommand.reboot(topology, hostid=hostid)
 
 
 def system_status(topology: Topology, hostid: str) -> CheckSystemStatus:
@@ -9688,9 +9682,7 @@ def system_status(topology: Topology, hostid: str) -> CheckSystemStatus:
     :param topology: `Topology` instance !no-auto-argument
     :param hostid: ID of host (serial or hostname) to check.
     """
-    result: CheckSystemStatus = UniversalCommand.check_system_availability(topology, hostid=hostid)
-
-    return result
+    return UniversalCommand.check_system_availability(topology, hostid=hostid)
 
 
 def update_ha_state(topology: Topology, hostid: str, state: str) -> HighAvailabilityStateStatus:
@@ -9701,31 +9693,26 @@ def update_ha_state(topology: Topology, hostid: str, state: str) -> HighAvailabi
     :param hostid: ID of host (serial or hostname) to update the state.
     :param state: New state.
     """
-    result: HighAvailabilityStateStatus = FirewallCommand.change_status(topology, hostid=hostid, state=state)
-
-    return result
+    return FirewallCommand.change_status(topology, hostid=hostid, state=state)
 
 
 """Hygiene Commands"""
 
 
 def check_log_forwarding(topology: Topology,
-                         device_filter_string: str = None) -> ConfigurationHygieneCheckResult:
+                         device_filter_string: Optional[str] = None) -> ConfigurationHygieneCheckResult:
     """
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only check given device
     """
-    result: ConfigurationHygieneCheckResult = \
-        HygieneLookups.check_log_forwarding_profiles(topology, device_filter_str=device_filter_string)
-
-    return result
+    return HygieneLookups.check_log_forwarding_profiles(topology, device_filter_str=device_filter_string)
 
 
 def check_vulnerability_profiles(
         topology: Topology,
-        device_filter_string: str = None,
-        minimum_block_severities: str = "critical,high",
-        minimum_alert_severities: str = "medium,low"
+        device_filter_string: Optional[str] = None,
+        minimum_block_severities: Optional[str] = "critical,high",
+        minimum_alert_severities: Optional[str] = "medium,low"
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured Vulnerability profiles to ensure at least one meets best practices.
@@ -9735,14 +9722,12 @@ def check_vulnerability_profiles(
     :param minimum_block_severities: csv list of severities that must be in drop/reset/block-ip mode.
     :param minimum_alert_severities: csv list of severities that must be in alert/default or higher mode.
     """
-    result: ConfigurationHygieneCheckResult = HygieneLookups.check_vulnerability_profiles(
+    return HygieneLookups.check_vulnerability_profiles(
         topology,
         device_filter_str=device_filter_string,
         minimum_block_severities=minimum_block_severities.split(","),
         minimum_alert_severities=minimum_alert_severities.split(",")
     )
-
-    return result
 
 
 def get_topology() -> Topology:
