@@ -52,3 +52,4 @@ CommonServerPython
 CommonServer
 mergeVersionedIntegrationContext
 SearchIndicatorRelationships 
+CommandResults
