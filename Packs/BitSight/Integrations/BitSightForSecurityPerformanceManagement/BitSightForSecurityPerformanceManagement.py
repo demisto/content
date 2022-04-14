@@ -225,8 +225,6 @@ def prepare_and_validate_fetch_findings_args(client, args):
     if severity:
         severity = severity.lower()
     grade = args.get('findings_grade', None)
-    if type(grade) is list:
-        grade = ','.join(grade)
     asset_category = args.get('findings_min_asset_category', None)
     if asset_category:
         asset_category = asset_category.lower()
