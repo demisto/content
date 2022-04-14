@@ -40,8 +40,7 @@ def create_pr_comment(validate_pr_comment, unit_tests_pr_comment):
 
 
 def convert_json_to_html(json_obj):
-    with open(summary_file, 'a') as file_data:
-        file_data.write(json_obj)
+    return json_obj
 
 
 def build_summary_report(validate_summary, unit_tests_summary):
