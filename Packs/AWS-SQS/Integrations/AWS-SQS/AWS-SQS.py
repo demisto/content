@@ -146,7 +146,7 @@ def parse_incident_from_finding(message, parse_body_as_json=False):
     if parse_body_as_json:
         try:
             message["Body"] = json.loads(message["Body"])
-        except json.JSONDecodeError:
+        except json.decoder.JSONDecodeError:
             pass
     incident['rawJSON'] = json.dumps(message)
     return incident
