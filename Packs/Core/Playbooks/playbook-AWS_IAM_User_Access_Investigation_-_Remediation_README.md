@@ -1,9 +1,9 @@
-Respond to Cortex XDR Cloud alerts where an AWS IAM user`s access key is used suspiciously to access the cloud environment. 
+Respond to Cortex XSIAM alerts where an AWS IAM user`s access key is used suspiciously to access the cloud environment. 
 The following alerts are supported for AWS environments.
 - Penetration testing tool attempt
 - Penetration testing tool activity
 - Suspicious API call from a Tor exit node
- This is a beta playbook, which lets you implement and test pre-release software. At the moment we support AWS but are working towards multi-cloud support. Since the playbook is beta, it might contain bugs. Updates to the playbook during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the content to help us identify issues, fix them, and continually improve.
+ This is a beta playbook, which lets you implement and test pre-release software. Although AWS is supported, we are working towards multi-cloud support. As the playbook is beta, it might contain bugs. Updates to the playbook during the beta phase might include non-backward compatible features. We encourage your feedback on the quality and usability of the content to help us identify and fix issues, so we can continually improve the content.
 
 
 ## Dependencies
@@ -31,11 +31,11 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | userName | The name of the user whos key you want to update. |  | Optional |
 | accessKeyId | The access key ID of the secret access key you want to update. |  | Optional |
-| AutoDeleteProfile | True/False to automatically delete the user login profile if it exists. |  | Optional |
-| IP | IP address to block using the playbook. |  | Optional |
-| AutoBlockIP | True/False to initiate block IP playbook automatically  | False | Optional |
-| IndicatorTag | Tag name for bad reputation IP addresses investigated in the incident.<br/>Use it when the EDL service is configured to add indicators to block in PANW PAN-OS.<br/>If indicator verdict \(Malicious/Bad\) is used to add indicators to XSOAR EDL you don't need to use the tag. Indicators will be set as malicious automatically in the incident. |  | Optional |
-| DAG | This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.<br/>Specify the Dynamic Address Group tag name for IP handling. |  | Optional |
+| AutoDeleteProfile | Whether to automatically delete the user login profile, if it exists (True/False). |  | Optional |
+| IP | The IP address to block using the playbook. |  | Optional |
+| AutoBlockIP | Whether to initiate the block IP playbook automatically (True/False).  | False | Optional |
+| IndicatorTag | The tag name for bad reputation IP addresses investigated in the incident.<br/>Use thi swhen the EDL service is configured to add indicators to block in PANW PAN-OS.<br/>If indicator verdict \(Malicious/Bad\) is used to add indicators to Cortex XSIAM EDL, you don't need to use the tag. Indicators are set as malicious, automatically in the incident. |  | Optional |
+| DAG | Determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.<br/>Specify the Dynamic Address Group tag name for IP handling. |  | Optional |
 
 ## Playbook Outputs
 ---
