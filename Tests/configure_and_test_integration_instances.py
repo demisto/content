@@ -804,7 +804,7 @@ class XSIAMBuild(Build):
         pass
 
 
-def options_handler():
+def options_handler(args=None):
     parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
@@ -840,7 +840,7 @@ def options_handler():
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
     # disable-secrets-detection-end
-    options = parser.parse_args()
+    options = parser.parse_args(args)
 
     return options
 

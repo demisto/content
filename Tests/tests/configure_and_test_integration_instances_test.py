@@ -1,5 +1,7 @@
+import pytest
+
 from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
-    get_json_file, options_handler
+    options_handler, XSIAMBuild
 
 XSIAM_SERVERS = {
     "qa2-test-111111": {
@@ -21,6 +23,34 @@ XSIAM_SERVERS = {
         "demisto_version": "99.99.98"
     }
 }
+
+
+def create_build_object_with_mock(mocker, build_object_type):
+    args = ['-u', "$USERNAME", '-p', "$PASSWORD", '-c', "$CONF_PATH", '-s', "$SECRET_CONF_PATH",
+            '--tests_to_run', "$ARTIFACTS_FOLDER/filter_file.txt",
+            '--pack_ids_to_install', "$ARTIFACTS_FOLDER/content_packs_to_install.txt",
+            '-g', "$GIT_SHA1", '--ami_env', "$1", '-n', 'false', '--branch', "$CI_COMMIT_BRANCH",
+            '--build-number', "$CI_PIPELINE_ID", '-sa', "$GCS_MARKET_KEY", '--build_object_type', build_object_type,
+            '--xsiam_machine', "qa2-test-111111", '--xsiam_servers_path', '$XSIAM_SERVERS_PATH']
+    options = options_handler(args=args)
+    json_data = {
+        'tests': [],
+        'skipped_integrations': [],
+        'unmockable_integrations': [],
+    }
+    json_data.update(**XSIAM_SERVERS)
+    mocker.patch('Tests.configure_and_test_integration_instances.get_json_file',
+                 return_value=json_data)
+    mocker.patch('Tests.configure_and_test_integration_instances.Build.fetch_tests_list',
+                 return_value=[])
+    mocker.patch('Tests.configure_and_test_integration_instances.Build.fetch_pack_ids_to_install',
+                 return_value=[])
+    mocker.patch('Tests.configure_and_test_integration_instances.options_handler',
+                 return_value=options)
+    mocker.patch('Tests.configure_and_test_integration_instances.XSOARBuild.get_servers',
+                 return_value=({'1.1.1.1': '7000'}, '6.5.0'))
+    build = create_build_object()
+    return build
 
 
 def test_configure_old_and_new_integrations(mocker):
@@ -54,16 +84,7 @@ def test_configure_old_and_new_integrations(mocker):
     assert not set(old_modules_instances).intersection(new_modules_instances)
 
 
-def test_create_build(mocker):
-
-    json_data = {'tests': [],
-                 'skipped_integrations': [],
-                 'unmockable_integrations': [],
-                 }
-    mocker.patch('Tests.configure_and_test_integration_instances.get_json_file',
-                 return_value=json_data.update(**XSIAM_SERVERS))
-    mocker.patch('Tests.configure_and_test_integration_instances.Build.fetch_tests_list',
-                 return_value=[])
-    mocker.patch('Tests.configure_and_test_integration_instances.Build.fetch_pack_ids_to_install',
-                 return_value=[])
-    build = create_build_object()
+@pytest.mark.parametrize('expected_class, build_object_type', [(XSOARBuild, 'XSOAR'), (XSIAMBuild, 'XSIAM')])
+def test_create_build(mocker, expected_class, build_object_type):
+    build = create_build_object_with_mock(mocker, build_object_type)
+    assert isinstance(build, expected_class)
