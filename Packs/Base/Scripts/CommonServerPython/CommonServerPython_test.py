@@ -7161,7 +7161,6 @@ def test_content_type(content_format, outputs, expected_type):
     assert command_results.to_context()['ContentsFormat'] == expected_type
 
 
-
 class TestSendEventsToXSIAMTest:
     from test_data.send_events_to_xsiam_data import events_dict
     test_data = events_dict
@@ -7205,7 +7204,7 @@ class TestSendEventsToXSIAMTest:
 
         from CommonServerPython import BaseClient
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
-        _http_request_mock = mocker.patch.object(BaseClient, '_http_request')
+        _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value={'error': 'false'})
 
         events = self.test_data[events_use_case]['events']
         data_format = self.test_data[events_use_case].get('format')
