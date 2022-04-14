@@ -377,8 +377,7 @@ def fetch_incidents(client: Client, regions: str, start_time: int = None, end_ti
 
     notification_map = client.get_dlp_incidents(regions=regions, start_time=start_time, end_time=end_time)
     incidents = []
-    for region in notification_map:
-        notifications = notification_map[region]
+    for region, notifications in notification_map.items():
         for notification in notifications:
             incident = create_incident(notification, region)
             incidents.append(incident)
