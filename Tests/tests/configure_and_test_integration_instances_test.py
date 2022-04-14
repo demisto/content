@@ -86,5 +86,13 @@ def test_configure_old_and_new_integrations(mocker):
 
 @pytest.mark.parametrize('expected_class, build_object_type', [(XSOARBuild, 'XSOAR'), (XSIAMBuild, 'XSIAM')])
 def test_create_build(mocker, expected_class, build_object_type):
+    """
+    Given:
+        - server_type of the server we run the build on: XSIAM or XSOAR.
+    When:
+        - Running 'configure_an_test_integration_instances' script and creating Build object
+    Then:
+        - Assert there the rigth Build object created: XSIAMBuild or XSOARBuild.
+    """
     build = create_build_object_with_mock(mocker, build_object_type)
     assert isinstance(build, expected_class)
