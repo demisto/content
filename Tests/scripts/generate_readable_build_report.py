@@ -10,7 +10,7 @@ JOB_ID = os.environ.get('CI_JOB_ID')
 summary_file = os.path.join(ARTIFACTS_FOLDER, 'summary.html')
 
 
-def get_file_data(file_path: str):
+def get_file_data(file_path: str) -> dict:
     """
     """
     # TODO change print to log
@@ -18,14 +18,16 @@ def get_file_data(file_path: str):
         if os.path.isfile(file_path):
             print(f'Extracting {file_path}')
             with open(file_path, 'r') as file_data:
-                artifact_data = file_data
+                try:
+                    return json.load(file_data)
+                except Exception:
+                    print(f'could not parse json correctly, skipping {file_path}')
         else:
             print(f'Did not find {file_path} file')
-            return ''
+            return {}
     except Exception:
         print(f'Error getting {file_path} file')
-        return ''
-    return artifact_data
+        return {}
 
 
 def create_pr_comment(validate_pr_comment, unit_tests_pr_comment):
@@ -51,8 +53,7 @@ def build_summary_report(validate_summary, unit_tests_summary):
 
 
 def test_get_failing_ut():
-    file = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'failed_unit_tests.json'))
-    failed_ut = json.load(file)
+    failed_ut = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'failed_unit_tests.json'))
     if failed_ut:
         # TODO change method of counting
         number_of_failing_ut = 1
@@ -63,9 +64,9 @@ def test_get_failing_ut():
 
 
 def test_get_failing_validations():
-    file = open(os.path.join(ARTIFACTS_FOLDER, 'validate_outputs.json'), 'r')
+    failed_validations = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'validate_outputs.json'))
     # file = open('validate_outputs.json', 'r')
-    failed_validations = json.load(file)
+    # failed_validations = json.load(file)
     validate_summary = {}
     if failed_validations:
         pr_message = f'You have {len(failed_validations)} failing validations in this push.\n'
