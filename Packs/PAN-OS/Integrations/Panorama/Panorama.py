@@ -9711,8 +9711,8 @@ def check_log_forwarding(topology: Topology,
 def check_vulnerability_profiles(
         topology: Topology,
         device_filter_string: Optional[str] = None,
-        minimum_block_severities: Optional[str] = "critical,high",
-        minimum_alert_severities: Optional[str] = "medium,low"
+        minimum_block_severities: str = "critical,high",
+        minimum_alert_severities: str = "medium,low"
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured Vulnerability profiles to ensure at least one meets best practices.
