@@ -72,4 +72,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![T1059 - Command and Scripting Interpreter](Insert the link to your image here)
+![T1059 - Command and Scripting Interpreter](https://raw.githubusercontent.com/demisto/content/260a4d094a4db588e37a3763d511b5248cd7049b/Packs/Core/doc_files/T1059_-_Command_and_Scripting_Interpreter.png)
