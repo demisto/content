@@ -54,7 +54,7 @@ dependson:
   should:
   - SlackV3|||send-notification
 runonce: false
-dockerimage: demisto/python3:3.10.4.27798
+dockerimage: demisto/python3:3.10.4.28442
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

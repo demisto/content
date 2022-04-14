@@ -57,14 +57,14 @@ def create_blocks(message: str, entitlement: str, reply: str) -> list:
 
 
 def main():
-    res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'persistent'),
-                                                    'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag')})
+    args = demisto.args()
+    res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(args, 'persistent'),
+                                                    'replyEntriesTag': demisto.get(args, 'replyEntriesTag')})
     if isError(res[0]):
         demisto.results(res)
         sys.exit(0)
     entitlement = demisto.get(res[0], 'Contents')
 
-    args = demisto.args()
     file_name = args.get('file_name')
     data_profile_name = args.get('data_profile_name')
     snippets = args.get('snippets', '')
@@ -102,8 +102,8 @@ def main():
         expiry = datetime.strftime(expiry_date, DATE_FORMAT)
 
     entitlement_string = f'{entitlement}@{demisto.investigation().get("id")}'
-    if demisto.get(demisto.args(), 'task'):
-        entitlement_string += f'|{demisto.get(demisto.args(), "task")}'
+    if demisto.get(args, 'task'):
+        entitlement_string += f'|{demisto.get(args, "task")}'
 
     args = {
         'ignoreAddURL': 'true',
@@ -120,7 +120,7 @@ def main():
         'default_response': 'NoResponse'
     })
 
-    to = demisto.get(demisto.args(), 'user_id')
+    to = demisto.get(args, 'user_id')
 
     if to:
         args['to'] = to
