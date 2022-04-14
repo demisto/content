@@ -1867,7 +1867,8 @@ def long_running_execution_command(client: Client, params: Dict):
                 mirror_direction=mirror_direction
             )
 
-        except Exception:
+        except Exception as e:
+            demisto.updateModuleHealth(f'Error occurred during long running loop: {e}')
             demisto.error('Error occurred during long running loop')
             demisto.error(traceback.format_exc())
 
