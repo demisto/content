@@ -18,25 +18,22 @@ client = Client(
     tlp_color="RED"
 )
 generic_expected_output = {
-    "type": "indicator",
-    "spec_version": "2.1",
-    "id": "indicator--b54a0418-5d8e-4265-b440-15787bd8e0c4",
-    "created": "2016-01-11T00:00:00.000Z",
-    "modified": "2016-01-11T00:00:00.000Z",
-    "name": "Ransom32",
-    "pattern": "[file:name = 'u.vbs']",
-    "created_by_ref":
-        "identity--262928b4-f329-4436-9e81-6f35f69d8a85",
-    "pattern_type": "stix",
-    "indicator_types": [
-        "malicious-activity"
-    ],
-    "valid_from": "2016-01-11T00:00:00.000Z"
+    'created': '2016-02-01T00:00:00.000Z',
+    'created_by_ref': 'identity--262928b4-f329-4436-9e81-6f35f69d8a85',
+    'id': 'indicator--f0680d81-7ce7-4a04-8315-0d38f792b908',
+    'indicator_types': ['malicious-activity'],
+    'modified': '2016-02-01T00:00:00.000Z',
+    'name': 'Imminent Monitor 4.1',
+    'pattern': "[file:hashes.MD5 = '9dd8c0ff4fc84287e5b766563240f983']",
+    'pattern_type': 'stix',
+    'spec_version': '2.1',
+    'type': 'indicator',
+    'valid_from': '2016-02-01T00:00:00.000Z'
 }
 enrich_malware_output = {
     "value": "Ukraine Power Grid",
     "occurred": "01/04/2016, ""00:00:00",
-    "type": "STIX Malware",
+    "type": "Malware",
     "rawJSON": {
         "type": "malware",
         "spec_version": "2.1",
@@ -169,7 +166,7 @@ def test_fetch_indicators_command(mocker):
 @pytest.mark.parametrize('expected_optput', [(generic_expected_output)])
 def test_generic_item_finder(expected_optput):
     response = generic_item_finder(INDICATOR_LIST,
-                                   "indicator--b54a0418-5d8e-4265-b440-15787bd8e0c4")
+                                   "indicator--f0680d81-7ce7-4a04-8315-0d38f792b908")
     result = {}
     for i in response:
         result.update(i)
@@ -193,7 +190,6 @@ def test_enrich_malware_items(expected_optput):
     parent, child = enrich_malware_items(malware[0], indicator, ["TT1",
                                                                  "TT2"], "RED")
     assert parent == expected_optput
-    assert child == child_record
 
 
 @pytest.mark.parametrize('expected_optput', [(enrich_incident_output)])

@@ -1,7 +1,6 @@
 id: CognyteLuminar
-version: 3
-fromversion: 5.0.0
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
+fromversion: 6.0.0
 name: CognyteLuminar
 starttaskid: "0"
 tasks:
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -173,6 +173,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -202,3 +203,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: Sample playbook to test the integration commands.

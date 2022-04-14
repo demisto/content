@@ -219,7 +219,7 @@ There is no context output for this command.
 
 ### luminar-reset-fetch-indicators
 ***
-This command will reset your fetch history.
+WARNING: This command will reset your fetch history.
 
 
 #### Base Command

@@ -82,14 +82,19 @@ def enrich_malware_items(parent, childrens, feed_tags, tlp_color):
     modified_parent = None
     all_tags = set()
     for children in childrens:
+        indicator_type = None
         pattern = children.get("pattern")
         for match in stix_regex_parser.findall(pattern):
-            stix_type, _, value = match
-            malware_types = parent.get("malwareTypes")
+            stix_type, stix_property, value = match
             if stix_type in LUMINAR_TO_XSOAR_TYPES.keys():
                 indicator_type = LUMINAR_TO_XSOAR_TYPES[stix_type]
+                if indicator_type == FeedIndicatorType.File and not str(stix_property).__contains__("hashes"):
+                    indicator_type = None
             else:
                 indicator_type = stix_type
+
+        if indicator_type:
+            malware_types = parent.get("malwareTypes")
             children.update(indicator_type=indicator_type)
             parent["name"] = children["name"]
             children["value"] = value
@@ -135,7 +140,8 @@ def enrich_malware_items(parent, childrens, feed_tags, tlp_color):
     if parent:
         additional_fields = {
             "STIX Is Malware Family": parent["is_family"],
-            "tags": list(all_tags), "stixid": parent["id"],
+            "tags": list(all_tags),
+            "stixid": parent["id"],
             'STIX Malware Types': parent["malwareTypes"],
             'malware_types': parent["malwareTypes"]
         }
@@ -144,7 +150,7 @@ def enrich_malware_items(parent, childrens, feed_tags, tlp_color):
             'occurred': datetime.strptime(parent["created"],
                                           '%Y-%m-%dT%H:%M:%S.%f%z').strftime(
                 "%m/%d/%Y, %H:%M:%S"),
-            'type': "STIX Malware",
+            'type': ThreatIntel.ObjectsNames.MALWARE,
             'rawJSON': dict(parent),
             'fields': additional_fields,
         }
@@ -278,13 +284,16 @@ class Client(BaseClient):
                     luminar_indicators.append(ioc_list)
             if luminar_indicators:
                 for lum_indicator in luminar_indicators[0]:
+                    indicator_type = None
                     pattern = lum_indicator["pattern"]
                     for match in stix_regex_parser.findall(pattern):
-                        stix_type, _, value = match
+                        stix_type, stix_property, value = match
                         if stix_type in LUMINAR_TO_XSOAR_TYPES.keys():
                             indicator_type = LUMINAR_TO_XSOAR_TYPES[stix_type]
-                        else:
-                            indicator_type = stix_type
+                            if indicator_type == FeedIndicatorType.File and \
+                                    not str(stix_property).__contains__("hashes"):
+                                indicator_type = None
+                    if indicator_type:
                         indicator = {
                             'Indicator Type': indicator_type,
                             'Indicator Value': value,
