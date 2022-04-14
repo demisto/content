@@ -16,5 +16,5 @@ Determines whether an IPv4 address is contained in one or more comma-delimited C
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| left | IPv4 address to filter. |
-| right | Comma-separated list of IPv4 ranges in CIDR notation against which to match. |
+| left | The IPv4 address to search for. |
+| right | A comma-separated list of IPv4 ranges in CIDR notation against which to match. |
