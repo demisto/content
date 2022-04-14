@@ -103,7 +103,7 @@ def main():
 
     entitlement_string = f'{entitlement}@{demisto.investigation().get("id")}'
     if demisto.get(demisto.args(), 'task'):
-        entitlement_string += '|' + demisto.get(demisto.args(), 'task')
+        entitlement_string += f'|{demisto.get(demisto.args(), "task")}'
 
     args = {
         'ignoreAddURL': 'true',
