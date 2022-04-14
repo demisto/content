@@ -2,15 +2,15 @@ id: Tag massive and internal IOCs to avoid EDL listing
 version: -1
 name: Tag massive and internal IOCs to avoid EDL listing
 description: |-
-  This playbook will tag internal assets and Massive IOCs (TLD Wildcards and CIDRs) to be avoided by the EDL. The playbook will do the following according to indicator type:
+  This playbook tags internal assets and massive IOCs (TLD wildcards and CIDRs) to be avoided by the EDL. The playbook does the following according to indicator type:
 
-  CIDRs - If the CIDR prefix is larger than the set max prefix it will tag it as a `Massive_CIDR` and also with `skip_edl`
+  CIDRs - If the CIDR prefix is larger than the set max prefix it tags it as a `Massive_CIDR` and also with `skip_edl`.
 
-  TLD Wildcards - If a domainglob is a TLD wildcard (i.e. - *.net) it will be tagged as `TLD_Wildcard` and also with `skip_edl`.
+  TLD Wildcards - If a domainglob is a TLD wildcard (for example, *.net) it will be tagged as `TLD_Wildcard` and also with `skip_edl`.
 
   Internal IPs - If an IP is internal and also part of the CIDR configured by the user in the "Internal Assets" list it will be checked as `internal` and tagged with `skip_edl`.
 
-  Internal Domains - If a domain is a subdomain of the domains configured in the "Internal Assets" list it will be checked as `internal` and tagged with `skip_edl`.
+  Internal Domains - If a domain is a subdomain of the domains configured in the "Internal Assets" list it is checked as `internal` and tagged with `skip_edl`.
 starttaskid: "0"
 tasks:
   "0":
@@ -52,7 +52,7 @@ tasks:
       id: 36927f6b-0edc-4026-869b-5463e3339f30
       version: -1
       name: Check for DomainGlobs
-      description: Check if domainglobs are returned in the query
+      description: Checks if domainglobs are returned in the query.
       type: condition
       iscommand: false
       brand: ""
@@ -105,7 +105,7 @@ tasks:
       id: 8075e7cc-4924-445d-8a74-fbce3c561fa9
       version: -1
       name: Add Big CIDRs to context
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -171,7 +171,7 @@ tasks:
       id: c93f8140-071d-46cc-8e2e-01aa08afdffb
       version: -1
       name: Check for CIDRs
-      description: Check if CIDRs are returned in the query
+      description: Checks if CIDRs are returned in the query.
       type: condition
       iscommand: false
       brand: ""
@@ -270,7 +270,7 @@ tasks:
       id: d5a0c6d4-40be-43b5-8cc6-673a770f3ec0
       version: -1
       name: Add Big DomainGlobs to context
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -394,7 +394,7 @@ tasks:
       id: c2903f0f-6a94-4abc-87e5-7e3c2390b74b
       version: -1
       name: Check for internal Assets
-      description: Check if the user inputted a list of internal assets
+      description: Checks whether the user added a list of internal assets.
       type: condition
       iscommand: false
       brand: ""
@@ -503,7 +503,7 @@ tasks:
       id: 3a8c5659-aabe-4692-856e-ba4f4f9534c8
       version: -1
       name: Add internal IPs to context
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -629,7 +629,7 @@ tasks:
       id: 0906060e-0ccd-410f-8365-03670c6fcd34
       version: -1
       name: Add internal domains to context
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -687,7 +687,7 @@ tasks:
       id: d529ea63-25bf-447c-813c-5d3840655744
       version: -1
       name: Add internal CIDRs to context
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -953,8 +953,8 @@ inputs:
 - key: ""
   value: {}
   required: false
-  description: This query will retrieve the following indicator types - IP, IPv6,
-    CIDR, IPv6CIDR
+  description: This query retrieves the following indicator types - IP, IPv6,
+    CIDR, and IPv6CIDR.
   playbookInputQuery:
     query: type:CIDR or type:IP or type:DomainGlob or type:IPv6CIDR or type:Domain
     queryEntity: indicators
@@ -991,8 +991,8 @@ inputs:
   value:
     simple: "8"
   required: false
-  description: The maximum Prefix to allow, any prefix bigger than the specified will
-    be tagged to be ignored by the EDL.
+  description: The maximum prefix to allow. Any prefix bigger than this is
+    tagged to be ignored by the EDL.
   playbookInputQuery:
 fromversion: 5.5.0
 quiet: true
