@@ -1,0 +1,17 @@
+commonfields:
+  id: d41bae23-5ba0-4044-8d9f-c476c222158a
+  version: 2
+vcShouldKeepItemLegacyProdMachine: false
+name: demisto_sdk_e2e_test_script
+script: ""
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.10.4.27798
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}

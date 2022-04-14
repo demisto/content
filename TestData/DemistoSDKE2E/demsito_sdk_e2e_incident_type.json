@@ -1,0 +1,43 @@
+[
+	{
+		"id": "demsito_sdk_e2e_incident_type",
+		"version": 2,
+		"cacheVersn": 0,
+		"modified": "2022-04-10T11:43:31.306219+03:00",
+		"packID": "",
+		"itemVersion": "",
+		"fromServerVersion": "",
+		"toServerVersion": "",
+		"definitionId": "",
+		"vcShouldIgnore": false,
+		"vcShouldKeepItemLegacyProdMachine": false,
+		"commitMessage": "",
+		"shouldCommit": false,
+		"locked": false,
+		"name": "demsito_sdk_e2e_incident_type",
+		"prevName": "demsito_sdk_e2e_incident_type",
+		"color": "#D5A2C1",
+		"playbookId": "a6a80a46-1798-4bc3-8d98-91c9960d7012",
+		"hours": 0,
+		"days": 0,
+		"weeks": 0,
+		"hoursR": 0,
+		"daysR": 0,
+		"weeksR": 0,
+		"system": false,
+		"readonly": false,
+		"default": false,
+		"autorun": false,
+		"preProcessingScript": "",
+		"closureScript": "",
+		"disabled": false,
+		"reputationCalc": 0,
+		"onChangeRepAlg": 0,
+		"layout": "a73d0c31-2bcd-4695-814b-40205401cf9f",
+		"detached": false,
+		"extractSettings": {
+			"mode": "Specific",
+			"fieldCliNameToExtractSettings": {}
+		}
+	}
+]
