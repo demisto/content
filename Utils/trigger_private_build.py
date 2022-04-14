@@ -145,7 +145,8 @@ def main():
             # wait 5 seconds and get the workflow ids again
             time.sleep(5)
             workflow_ids_after_dispatch = get_dispatch_workflows_ids(github_token, 'master')
-
+            logging.critical(pre_existing_workflow_ids)
+            logging.critical(workflow_ids_after_dispatch)
             # compare with the first workflows list to get the current id
             workflow_ids_diff = [x for x in workflow_ids_after_dispatch if x not in pre_existing_workflow_ids]
             if workflow_ids_diff:
