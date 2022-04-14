@@ -8750,7 +8750,7 @@ class HygieneLookups:
     @staticmethod
     def check_log_forwarding_profiles(
             topology: Topology,
-            device_filter_str: str = None,
+            device_filter_str: Optional[str] = None,
     ):
         """
         Evaluates the log forwarding profiles configured througout the environment to validate at least one is present with the
@@ -8844,7 +8844,6 @@ class HygieneLookups:
         :param minimum_block_severities: A string list of severities that MUST be in block mode
         """
         conforming_profiles = []
-
         for profile in profiles:
             block_severities = minimum_block_severities.copy()
             alert_severities = minimum_alert_severities.copy()
@@ -8877,9 +8876,9 @@ class HygieneLookups:
     @staticmethod
     def check_vulnerability_profiles(
             topology: Topology,
-            device_filter_str: str = None,
-            minimum_block_severities: list[str] = None,
-            minimum_alert_severities: list[str] = None
+            device_filter_str: Optional[str] = None,
+            minimum_block_severities: Optional[List[str]] = None,
+            minimum_alert_severities: Optional[List[str]] = None
     ) -> ConfigurationHygieneCheckResult:
         """
         Checks the environment to ensure at least one vulnerability profile is configured according to visibility best practices.
@@ -9150,7 +9149,7 @@ class UniversalCommand:
 
     @staticmethod
     def install_software(topology: Topology, version: str,
-                         sync: bool = False, device_filter_str: Optional[str] = None) -> InstallSoftwareCommandResult:
+                         sync: Optional[bool] = False, device_filter_str: Optional[str] = None) -> InstallSoftwareCommandResult:
 
         """
         Start the installation process for the given software version.
@@ -9650,6 +9649,7 @@ def download_software(topology: Topology, version: str,
        
     return UniversalCommand.download_software(topology, version, device_filter_str=device_filter_string, sync=_sync)
 
+
 def install_software(topology: Topology, version: str,
                      device_filter_string: str = None, sync: bool = False) -> InstallSoftwareCommandResult:
     """
@@ -9661,11 +9661,10 @@ def install_software(topology: Topology, version: str,
     :param version: software version to upgrade to, ex. 9.1.2
     :param sync: If provided, runs the download synchronously - make sure 'execution-timeout' is increased.
     """
-    if sync == "false":
-        sync = False
+    _sync = argToBoolean(sync)
     result: InstallSoftwareCommandResult = UniversalCommand.install_software(topology, version,
                                                                              device_filter_str=device_filter_string,
-                                                                             sync=sync)
+                                                                             sync=_sync)
 
     return result
 
