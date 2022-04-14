@@ -116,7 +116,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.4.28442
   isfetch: true
   commands:
   - name: lr-alarms-list
@@ -128,16 +128,16 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-        - New
-        - Opened
-        - Working
-        - Escalated
-        - Closed
-        - Closed_FalseAlarm
-        - Closed_Resolved
-        - Closed_Unresolved
-        - Closed_Reported
-        - Closed_Monitor
+      - New
+      - Opened
+      - Working
+      - Escalated
+      - Closed
+      - Closed_FalseAlarm
+      - Closed_Resolved
+      - Closed_Unresolved
+      - Closed_Reported
+      - Closed_Monitor
     - name: offset
       defaultValue: "0"
       description: 'The number of alarms to skip before starting to collect the result set.'
@@ -247,9 +247,9 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-        - comment
-        - status
-        - rbp
+      - comment
+      - status
+      - rbp
     - name: offset
       defaultValue: "0"
       description: 'The number of items to skip before starting to collect the result set.'
@@ -2241,9 +2241,7 @@ script:
       contextPath: LogRhythm.List.revisitDate
       description: 'The list revisit date.'
   - name: lr-list-summary-create-update
-    description: 'Updates a list summary based on the GUID and other required details.
-     Searches the system for existing list summaries by GUID.
-      Creates a new list summary if the GUID does not exist. Otherwise, updates the list summary.'
+    description: 'Updates a list summary based on the GUID and other required details. Searches the system for existing list summaries by GUID. Creates a new list summary if the GUID does not exist. Otherwise, updates the list summary.'
     arguments:
     - name: list_type
       description: 'The list type. Possible values: "None", "Application", "Classification", "CommonEvent", "Host", "Location", "MsgSource", "MsgSourceType", "MPERule", "Network", "User", "GeneralValue", "Entity", "RootEntity", "IP", "IPRange", and "Identity".'
@@ -4000,6 +3998,12 @@ script:
       description: 'The endpoint hostname.'
       required: false
       isArray: false
+    - default: true
+      description: ''
+      isArray: true
+      name: endpoint
+      required: true
+      secret: false
     outputs:
     - contextPath: Endpoint.Hostname
       description: The endpoint's hostname.
