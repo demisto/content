@@ -102,9 +102,6 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
             if data is not None:
                 for hit in data:
                     incident_created_time = int(alert.get('created', '0')
-                    if last_fetch:
-                        if incident_created_time <= last_fetch
-                            continue
                     incident = {
                         'name': hit['alert']['category'] + hit['alert']['signature'],
                         'occured': hit['@timestamp'],
