@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8b8374a2-b79d-46de-861d-12bd94d694c8
+    taskid: 8a695fbb-5cd5-4fed-8c05-2de37b374f02
     type: start
     task:
-      id: 8b8374a2-b79d-46de-861d-12bd94d694c8
+      id: 8a695fbb-5cd5-4fed-8c05-2de37b374f02
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 100
+          "y": -90
         }
       }
     note: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: d689d797-b627-4ed4-8db8-f702fddf7aac
+    taskid: 2eca42b7-3c92-4b5a-8395-9696e76b2eca
     type: title
     task:
-      id: d689d797-b627-4ed4-8db8-f702fddf7aac
+      id: 2eca42b7-3c92-4b5a-8395-9696e76b2eca
       version: -1
       name: Analysis
       type: title
@@ -47,13 +47,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "47"
+      - "54"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1140,
-          "y": 255
+          "y": 95
         }
       }
     note: false
@@ -65,10 +65,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 72fbd013-1f55-4324-827e-a293884788f3
+    taskid: e41ef180-47df-4fc3-8661-b9c760d51cbd
     type: title
     task:
-      id: 72fbd013-1f55-4324-827e-a293884788f3
+      id: e41ef180-47df-4fc3-8661-b9c760d51cbd
       version: -1
       name: 'Containment '
       type: title
@@ -95,10 +95,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 8463fb6b-e649-4464-85e1-fa2497f81c27
+    taskid: 93ddf2dd-f186-4e8f-8600-d63d0008f0be
     type: title
     task:
-      id: 8463fb6b-e649-4464-85e1-fa2497f81c27
+      id: 93ddf2dd-f186-4e8f-8600-d63d0008f0be
       version: -1
       name: Finding
       type: title
@@ -125,10 +125,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 22432c3e-f618-4556-8544-4695c8054471
+    taskid: 9bcab523-2706-4c67-8a92-bd215b33334a
     type: condition
     task:
-      id: 22432c3e-f618-4556-8544-4695c8054471
+      id: 9bcab523-2706-4c67-8a92-bd215b33334a
       version: -1
       name: Manual review - was it your security vendor?
       description: |+
@@ -161,10 +161,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 4ddb3c79-cf4a-4ab8-8e26-dc5cd72e8c04
+    taskid: 44575d80-9fe5-4a34-877a-e0aebb078ffb
     type: regular
     task:
-      id: 4ddb3c79-cf4a-4ab8-8e26-dc5cd72e8c04
+      id: 44575d80-9fe5-4a34-877a-e0aebb078ffb
       version: -1
       name: close alert
       description: Closes the alert in Cortex XSIAM
@@ -195,10 +195,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 1c926e27-0fd5-4b60-82e4-3ab7bec929c9
+    taskid: c71ad1c3-4763-48f8-8924-a5829300da3a
     type: title
     task:
-      id: 1c926e27-0fd5-4b60-82e4-3ab7bec929c9
+      id: c71ad1c3-4763-48f8-8924-a5829300da3a
       version: -1
       name: Investigation
       type: title
@@ -225,10 +225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 7122ef49-4fec-412a-86da-2f6fc9563561
+    taskid: 9584a013-1f93-4b4f-8e0f-9dfc08f4fd77
     type: title
     task:
-      id: 7122ef49-4fec-412a-86da-2f6fc9563561
+      id: 9584a013-1f93-4b4f-8e0f-9dfc08f4fd77
       version: -1
       name: 'Remediation '
       type: title
@@ -256,10 +256,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: e16a8da7-de95-4894-83f9-c9bc38ff52e2
+    taskid: 65b1e124-5960-4978-8951-db9ab7ec1b66
     type: condition
     task:
-      id: e16a8da7-de95-4894-83f9-c9bc38ff52e2
+      id: 65b1e124-5960-4978-8951-db9ab7ec1b66
       version: -1
       name: Should restore affected endpoint?
       description: Checks if it should release the affected endpoint from isolation.
@@ -301,10 +301,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 1c0c3418-1dc3-4ddf-85b7-2eaf744cca18
+    taskid: a0944a44-9352-42db-8c79-7efb05810cb0
     type: title
     task:
-      id: 1c0c3418-1dc3-4ddf-85b7-2eaf744cca18
+      id: a0944a44-9352-42db-8c79-7efb05810cb0
       version: -1
       name: Done
       type: title
@@ -328,10 +328,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: c56ccf1c-62e0-4bdc-8889-5ecf8f419c4f
+    taskid: efb795f3-f412-4285-86d3-c5993ab4affd
     type: condition
     task:
-      id: c56ccf1c-62e0-4bdc-8889-5ecf8f419c4f
+      id: efb795f3-f412-4285-86d3-c5993ab4affd
       version: -1
       name: Should close alert automatically?
       description: Whether to close the alert automatically or manually.
@@ -373,10 +373,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 7e128208-4a6e-4e8f-81b5-d9998af64a8a
+    taskid: b1838b4e-9970-4c49-8018-6145798ee35d
     type: condition
     task:
-      id: 7e128208-4a6e-4e8f-81b5-d9998af64a8a
+      id: b1838b4e-9970-4c49-8018-6145798ee35d
       version: -1
       name: 'Found any malicious behavior? '
       description: Checks if malicious behavior was found.
@@ -416,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 2650ee91-e541-4332-8cf9-8b27bef073fe
+    taskid: 7f4600b1-e7eb-4e39-8d1f-d4a60f0f01e4
     type: playbook
     task:
-      id: 2650ee91-e541-4332-8cf9-8b27bef073fe
+      id: 7f4600b1-e7eb-4e39-8d1f-d4a60f0f01e4
       version: -1
       name: Eradication Plan
       description: |-
@@ -476,10 +476,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 9af50b8b-6d3d-4e0b-8a19-57762adb934a
+    taskid: 7dd85db5-f1ee-48ac-8c44-2d953ce9e43d
     type: playbook
     task:
-      id: 9af50b8b-6d3d-4e0b-8a19-57762adb934a
+      id: 7dd85db5-f1ee-48ac-8c44-2d953ce9e43d
       version: -1
       name: Recovery Plan
       description: |-
@@ -528,10 +528,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: c65f44a3-7339-4023-85d9-730440543e30
+    taskid: b7f1d891-9d2e-4dd2-8926-5c3606a9c7f3
     type: playbook
     task:
-      id: c65f44a3-7339-4023-85d9-730440543e30
+      id: b7f1d891-9d2e-4dd2-8926-5c3606a9c7f3
       version: -1
       name: Handle False Positive Alerts
       description: |
@@ -585,26 +585,44 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: f1ec4e84-79d8-481f-8c34-0a5b410936f9
+    taskid: 5abf6156-7dbe-4910-8f60-da9a8e92615b
     type: playbook
     task:
-      id: f1ec4e84-79d8-481f-8c34-0a5b410936f9
+      id: 5abf6156-7dbe-4910-8f60-da9a8e92615b
       version: -1
       name: Command-Line Analysis
+      description: "This playbook takes the command line from the alert and performs the following actions:\n- Checks and decodes base64\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding."
       playbookName: Command-Line Analysis
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
     scriptarguments:
-      CommandLine:
+      Commandline:
         complex:
-          root: inputs.CommandLine
+          root: Core.DynamicAnalysis.internals.attributes
+          accessor: content
           transformers:
-          - operator: uniq
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${Core.DynamicAnalysis.internals.attributes.scriptblock_text}
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${Core.DynamicAnalysis.internals.attributes.original_command_line}
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${alert.targetprocesscmd}
     separatecontext: false
     loop:
       iscommand: false
@@ -627,10 +645,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 59741944-c3f6-4930-8594-53cec6875f48
+    taskid: ccddf57e-2637-434a-8bb1-2ac71c2111dc
     type: condition
     task:
-      id: 59741944-c3f6-4930-8594-53cec6875f48
+      id: ccddf57e-2637-434a-8bb1-2ac71c2111dc
       version: -1
       name: Found relevant information?
       description: Checks whether relevant information is found.
@@ -668,10 +686,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 6c84da37-0652-422c-83a2-04aef82d9021
+    taskid: ec9ef19d-b6cf-4245-862b-0aecee3d7fb1
     type: title
     task:
-      id: 6c84da37-0652-422c-83a2-04aef82d9021
+      id: ec9ef19d-b6cf-4245-862b-0aecee3d7fb1
       version: -1
       name: Recovery
       type: title
@@ -698,10 +716,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 96e29aab-f376-49f4-84cb-a30e569261de
+    taskid: 9e9d57ab-a2c3-456d-8c54-edc68282b0f3
     type: playbook
     task:
-      id: 96e29aab-f376-49f4-84cb-a30e569261de
+      id: 9e9d57ab-a2c3-456d-8c54-edc68282b0f3
       version: -1
       name: Endpoint Investigation Plan
       description: |-
@@ -772,10 +790,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: fb3b753b-416e-4a5d-8e72-cda87f3469e7
+    taskid: 54fef140-47c3-4dfb-846a-8783124320b4
     type: playbook
     task:
-      id: fb3b753b-416e-4a5d-8e72-cda87f3469e7
+      id: 54fef140-47c3-4dfb-846a-8783124320b4
       version: -1
       name: Containment Plan
       description: |-
@@ -942,10 +960,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 478be987-29c6-4b0d-8a92-247a466ada2f
+    taskid: f9aa1d02-285d-4299-8cbc-6ed55d11a413
     type: playbook
     task:
-      id: 478be987-29c6-4b0d-8a92-247a466ada2f
+      id: f9aa1d02-285d-4299-8cbc-6ed55d11a413
       version: -1
       name: Containment Plan
       description: |-
@@ -1110,6 +1128,42 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 2af58fe8-289d-4589-80bf-e2807e68813c
+    type: regular
+    task:
+      id: 2af58fe8-289d-4589-80bf-e2807e68813c
+      version: -1
+      name: Get commandline
+      description: Returns a dynamic analysis of each alert ID.
+      script: '|||core-get-dynamic-analysis'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: alert
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1125,10 +1179,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3075,
+        "height": 3265,
         "width": 1510,
         "x": 450,
-        "y": 100
+        "y": -90
       }
     }
   }

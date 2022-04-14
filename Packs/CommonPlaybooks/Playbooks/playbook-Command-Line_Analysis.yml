@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b88bd641-a5b0-4838-8fba-85837bc74b2a
+    taskid: a2848830-3438-4bea-87eb-793c8026f1ef
     type: start
     task:
-      id: b88bd641-a5b0-4838-8fba-85837bc74b2a
+      id: a2848830-3438-4bea-87eb-793c8026f1ef
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 1150,
-          "y": -1360
+          "y": -1200
         }
       }
     note: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: c6467231-495b-4883-88a7-eab2f5e70aea
+    taskid: d0ba6b98-7de7-4621-8d6b-85a067f4f314
     type: title
     task:
-      id: c6467231-495b-4883-88a7-eab2f5e70aea
+      id: d0ba6b98-7de7-4621-8d6b-85a067f4f314
       version: -1
       name: Command-Line Indicator Extraction
       description: Extracts indicators from the command line.
@@ -65,10 +65,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: f84a9239-5e9d-4197-8bfa-61bc6ad6ba32
+    taskid: cff18017-7f58-4d68-86b3-612ee9297bfb
     type: regular
     task:
-      id: f84a9239-5e9d-4197-8bfa-61bc6ad6ba32
+      id: cff18017-7f58-4d68-86b3-612ee9297bfb
       version: -1
       name: Enrich indicators
       description: Enriches indicators from the command line.
@@ -124,10 +124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: a213a937-f40d-4de4-8700-968bcc6808b8
+    taskid: c03e8d8d-8661-4743-891f-e6354f342c07
     type: condition
     task:
-      id: a213a937-f40d-4de4-8700-968bcc6808b8
+      id: c03e8d8d-8661-4743-891f-e6354f342c07
       version: -1
       name: Found additional indicators?
       description: Checks if indicators exist in the command line for which to enrich.
@@ -173,10 +173,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 64c37561-ee82-4492-8753-fbc0bc04ab73
+    taskid: 95c7a960-8b66-48f0-8510-ed22481ae4f2
     type: condition
     task:
-      id: 64c37561-ee82-4492-8753-fbc0bc04ab73
+      id: 95c7a960-8b66-48f0-8510-ed22481ae4f2
       version: -1
       name: Is there a base64 string in the command-line?
       description: Checks for a base64 string in the command line.
@@ -217,10 +217,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 5f7c95b6-92f6-48b8-82a8-c08910863c62
+    taskid: d3be2808-0367-4d39-80d5-8526a2abf84f
     type: regular
     task:
-      id: 5f7c95b6-92f6-48b8-82a8-c08910863c62
+      id: d3be2808-0367-4d39-80d5-8526a2abf84f
       version: -1
       name: Decode base64 string
       description: Decodes an input in Base64 format.
@@ -253,10 +253,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 346eb68e-48e4-4686-8583-0999b11f722e
+    taskid: 9e5742ee-5780-4374-8762-1023b0163f02
     type: title
     task:
-      id: 346eb68e-48e4-4686-8583-0999b11f722e
+      id: 9e5742ee-5780-4374-8762-1023b0163f02
       version: -1
       name: Done
       type: title
@@ -280,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: b0593656-484c-4bcb-86c4-b37b7cb39f4e
+    taskid: bedf7a15-c692-464d-8d5f-22206898b99d
     type: regular
     task:
-      id: b0593656-484c-4bcb-86c4-b37b7cb39f4e
+      id: bedf7a15-c692-464d-8d5f-22206898b99d
       version: -1
       name: Check if base64 string exists in command-line
       description: Extracts regex data from the provided text. The script support groups and looping.
@@ -319,10 +319,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: fbb0821a-c62a-40b0-8caf-41ca739fc8f9
+    taskid: 5610ad88-bc53-45a1-865c-6a6b607e1a98
     type: title
     task:
-      id: fbb0821a-c62a-40b0-8caf-41ca739fc8f9
+      id: 5610ad88-bc53-45a1-865c-6a6b607e1a98
       version: -1
       name: Command-Line Parameters
       type: title
@@ -353,10 +353,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 2825e2f3-3419-48f2-841e-246f6cd42a32
+    taskid: 3be872d3-8062-4a8c-8263-07f36fa926fc
     type: regular
     task:
-      id: 2825e2f3-3419-48f2-841e-246f6cd42a32
+      id: 3be872d3-8062-4a8c-8263-07f36fa926fc
       version: -1
       name: 'Set command line verdict '
       description: Sets a value in context from the key entered.
@@ -389,10 +389,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 6364c60a-7377-405b-8e60-356517a88274
+    taskid: 961ec942-dacf-4f4a-8b34-7e2847919a5e
     type: condition
     task:
-      id: 6364c60a-7377-405b-8e60-356517a88274
+      id: 961ec942-dacf-4f4a-8b34-7e2847919a5e
       version: -1
       name: Check for suspicious parameters usage
       description: Checks for suspicious parameters usage.
@@ -681,10 +681,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: b93fd559-a570-41ce-8a67-5dafc2716ccb
+    taskid: 2454d7b3-9568-4007-81ec-c1ef25acbcf3
     type: condition
     task:
-      id: b93fd559-a570-41ce-8a67-5dafc2716ccb
+      id: 2454d7b3-9568-4007-81ec-c1ef25acbcf3
       version: -1
       name: Check for encoded command parameters
       description: Checks for encoded command parameters.
@@ -746,10 +746,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 5b0e524a-d35d-40fc-89e0-35ac7dc81c09
+    taskid: 6f484473-7f55-4d72-8ce3-07361395169c
     type: condition
     task:
-      id: 5b0e524a-d35d-40fc-89e0-35ac7dc81c09
+      id: 6f484473-7f55-4d72-8ce3-07361395169c
       version: -1
       name: Check for network activity parameters
       description: Checks for network activity parameters.
@@ -835,10 +835,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: b536f7b5-4bcf-4f23-8cf4-849bf362f171
+    taskid: e3b1b82d-4b1c-4cd4-8273-f4b2b3f9477f
     type: condition
     task:
-      id: b536f7b5-4bcf-4f23-8cf4-849bf362f171
+      id: e3b1b82d-4b1c-4cd4-8273-f4b2b3f9477f
       version: -1
       name: Check for malicious tools usage
       description: Checks for malicious tools usage.
@@ -1023,10 +1023,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 33d8e75f-a6e3-4cab-81c8-3ed455a8c9da
+    taskid: b355c8cd-9438-4d16-88cf-367aad8dc5a2
     type: condition
     task:
-      id: 33d8e75f-a6e3-4cab-81c8-3ed455a8c9da
+      id: b355c8cd-9438-4d16-88cf-367aad8dc5a2
       version: -1
       name: Check for AMSI evasion techniques
       description: Checks for AMSI evasion techniques.
@@ -1162,10 +1162,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 94771ae1-1989-46ff-84b6-01818aa5e5f8
+    taskid: c56fef87-e77c-452f-850d-8a76d44d6e30
     type: regular
     task:
-      id: 94771ae1-1989-46ff-84b6-01818aa5e5f8
+      id: c56fef87-e77c-452f-850d-8a76d44d6e30
       version: -1
       name: Extract indicators from command-line
       description: Extracts indicators from the command line.
@@ -1205,10 +1205,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: ca776607-663c-494b-84ed-5c7a8261becc
+    taskid: 48fe6db5-28f2-46e8-8ca3-cfbcacaf3de3
     type: regular
     task:
-      id: ca776607-663c-494b-84ed-5c7a8261becc
+      id: 48fe6db5-28f2-46e8-8ca3-cfbcacaf3de3
       version: -1
       name: Set decoded commandline
       description: Sets a value in context from the key entered.
@@ -1252,69 +1252,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: d8a7413a-0fb9-438f-8704-deac078f6b8a
-    type: regular
-    task:
-      id: d8a7413a-0fb9-438f-8704-deac078f6b8a
-      version: -1
-      name: Set Commandline
-      description: Sets a value in context from the key entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      key:
-        simple: commandline.original
-      value:
-        complex:
-          root: Core.DynamicAnalysis.internals.attributes
-          accessor: content
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: ${Core.DynamicAnalysis.internals.attributes.scriptblock_text}
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: ${Core.DynamicAnalysis.internals.attributes.original_command_line}
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: ${alert.targetprocesscmd}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1150,
-          "y": -1020
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 7eb9f44c-1edd-49f0-8bb1-0ce5919dbfd0
+    taskid: 8331877c-a348-49ea-8aba-c8d92bdd9df2
     type: regular
     task:
-      id: 7eb9f44c-1edd-49f0-8bb1-0ce5919dbfd0
+      id: 8331877c-a348-49ea-8aba-c8d92bdd9df2
       version: -1
       name: 'Set command line verdict '
       description: Sets a value in context from the key entered.
@@ -1347,10 +1290,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 10da2438-5014-4993-837e-f896930f496d
+    taskid: 571b2978-8a1b-4697-8d68-ebdb3543cf32
     type: regular
     task:
-      id: 10da2438-5014-4993-837e-f896930f496d
+      id: 571b2978-8a1b-4697-8d68-ebdb3543cf32
       version: -1
       name: 'Set command line verdict '
       description: Sets a value in context from the key entered.
@@ -1383,10 +1326,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 30fb28c1-e121-4e3d-8755-1956e2d16102
+    taskid: fe7d7c88-4574-490b-88be-224b1bd83dc3
     type: regular
     task:
-      id: 30fb28c1-e121-4e3d-8755-1956e2d16102
+      id: fe7d7c88-4574-490b-88be-224b1bd83dc3
       version: -1
       name: 'Set command line verdict '
       description: Sets a value in context from the key entered.
@@ -1419,10 +1362,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: e95b2465-7187-4d72-8fd5-9a09c93e6759
+    taskid: a390494c-e6e3-4d90-8d4a-9a072dc3bec6
     type: regular
     task:
-      id: e95b2465-7187-4d72-8fd5-9a09c93e6759
+      id: a390494c-e6e3-4d90-8d4a-9a072dc3bec6
       version: -1
       name: 'Set command line verdict '
       description: Sets a value in context from the key entered.
@@ -1455,10 +1398,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 3ded5af2-6cac-429a-847c-eb703fb2a012
+    taskid: 7d374634-8e9f-42f4-821e-aae890e35f05
     type: condition
     task:
-      id: 3ded5af2-6cac-429a-847c-eb703fb2a012
+      id: 7d374634-8e9f-42f4-821e-aae890e35f05
       version: -1
       name: Found indicators in the command-line?
       description: Checks if indicators exist in the command line.
@@ -1505,10 +1448,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 242c58db-c947-4ce7-8eb8-8baebd1bd323
+    taskid: 0413e032-f6c1-4a55-81cd-bcac12a33d91
     type: regular
     task:
-      id: 242c58db-c947-4ce7-8eb8-8baebd1bd323
+      id: 0413e032-f6c1-4a55-81cd-bcac12a33d91
       version: -1
       name: 'Set command line verdict '
       description: Sets a value in context from the key entered.
@@ -1541,31 +1484,32 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: deb2ef37-e798-455d-8917-ea15485c8cc4
+    taskid: c422122e-9adf-4d20-8d37-110ed22f153e
     type: regular
     task:
-      id: deb2ef37-e798-455d-8917-ea15485c8cc4
+      id: c422122e-9adf-4d20-8d37-110ed22f153e
       version: -1
-      name: Get commandline
-      description: Returns a dynamic analysis of each alert ID.
-      script: '|||core-get-dynamic-analysis'
+      name: Set original commandline
+      description: Sets a value in context from the key entered.
+      scriptName: Set
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+      - "17"
     scriptarguments:
-      alert_ids:
+      key:
+        simple: commandline.original
+      value:
         complex:
-          root: alert
-          accessor: id
+          root: inputs.Commandline
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1150,
-          "y": -1200
+          "y": -1045
         }
       }
     note: false
@@ -1593,23 +1537,32 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2755,
+        "height": 2595,
         "width": 2120,
         "x": 500,
-        "y": -1360
+        "y": -1200
       }
     }
   }
-inputs: []
+inputs:
+- key: Commandline
+  value: {}
+  required: true
+  description: The command line.
+  playbookInputQuery:
 outputs:
 - contextPath: MatchRegex
+  description: The regex found in the command line
   type: unknown
 - contextPath: Indicators
+  description: Indicators extracted from the command line
   type: unknown
 - contextPath: commandline
+  description: The command line
   type: unknown
 - contextPath: CommandlineVerdict
+  description: The command line verdict
   type: unknown
 tests:
 - No tests (auto formatted)
-fromversion: 6.6.0
+fromversion: 6.0.0
