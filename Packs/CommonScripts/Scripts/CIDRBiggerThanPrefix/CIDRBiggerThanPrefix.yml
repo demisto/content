@@ -10,12 +10,11 @@ enabled: true
 args:
 - name: right
   required: true
-  description: The prefix to set as maximum
+  description: The prefix to set as maximum.
 - name: left
   required: true
-  description: The CIDR to validate (IPv4 or IPv6), can also be a comma separated
-    list.
-comment: Checks if given CIDR prefix is bigger than the maximum given
+  description: A comma-separated list of CIDR to validate (IPv4 or IPv6).
+comment: Checks whether a given CIDR prefix is bigger than the defined maximum prefix.
 scripttarget: 0
 subtype: python3
 runonce: false
