@@ -313,7 +313,7 @@ class EWSClient:
             raise Exception(
                 "Some attachment id did not found for message:" + str(attachment_ids)
             )
-
+        demisto.debug(f'all attachments: {attachments}')
         return attachments
 
     def is_default_folder(self, folder_path, is_public=None):
@@ -857,6 +857,8 @@ def get_entry_for_file_attachment(item_id, attachment):
     :return: file entry dict for attachment
     """
     entry = fileResult(get_attachment_name(attachment.name), attachment.content)
+    demisto.debug(f'-----attachment name: {attachment.name} ||| attachment size: {attachment.size} ||| attachment content size: {len(attachment.content)} ||| entry: {entry}------')
+    demisto.debug(f'-----demisto investigation object: {demisto.investigation()}------')
     entry["EntryContext"] = {
         CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT
         + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id, attachment)
