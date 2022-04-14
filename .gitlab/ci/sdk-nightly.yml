@@ -180,7 +180,7 @@ demisto-sdk-nightly:run-commands-against-instance-e2e:
       export DEMISTO_BASE_URL="https://localhost:$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].TunnelPort')"
       echo "Server URL: $DEMISTO_BASE_URL"
     - section_start "uploading Files to ARTIFACTS_FOLDER"
-    - cp -Rf ./TestsData/DemistoSDKE2E /Packs
+    - cp -Rf TestData/DemistoSDKE2E /Packs
     - section_end "end copying Files to ARTIFICATES_FOLDER"
     - section_start "Upload Entities to XSOAR Instance" --collapsed
     - *upload-entities-to-cortex-xsoar-e2e
