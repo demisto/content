@@ -1191,7 +1191,7 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: ""
+  description: "Whether to close the alert automatically or manually, after an analyst's review."
   playbookInputQuery:
 - key: AutoRestoreEndpoint
   value:
@@ -1213,7 +1213,7 @@ inputs:
 - key: FileRemediation
   value: {}
   required: false
-  description: ""
+  description: "Can be 'Quarantine' or 'Delete'."
   playbookInputQuery:
 outputs: []
 tests:
