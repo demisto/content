@@ -219,12 +219,12 @@ demisto-sdk-nightly:destroy-instance:
   cache:
     policy: pull-push
   needs: []
-  stage: create-instances
+  stage: destroy-instances
   script:
     - !reference [.download-demisto-conf]
     - |
       [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
-      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
+      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
 
 demisto-sdk-nightly:fan-in:
   tags:
