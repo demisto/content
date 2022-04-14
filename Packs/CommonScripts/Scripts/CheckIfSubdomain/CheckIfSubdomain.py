@@ -19,9 +19,11 @@ def main():
     internal_domains = argToList(demisto.args()['right'])
     domains = argToList(demisto.args()['left'])
 
+    no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
+
     for domain in domains:
         for internal_domain in internal_domains:
-            ext = tldextract.extract(domain)
+            ext = no_fetch_extract(domain)
             if ext.registered_domain == internal_domain.replace('*.', ''):
                 demisto.results(True)
                 return
