@@ -101,7 +101,7 @@ def main():
     if expiry_date:
         expiry = datetime.strftime(expiry_date, DATE_FORMAT)
 
-    entitlement_string = entitlement + '@' + demisto.investigation()['id']
+    entitlement_string = f'{entitlement}@{demisto.investigation().get("id")}'
     if demisto.get(demisto.args(), 'task'):
         entitlement_string += '|' + demisto.get(demisto.args(), 'task')
 
