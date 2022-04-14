@@ -1,0 +1,238 @@
+id: MITRE - Extract and Associate to Incident
+version: -1
+name: MITRE - Extract and Associate to Incident
+description: |-
+  The playbook accepts as an input MITRE techniques ID's
+  provides the MITRE technique name and grabs all the technique data using the MITRE integration.
+  After extracting the MITRE data the techniques get associated to the incident.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 088729b4-0d99-4e56-8af7-24065d2428b7
+    type: start
+    task:
+      id: 088729b4-0d99-4e56-8af7-24065d2428b7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 41dede14-390b-4ea5-83c0-80b9c76987e2
+    type: regular
+    task:
+      id: 41dede14-390b-4ea5-83c0-80b9c76987e2
+      version: -1
+      name: Get MITRE name
+      description: Gets the Attack Pattern value from the Attack Pattern ID.
+      script: '|||mitre-get-indicator-name'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      attack_ids:
+        simple: ${inputs.TechniqueID }
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 0b973103-f67b-4616-8dd0-0b903f423974
+    type: regular
+    task:
+      id: 0b973103-f67b-4616-8dd0-0b903f423974
+      version: -1
+      name: Get MITRE details
+      description: Looks up the reputation of the indicator.
+      script: '|||attack-pattern'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      attack_pattern:
+        simple: ${MITREATTACK.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 55bc2e4b-56d9-409d-8490-9fdf37995b58
+    type: regular
+    task:
+      id: 55bc2e4b-56d9-409d-8490-9fdf37995b58
+      version: -1
+      name: Associate MITRE to incident
+      description: commands.local.cmd.associate.indicators
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      indicatorsValues:
+        simple: ${MITREATTACK.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 78c61601-dac1-4c2e-86f8-d868beab2f9b
+    type: title
+    task:
+      id: 78c61601-dac1-4c2e-86f8-d868beab2f9b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f2c805ba-07f6-4550-8fdb-c03098941b75
+    type: condition
+    task:
+      id: f2c805ba-07f6-4550-8fdb-c03098941b75
+      version: -1
+      name: Are there techniques?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MITREATTACK.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 905,
+        "width": 620,
+        "x": 290,
+        "y": 90
+      }
+    }
+  }
+inputs:
+- key: TechniqueID
+  value: {}
+  required: false
+  description: "Accepts a single or array of MITRE technique ID's such as \nT1210 etc."
+  playbookInputQuery:
+outputs:
+- contextPath: AttackPattern
+  description: Array of attack patterns name and ID's.
+  type: string
+- contextPath: MITREATTACK
+  description: Full MITRE data for the attack pattern.
+  type: string
+tests:
+- FeedMitreAttackv2_test
+fromversion: 6.2.0
