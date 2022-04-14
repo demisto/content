@@ -8096,5 +8096,32 @@
                 "result": ["xyz"]
             }
         ]
+    }, {
+        "path": "path2",
+        "operation": "is transformed with",
+        "filter": {
+            "is updated with": "new value"
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "path1": "aaa",
+                        "path2": "bbb"
+                    }, {
+                        "path1": "aaa"
+                    }
+                ],
+                "result": [{
+                        "path1": "aaa",
+                        "path2": "new value"
+                    }, {
+                        "path1": "aaa"
+                    }
+                ]
+            }
+        ]
     }
 ]

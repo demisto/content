@@ -1,0 +1,54 @@
+[
+    {
+        "@odata.context": "",
+        "value": [
+            {
+                "@odata.etag": "W/\"CQAAABYAAABhdrqWZNreTp5Cv4fwzfP6AAG2fdZT\"",
+                "bccRecipients": [],
+                "body": {
+                    "content": "\u003chtml\u003e\u003chead\u003e\r\n\u003cmeta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"\u003e\u003c/head\u003e\u003cbody\u003e\u003cdiv dir=\"ltr\"\u003e\u003cbr\u003e\u003c/div\u003e\u003c/body\u003e\u003c/html\u003e",
+                    "contentType": "html"
+                },
+                "bodyPreview": "",
+                "categories": [],
+                "ccRecipients": [],
+                "changeKey": "",
+                "conversationId": "",
+                "conversationIndex": "AQHYN6QELbNl0mVzsUe8Qvy1E4ae2Q==",
+                "createdDateTime": "2022-03-14T13:04:20Z",
+                "flag": {
+                    "flagStatus": "notFlagged"
+                },
+                "from": {
+                    "emailAddress": {
+                        "address": "adress",
+                        "name": "name"
+                    }
+                },
+                "hasAttachments": false,
+                "id": "message_id",
+                "importance": "normal",
+                "inferenceClassification": "focused",
+                "internetMessageId": "message_id",
+                "isDeliveryReceiptRequested": null,
+                "isDraft": false,
+                "isRead": false,
+                "isReadReceiptRequested": false,
+                "lastModifiedDateTime": "2022-03-14T13:04:20Z",
+                "parentFolderId": "-H0jAQBhdrqWZNreTp5Cv4fwzfP6AAAAAAEMAAA=",
+                "receivedDateTime": "2022-03-14T13:04:20Z",
+                "replyTo": [],
+                "sender": {
+                    "emailAddress": {
+                        "address": "address",
+                        "name": "name"
+                    }
+                },
+                "sentDateTime": "2022-03-14T13:03:59Z",
+                "subject": "subject",
+                "toRecipients": [],
+                "webLink": "https://outlook.office365.com/owa/?ItemID=AAMkAGNhNWU3NWI4LTZkZTUtNGExYy04YTM4LTU2OTk2NjA3ODkwMQBGAAAAAABmIEZvc%2Fv7T6BVfPay%2FH0jBwBhdrqWZNreTp5Cv4fwzfP6AAAAAAEMAABhdrqWZNreTp5Cv4fwzfP6AAG23zvWAAA%3D\u0026exvsurl=1\u0026viewmodel=ReadMessageItem"
+            }
+        ]
+    }
+]

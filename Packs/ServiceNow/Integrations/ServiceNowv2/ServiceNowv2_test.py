@@ -278,6 +278,7 @@ def test_fetch_incidents(mocker):
     Validate The length of the results.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
+    mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number')
@@ -302,6 +303,7 @@ def test_fetch_incidents_with_attachments(mocker):
     Validate The length of the results and the attachment content.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2016-10-10 15:19:57", 'never mind'))
+    mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident', get_attachments=True,
@@ -330,6 +332,7 @@ def test_fetch_incidents_with_incident_name(mocker):
     Validate The length of the results.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
+    mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident',
@@ -705,7 +708,7 @@ def test_get_remote_data(mocker):
     res = get_remote_data_command(client, args, params)
 
     assert res[1]['File'] == 'test.txt'
-    assert res[2]['Contents'] == 'This is a comment'
+    assert res[2]['Contents'] == 'Type: comments\n\nThis is a comment'
 
 
 def test_assigned_to_field_no_user():
@@ -809,7 +812,7 @@ def test_get_remote_data_no_attachment(mocker):
     mocker.patch.object(client, 'get', return_value=RESPONSE_ASSIGNMENT_GROUP)
 
     res = get_remote_data_command(client, args, params)
-    assert res[1]['Contents'] == 'This is a comment'
+    assert res[1]['Contents'] == 'Type: comments\n\nThis is a comment'
     assert len(res) == 2
 
 
