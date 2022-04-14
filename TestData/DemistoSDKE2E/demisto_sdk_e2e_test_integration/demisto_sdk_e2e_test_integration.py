@@ -33,7 +33,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 ''' CLIENT CLASS '''
 
 
-class Client(BaseClient):
+class Client(BaseClient):  # type: ignore[name-defined]
     """Client class to interact with the service API
 
     This Client implements API calls, and does not contain any XSOAR logic.
@@ -86,7 +86,7 @@ def test_module(client: Client) -> str:
         # This  should validate all the inputs given in the integration configuration panel,
         # either manually or by using an API that uses them.
         message = 'ok'
-    except DemistoException as e:
+    except DemistoException as e:  # type: ignore[name-defined]
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
@@ -95,7 +95,7 @@ def test_module(client: Client) -> str:
 
 
 # TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # type: ignore[name-defined]
 
     dummy = args.get('dummy', None)
     if not dummy:
@@ -104,7 +104,7 @@ def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> Comma
     # Call the Client function and get the raw response
     result = client.baseintegration_dummy(dummy)
 
-    return CommandResults(
+    return CommandResults(  # type: ignore[name-defined]
         outputs_prefix='BaseIntegration',
         outputs_key_field='',
         outputs=result,
@@ -126,7 +126,7 @@ def main() -> None:
     # api_key = demisto.params().get('credentials', {}).get('password')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    base_url = urljoin(demisto.params()['url'], '/api/v1')  # type: ignore[name-defined]
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -153,17 +153,17 @@ def main() -> None:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
-            return_results(result)
+            return_results(result)  # type: ignore[name-defined]
 
         # TODO: REMOVE the following dummy command case:
         elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
+            return_results(baseintegration_dummy_command(client, demisto.args()))  # type: ignore[name-defined]
         # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')  # type: ignore[name-defined]
 
 
 ''' ENTRY POINT '''
