@@ -341,7 +341,7 @@ eyal-test:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     KUBERNETES_CPU_REQUEST: 1000m
-    XSIAM_CHOSEN_MACHINE_ID: "qa2-test-9997461765391"
+    XSIAM_CHOSEN_MACHINE_ID: "qa2-test-9994443226862"
   needs: []
   stage: create-instances
   script:
