@@ -221,10 +221,10 @@ demisto-sdk-nightly:destroy-instance:
   needs: []
   stage: destroy-instances
   script:
-    - !reference [.download-demisto-conf]
-    - |
-      [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
-      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+    # - !reference [.download-demisto-conf]
+    # - |
+    #   [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+    #   python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
 
 demisto-sdk-nightly:fan-in:
   tags:
@@ -233,6 +233,10 @@ demisto-sdk-nightly:fan-in:
   extends:
     - .sdk-nightly-schedule-rule-always
   script:
+    - !reference [.download-demisto-conf]
+    - |
+      [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
     - echo "fan in"
 
 

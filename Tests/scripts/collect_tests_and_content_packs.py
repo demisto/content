@@ -19,7 +19,8 @@ from Tests.scripts.utils import collect_helpers
 from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
 from Tests.scripts.utils.content_packs_util import should_test_content_pack, should_install_content_pack, \
     is_pack_xsoar_supported
-from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
+from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing, \
+    filter_modified_files_for_specific_marketplace_version
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from demisto_sdk.commands.common import constants
@@ -50,6 +51,9 @@ class TestConf(object):
 
     def get_tests(self):
         return self._conf.get('tests', {})
+
+    def get_marketplacev2_tests(self):
+        return self._conf['test_marketplacev2']
 
     def get_test_playbook_ids(self):
         conf_tests = self._conf['tests']
@@ -595,7 +599,6 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
         logging.warning(deprecated_commands_message)
 
     packs_to_install = collect_content_packs_to_install(id_set, integration_ids, playbook_names, script_names)
-
     return tests_set, catched_scripts, catched_playbooks, packs_to_install
 
 
@@ -1051,15 +1054,17 @@ def remove_ignored_tests(tests: set, id_set: dict, modified_packs: set) -> set:
     return tests
 
 
-def remove_tests_for_non_supported_packs(tests: set, id_set: dict) -> set:
+def remove_tests_for_non_supported_packs(tests: set, id_set: dict, marketplace_version: str) -> set:
     """Filters out test playbooks, which belong to one of the following packs:
         - Non XSOAR supported packs
         - DeprecatedContent, NonSupported packs
         - Deprecated packs
+        - Not compatible with the marketplace version were the tests will run
 
         Args:
             tests (set): Tests set to remove the tests to ignore from
             id_set (dict): The id set object
+            marketplace_version (str): The marketplace version were the tests will run
 
         Return:
              set: The filtered tests set
@@ -1072,9 +1077,11 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: dict) -> set:
 
             # We don't want to test playbooks that are not XSOAR supported, belong to the ignored packs or from
             # deprecated packs.
-            should_test, reason = should_test_content_pack(id_set_test_playbook_pack_name)
+            should_test, reason = should_test_content_pack(id_set_test_playbook_pack_name, marketplace_version, id_set)
             if not should_test:
                 tests_that_should_not_be_tested.add(f'{test}: {reason}')
+        else:
+            tests_that_should_not_be_tested.add(f'{test}: the pack of the test was not found in the id set')
 
     if tests_that_should_not_be_tested:
         logging.debug('The following test playbooks are not supported and will not be tested: \n{} '.format(
@@ -1096,40 +1103,72 @@ def remove_private_tests(tests_without_private_packs):
             tests_without_private_packs.remove(private_test)
 
 
-def filter_tests(tests: set, id_set: dict, modified_packs: set, is_nightly=False) -> set:
+def remove_unsupported_marketplace_tests_version(tests: set, id_set: dict, marketplace_version: str) -> set:
+    """Filters out test playbooks, which is not supported in the marketplace_version:
+        Args:
+            tests (set): Tests set to remove the tests to ignore from
+            id_set (dict): The id set object
+            marketplace_version (str): The marketplace version were the tests will run
+
+        Return:
+             set: The filtered tests set
+        """
+    ignored_tests_set = set()
+    for test_obj in id_set.get('TestPlaybooks', []):
+        for test_id, test_data in test_obj.items():
+            test_obj_name = test_data.get('name')
+            test_obj_versions = test_data.get('marketplaces', [])
+            if test_obj_name in tests and marketplace_version not in test_obj_versions:
+                ignored_tests_set.add(test_obj_name)
+
+    if ignored_tests_set:
+        readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
+        logging.info(f"Skipping tests that are not supported in this marketplace_version:\n{readable_ignored_tests}")
+        tests.difference_update(ignored_tests_set)
+    return tests
+
+
+def filter_tests(tests: set, id_set: dict, modified_packs: set, marketplace_version: str, is_nightly=False) -> set:
     """
     Filter tests out from the test set if they are:
     a. Ignored
     b. Non-XSOAR or non-supported packs
     c. tests of deprecated packs.
     d. tests of private packs (optional)
+    e. Not compatible with the marketplace version were the tests will run
+
     Args:
         tests (set): Set of tests collected so far.
         id_set (dict): The ID set.
-        remove_private_packs (bool): Whether to remove private packs
         modified_packs: The modified packs.
+        marketplace_version (str): The marketplace version were the tests will run.
     Returns:
         (set): Set of tests without ignored, non supported and deprecated-packs tests.
     """
     tests_with_no_dummy_strings = {test for test in tests if 'no test' not in test.lower()}
     tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set, modified_packs)
-    tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
+    tests_without_non_supported = remove_unsupported_marketplace_tests_version(tests_without_ignored, id_set,
+                                                                               marketplace_version)
+    tests_without_non_supported_packs = remove_tests_for_non_supported_packs(tests_without_non_supported, id_set,
+                                                                             marketplace_version)
 
     if is_nightly:
         # Removing private packs' tests from nightly, since they aren't runnable in nightly
         # due to the fact they aren't in stored in the content repository.
-        remove_private_tests(tests_without_non_supported)
+        remove_private_tests(tests_without_non_supported_packs)
 
-    return tests_without_non_supported
+    return tests_without_non_supported_packs
 
 
-def filter_installed_packs(packs_to_install: set) -> set:
+def filter_installed_packs(packs_to_install: set, marketplace_version: str, id_set: dict) -> set:
     """
     Filter only the packs that should get installed by the following conditions:
         - Content pack is not in skipped packs
         - Content pack is not deprecated
     Args:
         packs_to_install (set): Set of installed packs collected so far.
+        marketplace_version (str): The marketplace version where the tests will run
+        id_set (dict): Structure which holds all content entities to extract pack names from.
     Returns:
         (set): Set of packs without ignored, skipped and deprecated-packs.
     """
@@ -1137,7 +1176,7 @@ def filter_installed_packs(packs_to_install: set) -> set:
     packs_that_should_not_be_installed = set()
     packs_that_should_be_installed = set()
     for pack in packs_to_install:
-        should_install, reason = should_install_content_pack(pack)
+        should_install, reason = should_install_content_pack(pack, marketplace_version, id_set,)
         if not should_install:
             packs_that_should_not_be_installed.add(f'{pack}: {reason}')
         else:
@@ -1167,9 +1206,14 @@ def is_documentation_changes_only(files_string: str) -> bool:
 
 def get_test_list_and_content_packs_to_install(files_string,
                                                branch_name,
+                                               marketplace_version,
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
+    if marketplace_version == 'marketplacev2':
+        files_string = filter_modified_files_for_specific_marketplace_version(files_string, id_set, marketplace_version)
+        logging.debug(f'Files string after filter: {files_string}')
+
     modified_files_instance = get_modified_files_for_testing(files_string)
 
     modified_files_with_relevant_tests = modified_files_instance.modified_files
@@ -1241,29 +1285,69 @@ def get_test_list_and_content_packs_to_install(files_string,
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
     # All filtering out of packs should be done here
-    packs_to_install = filter_installed_packs(packs_to_install)
+    packs_to_install = filter_installed_packs(packs_to_install, marketplace_version, id_set)
 
     # All filtering out of tests should be done here
-    tests = filter_tests(tests, id_set, modified_packs)
+    tests = filter_tests(tests, id_set, modified_packs, marketplace_version, False)
 
-    if not tests or changed_common:
-        if not tests:
-            logging.info("No tests found running sanity check only.")
-        else:
-            logging.info("Changed one of the Common Server files, running sanity check too.")
+    if marketplace_version != 'marketplacev2':
+        if not tests or changed_common:
+            if not tests:
+                logging.info("No tests found running sanity check only.")
+            else:
+                logging.info("Changed one of the Common Server files, running sanity check too.")
 
-        logging.debug(f"Adding sanity tests: {SANITY_TESTS}")
-        tests.update(SANITY_TESTS)
-        logging.debug("Adding HelloWorld to tests as most of the sanity tests requires it.")
-        logging.debug(
-            "Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' uses it"
-        )
-        packs_to_install.update(["HelloWorld", "Gmail"])
+            logging.debug(f"Adding sanity tests: {SANITY_TESTS}")
+            tests.update(SANITY_TESTS)
+            logging.debug("Adding HelloWorld to tests as most of the sanity tests requires it.")
+            logging.debug(
+                "Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' uses it"
+            )
+            packs_to_install.update(["HelloWorld", "Gmail"])
 
     # We add Base and DeveloperTools packs for every build
-    packs_to_install.update(["DeveloperTools", "Base"])
+    if tests or packs_to_install:
+        packs_to_install.update(["DeveloperTools", "Base"])
 
     return tests, packs_to_install
+
+
+def get_all_packs_with_artifacts_for_specific_marketplace(id_set: dict, marketplace_version: str):
+    """Get all packs that have content artifacts in specific marketplace version:
+        Args:
+            id_set (dict): The id set object
+            marketplace_version (str): The marketplace version were the tests will run
+
+        Return:
+             set: set of packs
+        """
+    packs_to_install = set()
+    for artifacts in id_set.values():
+        # Ignore the Packs list in the ID set
+        if isinstance(artifacts, dict):
+            continue
+        for artifact_dict in artifacts:
+            for artifact_details in artifact_dict.values():
+                if artifact_details.get('marketplaces', []) == [marketplace_version]:
+                    packs_to_install.add(artifact_details.get('pack'))
+    return packs_to_install
+
+
+def get_test_playbooks_for_specific_marketplace(id_set: dict, marketplace_version: str):
+    """Get all test playbooks for specific marketplace version:
+        Args:
+            id_set (dict): The id set object
+            marketplace_version (str): The marketplace version were the tests will run
+
+        Return:
+             set: set test playbooks name
+        """
+    tests = set()
+    for test_obj in id_set.get('TestPlaybooks', []):
+        for test_id, test_data in test_obj.items():
+            if test_data.get('marketplaces', []) == [marketplace_version]:
+                tests.add(test_data.get('name'))
+    return tests
 
 
 def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
@@ -1380,12 +1464,31 @@ def changed_files_to_string(changed_files):
     return '\n'.join(files_with_status)
 
 
-def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
+def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_version='xsoar'):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
-        packs_to_install = filter_installed_packs(set(os.listdir(constants.PACKS_DIR)))
-        tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET), is_nightly=True,
-                             modified_packs=set())
+        if marketplace_version == 'marketplacev2':
+            # we are adding to the nightly on marketplacev2 few tests that are supported in both marketplacees
+            # see https://github.com/demisto/etc/issues/44350
+            tests = set(CONF.get_marketplacev2_tests())
+
+            # collect tests that are compatible only with marketplacev2
+            tests.update(get_test_playbooks_for_specific_marketplace(ID_SET, marketplace_version))
+
+            packs_to_install = CONF.get_packs_of_tested_integrations(tests, ID_SET)
+            packs_to_install.update(get_content_pack_name_of_test(tests, ID_SET))
+
+            # collect all packs and tests that are compatible only with marketplacev2
+            packs_to_install.update(get_all_packs_with_artifacts_for_specific_marketplace(ID_SET, marketplace_version))
+
+        else:
+            packs_to_install = (set(os.listdir(constants.PACKS_DIR)))
+            tests = set(CONF.get_test_playbook_ids())
+
+        packs_to_install = filter_installed_packs(packs_to_install, marketplace_version,
+                                                  deepcopy(ID_SET))
+        tests = filter_tests(tests, id_set=deepcopy(ID_SET), is_nightly=True,
+                             modified_packs=set(), marketplace_version=marketplace_version)
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
                      "should be tested")
     else:
@@ -1414,7 +1517,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
         logging.debug(f'Files string: {files_string}')
 
-        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name)
+        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
+                                                                             marketplace_version)
 
     tests_string = '\n'.join(tests)
     packs_to_install_string = '\n'.join(packs_to_install)
@@ -1455,10 +1559,11 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--skip-save', type=tools.str2bool,
                         help='Skipping saving the test filter file (good for simply doing validation)')
     parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
+    parser.add_argument('-mp', '--marketplace', help='marketplace version.', default='xsoar')
     options = parser.parse_args()
 
     # Create test file based only on committed files
-    create_test_file(options.nightly, options.skip_save, options.changed_pack_path)
+    create_test_file(options.nightly, options.skip_save, options.changed_pack_path, options.marketplace)
     if not _FAILED:
         logging.info("Finished test configuration")
         sys.exit(0)

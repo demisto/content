@@ -1148,7 +1148,7 @@ def wildfire_get_url_report(url: str) -> Tuple:
     get_report_uri = f"{URL}{URL_DICT['report']}"
     params = {'apikey': TOKEN, 'url': url}
     entry_context = {'URL': url}
-
+    human_readable = None
     try:
         response = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, resp_type='json')
         report = response.get('result').get('report')
@@ -1190,7 +1190,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
     sha256 = file_hash if sha256Regex.match(file_hash) else None
     md5 = file_hash if md5Regex.match(file_hash) else None
     entry_context = {key: value for key, value in (['MD5', md5], ['SHA256', sha256]) if value}
-
+    human_readable, relationships, indicator = None, None, None
     try:
         json_res = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
         reports = json_res.get('wildfire', {}).get('task_info', {}).get('report')
