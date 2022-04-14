@@ -218,8 +218,11 @@ demisto-sdk-nightly:destroy-instance:
     IFRA_ENV_TYPE: "Server Master"
   cache:
     policy: pull-push
-  needs: []
+  needs: ["demisto-sdk-nightly:run-commands-against-instance", "demisto-sdk-nightly:run-commands-against-instance-e2e"]
   stage: destroy-instances
+  dependencies:
+    - demisto-sdk-nightly:run-commands-against-instance
+    - demisto-sdk-nightly:run-commands-against-instance-e2e
   script:
     - echo "destroy-instance"
     # - !reference [.download-demisto-conf]
