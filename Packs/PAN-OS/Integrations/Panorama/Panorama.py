@@ -10274,7 +10274,7 @@ def main():
                     empty_result_message="Software download not started"
                 )
             )
-        elif demisto.command() == 'pan-os-platform-install-software':
+        elif command == 'pan-os-platform-install-software':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -10282,7 +10282,7 @@ def main():
                     empty_result_message="Software Install not started"
                 )
             )
-        elif demisto.command() == 'pan-os-platform-reboot':
+        elif command == 'pan-os-platform-reboot':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -10290,7 +10290,7 @@ def main():
                     empty_result_message="Device not rebooted, or did not respond."
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-system-status':
+        elif command == 'pan-os-platform-get-system-status':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -10298,7 +10298,7 @@ def main():
                     empty_result_message="No system status."
                 )
             )
-        elif demisto.command() == 'pan-os-platform-update-ha-state':
+        elif command == 'pan-os-platform-update-ha-state':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -10306,7 +10306,7 @@ def main():
                     empty_result_message="HA State either wasn't change or the device did not respond."
                 )
             )
-        elif demisto.command() == 'pan-os-hygiene-check-log-forwarding':
+        elif command == 'pan-os-hygiene-check-log-forwarding':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -10314,7 +10314,7 @@ def main():
                     empty_result_message="At least one log forwarding profile is configured according to best practices."
                 )
             )
-        elif demisto.command() == 'pan-os-hygiene-check-vulnerability-profiles':
+        elif command == 'pan-os-hygiene-check-vulnerability-profiles':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
