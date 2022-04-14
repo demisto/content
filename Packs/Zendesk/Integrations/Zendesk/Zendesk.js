@@ -234,6 +234,7 @@ var updateTicket = function() {
     }
     if (args.custom_fields) {
         var arrCust = args.custom_fields.split(',');
+        logDebug(JSONN.stringify(arrCust))
         var dicCustStr = {};
         for (var i = 0; i < arrCust.length; i++) {
             var tmpKey = arrCust[i].split('=');
@@ -246,6 +247,7 @@ var updateTicket = function() {
                 value: dicCustStr[strKey]
             })
         }
+        logDebug(JSONN.stringify(arrRes))
         body.ticket.custom_fields = arrRes;
     }
     for (var key in args) {
