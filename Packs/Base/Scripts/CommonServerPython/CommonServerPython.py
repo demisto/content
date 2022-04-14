@@ -9782,7 +9782,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
     res = client._http_request(method='POST', full_url=urljoin(xsiam_url, '/logs/v1/xsiam'), data=zipped_data,
                                headers=headers,
                                error_handler=events_error_handler)
-    if res.get('error').lower() == 'false':
+    if not res.get('error').lower() == 'false':
         raise DemistoException(header_msg + res.get('error'))
 
     demisto.updateModuleHealth({'eventsPulled': amount_of_events})
