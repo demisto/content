@@ -188,9 +188,8 @@ def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 3
             if retry > retries:
                 raise Exception('Waiting time for packs to be uninstalled has passed, there are still installed '
                                 'packs. Aborting.')
-            logging.info(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
-                         f'packs installed. Sleeping for 5 seconds.')
-            logging.info(f'{installed_packs=}')
+            logging.debug(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
+                          f'packs installed. Sleeping for 5 seconds.')
             sleep(5)
             installed_packs = get_all_installed_packs(client)
             retry = retry + 1
@@ -246,7 +245,7 @@ def main():
     options = options_handler()
     xsiam_servers = get_json_file(options.xsiam_servers_path)
     api_key, base_url, xdr_auth_id = get_xsiam_configuration(options.xsiam_machine, xsiam_servers)
-    logging.info(f'Starting cleanup for XSIAM server {base_url}')
+    logging.info(f'Starting cleanup for XSIAM server {options.xsiam_machine}')
 
     client = demisto_client.configure(base_url=base_url,
                                       verify_ssl=False,
@@ -254,9 +253,9 @@ def main():
                                       auth_id=xdr_auth_id)
 
     success = reset_base_pack_version(client) and uninstall_all_packs(client) and wait_for_uninstallation_to_complete(client)
-
     if not success:
         sys.exit(2)
+    logging.info('Uninstalling packs done.')
 
 
 if __name__ == '__main__':
