@@ -82,7 +82,20 @@ def _calculate_dbot_score(severity: int) -> int:
     return dbot_score
 
 
-def _extract_analysis_info(res: dict, dbot_score_type: str, reliability: DBotScoreReliability) -> List[dict]:
+def _get_malware_family(data: list, fundamental_client: Client):
+    malware_family = []
+    res = fundamental_client.threat_indicator_search(url_suffix='/v0/malware_family', data={'key.values': data})
+    if res.get('total_size'):
+        results = res.get('results', [])
+        if len(results):
+            for result in results:
+                display_text = result.get('display_text', '')
+                link = MALWARE_FAMILY_URL + result.get('uuid', '')
+                malware_family.append(f'{display_text}: {link}')
+    return malware_family
+
+
+def _extract_analysis_info(res: dict, dbot_score_type: str, reliability: DBotScoreReliability, fundamental_client: Client) -> List[dict]:
     """
     Extract context data from http-response and create corresponding DBotScore.
     If response is empty, return empty context and a none for DBotScore object
@@ -125,24 +138,31 @@ def _extract_analysis_info(res: dict, dbot_score_type: str, reliability: DBotSco
                     'LastSeen': str(last_seen_format)
                 }
                 if malware_family:
+                    malware_family = _get_malware_family(malware_family, fundamental_client)
                     analysis_info['MalwareFamily'] = malware_family
 
                 if threat_campaigns:
                     threatCampaigns = []
                     for threatCampaign in threat_campaigns:
-                        threatCampaigns.append(threatCampaign['display_text'])
+                        malware_name = threatCampaign['display_text']
+                        link = THREAT_CAMPAIGN_URL + threatCampaign['uuid']
+                        threatCampaigns.append(f'{malware_name}: {link}')
                     analysis_info['ThreatCampaigns'] = threatCampaigns
 
                 if threat_actors:
                     threatActors = []
                     for threatActor in threat_actors:
-                        threatActors.append(threatActor['display_text'])
+                        threat_actor_name = threatActor['display_text']
+                        link = THREAT_ACTOR_URL + threatActor['uuid']
+                        threatActors.append(f'{threat_actor_name}: {link}')
                     analysis_info['ThreatActors'] = threatActors
 
                 if threat_groups:
                     threatGroups = []
                     for threatGroup in threat_groups:
-                        threatGroups.append(threatGroup['display_text'])
+                        threat_group_name = threatGroup['display_text']
+                        link = THREAT_GROUP_URL + threatGroup['uuid']
+                        threatGroups.append(f'{threat_group_name}: {link}')
                     analysis_info['ThreatGroups'] = threatGroups
 
                 analysis_results.append({'analysis_info': analysis_info, 'dbot': dbot})
@@ -218,7 +238,7 @@ def iair_to_context(analysis_info: dict):
     return context
 
 
-def ip_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client) -> List[CommandResults]:
+def ip_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client, fundamental_client: Client) -> List[CommandResults]:
     """
     Args:
         client: iDefense client
@@ -229,7 +249,7 @@ def ip_command(client: Client, args: dict, reliability: DBotScoreReliability, do
     ips: list = argToList(args.get('ip'))
     _validate_args("IP", ips)
     res = client.threat_indicator_search(url_suffix='/v0/ip', data={'key.values': ips})
-    analysis_results = _extract_analysis_info(res, DBotScoreType.IP, reliability)
+    analysis_results = _extract_analysis_info(res, DBotScoreType.IP, reliability, fundamental_client)
     returned_ips = _check_returned_results(res)
     no_match_values = _check_no_match_values(ips, returned_ips)
     command_results = []
@@ -256,12 +276,12 @@ def ip_command(client: Client, args: dict, reliability: DBotScoreReliability, do
     return command_results
 
 
-def url_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client) -> List[CommandResults]:
+def url_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client, fundamental_client: Client) -> List[CommandResults]:
     urls: list = argToList(args.get('url'))
     _validate_args("URL", urls)
 
     res = client.threat_indicator_search(url_suffix='/v0/url', data={'key.values': urls})
-    analysis_results = _extract_analysis_info(res, DBotScoreType.URL, reliability)
+    analysis_results = _extract_analysis_info(res, DBotScoreType.URL, reliability, fundamental_client)
     returned_urls = _check_returned_results(res)
     no_match_values = _check_no_match_values(urls, returned_urls)
     command_results = []
@@ -288,12 +308,12 @@ def url_command(client: Client, args: dict, reliability: DBotScoreReliability, d
     return command_results
 
 
-def domain_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client) -> List[CommandResults]:  # noqa
+def domain_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client, fundamental_client: Client) -> List[CommandResults]:  # noqa
 
     domains: list = argToList(args.get('domain'))
 
     res = client.threat_indicator_search(url_suffix='/v0/domain', data={'key.values': domains})
-    analysis_results = _extract_analysis_info(res, DBotScoreType.DOMAIN, reliability)
+    analysis_results = _extract_analysis_info(res, DBotScoreType.DOMAIN, reliability, fundamental_client)
     returned_domains = _check_returned_results(res)
     no_match_values = _check_no_match_values(domains, returned_domains)
     command_results = []
@@ -320,7 +340,7 @@ def domain_command(client: Client, args: dict, reliability: DBotScoreReliability
     return command_results
 
 
-def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client) -> CommandResults:
+def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client, fundamental_client: Client) -> CommandResults:
     """
     Search for indicator with the given uuid. When response return, checks which indicator found.
     Args:
@@ -380,24 +400,31 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
         }
 
         if malware_family:
+            malware_family = _get_malware_family(malware_family, fundamental_client)
             analysis_info['MalwareFamily'] = malware_family
 
         if threat_campaigns:
             threatCampaigns = []
             for threatCampaign in threat_campaigns:
-                threatCampaigns.append(threatCampaign['display_text'])
+                threat_campaign_name = threatCampaign['display_text']
+                link = THREAT_CAMPAIGN_URL + threatCampaign['uuid']
+                threatCampaigns.append(f'{threat_campaign_name}: {link}')
             analysis_info['ThreatCampaigns'] = threatCampaigns
 
         if threat_actors:
             threatActors = []
             for threatActor in threat_actors:
-                threatActors.append(threatActor['display_text'])
+                threat_actor_name = threatActor['display_text']
+                link = THREAT_ACTOR_URL + threatActor['uuid']
+                threatActors.append(f'{threat_actor_name}: {link}')
             analysis_info['ThreatActors'] = threatActors
 
         if threat_groups:
             threatGroups = []
             for threatGroup in threat_groups:
-                threatGroups.append(threatGroup['display_text'])
+                threat_group_name = threatGroup['display_text']
+                link = THREAT_GROUP_URL + threatGroup['uuid']
+                threatGroups.append(f'{threat_group_name}: {link}')
             analysis_info['ThreatGroups'] = threatGroups
             
         analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
@@ -471,6 +498,8 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             analysis_info["Description"] = description
         if analysis:
             analysis_info["Analysis"] = analysis
+
+        result_link = ''
 
         if indicator_type.lower() == 'malware_family':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
@@ -730,7 +759,7 @@ def main():
         elif command == 'acti-get-fundamentals-by-uuid':  # pragma: no cover
             return_results(fundamental_uuid_command(fundamental_client, demisto.args(), reliability))  # pragma: no cover
         elif command in commands:  # pragma: no cover
-            return_results(commands[command](client, demisto.args(), reliability, document_search_client))  # pragma: no cover
+            return_results(commands[command](client, demisto.args(), reliability, document_search_client, fundamental_client))  # pragma: no cover
 
     except Exception as e:  # pragma: no cover
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')  # pragma: no cover
