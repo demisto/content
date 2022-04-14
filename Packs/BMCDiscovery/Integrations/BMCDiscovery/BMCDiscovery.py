@@ -162,8 +162,15 @@ def discovery_search_custom_command(client: Client, **args) -> CommandResults:
                 row[key] = kind[key]
         user_output.append(row)
 
+    search_name = args.get('name', '')
+
+    context_output = dict()
+    context_output['data'] = response
+    if search_name:
+        context_output['name'] = search_name
+
     return CommandResults(outputs_prefix='BmcDiscovery.CustomSearch',
-                          outputs=response,
+                          outputs=context_output,
                           raw_response=response,
                           readable_output=tableToMarkdown(name='BMC Discovery Custom Search Results '
                                                                '(see context for more details)', t=user_output))
@@ -177,6 +184,9 @@ def discovery_search_command(client: Client, **args) -> CommandResults:
 
     output: Dict = {}
     output['data'] = list()
+    search_name = args.get('name', '')
+    if search_name:
+        output['name'] = search_name
     count = 0
     for item in response:
         results = item['results']

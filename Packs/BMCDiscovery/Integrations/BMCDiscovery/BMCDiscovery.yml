@@ -155,6 +155,12 @@ script:
       name: hostname
       required: false
       secret: false
+    - default: false
+      description: Name of the search
+      isArray: false
+      name: name
+      required: false
+      secret: false
     deprecated: false
     description: Search for a node by hostname or IP address. If not found, repeat the search with a different node kind.
     execution: false
@@ -166,6 +172,9 @@ script:
     - contextPath: BmcDiscovery.Search.data
       description: Search results
       type: Unknown
+    - contextPath: BmcDiscovery.Search.name
+      description: Name of the search
+      type: String
 
   - name: bmc-discovery-search-custom
     description: Run a user-defined search
@@ -180,10 +189,19 @@ script:
       defaultValue: "50"
     - name: results_id
       description: Search results id
+    - default: false
+      description: Name of the search
+      isArray: false
+      name: name
+      required: false
+      secret: false
     outputs:
-    - contextPath: BmcDiscovery.CustomSearch
+    - contextPath: BmcDiscovery.CustomSearch.data
       description: Search results
       type: Unknown
+    - contextPath: BmcDiscovery.CustomSearch.name
+      description: Name of the search
+      type: String
 
   - name: bmc-discovery-scan-create
     description: 'Create a new Discovery scan (run) with pre-defined parameters (Kind: IP; Level: Full Discovery; Type: Snapshot)'
@@ -285,7 +303,7 @@ script:
       type: Unknown
     description: Get detailed scan (run) results
 
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.4.28442
   feed: false
   isfetch: false
   longRunning: false
@@ -294,6 +312,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 6.1.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

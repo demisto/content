@@ -61,7 +61,7 @@ def test_discovery_search_custom_command(mocker):
     query = \
         "SEARCH FLAGS(no_segment) DeviceInfo WHERE #DiscoveryResult:DiscoveryAccessResult:DiscoveryAccess:DiscoveryAccess._last_marker TRAVERSE Primary:Inference:InferredElement: SHOW kind(#), name, #InferredElement:Inference:Associate:DiscoveryAccess.endpoint"  # noqa: E501
     results = discovery_search_custom_command(client, query=query)
-    assert results.outputs[0].get('count') == 326
+    assert results.outputs.get('data')[0].get('count') == 326
 
 
 def test_discovery_scan_status_list_command_by_id(mocker):

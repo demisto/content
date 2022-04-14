@@ -6,8 +6,9 @@ This integration was integrated and tested with BMC Discovery v.22.1.
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for BMC Discovery.
 3. Click **Add instance** to create and configure a new integration instance.
+
 | **Parameter**                      | **Description**               | **Required** |
-|------------------------------------|-------------------------------|--------------|
+| ---------------------------------- | ----------------------------- | ------------ |
 | Server URL                         | BMC Discovery URL             | True         |
 | API Token                          | BMC Discovery user API token* | True         |
 | Use system proxy settings          |                               | False        |
@@ -21,13 +22,14 @@ This integration was integrated and tested with BMC Discovery v.22.1.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-###bmc-discovery-scan-status-list
-***
+#### bmc-discovery-scan-status-list
+
 Get status of all currently running scans (runs) or a specific scan (run)
 
 Base Command
 
 `bmc-discovery-scan-status-list`
+
 #### Input
 
 | **Argument Name** | **Description**             | **Required** |
@@ -69,14 +71,15 @@ Base Command
 | BmcDiscovery.Scan.Status.consolidating                        | Boolean  | Is consolidating                          |
 | BmcDiscovery.Scan.Status.consolidation_source                 | String   | Consolidation source                      |
 
-
-###bmc-discovery-scan-create
 ***
+#### bmc-discovery-scan-create
+
 Create a new snapshot scan (run)
 
 Base Command
 
 `bmc-discovery-scan-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -96,14 +99,15 @@ Base Command
 | BmcDiscovery.Scan.Create.url  | String   | New scan URI    |
 | BmcDiscovery.Scan.Create.uuid | String   | New scan UUID   |
 
-
-###bmc-discovery-scan-summary
 ***
+#### bmc-discovery-scan-summary
+
 Retrieve scan (run) results summary
 
 Base Command
 
 `bmc-discovery-scan-summary`
+
 #### Input
 
 | **Argument Name** | **Description**   | **Required** |
@@ -126,13 +130,15 @@ Base Command
 | BmcDiscovery.Scan.Summary.Error      | Number   | Number of entities in error             |
 | BmcDiscovery.Scan.Summary.Dropped    | Number   | Number of dropped entities              |
 
-###bmc-discovery-scan-stop
 ***
+#### bmc-discovery-scan-stop
+
 Cancel a currently running scan
 
 Base Command
 
 `bmc-discovery-scan-stop`
+
 #### Input
 
 | **Argument Name** | **Description**   | **Required** |
@@ -150,13 +156,15 @@ Base Command
 |-------------------------------------|----------|--------------------|
 | BmcDiscovery.Scan.Stop.cancelled    | Boolean  | Scan cancel status |
 
-###bmc-discovery-scan-results-list
 ***
+#### bmc-discovery-scan-results-list
+
 Get a list of hosts by specific result type
 
 Base Command
 
 `bmc-discovery-scan-results-list`
+
 #### Input
 
 | **Argument Name** | **Description**                                                             | **Required** |
@@ -178,13 +186,15 @@ Base Command
 | BmcDiscovery.Scan.Result.results_id  | String   | Current result id                  |
 | BmcDiscovery.Scan.Result.results     | Unknown  | The actual scan result data        |
 
-###bmc-discovery-search
 ***
+#### bmc-discovery-search
+
 Search for a node by IP address or hostname
 
 Base Command
 
 `bmc-discovery-search`
+
 #### Input
 
 | **Argument name** | **Description**                                      | **Required**  |
@@ -192,6 +202,7 @@ Base Command
 | ip                | IP address                                           | Optional      | 
 | hostname          | Hostname                                             | Optional      |
 | kind              | "Node kind (Host, NetWorkDevice, SNMPManagedDevice)" | Single Select |
+| name              | Search name                                          | Optional      |
 
 #### Context Output
 
@@ -199,14 +210,17 @@ Base Command
 |---------------------------|----------|----------------------------|
 | BmcDiscovery.Search.count | Number   | Number of returned results |
 | BmcDiscovery.Search.data  | Unknown  | Search results             |
+| BmcDiscovery.Search.name  | String   | Name of the search         |
 
-###bmc-discovery-search-custom
 ***
+#### bmc-discovery-search-custom
+
 Run a user defined query
 
 Base Command
 
 `bmc-discovery-search-custom`
+
 #### Input
 
 | **Argument name** | **Description**       | **Required**  |
@@ -216,7 +230,7 @@ Base Command
 | limit             | Search resuluts limit | Optional      |
 | results_id        | Search results id     | Optional      |
 
-*****See the [documentation for reference](https://docs.bmc.com/docs/discovery/113/using-the-query-language-788111625.html)
+*See the [documentation for reference](https://docs.bmc.com/docs/discovery/113/using-the-query-language-788111625.html)
 
 #### Context Output
 
