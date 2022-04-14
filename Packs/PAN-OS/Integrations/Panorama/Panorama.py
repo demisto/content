@@ -2805,15 +2805,36 @@ def prettify_rule(rule: dict):
     return pretty_rule
 
 
-def prettify_rules(rules: Union[List[dict], dict]):
+def prettify_rules(rules: Union[List[dict], dict], target):
     if not isinstance(rules, list):
-        return prettify_rule(rules)
+        rules = [rules]
     pretty_rules_arr = []
     for rule in rules:
+        if not target_filter(rule, target):
+            continue
         pretty_rule = prettify_rule(rule)
         pretty_rules_arr.append(pretty_rule)
 
     return pretty_rules_arr
+
+
+def target_filter(rule, target):
+    """
+        Args:
+            rule (dict): A rule from the panorama instance.
+            target (num): A serial number to filter the rule on
+
+        Returns:
+            if the rule contains the target return True else False.
+    """
+    target_entry = rule.get('target', {}).get('devices', {}).get('entry')
+    if isinstance(target_entry, dict):
+        target_entry = [target_entry]
+        for entry in target_entry:
+            if entry.get('@name') == target:
+                return True
+
+    return False
 
 
 @logger
@@ -7161,12 +7182,7 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
             XPATH_SECURITY_RULES = "/config/shared/"
             DEVICE_GROUP = device_group_shared
         else:
-            if target := args.get('target'):
-                print('here')
-                XPATH_SECURITY_RULES = "/config/devices/entry[@name=\'" + target + "\']/vsys/entry[@name=\'" + "vsys1" + "\']/rulebase/security/rules/entry/"
-            else:
-                XPATH_SECURITY_RULES = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
-
+            XPATH_SECURITY_RULES = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
     else:
         XPATH_SECURITY_RULES = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/rulebase/security/rules/entry"
 
