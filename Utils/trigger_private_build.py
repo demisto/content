@@ -134,7 +134,6 @@ def main():
                                      'Authorization': f'Bearer {github_token}'},
                             data=json.dumps(payload),
                             verify=False)
-        logging.critical(res)
         if res.status_code != 204:
             logging.critical(f'Failed to trigger private repo build, request to '
                              f'{TRIGGER_BUILD_URL} failed with error: {str(res.content)}')
