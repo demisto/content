@@ -7715,7 +7715,8 @@ class Topology:
         """
         all_devices = {**self.firewall_objects, **self.panorama_objects}
         if filter_string not in all_devices:
-            raise DemistoException(f"filter_str {filter_string} does not exactly match any devices known to this topology.")
+            raise DemistoException(f"filter_str {filter_string} is not the exact ID of a host in this topology; " +
+                                   f"use a more specific filter string.")
 
         return all_devices.get(filter_string)
 
