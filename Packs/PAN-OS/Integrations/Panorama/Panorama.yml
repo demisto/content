@@ -7474,7 +7474,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Reboot the given host.
+    description: >
+      Reboot the given device by hostid. Warning; this command has no confirmation and the device
+      will immediately reboot.
     name: pan-os-platform-reboot
     outputs:
     - contextPath: PANOS.RestartStatus.Summary.hostid
