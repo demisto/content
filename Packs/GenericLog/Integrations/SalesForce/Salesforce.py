@@ -13,21 +13,6 @@ from requests.auth import HTTPBasicAuth
 urllib3.disable_warnings()
 
 
-def convert_to_github_date(value: Union[str, datetime, int]) -> str:
-    """Converting int(epoch), str(3 days) or datetime to github's api time"""
-    timestamp: Optional[datetime]
-    if isinstance(value, int):
-        value = str(value)
-    if not isinstance(value, datetime):
-        timestamp = dateparser.parse(value)
-    if timestamp is None:
-        raise TypeError(f'after is not a valid time {value}')
-    timestamp_epoch = timestamp.timestamp() * 1000
-    str_bytes = f'{timestamp_epoch}|'.encode('ascii')
-    base64_bytes = base64.b64encode(str_bytes)
-    return base64_bytes.decode('ascii')
-
-
 class Method(str, Enum):
     GET = 'GET'
     POST = 'POST'
@@ -54,18 +39,6 @@ class Request(BaseModel):
         arbitrary_types_allowed = True
 
 
-class ReqParams(BaseModel):  # TODO: implement request params (if any)
-    password: str
-    username: str
-    client_secret: str
-    client_id: str
-    grant_type: str
-
-
-class Args(BaseModel):
-    limit: int = 10
-
-
 class Client:
     def __init__(self, request: Request, options: Options, session=requests.Session()):
         self.request = request
@@ -90,10 +63,6 @@ class Client:
             LOG(msg)
             raise DemistoException(msg) from exc
 
-    def set_from_time_filter(self, after: Any):
-        """TODO: set the next time to fetch"""
-        self.request.params.after = convert_to_github_date(after)  # type: ignore[union-attr]
-
     def _skip_cert_verification(self, skip_cert_verification=skip_cert_verification):
         if not self.request.validate:
             skip_cert_verification()
@@ -106,8 +75,16 @@ class Client:
 
 
 class GetEvents:
-    def __init__(self, client: Client) -> None:
+    def __init__(self, client: Client, url, client_id, client_secret, username, password) -> None:
         self.client = client
+        self.url = url
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.username = username
+        self.password = password
+        self.headers = {}
+        self.instance_url = ''
+        self.get_token()
 
     def call(self):
         resp = self.client.call()
@@ -115,18 +92,89 @@ class GetEvents:
 
     def _iter_events(self):
         temp_dir = tempfile.TemporaryDirectory()
-        events = []
-        res = self.call()
-        for file in res.get('records', []):
-            local_filename = file["LogFile"].replace('/', '_').replace(':', '_')
+        events_list = []
+
+        from_date = '2022-01-01T00:00:00z'
+        for line in self.pull_log_files(from_date):
+            local_filename = line["LogFile"].replace('/', '_').replace(':', '_')
             file_in_tmp_path = "{}/{}".format(temp_dir.name, local_filename)
-            self.get_file_raw_lines(file["LogFile"], file_in_tmp_path)
+            self.get_file_raw_lines(line["LogFile"], file_in_tmp_path)
 
             for chunk in self.gen_chunks_to_object(file_in_tmp_path, chunksize=2000):
-                events.extend(chunk)
-        return events
+                events_list.extend(chunk)
+        return [events_list]
 
-    def run(self, limit=10):
+    def get_token(self):
+        params = {'grant_type': 'password',
+                  'client_id': self.client_id,
+                  'client_secret': self.client_secret,
+                  'username': self.username,
+                  'password': self.password}
+
+        payload_str = "&".join("%s=%s" % (k, v) for k, v in params.items())
+        url = urljoin(self.url, 'services/oauth2/token')
+        try:
+            r = requests.post(url, params=payload_str, verify=False)
+        except Exception as err:
+            raise DemistoException(f'Failed to get token {err}')
+        if r.status_code == 200:
+            res = json.loads(r.text)
+            self.headers = {'Authorization': f"Bearer {res.get('access_token')}"}
+            self.instance_url = res.get('instance_url')
+        else:
+            raise DemistoException(f'Failed to get token')
+
+    def pull_log_files(self, from_date):
+        interval = "hourly"
+
+        if interval == 'hourly':
+            query = "SELECT+Id+,+EventType+,+Interval+,+LogDate+,+LogFile+,+LogFileLength" + \
+                    "+FROM+EventLogFile" + \
+                    f"+WHERE+Interval+=+'Hourly'+and+CreatedDate+>+{from_date}"
+
+        elif interval == 'daily':
+            query = "SELECT+Id+,+CreatedDate+,+EventType+,+LogDate+,+LogFile+,+LogFileLength" + \
+                    "+FROM+EventLogFile" + \
+                    f"+WHERE+LogDate+>+{from_date}"
+
+        demisto.info('Searching files last modified from {}'.format(from_date))
+
+        url = f'https://um6.salesforce.com/services/data/v44.0/query?q={query}'
+
+        r = requests.get(url, headers=self.headers, verify=False)
+
+        if r.status_code == 401:
+            self.get_token()
+            r = requests.get(url, headers=self.headers, verify=False)
+
+        if r.status_code == 200:
+            files = json.loads(r.text)['records']
+            done_status = json.loads(r.text)['done']
+            while done_status is False:
+                query = json.loads(r.text)['nextRecordsUrl']
+                try:
+                    r = requests.get(f'{instance_url}{query}', headers=headers)
+                except Exception as err:
+                    demisto.error(f'File list getting failed: {err}')
+                if r.status_code == 200:
+                    done_status = json.loads(r.text)['done']
+                    for file in json.loads(r.text)['records']:
+                        files.append(file)
+                else:
+                    done_status = True
+            demisto.info('Total number of files is {}.'.format(len(files)))
+
+            files.sort(key=lambda k: dateparser.parse(k.get('LogDate')))
+
+            #TODO: save the last date and the last id for the next run
+            last_date = files[-1].get('LogDate')
+            last_id = files[-1].get('Id')
+
+            return files
+        else:
+            demisto.error(f'File list getting failed: {r.status_code} {r.text}')
+
+    def run(self, limit=10000):
         stored = []
         for logs in self._iter_events():
             stored.extend(logs)
@@ -134,42 +182,24 @@ class GetEvents:
                 return stored[:limit]
         return stored
 
-    @staticmethod
-    def get_last_run(logs) -> dict:
-        """TODO: Implement the last run (from previous logs)"""
-        last_time = logs[-1].get('@timestamp') / 1000
-        next_fetch_time = datetime.fromtimestamp(last_time) + timedelta(
-            seconds=1
-        )
-        return {'after': next_fetch_time.isoformat()}
-
-
     def get_file_raw_lines(self, file_url, file_in_tmp_path):
-        instance_url = 'https://d4k0000039io4uae-dev-ed.my.salesforce.com'
-        headers = {}
-        headers['Authorization'] = f"Bearer XXXX"
-        url = f'{instance_url}{file_url}'
+        url = f'{self.instance_url}{file_url}'
         try:
-            with requests.get(url, stream=True, headers=headers) as r:
-                with open(file_in_tmp_path, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=1024 * 1024):
-                        if chunk:  # filter out keep-alive new chunks
-                            f.write(chunk)
-                if r.status_code == 200:
-                    print('File successfully downloaded from url {} '.format(url))
-                else:
-                    print('File downloading failed. {r.status_code} {r.text} {file_url}')
+            r = requests.get(url, stream=True, headers=self.headers)
+            if r.status_code == 401:
+                self.get_token()
+                r = requests.get(url, stream=True, headers=self.headers)
+
+            with open(file_in_tmp_path, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=1024 * 1024):
+                    if chunk:  # filter out keep-alive new chunks
+                        f.write(chunk)
+            if r.status_code == 200:
+                demisto.info('File successfully downloaded from url {} '.format(url))
+            else:
+                demisto.info('File downloading failed. {r.status_code} {r.text} {file_url}')
         except Exception as err:
-            print('File downloading failed. {err} {file_url}')
-
-
-    def gen_chunks(self, file_in_tmp_path):
-        events = []
-        for chunk in self.gen_chunks_to_object(file_in_tmp_path, chunksize=2000):
-            events.extend(chunk)
-
-        return events
-
+            demisto.error('File downloading failed. {err} {file_url}')
 
     def gen_chunks_to_object(self, file_in_tmp_path, chunksize=100):
         field_names = [name.lower() for name in list(csv.reader(open(file_in_tmp_path)))[0]]
@@ -178,7 +208,7 @@ class GetEvents:
         chunk = []
         next(reader)
         for index, line in enumerate(reader):
-            if (index % chunksize == 0 and index > 0):
+            if index % chunksize == 0 and index > 0:
                 yield chunk
                 del chunk[:]
             chunk.append(line)
@@ -189,55 +219,7 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getIntegrationContext()
 
-    demisto_params = {'method': 'POST',
-                      'url': 'https://um6.salesforce.com/services/oauth2/token?grant_type=password&client_id=XXXXXX&client_secret=XXXXXX&username=XXXXXX&password=XXXXXX',
-                      'verify': False}
-
     request = Request.parse_obj(demisto_params)
-
-
-
-    # demisto_params = {'method': 'POST',
-    #                   'url': 'https://um6.salesforce.com/services/oauth2/token',
-    #                   'grant_type': 'password',
-    #                   'client_id': 'XXXXXX',
-    #                   'client_secret': 'XXXXXX',
-    #                   'username': 'XXXXXX',
-    #                   'password': 'XXXXXX',
-    #                   'verify': False}
-    #
-    # demisto_params['params'] = ReqParams.parse_obj(demisto_params)
-    # request = Request.parse_obj(demisto_params)
-
-
-
-    # url = "https://um6.salesforce.com/services/oauth2/token"
-
-    # url = "https://um6.salesforce.com/services/oauth2/token?grant_type=password&client_id=XXXXXX&client_secret=XXXXXX&username=XXXXXX&password=XXXXXX"
-
-
-    # params =  {'grant_type': 'password',
-    #                   'client_id': 'XXXXXX',
-    #                   'client_secret': 'XXXXXX',
-    #                   'username': 'XXXXXX',
-    #                   'password': 'XXXXXX'}
-    #
-    #
-    # response = requests.post(url, params = params, verify = False)
-    #
-    # print(response.text.encode('utf8'))
-
-
-
-    demisto_params = {'method': 'GET',
-                      'url': 'https://um6.salesforce.com/services/data/v54.0/query?q=SELECT+Id+,+EventType+,+LogFile+,+LogDate+,+LogFileLength+FROM+EventLogFile',
-                      'verify': False}
-
-
-    request = Request.parse_obj(demisto_params)
-
-    request.headers['Authorization'] = f"Bearer XXXXXX"
-
 
     options = Options.parse_obj(demisto_params)
 
@@ -250,11 +232,8 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
         get_events.run(limit=1)
         demisto.results('ok')
     else:
-        args = Args(**demisto_params)
-        events = get_events.run(args.limit)
+        events = get_events.run()
 
-        if events:
-            demisto.setIntegrationContext(GetEvents.get_last_run(events))
         command_results = CommandResults(
             readable_output=tableToMarkdown('Github events', events, headerTransform=pascalToSpace),
             outputs_prefix='Github.Events',
