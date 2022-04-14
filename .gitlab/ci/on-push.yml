@@ -332,18 +332,3 @@ xsiam_server_master:
   variables:
     INSTANCE_ROLE: "XSIAM Master"
 
-
-eyal-test:
-  tags:
-    - gke
-  extends:
-    - .default-job-settings
-  variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-    KUBERNETES_CPU_REQUEST: 1000m
-    XSIAM_CHOSEN_MACHINE_ID: "qa2-test-9997333835008"
-  needs: []
-  stage: create-instances
-  script:
-    - !reference [.download-demisto-conf]
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket.sh
