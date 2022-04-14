@@ -363,6 +363,7 @@ def test_case_evidence_list_request(requests_mock):
     CLIENT.case_evidence_list_request('1', '', 'alarm', 'pending')
     assert requests_mock.last_request.query == 'type=alarm&status=pending'
 
+
 def test_empty_alarmsSearchDetails(requests_mock):
     """
     Given:
