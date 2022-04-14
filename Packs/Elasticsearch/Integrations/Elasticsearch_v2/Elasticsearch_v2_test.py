@@ -30,7 +30,7 @@ ES_V6_RESPONSE = {
                 '_id': '123',
                 '_score': 1.3862944,
                 '_source': {
-                    'Date': '2019-08-29T14:45:00Z'
+                    'Date': '2019-08-29T14:45:00.123Z'
                 }
             }, {
                 '_index': 'users',
@@ -148,7 +148,7 @@ MOCK_ES6_SEARCH_CONTEXT = str({
             '_type': '_doc',
             '_id': '123',
             '_score': 1.3862944,
-            '_source': {'Date': '2019-08-29T14:45:00Z'}
+            '_source': {'Date': '2019-08-29T14:45:00.123Z'}
         },
         {
             '_index': 'users',
@@ -166,7 +166,7 @@ MOCK_ES6_HIT_CONTEXT = str([
         '_id': '123',
         '_type': '_doc',
         '_score': 1.3862944,
-        'Date': '2019-08-29T14:45:00Z'
+        'Date': '2019-08-29T14:45:00.123Z'
     },
     {
         '_index': 'users',
@@ -245,14 +245,14 @@ MOCK_ES6_INCIDETNS = str([
                    '"_type": "_doc", '
                    '"_id": "123", '
                    '"_score": 1.3862944, '
-                   '"_source": {"Date": "2019-08-29T14:45:00Z"}'
+                   '"_source": {"Date": "2019-08-29T14:45:00.123Z"}'
                    '}',
         'occurred': '2019-08-29T14:45:00Z',
         'labels':
             [
                 {
                     'type': 'Date',
-                    'value': '2019-08-29T14:45:00Z'
+                    'value': '2019-08-29T14:45:00.123Z'
                 }
             ]
     }, {
@@ -283,7 +283,7 @@ MOCK_ES6_INCIDETNS_WITHOUT_LABELS = str([
                    '"_type": "_doc", '
                    '"_id": "123", '
                    '"_score": 1.3862944, '
-                   '"_source": {"Date": "2019-08-29T14:45:00Z"}'
+                   '"_source": {"Date": "2019-08-29T14:45:00.123Z"}'
                    '}',
         'occurred': '2019-08-29T14:45:00Z',
     }, {
