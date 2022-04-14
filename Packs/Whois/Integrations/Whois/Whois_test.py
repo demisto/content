@@ -215,6 +215,7 @@ def test_get_whois_ip_proxy_param(mocker):
     """
     from Whois import get_whois_ip
     mocker.patch.object(demisto, 'params', return_value={"proxy": True})
+    mocker.patch("ipwhois.IPWhois.lookup_rdap", return_value={"raw": None})
     result = get_whois_ip('1.1.1.1')
     assert result
 
