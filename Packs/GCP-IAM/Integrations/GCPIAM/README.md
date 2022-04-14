@@ -1344,7 +1344,7 @@ Creates a service account in project.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_name | The name of the project associated with the service account. Must be of the form projects/{project_id}. | Required | 
-| service_account_id | The account ID that is used to generate the service account email address and a stable unique ID. It is unique within a project, must be 6-30 characters long, and match the regular expression [a-z]([-a-z0-9]*[a-z0-9]). | Required | 
+| service_account_id | The account ID that is used to generate the service account email address and a stable unique ID. It is unique within a project, must be 6-30 characters long, and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])`. | Required | 
 | display_name | Human readable name for the created service account. | Optional | 
 | description | Human readable description for the created service account. | Optional | 
 #### Context Output

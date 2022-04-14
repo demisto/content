@@ -46,7 +46,7 @@ configuration:
   required: false
   type: 8
 description: CRYPTOSIM gets correlations and correlation's alerts. Integration fetchs alerts to incident according to instance.
-display: Cryptsoim
+display: Cryptosim
 name: Cryptosim
 script:
   commands:
