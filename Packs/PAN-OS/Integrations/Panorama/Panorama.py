@@ -7707,7 +7707,7 @@ class Topology:
         for device in all_devices.values():
             yield device
 
-    def one(self, filter_string: str) -> Union[Firewall, Panorama]:
+    def get_single_device(self, filter_string: str) -> Union[Firewall, Panorama]:
         """
         Returns JUST ONE device, based on the filter string, and errors if the filter returns more.
         Safeguard for functions that should only ever operate on a single device.
@@ -9170,7 +9170,7 @@ class UniversalCommand:
         :param hostid: The host to reboot - this function will only ever reboot one device at a time.
         """
         result = []
-        device = topology.one(filter_string=hostid)
+        device = topology.get_single_device(filter_string=hostid)
         device.restart()
         result.append(GenericSoftwareStatus(
             hostid=resolve_host_id(device),
