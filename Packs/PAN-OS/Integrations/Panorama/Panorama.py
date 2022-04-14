@@ -564,10 +564,7 @@ def panorama_commit(args):
         'cmd': f'<commit>{command}</commit>',
         'key': API_KEY,
     }
-
-    if target := args.get('target', None):
-        params.update({'target': target})
-
+    update_target(args, params)
     if is_partial:
         params['action'] = 'partial'
 
@@ -2810,8 +2807,9 @@ def prettify_rules(rules: Union[List[dict], dict], target):
         rules = [rules]
     pretty_rules_arr = []
     for rule in rules:
-        if not target_filter(rule, target):
-            continue
+        if target:
+            if not target_filter(rule, target):
+                continue
         pretty_rule = prettify_rule(rule)
         pretty_rules_arr.append(pretty_rule)
 
@@ -2828,18 +2826,17 @@ def target_filter(rule, target):
             if the rule contains the target return True else False.
     """
     target_entry = rule.get('target', {}).get('devices', {}).get('entry')
-    if isinstance(target_entry, dict):
+    if not isinstance(target_entry, list):
         target_entry = [target_entry]
-        for entry in target_entry:
-            if entry.get('@name') == target:
-                return True
+    for entry in target_entry:
+        if entry.get('@name') == target:
+            return True
 
     return False
 
 
 @logger
-def panorama_list_rules(xpath: str, args: dict):
-    tag = args.get('tag')
+def panorama_list_rules(xpath: str, tag: str = None):
     params = {
         'action': 'get',
         'type': 'config',
@@ -2850,7 +2847,6 @@ def panorama_list_rules(xpath: str, args: dict):
     if tag:
         params["xpath"] = f'{params["xpath"]}[( tag/member = \'{tag}\')]'
 
-    update_target(args, params)
     result = http_request(
         URL,
         'GET',
@@ -2872,8 +2868,10 @@ def panorama_list_rules_command(args: dict):
     else:
         xpath = XPATH_SECURITY_RULES
 
-    rules = panorama_list_rules(xpath, args)
-    pretty_rules = prettify_rules(rules)
+    tag = args.get('tag')
+    target = args.get('target', None)
+    rules = panorama_list_rules(xpath, tag)
+    pretty_rules = prettify_rules(rules, target)
 
     return_results({
         'Type': entryTypes['note'],
@@ -5446,7 +5444,15 @@ def panorama_check_latest_panos_software_command(target: Optional[str] = None):
         'GET',
         params=params
     )
-    return_results(result['response']['result'])
+    to_context = result.get('response', {}).get('result', {})
+    versions = to_context.get('sw-updates', {}).get('versions').get('entry', [])
+    if len(versions) > 5:
+        versions = versions[:5]
+    human_readable = tableToMarkdown('5 latest pan-os software releases', versions, ['version', 'filename', 'size', 'released-on', 'downloaded' , 'current' , 'latest', 'uploaded'] )
+    return_results(CommandResults(readable_output=human_readable,
+                                  outputs=to_context,
+                                  raw_response=result,
+                                  ))
 
 
 @logger
@@ -9422,7 +9428,7 @@ def update_target(args: dict, params: dict):
             None
     """
     if target := args.get('target', None):
-        params.update({'target': target})
+        params['target'] = target
 
 
 def main():
