@@ -88,8 +88,11 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
     max_fetch = demisto.params().get('max_fetch')
     if last_fetch is None:
         last_fetch = first_fetch_time
+    else:
+        last_fetch = last_fetch
+    latest_create_time = cast(int, last_fetch)
     last_fetch_time = datetime.fromtimestamp(last_fetch)
-    last_fetch_Format = last_fetch_time.strftime(NCURION_DATE_FORMAT)
+    last_fetch_format = last_fetch_time.strftime(NCURION_DATE_FORMAT)  
     params1 = {"start": f"{last_fetch_Format}", "size": max_fetch}
     if len(log_server_id) > 0:
         for i in log_server_id:
@@ -98,14 +101,18 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
             data = response_log.json()
             if data is not None:
                 for hit in data:
+                    incident_created_time = int(alert.get('created', '0')
+                    if last_fetch:
+                        if incident_created_time <= last_fetch
+                            continue
                     incident = {
                         'name': hit['alert']['category'] + hit['alert']['signature'],
                         'occured': hit['@timestamp'],
                         'rawJSON': json.dumps(hit)
                     }
                     incidents.append(incident)
-    nowtime = datetime.now().timestamp()
-    lastest_created_time = cast(int, nowtime)
+                    if incident_created_time > latest_created_time:
+                        lastest_created_time = incident_created_time
     next_run = {'last_fetch': lastest_created_time}
     logout = json.dumps({
         "access_token": access_token,
