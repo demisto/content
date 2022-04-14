@@ -185,13 +185,23 @@ demisto-sdk-nightly:run-commands-against-instance-e2e:
     - section_start "Upload Entities to XSOAR Instance" --collapsed
     - *upload-entities-to-cortex-xsoar-e2e
     - section_end "Upload Entities to XSOAR Instance"
-    - section_start "Download Entities from XSOAR Instance" --collapsed
+    - section_start "Download DemistoSDKE2E integration from XSOAR Instance" --collapsed
+    - demisto-sdk download -o Packs/DemistoSDKE2E/demisto_sdk_e2e_test_integration -i demisto_sdk_e2e_test_integration  --insecure -f
+    - section_start "Format Content Items" --collapsed
+    - demisto-sdk format -i Packs/DemistoSDKE2E/demisto_sdk_e2e_test_integration -nv -ud -y
+    - section_end "Format Content Items"
+    - section_start "Run Validate" --collapsed
+    - demisto-sdk validate -i Packs/DemistoSDKE2E/demisto_sdk_e2e_test_integration
+    - section_end "Run Validate"
+    - section_start "Run Lint" --collapsed
+    - demisto-sdk lint -i Packs/DemistoSDKE2E/demisto_sdk_e2e_test_integration
+    - section_end "Run Lint"
     # - demisto-sdk download -o Packs/DemistoSDKE2E/ -i DemistoSDKE2E --insecure -f
     # - demisto-sdk download -o Packs/DemistoSDKE2E/ -i HelloWorld-Test --insecure -f
     # - demisto-sdk download -o Packs/DemistoSDKE2E/ -i "Hello World IncidentField Test" --insecure -f
     # - demisto-sdk download -o Packs/DemistoSDKE2E/ -i "Hello World Alert Test" --insecure -f
     # - demisto-sdk download -o Packs/DemistoSDKE2E/ -i "Hello World Test - Incoming Mapper" --insecure -f
-    # - section_end "Download Entities from XSOAR Instance"
+    - section_end "Download DemistoSDKE2E integration from XSOAR Instance"
     # - section_start "Format Content Items" --collapsed
     # - demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
     # - section_end "Format Content Items"
