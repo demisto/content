@@ -8658,13 +8658,18 @@ class ConfigurationHygieneCheckResult:
     _result_cls = ConfigurationHygieneIssue
     _outputs_key_field = "issue_code"
 
+
 class HygieneCheckRegister:
-    """Stores all the hygiene checks this integration is capable of and their assocaited details."""
+    """Stores all the hygiene checks this integration is capable of and their associated details."""
 
     def __init__(self, register: dict):
-        self.register: dict = register
+        self.register: Dict[str, ConfigurationHygieneCheck] = register
 
-    def get(self, issue_code) -> ConfigurationHygieneCheck:
+    def get(self, issue_code: str) -> ConfigurationHygieneCheck:
+        """
+        Gets a single Hygiene check by it's string issue code.
+        :param issue_code: The string issue code, such as BP-V-1
+        """
         issue_check = self.register.get(issue_code)
         if not issue_check:
             raise DemistoException("Invalid Hygiene check issue name")
@@ -8674,7 +8679,15 @@ class HygieneCheckRegister:
         return self.register.values()
 
     @classmethod
-    def get_hygiene_check_register(cls, issue_codes: list[str]):
+    def get_hygiene_check_register(cls, issue_codes: List[str]):
+        """
+        Builds the hygiene check register which stores a representation of all the hygiene checks supported by this integration,
+        filtered by the list of issue_codes provided
+        This function allows a hygiene lookup command to check for the presence of specific hygiene issues and set the result
+        accordingly.
+
+        :param issue_codes: List of string issue codes to return hygiene check objects for.
+        """
         check_register = {
             "BP-V-1": ConfigurationHygieneCheck(
                 issue_code="BP-V-1",
@@ -8739,6 +8752,12 @@ class HygieneLookups:
             topology: Topology,
             device_filter_str: str = None,
     ):
+        """
+        Evaluates the log forwarding profiles configured througout the environment to validate at least one is present with the
+        correct settings required for log visibility.
+        :param topology: `Topology` instance
+        :param device_filter_str: Filter checks to a specific device or devices
+        """
         issues = []
         lf_profile_list: list[LogForwardingProfile] = []
         check_register = HygieneCheckRegister.get_hygiene_check_register([
@@ -8813,11 +8832,17 @@ class HygieneLookups:
 
     @staticmethod
     def get_conforming_threat_profiles(
-            profiles: Union[list[VulnerabilityProfile], list[AntiSpywareProfile]],
-            minimum_block_severities: list[str],
-            minimum_alert_severities: list[str]
-    ) -> Union[list[VulnerabilityProfile], list[AntiSpywareProfile]]:
-        """Given a list of threat profiles, return any that conform to best practices."""
+            profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]],
+            minimum_block_severities: List[str],
+            minimum_alert_severities: List[str]
+    ) -> Union[List[VulnerabilityProfile], List[AntiSpywareProfile]]:
+        """
+        Given a list of threat (vulnerability or spyware) profiles, return any that conform to best practices.
+
+        :param profiles: A list of ..Profile pan-os-python objects
+        :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
+        :param minimum_block_severities: A string list of severities that MUST be in block mode
+        """
         conforming_profiles = []
 
         for profile in profiles:
@@ -8856,6 +8881,15 @@ class HygieneLookups:
             minimum_block_severities: list[str] = None,
             minimum_alert_severities: list[str] = None
     ) -> ConfigurationHygieneCheckResult:
+        """
+        Checks the environment to ensure at least one vulnerability profile is configured according to visibility best practices.
+        The minimum severities can be tweaked to customize what "best practices" is.
+
+        :param topology: `Topology` instance
+        :param device_filter_str: Filter checks to a specific device or devices
+        :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
+        :param minimum_block_severities: A string list of severities that MUST be in block mode
+        """
 
         if not minimum_block_severities:
             minimum_block_severities = BestPractices.VULNERABILITY_BLOCK_SEVERITIES
@@ -8894,34 +8928,6 @@ class HygieneLookups:
             summary_data=[item for item in check_register.values()],
             result_data=issues
         )
-
-
-    @staticmethod
-    def get_all_conforming_vulnerability_profiles(
-            topology: Topology,
-            minimum_block_severities: list[str],
-            minimum_alert_severities: list[str],
-            device_filter_str: str = None,
-    ) -> list[PanosObjectReference]:
-
-        result = []
-        for device, container in topology.get_all_object_containers(device_filter_str):
-            spyware_profiles: list[VulnerabilityProfile] = VulnerabilityProfile.refreshall(container)
-            conforming_profiles = HygieneLookups.get_conforming_threat_profiles(
-                spyware_profiles,
-                minimum_block_severities=minimum_block_severities,
-                minimum_alert_severities=minimum_alert_severities
-            )
-
-            for profile in conforming_profiles:
-                result.append(PanosObjectReference(
-                    hostid=resolve_host_id(device),
-                    container_name=resolve_container_name(container),
-                    name=profile.name,
-                    object_type="VulnerabilityProfile"
-                ))
-
-        return result
 
 
 class PanoramaCommand:
