@@ -5775,7 +5775,8 @@ Download the provided software version onto the device.
 
 ### pan-os-platform-reboot
 ***
-Reboot the given host.
+Reboot the given device by hostid. Warning; this command has no confirmation and the device
+will immediately reboot.
 
 
 #### Base Command
