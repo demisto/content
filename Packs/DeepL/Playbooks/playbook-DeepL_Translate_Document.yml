@@ -1,0 +1,367 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: DeepL Translate Document
+inputs:
+- description: EntryID of the File to be translated
+  key: entry_id
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: BG,CS,DA,DE,EL,EN,ES,ET,FI,FR,HU,IT,JA,LT,LV,NL,PL,PT,RO,RU,SK,SL,SV,ZH
+  key: source_lang
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: BG,CS,DA,DE,EL,EN-GB,EN-US,EN,ES,ET,FI,FR,HU,IT,JA,LT,LV,NL,PL,PT-PT,PT-BR,PT,RO,RU,SK,SL,SV,ZH
+  key: target_lang
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The name of the uploaded file. Can be used as an alternative to including the file name in the file part's content disposition.
+  key: filename
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    Sets whether the translated text should lean towards formal or informal language. This feature currently only works for target languages "DE" (German), "FR" (French), "IT" (Italian), "ES" (Spanish), "NL" (Dutch), "PL" (Polish), "PT-PT", "PT-BR" (Portuguese) and "RU" (Russian).Possible options are: "default" (default) "more" - for a more formal language "less" - for a more informal language
+
+    values: default,more,less
+  key: formality
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'Specify the glossary to use for the document translation. Important: This requires the source_lang parameter to be set and the language pair of the glossary has to match the language pair of the request.'
+  key: glossary_id
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: "filename (Default is: 'TranslatedFile')"
+  key: translated_filename
+  playbookInputQuery:
+  required: false
+  value: {}
+name: DeepL Translate Document
+outputs:
+- contextPath: TranslatedFile.EntryID
+  description: Translated File EntryID
+  type: unknown
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 12683762-dac1-4a70-808d-ba8886b6ee49
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 12683762-dac1-4a70-808d-ba8886b6ee49
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  '1':
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.entry_id
+      filename:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.filename
+              operator: isNotEmpty
+          root: inputs.filename
+      formality:
+        complex:
+          root: inputs.formality
+      glossary_id:
+        complex:
+          root: inputs.glossary_id
+      source_lang:
+        complex:
+          root: inputs.source_lang
+      target_lang:
+        complex:
+          root: inputs.target_lang
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Please note that with every submitted document of type .pptx, .docx or .pdf you are billed a minimum of 50'000 characters with the DeepL API plan, no matter how many characters are included in the document.  Because the request includes a file upload, it must be an HTTP POST request containing multipart/form-data. This call returns immediately after the document was uploaded and queued for translation. Further requests must be sent to the API to get updates on the translation progress or to download the translated document once the translation is finished (see other document request types below).  Once the document is fully uploaded, the translation starts immediately. Please be aware that the uploaded document is automatically removed from the server after the translation is done. You have to upload the document again in order to restart the translation.  The maximum upload limit for any document is 10MB and 1.000.000 characters.
+      id: ba640463-d64c-4595-8432-8039b8d46da9
+      iscommand: true
+      name: DeepL Submit Document
+      script: '|||deepl-submit-document'
+      type: regular
+      version: -1
+    taskid: ba640463-d64c-4595-8432-8039b8d46da9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  '4':
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c3e62761-de62-4fdb-828b-dc5e672baa37
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: c3e62761-de62-4fdb-828b-dc5e672baa37
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  '5':
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      document_id:
+        complex:
+          accessor: document_id
+          root: DeepL.DocumentSubmission
+          transformers:
+          - operator: LastArrayElement
+      document_key:
+        complex:
+          accessor: document_key
+          root: DeepL.DocumentSubmission
+          transformers:
+          - operator: LastArrayElement
+      filename:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.translated_filename
+              operator: isNotEmpty
+          root: inputs.translated_filename
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Get the translated document
+      id: 2173539b-29c4-4603-8320-4659ad6cc997
+      iscommand: true
+      name: Get Translated Document
+      script: '|||deepl-get-document'
+      type: regular
+      version: -1
+    taskid: 2173539b-29c4-4603-8320-4659ad6cc997
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  '6':
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: TranslatedFile.EntryID
+      value:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 1f28935b-e0f3-49bd-8b23-3ef6fc783221
+      iscommand: false
+      name: Set output EntryID of the Translated Document
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 1f28935b-e0f3-49bd-8b23-3ef6fc783221
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  '8':
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: document_key
+      AdditionalPollingCommandArgValues:
+        simple: ${DeepL.DocumentSubmission.document_key}
+      Ids:
+        simple: ${DeepL.DocumentSubmission.document_id}
+      Interval:
+        simple: '1'
+      PollingCommandArgName:
+        simple: document_id
+      PollingCommandName:
+        simple: deepl-check-document-status
+      Timeout:
+        simple: '10'
+      dt:
+        simple: DeepL.DocumentStatus(val.status == "queued" || val.status == "translating").document_id
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: dcdd8915-5a9d-4f97-84ed-5a48cf1c0afb
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: dcdd8915-5a9d-4f97-84ed-5a48cf1c0afb
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  '9':
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      document_id:
+        simple: ${DeepL.DocumentSubmission.document_id}
+      document_key:
+        simple: ${DeepL.DocumentSubmission.document_key}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: The status of the document translation process can be checked by sending a status request to the document specific status URL.
+      id: d95ddd07-9871-40b8-80a3-01f00057b16d
+      iscommand: true
+      name: Check Submission Status
+      script: '|||deepl-check-document-status'
+      type: regular
+      version: -1
+    taskid: d95ddd07-9871-40b8-80a3-01f00057b16d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+description: ''
+fromversion: 6.0.0
