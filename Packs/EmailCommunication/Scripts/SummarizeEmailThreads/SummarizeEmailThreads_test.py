@@ -1,4 +1,5 @@
 from CommonServerPython import *
+import pytest
 
 
 def util_open_file(path):
@@ -9,6 +10,46 @@ def util_open_file(path):
 def util_load_json(path):
     with open(path, mode='r') as f:
         return json.loads(f.read())
+
+
+@pytest.mark.parametrize(
+    "email_threads, expected_result",
+    [
+        (util_load_json('test_data/email_threads.json'), util_load_json('test_data/email_threads.json')),
+        (util_load_json('test_data/email_threads.json')[0], [util_load_json('test_data/email_threads.json')[0]]),
+        ('', None)
+    ]
+)
+def test_fetch_email_threads(email_threads, expected_result, mocker):
+    """
+    Unit test Scenario 1 - Multiple thread entries present
+        Given
+        - Function is called to fetch email threads from current incident
+        When
+        - Context contains multiple mail threads (list of dicts)
+        Then
+        - Validate that function returns email thread data (list of dicts)
+    Unit test Scenario 2 - Single thread entry present
+        Given
+        - Function is called to fetch email threads from current incident
+        When
+        - Context contains a single thread entry (dict)
+        Then
+        - Validate that function returns email thread data (list with one dict)
+    Unit test Scenario 3 - No thread entries present
+        Given
+        - Function is called to fetch email threads from current incident
+        When
+        - Context contains no thread entries
+        Then
+        - Validate that function returns None
+    """
+    from SummarizeEmailThreads import fetch_email_threads
+    import SummarizeEmailThreads
+    mocker.patch.object(demisto, 'executeCommand')
+    mocker.patch.object(SummarizeEmailThreads, 'dict_safe_get', return_value=email_threads)
+    result = fetch_email_threads('1')
+    assert result == expected_result
 
 
 def test_format_threads(mocker):

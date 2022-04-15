@@ -111,7 +111,32 @@ def test_validate_email_sent_fails(mocker):
                      'Sender requires argument inReplyTo that is missing (7)'
 
 
-def test_execute_reply_mail(mocker):
+@pytest.mark.parametrize(
+    "test_args, expected_response",
+    [
+        ((1, 'Email Subject', 'end_user@company.com', 'Reply body.', 'soc_sender@company.com',
+         'cc_user@company.com', 'bcc_user@company.com', '<html><body>Reply body.</body></html',
+          ['10', '12'], '5', '12345678', 'soc_sender@company.com'),
+         {'to': 'end_user@company.com', 'inReplyTo': '5',
+          'subject': '<12345678> Email Subject', 'cc': 'cc_user@company.com',
+          'bcc': 'bcc_user@company.com',
+          'htmlBody': '<html><body>Reply body.</body></html',
+          'body': 'Reply body.', 'attachIDs': '10,12',
+          'replyTo': 'soc_sender@company.com', 'using': 'soc_sender@company.com'}
+         ),
+        ((1, 'Email Subject', 'end_user@company.com', 'Reply body.', 'soc_sender@company.com',
+         'cc_user@company.com', 'bcc_user@company.com', '<html><body>Reply body.</body></html',
+          ['10', '12'], '5', '12345678', ''),
+         {'to': 'end_user@company.com', 'inReplyTo': '5',
+          'subject': '<12345678> Email Subject', 'cc': 'cc_user@company.com',
+          'bcc': 'bcc_user@company.com',
+          'htmlBody': '<html><body>Reply body.</body></html',
+          'body': 'Reply body.', 'attachIDs': '10,12',
+          'replyTo': 'soc_sender@company.com'}
+         )
+    ]
+)
+def test_execute_reply_mail(test_args, expected_response, mocker):
     """Unit Test
     Given
     - function is called to send an email reply
@@ -124,16 +149,9 @@ def test_execute_reply_mail(mocker):
     import SendEmailReply
     execute_command_mocker = mocker.patch.object(demisto, 'executeCommand', return_value=True)
     mocker.patch.object(SendEmailReply, 'return_error', return_value=True)
-    execute_reply_mail(1, 'Email Subject', 'end_user@company.com', 'Reply body.', 'soc_sender@company.com',
-                       'cc_user@company.com', 'bcc_user@company.com', '<html><body>Reply body.</body></html',
-                       ['10', '12'], '5', '12345678', 'soc_sender@company.com')
+    execute_reply_mail(*test_args)
     execute_command_call_args = execute_command_mocker.call_args
-    assert execute_command_call_args.args[1] == {'to': 'end_user@company.com', 'inReplyTo': '5',
-                                                 'subject': '<12345678> Email Subject', 'cc': 'cc_user@company.com',
-                                                 'bcc': 'bcc_user@company.com',
-                                                 'htmlBody': '<html><body>Reply body.</body></html',
-                                                 'body': 'Reply body.', 'attachIDs': '10,12',
-                                                 'replyTo': 'soc_sender@company.com', 'using': 'soc_sender@company.com'}
+    assert execute_command_call_args.args[1] == expected_response
 
 
 GET_EMAIL_RECIPIENTS = [
@@ -301,6 +319,24 @@ def test_get_email_cc(current_cc, additional_cc, excepted):
     assert result == excepted
 
 
+def test_get_email_threads(mocker):
+    """Unit Test
+    Given
+    - Function is called to fetch email threads from current incident
+    When
+    - Context contains email threads
+    Then
+    - Validate that function returns email thread data
+    """
+    from SendEmailReply import get_email_threads
+    import SendEmailReply
+    email_threads = util_load_json('test_data/email_threads.json')
+    mocker.patch.object(demisto, 'executeCommand')
+    mocker.patch.object(SendEmailReply, 'dict_safe_get', return_value=email_threads)
+    result = get_email_threads('1')
+    assert result == email_threads
+
+
 @pytest.mark.parametrize(
     "email_code, email_threads, scenario",
     [
@@ -369,29 +405,28 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
 
 
 @pytest.mark.parametrize(
-    "email_cc, email_bcc, expected_result, send_mail_request_args",
+    "test_args, expected_result, expected_message",
     [
-        ('',
-         '',
-         'Mail sent successfully. To: end_user@company.com',
-         (1, 'Subject', 'end_user@company.com', 'Email body.', 'soc_sender@company.com', '', '',
-          'Email Body + Signature', '', '', '12345678', 'soc_sender@company.com')
-         ),
-        ('cc_user@company.com',
-         '',
-         'Mail sent successfully. To: end_user@company.com Cc: cc_user@company.com',
-         (1, 'Subject', 'end_user@company.com', 'Email body.', 'soc_sender@company.com', 'cc_user@company.com', '',
-          'Email Body + Signature', '', '', '12345678', 'soc_sender@company.com')
-         ),
-        ('cc_user@company.com',
-         'bcc_user@company.com',
-         'Mail sent successfully. To: end_user@company.com Cc: cc_user@company.com Bcc: bcc_user@company.com',
-         (1, 'Subject', 'end_user@company.com', 'Email body.', 'soc_sender@company.com', 'cc_user@company.com',
-          'bcc_user@company.com', 'Email Body + Signature', '', '', '12345678', 'soc_sender@company.com')
-         )
+        ((1, 'Email Subject', 'end_user@company.com', 'Email Body', 'soc_sender@company.com', '', '',
+          '<html><body>Email Body</body></html>', [], '12345678', 'soc_sender@company.com', 'attachment.txt'),
+         (1, 'Email Subject', 'end_user@company.com', 'Email Body', 'soc_sender@company.com', '', '',
+          'Email Body + Signature', [], 'attachment.txt', '12345678', 'soc_sender@company.com'),
+         'Mail sent successfully. To: end_user@company.com'),
+        ((1, 'Email Subject', 'end_user@company.com', 'Email Body', 'soc_sender@company.com', 'cc_user@company.com', '',
+          '<html><body>Email Body</body></html>', [], '12345678', 'soc_sender@company.com', 'attachment.txt'),
+         (1, 'Email Subject', 'end_user@company.com', 'Email Body', 'soc_sender@company.com', 'cc_user@company.com', '',
+          'Email Body + Signature', [], 'attachment.txt', '12345678', 'soc_sender@company.com'),
+         'Mail sent successfully. To: end_user@company.com Cc: cc_user@company.com'),
+        ((1, 'Email Subject', 'end_user@company.com', 'Email Body', 'soc_sender@company.com', '',
+          'bcc_user@company.com', '<html><body>Email Body</body></html>', [], '12345678', 'soc_sender@company.com',
+          'attachment.txt'),
+         (
+         1, 'Email Subject', 'end_user@company.com', 'Email Body', 'soc_sender@company.com', '', 'bcc_user@company.com',
+         'Email Body + Signature', [], 'attachment.txt', '12345678', 'soc_sender@company.com'),
+         'Mail sent successfully. To: end_user@company.com Bcc: bcc_user@company.com')
     ]
 )
-def test_send_new_email(email_cc, email_bcc, expected_result, send_mail_request_args, mocker):
+def test_send_new_email(test_args, expected_result, expected_message, mocker):
     """Unit test
         Given:
         - All required function arguments are provided
@@ -406,12 +441,10 @@ def test_send_new_email(email_cc, email_bcc, expected_result, send_mail_request_
     mocker.patch.object(SendEmailReply, 'append_email_signature', return_value='Email Body + Signature')
     send_new_mail_request_mocker = mocker.patch.object(SendEmailReply, 'send_new_mail_request',
                                                        return_value=[{'Contents': 'Success', 'Type': 1}])
-    result = send_new_email(1, 'Subject', 'end_user@company.com', 'Email body.', 'soc_sender@company.com',
-                            email_cc, email_bcc, '<html><body>Email body.', '', '12345678',
-                            'soc_sender@company.com', '')
+    message = send_new_email(*test_args)
     send_new_mail_request_args = send_new_mail_request_mocker.call_args
-    assert result == expected_result
-    assert send_new_mail_request_args.args == send_mail_request_args
+    assert message == expected_message
+    assert send_new_mail_request_args.args == expected_result
 
 
 @pytest.mark.parametrize(
@@ -495,7 +528,30 @@ def test_single_thread_reply(email_code, mocker):
                                                  {'id': 1, 'customFields': {'emailgeneratedcode': '12345678'}})
 
 
-def test_send_new_mail_request(mocker):
+@pytest.mark.parametrize(
+    "test_args, expected_result",
+    [
+        ((1, 'Email Subject', 'end_user@company.com', 'Message body.', 'soc_sender@company.com', 'cc_user@company.com',
+         'bcc_user@company.com', '<html><body>Reply body.</body></html', ['10', '12'], '', '12345678',
+          'soc_sender@company.com'),
+         {'to': 'end_user@company.com', 'subject': '<12345678> Email Subject',
+          'cc': 'cc_user@company.com', 'bcc': 'bcc_user@company.com',
+          'htmlBody': '<html><body>Reply body.</body></html',
+          'body': 'Message body.', 'attachIDs': '10,12',
+          'replyTo': 'soc_sender@company.com', 'using': 'soc_sender@company.com'}
+         ),
+        ((1, 'Email Subject', 'end_user@company.com', 'Message body.', 'soc_sender@company.com', 'cc_user@company.com',
+         'bcc_user@company.com', '<html><body>Reply body.</body></html', ['10', '12'], '', '12345678',
+          ''),
+         {'to': 'end_user@company.com', 'subject': '<12345678> Email Subject',
+          'cc': 'cc_user@company.com', 'bcc': 'bcc_user@company.com',
+          'htmlBody': '<html><body>Reply body.</body></html',
+          'body': 'Message body.', 'attachIDs': '10,12',
+          'replyTo': 'soc_sender@company.com'}
+         )
+    ]
+)
+def test_send_new_mail_request(test_args, expected_result, mocker):
     """Unit Test
     Given
     - function is called to send a new email message
@@ -509,16 +565,9 @@ def test_send_new_mail_request(mocker):
     execute_command_mocker = mocker.patch.object(demisto, 'executeCommand', return_value='Success')
     mocker.patch.object(SendEmailReply, 'return_error', return_value=True)
     mocker.patch.object(SendEmailReply, 'create_thread_context', return_value=True)
-    result = send_new_mail_request(1, 'Email Subject', 'end_user@company.com', 'Message body.',
-                                   'soc_sender@company.com', 'cc_user@company.com', 'bcc_user@company.com',
-                                   '<html><body>Reply body.</body></html', ['10', '12'], '', '12345678',
-                                   'soc_sender@company.com')
+    result = send_new_mail_request(*test_args)
     execute_command_call_args = execute_command_mocker.call_args
-    assert execute_command_call_args.args[1] == {'to': 'end_user@company.com', 'subject': '<12345678> Email Subject',
-                                                 'cc': 'cc_user@company.com', 'bcc': 'bcc_user@company.com',
-                                                 'htmlBody': '<html><body>Reply body.</body></html',
-                                                 'body': 'Message body.', 'attachIDs': '10,12',
-                                                 'replyTo': 'soc_sender@company.com', 'using': 'soc_sender@company.com'}
+    assert execute_command_call_args.args[1] == expected_result
     assert result == 'Success'
 
 
