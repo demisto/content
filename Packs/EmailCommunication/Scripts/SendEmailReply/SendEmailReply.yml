@@ -16,7 +16,7 @@ args:
   description: Name of the mail sender instance name for transmitting emails
   defaultValue:
 - name: new_thread
-  required: true
+  required: false
   auto: PREDEFINED
   predefined:
   - "true"
