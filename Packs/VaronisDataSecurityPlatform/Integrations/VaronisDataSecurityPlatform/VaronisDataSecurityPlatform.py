@@ -269,9 +269,9 @@ class Client(BaseClient):
             '/api/alert/alert/SetStatusToAlerts',
             json_data=query)
 
-    def varonis_get_alerts_id(self, first_fetch_time: Optional[datetime], from_alert_id: Optional[int], max_results: int,
-                              alert_status: Optional[str], threat_models: Optional[List[str]], severity: Optional[str]
-                              ) -> Dict[str, Any]:
+    def varonis_get_xsoar_alerts(self, first_fetch_time: Optional[datetime], from_alert_id: Optional[int], max_results: int,
+                                 alert_status: Optional[str], threat_models: Optional[List[str]], severity: Optional[str]
+                                 ) -> List[Dict[str, Any]]:
         """Get alert ids to retrieve from search api.
 
         :type first_fetch_time: ``Optional[datetime]``
@@ -295,8 +295,8 @@ class Client(BaseClient):
         :type severity: ``Optional[str]``
         :param severity: severity of the alert to search for. Options are 'High', 'Medium' or 'Low'
 
-        :return: Alert ids
-        :rtype: ``Dict[str, Any]``
+        :return: Alerts
+        :rtype: ``List[Dict[str, Any]]``
 
         """
 
@@ -320,7 +320,7 @@ class Client(BaseClient):
 
         return self._http_request(
             'GET',
-            '/api/alert/alert/GetAlertsID',
+            '/api/alert/alert/GetXsoarAlerts',
             params=request_params
         )
 
@@ -872,37 +872,20 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
 
     last_fetched_id = last_run.get('last_fetched_id', None)
     incidents: List[Dict[str, Any]] = []
-    next_run = {'last_fetched_id': last_fetched_id}
 
     demisto.debug(f'Fetching incidents. Last fetched id: {last_fetched_id}')
 
-    alert_ids = client.varonis_get_alerts_id(first_fetch_time=first_fetch_time, from_alert_id=last_fetched_id,
+    alerts = client.varonis_get_xsoar_alerts(first_fetch_time=first_fetch_time, from_alert_id=last_fetched_id,
                                              max_results=max_results, alert_status=alert_status,
                                              threat_models=threat_models,
                                              severity=severity)
 
-    last_fetched_id = alert_ids['LatestAlertId']
-    if last_fetched_id != 0:
-        next_run['last_fetched_id'] = last_fetched_id
-    else:
-        demisto.debug('API returned no alerts')
-        return next_run, incidents
-
-    alert_id_to_datetime = alert_ids['AlertIdToOccuredTime']
-    alert_guids: List[str] = alert_id_to_datetime.keys()
-
-    result = varonis_get_alerts(client, None, None, None, None, 1000, 1, alert_guids)
-    alerts_output = create_output(ALERT_OUTPUT, result['rows'])
-
-    if not alerts_output:
-        demisto.debug('API returned no alerts from search api')
-        return next_run, incidents
-
-    alerts = alerts_output['Alert']
-
     for alert in alerts:
-        guid = alert['ID']
-        alert_time = alert_id_to_datetime[guid]
+        id = alert['Id']
+        if not last_fetched_id or id > last_fetched_id:
+            last_fetched_id = id
+        guid = alert['Guid']
+        alert_time = alert['Time']
         incident = {
             'name': f'Varonis alert {guid}',
             'occurred': f'{alert_time}Z',
@@ -912,6 +895,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
         }
 
         incidents.append(incident)
+
+    next_run = {'last_fetched_id': last_fetched_id}
 
     return next_run, incidents
 

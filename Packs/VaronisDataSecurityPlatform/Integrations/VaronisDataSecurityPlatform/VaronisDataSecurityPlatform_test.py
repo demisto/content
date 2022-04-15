@@ -147,10 +147,12 @@ def test_varonis_get_alerted_events_command(mocker: MockerFixture):
 def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     from VaronisDataSecurityPlatform import fetch_incidents
 
+    fetch_output = util_load_json('test_data/varonis_fetch_incidents_output.json')
+
     requests_mock.get(
-        'https://test.com/api/alert/alert/GetAlertsID'
+        'https://test.com/api/alert/alert/GetXsoarAlerts'
         '?threatModels=Suspicious&severity=Medium&status=1&fromAlertId=150&bulkSize=100',
-        json=util_load_json('test_data/demisto_get_alert_ids.json'))
+        json=fetch_output)
 
     client = Client(
         base_url='https://test.com',
@@ -162,18 +164,6 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
         client,
         'varonis_get_enum',
         return_value=util_load_json('test_data/varonis_get_enum_response.json')
-    )
-
-    mocker.patch.object(
-        client,
-        'varonis_execute_search',
-        return_value=util_load_json('test_data/search_alerts_response.json')
-    )
-
-    mocker.patch.object(
-        client,
-        'varonis_get_search_result',
-        return_value=util_load_json('test_data/varonis_get_alerts_api_response.json')
     )
 
     mocker.patch.object(demisto, 'debug', return_value=None)
@@ -192,21 +182,19 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
         first_fetch_time='3 days'
     )
 
-    expected_outputs = util_load_json('test_data/varonis_get_alerts_command_output.json')
-
-    assert next_run == {'last_fetched_id': 200}
+    assert next_run == {'last_fetched_id': 152}
     assert incidents == [
         {
-            'name': 'Varonis alert 4FDB86C2-D78F-47EC-A1B1-74C4268A8A60',
-            'occurred': '2022-02-12T13:59:00Z',
-            'rawJSON': json.dumps(expected_outputs['Alert'][0]),
+            'name': 'Varonis alert 70FED0AD-8C95-4B52-A8EE-47F9AF72514F',
+            'occurred': '2022-04-13T10:01:35Z',
+            'rawJSON': json.dumps(fetch_output[0]),
             'type': 'Varonis DSP Incident',
             'severity': 3,
         },
         {
-            'name': 'Varonis alert D99AEA15-7F17-46FC-A249-942B974377D6',
-            'occurred': '2022-02-12T13:59:00Z',
-            'rawJSON': json.dumps(expected_outputs['Alert'][1]),
+            'name': 'Varonis alert 08CA3B6B-CFC4-45B0-8822-4C0BD007E0B0',
+            'occurred': '2022-04-13T10:01:33Z',
+            'rawJSON': json.dumps(fetch_output[1]),
             'type': 'Varonis DSP Incident',
             'severity': 3,
         }

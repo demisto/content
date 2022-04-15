@@ -19,39 +19,10 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "country",
+                                "fieldId": "varonisdatasecurityplatformlocations",
                                 "height": 22,
-                                "id": "b2b13100-aea0-11ec-8bba-8b3a4f6436f6",
+                                "id": "fa4384b0-bc05-11ec-818e-cda3eda8d08a",
                                 "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "state",
-                                "height": 53,
-                                "id": "87351fa0-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "varonisdatasecurityplatformabnormallocation",
-                                "height": 53,
-                                "id": "9dff2b40-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "varonisdatasecurityplatformblacklistlocation",
-                                "height": 53,
-                                "id": "9a705f30-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 2,
-                                "listId": "vpdxqzumhf-ad458840-ae98-11ec-8bba-8b3a4f6436f6",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -72,44 +43,11 @@
                         "i": "vpdxqzumhf-cb6971b0-ae98-11ec-8bba-8b3a4f6436f6",
                         "items": [
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "sourceusername",
-                                "height": 53,
-                                "id": "b07e6dd0-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 0,
-                                "listId": "vpdxqzumhf-caseinfoid-a9c37a00-a3ae-11ec-9d09-8f08fc549556",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "samaccountname",
-                                "height": 53,
-                                "id": "ba518900-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 1,
-                                "listId": "vpdxqzumhf-cb6971b0-ae98-11ec-8bba-8b3a4f6436f6",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "varonisdatasecurityplatformbyprivilegedaccounttype",
-                                "height": 53,
-                                "id": "bead9020-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 2,
-                                "listId": "vpdxqzumhf-cb6971b0-ae98-11ec-8bba-8b3a4f6436f6",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "department",
+                                "fieldId": "varonisdatasecurityplatformusers",
                                 "height": 22,
-                                "id": "938465d0-b671-11ec-86d1-4fb4f86ab412",
-                                "index": 3,
+                                "id": "aa86ff90-bcb1-11ec-9c8b-27050d24cf16",
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -130,24 +68,11 @@
                         "i": "vpdxqzumhf-09e53b90-ae99-11ec-8bba-8b3a4f6436f6",
                         "items": [
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "assetid",
-                                "height": 53,
-                                "id": "ec383180-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 1,
-                                "listId": "vpdxqzumhf-caseinfoid-a9c37a00-a3ae-11ec-9d09-8f08fc549556",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "devicename",
-                                "height": 53,
-                                "id": "f9b716a0-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 1,
-                                "listId": "vpdxqzumhf-caseinfoid-a9c37a00-a3ae-11ec-9d09-8f08fc549556",
+                                "fieldId": "varonisdatasecurityplatformdevices",
+                                "height": 22,
+                                "id": "5fce81b0-bbfa-11ec-911f-17e2a4d9eb5a",
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -316,21 +241,10 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "alertsource",
-                                "height": 53,
-                                "id": "cf971780-a3b0-11ec-9cda-f7920a71352f",
+                                "fieldId": "varonisdatasecurityplatformsources",
+                                "height": 22,
+                                "id": "b476ca80-bcb1-11ec-9c8b-27050d24cf16",
                                 "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "varonisdatasecurityplatformonfileserverordomain",
-                                "height": 53,
-                                "id": "f336f700-a3b0-11ec-9cda-f7920a71352f",
-                                "index": 1,
-                                "listId": "vpdxqzumhf-9ec40ac0-ae99-11ec-8bba-8b3a4f6436f6",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
