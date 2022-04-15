@@ -1592,15 +1592,16 @@ class TestUniversalCommand:
 
         # We also want to check that if an empty string is passed, an error is returned
         with pytest.raises(
-                DemistoException,
-                match="filter_str  is not the exact ID of a host in this topology; use a more specific filter string."
+            DemistoException,
+            match="filter_str  is not the exact ID of a host in this topology; use a more specific filter string."
         ):
             UniversalCommand.reboot(mock_topology, "")
 
         # Lets also check that if an invalid hostid is given, we also raise.
         with pytest.raises(
-                DemistoException,
-                match="filter_str badserialnumber is not the exact ID of a host in this topology; use a more specific filter string."
+            DemistoException,
+            match="filter_str badserialnumber is not the exact ID of "
+                  "a host in this topology; use a more specific filter string."
         ):
             UniversalCommand.reboot(mock_topology, "badserialnumber")
 
