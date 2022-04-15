@@ -5,6 +5,7 @@ import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
 from datetime import datetime
+import time
 
 requests.packages.urllib3.disable_warnings()
 NCURION_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -108,6 +109,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
                         'rawJSON': json.dumps(hit)
                     }
                     incidents.append(incident)
+                    incident_created_time = int(time.time())
                     if incident_created_time > latest_created_time:
                         lastest_created_time = incident_created_time
     next_run = {'last_fetch': lastest_created_time}
