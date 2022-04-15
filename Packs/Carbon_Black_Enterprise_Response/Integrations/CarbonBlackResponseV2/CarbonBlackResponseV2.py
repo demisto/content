@@ -75,8 +75,10 @@ class netconn_complete():
 
     def format(self):
         for entry in self.fields:
-            entry['remote_ip'] = socket.inet_ntoa(struct.pack('>i', entry['remote_ip']))
-            entry['local_ip'] = socket.inet_ntoa(struct.pack('>i', entry['local_ip']))
+            # to avoid ff:00 like entries
+            if isinstance(entry['remote_ip'], int) and isinstance(entry['local_ip'], int):
+                entry['remote_ip'] = socket.inet_ntoa(struct.pack('>i', entry['remote_ip']))
+                entry['local_ip'] = socket.inet_ntoa(struct.pack('>i', entry['local_ip']))
         return self.fields
 
 class modload_complete(ProcessEventDetail):
