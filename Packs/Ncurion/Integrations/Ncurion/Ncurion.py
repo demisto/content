@@ -92,10 +92,10 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
     else:
         last_fetch = last_fetch
     latest_create_time = cast(int, last_fetch)
-    incident_created_time = int(time.time())
+    next_run_time = int(time.time())
     last_fetch_time = datetime.fromtimestamp(last_fetch)
     last_fetch_format = last_fetch_time.strftime(NCURION_DATE_FORMAT)  
-    params1 = {"start": f"{last_fetch_Format}", "size": max_fetch}
+    params1 = {"start": f"{last_fetch_format}", "size": max_fetch}
     if len(log_server_id) > 0:
         for i in log_server_id:
             base_url_log = base_url + f'/logapi/api/v1/logserver/search/alert/search/{i}'
@@ -109,9 +109,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
                         'rawJSON': json.dumps(hit)
                     }
                     incidents.append(incident)
-                    if incident_created_time > latest_created_time:
-                        lastest_created_time = incident_created_time
-    next_run = {'last_fetch': lastest_created_time}
+    next_run = {'last_fetch': next_run_time}
     logout = json.dumps({
         "access_token": access_token,
         "refresh_token": refresh_token
