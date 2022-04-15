@@ -37,7 +37,7 @@ def test_module(requests_mock):
 
 def test_module_failure(mocker, requests_mock):
     """
-    Test the basic test-module command in case of a failure.
+    Test the basic test-module command in case of a failure
     """
     from CybleEvents import Client, get_test_response
 
