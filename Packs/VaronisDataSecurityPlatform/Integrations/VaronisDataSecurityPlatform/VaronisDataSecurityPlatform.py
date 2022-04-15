@@ -739,6 +739,11 @@ def enrich_with_pagination(output: Dict[str, Any], page: int, page_size: int) ->
     return output
 
 
+def enrich_with_url(output: Dict[str, Any], baseUrl: str, id: str) -> Dict[str, Any]:
+    output['Url'] = f'{baseUrl}/#/app/analytics/entity/Alert/{id}'
+    return output
+
+
 def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, alert_ids: list) -> bool:
     """Update Varonis alert. It creates request and pass it to http client
 
@@ -886,6 +891,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
             last_fetched_id = id
         guid = alert['Guid']
         alert_time = alert['Time']
+        enrich_with_url(alert, client._base_url, guid)
         incident = {
             'name': f'Varonis alert {guid}',
             'occurred': f'{alert_time}Z',
@@ -956,11 +962,15 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     result = varonis_get_alerts(client, alert_statuses, threat_model_names, start_time, end_time, max_results, page, None)
     outputs = create_output(ALERT_OUTPUT, result['rows'])
     page_size = result['rowsCount']
+    alerts = []
     if outputs:
         outputs = enrich_with_pagination(outputs, page, page_size)
+        alerts = outputs['Alert']
+        for alert in alerts:
+            enrich_with_url(alert, client._base_url, alert['ID'])
 
-    readable_output = tableToMarkdown('Varonis Alerts', outputs['Alert'], headers=[
-                                      'Name', 'Severity', 'Time', 'Category', 'UserName', 'Status'])
+    readable_output = tableToMarkdown('Varonis Alerts', alerts, headers=[
+                                      'Name', 'Severity', 'Time', 'Category', 'UserName', 'Status', 'Url'])
 
     return CommandResults(
         readable_output=readable_output,
@@ -1059,10 +1069,12 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     result = varonis_get_alerted_events(client, alerts, max_results, page)
     outputs = create_output(EVENT_OUTPUT, result['rows'])
     page_size = result['rowsCount']
+    events = []
     if outputs:
         outputs = enrich_with_pagination(outputs, page, page_size)
+        events = outputs['Event']
 
-    readable_output = tableToMarkdown('Varonis Alerted Events', outputs['Event'])
+    readable_output = tableToMarkdown('Varonis Alerted Events', events)
 
     return CommandResults(
         readable_output=readable_output,

@@ -19,7 +19,10 @@
                     "simple": "Status"
                 },
                 "Threat Name": {
-                    "simple": "Device.IPThreatTypes"
+                    "simple": "IPThreatTypes"
+                },
+                "Incident Link": {
+                    "simple": "Url"
                 },
                 "Varonis Data Security Platform Close Reason": {
                     "simple": "CloseReason"

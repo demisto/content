@@ -147,7 +147,7 @@ def test_varonis_get_alerted_events_command(mocker: MockerFixture):
 def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     from VaronisDataSecurityPlatform import fetch_incidents
 
-    fetch_output = util_load_json('test_data/varonis_fetch_incidents_output.json')
+    fetch_output = util_load_json('test_data/varonis_fetch_incidents_response.json')
 
     requests_mock.get(
         'https://test.com/api/alert/alert/GetXsoarAlerts'
@@ -182,19 +182,21 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
         first_fetch_time='3 days'
     )
 
+    expected_outputs = util_load_json('test_data/varonis_fetch_incidents_output.json')
+
     assert next_run == {'last_fetched_id': 152}
     assert incidents == [
         {
             'name': 'Varonis alert 70FED0AD-8C95-4B52-A8EE-47F9AF72514F',
             'occurred': '2022-04-13T10:01:35Z',
-            'rawJSON': json.dumps(fetch_output[0]),
+            'rawJSON': json.dumps(expected_outputs[0]),
             'type': 'Varonis DSP Incident',
             'severity': 3,
         },
         {
             'name': 'Varonis alert 08CA3B6B-CFC4-45B0-8822-4C0BD007E0B0',
             'occurred': '2022-04-13T10:01:33Z',
-            'rawJSON': json.dumps(fetch_output[1]),
+            'rawJSON': json.dumps(expected_outputs[1]),
             'type': 'Varonis DSP Incident',
             'severity': 3,
         }
