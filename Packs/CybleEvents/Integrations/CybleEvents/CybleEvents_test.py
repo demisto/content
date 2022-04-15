@@ -57,7 +57,7 @@ def test_module_failure(mocker, requests_mock):
 
 def test_get_event_types(requests_mock):
     """
-    Test the module get_event_types
+    Test the module get_event_types.
     :param requests_mock:
     :return:
     """
