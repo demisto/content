@@ -88,18 +88,32 @@ def execute_reply_mail(incident_id, email_subject, email_to, reply_body, service
     else:
         subject_with_id = email_subject
 
-    mail_content = {
-        "to": email_to,
-        "inReplyTo": email_latest_message,
-        "subject": subject_with_id,
-        "cc": email_cc,
-        "bcc": email_bcc,
-        "htmlBody": reply_html_body,
-        "body": reply_body,
-        "attachIDs": ",".join(entry_id_list),
-        "replyTo": service_mail,
-        "using": mail_sender_instance
-    }
+    # If a mail sender instance has been set, set the "using" parameter with it. Otherwise do not set "using"
+    if mail_sender_instance:
+        mail_content = {
+            "to": email_to,
+            "inReplyTo": email_latest_message,
+            "subject": subject_with_id,
+            "cc": email_cc,
+            "bcc": email_bcc,
+            "htmlBody": reply_html_body,
+            "body": reply_body,
+            "attachIDs": ",".join(entry_id_list),
+            "replyTo": service_mail,
+            "using": mail_sender_instance
+        }
+    else:
+        mail_content = {
+            "to": email_to,
+            "inReplyTo": email_latest_message,
+            "subject": subject_with_id,
+            "cc": email_cc,
+            "bcc": email_bcc,
+            "htmlBody": reply_html_body,
+            "body": reply_body,
+            "attachIDs": ",".join(entry_id_list),
+            "replyTo": service_mail
+        }
     return demisto.executeCommand("reply-mail", mail_content)
 
 
@@ -238,17 +252,30 @@ def send_new_mail_request(incident_id, email_subject, email_to, email_body, serv
     else:
         subject_with_id = email_subject
 
-    mail_content = {
-        "to": email_to,
-        "subject": subject_with_id,
-        "cc": email_cc,
-        "bcc": email_bcc,
-        "htmlBody": email_html_body,
-        "body": email_body,
-        "attachIDs": ",".join(entry_id_list),
-        "replyTo": service_mail,
-        "using": mail_sender_instance
-    }
+    # If a mail sender instance has been set, set the "using" parameter with it. Otherwise do not set "using"
+    if mail_sender_instance:
+        mail_content = {
+            "to": email_to,
+            "subject": subject_with_id,
+            "cc": email_cc,
+            "bcc": email_bcc,
+            "htmlBody": email_html_body,
+            "body": email_body,
+            "attachIDs": ",".join(entry_id_list),
+            "replyTo": service_mail,
+            "using": mail_sender_instance
+        }
+    else:
+        mail_content = {
+            "to": email_to,
+            "subject": subject_with_id,
+            "cc": email_cc,
+            "bcc": email_bcc,
+            "htmlBody": email_html_body,
+            "body": email_body,
+            "attachIDs": ",".join(entry_id_list),
+            "replyTo": service_mail
+        }
     # Send email
     email_result = demisto.executeCommand("send-mail", mail_content)
 
@@ -885,7 +912,7 @@ def main():
     attachments = argToList(args.get('attachment', []))
     new_email_attachments = custom_fields.get('emailnewattachment', {})
     notes = demisto.executeCommand("getEntries", {'filter': {'categories': ['notes']}})
-    mail_sender_instance = args.get('mail_sender_instance')
+    mail_sender_instance = args.get('mail_sender_instance', None)
     new_thread = args.get('new_thread')
     new_email_recipients = custom_fields.get('emailnewrecipients')
     new_email_subject = custom_fields.get('emailnewsubject')
