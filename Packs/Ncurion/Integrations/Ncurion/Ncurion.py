@@ -1,6 +1,6 @@
 import json
 import traceback
-from typing import Dict, List, Union, Tuple, cast
+from typing import Dict, List, Union, Tuple
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
