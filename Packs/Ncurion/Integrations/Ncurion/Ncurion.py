@@ -92,6 +92,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
     else:
         last_fetch = last_fetch
     latest_create_time = cast(int, last_fetch)
+    incident_created_time = int(time.time())
     last_fetch_time = datetime.fromtimestamp(last_fetch)
     last_fetch_format = last_fetch_time.strftime(NCURION_DATE_FORMAT)  
     params1 = {"start": f"{last_fetch_Format}", "size": max_fetch}
@@ -102,14 +103,12 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
             data = response_log.json()
             if data is not None:
                 for hit in data:
-                    incident_created_time = int(alert.get('created', '0')
                     incident = {
                         'name': hit['alert']['category'] + hit['alert']['signature'],
-                        'occured': hit['@timestamp'],
+                        'occured': hit['timestamp'],
                         'rawJSON': json.dumps(hit)
                     }
                     incidents.append(incident)
-                    incident_created_time = int(time.time())
                     if incident_created_time > latest_created_time:
                         lastest_created_time = incident_created_time
     next_run = {'last_fetch': lastest_created_time}
