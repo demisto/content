@@ -1826,11 +1826,12 @@ def list_hosts_changelog_command(client: Client, args: Dict[str, str]) -> Comman
     outputs = response['results']
 
     readable_output = tableToMarkdown(
-        get_pagination_readable_message('Hosts Changes List:', page, limit),
+        'Hosts Changes List:',
         outputs,
         removeNull=True,
         headers=['id', 'host_id', 'host_name', 'event_type_name', 'old_value', 'new_value'],
-        headerTransform=to_table_header)
+        headerTransform=to_table_header,
+        metadata=get_pagination_readable_message(page, limit))
 
     return CommandResults(outputs_prefix='ForescoutEyeInspect.HostChangeLog',
                           outputs_key_field='id',
