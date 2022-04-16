@@ -13,10 +13,10 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
-      '#none#':
-      - "1"
+      "#none#":
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -43,8 +43,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "2"
+      "#none#":
+        - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -74,8 +74,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "3"
+      "#none#":
+        - "3"
     scriptarguments:
       limit:
         simple: "1"
@@ -107,56 +107,56 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+        - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Host.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Host.ip_reuse_domain_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Host.ip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Host.first_seen
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Host.last_seen
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ForescoutEyeInspect.Host.nested_address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Host.mac_addresses
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ForescoutEyeInspect.Host.vlan
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Host.sensor_ids
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.ip_reuse_domain_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.ip
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.first_seen
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.last_seen
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.nested_address
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.mac_addresses
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.vlan
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.sensor_ids
+                iscontext: true
     view: |-
       {
         "position": {
@@ -182,8 +182,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "5"
+      "#none#":
+        - "5"
     scriptarguments:
       limit:
         simple: "1"
@@ -215,36 +215,36 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+        - "8"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Link.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Link.src_host_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Link.dst_host_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Link.first_seen
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Link.last_seen
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Link.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Link.src_host_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Link.dst_host_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Link.first_seen
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Link.last_seen
+                iscontext: true
     view: |-
       {
         "position": {
@@ -270,8 +270,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "9"
+      "#none#":
+        - "9"
     scriptarguments:
       limit:
         simple: "1"
@@ -303,86 +303,86 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+        - "10"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.alert_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.timestamp
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.event_type_ids
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.event_type_names
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.sensor_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.sensor_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.engine
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.profile_module_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.profile_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.l2_proto
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.l3_proto
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.l4_proto
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.severity
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Alert.status
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.alert_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.timestamp
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.event_type_ids
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.event_type_names
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.description
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.sensor_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.sensor_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.engine
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.profile_module_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.profile_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.l2_proto
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.l3_proto
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.l4_proto
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.severity
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.status
+                iscontext: true
     view: |-
       {
         "position": {
@@ -408,8 +408,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "11"
+      "#none#":
+        - "11"
     scriptarguments:
       alert_id:
         simple: ${ForescoutEyeInspect.Alert.alert_id}
@@ -439,36 +439,36 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+        - "12"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: InfoFile.Size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: InfoFile.Name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: InfoFile.EntryID
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: InfoFile.Info
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: InfoFile.Type
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Size
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.EntryID
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Info
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Type
+                iscontext: true
     view: |-
       {
         "position": {
@@ -494,8 +494,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "13"
+      "#none#":
+        - "13"
     scriptarguments:
       limit:
         simple: "1"
@@ -527,51 +527,51 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+        - "14"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Sensor.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Sensor.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Sensor.address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Sensor.port
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Sensor.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Sensor.sensor_version
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Sensor.state
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.Sensor.health_status
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.address
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.port
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.sensor_version
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.state
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.health_status
+                iscontext: true
     view: |-
       {
         "position": {
@@ -597,8 +597,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "15"
+      "#none#":
+        - "15"
     scriptarguments:
       limit:
         simple: "1"
@@ -632,46 +632,46 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "16"
+        - "16"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.SensorModule.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.SensorModule.sensor_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.SensorModule.engine
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ForescoutEyeInspect.SensorModule.singleton
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.SensorModule.name
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ForescoutEyeInspect.SensorModule.started
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.SensorModule.date_last_update
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.sensor_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.engine
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.singleton
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.started
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.date_last_update
+                iscontext: true
     view: |-
       {
         "position": {
@@ -697,8 +697,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "17"
+      "#none#":
+        - "17"
     scriptarguments:
       description: {}
       module_id:
@@ -735,46 +735,46 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "19"
+        - "19"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.SensorModule.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.SensorModule.sensor_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.SensorModule.engine
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ForescoutEyeInspect.SensorModule.singleton
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.SensorModule.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.SensorModule.started
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.SensorModule.date_last_update
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.sensor_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.engine
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.singleton
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.started
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.date_last_update
+                iscontext: true
     view: |-
       {
         "position": {
@@ -800,8 +800,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "20"
+      "#none#":
+        - "20"
     scriptarguments:
       limit:
         simple: "1"
@@ -835,21 +835,21 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "21"
+        - "21"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.IPBlacklist.address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.IPBlacklist.comment
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.IPBlacklist.address
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.IPBlacklist.comment
+                iscontext: true
     view: |-
       {
         "position": {
@@ -875,8 +875,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "23"
+      "#none#":
+        - "23"
     scriptarguments:
       address:
         simple: 3.4.5.6
@@ -910,8 +910,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "24"
+      "#none#":
+        - "24"
     scriptarguments:
       limit:
         simple: "1"
@@ -945,21 +945,21 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "25"
+        - "25"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.DomainBlacklist.domain_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.DomainBlacklist.comment
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.DomainBlacklist.domain_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.DomainBlacklist.comment
+                iscontext: true
     view: |-
       {
         "position": {
@@ -985,8 +985,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "27"
+      "#none#":
+        - "27"
     scriptarguments:
       comment:
         simple: XSOAR Test Playbook Domain
@@ -1020,8 +1020,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "28"
+      "#none#":
+        - "28"
     scriptarguments:
       limit:
         simple: "1"
@@ -1055,26 +1055,26 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "29"
+        - "29"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.SSLClientBlacklist.sensor_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.SSLClientBlacklist.application_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.SSLClientBlacklist.ja3_hash
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SSLClientBlacklist.sensor_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SSLClientBlacklist.application_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SSLClientBlacklist.ja3_hash
+                iscontext: true
     view: |-
       {
         "position": {
@@ -1100,8 +1100,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "31"
+      "#none#":
+        - "31"
     scriptarguments:
       application_name:
         simple: Shodan
@@ -1137,8 +1137,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "32"
+      "#none#":
+        - "32"
     scriptarguments:
       limit:
         simple: "1"
@@ -1172,31 +1172,31 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "33"
+        - "33"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.FileOperationBlacklist.matching_type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.FileOperationBlacklist.file_or_folder
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.FileOperationBlacklist.operation
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.FileOperationBlacklist.comment
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.FileOperationBlacklist.matching_type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.FileOperationBlacklist.file_or_folder
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.FileOperationBlacklist.operation
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.FileOperationBlacklist.comment
+                iscontext: true
     view: |-
       {
         "position": {
@@ -1222,8 +1222,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "35"
+      "#none#":
+        - "35"
     scriptarguments:
       comment:
         simple: XSOAR Test Playbook File Operation
@@ -1261,8 +1261,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "36"
+      "#none#":
+        - "36"
     separatecontext: false
     view: |-
       {
@@ -1289,36 +1289,36 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "37"
+        - "37"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.CCInfo.ip_address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.CCInfo.hostname
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.CCInfo.open_ports
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.CCInfo.cc_version
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.CCInfo.health_status
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.CCInfo.ip_address
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.CCInfo.hostname
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.CCInfo.open_ports
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.CCInfo.cc_version
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.CCInfo.health_status
+                iscontext: true
     view: |-
       {
         "position": {
@@ -1344,8 +1344,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "38"
+      "#none#":
+        - "38"
     scriptarguments:
       cc_info: {}
       sensor_id:
@@ -1376,36 +1376,36 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "41"
+        - "41"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: InfoFile.Size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: InfoFile.Name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: InfoFile.EntryID
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: InfoFile.Info
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: InfoFile.Type
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Size
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.EntryID
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Info
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Type
+                iscontext: true
     view: |-
       {
         "position": {
@@ -1431,8 +1431,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "40"
+      "#none#":
+        - "40"
     scriptarguments:
       limit:
         simple: "1"
@@ -1464,31 +1464,31 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "48"
+        - "48"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.GroupPolicy.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.GroupPolicy.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.GroupPolicy.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.GroupPolicy.constraints
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.description
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.constraints
+                iscontext: true
     view: |-
       {
         "position": {
@@ -1514,14 +1514,15 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "42"
+      "#none#":
+        - "42"
     scriptarguments:
       constraints:
-        simple: '[{"type": "os_version", "operator": "equals", "os_version": "Windows
+        simple:
+          '[{"type": "os_version", "operator": "equals", "os_version": "Windows
           10"}]'
       description:
-        simple: 'XSOAR Test Playbook Group Policy '
+        simple: "XSOAR Test Playbook Group Policy "
       name:
         simple: XSOAR Test Playbook
     separatecontext: false
@@ -1550,31 +1551,31 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "43"
+        - "43"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.GroupPolicy.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.GroupPolicy.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.GroupPolicy.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.GroupPolicy.constraints
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.description
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.constraints
+                iscontext: true
     view: |-
       {
         "position": {
@@ -1600,8 +1601,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "44"
+      "#none#":
+        - "44"
     scriptarguments:
       constraints:
         simple: ${ForescoutEyeInspect.GroupPolicy.constraints}
@@ -1637,31 +1638,31 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "46"
+        - "46"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.GroupPolicy.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.GroupPolicy.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.GroupPolicy.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.GroupPolicy.constraints
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.description
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.constraints
+                iscontext: true
     view: |-
       {
         "position": {
@@ -1687,8 +1688,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "39"
+      "#none#":
+        - "39"
     scriptarguments:
       policy_id:
         simple: ${ForescoutEyeInspect.GroupPolicy.id}
@@ -1718,8 +1719,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "47"
+      "#none#":
+        - "47"
     scriptarguments:
       filter_type:
         simple: address
@@ -1753,8 +1754,8 @@ tasks:
       iscommand: true
       brand: ForescoutEyeInspect
     nexttasks:
-      '#none#':
-      - "45"
+      "#none#":
+        - "45"
     scriptarguments:
       filter_type:
         simple: address
@@ -1788,8 +1789,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "49"
+      "#none#":
+        - "49"
     scriptarguments:
       limit:
         simple: "1"
@@ -1821,36 +1822,36 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "50"
+        - "50"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.IPReuseDomain.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.IPReuseDomain.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.IPReuseDomain.address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.IPReuseDomain.mask
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.IPReuseDomain.vlan_ids
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.IPReuseDomain.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.IPReuseDomain.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.IPReuseDomain.address
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.IPReuseDomain.mask
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.IPReuseDomain.vlan_ids
+                iscontext: true
     view: |-
       {
         "position": {
@@ -1876,8 +1877,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "51"
+      "#none#":
+        - "51"
     scriptarguments:
       limit:
         simple: "1"
@@ -1909,31 +1910,31 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "52"
+        - "52"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.HostChangeLog.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.HostChangeLog.timestamp
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.HostChangeLog.event_type_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ForescoutEyeInspect.HostChangeLog.host_id
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.HostChangeLog.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.HostChangeLog.timestamp
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.HostChangeLog.event_type_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.HostChangeLog.host_id
+                iscontext: true
     view: |-
       {
         "position": {
@@ -1957,7 +1958,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -1985,5 +1986,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.2.0
+fromversion: 6.1.0
 description: Test playbook for Forescout EyeInspect integration
