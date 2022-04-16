@@ -1,9 +1,12 @@
-import os
 import json
-from ForescoutEyeInspect import Client
-import demistomock as demisto
+import os
+from urllib.parse import urljoin
 
-BASE_URL = "https://api.com/api/v1"
+import demistomock as demisto
+from ForescoutEyeInspect import Client
+
+CLIENT_BASE_URL = "https://api.com/"
+MOCK_BASE_URL = urljoin(CLIENT_BASE_URL, "api/v1")
 
 
 def load_json_mock_response(filename: str) -> str:
@@ -17,11 +20,11 @@ def load_raw_mock_response(filename: str) -> bytes:
 
 
 def mock_client() -> Client:
-    return Client(base_url=BASE_URL, use_ssl=False, use_proxy=False, username="", password="")
+    return Client(base_url=CLIENT_BASE_URL, use_ssl=False, use_proxy=False, username="", password="")
 
 
 def mock_csrf_token(requests_mock):
-    requests_mock.get(f"{BASE_URL}/sensors",
+    requests_mock.get(f"{MOCK_BASE_URL}/sensors",
                       headers={
                           "CCJSESSIONID": os.urandom(32).hex().upper(),
                           "X-CSRF-Token": os.urandom(32).hex().upper()
@@ -46,7 +49,7 @@ def test_list_hosts(requests_mock):
     client = mock_client()
     mock_response = load_json_mock_response("hosts")
 
-    requests_mock.get(f"{BASE_URL}/hosts", json=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/hosts", json=mock_response)
 
     result = list_hosts_command(client, {"page": 1, "limit": 50})
 
@@ -76,7 +79,7 @@ def test_list_links(requests_mock):
     client = mock_client()
     mock_response = load_json_mock_response("links")
 
-    requests_mock.get(f"{BASE_URL}/links", json=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/links", json=mock_response)
 
     result = list_links_command(client, {"page": 1, "limit": 50})
 
@@ -107,7 +110,7 @@ def test_get_vulnerability_info(requests_mock):
     client = mock_client()
     mock_response = load_json_mock_response("cve")
 
-    requests_mock.get(f"{BASE_URL}/cve_info/CVE-2020-0305", json=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/cve_info/CVE-2020-0305", json=mock_response)
 
     result = get_vulnerability_info_command(client, {"cve_id": "CVE-2020-0305"})
 
@@ -138,7 +141,7 @@ def test_list_alerts(requests_mock):
     client = mock_client()
     mock_response = load_json_mock_response("alerts")
 
-    requests_mock.get(f"{BASE_URL}/alerts", json=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/alerts", json=mock_response)
 
     result = list_alerts_command(client, {"page": 1, "limit": 1})
 
@@ -169,7 +172,7 @@ def test_get_alert_pcap(requests_mock):
     client = mock_client()
     mock_response = load_raw_mock_response("alert.pcap")
 
-    requests_mock.get(f"{BASE_URL}/alert_pcaps/1", content=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/alert_pcaps/1", content=mock_response)
 
     result = get_alert_pcap_command(client, {"alert_id": 1})
     saved_filename = f'{demisto.investigation()["id"]}_{result["FileID"]}'
@@ -199,7 +202,7 @@ def test_list_sensors(requests_mock):
     client = mock_client()
     mock_response = load_json_mock_response("sensors")
 
-    requests_mock.get(f"{BASE_URL}/sensors", json=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/sensors", json=mock_response)
 
     result = list_sensors_command(client, {"page": 1, "limit": 50})
 
@@ -229,7 +232,7 @@ def test_list_sensor_modules(requests_mock):
     client = mock_client()
     mock_response = load_json_mock_response("sensor_modules")
 
-    requests_mock.get(f"{BASE_URL}/sensors/2/modules", json=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/sensors/2/modules", json=mock_response)
 
     result = list_sensor_modules_command(client, {"sensor_id": 2, "page": 1, "limit": 50})
 
@@ -260,7 +263,7 @@ def test_update_sensor_module(requests_mock):
     mock_response = load_json_mock_response("sensor_module")
 
     mock_csrf_token(requests_mock)
-    requests_mock.put(f"{BASE_URL}/sensors/2/modules/5", json=mock_response)
+    requests_mock.put(f"{MOCK_BASE_URL}/sensors/2/modules/5", json=mock_response)
 
     result = update_sensor_module_command(
         client,
@@ -299,7 +302,7 @@ def test_delete_sensor_module(requests_mock):
     client = mock_client()
 
     mock_csrf_token(requests_mock)
-    requests_mock.delete(f"{BASE_URL}/sensors/2/modules/5", text="")
+    requests_mock.delete(f"{MOCK_BASE_URL}/sensors/2/modules/5", text="")
 
     result = delete_sensor_module_command(client, {"sensor_id": 2, "module_id": 5})
 
@@ -324,7 +327,7 @@ def test_get_ip_blacklist(requests_mock):
     client = mock_client()
     mock_response = load_json_mock_response("ip_blacklist")
 
-    requests_mock.get(f"{BASE_URL}/sensors/2/itl/itl_sec_udb_bip/blacklist", json=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/sensors/2/itl/itl_sec_udb_bip/blacklist", json=mock_response)
 
     result = get_ip_blacklist_command(client, {"sensor_id": 2, "page": 1, "limit": 50})
 
@@ -351,7 +354,7 @@ def test_add_ip_blacklist(requests_mock):
     client = mock_client()
 
     mock_csrf_token(requests_mock)
-    requests_mock.post(f"{BASE_URL}/sensors/2/itl/itl_sec_udb_bip/blacklist", text="")
+    requests_mock.post(f"{MOCK_BASE_URL}/sensors/2/itl/itl_sec_udb_bip/blacklist", text="")
 
     result = add_ip_blacklist_command(client, {
         "sensor_id": 2,
@@ -381,7 +384,7 @@ def test_get_domain_blacklist(requests_mock):
     client = mock_client()
     mock_response = load_json_mock_response("domain_blacklist")
 
-    requests_mock.get(f"{BASE_URL}/sensors/2/itl/itl_sec_udb_dns_bd/blacklist", json=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/sensors/2/itl/itl_sec_udb_dns_bd/blacklist", json=mock_response)
 
     result = get_domain_blacklist_command(client, {"sensor_id": 2, "page": 1, "limit": 50})
 
@@ -409,7 +412,7 @@ def test_add_domain_blacklist(requests_mock):
     client = mock_client()
 
     mock_csrf_token(requests_mock)
-    requests_mock.post(f"{BASE_URL}/sensors/2/itl/itl_sec_udb_dns_bd/blacklist", text="")
+    requests_mock.post(f"{MOCK_BASE_URL}/sensors/2/itl/itl_sec_udb_dns_bd/blacklist", text="")
 
     result = add_domain_blacklist_command(client, {
         "sensor_id": 2,
@@ -439,7 +442,7 @@ def test_get_ssl_client_blacklist(requests_mock):
     client = mock_client()
     mock_response = load_json_mock_response("ssl_client_blacklist")
 
-    requests_mock.get(f"{BASE_URL}/sensors/2/itl/itl_sec_udb_ssl_bja3/blacklist",
+    requests_mock.get(f"{MOCK_BASE_URL}/sensors/2/itl/itl_sec_udb_ssl_bja3/blacklist",
                       json=mock_response)
 
     result = get_ssl_client_blacklist_command(client, {"sensor_id": 2, "page": 1, "limit": 50})
@@ -469,7 +472,7 @@ def test_add_ssl_client_blacklist(requests_mock):
     client = mock_client()
 
     mock_csrf_token(requests_mock)
-    requests_mock.post(f"{BASE_URL}/sensors/2/itl/itl_sec_udb_ssl_bja3/blacklist", text="")
+    requests_mock.post(f"{MOCK_BASE_URL}/sensors/2/itl/itl_sec_udb_ssl_bja3/blacklist", text="")
 
     result = add_ssl_client_blacklist_command(
         client,
@@ -503,7 +506,7 @@ def test_get_file_operation_blacklist(requests_mock):
 
     client = mock_client()
     mock_response = load_json_mock_response("file_operation_blacklist")
-    requests_mock.get(f"{BASE_URL}/sensors/2/itl/itl_sec_udb_bfo/blacklist", json=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/sensors/2/itl/itl_sec_udb_bfo/blacklist", json=mock_response)
 
     result = get_file_operation_blacklist_command(client, {"sensor_id": 2, "page": 1, "limit": 50})
 
@@ -533,7 +536,7 @@ def test_add_file_operation_blacklist(requests_mock):
     client = mock_client()
 
     mock_csrf_token(requests_mock)
-    requests_mock.post(f"{BASE_URL}/sensors/2/itl/itl_sec_udb_bfo/blacklist", text="")
+    requests_mock.post(f"{MOCK_BASE_URL}/sensors/2/itl/itl_sec_udb_bfo/blacklist", text="")
 
     result = add_file_operation_blacklist_command(
         client,
@@ -569,7 +572,7 @@ def test_get_diagnostics_information(requests_mock):
     client = mock_client()
     mock_response = load_json_mock_response("cc_info")
 
-    requests_mock.get(f"{BASE_URL}/cc_info", json=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/cc_info", json=mock_response)
 
     result = get_diagnostics_information_command(client)
 
@@ -597,7 +600,7 @@ def test_get_diagnostic_logs(requests_mock):
     client = mock_client()
     mock_response = load_raw_mock_response("diagnostic_logs.zip")
 
-    requests_mock.get(f"{BASE_URL}/diagnostic_logs", content=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/diagnostic_logs", content=mock_response)
 
     result = get_diagnostic_logs_command(client, {"cc_info": True, "sensor_id": 2})
     saved_filename = f'{demisto.investigation()["id"]}_{result["FileID"]}'
@@ -626,7 +629,7 @@ def test_list_group_policies(requests_mock):
     client = mock_client()
     mock_response = load_json_mock_response("group_policies")
 
-    requests_mock.get(f"{BASE_URL}/group_policy", json=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/group_policy", json=mock_response)
 
     result = list_group_policies_command(client, {"page": 1, "limit": 50})
 
@@ -655,7 +658,7 @@ def test_create_group_policy(requests_mock):
     mock_response = load_json_mock_response("group_policy")
 
     mock_csrf_token(requests_mock)
-    requests_mock.post(f"{BASE_URL}/group_policy", json=mock_response)
+    requests_mock.post(f"{MOCK_BASE_URL}/group_policy", json=mock_response)
 
     result = create_group_policy_command(
         client,
@@ -695,7 +698,7 @@ def test_update_group_policy(requests_mock):
     mock_response = load_json_mock_response("group_policy")
 
     mock_csrf_token(requests_mock)
-    requests_mock.put(f"{BASE_URL}/group_policy/1", json=mock_response)
+    requests_mock.put(f"{MOCK_BASE_URL}/group_policy/1", json=mock_response)
 
     result = update_group_policy_command(
         client,
@@ -740,7 +743,7 @@ def test_delete_group_policy(requests_mock):
     mock_response = load_json_mock_response("group_policy")
 
     mock_csrf_token(requests_mock)
-    requests_mock.delete(f"{BASE_URL}/group_policy/1", json=mock_response)
+    requests_mock.delete(f"{MOCK_BASE_URL}/group_policy/1", json=mock_response)
 
     result = delete_group_policy_command(client, {"policy_id": 1})
 
@@ -764,7 +767,7 @@ def test_assign_group_policy_hosts(requests_mock):
     client = mock_client()
 
     mock_csrf_token(requests_mock)
-    requests_mock.post(f"{BASE_URL}/group_policy/1/add_hosts", json={"count": 2})
+    requests_mock.post(f"{MOCK_BASE_URL}/group_policy/1/add_hosts", json={"count": 2})
 
     result = assign_group_policy_hosts_command(client, {
         "policy_id": 1,
@@ -792,7 +795,7 @@ def test_unassign_group_policy_hosts(requests_mock):
     client = mock_client()
 
     mock_csrf_token(requests_mock)
-    requests_mock.post(f"{BASE_URL}/group_policy/1/remove_hosts", json={"count": 2})
+    requests_mock.post(f"{MOCK_BASE_URL}/group_policy/1/remove_hosts", json={"count": 2})
 
     result = unassign_group_policy_hosts_command(client, {
         "policy_id": 1,
@@ -821,7 +824,7 @@ def test_list_ip_reuse_domains(requests_mock):
     client = mock_client()
     mock_response = load_json_mock_response("ip_reuse_domains")
 
-    requests_mock.get(f"{BASE_URL}/ip_reuse_domains", json=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/ip_reuse_domains", json=mock_response)
 
     result = list_ip_reuse_domains_command(client, {"page": 1, "limit": 50})
 
@@ -852,7 +855,7 @@ def test_list_hosts_changelog(requests_mock):
     client = mock_client()
     mock_response = load_json_mock_response("host_change_logs")
 
-    requests_mock.get(f"{BASE_URL}/host_change_logs", json=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/host_change_logs", json=mock_response)
 
     result = list_hosts_changelog_command(client, {"page": 1, "limit": 1})
 
