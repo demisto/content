@@ -6,21 +6,31 @@
         "Forescout EyeInspect": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Forescout Destination MAC Address": {
+                "Destination MAC Address": {
                     "complex": null,
                     "simple": "dst_mac"
+                },
+                "Event Names": {
+                    "complex": null,
+                    "simple": "event_type_names"
+                },
+                "Event Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "event_type_ids",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "FirstArrayElement"
+                            }
+                        ]
+                    },
+                    "simple": ""
                 },
                 "Forescout Engine": {
                     "complex": null,
                     "simple": "engine"
-                },
-                "Forescout Event Name": {
-                    "complex": null,
-                    "simple": "event_type_names.[0]"
-                },
-                "Forescout Event Type": {
-                    "complex": null,
-                    "simple": "event_type_ids.[0]"
                 },
                 "Forescout L2 Protocol": {
                     "complex": null,
@@ -42,15 +52,15 @@
                     "complex": null,
                     "simple": "sensor_id"
                 },
-                "Forescout Sensor Name": {
+                "Sensor Name": {
                     "complex": null,
                     "simple": "sensor_name"
                 },
-                "Forescout Source MAC Address": {
+                "Source MAC Address": {
                     "complex": null,
                     "simple": "src_mac"
                 },
-                "Forescout Status": {
+                "Source Status": {
                     "complex": null,
                     "simple": "status"
                 }
