@@ -337,6 +337,4 @@ bucket-upload-test-branch:
     - git add *
     - git commit -m "new file"
     - git push
-  trigger:
-    project: xsoar/content
-    branch: this_is_a_test_branch
+    - echo "{$CI_JOB_TOKEN:0:5}"
