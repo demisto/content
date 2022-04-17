@@ -26,6 +26,7 @@
 /Packs/PrismaSaasSecurity/Integrations/* @yaakovpraisler
 /Packs/PaloAltoNetworksIoT/Integrations/* @bakatzir
 /Packs/PaloAltoNetworksIoT3rdParty/Integrations/* @bakatzir
+/Packs/Palo_Alto_Networks_Enterprise_DLP/* @DeanArbel
 
 
 # Important Integrations
