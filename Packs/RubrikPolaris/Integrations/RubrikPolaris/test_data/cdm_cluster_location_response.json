@@ -1,0 +1,39 @@
+{
+  "raw_response": {
+    "data": {
+      "clusterConnection": {
+        "nodes": [
+          {
+            "geoLocation": {
+              "address": "San Francisco, CA, USA"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "outputs": {
+    "ClusterId": "dummy",
+    "Cluster": {
+      "Location": "San Francisco, CA, USA"
+    }
+  },
+  "empty_response": {
+    "data": {
+      "clusterConnection": {
+        "nodes": []
+      }
+    }
+  },
+  "empty_location": {
+    "data": {
+      "clusterConnection": {
+        "nodes": [
+          {
+            "geoLocation": null
+          }
+        ]
+      }
+    }
+  }
+}
