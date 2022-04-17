@@ -204,7 +204,7 @@ def create_incident_custom_id(incident):
 
     extensive_log('[SplunkPy] ID after all fields were added: {}'.format(incident_custom_id))
 
-    unique_id = hashlib.md5(incident_custom_id).hexdigest()  # guardrails-disable-line nosec
+    unique_id = hashlib.md5(incident_custom_id).hexdigest()  # nosec  # guardrails-disable-line
     extensive_log('[SplunkPy] Found incident ID is: {}'.format(unique_id))
     return unique_id
 
@@ -628,7 +628,7 @@ class Notable:
             return self.id
 
         notable_raw_data = self.data.get('_raw', '')
-        raw_hash = hashlib.md5(notable_raw_data).hexdigest()  # guardrails-disable-line nosec
+        raw_hash = hashlib.md5(notable_raw_data).hexdigest()  # nosec  # guardrails-disable-line
 
         if self.time_is_missing and self.index_time:
             notable_custom_id = '{}_{}'.format(self.index_time, raw_hash)  # index_time stays in epoch to differentiate
