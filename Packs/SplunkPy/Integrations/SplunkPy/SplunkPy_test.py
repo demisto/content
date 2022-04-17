@@ -1519,7 +1519,7 @@ COMMAND_CASES = [
     ({'xsoar_username': 'Non Existing,', 'map_missing': False},  # case missing&empty multiple usernames were provided
      [{'Splunk User': 'Could not map splunk user, Check logs for more info.', 'Xsoar User': 'Non Existing'},
       {'Splunk User': 'Could not map splunk user, Check logs for more info.', 'Xsoar User': ''}]
-),
+     ),
 ]
 
 

@@ -67,7 +67,7 @@
                 "Notable Urgency": {
                     "simple": "urgency"
                 },
-                "Splunk Notable Reviewer": {
+                "Notable Reviewer": {
 					"complex": {
 						"filters": [],
 						"root": "reviewer",

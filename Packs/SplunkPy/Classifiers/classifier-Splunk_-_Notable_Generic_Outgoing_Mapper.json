@@ -6,22 +6,23 @@
         "Splunk Notable Generic": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-              "reviewer": {
+                "urgency": {
+                    "complex": null,
+                    "simple": "notableurgency"
+                },
+			  	"reviewer": {
+					"simple": "",
 					"complex": {
 						"filters": [],
-						"root": "splunknotablereviewer",
+						"root": "notablereviewer",
 						"transformers": [
 							{
 								"operator": "FirstArrayElement"
 							}
 						]
 					}
-				},
-                "urgency": {
-                    "complex": null,
-                    "simple": "notableurgency"
-                }
-            }
+				}
+			}
         },
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
