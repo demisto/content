@@ -50,4 +50,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Ransomware Enrich and Contain](Insert the link to your image here)
+![Ransomware Enrich and Contain](https://raw.githubusercontent.com/demisto/content/6b468656734d10b98f9deee7d24897b0acec6292/Packs/Core/doc_files/Ransomware_Enrich_and_Contain.png)

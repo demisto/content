@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Ransomware Advanced Analysis](Insert the link to your image here)
+![Ransomware Advanced Analysis](https://raw.githubusercontent.com/demisto/content/6b468656734d10b98f9deee7d24897b0acec6292/Packs/Core/doc_files/Ransomware_Advanced_Analysis.png)

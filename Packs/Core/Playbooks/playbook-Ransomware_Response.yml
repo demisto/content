@@ -536,6 +536,7 @@ tasks:
       id: 91d3b754-2bf2-470f-8b6e-f8868e846b10
       version: -1
       name: Should run advanced analysis?
+      description: Whether to execute advanced analysis.
       type: condition
       iscommand: false
       brand: ""
@@ -919,6 +920,7 @@ tasks:
       id: 4dbf4631-7419-4a88-83c2-c9d2a0761149
       version: -1
       name: Found relevant information?
+      description: Checks if relevant alerts found in the previous query.
       type: condition
       iscommand: false
       brand: ""
@@ -1391,4 +1393,5 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
+marketplaces: ["marketplacev2"]
 fromversion: 6.6.0
