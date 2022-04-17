@@ -1,4 +1,4 @@
-Checks if given domains is a subdomain to one of the domains listed
+Checks if a given domain is a subdomain of one of the listed domains.
 
 ## Script Data
 
@@ -16,5 +16,5 @@ Checks if given domains is a subdomain to one of the domains listed
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| left | List of domains to check if thy are subdomains of the internal assets |
-| right | List of internal assets \(i.e. - mycompany.com\) |
+| left | A list of domains to check if they are subdomains of the internal assets. |
+| right | A list of internal assets \(for example, mycompany.com\). |
