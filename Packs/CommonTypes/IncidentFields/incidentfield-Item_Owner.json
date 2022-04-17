@@ -19,12 +19,20 @@
     "openEnded": false,
     "associatedToAll": false,
     "associatedTypes": [
-        "Saas Security Incident"
+        "Saas Security Incident",
+        "Symantec DLP Discover Incident",
+        "Symantec DLP Endpoint Incident",
+        "Symantec DLP Network Incident"
     ],
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "systemAssociatedTypes": [
+        "Symantec DLP Discover Incident",
+        "Symantec DLP Endpoint Incident",
+        "Symantec DLP Network Incident"
+    ]
 }
