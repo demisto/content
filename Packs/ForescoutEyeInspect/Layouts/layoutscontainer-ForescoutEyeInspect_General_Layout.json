@@ -357,7 +357,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "forescoutl2protocol",
+                                "fieldId": "forescouteyeinspectl2protocol",
                                 "height": 53,
                                 "id": "91fd2060-aa7a-11ec-b4a8-b1a3869c85a4",
                                 "index": 0,
@@ -366,7 +366,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "forescoutl3protocol",
+                                "fieldId": "forescouteyeinspectl3protocol",
                                 "height": 53,
                                 "id": "92c37da0-aa7a-11ec-b4a8-b1a3869c85a4",
                                 "index": 1,
@@ -375,7 +375,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "forescoutl4protocol",
+                                "fieldId": "forescoutleyeinspectl4protocol",
                                 "height": 53,
                                 "id": "937d30b0-aa7a-11ec-b4a8-b1a3869c85a4",
                                 "index": 2,
@@ -384,7 +384,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "forescoutl7protocol",
+                                "fieldId": "forescouteyeinspectl7protocol",
                                 "height": 53,
                                 "id": "94246d30-aa7a-11ec-b4a8-b1a3869c85a4",
                                 "index": 3,
@@ -596,7 +596,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "forescoutengine",
+                                "fieldId": "forescouteyeinspectengine",
                                 "height": 53,
                                 "id": "648216f0-aa9c-11ec-868b-1fa1fde3688b",
                                 "index": 2,
@@ -658,7 +658,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 3,
-                                "fieldId": "forescoutsensorid",
+                                "fieldId": "forescouteyeinspectsensorid",
                                 "height": 53,
                                 "id": "043af160-aa9a-11ec-a5dd-e5fc59c77f80",
                                 "index": 1,

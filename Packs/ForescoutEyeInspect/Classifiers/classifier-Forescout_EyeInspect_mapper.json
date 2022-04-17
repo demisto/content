@@ -28,27 +28,27 @@
                     },
                     "simple": ""
                 },
-                "Forescout Engine": {
+                "Forescout EyeInspect Engine": {
                     "complex": null,
                     "simple": "engine"
                 },
-                "Forescout L2 Protocol": {
+                "Forescout EyeInspect L2 Protocol": {
                     "complex": null,
                     "simple": "l2_proto"
                 },
-                "Forescout L3 Protocol": {
+                "Forescout EyeInspect L3 Protocol": {
                     "complex": null,
                     "simple": "l3_proto"
                 },
-                "Forescout L4 Protocol": {
+                "Forescout EyeInspect L4 Protocol": {
                     "complex": null,
                     "simple": "l4_proto"
                 },
-                "Forescout L7 Protocol": {
+                "Forescout EyeInspect L7 Protocol": {
                     "complex": null,
                     "simple": "l7_proto"
                 },
-                "Forescout Sensor ID": {
+                "Forescout EyeInspect Sensor ID": {
                     "complex": null,
                     "simple": "sensor_id"
                 },
