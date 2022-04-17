@@ -1,11 +1,12 @@
 from enum import Enum
-
 from pydantic import BaseModel, AnyUrl, Json
-
 from CommonServerPython import *
 
 
 class Method(str, Enum):
+    """
+    A list that represent the types of http request available
+    """
     GET = 'GET'
     POST = 'POST'
     PUT = 'PUT'
@@ -15,16 +16,21 @@ class Method(str, Enum):
 
 
 class ReqParams(BaseModel):
+    """
+    A class that stores the request query params
+    """
     since: str
     sortOrder: Optional[str] = 'ASCENDING'
     limit: str = '100'
 
-    def set_since_value(self, since):
+    def set_since_value(self, since: 'dateTime as ISO string') -> None:
         self.since = since
 
 
-
 class Request(BaseModel):
+    """
+    A class that stores a request configuration
+    """
     method: Method
     url: AnyUrl
     headers: Optional[Union[Json[dict], dict]]
@@ -33,11 +39,11 @@ class Request(BaseModel):
     data: Optional[str] = None
 
 
-class Args(BaseModel):
-    limit: int = 10
-
-
 class Client:
+    """
+    A class for the client request handling
+    """
+
     def __init__(self, request: Request):
         self.request = request
 
@@ -56,10 +62,16 @@ class Client:
 
 
 class GetEvents:
+    """
+    A class to handle the flow of the integration
+    """
     def __init__(self, client: Client) -> None:
         self.client = client
 
-    def _iter_events(self, last_object_ids):
+    def _iter_events(self, last_object_ids: list) -> None:
+        """
+        Function that responsible for the iteration over the events returned from the Okta api
+        """
         response = self.client.call()
         events: list = response.json()
         if last_object_ids:
@@ -79,7 +91,10 @@ class GetEvents:
                 LOG('empty list, breaking')
                 break
 
-    def aggregated_results(self, request_size=10, last_object_ids=None):
+    def aggregated_results(self, request_size: int = 10, last_object_ids: List[str] = None) -> List[dict]:
+        """
+        Function to group the events according to the user limits
+        """
         stored_events = []
         for events in self._iter_events(last_object_ids):
             stored_events.extend(events)
@@ -88,18 +103,25 @@ class GetEvents:
         return stored_events
 
     @staticmethod
-    def get_last_run(events) -> dict:
+    def get_last_run(events: List[dict]) -> dict:
+        """
+        Get the info from the last run, it returns the time to query from and a list of ids to prevent duplications
+        """
+
         ids = []
         last_time = events[-1].get('published')
         for event in events:
             if event.get('published') == last_time:
                 ids.append(event.get('uuid'))
-        last_time = datetime.fromisoformat(str(last_time).replace('Z', ''))
-        last_time = last_time - timedelta(milliseconds=1)
+        d = {'after': last_time.isoformat(), 'ids': ids}
         return {'after': last_time.isoformat(), 'ids': ids}
 
     @staticmethod
-    def remove_duplicates(events, ids):
+    def remove_duplicates(events: list, ids: list) -> list:
+        """
+        Remove object duplicates by the uuid of the object
+        """
+
         duplicates_indexes = []
         for i in range(len(events)):
             event_id = events[i]['uuid']
@@ -113,16 +135,13 @@ class GetEvents:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     # Args is always stronger. Get last run even stronger
-    demisto_params = demisto.params() #| demisto.args() | demisto.getLastRun()
+    demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
     request_size = demisto_params.get('request_size')
     if not request_size:
+        # If not exist set default
         request_size = 1000
     else:
         request_size = int(request_size)
-    print('request_size', request_size)
-    print('*********************\n******************************\n*******************')
-    print(demisto_params)
-    print('*********************\n******************************\n*******************')
     if 'after' in demisto_params:
         after = int(demisto_params['after'])
 
@@ -130,21 +149,16 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
     encrypted_headers = json.loads(demisto_params['encrypted_headers'])
     demisto_params['headers'] = dict(encrypted_headers.items() | headers.items())
     del demisto_params['encrypted_headers']
-    # TODO: replace them when doing a pr
-    # last_run = demisto.getLastRun()
     last_run = demisto.getIntegrationContext()
-    print('ctx', last_run)
     last_object_ids = last_run.get('ids')
-    # last_object_ids = ['180553f5-2e26-11ec-9335-f73245edc71f']
+    # If we do not have an after in the last run than we calculate after according to now - after param from integration settings
     if 'after' not in last_run:
         delta = datetime.today() - timedelta(days=after)
         last_run = delta.isoformat()
     else:
         last_run = last_run['after']
-        print('after', last_run)
     demisto_params['params'] = ReqParams(**demisto_params, since=last_run)
     # demisto_params['params'].set_since_value('last_run')
-    print('last_run', last_run)
 
     request = Request(**demisto_params)
 
@@ -157,11 +171,9 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
         get_events.aggregated_results(limit=1)
         demisto.results('ok')
     else:
-        args = Args(**demisto_params)
+        # Get the events from the api according to limit and request_size
         events = get_events.aggregated_results(request_size, last_object_ids=last_object_ids)
         if events:
-            # TODO: replace them when doing a pr
-            # demisto.setLastRun(GetEvents.get_last_run(events))
             demisto.setIntegrationContext(GetEvents.get_last_run(events))
 
         command_results = CommandResults(
