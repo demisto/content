@@ -332,7 +332,8 @@ bucket-upload-test-branch:
   stage: create-test-branch
   script:
     - echo "Creating new branch"
-    - export GIT_SSL_CAINFO=$CI_SERVER_TLS_CA_FILE
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - ssh-keyscan -t rsa $CI_SERVER_HOST >> ~/.ssh/known_hosts
     - git config user.email "test@example.com"
     - git config user.name "Test"
     - git checkout -b "this_is_a_test_branch"
