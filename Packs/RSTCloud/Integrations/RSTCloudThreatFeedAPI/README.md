@@ -22,9 +22,11 @@ Please check indicator tags and malware family fields. An indicator may describe
     | Score threshold for IP reputation command | Set this to determine the RST Threat Feed score that will determine if an IP is malicious \(0-100\) | True |
     | Score threshold for domain reputation command | Set this to determine the RST Threat Feed score that will determine if a domain is malicious \(0-100\) | True |
     | Score threshold for url reputation command | Set this to determine the RST Threat Feed score that will determine if a url is malicious \(0-100\) | True |
+    | Score threshold for file reputation command | Set this to determine the RST Threat Feed score that will determine if a file is malicious \(0-100\) | True |
     | IP Indicator Expiration (days) | Mark IP indicators older than indicator_expiration_ip value in days as Suspicious ignoring the last available score | True |
     | Domain Indicator Expiration (days) | Mark domain indicators older than indicator_expiration_domain value in days as Suspicious ignoring the last available score | True |
     | URL Indicator Expiration (days) | Mark URL indicators older than indicator_expiration_url value in days as Suspicious ignoring the last available score | True |
+    | Hash Indicator Expiration (days) | Mark Hash indicators older than indicator_expiration_url value in days as Suspicious ignoring the last available score | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
 
@@ -81,6 +83,9 @@ Returns IP information and reputation.
 | RST.IP.Related | String | The associated domains | 
 | RST.IP.FalsePositive | String | true if it is likely a False Positive | 
 | RST.IP.FalsePositiveDesc | String | Description why we think it may be a False Positive | 
+| RST.IP.CVE | String | Related CVE \(vulnerabilities\) | 
+| RST.IP.Industry | String | Related Industry | 
+| RST.IP.Report | String | Collected from | 
 
 
 #### Command Example
@@ -195,6 +200,9 @@ Returns Domain information and reputation.
 | RST.Domain.Related | String | The associated IP addresses | 
 | RST.Domain.FalsePositive | String | true if it is likely a False Positive | 
 | RST.Domain.FalsePositiveDesc | String | Description why we think it may be a False Positive | 
+| RST.Domain.CVE | String | Related CVE \(vulnerabilities\) | 
+| RST.Domain.Industry | String | Related Industry | 
+| RST.Domain.Report | String | Collected from | 
 
 
 #### Command Example
@@ -268,7 +276,7 @@ Returns URL information and reputation.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | List of URLs. | Required | 
-| threshold | If the URL has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used. Default is 30. | Optional | 
+| threshold | If the URL has reputation above the threshold then the URL defined as malicious. If threshold not set, then threshold from instance configuration is used. Default is 30. | Optional | 
 
 
 #### Context Output
@@ -297,6 +305,8 @@ Returns URL information and reputation.
 | RST.URL.FalsePositiveDesc | String | Description why we think it may be a False Positive | 
 | RST.URL.Parsed | String | Parsed URL components | 
 | RST.URL.CVE | String | Related CVE \(vulnerabilities\) | 
+| RST.URL.Industry | String | Related Industry | 
+| RST.URL.Report | String | Collected from | 
 
 
 #### Command Example
@@ -352,6 +362,112 @@ Returns URL information and reputation.
 #### Human Readable Output
 
 >### RST Threat Feed URL Reputation for: `https://cwa.mx/himalaya/ziqqbxu4f7cwsordfxkihmhwfcc`
+>
+>|Description|Last Seen|Relevance|Score|Tags|Threat|
+>|---|---|---|---|---|---|
+>| Ioc with tags: malware. related threats: emotet<br/> | 2021-01-26 | Suspicious | 14 | malware | emotet |
+
+
+### file
+***
+Returns File information and reputation.
+
+
+#### Base Command
+
+`file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file | List of Files. | Required | 
+| threshold | If the File has reputation above the threshold then the File defined as malicious. If threshold not set, then threshold from instance configuration is used. Default is 5. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | String | The indicator that was tested | 
+| DBotScore.Score | Number | The actual score | 
+| DBotScore.Type | String | The indicator type | 
+| DBotScore.Vendor | String | The vendor used to calculate the score | 
+| File.Name | String | The file name | 
+| File.MD5 | String | MD5 for the the file name | 
+| File.SHA1 | String | SHA1 for the the file name  | 
+| File.SHA256 | String | The URL | 
+| File.Tags | String | The associated tags | 
+| File.Malicious.Vendor | String | The vendor reporting the File as malicious | 
+| File.Malicious.Description | String | A description explaining why the File was reported as malicious | 
+| File.Malicious.Score | String | The score calculated for the File indicator by the vendor | 
+| RST.File.Name | String | The file name | 
+| RST.File.MD5 | String | MD5 for the the file name | 
+| RST.File.SHA1 | String | SHA1 for the the file name  | 
+| RST.File.SHA256 | String | SHA256 for the the file name  | 
+| RST.File.FirstSeen | Date | First Seen | 
+| RST.File.LastSeen | Date | Last Seen | 
+| RST.File.Tags | String | The associated tags | 
+| RST.File.Threat | String | The associated Malware Family or threat name | 
+| RST.File.Score | Number | The total score | 
+| RST.File.UUID | String | The unique ID for the indicator | 
+| RST.File.Description | String | The associated Description provided by the vendor | 
+| RST.File.FalsePositive | String | true if it is likely a False Positive | 
+| RST.File.FalsePositiveDesc | String | Description why we think it may be a False Positive | 
+| RST.File.CVE | String | Related CVE \(vulnerabilities\) | 
+| RST.File.Industry | String | Related Industry | 
+| RST.File.Report | String | Collected from | 
+
+
+#### Command Example
+```!file file="fe3d38316dc38a4ec63eac80e34cb157c9d896460f9b7b3bfbd2cec4e2cb8cdc"threshold=5```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "fe3d38316dc38a4ec63eac80e34cb157c9d896460f9b7b3bfbd2cec4e2cb8cdc",
+        "Score": 3,
+        "Type": "file",
+        "Vendor": "RST Cloud"
+    },
+    "RST": {
+        "File": {
+            "CVE": [],
+            "FalsePositive": "false",
+            "FalsePositiveDesc": "",
+            "FirstSeen": "2021-05-11T00:00:00.000Z",
+            "Industry": [],
+            "LastSeen": "2022-03-11T00:00:00.000Z",
+            "Name": [],
+            "RSTReference": "https://rstcloud.net/uuid?id=c86948e7-eb72-3fe1-96e9-429e885cea3b",
+            "Report": [
+                "https://www.threatfabric.com/blogs/partners-in-crime-medusa-cabassous.html"
+            ],
+            "SHA256": "fe3d38316dc38a4ec63eac80e34cb157c9d896460f9b7b3bfbd2cec4e2cb8cdc",
+            "Score": "6",
+            "Tags": [
+                "malware"
+            ],
+            "Threat": [
+                "medusa",
+                "flubot"
+            ],
+            "Type": "File",
+            "UUID": "c86948e7-eb72-3fe1-96e9-429e885cea3b"
+        }
+    },
+    "File": {
+        "SHA256": "fe3d38316dc38a4ec63eac80e34cb157c9d896460f9b7b3bfbd2cec4e2cb8cdc",
+        "Tags": [
+            "malware"
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### RST Threat Feed File Reputation for: `https://cwa.mx/himalaya/ziqqbxu4f7cwsordfxkihmhwfcc`
 >
 >|Description|Last Seen|Relevance|Score|Tags|Threat|
 >|---|---|---|---|---|---|

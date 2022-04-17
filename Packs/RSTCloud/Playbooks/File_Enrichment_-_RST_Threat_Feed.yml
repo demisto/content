@@ -1,0 +1,250 @@
+id: File Enrichment - RST Threat Feed
+version: -1
+fromversion: 6.0.0
+contentitemexportablefields:
+  contentitemfields: {}
+name: File Enrichment - RST Threat Feed
+description: Enrich File hashes using RST Threat Feed integrations
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3f6b8522-c653-4608-800d-f7da232392fb
+    type: start
+    task:
+      id: 3f6b8522-c653-4608-800d-f7da232392fb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 41
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 9ce27446-fb4f-406f-8812-265792a2ba69
+    type: condition
+    task:
+      id: 9ce27446-fb4f-406f-8812-265792a2ba69
+      version: -1
+      name: Is there a File to enrich?
+      description: Checks whether the playbook's input contains at least one File name to enrich.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 171
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: f6da103d-6baa-4afb-8b7d-65740714dcf2
+    type: title
+    task:
+      id: f6da103d-6baa-4afb-8b7d-65740714dcf2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 99bd0bb3-ffa0-4952-8015-4f05f713fe2d
+    type: condition
+    task:
+      id: 99bd0bb3-ffa0-4952-8015-4f05f713fe2d
+      version: -1
+      name: Is RST Threat Feed API enabled?
+      description: Checks if there is an active instance of the RST Threat Feed API API integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RST Cloud - Threat Feed API
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 578.5,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 7905202f-5003-4ecf-8e65-07b46192c2dc
+    type: regular
+    task:
+      id: 7905202f-5003-4ecf-8e65-07b46192c2dc
+      version: -1
+      name: Get RST Threat Feed report for hashes
+      description: Returns File information and reputation.
+      script: RST Cloud - Threat Feed API|||file
+      type: regular
+      iscommand: true
+      brand: RST Cloud - Threat Feed API
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.File
+          transformers:
+          - operator: uniq
+      threshold:
+        simple: inputs.threshold
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 578.5,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_24_#default#": 0.18,
+      "26_24_#default#": 0.55,
+      "26_28_yes": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 789,
+        "width": 677.5,
+        "x": 281,
+        "y": 41
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+      transformers:
+      - operator: uniq
+  required: false
+  description: The Files to enrich.
+  playbookInputQuery:
+- key: threshold
+  value:
+    simple: inputs.threshold
+  required: false
+  description: Defines the minimum score to set indicators as malicious
+  playbookInputQuery:
+outputs:
+- contextPath: File
+  description: The File objects.
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, and Vendor.
+  type: unknown
+
+tests:
+- No tests (auto formatted)

@@ -97,6 +97,31 @@ def test_url_command(requests_mock):
     assert raw_results[0]['Data'] == value_to_check
 
 
+def test_file_command(requests_mock):
+    """Tests the hash reputation command function.
+
+    Configures requests_mock instance to generate the appropriate
+    hash reputation API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    """
+    from RSTCloudThreatFeedAPI import Client, file_command
+
+    value_to_check = 'fe3d38316dc38a4ec63eac80e34cb157c9d896460f9b7b3bfbd2cec4e2cb8cdc'
+    mock_response = util_load_json('test_data/hash_reputation.json')
+    requests_mock.get(f'https://api.rstcloud.net/v1/ioc?value={value_to_check}', json=mock_response)
+
+    client = Client(verify=False, apikey='test')
+    args = {'file': value_to_check}
+    markdown, raw_results, indicators = file_command(client, args)
+
+    assert isinstance(markdown, list)
+    assert isinstance(raw_results, list)
+    assert isinstance(indicators, list)
+    assert isinstance(markdown[0], str)
+    assert indicators[0].sha256 == value_to_check
+    assert raw_results[0]['SHA256'] == value_to_check
+
+
 def test_submit_command(requests_mock):
     """Tests the submission command function.
 
