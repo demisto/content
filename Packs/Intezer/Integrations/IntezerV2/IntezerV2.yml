@@ -47,6 +47,27 @@ script:
         - contextPath: Intezer.Analysis.Type
           description: type of the analysis
           type: string
+    - name: intezer-analyze-url
+      arguments:
+        - default: false
+          description: Url to query.
+          isArray: false
+          name: url
+          required: true
+          secret: false
+      deprecated: false
+      description: Checks reputation of an Url
+      execution: false
+      outputs:
+        - contextPath: Intezer.Analysis.ID
+          description: Intezer analysis id
+          type: string
+        - contextPath: Intezer.Analysis.Status
+          description: status of the analysis
+          type: string
+        - contextPath: Intezer.Analysis.Type
+          description: type of the analysis
+          type: string
     - name: intezer-get-latest-report
       arguments:
         - default: false
@@ -257,7 +278,7 @@ script:
         - contextPath: Intezer.Analysis.SubAnalyses.Metadata
           description: A Sub Analysis metadata
           type: Unknown
-  dockerimage: demisto/py3-tools:0.0.1.25751
+  dockerimage: demisto/py3-tools:0.0.1.28570
   isfetch: false
   runonce: false
   script: '-'
