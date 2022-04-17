@@ -532,14 +532,24 @@ ARGS_TO_UPDATE = {
 }
 
 MOCKED_RAW_INCIDENT_OUTPUT = {
-    'value': [{
-        'ID': 'inc_ID',
-        'Name': 'inc_name',
-        'IncidentNumber': 2,
-        'Title': 'title',
-        'Severity': 'High',
-        'CreatedTimeUTC': '2020-02-02T14:05:01.5348545Z',
-    }]
+    'value': [
+        {
+            'ID': 'inc_ID',
+            'Name': 'inc_name',
+            'IncidentNumber': 2,
+            'Title': 'title',
+            'Severity': 'High',
+            'CreatedTimeUTC': '2020-02-02T14:05:01.5348545Z',
+        },
+        {
+            'ID': 'inc_ID_3',
+            'Name': 'inc_name_3',
+            'IncidentNumber': 3,
+            'Title': 'title',
+            'Severity': 'Low',
+            'CreatedTimeUTC': '2020-02-02T14:05:01.5348545Z',
+        }
+    ]
 }
 
 
@@ -1243,7 +1253,7 @@ class TestHappyPath:
             case 2: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
         """
         # prepare
-        raw_incidents = MOCKED_RAW_INCIDENT_OUTPUT.get('value')
+        raw_incidents = [MOCKED_RAW_INCIDENT_OUTPUT.get('value')[0]]
         last_fetch_ids = args.get('last_fetch_ids')
         min_severity = args.get('min_severity')
         last_incident_number = args.get('last_incident_number')
@@ -1291,6 +1301,35 @@ class TestHappyPath:
         # validate
         assert 'properties/createdTimeUtc ge' in call_args.get('params').get('$filter')
         assert 'properties/createdTimeUtc asc' == call_args.get('params').get('$orderby')
+
+    @pytest.mark.parametrize('min_severity, expected_incident_num', [(1, 2), (3, 1)])
+    def test_last_fetched_incident_for_various_severity_levels(self, mocker, min_severity, expected_incident_num):
+        """
+        Given:
+            - Fetched incidents are with severity behind and over the lowest level defined in the integration instanse.
+
+        When:
+            - Calling the process_incidents function.
+
+        Then:
+            - Validate the last fetched incident contain also the low severity incidents.
+            - Validate only incidents with the expected severity level is returned.
+        """
+        # prepare
+        raw_incidents = MOCKED_RAW_INCIDENT_OUTPUT['value']
+        latest_created_time = dateparser.parse('2020-02-02T14:05:01.5348545Z')
+
+        # run
+        next_run, incidents = process_incidents(raw_incidents=raw_incidents,
+                                                last_fetch_ids=[],
+                                                min_severity=min_severity,
+                                                latest_created_time=latest_created_time,
+                                                last_incident_number=1)
+
+        # validate
+        assert next_run.get('last_fetch_ids') == ['inc_ID', 'inc_ID_3']
+        assert next_run.get('last_incident_number') == 3
+        assert len(incidents) == expected_incident_num
 
 
 class TestEdgeCases:
