@@ -313,3 +313,13 @@ slack-notify-bucket-upload:
   extends:
     - .trigger-slack-notification
     - .bucket-upload-rule-always
+
+bucket-upload-test-branch:
+  rules:
+    - if: '$TEST_BRANCH == "true"'
+      when: always
+  stage: create-test-branch
+  script:
+    - echo "Creating new branch"
+    - git checkout -b "this_is_a_test_brnahc"
+    - ls

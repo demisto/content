@@ -8,6 +8,7 @@ default:
     when: always
 
 stages:
+  - create-test-branch
   - unittests-and-validations
   - create-instances
   - run-instances
