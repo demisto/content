@@ -295,7 +295,7 @@ slack-notify-nightly-build:
     - section_end "Lock XSIAM Machine"
 
     - section_start "Clean XSIAM Machine"
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket.sh
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_xsiam.sh
     - section_end "Clean XSIAM Machine"
 
     - section_start "Install Packs and run Test-Module"

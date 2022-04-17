@@ -1583,7 +1583,7 @@ def create_build_object() -> Build:
 
 def main():
     """
-    This step in the build doing different things for branch build and nightly.
+    This step in the build is doing different things for branch build and nightly.
     The flow for custom branch build is:
         1. Add server config and restart servers (only in xsoar).
         2. Disable all enabled integrations.
@@ -1595,7 +1595,7 @@ def main():
         6. Changes marketplace bucket to the new one that was created in create-instances workflow.
         7. Installs all (new and modified) packs from current branch.
         8. After updating packs from branch, runs `test-module` for both new and modified integrations,
-            to check that modified integrations was not broken. (post-ipdate).
+            to check that modified integrations was not broken. (post-update).
         9. Prints results.
     The flow for nightly:
         1. Add server config and restart servers (only in xsoar).
