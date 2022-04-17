@@ -58,6 +58,7 @@ def _get_missing_file_result(file_hash: str) -> CommandResults:
         }
     )
 
+
 def _get_missing_url_result(url: str, ex: ServerError = None) -> CommandResults:
     dbot = {
         'Vendor': 'Intezer',
@@ -464,6 +465,7 @@ def enrich_dbot_and_display_file_analysis_results(intezer_result):
             'Intezer.Analysis(val.ID && val.ID == obj.ID)': {'ID': analysis_id, 'Status': 'Done'}
         }
     )
+
 
 def enrich_dbot_and_display_url_analysis_results(intezer_result):
     summary = intezer_result['summary']
