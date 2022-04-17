@@ -51,3 +51,6 @@ CreateIndicatorRelationship
 CommonServerPython
 CommonServer
 mergeVersionedIntegrationContext
+SearchIndicatorRelationships 
+CommandResults
+YMLMetadataCollector

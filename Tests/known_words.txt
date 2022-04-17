@@ -119,6 +119,7 @@ hashes
 FTPs
 afterwards
 http
+HTML
 runtime
 dns
 Ubuntu
@@ -156,4 +157,8 @@ GetCampaignIncidentsInfo
 IsIncidentPartOfCampaign
 unsearchable
 ChronicleAsset
+Reforamtted
+ipstack
 SNDBOX
+C
+integrationReliability
