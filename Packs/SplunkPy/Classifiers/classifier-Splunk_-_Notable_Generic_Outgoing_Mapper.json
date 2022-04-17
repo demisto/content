@@ -6,6 +6,17 @@
         "Splunk Notable Generic": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+              "reviewer": {
+					"complex": {
+						"filters": [],
+						"root": "splunknotablereviewer",
+						"transformers": [
+							{
+								"operator": "FirstArrayElement"
+							}
+						]
+					}
+				},
                 "urgency": {
                     "complex": null,
                     "simple": "notableurgency"

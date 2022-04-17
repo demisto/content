@@ -67,6 +67,17 @@
                 "Notable Urgency": {
                     "simple": "urgency"
                 },
+                "Splunk Notable Reviewer": {
+					"complex": {
+						"filters": [],
+						"root": "reviewer",
+						"transformers": [
+							{
+								"operator": "FirstArrayElement"
+							}
+						]
+					}
+				},
                 "Srcs": {
                     "simple": "src"
                 },

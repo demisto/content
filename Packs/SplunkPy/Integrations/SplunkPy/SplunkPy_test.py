@@ -1502,13 +1502,24 @@ def test_owner_mapping_mechanism_splunk_to_xsoar(mocker, splunk_name, expected_x
 
 COMMAND_CASES = [
     ({'xsoar_username': 'test_xsoar'},  # case normal single username was provided
-     {'test_xsoar': u'test_splunk'}),
+     [{'Splunk User': u'test_splunk', 'Xsoar User': 'test_xsoar'}]),
     ({'xsoar_username': 'test_xsoar, Non existing'},  # case normal multiple usernames were provided
-     {'Non existing': 'unassigned', 'test_xsoar': u'test_splunk'}),
+     [{'Splunk User': u'test_splunk', 'Xsoar User': 'test_xsoar'},
+      {'Splunk User': 'unassigned', 'Xsoar User': 'Non existing'}]),
     ({'xsoar_username': 'Non Existing,'},  # case normal&empty multiple usernames were provided
-     {'': 'Could not Find splunk user, check logs for more details.', 'Non Existing': 'unassigned'}),
+     [{'Splunk User': 'unassigned', 'Xsoar User': 'Non Existing'},
+      {'Splunk User': 'Could not map splunk user, Check logs for more info.', 'Xsoar User': ''}]),
     ({'xsoar_username': ['test_xsoar', 'Non existing']},  # case normal&missing multiple usernames were provided
-     {'Non existing': 'unassigned', 'test_xsoar': u'test_splunk'})
+     [{'Splunk User': u'test_splunk', 'Xsoar User': 'test_xsoar'},
+      {'Splunk User': 'unassigned', 'Xsoar User': 'Non existing'}]),
+    ({'xsoar_username': ['test_xsoar', 'Non existing'], 'map_missing': False},
+     # case normal & missing multiple usernames were provided without missing's mapping activated
+     [{'Splunk User': u'test_splunk', 'Xsoar User': 'test_xsoar'},
+      {'Splunk User': 'Could not map splunk user, Check logs for more info.', 'Xsoar User': 'Non existing'}]),
+    ({'xsoar_username': 'Non Existing,', 'map_missing': False},  # case missing&empty multiple usernames were provided
+     [{'Splunk User': 'Could not map splunk user, Check logs for more info.', 'Xsoar User': 'Non Existing'},
+      {'Splunk User': 'Could not map splunk user, Check logs for more info.', 'Xsoar User': ''}]
+),
 ]
 
 
@@ -1528,8 +1539,8 @@ def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs)
     mapper = splunk.UserMappingObject(service, True, table_name='splunk_xsoar_users',
                                       xsoar_user_column_name='xsoar_user',
                                       splunk_user_column_name='splunk_user')
-
+    # Ignoring logging pytest error
+    mocker.patch.object(demisto, 'error')
     mocker.patch.object(mapper, '_get_record', side_effect=mocked_get_record)
-    mapper.get_splunk_user_by_xsoar_command(xsoar_names)
     res = mapper.get_splunk_user_by_xsoar_command(xsoar_names)
     assert res.outputs == expected_outputs

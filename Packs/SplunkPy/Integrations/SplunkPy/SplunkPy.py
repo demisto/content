@@ -121,7 +121,7 @@ class UserMappingObject:
 
         return xsoar_user
 
-    def get_splunk_user_by_xsoar(self, xsoar_user):
+    def get_splunk_user_by_xsoar(self, xsoar_user, map_missing=True):
 
         record = self._get_record(self.xsoar_user_column_name, xsoar_user)
 
@@ -129,7 +129,7 @@ class UserMappingObject:
             demisto.error(
                 "Could not find splunk user matching xsoar's {0}. Consider adding it to the {1} lookup.".format(
                     xsoar_user, self.table_name))
-            return 'unassigned'
+            return 'unassigned' if map_missing else None
 
         # assuming username is unique, so only one record is returned.
         splunk_user = record[0].get(self.splunk_user_column_name)
@@ -138,20 +138,26 @@ class UserMappingObject:
             demisto.error(
                 "Splunk user matching Xsoar's {0} is empty. Fix the record in {1} lookup.".format(
                     splunk_user, self.table_name))
-            return 'unassigned'
+            return 'unassigned' if map_missing else None
 
         return splunk_user
 
     def get_splunk_user_by_xsoar_command(self, args):
         xsoar_users = argToList(args.get('xsoar_username'))
-        outputs = {}
+        map_missing = argToBoolean(args.get('map_missing', True))
+
+        outputs = []
         for user in xsoar_users:
-            splunk_user = self.get_splunk_user_by_xsoar(user) if user else None
-            outputs[user] = splunk_user if splunk_user else 'Could not Find splunk user, check logs for more details.'
+            splunk_user = self.get_splunk_user_by_xsoar(user, map_missing=map_missing) if user else None
+            outputs.append(
+                {'Xsoar User': user,
+                 'Splunk User': splunk_user if splunk_user else 'Could not map splunk user, Check logs for more info.'})
 
         return CommandResults(
             outputs=outputs,
-            readable_output=tableToMarkdown('Xsoar-Splunk Username Mapping', outputs, headers='Splunk user')
+            outputs_prefix='Splunk.UserMapping',
+            readable_output=tableToMarkdown('Xsoar-Splunk Username Mapping', outputs,
+                                            headers=['Xsoar User', 'Splunk User'])
         )
 
 
@@ -577,18 +583,18 @@ class Notable:
 
     def submitted(self):
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
-        return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and \
-               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+        return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and len(
+            self.enrichments) == len(ENABLED_ENRICHMENTS)
 
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
-        return all(enrichment.status == Enrichment.FAILED for enrichment in self.enrichments) and \
-               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+        return all(enrichment.status == Enrichment.FAILED for enrichment in self.enrichments) and len(
+            self.enrichments) == len(ENABLED_ENRICHMENTS)
 
     def handled(self):
         """ Returns an indicator on whether all notable's enrichments were handled or not """
-        return all(enrichment.status in Enrichment.HANDLED for enrichment in self.enrichments) or \
-               any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
+        return all(enrichment.status in Enrichment.HANDLED for enrichment in self.enrichments) or any(
+            enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
 
     def get_submitted_enrichments(self):
         """ Returns indicators on whether each enrichment was submitted/failed or not initiated """
@@ -1386,7 +1392,7 @@ def create_mapping_dict(total_parsed_results, type_field):
     return types_map
 
 
-def get_mapping_fields_command(service):
+def get_mapping_fields_command(service, mapper):
     # Create the query to get unique objects
     # The logic is identical to the 'fetch_incidents' command
     type_field = demisto.params().get('type_field', 'source')
@@ -1430,7 +1436,7 @@ def get_mapping_fields_command(service):
     reader = results.ResultsReader(oneshotsearch_results)
     for item in reader:
         notable = Notable(data=item)
-        total_parsed_results.append(notable.to_incident())
+        total_parsed_results.append(notable.to_incident(mapper))
 
     types_map = create_mapping_dict(total_parsed_results, type_field)
     demisto.results(types_map)
@@ -2690,7 +2696,7 @@ def main():
         if argToBoolean(demisto.params().get('use_cim', False)):
             get_cim_mapping_field_command()
         else:
-            get_mapping_fields_command(service)
+            get_mapping_fields_command(service, mapper)
     elif command == 'get-remote-data':
         demisto.info('########### MIRROR IN #############')
         get_remote_data_command(service, demisto.args(), demisto.params().get('close_incident'), mapper)
