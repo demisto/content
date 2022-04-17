@@ -6215,6 +6215,11 @@ def get_anti_spyware_best_practice_command():
     })
 
 
+def apply_dns_signature_policy_command(args)-> CommandResults:
+
+    return CommandResults(readable_output='Success')
+
+
 @logger
 def get_file_blocking_best_practice() -> Dict:
     params = {
@@ -9870,6 +9875,10 @@ def main():
                     download_software(topology, **demisto.args()),
                     empty_result_message="Software download not started"
                 )
+            )
+        elif command == '!pan-os-apply-dns-signature-policy':
+            return_results(
+                apply_dns_signature_policy_command(args)
             )
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
