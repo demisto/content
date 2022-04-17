@@ -6197,7 +6197,6 @@ script:
       description: Installation status.
       type: String
   - arguments:
-      name: target
     - description: Job ID of the content installation.
       name: job_id
       required: true
