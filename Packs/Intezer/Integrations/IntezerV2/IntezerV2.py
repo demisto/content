@@ -4,6 +4,7 @@ from typing import Dict
 from typing import List
 from typing import Union
 
+import demistomock as demisto
 import requests
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -19,6 +20,7 @@ from intezer_sdk.errors import AnalysisIsStillRunning
 from intezer_sdk.errors import FamilyNotFoundError
 from intezer_sdk.errors import HashDoesNotExistError
 from intezer_sdk.errors import InvalidApiKey
+from intezer_sdk.errors import ServerError
 from intezer_sdk.family import Family
 from intezer_sdk.sub_analysis import SubAnalysis
 from requests import HTTPError
@@ -56,7 +58,7 @@ def _get_missing_file_result(file_hash: str) -> CommandResults:
         }
     )
 
-def _get_missing_url_result(url: str) -> CommandResults:
+def _get_missing_url_result(url: str, ex: ServerError = None) -> CommandResults:
     dbot = {
         'Vendor': 'Intezer',
         'Type': 'Url',
@@ -65,7 +67,7 @@ def _get_missing_url_result(url: str) -> CommandResults:
     }
 
     return CommandResults(
-        readable_output=f'The Url {url} was not found on Intezer',
+        readable_output=f'The Url {url} was not found on Intezer. Error {ex}',
         outputs={
             outputPaths['dbotscore']: dbot
         }
@@ -175,10 +177,10 @@ def analyze_url_command(intezer_api: IntezerApi, args: Dict[str, str]) -> Comman
             outputs=context_json,
             readable_output='Analysis created successfully: {}'.format(analysis_id)
         )
-    except Exception:
-        return _get_missing_url_result(url)
     except AnalysisIsAlreadyRunning as error:
         return _get_analysis_running_result(response=error.response)
+    except ServerError as ex:
+        return _get_missing_url_result(url, ex)
 
 
 def get_latest_result_command(intezer_api: IntezerApi, args: Dict[str, str]) -> CommandResults:
@@ -233,15 +235,19 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
                 analysis_result = response.json()['result']
             elif analysis_type == 'Url':
                 analysis = get_url_analysis_by_id(analysis_id)
+                if not analysis:
+                    command_results.append(_get_missing_url_result(analysis_id))
                 analysis_result = analysis.result()
             else:
                 analysis = get_file_analysis_by_id(analysis_id, api=intezer_api)
+                if not analysis:
+                    command_results.append(_get_missing_analysis_result(analysis_id))
                 analysis_result = analysis.result()
 
             if analysis_result and analysis_type == 'Endpoint':
                 command_results.append(
                     enrich_dbot_and_display_endpoint_analysis_results(analysis_result, indicator_name))
-            if analysis_result and analysis_type == 'Url':
+            elif analysis_result and analysis_type == 'Url':
                 command_results.append(
                     enrich_dbot_and_display_url_analysis_results(analysis_result))
             else:
