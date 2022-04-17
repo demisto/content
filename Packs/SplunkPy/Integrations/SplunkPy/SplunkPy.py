@@ -98,16 +98,18 @@ class UserMappingObject:
 
     def _get_record(self, col, value_to_search):
         """ Gets the records with the value found in the relevant column. """
-        return self.service.kvstore[self.table_name].data.query(**{"query": json.dumps({col: value_to_search})})
+        return self.service.kvstore[self.table_name].data.query(query=json.dumps({col: value_to_search}))
 
     def get_xsoar_user_by_splunk(self, splunk_user):
 
         record = self._get_record(self.splunk_user_column_name, splunk_user)
 
         if not record:
+
             demisto.error(
-                "Could not find xsoar user matching splunk's {0}. Consider adding it to the {1} lookup.".format(
-                    splunk_user, self.table_name))
+                "Could not find xsoar user matching splunk's {splunk_user}. "
+                "Consider adding it to the {table_name} lookup.".format(
+                    splunk_user=splunk_user, table_name=self.table_name))
             return ''
 
         # assuming username is unique, so only one record is returned.
@@ -115,8 +117,8 @@ class UserMappingObject:
 
         if not xsoar_user:
             demisto.error(
-                "Xsoar user matching splunk's {0} is empty. Fix the record in {1} lookup.".format(
-                    splunk_user, self.table_name))
+                "Xsoar user matching splunk's {splunk_user} is empty. Fix the record in {table_name} lookup.".format(
+                    splunk_user=splunk_user, table_name=self.table_name))
             return ''
 
         return xsoar_user
@@ -127,8 +129,9 @@ class UserMappingObject:
 
         if not record:
             demisto.error(
-                "Could not find splunk user matching xsoar's {0}. Consider adding it to the {1} lookup.".format(
-                    xsoar_user, self.table_name))
+                "Could not find splunk user matching xsoar's {xsoar_user}. "
+                "Consider adding it to the {table_name} lookup.".format(
+                    xsoar_user=xsoar_user, table_name=self.table_name))
             return 'unassigned' if map_missing else None
 
         # assuming username is unique, so only one record is returned.
@@ -136,8 +139,8 @@ class UserMappingObject:
 
         if not splunk_user:
             demisto.error(
-                "Splunk user matching Xsoar's {0} is empty. Fix the record in {1} lookup.".format(
-                    splunk_user, self.table_name))
+                "Splunk user matching Xsoar's {xsoar_user} is empty. Fix the record in {table_name} lookup.".format(
+                    xsoar_user=xsoar_user, table_name=self.table_name))
             return 'unassigned' if map_missing else None
 
         return splunk_user
