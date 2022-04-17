@@ -332,5 +332,11 @@ bucket-upload-test-branch:
   stage: create-test-branch
   script:
     - echo "Creating new branch"
-    - git checkout -b "this_is_a_test_brnahc"
-    - ls
+    - git checkout -b "this_is_a_test_branch"
+    - touch test.txt
+    - git add *
+    - git commit -m "new file"
+    - git push
+  trigger:
+    project: xsoar/content
+    branch: this_is_a_test_branch
