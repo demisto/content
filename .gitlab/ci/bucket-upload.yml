@@ -332,8 +332,7 @@ bucket-upload-test-branch:
   stage: create-test-branch
   script:
     - echo "Creating new branch"
-    - git config --global "http.${CI_SERVER_URL}.sslCAInfo" "$CI_SERVER_TLS_CA_FILE"
-    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/xsoar/content.git
+    - export GIT_SSL_CAINFO=$CI_SERVER_TLS_CA_FILE
     - git config user.email "test@example.com"
     - git config user.name "Test"
     - git checkout -b "this_is_a_test_branch"
