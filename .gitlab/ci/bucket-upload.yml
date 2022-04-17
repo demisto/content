@@ -5,6 +5,7 @@
     - if: '$BUCKET_UPLOAD == "true"'
     - if: '$TEST_BRANCH == "true"'
       when: never
+
 .bucket-upload-rule-always:
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
@@ -56,6 +57,8 @@ create-instances-upload-flow:
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
+    - if: '$TEST_BRANCH == "true"'
+      when: never
 
 prepare-testing-bucket-mpv2-upload-flow:
  extends:
@@ -68,7 +71,8 @@ prepare-testing-bucket-mpv2-upload-flow:
      when: never
    - if: '$BUCKET_UPLOAD == "true"'
    - if: '$FORCE_BUCKET_UPLOAD == "true"'
-
+   - if: '$TEST_BRANCH == "true"'
+     when: never
 
 .install_packs_in_server:
   tags:
