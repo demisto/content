@@ -338,5 +338,5 @@ bucket-upload-test-branch:
     - touch test.txt
     - git add *
     - git commit -m "new file"
-    - git push
+    - git push --set-upstream origin this_is_a_test_branch
     - echo "{$CI_JOB_TOKEN:0:5}"
