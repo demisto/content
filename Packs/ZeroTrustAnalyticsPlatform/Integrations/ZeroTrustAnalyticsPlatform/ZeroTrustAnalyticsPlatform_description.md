@@ -1,4 +1,4 @@
-## CRITICALSTART Zero Threat Analytics Platform
+## Critical Start Zero Threat Analytics Platform
 
 ## Select incident type
 1. Select the default **Incident type** as **ZTAP Alert**
