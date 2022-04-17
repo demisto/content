@@ -83,6 +83,9 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
+    scriptarguments:
+      limit:
+        simple: "1"
     separatecontext: false
     view: |-
       {
