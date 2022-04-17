@@ -204,7 +204,7 @@ def create_incident_custom_id(incident):
 
     extensive_log('[SplunkPy] ID after all fields were added: {}'.format(incident_custom_id))
 
-    unique_id = hashlib.md5(incident_custom_id).hexdigest()  # nosec
+    unique_id = hashlib.md5(incident_custom_id).hexdigest()  # guardrails-disable-line # nosec
     extensive_log('[SplunkPy] Found incident ID is: {}'.format(unique_id))
     return unique_id
 

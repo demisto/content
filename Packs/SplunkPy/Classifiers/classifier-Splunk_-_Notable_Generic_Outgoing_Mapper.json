@@ -14,7 +14,7 @@
 					"simple": "",
 					"complex": {
 						"filters": [],
-						"root": "notablereviewer",
+						"root": "splunknotablereviewer",
 						"transformers": [
 							{
 								"operator": "FirstArrayElement"
