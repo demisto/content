@@ -332,6 +332,8 @@ bucket-upload-test-branch:
   stage: create-test-branch
   script:
     - echo "Creating new branch"
+    - git config user.email "test@example.com"
+    - git config user.name "Test"
     - git checkout -b "this_is_a_test_branch"
     - touch test.txt
     - git add *
