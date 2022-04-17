@@ -1554,5 +1554,5 @@ class TestFirewallCommand:
     def test_update_target(self, args, expected):
         from Panorama import update_target
         params = {}
-        update_target(args, {})
+        update_target(args, params)
         assert ('target' in params) == expected
