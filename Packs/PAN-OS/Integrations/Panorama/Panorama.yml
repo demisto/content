@@ -6197,8 +6197,6 @@ script:
       description: Installation status.
       type: String
   - arguments:
-    - description: The device on which to check the installation status of the content
-        update.
       name: target
     - description: Job ID of the content installation.
       name: job_id
