@@ -2013,10 +2013,11 @@ tasks:
       id: c97ecd09-9815-4d00-8433-2adfc2cf306e
       version: -1
       name: endpoint
-      script: '|||endpoint'
+      description: Returns information about an endpoint.
+      script: LogRhythmRest V2|||endpoint
       type: regular
       iscommand: true
-      brand: ""
+      brand: LogRhythmRest V2
     nexttasks:
       '#none#':
       - "86"
