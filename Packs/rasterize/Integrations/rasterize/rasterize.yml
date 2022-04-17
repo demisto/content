@@ -116,16 +116,16 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: 600px
-      description: The html page width, for example, 600px. Specify with or without
+      defaultValue: 1000px
+      description: The html page width, for example, 1000px. Specify with or without
         the px suffix.
       isArray: false
       name: width
       required: false
       secret: false
     - default: false
-      defaultValue: 800px
-      description: The html page height, for example, 800px. Specify with or without
+      defaultValue: 1500px
+      description: The html page height, for example, 1500px. Specify with or without
         the px suffix.
       isArray: false
       name: height
