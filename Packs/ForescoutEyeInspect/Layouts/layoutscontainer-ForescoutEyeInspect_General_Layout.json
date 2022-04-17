@@ -510,7 +510,7 @@
                                 "index": 0,
                                 "listId": "9t0zndywrw-b1f7cf30-aa86-11ec-a6bf-4bb637faf2b7",
                                 "name": "Get PCAP",
-                                "scriptId": "b79204a8-fc2b-434e-8b60-366f4a36547e",
+                                "scriptId": "ForescoutEyeInspectButtonGetPCAP",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -525,7 +525,7 @@
                                 "index": 1,
                                 "listId": "9t0zndywrw-b1f7cf30-aa86-11ec-a6bf-4bb637faf2b7",
                                 "name": "Get Vulnerability Info",
-                                "scriptId": "a12290e4-870a-40eb-8d2c-06b243484e32",
+                                "scriptId": "ForescoutEyeInspectButtonGetVulnerabilityInfo",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -538,7 +538,7 @@
                                 "id": "e717e5e0-aa88-11ec-a6bf-4bb637faf2b7",
                                 "index": 2,
                                 "name": "Get Host Change Log ( Last 24 Hours ) ",
-                                "scriptId": "fd039bc8-1b5b-4347-8b74-6cb336bf4983",
+                                "scriptId": "ForescoutEyeInspectButtonHostChangeLog",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             }
