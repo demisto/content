@@ -399,7 +399,7 @@
                             {
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "notablereviewer",
+								"fieldId": "splunknotablereviewer",
 								"height": 22,
 								"id": "52b88640-be18-11ec-8ba7-2999d56659d0",
 								"index": 7,
