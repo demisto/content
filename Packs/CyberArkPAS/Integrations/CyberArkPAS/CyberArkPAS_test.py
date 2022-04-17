@@ -241,11 +241,25 @@ def test_fetch_incidents_with_specific_score(mocker):
     assert incidents == INCIDENTS_FILTERED_BY_SCORE
 
 
-def test_add_safe_member_permissions_validate(mocker):
+@pytest.mark.parametrize('permission_exist', [False, True])
+def test_add_safe_member_permissions_validate(mocker, permission_exist):
+    """
+    Given
+    - Permissions.
+    When
+    - calling *add_safe_member* method.
+    Then
+    - Validate ManageSafeMembers was set in http body permission list.
+    """
+    args = ADD_SAFE_MEMBER_ARGS
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.cyberark.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, max_fetch=50)
     mock = mocker.patch.object(Client, '_http_request')
-
-    add_safe_member_command(client, **ADD_SAFE_MEMBER_ARGS)
-    assert mock.call_args[1].get('json_data').get('member').get('Permissions')[12].get('Value')
+    if permission_exist:
+        args.get('permissions').remove('ManageSafeMembers')
+    add_safe_member_command(client, **args)
+    permissions = mock.call_args[1].get('json_data').get('member').get('Permissions')
+    for permission in permissions:
+        if 'ManageSafeMembers' in permission:
+            assert permission.get('Value') == permission_exist
