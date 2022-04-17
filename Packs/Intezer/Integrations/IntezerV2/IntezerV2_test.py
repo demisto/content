@@ -682,7 +682,7 @@ def test_analyze_by_url_command_success(requests_mock):
 
     _setup_access_token(requests_mock)
     requests_mock.post(
-        f'{full_url}/url',
+        f'{full_url}/url/',
         status_code=HTTPStatus.CREATED,
         json=dict(result_url=f'/url/{analysis_id}')
     )
@@ -701,7 +701,7 @@ def test_analyze_by_url_command_missing_url(requests_mock):
 
     _setup_access_token(requests_mock)
     requests_mock.post(
-        f'{full_url}/url',
+        f'{full_url}/url/',
         status_code=HTTPStatus.BAD_REQUEST,
         json=dict(error='Bad url')
     )

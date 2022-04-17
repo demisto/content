@@ -225,6 +225,7 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
     analysis_type = args.get('analysis_type', 'File')
     analysis_ids = argToList(args.get('analysis_id'))
     indicator_name = args.get('indicator_name')
+    analysis_result = None
 
     command_results = []
 
@@ -237,12 +238,14 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
                 analysis = get_url_analysis_by_id(analysis_id)
                 if not analysis:
                     command_results.append(_get_missing_url_result(analysis_id))
-                analysis_result = analysis.result()
+                else:
+                    analysis_result = analysis.result()
             else:
                 analysis = get_file_analysis_by_id(analysis_id, api=intezer_api)
                 if not analysis:
                     command_results.append(_get_missing_analysis_result(analysis_id))
-                analysis_result = analysis.result()
+                else:
+                    analysis_result = analysis.result()
 
             if analysis_result and analysis_type == 'Endpoint':
                 command_results.append(
@@ -271,6 +274,8 @@ def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> Co
 
     try:
         analysis = get_file_analysis_by_id(analysis_id, api=intezer_api)
+        if not analysis:
+            return _get_missing_analysis_result(analysis_id=str(analysis_id))
     except HTTPError as error:
         if error.response.status_code == HTTPStatus.NOT_FOUND:
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
