@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-demisto-sdk = "==1.6.1"
 
 [dev-packages]
 
