@@ -1,19 +1,20 @@
 .bucket-upload-rule:
   rules:
+    - if: '$TEST_BRANCH == "true"'
+      when: never
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
-    - if: '$TEST_BRANCH == "true"'
-      when: never
+
 
 .bucket-upload-rule-always:
   rules:
+    - if: '$TEST_BRANCH == "true"'
+      when: never
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
       when: always
-    - if: '$TEST_BRANCH == "true"'
-      when: never
 
 
 .check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
