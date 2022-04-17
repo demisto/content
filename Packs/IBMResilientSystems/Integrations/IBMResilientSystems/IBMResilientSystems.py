@@ -200,7 +200,7 @@ def search_incidents_command(client, args):
 
 
 def search_incidents(client, args):
-    conditions = []
+    conditions = []  # type: Any
     if 'severity' in args:
         value = []
         severity = args['severity'].split(',')

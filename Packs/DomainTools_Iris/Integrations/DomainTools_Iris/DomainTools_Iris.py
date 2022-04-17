@@ -98,7 +98,7 @@ def find_age(create_date):
     Returns: Number of days
 
     """
-    time_diff = datetime.now() - dateparser.parse(create_date)
+    time_diff = datetime.now() - dateparser.parse(create_date)  # type: ignore
     return time_diff.days
 
 
