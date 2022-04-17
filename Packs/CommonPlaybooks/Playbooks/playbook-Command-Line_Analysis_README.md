@@ -1,8 +1,14 @@
 This playbook takes the command line from the alert and performs the following actions:
-- Checks and decodes base64
+- Checks for base64 string and decodes if exists
 - Extracts and enriches indicators from the command line
 - Checks specific arguments for malicious usage 
-At the end of the playbook, it sets a possible verdict for the command line, based on the finding.
+
+At the end of the playbook, it sets a possible verdict for the command line, based on the finding:
+1. Indicators found in the command line
+2. Found AMSI techniques
+3. Found suspicious parameters
+4. Usage of malicious tools
+5. Indication of network activity
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -14,9 +20,9 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
+* MatchRegexV2
 * Base64Decode
 * Set
-* MatchRegexV2
 
 ### Commands
 * enrichIndicators
