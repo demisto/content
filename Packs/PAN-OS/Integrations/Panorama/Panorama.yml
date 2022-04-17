@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Panorama - Test
+  id: Panorama
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -65,8 +65,8 @@ configuration:
   additionalinfo: Use the "API Key (Recommended)" parameter instead.
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
-display: Palo Alto Networks PAN-OS - Test
-name: Panorama - Test
+display: Palo Alto Networks PAN-OS
+name: Panorama
 script:
   commands:
   - arguments:
@@ -955,8 +955,6 @@ script:
       description: URL to check.
       isArray: true
       name: url
-    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
-      name: target
     description: Gets a URL category from URL filtering. This command is only available
       on Firewall devices.
     name: panorama-get-url-category
@@ -2852,7 +2850,7 @@ script:
       description: PAN-OS installation details.
       type: String
   - arguments:
-    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
+    - description: The target device on which to reboot the firewall.
       name: target
     description: Reboots the Firewall device.
     deprecated: true
@@ -5281,7 +5279,7 @@ script:
       required: true
     - description: The serial number of the firewall to download the PCAP from.
       name: serialNumber
-    - description: The
+    - description: The file name for the PCAP type ('dlp-pcap', 'filter-pcap', or 'application-pcap'). Required for 'filter-pcap'.
       name: from
     - description: The new name for the PCAP file after downloading. If this argument
         is not specified, the file name is the PCAP file name set in the firewall.
@@ -6292,7 +6290,7 @@ script:
       description: PAN-OS installation details.
       type: String
   - arguments:
-    - description: The target device on which to reboot the firewall.
+    - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
     description: Reboots the Firewall device.
     name: pan-os-device-reboot
