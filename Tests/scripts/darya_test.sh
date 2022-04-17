@@ -19,7 +19,11 @@ echo "Pipline id: $CI_PIPELINE_ID"
 echo "Job id: $CI_JOB_ID"
 
 echo "Job finished, removing lock file"
-gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-*"
+#gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+#gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-*"
+
+echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
+source $BASH_ENV
+python3 ./Tests/gcp.py
 
 echo "Finished removing lock file"

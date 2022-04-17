@@ -5,12 +5,12 @@
 #==================================
 
 export GCS_LOCKS_PATH=gs://xsoar-ci-artifacts/content-locks-xsiam
-export GCS_QUEUE_FILE=queue
+export GCS_QUEUE_FILE=queue-master
 export LOCK_IDENTIFIER=lock
-export TEST_MACHINES_LIST=TestMachines
+export TEST_MACHINES_LIST=test-machines-master
 export ALLOWED_STATES=running
 export BUILD_STATUS_API=https://code.pan.run/api/v4/projects/2596/jobs   # disable-secrets-detection
-export SELF_LOCK_PATTERN=*-$LOCK_IDENTIFIER-$CI_PIPELINE_ID
+export SELF_LOCK_PATTERN=*-$LOCK_IDENTIFIER-$CI_JOB_ID
 
 #=================================
 #   Variables
@@ -19,7 +19,7 @@ export SELF_LOCK_PATTERN=*-$LOCK_IDENTIFIER-$CI_PIPELINE_ID
 export START=$SECONDS
 export QUEUE_FILE_PATH=$GCS_LOCKS_PATH/$GCS_QUEUE_FILE
 export QUEUE_LOCK_PATTERN=$GCS_QUEUE_FILE-$LOCK_IDENTIFIER-*
-export QUEUE_SELF_LOCK=$GCS_QUEUE_FILE-$LOCK_IDENTIFIER-$CI_PIPELINE_ID
+export QUEUE_SELF_LOCK=$GCS_QUEUE_FILE-$LOCK_IDENTIFIER-$CI_JOB_ID
 
 #=================================
 #   Functions & helpers
@@ -75,11 +75,11 @@ function release_queue() {
 }
 
 function get_number_in_line() {
-	export NUMBER_IN_LINE=`cat $1 2> /dev/null | grep -n $CI_PIPELINE_ID | cut -d: -f1`
+	export NUMBER_IN_LINE=`cat $1 2> /dev/null | grep -n $CI_JOB_ID | cut -d: -f1`
 }
 
 function register_in_line() {
-	echo $CI_PIPELINE_ID >> $1
+	echo $CI_JOB_ID >> $1
 	export LOCK_CHANGED="true"
 }
 
@@ -111,7 +111,7 @@ function get_build_locks() {
 
 function lock_machine() {
         echo "Locking $TEST_MACHINE for testing"
-    	  export MACHINE_LOCK_FILE=$TEST_MACHINE-$LOCK_IDENTIFIER-$CI_PIPELINE_ID
+    	  export MACHINE_LOCK_FILE=$TEST_MACHINE-$LOCK_IDENTIFIER-$CI_JOB_ID
     		touch $MACHINE_LOCK_FILE
     		gsutil -m cp $MACHINE_LOCK_FILE $GCS_LOCKS_PATH/$MACHINE_LOCK_FILE
     		echo $TEST_MACHINE > ChosenMachine
