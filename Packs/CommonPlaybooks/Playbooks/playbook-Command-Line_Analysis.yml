@@ -1,7 +1,7 @@
 id: Command-Line Analysis
 version: -1
 name: Command-Line Analysis
-description: "This playbook takes the command line from the alert and performs the following actions:\n- Checks and decodes base64\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding."
+description: "This playbook takes the command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity"
 starttaskid: "0"
 tasks:
   "0":
@@ -353,12 +353,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 3be872d3-8062-4a8c-8263-07f36fa926fc
+    taskid: b027e4bc-d481-4f58-842d-395bd7ef348f
     type: regular
     task:
-      id: 3be872d3-8062-4a8c-8263-07f36fa926fc
+      id: b027e4bc-d481-4f58-842d-395bd7ef348f
       version: -1
-      name: 'Set command line verdict '
+      name: Set command line verdict of networkActivity
       description: Sets a value in context from the key entered.
       scriptName: Set
       type: regular
@@ -1254,12 +1254,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 8331877c-a348-49ea-8aba-c8d92bdd9df2
+    taskid: c89fbf52-da5f-4bab-836e-07a697e0fb71
     type: regular
     task:
-      id: 8331877c-a348-49ea-8aba-c8d92bdd9df2
+      id: c89fbf52-da5f-4bab-836e-07a697e0fb71
       version: -1
-      name: 'Set command line verdict '
+      name: Set command line verdict of maliciousTools
       description: Sets a value in context from the key entered.
       scriptName: Set
       type: regular
@@ -1290,12 +1290,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 571b2978-8a1b-4697-8d68-ebdb3543cf32
+    taskid: b9b89f0b-8885-4908-8d0f-c785c90feddd
     type: regular
     task:
-      id: 571b2978-8a1b-4697-8d68-ebdb3543cf32
+      id: b9b89f0b-8885-4908-8d0f-c785c90feddd
       version: -1
-      name: 'Set command line verdict '
+      name: Set command line verdict of suspiciousParameters
       description: Sets a value in context from the key entered.
       scriptName: Set
       type: regular
@@ -1326,12 +1326,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: fe7d7c88-4574-490b-88be-224b1bd83dc3
+    taskid: 0fbff6eb-dc6e-4a75-876a-7dcb37dffa6b
     type: regular
     task:
-      id: fe7d7c88-4574-490b-88be-224b1bd83dc3
+      id: 0fbff6eb-dc6e-4a75-876a-7dcb37dffa6b
       version: -1
-      name: 'Set command line verdict '
+      name: Set command line verdict of AMSI
       description: Sets a value in context from the key entered.
       scriptName: Set
       type: regular
@@ -1448,12 +1448,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 0413e032-f6c1-4a55-81cd-bcac12a33d91
+    taskid: 8dae2f2c-fb4b-4ae8-83dd-1af6df62e0b7
     type: regular
     task:
-      id: 0413e032-f6c1-4a55-81cd-bcac12a33d91
+      id: 8dae2f2c-fb4b-4ae8-83dd-1af6df62e0b7
       version: -1
-      name: 'Set command line verdict '
+      name: Set command line verdict of foundIndicators
       description: Sets a value in context from the key entered.
       scriptName: Set
       type: regular
