@@ -119,6 +119,7 @@ hashes
 FTPs
 afterwards
 http
+HTML
 runtime
 dns
 Ubuntu
