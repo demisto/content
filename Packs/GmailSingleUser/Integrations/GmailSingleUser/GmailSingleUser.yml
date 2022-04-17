@@ -58,12 +58,10 @@ configuration:
   name: insecure
   required: false
   type: 8
-  defaultvalue: ''
   additionalinfo:
 - name: proxy
   display: Use system proxy settings
   required: false
-  defaultvalue: ''
   type: 8
   additionalinfo:
 description: Gmail API using OAuth 2.0.
