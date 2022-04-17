@@ -142,6 +142,9 @@
                 "occurred": {
                     "simple": "_time"
                 },
+                "owner": {
+					"simple": "owner"
+				},
                 "severity": {
                     "simple": "severity"
                 }
