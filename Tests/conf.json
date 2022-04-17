@@ -5245,7 +5245,7 @@
         "Git_Integration-Test": "Issue 37800",
         "RecordedFutureFeed - Test": "Issue 43923",
         "RedLockTest": "Issue 24600",
-        "SymantecEndpointProtection_Test": "Unable to connect to instance"
+        "SymantecEndpointProtection_Test": "Issue 30157"
     },
     "skipped_integrations": {
 
