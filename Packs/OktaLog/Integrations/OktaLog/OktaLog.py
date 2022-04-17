@@ -113,7 +113,6 @@ class GetEvents:
         for event in events:
             if event.get('published') == last_time:
                 ids.append(event.get('uuid'))
-        d = {'after': last_time.isoformat(), 'ids': ids}
         return {'after': last_time.isoformat(), 'ids': ids}
 
     @staticmethod

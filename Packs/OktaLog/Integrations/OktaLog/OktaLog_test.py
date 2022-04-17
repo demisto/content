@@ -16,8 +16,7 @@ get_events = GetEvents(client)
       {'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5fecc'},
       {'uuid': '1de9a355-3148-11ec-a0e6-a12f3c5d77f3'}], ['1de9a355-3148-11ec-a0e6-a12f3c5dxxxx'], 3),
     ([], ['1de9a355-3148-11ec-a0e6-a12f3c5d77f3'], 0)])
-def test_remove_duplicates(mocker, events, ids, result):
-    # mocker.patch.object(client, 'call', return_value={})
+def test_remove_duplicates(events, ids, result):
     assert len(get_events.remove_duplicates(events, ids)) == result
 
 
@@ -42,7 +41,6 @@ def test_get_last_run(events, result):
 
 
 @pytest.mark.parametrize("time", [('2022-04-17T12:32:36.667)')])
-
 def test_set_since_value(time):
     req_params.set_since_value(time)
     assert req_params.since == time
