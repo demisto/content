@@ -225,7 +225,6 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
     analysis_type = args.get('analysis_type', 'File')
     analysis_ids = argToList(args.get('analysis_id'))
     indicator_name = args.get('indicator_name')
-    analysis_result = None
 
     command_results = []
 
@@ -235,15 +234,17 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
                 response = intezer_api.get_url_result(f'/endpoint-analyses/{analysis_id}')
                 analysis_result = response.json()['result']
             elif analysis_type == 'Url':
-                analysis = get_url_analysis_by_id(analysis_id)
+                analysis = get_url_analysis_by_id(analysis_id, api=intezer_api)
                 if not analysis:
                     command_results.append(_get_missing_url_result(analysis_id))
+                    continue
                 else:
                     analysis_result = analysis.result()
             else:
                 analysis = get_file_analysis_by_id(analysis_id, api=intezer_api)
                 if not analysis:
                     command_results.append(_get_missing_analysis_result(analysis_id))
+                    continue
                 else:
                     analysis_result = analysis.result()
 

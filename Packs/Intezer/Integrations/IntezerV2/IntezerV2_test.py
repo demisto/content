@@ -713,4 +713,4 @@ def test_analyze_by_url_command_missing_url(requests_mock):
     command_results = analyze_url_command(intezer_api, args)
 
     # Assert
-    assert command_results.readable_output == f'The Url {url} was not found on Intezer. Error Server returned bad request error: Bad url'
+    assert command_results.readable_output == f'The Url {url} was not found on Intezer. Error Server returned bad request Error:Bad url'
