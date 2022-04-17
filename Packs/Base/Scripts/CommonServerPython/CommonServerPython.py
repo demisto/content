@@ -9707,6 +9707,134 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
     return last_run
 
 
+# YML metadata collector mocked classes.
+class ParameterTypes:
+    """YML ConfKey key_type type.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The ParameterTypes enum
+    :rtype: ``ParameterTypes``
+    """
+    STRING = 0
+    NUMBER = 1
+    ENCRYPTED = 4
+    BOOLEAN = 8
+    AUTH = 9
+    DOWNLOAD_LINK = 11
+    TEXT_AREA = 12
+    INCIDENT_TYPE = 13
+    TEXT_AREA_ENCRYPTED = 14
+    SINGLE_SELECT = 15
+    MULTI_SELECT = 16
+
+
+class OutputArgument:
+    """YML output argument.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The OutputArgument object
+    :rtype: ``OutputArgument``
+    """
+    def __init__(self,
+                 name,
+                 output_type=dict,
+                 description=None,
+                 prefix=None):
+        pass
+
+
+class InputArgument:
+    """YML input argument for a command.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The InputArgument object
+    :rtype: ``InputArgument``
+    """
+    def __init__(self,
+                 name=None,
+                 description=None,
+                 required=False,
+                 default=None,
+                 is_array=False,
+                 secret=False,
+                 execution=False,
+                 options=None,
+                 input_type=None):
+        pass
+
+
+class ConfKey:
+    """YML configuration key fields.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The ConfKey object
+    :rtype: ``ConfKey``
+    """
+    def __init__(self,
+                 name,
+                 display=None,
+                 default_value=None,
+                 key_type=0,  # Expects ParameterType
+                 required=False,
+                 additional_info=None,
+                 options=None,
+                 input_type=None):
+        pass
+
+
+class YMLMetadataCollector:
+    """The YMLMetadataCollector class provides decorators for integration
+    functions which contain details relevant to yml generation.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The YMLMetadataCollector object
+    :rtype: ``YMLMetadataCollector``
+    """
+    def __init__(self, integration_name, docker_image="demisto/python3:latest",
+                 description=None, category="Utilities", conf=None,
+                 is_feed=False, is_fetch=False, is_runonce=False,
+                 detailed_description=None, image=None, display=None,
+                 tests=["No tests"], fromversion="6.0.0",
+                 long_running=False, long_running_port=False, integration_type="python",
+                 integration_subtype="python3", deprecated=None, systemd=None,
+                 timeout=None, default_classifier=None,
+                 default_mapper_in=None, integration_name_x2=None, default_enabled_x2=None,
+                 default_enabled=None, verbose=False):
+        pass
+
+    def command(self, command_name, outputs_prefix=None,
+                outputs_list=None, inputs_list=None,
+                execution=None, file_output=False,
+                multiple_output_prefixes=False, deprecated=False, restore=False,
+                description=None):
+        def command_wrapper(func):
+            def get_out_info(*args, **kwargs):
+                if restore:
+                    kwargs['command_name'] = command_name
+                    kwargs['outputs_prefix'] = outputs_prefix
+                    kwargs['execution'] = execution
+                return func(*args, **kwargs)
+
+            return get_out_info
+
+        return command_wrapper
+
+
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################
