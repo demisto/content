@@ -26,7 +26,7 @@ export QUEUE_SELF_LOCK=$GCS_QUEUE_FILE-$LOCK_IDENTIFIER-$CI_PIPELINE_ID
 #==================================
 
 function get_build_job_statuses() {
-	export BUILD_STATUSES=`echo $1 | tr ' ' '\n' | xargs -I {} curl --header "PRIVATE-TOKEN: $GITLAB_STATUS_TOKEN" $BUILD_STATUS_API/{}/jobs -s | jq -c '.[] | select(.name=="xsiam_server_master" or .name=="test") | .status' | sed 's/"//g' | tr ' ' '\n' | sort | uniq`
+	export BUILD_STATUSES=`echo $1 | tr ' ' '\n' | xargs -I {} curl --header "PRIVATE-TOKEN: $GITLAB_STATUS_TOKEN" $BUILD_STATUS_API/{} -s | jq -c '.[] | .status' | sed 's/"//g' | tr ' ' '\n' | sort | uniq`
 }
 
 function is_status_exists() {
@@ -253,4 +253,3 @@ done
 export XSIAM_CHOSEN_MACHINE_ID=`cat ChosenMachine`	# ChosenMachine it is the file with free machine. machine name will be written there.
 # export vars to file
 echo -e "export XSIAM_CHOSEN_MACHINE_ID=$XSIAM_CHOSEN_MACHINE_ID" >>  XSIAMEnvVariables
-
