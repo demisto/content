@@ -1,0 +1,966 @@
+commonfields:
+  id: OPNSense
+  version: -1
+name: OPNSense
+display: OPNSense
+category: Network Security
+description: >-
+  Manage OPNsense Firewall. 
+
+  For more information see OPNsense documentation.
+
+  OPNsense is an open source, easy-to-use and easy-to-build HardenedBSD based firewall and routing platform.
+configuration:
+- name: url
+  display: Server URL (e.g. https://opnsense.mydomain.ltd)
+  required: true
+  defaultvalue: https://opnsense.mydomain.ltd
+  type: 0
+  additionalinfo:
+- name: apikey
+  display: API Key
+  required: true
+  type: 4
+- name: apisecret
+  display: API Secret
+  required: true
+  type: 4
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  type: 8
+script:
+  script: ""
+  type: python
+  commands:
+  - name: opnsense-alias-list
+    arguments: []
+    outputs:
+    - contextPath: OPNSense.Alias
+      description: Aliases list
+    description: Get aliases list
+  - name: opnsense-alias-add
+    arguments:
+    - name: name
+      required: true
+      description: Alias name
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - host
+      - network
+      - port
+      - url
+      - urltable
+      - geoip
+      - networkgroup
+      - mac
+      - external
+      - dynipv6host
+      description: Alias type
+    - name: enabled
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Alias enabled
+      defaultValue: "1"
+    - name: proto
+      auto: PREDEFINED
+      predefined:
+      - inet
+      - inet6
+      description: Alias protocol
+    - name: updatefreq
+      description: Refresh Frequency (format A.B where A is day and B is hour, every 15 mins will be 0.01 for example)
+    - name: counters
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Alias statistics
+    - name: description
+      description: Alias description
+    - name: content
+      description: Alias content
+      isArray: true
+      type: textArea
+    - name: auto_commit
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      description: Apply automaticly aliases changes
+      defaultValue: "False"
+    outputs:
+    - contextPath: OPNSense.Alias
+      description: Alias UUID created
+    description: Create new alias
+  - name: opnsense-alias-del
+    arguments:
+    - name: uuid
+      required: true
+      description: Alias UUID
+    - name: auto_commit
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      description: Apply automaticly aliases changes
+      defaultValue: "False"
+    outputs:
+    - contextPath: OPNSense.Alias
+      description: Alias UUID deleted
+    description: Delete alias with uuid
+  - name: opnsense-alias-mod
+    arguments:
+    - name: uuid
+      required: true
+      description: Alias UUID
+    - name: content
+      required: true
+      description: Alias content seperated by comma (NB. will replace actual content!)
+      isArray: true
+      type: textArea
+    - name: name
+      description: Alias name
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - host
+      - network
+      - port
+      - url
+      - urltable
+      - geoip
+      - networkgroup
+      - mac
+      - external
+      - dynipv6host
+      description: Alias type
+    - name: proto
+      auto: PREDEFINED
+      predefined:
+      - inet
+      - inet6
+      description: Alias protocol
+    - name: enabled
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Alias enabled
+    - name: updatefreq
+      description: Refresh Frequency (format A.B where A is day and B is hour, every 15 mins will be 0.01 for example)
+    - name: counters
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Alias statistics
+    - name: description
+      description: Alias description
+    - name: auto_commit
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      description: Apply automaticly aliases changes
+      defaultValue: "False"
+    outputs:
+    - contextPath: OPNSense.Alias
+      description: Alias UUID modified
+    description: Modify an existing alias
+  - name: opnsense-alias-mod-additem
+    arguments:
+    - name: name
+      required: true
+      description: Alias name
+    - name: entry
+      description: Entry to add
+    - name: auto_commit
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      description: Apply automaticly aliases changes
+      defaultValue: "False"
+    outputs:
+    - contextPath: OPNSense.Alias
+      description: Alias UUID modified
+    description: Add item into existing alias
+  - name: opnsense-alias-mod-delitem
+    arguments:
+    - name: name
+      required: true
+      description: Alias name
+    - name: entry
+      description: Entry to remove
+    - name: auto_commit
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      description: Apply automaticly aliases changes
+      defaultValue: "False"
+    outputs:
+    - contextPath: OPNSense.Alias
+      description: Alias UUID modified
+    description: Del item into existing alias
+  - name: opnsense-alias-get
+    arguments:
+    - name: uuid
+      description: Alias UUID (you must at least define the name or the uuid argument)
+    - name: name
+      description: Alias name (you must at least define the name or the uuid argument)
+    description: Get alias details
+    outputs:
+    - contextPath: OPNSense.Alias
+      description: Alias details
+      type: Unknown
+    - contextPath: OPNSense.Alias.name
+      description: Alias name
+      type: Unknown
+    - contextPath: OPNSense.Alias.content
+      description: Alias content
+      type: Unknown
+    - contextPath: OPNSense.Alias.description
+      description: Alias description
+      type: Unknown
+    - contextPath: OPNSense.Alias.enabled
+      description: Alias enabled
+      type: Unknown
+  - name: opnsense-alias-get-uuid
+    arguments:
+    - name: name
+      required: true
+      description: Alias name
+    description: Get alias UUID
+    outputs:
+    - contextPath: OPNSense.Alias
+      description: Alias UUID
+      type: Unknown
+  - name: opnsense-interfaces-list
+    arguments: []
+    description: Get interfaces list
+    outputs:
+    - contextPath: OPNSense.Interfaces
+      description: Interfaces list
+      type: Unknown
+  - name: opnsense-category-list
+    arguments: []
+    description: Get categories list
+    outputs:
+    - contextPath: OPNSense.Category
+      description: Categories list
+      type: Unknown
+  - name: opnsense-category-add
+    arguments:
+    - name: name
+      required: true
+      description: Category name
+    - name: auto
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Automatically added, will be removed when unused
+    - name: color
+      description: "Category color (format : #YVWXYZ)"
+    description: Create new category
+    outputs:
+    - contextPath: OPNSense.Category
+      description: Category UUID
+      type: Unknown
+  - name: opnsense-category-del
+    arguments:
+    - name: uuid
+      required: true
+      description: Category UUID
+    description: Delete category with uuid
+    outputs:
+    - contextPath: OPNSense.Category
+      description: Category UUID
+      type: Unknown
+  - name: opnsense-category-get
+    arguments:
+    - name: uuid
+      description: Category UUID
+    description: Get category details
+    outputs:
+    - contextPath: OPNSense.Category
+      description: Category details
+      type: Unknown
+  - name: opnsense-category-mod
+    arguments:
+    - name: uuid
+      required: true
+      description: Category UUID
+    - name: name
+      description: Category name
+    - name: color
+      description: "Category color (format : #YVWXYZ)"
+    - name: auto
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Automatically added, will be removed when unused
+    description: Modify an axisting category
+    outputs:
+    - contextPath: cef2c7d7-68d8-41aa-b6b8-1cac38554d58
+      description: Category UUID
+      type: Unknown
+  - name: opnsense-rule-list
+    arguments: []
+    description: Get rules list
+    outputs:
+    - contextPath: OPNSense.Rule
+      description: Rules list
+      type: Unknown
+  - name: opnsense-rule-get
+    arguments:
+    - name: uuid
+      required: true
+      description: Rule UUID
+    description: Get rule details
+    outputs:
+    - contextPath: OPNSense.Rule
+      description: Rule details
+      type: Unknown
+    - contextPath: OPNSense.Rule.description
+      description: Rule description
+      type: Unknown
+    - contextPath: OPNSense.Rule.enabled
+      description: Rule enabled
+      type: Unknown
+    - contextPath: OPNSense.Rule.source_net
+      description: Source NET's rule
+      type: Unknown
+    - contextPath: OPNSense.Rule.destination_net
+      description: Destination NET's rule
+      type: Unknown
+    - contextPath: OPNSense.Rule.interface
+      description: Interface's rule
+      type: Unknown
+  - name: opnsense-alias-apply
+    arguments: []
+    description: Apply configuration
+    outputs: []
+  - name: opnsense-device-reboot
+    arguments: []
+    description: Reboot the device
+    outputs:
+    - contextPath: OPNSense.Device
+      description: Reboot status
+      type: Unknown
+  - name: opnsense-firmware-info
+    arguments: []
+    description: Get firmware info
+    outputs:
+    - contextPath: OPNSense.Firmware
+      description: Firmware info
+      type: Unknown
+  - name: opnsense-firmware-status
+    arguments: []
+    description: Get firmware status
+    outputs:
+    - contextPath: OPNSense.Firmware
+      description: Firmware status
+      type: Unknown
+  - name: opnsense-firmware-upgradestatus
+    arguments: []
+    description: Get firmware upgrade status
+    outputs:
+    - contextPath: OPNSense.Firmware
+      description: Firmware upgrade status
+      type: Unknown
+  - name: opnsense-firmware-update
+    arguments: []
+    description: Do firmware update
+    outputs:
+    - contextPath: OPNSense.Firmware
+      description: Firmware update
+      type: Unknown
+  - name: opnsense-firmware-upgrade
+    arguments: []
+    description: Do firmware upgrade
+    outputs:
+    - contextPath: OPNSense.Firmware
+      description: Firmware upgrade
+      type: Unknown
+  - name: opnsense-rule-del
+    arguments:
+    - name: uuid
+      required: true
+      description: Rule UUID
+    - name: auto_commit
+      auto: PREDEFINED
+      predefined:
+      - None
+      - "True"
+      description: Apply automaticly aliases changes
+      defaultValue: None
+    description: Delete an existing rule
+    outputs:
+    - contextPath: OPNSense.Rule
+      description: Rule UUID
+      type: Unknown
+  - name: opnsense-rule-add
+    arguments:
+    - name: action
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - pass
+      - block
+      - reject
+      description: Rule action
+      defaultValue: pass
+    - name: enabled
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Rule enabled
+      defaultValue: "1"
+    - name: quick
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Rule quick
+      defaultValue: "1"
+    - name: interface
+      description: Rule interface
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - in
+      - out
+      description: Rule direction
+      defaultValue: in
+    - name: ipprotocol
+      auto: PREDEFINED
+      predefined:
+      - inet
+      - inet6
+      description: Rule IP Protocol
+      defaultValue: inet
+    - name: protocol
+      auto: PREDEFINED
+      predefined:
+      - any
+      - ICMP
+      - IGMP
+      - GGP
+      - IPENCAP
+      - ST2
+      - TCP
+      - CBT
+      - EGP
+      - IGP
+      - BBN-RCC
+      - NVP
+      - PUP
+      - ARGUS
+      - EMCON
+      - XNET
+      - CHAOS
+      - UDP
+      - MUX
+      - DCN
+      - HMP
+      - PRM
+      - XNS-IDP
+      - TRUNK-1
+      - TRUNK-2
+      - LEAF-1
+      - LEAF-2
+      - RDP
+      - ISO-TP4
+      - NETBLT
+      - MFE-NSP
+      - MERIT-INP
+      - DCCP
+      - 3PC
+      - IDPR
+      - XTP
+      - DDP
+      - IDPR-CMTP
+      - TP++
+      - IL
+      - IPV6
+      - SDRP
+      - IDRP
+      - RSVP
+      - GRE
+      - DSR
+      - BNA
+      - ESP
+      - AH
+      - I-NLSP
+      - SWIPE
+      - NARP
+      - MOBILE
+      - TLSP
+      - SKIP
+      - IPV6-ICMP
+      - CFTP
+      - SAT-EXPAK
+      - KRYPTOLAN
+      - RVD
+      - IPPC
+      - SAT-MON
+      - VISA
+      - IPCV
+      - CPNX
+      - CPHB
+      - WSN
+      - PVP
+      - BR-SAT-MON
+      - SUN-ND
+      - WB-MON
+      - WB-EXPAK
+      - ISO-IP
+      - VMTP
+      - SECURE-VMTP
+      - VINES
+      - TTP
+      - NSFNET-IGP
+      - DGP
+      - TCF
+      - EIGRP
+      - OSPF
+      - SPRITE-RPC
+      - LARP
+      - MTP
+      - AX.25
+      - IPIP
+      - MICP
+      - SCC-SP
+      - ETHERIP
+      - ENCAP
+      - GMTP
+      - IFMP
+      - PNNI
+      - PIM
+      - ARIS
+      - SCPS
+      - QNX
+      - A/N
+      - IPCOMP
+      - SNP
+      - COMPAQ-PEER
+      - IPX-IN-IP
+      - CARP
+      - PGM
+      - L2TP
+      - DDX
+      - IATP
+      - STP
+      - SRP
+      - UTI
+      - SMP
+      - SM
+      - PTP
+      - ISIS
+      - CRTP
+      - CRUDP
+      - SPS
+      - PIPE
+      - SCTP
+      - FC
+      - RSVP-E2E-IGNORE
+      - UDPLITE
+      - MPLS-IN-IP
+      - MANET
+      - HIP
+      - SHIM6
+      - WESP
+      - ROHC
+      - PFSYNC
+      - DIVERT
+      description: Rule protocol
+      defaultValue: any
+    - name: source_net
+      description: Source Net
+      defaultValue: any
+    - name: source_not
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Source NOT
+      defaultValue: "0"
+    - name: source_port
+      description: Source port
+    - name: destination_net
+      description: Destination Net
+      defaultValue: any
+    - name: destination_not
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Destination NOT
+      defaultValue: "0"
+    - name: destination_port
+      description: Destination port
+    - name: log
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Enable logging
+      defaultValue: "0"
+    - name: sequence
+      description: Provide a valid sequence for sorting (1 - 99999)
+      defaultValue: "1"
+    - name: description
+      description: Rule description
+    - name: auto_commit
+      auto: PREDEFINED
+      predefined:
+      - None
+      - "True"
+      description: Apply automaticly aliases changes
+      defaultValue: None
+    description: Create a new rule
+    outputs:
+    - contextPath: OPNSense.Rule
+      description: Rule UUID
+      type: Unknown
+  - name: opnsense-rule-mod
+    arguments:
+    - name: uuid
+      required: true
+      description: Rule UUID
+    - name: action
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - pass
+      - block
+      - reject
+      description: Rule action
+      defaultValue: pass
+    - name: enabled
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Rule enabled
+      defaultValue: "1"
+    - name: quick
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Rule quick
+      defaultValue: "1"
+    - name: interface
+      description: Rule interface
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - in
+      - out
+      description: Rule description
+      defaultValue: in
+    - name: ipprotocol
+      auto: PREDEFINED
+      predefined:
+      - inet
+      - inet6
+      description: Rule IP protocol
+      defaultValue: inet
+    - name: protocol
+      auto: PREDEFINED
+      predefined:
+      - any
+      - ICMP
+      - IGMP
+      - GGP
+      - IPENCAP
+      - ST2
+      - TCP
+      - CBT
+      - EGP
+      - IGP
+      - BBN-RCC
+      - NVP
+      - PUP
+      - ARGUS
+      - EMCON
+      - XNET
+      - CHAOS
+      - UDP
+      - MUX
+      - DCN
+      - HMP
+      - PRM
+      - XNS-IDP
+      - TRUNK-1
+      - TRUNK-2
+      - LEAF-1
+      - LEAF-2
+      - RDP
+      - ISO-TP4
+      - NETBLT
+      - MFE-NSP
+      - MERIT-INP
+      - DCCP
+      - 3PC
+      - IDPR
+      - XTP
+      - DDP
+      - IDPR-CMTP
+      - TP++
+      - IL
+      - IPV6
+      - SDRP
+      - IDRP
+      - RSVP
+      - GRE
+      - DSR
+      - BNA
+      - ESP
+      - AH
+      - I-NLSP
+      - SWIPE
+      - NARP
+      - MOBILE
+      - TLSP
+      - SKIP
+      - IPV6-ICMP
+      - CFTP
+      - SAT-EXPAK
+      - KRYPTOLAN
+      - RVD
+      - IPPC
+      - SAT-MON
+      - VISA
+      - IPCV
+      - CPNX
+      - CPHB
+      - WSN
+      - PVP
+      - BR-SAT-MON
+      - SUN-ND
+      - WB-MON
+      - WB-EXPAK
+      - ISO-IP
+      - VMTP
+      - SECURE-VMTP
+      - VINES
+      - TTP
+      - NSFNET-IGP
+      - DGP
+      - TCF
+      - EIGRP
+      - OSPF
+      - SPRITE-RPC
+      - LARP
+      - MTP
+      - AX.25
+      - IPIP
+      - MICP
+      - SCC-SP
+      - ETHERIP
+      - ENCAP
+      - GMTP
+      - IFMP
+      - PNNI
+      - PIM
+      - ARIS
+      - SCPS
+      - QNX
+      - A/N
+      - IPCOMP
+      - SNP
+      - COMPAQ-PEER
+      - IPX-IN-IP
+      - CARP
+      - PGM
+      - L2TP
+      - DDX
+      - IATP
+      - STP
+      - SRP
+      - UTI
+      - SMP
+      - SM
+      - PTP
+      - ISIS
+      - CRTP
+      - CRUDP
+      - SPS
+      - PIPE
+      - SCTP
+      - FC
+      - RSVP-E2E-IGNORE
+      - UDPLITE
+      - MPLS-IN-IP
+      - MANET
+      - HIP
+      - SHIM6
+      - WESP
+      - ROHC
+      - PFSYNC
+      - DIVERT
+      description: Rule protocol
+    - name: source_net
+      description: Source Net
+    - name: source_not
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Source NOT
+      defaultValue: "0"
+    - name: source_port
+      description: Source port
+    - name: destination_net
+      description: Destination Net
+    - name: destination_not
+      description: Destination NOT
+    - name: destination_port
+      description: Destination port
+    - name: log
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Enable log
+      defaultValue: "0"
+    - name: description
+      description: Rule description
+    - name: auto_commit
+      auto: PREDEFINED
+      predefined:
+      - None
+      - "True"
+      description: Apply automaticly aliases changes
+      defaultValue: None
+    description: Modify an existing rule
+    outputs:
+    - contextPath: OPNSense.Rule
+      description: Rule UUID
+      type: Unknown
+  - name: opnsense-rule-apply
+    arguments:
+    - name: rollback_revision
+      description: Rollback revision
+    description: Apply rules current configuration
+    outputs:
+    - contextPath: OPNSense.Rule
+      description: Action status
+      type: Unknown
+  - name: opnsense-rule-savepoint
+    arguments: []
+    description: Save rules current configuration
+    outputs:
+    - contextPath: OPNSense.Rule
+      description: Action status
+      type: Unknown
+  - name: opnsense-logs-search
+    arguments:
+    - name: limit
+      default: true
+      description: Log search limit
+      defaultValue: "1000"
+    - name: ip
+      description: Search IP in src or dst
+    - name: interface
+      description: Interface search filter
+    description: Search into firewall logs
+    outputs:
+    - contextPath: OPNSense.Logs
+      description: OPNSense logs
+      type: Unknown
+    - contextPath: OPNSense.Logs.interface
+      description: interface in logs
+      type: Unknown
+    - contextPath: OPNSense.Logs.src
+      description: SRC in logs
+      type: Unknown
+    - contextPath: OPNSense.Logs.srcport
+      description: SRCPORT in logs
+      type: Unknown
+    - contextPath: OPNSense.Logs.dst
+      description: DST in logs
+      type: Unknown
+    - contextPath: OPNSense.Logs.dstport
+      description: DSTPORT in logs
+      type: Unknown
+    - contextPath: OPNSense.Logs.action
+      description: Action in logs
+      type: Unknown
+    - contextPath: OPNSense.Logs.__timestamp__
+      description: timestamp in logs
+      type: Unknown
+    - contextPath: OPNSense.Logs.label
+      description: label in logs
+      type: Unknown
+    - contextPath: OPNSense.Logs.protoname
+      description: protoname in logs
+      type: Unknown
+  - name: opnsense-states-search
+    arguments:
+    - name: ip
+      description: Search IP in src or dst
+    description: Query states
+    outputs:
+    - contextPath: OPNSense.States
+      description: OPNSense States
+      type: Unknown
+    - contextPath: OPNSense.States.label
+      description: label in states
+      type: Unknown
+    - contextPath: OPNSense.States.descr
+      description: states description
+      type: Unknown
+    - contextPath: OPNSense.States.nat_addr
+      description: nat address in states
+      type: Unknown
+    - contextPath: OPNSense.States.nat_port
+      description: nat port in states
+      type: Unknown
+    - contextPath: OPNSense.States.iface
+      description: interface in states
+      type: Unknown
+    - contextPath: OPNSense.States.ipproto
+      description: IP Protocol in states
+      type: Unknown
+    - contextPath: OPNSense.States.proto
+      description: Protocol in states
+      type: Unknown
+  - name: opnsense-state-del
+    arguments:
+    - name: state_id
+      description: State ID
+    description: Delete state with ID
+    outputs: []
+  - name: opnsense-rule-revert
+    arguments:
+    - name: rollback_revision
+      description: Rollback revision
+    description: Revert config to given savepoint
+    outputs: []
+  dockerimage: demisto/opnsense:1.0.0.28314
+  runonce: false
+  subtype: python3
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

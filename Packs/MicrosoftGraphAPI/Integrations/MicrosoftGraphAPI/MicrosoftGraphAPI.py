@@ -141,8 +141,6 @@ def main() -> None:  # pragma: no cover
     app_secret = params.get('app_secret') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('certificate_thumbprint')
     private_key = params.get('private_key')
-    if not app_secret and not (certificate_thumbprint and private_key):
-        raise DemistoException('Application Secret or Certificate Thumbprint and Private Key must be provided.')
 
     try:
         client = MsGraphClient(
