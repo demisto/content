@@ -628,7 +628,7 @@ class Notable:
             return self.id
 
         notable_raw_data = self.data.get('_raw', '')
-        raw_hash = hashlib.md5(notable_raw_data).hexdigest()  # nosec
+        raw_hash = hashlib.md5(notable_raw_data).hexdigest()  # guardrails-disable-line nosec
 
         if self.time_is_missing and self.index_time:
             notable_custom_id = '{}_{}'.format(self.index_time, raw_hash)  # index_time stays in epoch to differentiate
