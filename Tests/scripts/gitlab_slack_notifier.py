@@ -274,7 +274,7 @@ def main():
             'attachments': slack_msg_data
         }
     )
-    if pipeline_failed_jobs:
+    if pipeline_failed_jobs: #and slack_channel == CONTENT_CHANNEL
         notify_failures_to_build_channel(slack_client, slack_msg_data)
 
 
