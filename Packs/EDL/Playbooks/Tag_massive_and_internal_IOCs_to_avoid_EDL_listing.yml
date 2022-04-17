@@ -231,7 +231,7 @@ tasks:
     task:
       id: 61af1bf3-2dc7-4d3a-8ab4-68386511cb9d
       version: -1
-      name: Append Big_CIDR tag
+      name: Append Massive_CIDR tag
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
       script: Builtin|||appendIndicatorField
       type: regular
@@ -328,7 +328,7 @@ tasks:
     task:
       id: 00962fb1-ba33-4cbd-80fb-b954cd3a5b13
       version: -1
-      name: Append Big_Domainglob tag
+      name: Append TLD_Wildcard tag
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
       script: Builtin|||appendIndicatorField
       type: regular
@@ -463,7 +463,7 @@ tasks:
     task:
       id: cbd36ac7-1b29-41cf-8776-f7bb14c0c107
       version: -1
-      name: Checkmark Internal IPs
+      name: Mark IPs as Internal
       description: commands.local.cmd.set.indicator
       script: Builtin|||setIndicator
       type: regular
@@ -589,7 +589,7 @@ tasks:
     task:
       id: 41b58221-2e2c-404c-8a56-8fa31e9de755
       version: -1
-      name: Checkmark Internal Domains
+      name: Mark domains as internal
       description: commands.local.cmd.set.indicator
       script: Builtin|||setIndicator
       type: regular
