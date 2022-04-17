@@ -6215,9 +6215,33 @@ def get_anti_spyware_best_practice_command():
     })
 
 
-def apply_dns_signature_policy_command(args)-> CommandResults:
-
-    return CommandResults(readable_output='Success')
+def apply_dns_signature_policy_command(args) -> CommandResults:
+    name = args.get('name')
+    edl = args.get('edl')
+    desc = args.get('description')
+    action = args.get('action')
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{DEVICE_GROUP}']/profiles/spyware/entry[@name='{name}']",
+        'key': API_KEY,
+        'element': '<botnet-domains>'
+                   f'<lists>'
+                   f'<entry name="default-paloalto-dns"><packet-capture>disable</packet-capture><action><sinkhole/></action></entry>'
+                   f'<entry name="default-paloalto-cloud"><packet-capture>disable</packet-capture><action><allow/></action></entry>'
+                   f'<entry name="{edl}"><packet-capture>disable</packet-capture><action><{action}/></action></entry>'
+                   f'</lists>'
+                   f'<sinkhole><ipv4-address>pan-sinkhole-default-ip</ipv4-address><ipv6-address>::1</ipv6-address></sinkhole>'
+                   f'</botnet-domains>'
+                   f'<description>{desc}</description>'
+                   f'</request>'
+    }
+    result = http_request(
+        URL,
+        'SET',
+        params=params,
+    )
+    return CommandResults(outputs=result)
 
 
 @logger
@@ -9876,7 +9900,7 @@ def main():
                     empty_result_message="Software download not started"
                 )
             )
-        elif command == '!pan-os-apply-dns-signature-policy':
+        elif command == 'pan-os-apply-dns-signature-policy':
             return_results(
                 apply_dns_signature_policy_command(args)
             )

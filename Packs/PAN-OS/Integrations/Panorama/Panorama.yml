@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Panorama
+  id: Panorama - SPY
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -65,8 +65,8 @@ configuration:
   additionalinfo: Use the "API Key (Recommended)" parameter instead.
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
-display: Palo Alto Networks PAN-OS
-name: Panorama
+display: Palo Alto Networks PAN-OS - SPY
+name: Panorama - SPY
 script:
   commands:
   - arguments:
@@ -6607,6 +6607,27 @@ script:
     - contextPath: Panorama.Spyware.BotentDomain.Max_version
       description: The botnet domain max version.
       type: String
+  - arguments:
+      - name: Anti_spyware_profile_name
+        description: The name of the anti spyware profile
+        required: true
+      - name: description
+        description: The description of the anti spyware profile
+      - name: DNS_signature_source
+        description: The EDL name to link to the profile
+        required: true
+      - auto: PREDEFINED
+        description: Action on DNS queris
+        name: Action
+        predefined:
+          - alert
+          - allow
+          - block
+          - sinkhole
+        required: true
+    name: pan-os-apply-dns-signature-policy
+    description: Allows assigning of EDL to the Anti-Spyware profile under "DNS Signature Policies"
+    outputs: []
   - arguments: []
     description: Get file-blocking best practices.
     name: pan-os-get-file-blocking-best-practice
