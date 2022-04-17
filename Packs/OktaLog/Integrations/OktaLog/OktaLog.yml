@@ -1,0 +1,74 @@
+commonfields:
+  id: Okta SIEM
+  version: -1
+name: Okta SIEM
+display: Okta SIEM
+category: Analytics & SIEM
+description: Okta logs integration for SIEM.
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: 'https://XXXXXXX.oktapreview.com/api/v1/logs'
+  type: 0
+  required: true
+- display: HTTP Method
+  name: method
+  type: 15
+  required: true
+  defaultvalue: GET
+  options:
+  - GET
+  - POST
+  - DELETE
+  - PUT
+  - PATCH
+  - HEAD
+- display: Headers
+  name: headers
+  defaultvalue: '{"Accept": "application/json","Content-Type": "application/json"}'
+  type: 0
+  required: true
+- display: Encrypted headers
+  name: encrypted_headers
+  defaultvalue: '{"Authorization": "SSWS 00E_T06yX_gx0c9avNHUA4nBGzrgkXJzNqJgTaYw16"}'
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Use Secured Connection
+  name: verify
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Api request limit
+  name: limit
+  type: 0
+  defaultvalue: 1000
+  required: false
+- display: SIEM request limit
+  name: request_size
+  type: 0
+  defaultvalue: 1000
+  required: true
+- display: First fetch time interval(In days)
+  name: after
+  type: 0
+  defaultvalue: 7
+  required: true
+script:
+  script: ""
+  type: python
+  commands:
+  - name: okta-fetch-logs
+    arguments:
+    - name: limit
+      description: How many logs to fetch from the api
+    description: Brings logs from okta.
+  dockerimage: demisto/fastapi:1.0.0.28061
+  runonce: false
+  subtype: python3
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
