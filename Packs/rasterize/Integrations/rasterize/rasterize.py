@@ -49,6 +49,7 @@ DEFAULT_CHROME_OPTIONS = [
 
 USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
 PAGES_LIMITATION = 20
+MAXPAGES_LIMIT = 100
 
 
 def return_err_or_warn(msg):
@@ -256,7 +257,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bo
     """
     demisto.debug(f'Loading file at Path: {path}')
     input_pdf = PdfFileReader(open(path, "rb"), strict=False)
-    pages = input_pdf.numPages if max_pages == "*" else min(int(max_pages), input_pdf.numPages)
+    pages = min(input_pdf.numPages, MAXPAGES_LIMIT) if max_pages == "*" else min(int(max_pages), input_pdf.numPages)
     # pages = min(max_pages, input_pdf.numPages)
 
     with tempfile.TemporaryDirectory() as output_folder:
