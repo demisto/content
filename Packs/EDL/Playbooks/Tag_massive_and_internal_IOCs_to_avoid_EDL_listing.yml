@@ -105,7 +105,7 @@ tasks:
       id: 8075e7cc-4924-445d-8a74-fbce3c561fa9
       version: -1
       name: Add Big CIDRs to context
-      description: Sets a value in context under the key you entered.
+      description: Adds relevant CIRs under `NewIOCs.CIDRs` in the context
       scriptName: Set
       type: regular
       iscommand: false
@@ -232,7 +232,7 @@ tasks:
       id: 61af1bf3-2dc7-4d3a-8ab4-68386511cb9d
       version: -1
       name: Append Massive_CIDR tag
-      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      description: Appends Massive_CIDR tag to the CIDR
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -269,8 +269,8 @@ tasks:
     task:
       id: d5a0c6d4-40be-43b5-8cc6-673a770f3ec0
       version: -1
-      name: Add Big DomainGlobs to context
-      description: Sets a value in context under the key you entered.
+      name: Add TLD wildcards to context
+      description: Adds tld wild cards to context under `NewIOCs.TLD_Wildcards`
       scriptName: Set
       type: regular
       iscommand: false
@@ -329,7 +329,7 @@ tasks:
       id: 00962fb1-ba33-4cbd-80fb-b954cd3a5b13
       version: -1
       name: Append TLD_Wildcard tag
-      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      description: Appends TLD_Wildcard tag to the DomainGlob
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -464,7 +464,7 @@ tasks:
       id: cbd36ac7-1b29-41cf-8776-f7bb14c0c107
       version: -1
       name: Mark IPs as Internal
-      description: commands.local.cmd.set.indicator
+      description: Sets the `internal` field as True
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -503,7 +503,7 @@ tasks:
       id: 3a8c5659-aabe-4692-856e-ba4f4f9534c8
       version: -1
       name: Add internal IPs to context
-      description: Sets a value in context under the key you entered.
+      description: Add internal IPs to context under `Internal_IPs`
       scriptName: Set
       type: regular
       iscommand: false
@@ -590,7 +590,7 @@ tasks:
       id: 41b58221-2e2c-404c-8a56-8fa31e9de755
       version: -1
       name: Mark domains as internal
-      description: commands.local.cmd.set.indicator
+      description: Set the `internal` field of the domain to True.
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -629,7 +629,7 @@ tasks:
       id: 0906060e-0ccd-410f-8365-03670c6fcd34
       version: -1
       name: Add internal domains to context
-      description: Sets a value in context under the key you entered.
+      description: Add internal domains to context under `Internal_Domains`
       scriptName: Set
       type: regular
       iscommand: false
@@ -687,7 +687,7 @@ tasks:
       id: d529ea63-25bf-447c-813c-5d3840655744
       version: -1
       name: Add internal CIDRs to context
-      description: Sets a value in context under the key you entered.
+      description: Add internal CIDRs to context under `Internal_Assets.CIDRs`
       scriptName: Set
       type: regular
       iscommand: false
@@ -733,7 +733,7 @@ tasks:
       id: 9c847480-1372-4c1c-89af-de93a8d38020
       version: -1
       name: Add internal domains to context
-      description: Set a value in context under the key you entered.
+      description: Add internal domains to context under `Internal_Assets.Domains`
       scriptName: Set
       type: regular
       iscommand: false
@@ -779,7 +779,7 @@ tasks:
       id: 23163823-04fb-442a-8bb7-68763c259ead
       version: -1
       name: Append skip_edl tag tp IPs
-      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      description: Append `skip_edl` tag tp IPs
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -817,7 +817,7 @@ tasks:
       id: a718d7fe-68f9-49a0-86fb-58d2253aea5a
       version: -1
       name: Append skip_edl tag to Domains
-      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      description: Append `skip_edl` tag to Domains
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
