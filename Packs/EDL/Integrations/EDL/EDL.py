@@ -74,6 +74,7 @@ MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "med
 INCREASE_LIMIT = 1.1
 '''Request Arguments Class'''
 
+
 class RequestArguments:
     CTX_QUERY_KEY = 'last_query'
     CTX_OUT_FORMAT = 'out_format'
