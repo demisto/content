@@ -43,6 +43,30 @@ configuration:
   name: timeout
   required: false
   type: 0
+- additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
+  defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: 'The statuses of the incidents that will be fetched. If no status
+    is provided then incidents of all the statuses will be fetched. Note: An incident
+    whose status was changed to a filtered status after its creation time will not
+    be fetched.'
+  display: Incident Statuses to Fetch
+  hidden: false
+  name: status
+  options:
+  - new
+  - under_investigation
+  - resolved_known_issue
+  - resolved_false_positive
+  - resolved_true_positive
+  - resolved_security_testing
+  - resolved_other
+  - resolved_auto
+  required: false
+  type: 16
 - display: Only fetch starred incidents
   hidden: false
   name: starred
@@ -54,12 +78,6 @@ configuration:
   display: Starred incidents fetch window
   hidden: false
   name: starred_incidents_fetch_window
-  required: false
-  type: 0
-- additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
-  defaultvalue: '10'
-  display: Maximum number of incidents per fetch
-  name: max_fetch
   required: false
   type: 0
 - defaultvalue: 3 days
@@ -88,24 +106,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: 'The statuses of the incidents that will be fetched. If no status
-    is provided then incidents of all the statuses will be fetched. Note: An incident
-    whose status was changed to a filtered status after its creation time will not
-    be fetched.'
-  display: Incident Statuses to Fetch
-  hidden: false
-  name: status
-  options:
-  - new
-  - under_investigation
-  - resolved_known_issue
-  - resolved_false_positive
-  - resolved_true_positive
-  - resolved_security_testing
-  - resolved_other
-  - resolved_auto
-  required: false
-  type: 16
 defaultclassifier: Cortex XDR - IR
 defaultmapperin: Cortex XDR - IR-mapper
 defaultmapperout: Cortex XDR - IR-out-mapper
@@ -3177,7 +3177,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.ingestion_time
       description: Ingestion time.
       type: String
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.4.28442
   feed: false
   isfetch: true
   ismappable: true

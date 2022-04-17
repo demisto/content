@@ -1,10 +1,10 @@
 {
     "reply": {
-        "total_count": 1,
-        "result_count": 1,
+        "total_count": 2,
+        "result_count": 2,
         "incidents": [
             {
-                "incident_id": "1",
+                "incident_id": "3",
                 "creation_time": 1575806909185,
                 "modification_time": 1575813875168,
                 "detection_time": null,
@@ -27,7 +27,7 @@
                 "starred": true
             },
             {
-                "incident_id": "2",
+                "incident_id": "4",
                 "creation_time": 1575806909185,
                 "modification_time": 1575813875168,
                 "detection_time": null,

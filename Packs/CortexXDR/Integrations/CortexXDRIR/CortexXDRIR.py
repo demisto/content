@@ -226,10 +226,12 @@ def clear_trailing_whitespace(res):
     return res
 
 
-def filter_and_save_unseen_incident(incidents: List) -> List:
+def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_already_filtered_incidents: int) -> List:
     """
     Filters incidents that were seen already and saves the unseen incidents to LastRun object.
     :param incidents: List of incident - must be list
+    :param limit: the maximum number of incident per fetch
+    :param number_of_already_filtered_incidents: number of incidents that were fetched already
     :return: the filtered incidents.
     """
     last_run_obj = demisto.getLastRun()
@@ -242,6 +244,9 @@ def filter_and_save_unseen_incident(incidents: List) -> List:
             continue
         fetched_starred_incidents[incident_id] = True
         filtered_incidents.append(incident)
+        number_of_already_filtered_incidents += 1
+        if number_of_already_filtered_incidents == limit:
+            break
 
     last_run_obj['fetched_starred_incidents'] = fetched_starred_incidents
     demisto.setLastRun(last_run_obj)
@@ -268,6 +273,47 @@ class Client(BaseClient):
                                        f'XSOAR and XDR server clocks are in sync')
             else:
                 raise
+
+    def handle_fetch_starred_incidents(self, limit: int, page_number: int, request_data: dict) -> List:
+        """
+        handles pagination and filter of starred incidents that were fetched.
+        :param limit: the maximum number of incident per fetch
+        :param page_number: page number
+        :param request_data: the api call request data
+        :return: the filtered starred incidents.
+        """
+        res = self._http_request(
+            method='POST',
+            url_suffix='/incidents/get_incidents/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+        raw_incidents = res.get('reply', {}).get('incidents', [])
+
+        # we want to avoid duplications of starred incidents in the fetch-incident command (we fetch all incidents
+        # in the fetch window).
+        filtered_incidents = filter_and_save_unseen_incident(raw_incidents, limit, 0)
+
+        # we want to support pagination on starred incidents.
+        while len(filtered_incidents) < limit:
+            page_number += 1
+            search_from = page_number * limit
+            search_to = search_from + limit
+            request_data['search_from'] = search_from
+            request_data['search_to'] = search_to
+
+            res = self._http_request(
+                method='POST',
+                url_suffix='/incidents/get_incidents/',
+                json_data={'request_data': request_data},
+                timeout=self.timeout
+            )
+            raw_incidents = res.get('reply', {}).get('incidents', [])
+            if not raw_incidents:
+                break
+            filtered_incidents += filter_and_save_unseen_incident(raw_incidents, limit, len(filtered_incidents))
+
+        return filtered_incidents
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
@@ -339,6 +385,11 @@ class Client(BaseClient):
                 'operator': 'gte',
                 'value': starred_incidents_fetch_window
             })
+            if demisto.command() == 'fetch-incidents':
+                if len(filters) > 0:
+                    request_data['filters'] = filters
+                incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
+                return incidents
 
         else:
             if lte_creation_time:
@@ -385,12 +436,8 @@ class Client(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
-        incidents = res.get('reply').get('incidents', [])
+        incidents = res.get('reply', {}).get('incidents', [])
 
-        if starred and demisto.command() == 'fetch-incidents':
-            # we want to avoid duplications of starred incidents in the fetch-incident command (we fetch all incidents
-            # in the fetch window).
-            incidents = filter_and_save_unseen_incident(incidents)
         return incidents
 
     def get_incident_extra_data(self, incident_id, alerts_limit=1000):
@@ -1515,9 +1562,6 @@ def get_incidents_command(client, args):
     starred = args.get('starred')
     starred_incidents_fetch_window = args.get('starred_incidents_fetch_window', '3 days')
     starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
-    if starred_incidents_fetch_window and not starred:
-        raise ValueError('In order to filter starred incidents you need to set both '
-                         'starred and starred_incidents_fetch_window arguments.')
 
     sort_by_modification_time = args.get('sort_by_modification_time')
     sort_by_creation_time = args.get('sort_by_creation_time')
@@ -3631,25 +3675,32 @@ def main():
     Executes an integration command
     """
     command = demisto.command()
+    params = demisto.params()
     LOG(f'Command being called is {command}')
 
-    api_key = demisto.params().get('apikey')
-    api_key_id = demisto.params().get('apikey_id')
-    first_fetch_time = demisto.params().get('fetch_time', '3 days')
-    base_url = urljoin(demisto.params().get('url'), '/public_api/v1')
-    proxy = demisto.params().get('proxy')
-    verify_cert = not demisto.params().get('insecure', False)
-    statuses = demisto.params().get('status')
-    starred = True if demisto.params().get('starred') else None
-    starred_incidents_fetch_window = demisto.params().get('starred_incidents_fetch_window', '3 days')
+    # using two different credentials object as they both fields need to be encrypted
+    api_key = params.get('apikey', {}).get('password', '')
+    api_key_id = params.get('apikey_id', {}).get('password', '')
+    if not api_key:
+        raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
+    if not api_key_id:
+        raise DemistoException('Missing API Key ID. Fill in a valid key ID in the integration configuration.')
+
+    first_fetch_time = params.get('fetch_time', '3 days')
+    base_url = urljoin(params.get('url'), '/public_api/v1')
+    proxy = params.get('proxy')
+    verify_cert = not params.get('insecure', False)
+    statuses = params.get('status')
+    starred = True if params.get('starred') else None
+    starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
 
     try:
-        timeout = int(demisto.params().get('timeout', 120))
+        timeout = int(params.get('timeout', 120))
     except ValueError as e:
         demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
         timeout = 120
     try:
-        max_fetch = int(demisto.params().get('max_fetch', 10))
+        max_fetch = int(params.get('max_fetch', 10))
     except ValueError as e:
         demisto.debug(f'Failed casting max fetch parameter to int, falling back to 10 - {e}')
         max_fetch = 10
