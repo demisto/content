@@ -1,7 +1,7 @@
-Use FortiSIEM v2 to fetch and update incidents, search events and manage watchlists of FortiSIEM.
-This integration was integrated and tested with version 6.3.2 of FortiSIEMV2
+Use FortiSIEM v2 to fetch and update incidents, search events and manage FortiSIEM watchlists.
+This integration was integrated and tested with FortiSIEMV2 version 6.3.2.
 
-Some changes have been made that might affect your existing content. 
+Changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-fortisiem-v2).
 
 ## Configure FortiSIEM v2 on Cortex XSOAR
@@ -16,7 +16,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Username |  | True |
     | Password |  | True |
     | Maximum incidents per fetch. | Default is 20. Maximum is 200. Setting a value greater than 20 may harm performance, if used with 'Fetch With Events' mode. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). |  | False |
+    | First fetch timestamp (number, time unit. e.g., 12 hours, 7 days). |  | False |
     | Filter incidents by status. |  | False |
     | Fetch Mode | In some cases, performance might be impacted by using 'Fetch With Events' mode. | False |
     | Maximum events to fetch per incident. | Default is 20. Maximum is 50. | False |
@@ -31,7 +31,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fortisiem-event-search
 ***
-Initiate search process on events. The events are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, an 'AND' operator is used between them. If the query argument is filled, it overrides the values in the filtering arguments.
+Initiate search process on events. Events are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, an 'AND' operator is used between them. If the query argument is provided, it overrides the values in the filtering arguments.
 
 
 #### Base Command
@@ -673,7 +673,7 @@ Get watchlist by the specified watchlist or entry ID.
 >### Get Watchlist 500504
 >|Id|Name|Display Name|Description|Value Type|
 >|---|---|---|---|---|
->| 500504 | PH_DYNLIST_POL_VIOLATION_ISSUE | Policy Violators | End nodes that are triggered violations - like visiting unauthorized websites, failed Anti-virus updates, P2P traffic etc | IP |
+>| 500504 | PH_DYNLIST_POL_VIOLATION_ISSUE | Policy Violators | End nodes that are triggered violations - such as visiting unauthorized websites, failed Anti-Virus updates, P2P traffic, etc. | IP |
 >
 >### Watchlist Entries
 >|Id|State|Entry Value|Triggering Rules|Count|First Seen|Last Seen|
@@ -707,7 +707,7 @@ Add a watchlist group. You can also add an entry to the watchlist.
 | entry_value | Entry value. | Optional | 
 | entry_age_out | The time period after which entries expire from the watchlist group if there is no activity during that time. For example, "3 days", "in 2 weeks", "1 month". By default, entries never expire from the watchlist. | Optional | 
 | entry_count | Entry count. | Optional | 
-| entry_first_seen | The first time the entry was seen (&lt;number&gt; &lt;time unit&gt;, For example, 12 hours, 7 days). | Optional | 
+| entry_first_seen | The first time the entry was seen (number, time unit. e.g., 12 hours, 7 days). | Optional | 
 | entry_last_seen | The last time the entry was seen. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10". | Optional | 
 | entry_trigger_rules | The triggering rules associates with the entry. Should be a comma-separated list of rule names. | Optional | 
 
@@ -818,7 +818,7 @@ Update watchlist entry. This command overrides all existing values in the entry'
 | entry_id | The ID of the entry to update. | Required | 
 | inclusive | Whether the entry is active. Possible values are: false, true. Default is true. | Optional | 
 | value | The entry value. | Required | 
-| expired_time | When the entry was expired (&lt;number&gt; &lt;time unit&gt;, For example, 12 hours, 7 days). | Optional | 
+| expired_time | When the entry was expired (number, time unit. e.g, 12 hours, 7 days). | Optional | 
 | age_out | The time period after which the entry expires from the watchlist group if there is no activity during that time. For example, "3 days ago", "in 2 weeks", "1 month". By default, the item never expires from the watchlist. | Optional | 
 | last_seen | The first time the entry was seen. For example, "3 days", "1 month", "2019-10-10T12:22:00", "2019-10-10". | Optional | 
 
@@ -997,25 +997,25 @@ The following sections list the changes in this version.
 
 ### Commands
 #### The following commands were removed in this version:
-* *fortisiem-get-events-by-incident* - this command was replaced by *fortisiem-event-list-by-incident*.
-* *fortisiem-clear-incident* - this command was replaced by *fortisiem-incident-update*.
-* *fortisiem-get-events-by-filter* - this command was replaced by *fortisiem-event-search-status*.
-* *fortisiem-get-cmdb-devices* - this command was replaced by *fortisiem-cmdb-devices-list*.
-* *fortisiem-get-events-by-query* - this command was replaced by *fortisiem-event-search-status*.
-* *fortisiem-get-lists* .
-* *fortisiem-add-item-to-resource-list* .
-* *fortisiem-remove-item-from-resource-list*.
-* *fortisiem-get-resource-list*.
+***fortisiem-get-events-by-incident*** - this command was replaced by ***fortisiem-event-list-by-incident***.
+***fortisiem-clear-incident*** - this command was replaced by ***fortisiem-incident-update***.
+***fortisiem-get-events-by-filter*** - this command was replaced by ***fortisiem-event-search-status***.
+***fortisiem-get-cmdb-devices*** - this command was replaced by ***fortisiem-cmdb-devices-list***.
+***fortisiem-get-events-by-query*** - this command was replaced by ***fortisiem-event-search-status***.
+***fortisiem-get-lists*** .
+***fortisiem-add-item-to-resource-list***.
+***fortisiem-remove-item-from-resource-list***.
+***fortisiem-get-resource-list***.
 
 ## Additional Considerations for this version
 #### The following commands were added in this version:
-* *fortisiem-watchlist-list*
-* *fortisiem-watchlist-get*
-* *fortisiem-watchlist-add*
-* *fortisiem-watchlist-entry-add*
-* *fortisiem-watchlist-entry-update*
-* *fortisiem-watchlist-delete*
-* *fortisiem-watchlist-entry-delete*
-* *fortisiem-watchlist-entry-get*
+***fortisiem-watchlist-list***
+***fortisiem-watchlist-get***
+***fortisiem-watchlist-add***
+***fortisiem-watchlist-entry-add***
+***fortisiem-watchlist-entry-update***
+***fortisiem-watchlist-delete***
+***fortisiem-watchlist-entry-delete***
+***fortisiem-watchlist-entry-get***
 
 #### Fetch incidents command can fetch also triggered events.
