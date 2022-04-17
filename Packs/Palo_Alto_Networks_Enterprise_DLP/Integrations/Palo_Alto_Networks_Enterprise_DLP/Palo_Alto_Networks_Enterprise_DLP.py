@@ -305,7 +305,7 @@ def print_debug_msg(msg: str):
     demisto.debug(f'PAN-DLP-Msg - {msg}')
 
 
-def update_incident(client: Client, args: dict) -> CommandResults:
+def update_incident_command(client: Client, args: dict) -> CommandResults:
     incident_id = args.get('incident_id', '')
     feedback = args.get('feedback', '')
     user_id = args.get('user_id', '')
@@ -450,7 +450,7 @@ def long_running_execution_command(params: Dict):
             time.sleep(FETCH_SLEEP)
 
 
-def exemption_eligible(args: dict, params: dict) -> CommandResults:
+def exemption_eligible_command(args: dict, params: dict) -> CommandResults:
     data_profile = args.get('data_profile')
     eligible_list = params.get('dlp_exemptible_list', '')
     if eligible_list == '*':
@@ -468,7 +468,7 @@ def exemption_eligible(args: dict, params: dict) -> CommandResults:
     )
 
 
-def slack_bot_message(args: dict, params: dict):
+def slack_bot_message_command(args: dict, params: dict):
     message_template = params.get('dlp_slack_message', '')
     template = Template(message_template)
     message = template.substitute(
@@ -531,11 +531,11 @@ def main():
         elif demisto.command() == 'long-running-execution':
             long_running_execution_command(params)
         elif demisto.command() == 'pan-dlp-update-incident':
-            return_results(update_incident(client, args))
+            return_results(update_incident_command(client, args))
         elif demisto.command() == 'pan-dlp-exemption-eligible':
-            return_results(exemption_eligible(args, params))
+            return_results(exemption_eligible_command(args, params))
         elif demisto.command() == 'pan-dlp-slack-message':
-            return_results(slack_bot_message(args, params))
+            return_results(slack_bot_message_command(args, params))
         elif demisto.command() == 'pan-dlp-reset-last-run':
             return_results(reset_last_run_command())
         elif demisto.command() == "test-module":

@@ -3,8 +3,8 @@ import pytest
 import json
 
 from Palo_Alto_Networks_Enterprise_DLP import Client, fetch_incidents, \
-    exemption_eligible, slack_bot_message, reset_last_run_command, parse_incident_details, \
-    parse_dlp_report, update_incident, main
+    exemption_eligible_command, slack_bot_message_command, reset_last_run_command, parse_incident_details, \
+    parse_dlp_report, update_incident_command, main
 
 DLP_URL = 'https://api.dlp.paloaltonetworks.com/v1'
 
@@ -102,7 +102,7 @@ def test_update_incident(requests_mock, mocker):
     client = Client(DLP_URL, "", "", False, None)
     mocker.patch.object(demisto, 'results')
 
-    results = update_incident(client, args).to_context()
+    results = update_incident_command(client, args).to_context()
 
     request = requests_mock.last_request
 
@@ -181,7 +181,7 @@ def test_exemption_eligible(mocker):
         'dlp_exemptible_list': 'abc,aaa,bbb'
     }
     mocker.patch.object(demisto, 'results')
-    results = exemption_eligible(args, params).to_context()
+    results = exemption_eligible_command(args, params).to_context()
     assert results['Contents'] == {'eligible': True}
 
 
@@ -193,7 +193,7 @@ def test_exemption_eligible_wildcard(mocker):
         'dlp_exemptible_list': '*'
     }
     mocker.patch.object(demisto, 'results')
-    results = exemption_eligible(args, params).to_context()
+    results = exemption_eligible_command(args, params).to_context()
     assert results['Contents'] == {'eligible': True}
 
 
@@ -208,7 +208,7 @@ def test_slack_bot_message(mocker):
         'data_profile_name': 'PCI'
     }
     mocker.patch.object(demisto, 'results')
-    results = slack_bot_message(args, params).to_context()
+    results = slack_bot_message_command(args, params).to_context()
     assert results['Contents'] == {'message': 'Hello John Doe, your file secrets.doc on Google Drive violated PCI'}
 
 
