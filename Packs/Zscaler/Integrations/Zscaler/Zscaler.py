@@ -919,7 +919,6 @@ def get_category_by_id(category_id):
     return None
 
 
-# Get the list of users from Zscaler, added by BG:
 def get_users_command(args):
     name = args.get("name", None)
     pageSize = args.get("pageSize")
@@ -946,7 +945,6 @@ def get_users_command(args):
     return entry
 
 
-# Get the list of user departments from Zscaler, added by BG:
 def get_departments_command(args):
     name = args.get("name", None)
     pageSize = args.get("pageSize")
@@ -973,7 +971,6 @@ def get_departments_command(args):
     return entry
 
 
-# Get the list of user groups from Zscaler, added by BG:
 def get_usergroups_command(args):
     name = args.get("name", None)
     pageSize = args.get("pageSize")
@@ -1000,7 +997,6 @@ def get_usergroups_command(args):
     return entry
 
 
-# Update user info in Zscaler, added by BG:
 def set_user_command(args):
     userId = args.get("id")
     params = json.loads(args.get("user"))
