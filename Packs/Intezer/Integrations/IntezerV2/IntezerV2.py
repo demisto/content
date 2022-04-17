@@ -277,9 +277,6 @@ def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> Co
         analysis = get_file_analysis_by_id(analysis_id, api=intezer_api)
         if not analysis:
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
-    except HTTPError as error:
-        if error.response.status_code == HTTPStatus.NOT_FOUND:
-            return _get_missing_analysis_result(analysis_id=str(analysis_id))
     except AnalysisIsStillRunning:
         return _get_analysis_running_result(analysis_id=str(analysis_id))
 
