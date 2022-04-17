@@ -77,7 +77,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'The query for filtering the relevant events. For example: ''eventId=9071234812319593968 AND eventType=type''. You can retrieve the attributes' names using the command's filtering arguments or using the event attributes returned in the context output.'
+      description: The query for filtering the relevant events. For example, "eventId=9071234812319593968 AND eventType='type'". You can retrieve the attributes' names using the command's filtering arguments or using the event attributes returned in the context output.
       isArray: false
       name: query
       required: false
@@ -1071,7 +1071,7 @@ script:
     - contextPath: FortiSIEM.WatchlistEntry.ageOut
       description: Expiration date of the entry.
       type: String
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.4.28442
   feed: false
   isfetch: true
   longRunning: false
