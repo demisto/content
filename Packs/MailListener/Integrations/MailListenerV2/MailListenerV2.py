@@ -232,7 +232,7 @@ def fetch_incidents(client: IMAPClient,
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
-    demisto.debug('in fetch incidents function')
+    logger(fetch_incidents)
     uid_to_fetch_from = last_run.get('last_uid', 1)
     time_to_fetch_from = parse(last_run.get('last_fetch', f'{first_fetch_time} UTC'), settings={'TIMEZONE': 'UTC'})
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
@@ -374,7 +374,7 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
     Returns:
         A list with arguments for the email search query
     """
-    demisto.debug('in generate search query')
+    logger(generate_search_query)
     permitted_from_addresses_list = argToList(permitted_from_addresses)
     permitted_from_domains_list = argToList(permitted_from_domains)
     messages_query = ''
