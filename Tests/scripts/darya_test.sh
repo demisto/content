@@ -1,4 +1,4 @@
-#export BUILD_STATUS_API=https://code.pan.run/api/v4/projects/2596/pipelines   # disable-secrets-detection
+#export BUILD_STATUS_API=https://code.pan.run/api/v4/projects/2596/jobs   # disable-secrets-detection
 #
 #
 #function get_build_job_statuses() {
