@@ -258,6 +258,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Absolute",
+            "playbookID": "Absolute_TestPlaybook",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "ServiceDeskPlus",
             "playbookID": "Service Desk Plus Test",
             "instance_names": "sdp_instance_1",
@@ -5067,6 +5072,9 @@
                 "Whois",
                 "Rasterize"
             ]
+        },
+        {
+            "playbookID": "DBotUpdateLogoURLPhishing_test"
         },
         {
             "playbookID": "TAXII2 Server Performance Test",
