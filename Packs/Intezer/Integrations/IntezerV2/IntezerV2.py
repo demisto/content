@@ -253,7 +253,7 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
             elif analysis_result and analysis_type == 'Url':
                 command_results.append(
                     enrich_dbot_and_display_url_analysis_results(analysis_result))
-            else:
+            elif analysis_result:
                 command_results.append(enrich_dbot_and_display_file_analysis_results(analysis_result))
 
         except HTTPError as http_error:

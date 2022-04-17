@@ -231,7 +231,7 @@ def test_check_analysis_status_and_get_results_url_command_single_success(reques
                     'verdict_name': 'malicious'
                 },
                 'submitted_url': url,
-                "downloaded_file": {
+                'downloaded_file': {
                     'analysis_id': '8db9a401-a142-41be-9a31-8e5f3642db62',
                     'analysis_summary': {
                         'verdict_description':
@@ -707,10 +707,10 @@ def test_analyze_by_url_command_missing_url(requests_mock):
     )
 
     url = '123test'
-    args = dict(url=url)
+    args = dict(url=url, analysis_type='Url')
 
     # Act
-    command_results = analyze_by_hash_command(intezer_api, args)
+    command_results = analyze_url_command(intezer_api, args)
 
     # Assert
     assert command_results.readable_output == f'The Url {url} was not found on Intezer. Error Server returned bad request error: Bad url'
