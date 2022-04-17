@@ -4391,7 +4391,7 @@
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
-            "timeout" : 1800
+            "timeout": 1800
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
@@ -4399,7 +4399,7 @@
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
-            "timeout" : 1800
+            "timeout": 1800
         },
         {
             "playbookID": "CrowdStrike_FalconX_Test",
@@ -4455,15 +4455,15 @@
             ],
             "external_playbook_config": {
                 "playbookID": "Phishing - Generic v3",
-                "input_parameters":{
+                "input_parameters": {
                     "InternalDomains": {
                         "simple": "demistodev.onmicrosoft.com"
                     }
                 }
             },
-            "instance_configuration":{
-                "classifier_id":"EWS v2",
-                "incoming_mapper_id":"EWS v2-mapper"
+            "instance_configuration": {
+                "classifier_id": "EWS v2",
+                "incoming_mapper_id": "EWS v2-mapper"
             },
             "memory_threshold": 160,
             "pid_threshold": 80
@@ -4486,15 +4486,21 @@
                 "virus_total_v3",
                 "ewso365_sec_eng_team"
             ],
-            "external_playbook_config": 
-            {
+            "external_playbook_config": {
                 "playbookID": "Phishing - Generic v3",
-                "input_parameters":
-                {
-                    "SearchAndDelete": {"simple": "True"},
-                    "GetOriginalEmail": {"simple": "True"},
-                    "SearchAndDeleteIntegration": {"simple": "O365"},
-                    "O365DeleteType": {"simple": "Soft"}
+                "input_parameters": {
+                    "SearchAndDelete": {
+                        "simple": "True"
+                    },
+                    "GetOriginalEmail": {
+                        "simple": "True"
+                    },
+                    "SearchAndDeleteIntegration": {
+                        "simple": "O365"
+                    },
+                    "O365DeleteType": {
+                        "simple": "Soft"
+                    }
                 }
             },
             "memory_threshold": 160,
@@ -5099,6 +5105,13 @@
             ],
             "playbookID": "GoogleSheets-Test",
             "fromversion": "6.1.0"
+        },
+        {
+            "integrations": [
+                "ForescoutEyeInspect"
+            ],
+            "playbookID": "playbook-ForescoutEyeInspect_Test",
+            "fromversion": "6.1.0"
         }
     ],
     "skipped_tests": {
@@ -5236,7 +5249,6 @@
         "RedLockTest": "Issue 24600"
     },
     "skipped_integrations": {
-        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Vertica": "No insance issue 45719",
         "Ipstack": "Usage limit reached (Issue 38063)",
@@ -5331,16 +5343,13 @@
         "AzureRiskyUsers": "No instance - developed by Qmasters",
         "AzureKeyVault": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        
         "_comment4": "~~~ OTHER ~~~",
         "Anomali ThreatStream v2": "Will be deprecated soon.",
         "Anomali ThreatStream": "Will be deprecated soon.",
@@ -5529,7 +5538,6 @@
         "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
-        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
