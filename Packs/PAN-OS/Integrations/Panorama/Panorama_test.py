@@ -1544,12 +1544,12 @@ class TestFirewallCommand:
                 # Attribute may be int 0
                 assert value is not None
 
-    @pytest.mark.parametrize('args',
-                             'expected',
-                             [({}, False),
-                              ({'target': None}, False),
-                              ({'target': 123}, True),
-                              ]
+    @pytest.mark.parametrize('args , expected',
+                             [
+                                 ({}, False),
+                                 ({'target': None}, False),
+                                 ({'target': 123}, True),
+                             ]
                              )
     def test_update_target(self, args, expected):
         from Panorama import update_target
