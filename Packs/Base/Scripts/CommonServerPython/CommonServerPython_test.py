@@ -1045,6 +1045,7 @@ def test_argToList():
     test5 = 1
     test6 = '1'
     test7 = True
+    test8 = [1, 2, 3]
 
     results = [argToList(test1), argToList(test2), argToList(test2, ','), argToList(test3), argToList(test4, ';')]
 
@@ -1052,8 +1053,10 @@ def test_argToList():
         assert expected == result, 'argToList test failed, {} is not equal to {}'.format(str(result), str(expected))
 
     assert argToList(test5) == [1]
+    assert argToList(test5, transform=str) == ['1']
     assert argToList(test6) == ['1']
     assert argToList(test7) == [True]
+    assert argToList(test8, transform=str) == ['1', '2', '3']
 
 
 @pytest.mark.parametrize('args, field, expected_output', [
@@ -7143,3 +7146,19 @@ def test_create_indicator_result_with_dbotscore_unknown(mocker, args, expected):
         assert expected['integration_name'] in results.readable_output
     else:
         assert 'Results:' in results.readable_output
+
+
+@pytest.mark.parametrize('content_format,outputs,expected_type', ((None, {}, 'json'),
+                                                                  (None, 'foo', 'text'),
+                                                                  (None, 1, 'text'),
+                                                                  ('html', '', 'html'),
+                                                                  ('html', {}, 'html')))
+def test_content_type(content_format, outputs, expected_type):
+    from CommonServerPython import CommandResults, EntryFormat
+    command_results = CommandResults(
+        outputs=outputs,
+        readable_output='human_readable',
+        outputs_prefix='prefix',
+        content_format=content_format,
+    )
+    assert command_results.to_context()['ContentsFormat'] == expected_type

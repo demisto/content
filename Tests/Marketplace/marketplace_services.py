@@ -25,7 +25,7 @@ from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT
+    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -109,6 +109,7 @@ class Pack(object):
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
         self._is_modified = None  # initialized in detect_modified function
+        self._is_siem = False  # initialized in collect_content_items function
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
         self._first_level_dependencies = {}  # initialized in set_pack_dependencies function
@@ -160,6 +161,19 @@ class Pack(object):
         """ setter of is_feed
         """
         self._is_feed = is_feed
+
+    @property
+    def is_siem(self):
+        """
+        bool: whether the pack is a siem pack
+        """
+        return self._is_siem
+
+    @is_siem.setter
+    def is_siem(self, is_siem):
+        """ setter of is_siem
+        """
+        self._is_siem = is_siem
 
     @status.setter  # type: ignore[attr-defined,no-redef]
     def status(self, status_value):
@@ -448,12 +462,12 @@ class Pack(object):
             pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count
         )
 
-    def is_feed_pack(self, yaml_content, yaml_type):
+    def add_pack_type_tags(self, yaml_content, yaml_type):
         """
-        Checks if an integration is a feed integration. If so, updates Pack._is_feed
+        Checks if an pack objects is siem or feed object. If so, updates Pack._is_feed or Pack._is_siem
         Args:
             yaml_content: The yaml content extracted by yaml.safe_load().
-            yaml_type: The type of object to check. Should be 'Playbook' or 'Integration'.
+            yaml_type: The type of object to check.
 
         Returns:
             Doesn't return
@@ -461,9 +475,13 @@ class Pack(object):
         if yaml_type == 'Integration':
             if yaml_content.get('script', {}).get('feed', False) is True:
                 self._is_feed = True
+            if yaml_content.get('isFetchEvents', False) is True:
+                self._is_siem = True
         if yaml_type == 'Playbook':
             if yaml_content.get('name').startswith('TIM '):
                 self._is_feed = True
+        if yaml_type in SIEM_RULES_OBJECTS:
+            self._is_siem = True
 
     @staticmethod
     def _clean_release_notes(release_notes_lines):
@@ -1586,6 +1604,12 @@ class Pack(object):
                 PackFolders.LISTS.value: "list",
                 PackFolders.PREPROCESS_RULES.value: "preprocessrule",
                 PackFolders.JOBS.value: "job",
+                PackFolders.PARSING_RULES.value: "parsingrule",
+                PackFolders.MODELING_RULES.value: "modelingrule",
+                PackFolders.CORRELATION_RULES.value: "correlationrule",
+                PackFolders.XSIAM_DASHBOARDS.value: "xsiamdashboard",
+                PackFolders.XSIAM_REPORTS.value: "xsiamreport",
+                PackFolders.TRIGGERS.value: "trigger",
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -1655,7 +1679,7 @@ class Pack(object):
                             self._contains_filter = True
 
                     elif current_directory == PackFolders.PLAYBOOKS.value:
-                        self.is_feed_pack(content_item, 'Playbook')
+                        self.add_pack_type_tags(content_item, 'Playbook')
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
@@ -1664,7 +1688,7 @@ class Pack(object):
 
                     elif current_directory == PackFolders.INTEGRATIONS.value:
                         integration_commands = content_item.get('script', {}).get('commands', [])
-                        self.is_feed_pack(content_item, 'Integration')
+                        self.add_pack_type_tags(content_item, 'Integration')
                         folder_collected_items.append({
                             'id': content_item.get('commonfields', {}).get('id', ''),
                             'name': content_item.get('display', ''),
@@ -1798,6 +1822,49 @@ class Pack(object):
                             'details': content_item.get('details', ''),
                         })
 
+                    elif current_directory == PackFolders.PARSING_RULES.value:
+                        self.add_pack_type_tags(content_item, 'ParsingRule')
+                        folder_collected_items.append({
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                        })
+
+                    elif current_directory == PackFolders.MODELING_RULES.value:
+                        self.add_pack_type_tags(content_item, 'ModelingRule')
+                        folder_collected_items.append({
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                        })
+
+                    elif current_directory == PackFolders.CORRELATION_RULES.value:
+                        self.add_pack_type_tags(content_item, 'CorrelationRule')
+                        folder_collected_items.append({
+                            'id': content_item.get('global_rule_id', ''),
+                            'name': content_item.get('name', ''),
+                            'description': content_item.get('description', ''),
+                        })
+
+                    elif current_directory == PackFolders.XSIAM_DASHBOARDS.value:
+                        folder_collected_items.append({
+                            'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
+                            'name': content_item.get('dashboards_data', [{}])[0].get('name', ''),
+                            'description': content_item.get('dashboards_data', [{}])[0].get('description', ''),
+                        })
+
+                    elif current_directory == PackFolders.XSIAM_REPORTS.value:
+                        folder_collected_items.append({
+                            'id': content_item.get('templates_data', [{}])[0].get('global_id', ''),
+                            'name': content_item.get('templates_data', [{}])[0].get('report_name', ''),
+                            'description': content_item.get('templates_data', [{}])[0].get('report_description', ''),
+                        })
+
+                    elif current_directory == PackFolders.TRIGGERS.value:
+                        folder_collected_items.append({
+                            'id': content_item.get('trigger_id', ''),
+                            'name': content_item.get('trigger_name', ''),
+                            'description': content_item.get('description', ''),
+                        })
+
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = content_item_name_mapping[current_directory]
 
@@ -1859,6 +1926,7 @@ class Pack(object):
         tags |= {PackTags.USE_CASE} if self._use_cases else set()
         tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
         tags |= {PackTags.FILTER} if self._contains_filter else set()
+        tags |= {PackTags.COLLECTION} if self._is_siem else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
