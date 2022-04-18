@@ -564,7 +564,8 @@ def panorama_commit(args):
         'cmd': f'<commit>{command}</commit>',
         'key': API_KEY,
     }
-    update_target(args, params)
+    if target := args.get('target', None):
+        params['target'] = target
     if is_partial:
         params['action'] = 'partial'
 
@@ -613,7 +614,8 @@ def panorama_commit_status(args: dict):
         'key': API_KEY
     }
 
-    update_target(args, params)
+    if target := args.get('target', None):
+        params['target'] = target
 
     result = http_request(
         URL,
@@ -739,7 +741,8 @@ def panorama_push_status(args: dict):
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
-    update_target(args, params)
+    if target := args.get('target', None):
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -2353,7 +2356,7 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
     return dbot_score
 
 
-def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list, additional_malicious: list, target: str = None):
+def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list, additional_malicious: list, target: Optional[str] = None):
     """
     Get the url category from Palo Alto URL Filtering
     """
@@ -4168,14 +4171,15 @@ def panorama_query_traffic_logs_command(args: dict):
 
 
 @logger
-def panorama_get_traffic_logs(job_id: str, args: dict = {}):
+def panorama_get_traffic_logs(job_id: str, target: Optional[str] = None):
     params = {
         'action': 'get',
         'type': 'log',
         'job-id': job_id,
         'key': API_KEY
     }
-    update_target(args, params)
+    if target:
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -4488,8 +4492,9 @@ def panorama_check_logs_status_command(args: dict):
     """
     job_id = args.get('job_id')
     job_ids = argToList(job_id)
+    target = args.get('target')
     for job_id in job_ids:
-        result = panorama_get_traffic_logs(job_id, args)
+        result = panorama_get_traffic_logs(job_id, target)
 
         if result['response']['@status'] == 'error':
             if 'msg' in result['response'] and 'line' in result['response']['msg']:
@@ -4622,6 +4627,7 @@ def prettify_logs(logs: Union[list, dict]):
 def panorama_get_logs_command(args: dict):
     ignore_auto_extract = args.get('ignore_auto_extract') == 'true'
     job_ids = argToList(args.get('job_id'))
+    target = args.get('target')
     for job_id in job_ids:
         result = panorama_get_traffic_logs(job_id, args)
         log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
@@ -5212,7 +5218,8 @@ def panorama_show_device_version(args):
         'cmd': '<show><system><info/></system></show>',
         'key': API_KEY
     }
-    update_target(args, params)
+    if target := args.get('target', None):
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -5255,7 +5262,9 @@ def panorama_download_latest_content_update_content(args: dict):
         'cmd': '<request><content><upgrade><download><latest/></download></upgrade></content></request>',
         'key': API_KEY
     }
-    update_target(args, params)
+    if target := args.get('target', None):
+        params['target'] = target
+
     result = http_request(
         URL,
         'POST',
@@ -5302,7 +5311,9 @@ def panorama_content_update_download_status(args: dict):
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
-    update_target(args, params)
+    if target := args.get('target', None):
+        params['target'] = target
+
     result = http_request(
         URL,
         'GET',
@@ -5353,7 +5364,8 @@ def panorama_install_latest_content_update(args: dict):
         'cmd': '<request><content><upgrade><install><version>latest</version></install></upgrade></content></request>',
         'key': API_KEY
     }
-    update_target(args, params)
+    if target := args.get('target', None):
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -5399,7 +5411,8 @@ def panorama_content_update_install_status(args: dict):
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
-    update_target(args, params)
+    if target := args.get('target', None):
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -5473,7 +5486,8 @@ def panorama_download_panos_version(args: dict):
                f'</version></download></software></system></request>',
         'key': API_KEY
     }
-    update_target(args, params)
+    if target := args.get('target', None):
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -5517,7 +5531,8 @@ def panorama_download_panos_status(args: dict):
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
-    update_target(args, params)
+    if target := args.get('target', None):
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -5568,7 +5583,8 @@ def panorama_install_panos_version(args: dict):
                '</version></install></software></system></request>',
         'key': API_KEY
     }
-    update_target(args, params)
+    if target := args.get('target', None):
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -5612,7 +5628,8 @@ def panorama_install_panos_status(args: dict):
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
-    update_target(args, params)
+    if target := args.get('target', None):
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -5660,7 +5677,8 @@ def panorama_device_reboot_command(args: dict):
         'cmd': '<request><restart><system></system></restart></request>',
         'key': API_KEY
     }
-    update_target(args, params)
+    if target := args.get('target', None):
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -9421,23 +9439,6 @@ def dataclasses_to_command_results(result: Any, empty_result_message: str = "No 
         **extra_args
     )
     return command_result
-
-
-def update_target(args: dict, params: dict):
-    """
-        Action:
-            if the target is specified in the args the target field will be updated
-            in the params dict
-
-        Args:
-            args (dict): The args from the user
-            params (dict): The params for the https request
-
-        Returns:
-            None
-    """
-    if target := args.get('target', None):
-        params['target'] = target
 
 
 def main():
