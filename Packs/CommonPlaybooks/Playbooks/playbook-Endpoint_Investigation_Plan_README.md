@@ -55,4 +55,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Endpoint Investigation Plan](Insert the link to your image here)
+![Endpoint Investigation Plan](https://raw.githubusercontent.com/demisto/content/master/Packs/CommonPlaybooks/doc_files/Endpoint_Investigation_Plan.png)
