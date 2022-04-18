@@ -734,15 +734,15 @@ def panorama_push_to_device_group_command(args: dict):
 
 
 @logger
-def panorama_push_status(args: dict):
-    job_id = args.get('job_id')
+def panorama_push_status(job_id: str, target: Optional[str] = None):
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
-    if target := args.get('target', None):
+    if target:
         params['target'] = target
+
     result = http_request(
         URL,
         'GET',
@@ -769,7 +769,9 @@ def panorama_push_status_command(args: dict):
     """
     Check jobID of push status
     """
-    result = panorama_push_status(args)
+    job_id = args.get('job_id')
+    target = args.get('target')
+    result = panorama_push_status(job_id, target)
     job = result.get('response', {}).get('result', {}).get('job', {})
     if job.get('type', '') not in ('CommitAll', 'ValidateAll'):
         raise Exception('JobID given is not of a Push neither of a validate.')
@@ -2282,7 +2284,7 @@ def panorama_edit_custom_url_category_command(args: dict):
 
 
 @logger
-def panorama_get_url_category(url_cmd: str, url: str, target: str):
+def panorama_get_url_category(url_cmd: str, url: str, target: Optional[str] = None):
     params = {
         'action': 'show',
         'type': 'op',
@@ -2356,7 +2358,8 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
     return dbot_score
 
 
-def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list, additional_malicious: list, target: Optional[str] = None):
+def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list,
+                                      additional_malicious: list, target: Optional[str] = None):
     """
     Get the url category from Palo Alto URL Filtering
     """
@@ -2805,7 +2808,7 @@ def prettify_rule(rule: dict):
     return pretty_rule
 
 
-def prettify_rules(rules: Union[List[dict], dict], target):
+def prettify_rules(rules: Union[List[dict], dict], target: Optional[str] = None):
     if not isinstance(rules, list):
         rules = [rules]
     pretty_rules_arr = []
@@ -2819,14 +2822,14 @@ def prettify_rules(rules: Union[List[dict], dict], target):
     return pretty_rules_arr
 
 
-def target_filter(rule, target):
+def target_filter(rule: dict, target: str/int):
     """
-        Args:
-            rule (dict): A rule from the panorama instance.
-            target (num): A serial number to filter the rule on
+    Args:
+        rule (dict): A rule from the panorama instance.
+        target (str/int): A serial number to filter the rule on
 
-        Returns:
-            if the rule contains the target return True else False.
+    Returns:
+        if the rule contains the target return True else False.
     """
     target_entry = rule.get('target', {}).get('devices', {}).get('entry')
     if not isinstance(target_entry, list):
@@ -4398,13 +4401,14 @@ def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_
 @logger
 def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
                         zone_src: str, zone_dst: str, time_generated: str, action: str,
-                        port_dst: str, rule: str, url: str, filedigest: str, target: str):
+                        port_dst: str, rule: str, url: str, filedigest: str, target: Optional[str] = None):
     params = {
         'type': 'log',
         'log-type': log_type,
         'key': API_KEY,
-        'target': target,
     }
+    if target:
+        params['target'] = target
 
     if filedigest and log_type != 'wildfire':
         raise Exception('The filedigest argument is only relevant to wildfire log type.')
@@ -4627,9 +4631,9 @@ def prettify_logs(logs: Union[list, dict]):
 def panorama_get_logs_command(args: dict):
     ignore_auto_extract = args.get('ignore_auto_extract') == 'true'
     job_ids = argToList(args.get('job_id'))
-    target = args.get('target')
+    target = args.get('target', None)
     for job_id in job_ids:
-        result = panorama_get_traffic_logs(job_id, args)
+        result = panorama_get_traffic_logs(job_id, target)
         log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
         if isinstance(log_type_dt, list):
             log_type = log_type_dt[0]
@@ -5212,13 +5216,13 @@ def panorama_delete_static_route_command(args: dict):
     })
 
 
-def panorama_show_device_version(args):
+def panorama_show_device_version(target: str = None):
     params = {
         'type': 'op',
         'cmd': '<show><system><info/></system></show>',
         'key': API_KEY
     }
-    if target := args.get('target', None):
+    if target:
         params['target'] = target
     result = http_request(
         URL,
@@ -5229,11 +5233,11 @@ def panorama_show_device_version(args):
     return result['response']['result']['system']
 
 
-def panorama_show_device_version_command(args: dict):
+def panorama_show_device_version_command(target: Optional[str] = None):
     """
     Get device details and show message in war room
     """
-    response = panorama_show_device_version(args)
+    response = panorama_show_device_version(target)
 
     info_data = {
         'Devicename': response['devicename'],
@@ -5256,13 +5260,13 @@ def panorama_show_device_version_command(args: dict):
 
 
 @logger
-def panorama_download_latest_content_update_content(args: dict):
+def panorama_download_latest_content_update_content(target: Optional[str] = None):
     params = {
         'type': 'op',
         'cmd': '<request><content><upgrade><download><latest/></download></upgrade></content></request>',
         'key': API_KEY
     }
-    if target := args.get('target', None):
+    if target:
         params['target'] = target
 
     result = http_request(
@@ -5278,7 +5282,8 @@ def panorama_download_latest_content_update_command(args: dict):
     """
     Download content and show message in war room
     """
-    result = panorama_download_latest_content_update_content(args)
+    target = args.get('target', None)
+    result = panorama_download_latest_content_update_content(target)
 
     if 'result' in result['response']:
         # download has been given a jobid
@@ -5304,14 +5309,13 @@ def panorama_download_latest_content_update_command(args: dict):
 
 
 @logger
-def panorama_content_update_download_status(args: dict):
-    job_id = args.get('job_id')
+def panorama_content_update_download_status(target: str, job_id: str):
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
-    if target := args.get('target', None):
+    if target:
         params['target'] = target
 
     result = http_request(
@@ -5327,8 +5331,9 @@ def panorama_content_update_download_status_command(args: dict):
     """
     Check jobID of content update download status
     """
-
-    result = panorama_content_update_download_status(args)
+    target = str(args['target']) if 'target' in args else None
+    job_id = args['job_id']
+    result = panorama_content_update_download_status(target, job_id)
 
     content_download_status = {
         'JobID': result['response']['result']['job']['id']
@@ -5358,13 +5363,13 @@ def panorama_content_update_download_status_command(args: dict):
 
 
 @logger
-def panorama_install_latest_content_update(args: dict):
+def panorama_install_latest_content_update(target: str):
     params = {
         'type': 'op',
         'cmd': '<request><content><upgrade><install><version>latest</version></install></upgrade></content></request>',
         'key': API_KEY
     }
-    if target := args.get('target', None):
+    if target:
         params['target'] = target
     result = http_request(
         URL,
@@ -5375,11 +5380,11 @@ def panorama_install_latest_content_update(args: dict):
     return result
 
 
-def panorama_install_latest_content_update_command(args: dict):
+def panorama_install_latest_content_update_command(target: Optional[str] = None):
     """
         Check jobID of content content install status
     """
-    result = panorama_install_latest_content_update(args)
+    result = panorama_install_latest_content_update(target)
 
     if 'result' in result['response']:
         # installation has been given a jobid
@@ -5404,14 +5409,13 @@ def panorama_install_latest_content_update_command(args: dict):
 
 
 @logger
-def panorama_content_update_install_status(args: dict):
-    job_id = args['job_id']
+def panorama_content_update_install_status(target: str, job_id: str):
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
-    if target := args.get('target', None):
+    if target:
         params['target'] = target
     result = http_request(
         URL,
@@ -5425,7 +5429,9 @@ def panorama_content_update_install_status_command(args: dict):
     """
     Check jobID of content update install status
     """
-    result = panorama_content_update_install_status(args)
+    target = str(args['target']) if 'target' in args else None
+    job_id = args['job_id']
+    result = panorama_content_update_install_status(target, job_id)
 
     content_install_status = {
         'JobID': result['response']['result']['job']['id']
@@ -5478,15 +5484,14 @@ def panorama_check_latest_panos_software_command(target: Optional[str] = None):
 
 
 @logger
-def panorama_download_panos_version(args: dict):
-    target_version = str(args['target_version'])
+def panorama_download_panos_version(target: str, target_version: str):
     params = {
         'type': 'op',
         'cmd': f'<request><system><software><download><version>{target_version}'
                f'</version></download></software></system></request>',
         'key': API_KEY
     }
-    if target := args.get('target', None):
+    if target:
         params['target'] = target
     result = http_request(
         URL,
@@ -5500,7 +5505,9 @@ def panorama_download_panos_version_command(args: dict):
     """
     Check jobID of pan-os version download
     """
-    result = panorama_download_panos_version(args)
+    target = str(args['target']) if 'target' in args else None
+    target_version = str(args['target_version'])
+    result = panorama_download_panos_version(target, target_version)
 
     if 'result' in result['response']:
         # download has been given a jobid
@@ -5524,14 +5531,13 @@ def panorama_download_panos_version_command(args: dict):
 
 
 @logger
-def panorama_download_panos_status(args: dict):
-    job_id = args.get('job_id')
+def panorama_download_panos_status(target: str, job_id: str):
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
-    if target := args.get('target', None):
+    if target:
         params['target'] = target
     result = http_request(
         URL,
@@ -5545,7 +5551,9 @@ def panorama_download_panos_status_command(args: dict):
     """
     Check jobID of panos download status
     """
-    result = panorama_download_panos_status(args)
+    target = str(args['target']) if 'target' in args else None
+    job_id = args.get('job_id')
+    result = panorama_download_panos_status(target, job_id)
     panos_download_status = {
         'JobID': result['response']['result']['job']['id']
     }
@@ -5575,16 +5583,16 @@ def panorama_download_panos_status_command(args: dict):
 
 
 @logger
-def panorama_install_panos_version(args: dict):
-    target_version = str(args['target_version'])
+def panorama_install_panos_version(target: str, target_version: str):
     params = {
         'type': 'op',
         'cmd': f'<request><system><software><install><version>{target_version}'
                '</version></install></software></system></request>',
         'key': API_KEY
     }
-    if target := args.get('target', None):
+    if target:
         params['target'] = target
+
     result = http_request(
         URL,
         'GET',
@@ -5597,7 +5605,9 @@ def panorama_install_panos_version_command(args: dict):
     """
     Check jobID of panos install
     """
-    result = panorama_install_panos_version(args)
+    target = str(args['target']) if 'target' in args else None
+    target_version = str(args['target_version'])
+    result = panorama_install_panos_version(target, target_version)
 
     if 'result' in result['response']:
         # panos install has been given a jobid
@@ -5621,14 +5631,13 @@ def panorama_install_panos_version_command(args: dict):
 
 
 @logger
-def panorama_install_panos_status(args: dict):
-    job_id = args['job_id']
+def panorama_install_panos_status(target: str, job_id: str):
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
-    if target := args.get('target', None):
+    if target:
         params['target'] = target
     result = http_request(
         URL,
@@ -5642,7 +5651,9 @@ def panorama_install_panos_status_command(args: dict):
     """
     Check jobID of panos install status
     """
-    result = panorama_install_panos_status(args)
+    target = str(args['target']) if 'target' in args else None
+    job_id = args['job_id']
+    result = panorama_install_panos_status(target, job_id)
 
     panos_install_status = {
         'JobID': result['response']['result']['job']['id']

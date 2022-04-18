@@ -3659,6 +3659,7 @@ script:
       - 'false'
     - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
+      required: false
     description: Commits a configuration to the Palo Alto firewall or Panorama, but
       does not validate if the commit was successful. Committing to Panorama does
       not push the configuration to the firewalls. To push the configuration, run
@@ -3697,6 +3698,7 @@ script:
       deprecated: true
     - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
+      required: false
     description: Pushes rules from PAN-OS to the configured device group. In order
       to push the configuration to Prisma Access managed tenants (single or multi
       tenancy), use the device group argument with the device group which is associated
@@ -4423,6 +4425,7 @@ script:
       name: url
     - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
+      required: false
     description: Gets a URL category from URL filtering. This command is only available
       on Firewall devices.
     name: pan-os-get-url-category
@@ -5228,6 +5231,7 @@ script:
       required: true
     - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
+      required: false
     description: Returns commit status for a configuration.
     name: pan-os-commit-status
     outputs:
@@ -5249,6 +5253,7 @@ script:
       required: true
     - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
+      required: false
     description: Returns the push status for a configuration.
     name: pan-os-push-status
     outputs:
@@ -5566,6 +5571,7 @@ script:
       name: tag
     - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
+      required: false
     description: Returns a list of predefined Security Rules.
     name: pan-os-list-rules
     outputs:
@@ -5661,6 +5667,7 @@ script:
       name: number_of_logs
     - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
+      required: false
     description: Query logs in Panorama.
     name: pan-os-query-logs
     outputs:
@@ -5680,6 +5687,7 @@ script:
       required: true
     - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
+      required: false
     description: Checks the status of a logs query.
     name: pan-os-check-logs-status
     outputs:
@@ -5700,6 +5708,7 @@ script:
       name: ignore_auto_extract
     - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
+      required: false
     description: Retrieves the data of a logs query.
     name: pan-os-get-logs
     outputs:
@@ -6169,6 +6178,7 @@ script:
   - arguments:
     - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
+      required: false
     - description: Job ID to check.
       name: job_id
       required: true
@@ -6187,6 +6197,7 @@ script:
   - arguments:
     - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
+      required: false
     description: Installs the latest content update.
     name: pan-os-install-latest-content-update
     outputs:
@@ -6202,6 +6213,7 @@ script:
       required: true
     - description: Use only with a Panorama configuration, invoke the command on the specific target - FW seriel number.
       name: target
+      required: false
     description: Gets the installation status of the content update.
     name: pan-os-content-update-install-status
     outputs:
