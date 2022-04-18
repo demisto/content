@@ -2875,7 +2875,7 @@ def panorama_list_rules_command(args: dict):
         xpath = XPATH_SECURITY_RULES
 
     tag = args.get('tag')
-    target = args.get('target', None)
+    target = args.get('target')
     rules = panorama_list_rules(xpath, tag)
     pretty_rules = prettify_rules(rules, target)
 
@@ -4454,7 +4454,7 @@ def panorama_query_logs_command(args: dict):
     rule = args.get('rule')
     filedigest = args.get('filedigest')
     url = args.get('url')
-    target = args.get('target', None)
+    target = args.get('target')
 
     if query and (address_src or address_dst or zone_src or zone_dst
                   or time_generated or action or port_dst or rule or url or filedigest):
