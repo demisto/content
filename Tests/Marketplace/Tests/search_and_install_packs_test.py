@@ -282,7 +282,7 @@ def test_install_nightly_packs_endless_loop(mocker):
         {'id': 'bad_integration1'},
         {'id': 'bad_integration2'},
     ]
-    script.install_nightly_packs(client, 'my_host', packs_to_install)
+    script.install_packs(client, 'my_host', packs_to_install)
 
 
 @pytest.mark.parametrize('path, latest_version', [
