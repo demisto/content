@@ -40,13 +40,13 @@ run-unittests-and-lint:
 
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
-run-validations_nightly:
+run-validations:
   extends:
     - .run-validations
   rules:
     - if: '$NIGHTLY'
 
-run-validations:
+validate-content-conf:
   stage: unittests-and-validations
   needs: []
   extends:
@@ -66,6 +66,7 @@ run-validations:
             echo "Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
             exit 1
         fi
+            echo "No branch with the name - $UNDERSCORE_CI_BRANCH were found in contest-test-conf conf.json ."
       fi
     - section_end "Validate content-test-conf Branch Merged"
 
