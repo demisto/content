@@ -5775,7 +5775,7 @@ Download the provided software version onto the device.
 
 ### pan-os-platform-reboot
 ***
-Reboot the given device by hostid. Warning; this command has no confirmation and the device
+Reboot the given device by hostid. Warning: This command has no confirmation and the device
 will immediately reboot.
 
 
@@ -5793,12 +5793,12 @@ will immediately reboot.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.RestartStatus.Summary.hostid | String | Host ID | 
-| PANOS.RestartStatus.Summary.started | String | Whether download process has started. | 
+| PANOS.RestartStatus.Summary.hostid | String | Host ID. | 
+| PANOS.RestartStatus.Summary.started | String | Whether the download process has started. | 
 
 ### pan-os-platform-get-system-status
 ***
-Checks the status of the given device, checking whether it's up or down and the operational mode normal
+Checks the status of the given device, checking whether it's up or down and if the operational mode is normal.
 
 
 #### Base Command
@@ -5815,12 +5815,12 @@ Checks the status of the given device, checking whether it's up or down and the 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.SystemStatus.hostid | String | Host ID | 
+| PANOS.SystemStatus.hostid | String | Host ID. | 
 | PANOS.SystemStatus.up | String | Whether the host device is up or still unavailable. | 
 
 ### pan-os-platform-update-ha-state
 ***
-Checks the status of the given device, checking whether it's up or down and the operational mode normal
+Checks the status of the given device, checking whether it's up or down and the operational mode normal.
 
 
 #### Base Command
@@ -5838,12 +5838,12 @@ Checks the status of the given device, checking whether it's up or down and the 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.HAStateUpdate.hostid | String | Host ID | 
-| PANOS.HAStateUpdate.state | String | New HA State | 
+| PANOS.HAStateUpdate.hostid | String | Host ID. | 
+| PANOS.HAStateUpdate.state | String | New HA state. | 
 
 ### pan-os-hygiene-check-log-forwarding
 ***
-Checks the configured Vulnerability profiles to ensure at least one meets best practices.
+Checks that at least one log forwarding profile is configured according to best practices.
 
 
 #### Base Command
@@ -5853,22 +5853,22 @@ Checks the configured Vulnerability profiles to ensure at least one meets best p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String to filter to only check given device. | Optional | 
+| device_filter_string | String by which to filter so that only the given device is checked. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check | 
-| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check | 
-| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed | 
-| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues | 
-| PANOS.ConfigurationHygiene.Result.hostid | String |  | 
-| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
-| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue | 
-| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of issue | 
-| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
 
 #### Command example
 ```!pan-os-hygiene-check-log-forwarding```
@@ -5937,7 +5937,7 @@ Checks the configured Vulnerability profiles to ensure at least one meets best p
 
 ### pan-os-hygiene-check-vulnerability-profiles
 ***
-Checks the configured Vulnerability profiles to ensure at least one meets best practices.
+Checks the configured vulnerability profiles to ensure at least one meets best practices.
 
 
 #### Base Command
@@ -5947,23 +5947,23 @@ Checks the configured Vulnerability profiles to ensure at least one meets best p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String to filter to only check given device. | Optional | 
-| minimum_block_severities | csv list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
-| minimum_alert_severities | csv list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+| device_filter_string | String by which to filter so that only the given device is checked. | Optional | 
+| minimum_block_severities | Comma-separated list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | Comma-separated list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check | 
-| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check | 
-| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed | 
-| PANOS.ConfigurationHygiene.Summary.issue_count | Nunber | Total number of matching issues | 
-| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID | 
-| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
-| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue | 
-| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | Nunber | Total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of the issue. | 
 | PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
 
 #### Command example
@@ -5996,7 +5996,7 @@ Checks the configured Vulnerability profiles to ensure at least one meets best p
 
 ### pan-os-platform-install-software
 ***
-Install the given software version onto the device. Download the software first with
+Install the given software version onto the device. Download the software first with panorama-download-panos-version.
 
 
 #### Base Command
@@ -6006,17 +6006,17 @@ Install the given software version onto the device. Download the software first 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| version | software version to upgrade to, ex. 9.1.2. | Required | 
-| device_filter_string | String to filter to only install to specific devices or serial numbers. | Optional | 
-| sync | If provided, runs the download synchronously - make sure 'execution-timeout' is increased. | Optional | 
+| version | Software version to upgrade to, for example: 9.1.2. | Required | 
+| device_filter_string | SString by which to filter to only install to specific devices or  serial numbers. | Optional | 
+| sync | If provided, runs the download synchronously. Make sure 'execution-timeout' is increased. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.InstallStatus.Summary.hostid | String | Host ID | 
-| PANOS.InstallStatus.Summary.started | String | Whether download process has started. | 
+| PANOS.InstallStatus.Summary.hostid | String | Host ID, | 
+| PANOS.InstallStatus.Summary.started | String | Whether the download process has started. | 
 
 #### Command example
 ```!pan-os-platform-install-software version=9.1.0```
