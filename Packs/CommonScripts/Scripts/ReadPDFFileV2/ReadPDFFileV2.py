@@ -244,10 +244,12 @@ def get_urls_and_emails_from_pdf_file(file_path):
     pdf = PyPDF2.PdfFileReader(pdf_file)
     pages = pdf.getNumPages()
 
+    # Goes over the PDF, page by page, and extracts urls and emails:
     for page in range(pages):
         page_sliced = pdf.getPage(page)
         page_object = page_sliced.getObject()
 
+        # Extracts the PDF's Annots (Annotations and Commenting):
         if annots := page_object.get('/Annots'):
             if not isinstance(annots, PyPDF2.generic.ArrayObject):
                 annots = [annots]
@@ -261,6 +263,7 @@ def get_urls_and_emails_from_pdf_file(file_path):
                     if isinstance(annot_object, PyPDF2.generic.IndirectObject):
                         annot_object = annot_object.getObject()
 
+                    # Extracts the URLs from the Annot object (under key: '/A'):
                     if a := annot_object.get('/A'):
                         if isinstance(a, PyPDF2.generic.IndirectObject):
                             a = a.getObject()

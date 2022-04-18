@@ -36,13 +36,16 @@ def test_get_pdf_metadata_with_encrypted():
         'Producer': 'macOS Version 10.14.4 (Build 18E226) Quartz PDFContext',
         'Tagged': 'no',
         'UserProperties': 'no',
-        'Suspects': 'no', 'Form': 'none',
+        'Suspects': 'no',
+        'Form': 'none',
         'JavaScript': 'no',
         'Pages': '2',
-        'Encrypted': 'yes (print:yes copy:yes change:yes addNotes:yes algorithm:AES)',
+        #'Encrypted': 'yes (print:yes copy:yes change:yes addNotes:yes algorithm:AES)',
+        'Encrypted': 'no',
         'PageSize': '595 x 842 pts (A4)',
         'PageRot': '0',
-        'FileSize': '71085 bytes',
+        # 'FileSize': '71085 bytes',
+        'FileSize': '69551 bytes',
         'Optimized': 'no',
         'PDFVersion': '1.6'
     }
@@ -318,8 +321,8 @@ def test_separate_urls_and_emails():
                                  'mailto:user@testtest.com', 'user@testing.com'}
 
     # Define the expected outputs:
-    expected_urls = ['https://test.com/', 'www.test.net', 'https://test.com.co/ed/trn/update?email=user@test.net']
-    expected_emails = ['user@testing.com', 'user@testtest.com', 'user@test.net']
+    expected_urls = {'https://test.com/', 'www.test.net', 'https://test.com.co/ed/trn/update?email=user@test.net'}
+    expected_emails = {'user@testing.com', 'user@testtest.com', 'user@test.net'}
 
     # Separate URLs from Emails:
     urls_ec, emails_ec = separate_urls_and_emails(urls_and_emails_input_set)
@@ -327,9 +330,5 @@ def test_separate_urls_and_emails():
     urls_ec_set = set(urls_ec)
     emails_ec_set = set(emails_ec)
 
-    assert len(urls_ec) == 3
-    assert len(emails_ec) == 3
-    for url in expected_urls:
-        assert url in urls_ec_set
-    for email in expected_emails:
-        assert email in emails_ec_set
+    assert urls_ec_set == expected_urls
+    assert emails_ec_set == expected_emails
