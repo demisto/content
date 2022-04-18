@@ -24,7 +24,7 @@
 .upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar-e2e
   - section_start "Upload E2E tests Entities to Cortex XSOAR" --collapsed
   - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/classifier-demsito_sdk_e2e_test_classifier.json
-  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_integration
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_integration/demisto_sdk_e2e_test_integration.yml
   - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_palybook.yml  
   - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_script.yml  
   - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/layoutscontainer-demisto_sdk_e2e_test_inident_layout.json
