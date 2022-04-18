@@ -200,5 +200,4 @@ There is no context output for this command.
 
 ## Additional Information
 In the first fetch iteration, it might take a few minutes for email messages to be ingested due to filter limitations on the IMAP client.
-Some emails may be skipped and not added to the fetched emails list, because they do not include a date field that shows when was it received,
-as a result, they can't be filtered according to the *time_to_fetch_from* argument.
+Some emails may be skipped and not fetched as incidents, due to the fact that they are lacking the date field that shows the time when the email was received.
