@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "Account Indicator",
+    "id": "RubrikPolaris Account Indicator",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -768,7 +768,7 @@
             }
         ]
     },
-    "name": "Account Indicator",
+    "name": "RubrikPolaris Account Indicator",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
