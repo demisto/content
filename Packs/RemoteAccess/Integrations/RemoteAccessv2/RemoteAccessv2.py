@@ -251,12 +251,9 @@ def main() -> None:
     command = demisto.command()
 
     credentials: Dict[str, Any] = params.get('credentials') or {}
-    user: Optional[str] = credentials.get('identifier')
-    password: Optional[str] = credentials.get('password')
-    certificate: Optional[str] = (credentials.get('credentials') or {}).get('sshkey')
-
-    if certificate == '':
-        certificate = None
+    user: str = credentials.get('identifier', '')
+    password: str = credentials.get('password', '')
+    certificate: str = (credentials.get('credentials') or {}).get('sshkey', '')
 
     host_name: str = params.get('hostname', '')
     ciphers: Set[str] = set(argToList(params.get('ciphers')))
