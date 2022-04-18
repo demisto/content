@@ -284,8 +284,9 @@ slack-notify-nightly-build:
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-# todo: uncomment it:
-#    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
+## todo: uncomment it:
+#    - ./Tests/scripts/darya_test.sh
+##    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
 #    # todo: delete next 3 lines
     - echo -e "Sanity Test - Playbook with integration\nSanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\n" > "$ARTIFACTS_FOLDER/filter_file.txt"
     - echo -e "Sanity Test - Playbook with integration\nSanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\n" > "/builds/xsoar/content/artifacts/filter_file.txt"
@@ -320,7 +321,7 @@ slack-notify-nightly-build:
   after_script:
     - echo "Job finished, removing lock file"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_PIPELINE_ID"
+    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_JOB_ID"
     - echo "Finished removing lock file"
 
 
