@@ -6635,7 +6635,7 @@ script:
     description: Allows assigning of EDL to the Anti-Spyware profile under "DNS Signature Policies"
     outputs:
       - contextPath: Panorama.ApplyDNS
-      - description: The api response from the command.
+        description: The api response from the command.
   - arguments: []
     description: Get file-blocking best practices.
     name: pan-os-get-file-blocking-best-practice
