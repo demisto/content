@@ -23,28 +23,28 @@
 
 .upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar-e2e
   - section_start "Upload E2E tests Entities to Cortex XSOAR" --collapsed
-  - demisto-sdk upload --insecure -i Packs/DemistoSDKE2E/classifier-demsito_sdk_e2e_test_classifier.json
-  - demisto-sdk upload --insecure -i Packs/DemistoSDKE2E/demisto_sdk_e2e_test_Indicator_type.json
-  - demisto-sdk upload --insecure -i Packs/DemistoSDKE2E/demisto_sdk_e2e_test_incident_field.json
-  - demisto-sdk upload --insecure -i Packs/DemistoSDKE2E/demisto_sdk_e2e_test_indicator_field.json
-  - demisto-sdk upload --insecure -i Packs/DemistoSDKE2E/demisto_sdk_e2e_test_integration
-  - demisto-sdk upload --insecure -i Packs/DemistoSDKE2E/demisto_sdk_e2e_test_palybook.yml
-  - demisto-sdk upload --insecure -i Packs/DemistoSDKE2E/demisto_sdk_e2e_test_reputation.json
-  - demisto-sdk upload --insecure -i Packs/DemistoSDKE2E/demisto_sdk_e2e_test_script.yml
-  - demisto-sdk upload --insecure -i Packs/DemistoSDKE2E/demsito_sdk_e2e_incident_type.json
-  - demisto-sdk upload --insecure -i Packs/DemistoSDKE2E/layoutscontainer-demisto_sdk_e2e_test_inident_layout.json
-  - demisto-sdk upload --insecure -i Packs/DemistoSDKE2E/layoutscontainer-demsito_sdk_e2e_indicator_layout.json
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/classifier-demsito_sdk_e2e_test_classifier.json
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_Indicator_type.json
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_incident_field.json
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_indicator_field.json
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_integration
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_palybook.yml
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_reputation.json
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_script.yml
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demsito_sdk_e2e_incident_type.json
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/layoutscontainer-demisto_sdk_e2e_test_inident_layout.json
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/layoutscontainer-demsito_sdk_e2e_indicator_layout.json
   - section_end "Upload E2E tests Entities to Cortex XSOAR"
 
 demisto-sdk-nightly:run-unittests-and-lint:
   extends:
-    - .run-unittests-and-lint
+  #  - .run-unittests-and-lint
     - .sdk-nightly-schedule-rule
 
 
 demisto-sdk-nightly:run-validations:
   extends:
-    - .run-validations
+  #  - .run-validations
     - .sdk-nightly-schedule-rule
 
 
@@ -180,9 +180,10 @@ demisto-sdk-nightly:run-commands-against-instance-e2e:
       export DEMISTO_BASE_URL="https://localhost:$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].TunnelPort')"
       echo "Server URL: $DEMISTO_BASE_URL"
     - section_start "uploading Files to ARTIFACTS_FOLDER"
-    - cp -Rf TestData/DemistoSDKE2E /Packs
+    #- cp -Rf TestData/DemistoSDKE2E /Packs
     - section_end "end copying Files to ARTIFICATES_FOLDER"
     - section_start "Upload Entities to XSOAR Instance" --collapsed
+    - mkdir Packs/DemistoSDKE2E/
     - *upload-entities-to-cortex-xsoar-e2e
     - section_end "Upload Entities to XSOAR Instance"
     - section_start "Download DemistoSDKE2E integration from XSOAR Instance" --collapsed
@@ -210,12 +211,7 @@ demisto-sdk-nightly:run-commands-against-instance-e2e:
     # - section_end "Run Validate"
     # - section_start "Run Lint" --collapsed
     # - demisto-sdk lint -i Packs/HelloWorld/
-    # - section_end "Run Lint"
-    # - *change-file-ids
-    # - *upload-entities-to-cortex-xsoar
-    # - section_start "Destroy instances"
-    # - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
-    # - section_end "Destroy instances"
+
 
 
 demisto-sdk-nightly:destroy-instance:
