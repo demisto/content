@@ -24,11 +24,9 @@ def test_get_images_paths_in_path():
 
 
 def test_get_pdf_metadata_with_encrypted():
-    from ReadPDFFileV2 import get_pdf_metadata, decrypt_pdf_file
+    from ReadPDFFileV2 import get_pdf_metadata
     file_path = f'{CWD}/encrypted.pdf'
-    dec_file_path = f'{CWD}/decrypted.pdf'
-    decrypt_pdf_file(file_path, '1234', dec_file_path)
-    metadata = get_pdf_metadata(dec_file_path)
+    metadata = get_pdf_metadata(file_path, user_password='1234')
     expected = {
         'Title': 'sample1.pdf',
         'Keywords': '',
@@ -36,19 +34,17 @@ def test_get_pdf_metadata_with_encrypted():
         'Producer': 'macOS Version 10.14.4 (Build 18E226) Quartz PDFContext',
         'Tagged': 'no',
         'UserProperties': 'no',
-        'Suspects': 'no',
-        'Form': 'none',
+        'Suspects': 'no', 'Form': 'none',
         'JavaScript': 'no',
         'Pages': '2',
-        'Encrypted': 'no',
+        'Encrypted': 'yes (print:yes copy:yes change:yes addNotes:yes algorithm:AES)',
         'PageSize': '595 x 842 pts (A4)',
         'PageRot': '0',
-        'FileSize': '69964 bytes',
+        'FileSize': '71085 bytes',
         'Optimized': 'no',
         'PDFVersion': '1.6'
     }
-    if os.path.exists(dec_file_path):
-        os.remove(dec_file_path)
+
     assert expected.items() <= metadata.items()
 
 

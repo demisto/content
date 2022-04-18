@@ -97,9 +97,12 @@ def get_images_paths_in_path(path):
     return res
 
 
-def get_pdf_metadata(file_path):
+def get_pdf_metadata(file_path, user_password=None):
     """Gets the metadata from the pdf as a dictionary"""
-    metadata_txt = run_shell_command('pdfinfo', '-enc', 'UTF-8', file_path)
+    if user_password:
+        metadata_txt = run_shell_command('pdfinfo', '-upw', user_password, file_path)
+    else:
+        metadata_txt = run_shell_command('pdfinfo', '-enc', 'UTF-8', file_path)
     metadata = {}
     metadata_str = metadata_txt.decode('utf8', 'replace')
     for line in metadata_str.split('\n'):
@@ -333,13 +336,13 @@ def main():
                 cpy_file_path = f'{output_folder}/ReadPDF.pdf'
                 shutil.copy(path, cpy_file_path)
 
+                # Get metadata:
+                metadata = get_pdf_metadata(cpy_file_path, user_password)
+
                 if user_password:  # The PDF is encrypted
                     dec_file_path = f'{output_folder}/DecryptedPDF.pdf'
                     decrypt_pdf_file(cpy_file_path, user_password, dec_file_path)
                     cpy_file_path = dec_file_path
-
-                # Get metadata:
-                metadata = get_pdf_metadata(cpy_file_path)
 
                 # Get text:
                 pdf_text_output_path = f'{output_folder}/PDFText.txt'
