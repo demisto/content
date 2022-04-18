@@ -10,9 +10,6 @@ echo "$BUILDS"
 get_build_job_statuses "$BUILDS"
 echo -e "Build statuses found are: \n $BUILD_STATUSES"
 
-
-curl --header "PRIVATE-TOKEN: $GITLAB_STATUS_TOKEN" $BUILD_STATUS_API/12248062
-
 #12248063 # cancelled
 #12248066 # failed
 #12248062 #done
