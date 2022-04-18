@@ -84,12 +84,7 @@ def get_available_key_algorithms() -> Set[str]:
 
 
 def create_paramiko_ssh_client(
-    host_name: str,
-    user_name: Optional[str],
-    password: Optional[str],
-    ciphers: Set[str],
-    key_algorithms: Set[str],
-    private_key: Optional[str] = None
+    host_name: str, user_name: str, password: str, ciphers: Set[str], key_algorithms: Set[str], private_key: str
 ) -> SSHClient:
     """
     Creates the Paramiko SSH client.
