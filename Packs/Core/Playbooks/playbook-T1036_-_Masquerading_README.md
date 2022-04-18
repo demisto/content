@@ -79,4 +79,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![T1036 - Masquerading](Insert the link to your image here)
+![T1036 - Masquerading](https://raw.githubusercontent.com/demisto/content/74b71dec6ba3d62ded607b56074c70305a3f44e3/Packs/Core/doc_files/T1036_-_Masquerading.png)
