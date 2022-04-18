@@ -24,8 +24,8 @@ BUCKET_UPLOAD = 'Upload Packs to Marketplace Storage'
 SDK_NIGHTLY = 'Demisto SDK Nightly'
 PRIVATE_NIGHTLY = 'Private Nightly'
 WORKFLOW_TYPES = {CONTENT_NIGHTLY, SDK_NIGHTLY, BUCKET_UPLOAD, PRIVATE_NIGHTLY}
-BUILD_INVESTIGATIONS_CHANNEL = 'dmst-build'
-USERNAME = 'Content GitlabCI'
+BUILD_NOTIFICATIONS_CHANNEL = 'dmst-build'
+SLACK_USERNAME = 'Content GitlabCI'
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
@@ -243,8 +243,8 @@ def notify_failures_to_build_channel(slack_client, slack_msg_data):
     slack_client.api_call(
         "chat.postMessage",
         json={
-            'channel': BUILD_INVESTIGATIONS_CHANNEL,
-            'username': USERNAME,
+            'channel': BUILD_NOTIFICATIONS_CHANNEL,
+            'username': SLACK_USERNAME,
             'as_user': 'False',
             'attachments': slack_msg_data
         }
@@ -269,12 +269,12 @@ def main():
         "chat.postMessage",
         json={
             'channel': slack_channel,
-            'username': USERNAME,
+            'username': SLACK_USERNAME,
             'as_user': 'False',
             'attachments': slack_msg_data
         }
     )
-    if pipeline_failed_jobs: #and slack_channel == CONTENT_CHANNEL
+    if pipeline_failed_jobs and slack_channel == CONTENT_CHANNEL:
         notify_failures_to_build_channel(slack_client, slack_msg_data)
 
 
