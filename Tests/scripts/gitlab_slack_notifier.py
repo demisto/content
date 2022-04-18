@@ -246,8 +246,8 @@ def notify_failures_to_build_channel(slack_client, slack_msg_data):
             'channel': BUILD_NOTIFICATIONS_CHANNEL,
             'username': SLACK_USERNAME,
             'as_user': 'False',
-            'attachments': slack_msg_data
-        }
+            'attachments': slack_msg_data,
+        },
     )
 
 
