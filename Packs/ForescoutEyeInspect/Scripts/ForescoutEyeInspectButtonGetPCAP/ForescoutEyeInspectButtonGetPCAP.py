@@ -14,7 +14,7 @@ def get_pcap() -> Dict[str, Any]:
 
 def main():
     try:
-        get_pcap()
+        return_results(get_pcap())
     except Exception as e:
         demisto.error(fix_traceback_line_numbers(traceback.format_exc()))
         return_error(f'Failed to get pcap from Forescout EyeInspect incident.\nError:\n{e}')
