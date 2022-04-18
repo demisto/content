@@ -140,75 +140,46 @@ def test_build_readpdf_entry_object_empty_extract(mocker):
     assert res[0]['HumanReadable'] == '### Metadata\n\n### URLs\n\n### Text\n'
 
 
-@pytest.mark.parametrize('pdf_encoding_type, expected_output', [
-    (1, 'https://test1.com/'),
-    (1, 'https://test2.com'),
-    (1, 'http://www.test3.net'),
-    (1, 'mailto:user@test4.com'),
-    (1, 'https://test5.com.co/ed/trn/update?email=user@test6.net'),
-    (1, 'http://www.test7.com'),
-    (1, 'https://test8.com/'),
-    (2, 'https://test1.com/'),
-    (2, 'https://test2.com'),
-    (2, 'http://www.test3.net'),
-    (2, 'mailto:user@test4.com'),
-    (2, 'https://test5.com.co/ed/trn/update?email=user@test6.net'),
-    (2, 'http://www.test7.com'),
-    (2, 'https://test8.com/')
+@pytest.mark.parametrize('file_path', [
+    'URLs_Extraction_Test_PDF_Encoding_Google_Docs_Renderer_protected.pdf',
+    'URLs_Extraction_Test_PDF_Encoding_Quartz_PDFContext_protected.pdf'
 ])
-def test_get_urls_and_emails_from_pdf_file_with_encrypt(pdf_encoding_type, expected_output):
+def test_get_urls_and_emails_from_pdf_file_with_encrypt(file_path):
     """
     This test verifies URL and Emails extraction from an encrypted PDF file.
 
         Given:
-        A number representing a type of a pdf encoding and an expected output - URL or Email address:
-        (the pdf is encrypted)
+        A path to an encrypted PDF file with a certain encoding:
+            1. A pdf created with google docs.
+            2. A pdf created with mac os Notes.
 
-            1. A PDF encoded with the first encoding, a text url ended with a slash /.
+        Both PDFs include URLs and Email addresses from different kinds that should be extracted:
 
-            2. A PDF encoded with the first encoding, a text url ended without a slash /.
-
-            3. A PDF encoded with the first encoding, a text url without the http prefix.
-
-            4. A PDF encoded with the first encoding, a text email address.
-
-            5. A PDF encoded with the first encoding, a text url with an https prefix, and an email address in it.
-
-            6. A PDF encoded with the first encoding, a text hyperlink of a url.
-
-            7. A PDF encoded with the first encoding, aa embedded url (a url the is hyperlinked to an image).
-
-            8. A PDF encoded with the second encoding, a text url ended with a slash /.
-
-            9. A PDF encoded with the second encoding, a text url ended without a slash /.
-
-            10. A PDF encoded with the second encoding, a text url without the http prefix.
-
-            11. A PDF encoded with the second encoding, a text email address.
-
-            12. A PDF encoded with the second encoding, a text url with an https prefix, and an email address in it.
-
-            13. A PDF encoded with the second encoding, a text hyperlink of a url.
-
-            14. A PDF encoded with the second encoding, aa embedded url (a url the is hyperlinked to an image).
+            * 'https://test1.com/' - A text url ended with a slash /.
+            * 'https://test2.com' - A text url ended without a slash /.
+            * 'www.test3.net' - A text url without the http prefix.
+            * 'user@test4.com' - A text email address.
+            * 'https://test5.com.co/ed/trn/update?email=user@test6.net' - A text url with an https prefix, and an email
+               address in it.
+            * 'http://www.test7.com' - A text hyperlink of a url.
+            * 'https://test8.com/' - An embedded url (a url that is hyperlinked to an image).
 
         When:
             Running 'get_urls_and_emails_from_pdf_file' function on the PDF file.
 
         Then:
             Verify that the expected amount of URLs and Email addresses was extracted from the PDF.
-            Verify that the specific URL or Email was extracted successfully.
+            Verify that the URLs Emails was extracted successfully.
 
     """
     from ReadPDFFileV2 import get_urls_and_emails_from_pdf_file, decrypt_pdf_file
 
-    # Select the PDF encoding:
-    if pdf_encoding_type == 1:  # first encoding type (a pdf created with google docs)
-        file_path = f'{CWD}/URLs_Extraction_Test_PDF_Encoding_Google_Docs_Renderer_protected.pdf'
-    else:  # second encoding type (a pdf created with mac os notes)
-        file_path = f'{CWD}/URLs_Extraction_Test_PDF_Encoding_Quartz_PDFContext_protected.pdf'
+    expected_output = {'https://test1.com/', 'https://test2.com', 'http://www.test3.net', 'mailto:user@test4.com',
+                       'https://test5.com.co/ed/trn/update?email=user@test6.net', 'http://www.test7.com',
+                       'https://test8.com/'}
 
     # Decrypt the PDF:
+    file_path = f'{CWD}/{file_path}'
     dec_file_path = f'{CWD}/decrypted.pdf'
     decrypt_pdf_file(file_path, '123456', dec_file_path)
 
@@ -219,82 +190,55 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(pdf_encoding_type, expec
     if os.path.exists(dec_file_path):
         os.remove(dec_file_path)
 
-    assert len(urls) == 7
-    assert expected_output in urls
+    assert len(urls) == len(expected_output)
+    assert urls == expected_output
 
 
-@pytest.mark.parametrize('pdf_encoding_type, expected_output', [
-    (1, 'https://test1.com/'),
-    (1, 'https://test2.com'),
-    (1, 'http://www.test3.net'),
-    (1, 'mailto:user@test4.com'),
-    (1, 'https://test5.com.co/ed/trn/update?email=user@test6.net'),
-    (1, 'http://www.test7.com'),
-    (1, 'https://test8.com/'),
-    (2, 'https://test1.com/'),
-    (2, 'https://test2.com'),
-    (2, 'http://www.test3.net'),
-    (2, 'mailto:user@test4.com'),
-    (2, 'https://test5.com.co/ed/trn/update?email=user@test6.net'),
-    (2, 'http://www.test7.com'),
-    (2, 'https://test8.com/')
+@pytest.mark.parametrize('file_path', [
+    'URLs_Extraction_Test_PDF_Encoding_Google_Docs_Renderer.pdf',
+    'URLs_Extraction_Test_PDF_Encoding_Quartz_PDFContext.pdf'
 ])
-def test_get_urls_and_emails_from_pdf_file_without_encrypt(pdf_encoding_type, expected_output):
+def test_get_urls_and_emails_from_pdf_file_without_encrypt(file_path):
     """
     This test verifies URL and Emails extraction from a non-encrypted PDF file.
 
         Given:
-        A number representing a type of a pdf encoding and an expected output - URL or Email address:
+        A path to a PDF file with a certain encoding:
+            1. A pdf created with google docs.
+            2. A pdf created with mac os Notes.
 
-            1. A PDF encoded with the first encoding, a text url ended with a slash /.
+        Both PDFs include URLs and Email addresses from different kinds that should be extracted:
 
-            2. A PDF encoded with the first encoding, a text url ended without a slash /.
-
-            3. A PDF encoded with the first encoding, a text url without the http prefix.
-
-            4. A PDF encoded with the first encoding, a text email address.
-
-            5. A PDF encoded with the first encoding, a text url with an https prefix, and an email address in it.
-
-            6. A PDF encoded with the first encoding, a text hyperlink of a url.
-
-            7. A PDF encoded with the first encoding, aa embedded url (a url the is hyperlinked to an image).
-
-            8. A PDF encoded with the second encoding, a text url ended with a slash /.
-
-            9. A PDF encoded with the second encoding, a text url ended without a slash /.
-
-            10. A PDF encoded with the second encoding, a text url without the http prefix.
-
-            11. A PDF encoded with the second encoding, a text email address.
-
-            12. A PDF encoded with the second encoding, a text url with an https prefix, and an email address in it.
-
-            13. A PDF encoded with the second encoding, a text hyperlink of a url.
-
-            14. A PDF encoded with the second encoding, aa embedded url (a url the is hyperlinked to an image).
+            * 'https://test1.com/' - A text url ended with a slash /.
+            * 'https://test2.com' - A text url ended without a slash /.
+            * 'www.test3.net' - A text url without the http prefix.
+            * 'user@test4.com' - A text email address.
+            * 'https://test5.com.co/ed/trn/update?email=user@test6.net' - A text url with an https prefix, and an email
+               address in it.
+            * 'http://www.test7.com' - A text hyperlink of a url.
+            * 'https://test8.com/' - An embedded url (a url that is hyperlinked to an image).
 
         When:
             Running 'get_urls_and_emails_from_pdf_file' function on the PDF file.
 
         Then:
             Verify that the expected amount of URLs and Email addresses was extracted from the PDF.
-            Verify that the specific URL or Email was extracted successfully.
+            Verify that the URLs Emails was extracted successfully.
 
     """
     from ReadPDFFileV2 import get_urls_and_emails_from_pdf_file
 
-    # Select the PDF encoding:
-    if pdf_encoding_type == 1:  # first encoding type (a pdf created with google docs)
-        file_path = f'{CWD}/URLs_Extraction_Test_PDF_Encoding_Google_Docs_Renderer.pdf'
-    else:  # second encoding type (a pdf created with mac os notes)
-        file_path = f'{CWD}/URLs_Extraction_Test_PDF_Encoding_Quartz_PDFContext.pdf'
+    expected_output = {'https://test1.com/', 'https://test2.com', 'http://www.test3.net', 'mailto:user@test4.com',
+                       'https://test5.com.co/ed/trn/update?email=user@test6.net', 'http://www.test7.com',
+                       'https://test8.com/'}
+
+    file_path = f'{CWD}/{file_path}'
 
     # Extract URLs and Emails:
     urls = get_urls_and_emails_from_pdf_file(file_path)
 
-    assert len(urls) == 7
-    assert expected_output in urls
+    assert len(urls) == len(expected_output)
+    assert urls == expected_output
 
 
 def test_separate_urls_and_emails():
