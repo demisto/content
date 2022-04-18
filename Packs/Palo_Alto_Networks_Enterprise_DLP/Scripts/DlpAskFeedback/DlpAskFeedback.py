@@ -105,14 +105,14 @@ def main():
     if demisto.get(args, 'task'):
         entitlement_string += f'|{demisto.get(args, "task")}'
 
-    args = {
+    send_notification_args = {
         'ignoreAddURL': 'true',
         'using-brand': 'SlackV3'
     }
 
     reply = "Thank you for your response."
     blocks = json.dumps(create_blocks(message, entitlement_string, reply))
-    args['blocks'] = json.dumps({
+    send_notification_args['blocks'] = json.dumps({
         'blocks': blocks,
         'entitlement': entitlement_string,
         'reply': reply,
@@ -123,12 +123,12 @@ def main():
     to = demisto.get(args, 'user_id')
 
     if to:
-        args['to'] = to
+        send_notification_args['to'] = to
     else:
         return_error('A user must be provided.')
 
     try:
-        demisto.results(demisto.executeCommand('send-notification', args))
+        demisto.results(demisto.executeCommand('send-notification', send_notification_args))
     except ValueError as e:
         if 'Unsupported Command' in str(e):
             return_error(
