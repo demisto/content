@@ -5,9 +5,9 @@
 #==================================
 
 export GCS_LOCKS_PATH=gs://xsoar-ci-artifacts/content-locks-xsiam
-export GCS_QUEUE_FILE=queue-master
+echo "queue is : $GCS_QUEUE_FILE"
 export LOCK_IDENTIFIER=lock
-export TEST_MACHINES_LIST=test-machines-master
+echo "tests machines is : $TEST_MACHINES_LIST"
 export ALLOWED_STATES=running
 export BUILD_STATUS_API=https://code.pan.run/api/v4/projects/2596/jobs   # disable-secrets-detection
 export SELF_LOCK_PATTERN=*-$LOCK_IDENTIFIER-$CI_JOB_ID
