@@ -2,7 +2,7 @@
     "id": "incident_netskopeaccessmethod",
     "version": -1,
     "modified": "2022-03-29T23:57:08.116206794+03:00",
-    "name": "NetSkope Access Method",
+    "name": "Netskope Access Method",
     "ownerOnly": false,
     "cliName": "netskopeaccessmethod",
     "type": "shortText",
@@ -18,9 +18,9 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "NetSkope Compromised Credentials",
-        "NetSkope Malware",
-        "NetSkope Qurantine"
+        "Netskope Compromised Credentials",
+        "Netskope Malware",
+        "Netskope Qurantine"
     ],
     "associatedToAll": false,
     "unmapped": false,

@@ -18,9 +18,9 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "NetSkope DLP",
-        "NetSkope Compromised Credentials",
-        "NetSkope Behavior Analytics"
+        "Netskope DLP",
+        "Netskope Compromised Credentials",
+        "Netskope Behavior Analytics"
     ],
     "associatedToAll": false,
     "unmapped": false,

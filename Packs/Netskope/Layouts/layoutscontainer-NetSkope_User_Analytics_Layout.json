@@ -281,7 +281,7 @@
             {
                 "hidden": false,
                 "id": "w5jxsyyrnw",
-                "name": "NetSkope Summary",
+                "name": "Netskope Summary",
                 "sections": [
                     {
                         "displayType": "CARD",
@@ -428,8 +428,8 @@
         ]
     },
     "group": "incident",
-    "id": "NetSkope -  User Analytics Layout",
-    "name": "NetSkope -  User Analytics Layout",
+    "id": "Netskope -  User Analytics Layout",
+    "name": "Netskope -  User Analytics Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

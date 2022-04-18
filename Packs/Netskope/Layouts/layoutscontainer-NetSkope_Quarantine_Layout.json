@@ -466,8 +466,8 @@
         ]
     },
     "group": "incident",
-    "id": "NetSkope - Quarantine Layout",
-    "name": "NetSkope - Quarantine Layout",
+    "id": "Netskope - Quarantine Layout",
+    "name": "Netskope - Quarantine Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

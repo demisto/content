@@ -281,7 +281,7 @@
             {
                 "hidden": false,
                 "id": "w5jxsyyrnw",
-                "name": "NetSkope Summary",
+                "name": "Netskope Summary",
                 "sections": [
                     {
                         "displayType": "CARD",
@@ -446,8 +446,8 @@
         ]
     },
     "group": "incident",
-    "id": "NetSkope -  DLP Layout",
-    "name": "NetSkope -  DLP Layout",
+    "id": "Netskope -  DLP Layout",
+    "name": "Netskope -  DLP Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

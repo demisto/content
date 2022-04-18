@@ -1,9 +1,9 @@
 {
     "description": "",
     "feed": false,
-    "id": "NetSkope Mapper",
+    "id": "Netskope Mapper",
     "mapping": {
-        "NetSkope Behavior Analytics": {
+        "Netskope Behavior Analytics": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Application Name": {
@@ -14,27 +14,27 @@
                     "complex": null,
                     "simple": "ccl"
                 },
-                "NetSkope Action": {
+                "Netskope Action": {
                     "complex": null,
                     "simple": "action"
                 },
-                "NetSkope Behavior Analytics Policy": {
+                "Netskope Behavior Analytics Policy": {
                     "complex": null,
                     "simple": "policy"
                 },
-                "NetSkope Event Type": {
+                "Netskope Event Type": {
                     "complex": null,
                     "simple": "event_type"
                 },
-                "NetSkope Object": {
+                "Netskope Object": {
                     "complex": null,
                     "simple": "object"
                 },
-                "NetSkope Object ID": {
+                "Netskope Object ID": {
                     "complex": null,
                     "simple": "object_id"
                 },
-                "NetSkope Object Type": {
+                "Netskope Object Type": {
                     "complex": null,
                     "simple": "object_type"
                 },
@@ -44,30 +44,30 @@
                 }
             }
         },
-        "NetSkope Compromised Credentials": {
+        "Netskope Compromised Credentials": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Cloud Confidence Level": {
                     "complex": null,
                     "simple": "ccl"
                 },
-                "NetSkope Access Method": {
+                "Netskope Access Method": {
                     "complex": null,
                     "simple": "email_source"
                 },
-                "NetSkope Acknowledge": {
+                "Netskope Acknowledge": {
                     "complex": null,
                     "simple": "acked"
                 },
-                "NetSkope Breach Description": {
+                "Netskope Breach Description": {
                     "complex": null,
                     "simple": "breach_description"
                 },
-                "NetSkope Breach Score": {
+                "Netskope Breach Score": {
                     "complex": null,
                     "simple": "breach_score"
                 },
-                "NetSkope Leak ID": {
+                "Netskope Leak ID": {
                     "complex": null,
                     "simple": "breach_id"
                 },
@@ -95,7 +95,7 @@
                 }
             }
         },
-        "NetSkope DLP": {
+        "Netskope DLP": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Alert ID": {
@@ -118,15 +118,15 @@
                     "complex": null,
                     "simple": "file_path"
                 },
-                "NetSkope Object": {
+                "Netskope Object": {
                     "complex": null,
                     "simple": "object"
                 },
-                "NetSkope Object ID": {
+                "Netskope Object ID": {
                     "complex": null,
                     "simple": "object_id"
                 },
-                "NetSkope Object Type": {
+                "Netskope Object Type": {
                     "complex": null,
                     "simple": "object_type"
                 },
@@ -166,7 +166,7 @@
                 }
             }
         },
-        "NetSkope Malware": {
+        "Netskope Malware": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "File Names": {
@@ -181,7 +181,7 @@
                     "complex": null,
                     "simple": "file_size"
                 },
-                "NetSkope Access Method": {
+                "Netskope Access Method": {
                     "complex": null,
                     "simple": "access_method"
                 },
@@ -199,7 +199,7 @@
                 }
             }
         },
-        "NetSkope Qurantine": {
+        "Netskope Qurantine": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "File MD5": {
@@ -214,7 +214,7 @@
                     "complex": null,
                     "simple": "file_size"
                 },
-                "NetSkope Access Method": {
+                "Netskope Access Method": {
                     "complex": null,
                     "simple": "access_method"
                 },
@@ -276,7 +276,7 @@
             }
         }
     },
-    "name": "NetSkope Mapper",
+    "name": "Netskope Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

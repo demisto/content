@@ -2,7 +2,7 @@
     "id": "incident_netskopeaction",
     "version": -1,
     "modified": "2022-03-23T16:49:59.109099094+02:00",
-    "name": "NetSkope Action",
+    "name": "Netskope Action",
     "ownerOnly": false,
     "cliName": "netskopeaction",
     "type": "shortText",
@@ -18,7 +18,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "NetSkope Behavior Analytics"
+        "Netskope Behavior Analytics"
     ],
     "associatedToAll": false,
     "unmapped": false,
