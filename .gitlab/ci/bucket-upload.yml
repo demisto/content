@@ -332,18 +332,19 @@ bucket-upload-test-branch:
   stage: create-test-branch
   before_script:
     - mkdir ~/.ssh/
-    - echo "${CI_KNOWN_HOSTS}" > ~/.ssh/known_hosts
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - ssh-keyscan -t rsa $CI_SERVER_HOST >> ~/.ssh/known_hosts
     - echo "${SSH_PUSH_KEY}" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - git config user.email "ci@example.com"
+    - git config user.email "iyeshaya@example.com"
     - git config user.name "CI"
     - git remote remove ssh_origin || true  # Local repo state may be cached
     - git remote add ssh_origin "git@$CI_SERVER_HOST:$CI_PROJECT_PATH.git"
   script:
     - echo "Creating new branch"
+    - echo "{$CI_JOB_TOKEN:0:5}"
     - git checkout -b "this_is_a_test_branch"
     - touch test.txt
     - git add *
     - git commit -m "new file"
     - git push ssh_origin this_is_a_test_branch
-    - echo "{$CI_JOB_TOKEN:0:5}"
