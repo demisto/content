@@ -2822,11 +2822,11 @@ def prettify_rules(rules: Union[List[dict], dict], target: Optional[str] = None)
     return pretty_rules_arr
 
 
-def target_filter(rule: dict, target: str/int):
+def target_filter(rule: dict, target: str):
     """
     Args:
         rule (dict): A rule from the panorama instance.
-        target (str/int): A serial number to filter the rule on
+        target (str): A serial number to filter the rule on
 
     Returns:
         if the rule contains the target return True else False.
