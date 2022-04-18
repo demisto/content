@@ -203,13 +203,13 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(pdf_encoding_type, expec
 
     # Select the PDF encoding:
     if pdf_encoding_type == 1:  # first encoding type (a pdf created with google docs)
-        file_path = f'{CWD}/URLs_Extraction_Test_PDF_Encoding_Google_Docs_Renderer.pdf'
+        file_path = f'{CWD}/URLs_Extraction_Test_PDF_Encoding_Google_Docs_Renderer_protected.pdf'
     else:  # second encoding type (a pdf created with mac os notes)
-        file_path = f'{CWD}/URLs_Extraction_Test_PDF_Encoding_Quartz_PDFContext.pdf'
+        file_path = f'{CWD}/URLs_Extraction_Test_PDF_Encoding_Quartz_PDFContext_protected.pdf'
 
     # Decrypt the PDF:
     dec_file_path = f'{CWD}/decrypted.pdf'
-    decrypt_pdf_file(file_path, '1234', dec_file_path)
+    decrypt_pdf_file(file_path, '123456', dec_file_path)
 
     # Extract URLs and Emails:
     urls = get_urls_and_emails_from_pdf_file(dec_file_path)
