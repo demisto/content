@@ -31,7 +31,7 @@ def main():
                 }
             }
             chosen_urls.append(base_url + suffix)
-    params["indicator_type"]: FeedIndicatorType.URL
+    params["indicator_type"] = FeedIndicatorType.URL
     params['ignore_regex'] = '#'
     params['url'] = chosen_urls
     feed_main('URLhaus Feed', params, 'urlhaus-feed-')
