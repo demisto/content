@@ -57,4 +57,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Containment Plan](Insert the link to your image here)
+![Containment Plan](https://raw.githubusercontent.com/demisto/content/48a7f1a1a628a2755201c55c24bc68d94e0dd49c/Packs/CommonPlaybooks/doc_files/Containment_Plan.png)

@@ -863,7 +863,7 @@ inputs:
 - key: FileSHA256
   value: {}
   required: false
-  description: ""
+  description: The file SHA256.
   playbookInputQuery:
 outputs:
 - contextPath: VTFileVerdict
