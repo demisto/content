@@ -6,16 +6,6 @@ from CommonServerPython import *
 HOURS_AGO = 24
 
 
-def get_past_time(current_time, hours_ago=HOURS_AGO) -> str:
-    new_time = demisto.executeCommand('GetTime', {
-        'date': current_time,
-        'dateFormat': 'ISO',
-        'hoursAgo': hours_ago
-    })[0]['Contents']
-
-    return new_time
-
-
 def get_hosts_changelog() -> Dict[str, Any]:
     incident_datetime = datetime.fromisoformat(demisto.incident()['occurred'])
     start_timestamp = (incident_datetime - timedelta(hours=HOURS_AGO)).isoformat()
