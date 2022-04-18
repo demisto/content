@@ -2715,5 +2715,5 @@ script:
           type: String
   runonce: false
 tests:
-  - CrowdstrikeFalconSandboxV2 Test
+  - CrowdstrikeFalconSandbox2 Test
 fromversion: 6.2.0
