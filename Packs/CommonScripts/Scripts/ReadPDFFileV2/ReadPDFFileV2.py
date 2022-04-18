@@ -273,6 +273,8 @@ def get_urls_and_emails_from_pdf_file(file_path):
                                 url = url.getObject()
                             urls_and_emails_set.add(url)
 
+    if len(urls_and_emails_set) == 0:
+        demisto.debug('No URLs or Emails were extracted from the PDF.')
     return urls_and_emails_set
 
 
