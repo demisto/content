@@ -40,12 +40,10 @@ def test_get_pdf_metadata_with_encrypted():
         'Form': 'none',
         'JavaScript': 'no',
         'Pages': '2',
-        #'Encrypted': 'yes (print:yes copy:yes change:yes addNotes:yes algorithm:AES)',
         'Encrypted': 'no',
         'PageSize': '595 x 842 pts (A4)',
         'PageRot': '0',
-        # 'FileSize': '71085 bytes',
-        'FileSize': '69551 bytes',
+        'FileSize': '69964 bytes',
         'Optimized': 'no',
         'PDFVersion': '1.6'
     }
