@@ -317,8 +317,8 @@ Machine.Isolate
 >### The request to stop the isolation has been submitted successfully:
 >|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
 >|---|---|---|---|---|---|---|
->| 488176cc | Unisolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | unisolate_test | Pending | 4899036531e3 | desktop-s2455r8 |
->| a6422c40 | Unisolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | unisolate_test | Pending | f70f9fe6b29 | desktop-s2455r9 |
+>| 488176cc | Unisolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | unisolate_test | Pending | 4899036531e3 | devicename_2 |
+>| a6422c40 | Unisolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | unisolate_test | Pending | f70f9fe6b29 | devicename_1 |
 
 
 ### 3. microsoft-atp-get-machines
@@ -894,7 +894,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. |
 | MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. |
 | MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. |
-| MicrosoftATP.Alert.LastUpdateTime | Date | The first event time that triggered the alert on that machine. |
+| MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. |
 | MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved'. |
 | MicrosoftATP.Alert.MachineID | String | The machine ID that is associated with the alert. |
 | MicrosoftATP.Alert.ComputerDNSName | String | The machine DNS name. |
@@ -1035,7 +1035,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. | 
 | MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. | 
 | MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
 | MicrosoftATP.Alert.MachineID | String | The ID of the machine that is associated with the alert. | 
 | MicrosoftATP.Alert.ComputerDNSName | String | The DNS name of the machine. | 
@@ -1078,7 +1078,7 @@ AdvancedQuery.Read.All
 | --- | --- | --- |
 | query | The query to run. | Required | 
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. | Optional | 
-
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
 
 ##### Context Output
 
@@ -1155,7 +1155,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. | 
 | MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. | 
 | MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
 | MicrosoftATP.Alert.MachineID | String | The machine ID that is associated with the alert. | 
 | MicrosoftATP.Alert.ComputerDNSName | String | The DNS name of the machine. | 
@@ -1166,7 +1166,7 @@ Alert.ReadWrite.All
 
 
 ##### Command Example
-```!microsoft-atp-create-alert category=Backdoor description="test" report_id=20279 event_time=2020-02-23T07:22:07.1532018Z machine_id=4899036531e374137f63289c3267bad772c13fef recommended_action="runAntiVirusScan" severity=Low title="testing alert"```
+```!microsoft-atp-create-alert category=Backdoor description="test" report_id=20279 event_time=2020-02-23T07:22:07.1532018Z machine_id=deviceid_2 recommended_action="runAntiVirusScan" severity=Low title="testing alert"```
 
 ##### Context Example
 ```
@@ -1244,8 +1244,8 @@ User.Read.All
 | MicrosoftATP.AlertUser.User.LeastPrevalentMachineID | String | The least prevalent machine ID. | 
 | MicrosoftATP.AlertUser.User.LogonTypes | String | The user logon types. | 
 | MicrosoftATP.AlertUser.User.LogonCount | Number | The user logon count. | 
-| MicrosoftATP.AlertUser.User.DomainAdmin | Number | Whether the user is the domain admin. | 
-| MicrosoftATP.AlertUser.User.NetworkUser | Number | Whether the user is the domain admin. | 
+| MicrosoftATP.AlertUser.User.DomainAdmin | Number | The domain admin. |
+| MicrosoftATP.AlertUser.User.NetworkUser | Number | The network admin. |
 | MicrosoftATP.AlertUser.AlertID | String | The ID of the alert. | 
 
 
@@ -2101,7 +2101,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.DomainAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. | 
 | MicrosoftATP.DomainAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.DomainAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.DomainAlert.Alerts.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.DomainAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. | 
 | MicrosoftATP.DomainAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
 | MicrosoftATP.DomainAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. | 
 | MicrosoftATP.DomainAlert.Alerts.ComputerDNSName | String | The machine DNS name. | 
@@ -2312,7 +2312,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.FileAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. | 
 | MicrosoftATP.FileAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.FileAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.FileAlert.Alerts.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.FileAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. | 
 | MicrosoftATP.FileAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
 | MicrosoftATP.FileAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. | 
 | MicrosoftATP.FileAlert.Alerts.ComputerDNSName | String | The DNS name of the machine. | 
@@ -2485,7 +2485,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.IPAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. | 
 | MicrosoftATP.IPAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.IPAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.IPAlert.Alerts.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.IPAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. | 
 | MicrosoftATP.IPAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
 | MicrosoftATP.IPAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. | 
 | MicrosoftATP.IPAlert.Alerts.ComputerDNSName | String | The DNS name of the machine. | 
@@ -2552,7 +2552,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.UserAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. | 
 | MicrosoftATP.UserAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.UserAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.UserAlert.Alerts.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.UserAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. | 
 | MicrosoftATP.UserAlert.Alerts.ResolvedTime | Date | The date and time when the status of the alert was changed to "Resolved". | 
 | MicrosoftATP.UserAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. | 
 | MicrosoftATP.UserAlert.Alerts.ComputerDNSName | String | The DNS name of the machine. | 
@@ -4481,7 +4481,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. | 
 | MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. | 
 | MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved'. | 
 | MicrosoftATP.Alert.MachineID | String | The machine ID that is associated with the alert. | 
 | MicrosoftATP.Alert.ComputerDNSName | String | The machine DNS name. | 
@@ -4826,3 +4826,870 @@ Gets a result file for a specified action.
 #### Human Readable Output
 
 >file_link: https:<span>//</span>automatedirstrprdeus.blob.core.windows.net/investigation-actions-data/b7df6ab7-5c73-4e13-8cd3-82e1f3d849ed/CustomPlaybookCommandOutput/7ef257a5069c45fe790be86d479d1518?se=2022-02-07T14%3A33%3A07Z&sp=rt&sv=2020-06-12&sr=b&rscd=attachment%3B%20filename%3Doutput_11a86b87-12b8-423b-9e8d-9775ab2da78f_0.json&skoid=34334208-452d-4d6d-afc6-0c319d62a726&sktid=124edf19-b350-4797-aefc-3206115ffdb3&skt=2022-02-07T13%3A48%3A07Z&ske=2022-02-07T14%3A33%3A07Z&sks=b&skv=2020-06-12&sig=IRxMKavzQqHplTsAL350holkkm%2B3NI2mhUUWxaHbOAM%3D
+### microsoft-atp-advanced-hunting-lateral-movement-evidence
+***
+Is there evidence of attempted lateral movement. By selecting a “query_purpose” argument, a designated query template will be used.
+
+
+#### Base Command
+
+`microsoft-atp-advanced-hunting-lateral-movement-evidence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_purpose | By selecting a “query_purpose” argument, a designated query template will be used. "network_connections" - The network connections initiated by the host/file to other internal hosts. "smb_connections" - SMB connections. "credential_dumping" - Was there a use of credential dumping? If so can we detect the use of the dumped users on other hosts on the network. "management_connection" - Management connection attempts to other hosts. Possible values are: network_connections, smb_connections, credential_dumping, management_connection. | Required |
+| device_name | Device name to look for. | Optional |
+| remote_ip_count | Threshold for network enumeration in smb_connection. | Optional |
+| file_name | File name to look for. | Optional |
+| sha1 | SHA1 hash to look for. | Optional |
+| sha256 | SHA256 hash to look for. | Optional |
+| md5 | MD5 hash to look for. | Optional |
+| device_id | Device ID to look for. | Optional |
+| query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
+| limit | Max number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
+| page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections | String | The query results for network_connections query_purpose. |
+| MicrosoftATP.HuntLateralMovementEvidence.Result.smb_connections | String | The query results for smb_connections query_purpose. |
+| MicrosoftATP.HuntLateralMovementEvidence.Result.credential_dumping | String | The query results for credential_dumping query_purpose. |
+| MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection | String | The query results for management_connection query_purpose. |
+
+#### Command example
+```!microsoft-atp-advanced-hunting-lateral-movement-evidence query_purpose=network_connections device_name=devicename_2,devicename_1 limit=6```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "HuntLateralMovementEvidence": {
+            "Result": {
+                "network_connections": [
+                    {
+                        "DeviceName": "devicename_2",
+                        "InitiatingProcessFileName": "",
+                        "RemoteIP": "ip1",
+                        "RemotePort": 54296,
+                        "TotalConnections": 21
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Lateral Movement Evidence Hunt (network_connections) Results
+>|DeviceName|RemoteIP|RemotePort|TotalConnections|
+>|---|---|---|---|
+>| devicename_2 | ip1 | 54296 | 21 |
+
+
+#### Command example
+```!microsoft-atp-advanced-hunting-lateral-movement-evidence query_purpose=smb_connections device_name=devicename_1```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "HuntLateralMovementEvidence": {
+            "Result": {
+                "smb_connections": [
+                    {
+                        "DeviceName": "devicename_1",
+                        "InitiatingProcessCreationTime": "2022-03-03T19:43:46.4373311Z",
+                        "InitiatingProcessFileName": "powershell.exe",
+                        "InitiatingProcessId": 5748,
+                        "RemoteIPCount": 5
+                    },
+                    {
+                        "DeviceName": "devicename_1",
+                        "InitiatingProcessCreationTime": "2022-03-03T19:51:43.2411889Z",
+                        "InitiatingProcessFileName": "powershell_ise.exe",
+                        "InitiatingProcessId": 10084,
+                        "RemoteIPCount": 17
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Lateral Movement Evidence Hunt (smb_connections) Results
+>|DeviceName|InitiatingProcessCreationTime|InitiatingProcessFileName|InitiatingProcessId|RemoteIPCount|
+>|---|---|---|---|---|
+>| devicename_1 | 2022-03-03T19:43:46.4373311Z | powershell.exe | 5748 | 5 |
+>| devicename_1 | 2022-03-03T19:51:43.2411889Z | powershell_ise.exe | 10084 | 17 |
+
+
+#### Command example
+```!microsoft-atp-advanced-hunting-lateral-movement-evidence query_purpose="management_connection" device_id="4cceb3c642212014e0e9553aa8b59e999ea515ff" query_operation="or" limit="50" timeout="10"```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "HuntLateralMovementEvidence": {
+            "Result": {
+                "management_connection": [
+                    {
+                        "DeviceName": "device_name",
+                        "LocalIP": "ip3",
+                        "RemoteIP": "ip4",
+                        "RemotePort": 135,
+                        "TotalCount": 41
+                    },
+                    {
+                        "DeviceName": "device_name",
+                        "LocalIP": "ip3",
+                        "RemoteIP": "ip3",
+                        "RemotePort": 139,
+                        "TotalCount": 1
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Lateral Movement Evidence Hunt (management_connection) Results
+>|DeviceName|LocalIP|RemoteIP|RemotePort|TotalCount|
+>|---|---|---|---|---|
+>| device_name | ip3 | ip4 | 135 | 41 |
+>| device_name | ip3 | ip3 | 139 | 1 |
+
+### microsoft-atp-advanced-hunting-persistence-evidence
+***
+Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
+
+
+#### Base Command
+
+`microsoft-atp-advanced-hunting-persistence-evidence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_purpose | By selecting a “query_purpose” argument, a designated query template will be used. "scheduled_job" - Did the process create any scheduled jobs? "registry_entry" - Did it write to the registry? Requires also argument process_cmd to be provided. "startup_folder_changes" - Was anything added to the startup folder? "new_service_created" - Was a new service created? "service_updated" - Was an existing service edited? "file_replaced" - Was a file replaced in program files? "new_user" - Was a new user created? (On the local machine). "new_group" - Was a new group created? "group_user_change" - Was a user added to a group?  (On the local machine) "local_firewall_change" - Was there a change to the local FW rules? "host_file_change" - Was there a change to the hosts file?. Possible values are: scheduled_job, registry_entry, startup_folder_changes, new_service_created, service_updated, file_replaced, new_user, new_group, group_user_change, local_firewall_change, host_file_change. | Required |
+| device_name | Device name to look for. | Optional |
+| file_name | File name to look for. | Optional |
+| sha1 | SHA1 hash to look for. | Optional |
+| sha256 | SHA256 hash to look for. | Optional |
+| md5 | MD5 hash to look for. | Optional |
+| device_id | Device ID to look for. | Optional |
+| query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
+| limit | Max number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
+| process_cmd | Proccess command line that initiated the registry entry. Can only be used with "registry_entry" query_purpose. | Optional |
+| page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job | String | The query results for scheduled_job query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry | String | The query results for registry_entry query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes | String | The query results for startup_folder_changes query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.new_service_created | String | The query results for new_service_created query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.service_updated | String | The query results for service_updated query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.file_replaced | String | The query results for file_replaced query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.new_user | String | The query results for new_user query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.new_group | String | The query results for new_group query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.group_user_change | String | The query results for group_user_change query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change | String | The query results for local_firewall_change query_purpose. |
+| MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change | String | The query results for host_file_change query_purpose. |
+
+#### Command example
+```!microsoft-atp-advanced-hunting-persistence-evidence query_purpose=scheduled_job device_name=devicename_2 device_id=4cceb3c642212014e0e9553aa8b59e999ea515ff,96444b946be252d1f4550354edef5fdc23aca2c5 query_operation=or```
+#### Human Readable Output
+
+>### Persistence EvidenceHunt Hunt (scheduled_job) Results
+>**No entries.**
+
+
+#### Command example
+```!microsoft-atp-advanced-hunting-persistence-evidence query_purpose=new_service_created  file_name=installer,services```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "HuntPersistenceEvidence": {
+            "Result": {
+                "new_service_created": [
+                    {
+                        "DeviceName": "devicename_2",
+                        "InitiatingProcessCommandLine": "services.exe",
+                        "InitiatingProcessFileName": "services.exe",
+                        "InitiatingProcessVersionInfoOriginalFileName": "services.exe",
+                        "InitiatingProcessVersionInfoProductName": "Microsoft\u00ae Windows\u00ae Operating System",
+                        "RegistryKey": "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services\\MpKsl49022091",
+                        "RegistryValueData": "",
+                        "RegistryValueName": "",
+                        "RegistryValueType": "None",
+                        "Timestamp": "2022-03-12T00:45:51.2745622Z"
+                    },
+                    {
+                        "DeviceName": "devicename_2",
+                        "InitiatingProcessCommandLine": "services.exe",
+                        "InitiatingProcessFileName": "services.exe",
+                        "InitiatingProcessVersionInfoOriginalFileName": "services.exe",
+                        "InitiatingProcessVersionInfoProductName": "Microsoft\u00ae Windows\u00ae Operating System",
+                        "RegistryKey": "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services\\MpKsl897892ef",
+                        "RegistryValueData": "",
+                        "RegistryValueName": "",
+                        "RegistryValueType": "None",
+                        "Timestamp": "2022-03-13T00:45:49.9561415Z"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Persistence EvidenceHunt Hunt (new_service_created) Results
+>|DeviceName|InitiatingProcessCommandLine|InitiatingProcessFileName|InitiatingProcessVersionInfoOriginalFileName|InitiatingProcessVersionInfoProductName|RegistryKey|RegistryValueType|Timestamp|
+>|---|---|---|---|---|---|---|---|
+>| devicename_2 | services.exe | services.exe | services.exe | Microsoft® Windows® Operating System | HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\MpKsl49022091 | None | 2022-03-12T00:45:51.2745622Z |
+>| devicename_2 | services.exe | services.exe | services.exe | Microsoft® Windows® Operating System | HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\MpKsl897892ef | None | 2022-03-13T00:45:49.9561415Z |
+
+
+#### Command example
+```!microsoft-atp-advanced-hunting-persistence-evidence query_purpose=new_user device_name=desktop```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "HuntPersistenceEvidence": {
+            "Result": {
+                "new_user": [
+                    {
+                        "AccountDomain": "devicename_1",
+                        "AccountName": "delete_me",
+                        "AccountSid": "accound-sid",
+                        "DeviceName": "devicename_1",
+                        "InitiatingProcessAccountName": "demisto",
+                        "InitiatingProcessLogonId": 74706995,
+                        "Timestamp": "2022-03-03T21:25:52.4538765Z"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Persistence EvidenceHunt Hunt (new_user) Results
+>|AccountDomain|AccountName|AccountSid|DeviceName|InitiatingProcessAccountName|InitiatingProcessLogonId|Timestamp|
+>|---|---|---|---|---|---|---|
+>| devicename_1 | delete_me | accound-sid | devicename_1 | demisto | 74706995 | 2022-03-03T21:25:52.4538765Z |
+
+
+#### Command example
+```!microsoft-atp-advanced-hunting-persistence-evidence query_purpose=new_group device_id=deviceid device_name=desktop  query_operation=and```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "HuntPersistenceEvidence": {
+            "Result": {
+                "new_group": [
+                    {
+                        "AccountDomain": "",
+                        "AccountName": "",
+                        "AccountSid": "",
+                        "AdditionalFields": "{\"GroupName\":\"Test_group_delete\",\"GroupDomainName\":\"devicename_1\",\"GroupSid\":\"S-1-5-21-4197691174-1403503641-4006700887-1006\"}",
+                        "DeviceName": "devicename_1",
+                        "InitiatingProcessAccountName": "demisto",
+                        "InitiatingProcessLogonId": 74706995,
+                        "Timestamp": "2022-03-03T21:26:30.8791017Z"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Persistence EvidenceHunt Hunt (new_group) Results
+>|AdditionalFields|DeviceName|InitiatingProcessAccountName|InitiatingProcessLogonId|Timestamp|
+>|---|---|---|---|---|
+>| {"GroupName":"Test_group_delete","GroupDomainName":"devicename_1","GroupSid":"S-1-5-21-4197691174-1403503641-4006700887-1006"} | devicename_1 | demisto | 74706995 | 2022-03-03T21:26:30.8791017Z |
+
+
+#### Command example
+```!microsoft-atp-advanced-hunting-persistence-evidence query_purpose=group_user_change device_name=desktop```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "HuntPersistenceEvidence": {
+            "Result": {
+                "group_user_change": [
+                    {
+                        "AccountSid": "accound-sid"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Persistence EvidenceHunt Hunt (group_user_change) Results
+>|AccountSid|
+>|---|
+>| accound-sid |
+
+
+#### Command example
+```!microsoft-atp-advanced-hunting-persistence-evidence query_purpose=local_firewall_change device_name=desktop```
+#### Human Readable Output
+
+>### Persistence EvidenceHunt Hunt (local_firewall_change) Results
+>**No entries.**
+
+
+#### Command example
+```!microsoft-atp-advanced-hunting-persistence-evidence query_purpose=host_file_change device_name=desktop```
+#### Human Readable Output
+
+>### Persistence EvidenceHunt Hunt (host_file_change) Results
+>**No entries.**
+
+### microsoft-atp-advanced-hunting-process-details
+***
+Process investigation. By selecting a “query_purpose” argument, a designated query template will be used.
+
+
+#### Base Command
+
+`microsoft-atp-advanced-hunting-process-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_purpose | By selecting a “query_purpose” argument, a designated query template will be used. "parent_process" - Parent process. "grandparent_process" - Grandparent process. "process_details" - Process hash, path, signature details. "beaconing_evidence" - Does the process appear to be beaconing? "powershell_execution_unsigned_files" - Has the file executed PowerShell? Query without specifying processes. No additional arguments are required. "process_excecution_powershell" - Has the file executed PowerShell?. Possible values are: parent_process, grandparent_process, process_details, beaconing_evidence, powershell_execution_unsigned_files, process_excecution_powershell. | Required |
+| device_name | Device name to look for. | Optional |
+| file_name | File name to look for. | Optional |
+| sha1 | SHA1 hash to look for. | Optional |
+| sha256 | SHA256 hash to look for. | Optional |
+| md5 | MD5 hash to look for. | Optional |
+| device_id | Device ID to look for. | Optional |
+| query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
+| limit | Max number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
+| page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.HuntProcessDetails.Result.parent_process | String | The query results for parent_process query_purpose. |
+| MicrosoftATP.HuntProcessDetails.Result.grandparent_process | String | The query results for grandparent_process query_purpose. |
+| MicrosoftATP.HuntProcessDetails.Result.process_details | String | The query results for process_details query_purpose. |
+| MicrosoftATP.HuntProcessDetails.Result.beaconing_evidence | String | The query results for beaconing_evidence query_purpose. |
+| MicrosoftATP.HuntProcessDetails.Result.powershell_execution_unsigned_files | String | The query results for powershell_execution_unsigned_files query_purpose. |
+| MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell | String | The query results for process_excecution_powershell query_purpose. |
+
+#### Command example
+```!microsoft-atp-advanced-hunting-process-details query_purpose=beaconing_evidence file_name=powershell device_name=desktop query_operation=and```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "HuntProcessDetails": {
+            "Result": {
+                "beaconing_evidence": [
+                    {
+                        "ActionType": "ConnectionSuccess",
+                        "DeviceId": "deviceid_2",
+                        "DeviceName": "devicename_2",
+                        "InitiatingProcessFileName": "powershell.exe",
+                        "InitiatingProcessMD5": "md5",
+                        "InitiatingProcessSHA1": "sha1",
+                        "InitiatingProcessSHA256": "sha256",
+                        "LocalIP": "ip1",
+                        "LocalIPType": "Private",
+                        "LocalPort": 49169,
+                        "Protocol": "Tcp",
+                        "RemoteIP": "ip3",
+                        "RemoteIPType": "Public",
+                        "RemotePort": 443,
+                        "RemoteUrl": "winatp-gw-eus.microsoft.com",
+                        "Timestamp": "2022-03-15T20:38:30.5393171Z"
+                    },
+                    {
+                        "ActionType": "ConnectionSuccess",
+                        "DeviceId": "deviceid",
+                        "DeviceName": "devicename_1",
+                        "InitiatingProcessFileName": "powershell.exe",
+                        "InitiatingProcessMD5": "md5",
+                        "InitiatingProcessSHA1": "sha1",
+                        "InitiatingProcessSHA256": "sha256",
+                        "LocalIP": "ip2",
+                        "LocalIPType": "Private",
+                        "LocalPort": 52110,
+                        "Protocol": "Tcp",
+                        "RemoteIP": "ip3",
+                        "RemoteIPType": "Public",
+                        "RemotePort": 443,
+                        "RemoteUrl": "winatp-gw-eus.microsoft.com",
+                        "Timestamp": "2022-03-15T15:33:29.0892401Z"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Process Details Hunt (beaconing_evidence) Results
+>|ActionType|DeviceId|DeviceName|InitiatingProcessFileName|InitiatingProcessMD5|InitiatingProcessSHA1|InitiatingProcessSHA256|LocalIP|LocalIPType|LocalPort|Protocol|RemoteIP|RemoteIPType|RemotePort|RemoteUrl|Timestamp|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| ConnectionSuccess | deviceid_2 | devicename_2 | powershell.exe | md5 | sha1 | sha256 | ip1 | Private | 49169 | Tcp | ip3 | Public | 443 | winatp-gw-eus.microsoft.com | 2022-03-15T20:38:30.5393171Z |
+>| ConnectionSuccess | deviceid | devicename_1 | powershell.exe | md5 | sha1 | sha256 | ip2 | Private | 52110 | Tcp | ip3 | Public | 443 | winatp-gw-eus.microsoft.com | 2022-03-15T15:33:29.0892401Z |
+
+### microsoft-atp-advanced-hunting-network-connections
+***
+Network connections investigation. By selecting a “query_purpose” argument, a designated query template will be used.
+
+
+#### Base Command
+
+`microsoft-atp-advanced-hunting-network-connections`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_purpose | By selecting a “query_purpose” argument, a designated query template will be used. "external_addresses" - Network connections to external addresses. "dns_query" - DNS query. Query by providing hash or filename or specific processes. At least one of file arguments (file_name, sha1, sha256, md5) is required and one of device arguments (device_name, device_id). "encoded_commands" - Are there commands with base 64 encoding? Only device arguments are required (device_name, device_id), at least one. Possible values are: external_addresses, dns_query, encoded_commands. | Required |
+| device_name | Device name to look for. | Optional |
+| file_name | File name to look for. | Optional |
+| sha1 | SHA1 hash to look for. | Optional |
+| sha256 | SHA256 hash to look for. | Optional |
+| md5 | MD5 hash to look for. | Optional |
+| device_id | Device ID to look for. | Optional |
+| query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
+| limit | Max number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
+| page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.HuntNetworkConnections.Result.external_addresses | String | The query results for external_addresses query_purpose. |
+| MicrosoftATP.HuntNetworkConnections.Result.dns_query | String | The query results for dns_query query_purpose. |
+| MicrosoftATP.HuntNetworkConnections.Result.encoded_commands | String | The query results for encoded_commands query_purpose. |
+
+#### Command example
+```!microsoft-atp-advanced-hunting-network-connections query_purpose=dns_query device_name=devicename_1,devicename_2```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "HuntNetworkConnections": {
+            "Result": {
+                "dns_query": [
+                    {
+                        "ActionType": "NetworkSignatureInspected",
+                        "DeviceName": "devicename_2",
+                        "Packetinfo": "{\"SignatureName\":\"DNS_Request\",\"SignatureMatchedContent\":\"h%D4%01%00%00%01%00%00%00%00%00%00%05ctldl%0Dwindowsupdate%03com\",\"SamplePacketContent\":\"[\\\"h%D4%01%00%00%01%00%00%00%00%00%00%05ctldl%0Dwindowsupdate%03com%00%00%01%00%01\\\"]\"}",
+                        "RemoteIP": "8.8.8.8",
+                        "Timestamp": "2022-03-15T20:01:20.3307099Z"
+                    },
+                    {
+                        "ActionType": "NetworkSignatureInspected",
+                        "DeviceName": "devicename_2",
+                        "Packetinfo": "{\"SignatureName\":\"DNS_Request\",\"SignatureMatchedContent\":\"%B0%C5%01%00%00%01%00%00%00%00%00%00%06us-v20%06events%04data%09microsoft%03com\",\"SamplePacketContent\":\"[\\\"%B0%C5%01%00%00%01%00%00%00%00%00%00%06us-v20%06events%04data%09microsoft%03com%00%00%01%00%01\\\"]\"}",
+                        "RemoteIP": "8.8.8.8",
+                        "Timestamp": "2022-03-15T20:01:20.3327319Z"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Network Connections Hunt (dns_query) Results
+>|ActionType|DeviceName|Packetinfo|RemoteIP|Timestamp|
+>|---|---|---|---|---|
+>| NetworkSignatureInspected | devicename_2 | {"SignatureName":"DNS_Request","SignatureMatchedContent":"h%D4%01%00%00%01%00%00%00%00%00%00%05ctldl%0Dwindowsupdate%03com","SamplePacketContent":"[\"h%D4%01%00%00%01%00%00%00%00%00%00%05ctldl%0Dwindowsupdate%03com%00%00%01%00%01\"]"} | 8.8.8.8 | 2022-03-15T20:01:20.3307099Z |
+>| NetworkSignatureInspected | devicename_2 | {"SignatureName":"DNS_Request","SignatureMatchedContent":"%B0%C5%01%00%00%01%00%00%00%00%00%00%06us-v20%06events%04data%09microsoft%03com","SamplePacketContent":"[\"%B0%C5%01%00%00%01%00%00%00%00%00%00%06us-v20%06events%04data%09microsoft%03com%00%00%01%00%01\"]"} | 8.8.8.8 | 2022-03-15T20:01:20.3327319Z |
+
+### microsoft-atp-advanced-hunting-cover-up
+***
+Cover up action investigation. By selecting a “query_purpose” argument, a designated query template will be used.
+
+
+#### Base Command
+
+`microsoft-atp-advanced-hunting-cover-up`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_purpose | By selecting a “query_purpose” argument, a designated query template will be used. "file_deleted" - Did the file delete itself? "event_log_cleared" - Was the event log cleared? Requires at least one of device arguments (device_name/device_id). "compromised_information" - Information on a compromised user and Its activities Requires only username argument. "connected_devices" - All connected devices by compromised user Requires only username argument. "action_types" - All action types created by a user on each machine Requires only username argument. "common_files" - Most common files associated with a user Requires only username argument. Possible values are: file_deleted, event_log_cleared, compromised_information, connected_devices, action_types, common_files. | Required |
+| device_name | Device name to look for. | Optional |
+| file_name | File name to look for. | Optional |
+| sha1 | SHA1 hash to look for. | Optional |
+| sha256 | SHA256 hash to look for. | Optional |
+| md5 | MD5 hash to look for. | Optional |
+| device_id | Device ID to look for. | Optional |
+| username | Username to look for in relevant query types. | Optional |
+| query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
+| limit | Max number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
+| page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.HuntCoverUp.Result.file_deleted | String | The query results for file_deleted query_purpose. |
+| MicrosoftATP.HuntCoverUp.Result.event_log_cleared | String | The query results for event_log_cleared query_purpose. |
+| MicrosoftATP.HuntCoverUp.Result.compromised_information | String | The query results for compromised_information query_purpose. |
+| MicrosoftATP.HuntCoverUp.Result.connected_devices | String | The query results for connected_devices query_purpose. |
+| MicrosoftATP.HuntCoverUp.Result.action_types | String | The query results for action_types query_purpose. |
+| MicrosoftATP.HuntCoverUp.Result.common_files | String | The query results for common_files query_purpose. |
+
+#### Command example
+```!microsoft-atp-advanced-hunting-cover-up query_purpose=file_deleted  file_name=chrome device_name=desktop query_operation=and```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "HuntCoverUp": {
+            "Result": {
+                "file_deleted": [
+                    {
+                        "DeviceId": "deviceid",
+                        "DeviceName": "devicename_1",
+                        "FileName": "old_chrome_proxy.exe",
+                        "FolderPath": "C:\\Program Files\\Google\\Chrome\\Temp\\scoped_dir9640_1501542081",
+                        "InitiatingProcessCommandLine": "\"setup.exe\" --rename-chrome-exe --system-level --verbose-logging --channel=stable",
+                        "InitiatingProcessFileName": "setup.exe",
+                        "InitiatingProcessVersionInfoProductName": "Google Chrome Installer",
+                        "Timestamp": "2022-03-10T09:41:21.9388696Z"
+                    },
+                    {
+                        "DeviceId": "deviceid",
+                        "DeviceName": "devicename_1",
+                        "FileName": "old_chrome_proxy.exe",
+                        "FolderPath": "C:\\Program Files\\Google\\Chrome\\Temp\\scoped_dir9640_1501542081",
+                        "InitiatingProcessCommandLine": "\"setup.exe\" --rename-chrome-exe --system-level --verbose-logging --channel=stable",
+                        "InitiatingProcessFileName": "setup.exe",
+                        "InitiatingProcessVersionInfoProductName": "Google Chrome Installer",
+                        "Timestamp": "2022-03-10T09:41:21.9390745Z"
+                    },
+                    {
+                        "DeviceId": "deviceid",
+                        "DeviceName": "devicename_1",
+                        "FileName": "chrome_pwa_launcher.exe",
+                        "FolderPath": "C:\\Program Files\\Google\\Chrome\\Application\\98.0.4758.102",
+                        "InitiatingProcessCommandLine": "\"setup.exe\" --channel=stable --delete-old-versions --system-level --verbose-logging",
+                        "InitiatingProcessFileName": "setup.exe",
+                        "InitiatingProcessVersionInfoProductName": "Google Chrome Installer",
+                        "Timestamp": "2022-03-10T09:41:37.3955125Z"
+                    },
+                    {
+                        "DeviceId": "deviceid",
+                        "DeviceName": "devicename_1",
+                        "FileName": "chrome_pwa_launcher.exe",
+                        "FolderPath": "C:\\Program Files\\Google\\Chrome\\Application\\98.0.4758.102",
+                        "InitiatingProcessCommandLine": "\"setup.exe\" --channel=stable --delete-old-versions --system-level --verbose-logging",
+                        "InitiatingProcessFileName": "setup.exe",
+                        "InitiatingProcessVersionInfoProductName": "Google Chrome Installer",
+                        "Timestamp": "2022-03-10T09:41:37.3957224Z"
+                    },
+                    {
+                        "DeviceId": "deviceid",
+                        "DeviceName": "devicename_1",
+                        "FileName": "99.0.4844.51_98.0.4758.102_chrome_updater.exe",
+                        "FolderPath": "C:\\Program Files (x86)\\Google\\Update\\Install\\{CD86F442-5CCD-4E90-B0AC-36D19A65A0C5}",
+                        "InitiatingProcessCommandLine": "\"GoogleUpdate.exe\" /svc",
+                        "InitiatingProcessFileName": "GoogleUpdate.exe",
+                        "InitiatingProcessVersionInfoProductName": "Google Update",
+                        "Timestamp": "2022-03-08T13:29:06.7875767Z"
+                    },
+                    {
+                        "DeviceId": "deviceid",
+                        "DeviceName": "devicename_1",
+                        "FileName": "99.0.4844.51_98.0.4758.102_chrome_updater.exe",
+                        "FolderPath": "C:\\Program Files (x86)\\Google\\Update\\Install\\{CD86F442-5CCD-4E90-B0AC-36D19A65A0C5}",
+                        "InitiatingProcessCommandLine": "\"GoogleUpdate.exe\" /svc",
+                        "InitiatingProcessFileName": "GoogleUpdate.exe",
+                        "InitiatingProcessVersionInfoProductName": "Google Update",
+                        "Timestamp": "2022-03-08T13:29:06.7877821Z"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cover Up Hunt (file_deleted) Results
+>|DeviceId|DeviceName|FileName|FolderPath|InitiatingProcessCommandLine|InitiatingProcessFileName|InitiatingProcessVersionInfoProductName|Timestamp|
+>|---|---|---|---|---|---|---|---|
+>| deviceid | devicename_1 | old_chrome_proxy.exe | C:\Program Files\Google\Chrome\Temp\scoped_dir9640_1501542081 | "setup.exe" --rename-chrome-exe --system-level --verbose-logging --channel=stable | setup.exe | Google Chrome Installer | 2022-03-10T09:41:21.9388696Z |
+>| deviceid | devicename_1 | old_chrome_proxy.exe | C:\Program Files\Google\Chrome\Temp\scoped_dir9640_1501542081 | "setup.exe" --rename-chrome-exe --system-level --verbose-logging --channel=stable | setup.exe | Google Chrome Installer | 2022-03-10T09:41:21.9390745Z |
+>| deviceid | devicename_1 | chrome_pwa_launcher.exe | C:\Program Files\Google\Chrome\Application\98.0.4758.102 | "setup.exe" --channel=stable --delete-old-versions --system-level --verbose-logging | setup.exe | Google Chrome Installer | 2022-03-10T09:41:37.3955125Z |
+>| deviceid | devicename_1 | chrome_pwa_launcher.exe | C:\Program Files\Google\Chrome\Application\98.0.4758.102 | "setup.exe" --channel=stable --delete-old-versions --system-level --verbose-logging | setup.exe | Google Chrome Installer | 2022-03-10T09:41:37.3957224Z |
+>| deviceid | devicename_1 | 99.0.4844.51_98.0.4758.102_chrome_updater.exe | C:\Program Files (x86)\Google\Update\Install\{CD86F442-5CCD-4E90-B0AC-36D19A65A0C5} | "GoogleUpdate.exe" /svc | GoogleUpdate.exe | Google Update | 2022-03-08T13:29:06.7875767Z |
+>| deviceid | devicename_1 | 99.0.4844.51_98.0.4758.102_chrome_updater.exe | C:\Program Files (x86)\Google\Update\Install\{CD86F442-5CCD-4E90-B0AC-36D19A65A0C5} | "GoogleUpdate.exe" /svc | GoogleUpdate.exe | Google Update | 2022-03-08T13:29:06.7877821Z |
+
+
+#### Command example
+```!microsoft-atp-advanced-hunting-cover-up query_purpose=event_log_cleared device_name=devicename_1```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "HuntCoverUp": {
+            "Result": {
+                "event_log_cleared": [
+                    {
+                        "ClearedLogList": [
+                            "\"wevtutil.exe\" clear-log System",
+                            "\"wevtutil.exe\" cl System"
+                        ],
+                        "DeviceId": "deviceid",
+                        "DeviceName": "devicename_1",
+                        "FileName": "wevtutil.exe",
+                        "InitiatingProcessFileName": "powershell.exe",
+                        "LogClearCount": 2,
+                        "Timestamp": "2022-03-09T07:15:00Z"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cover Up Hunt (event_log_cleared) Results
+>|ClearedLogList|DeviceId|DeviceName|FileName|InitiatingProcessFileName|LogClearCount|Timestamp|
+>|---|---|---|---|---|---|---|
+>| "wevtutil.exe" clear-log System,<br/>"wevtutil.exe" cl System | deviceid | devicename_1 | wevtutil.exe | powershell.exe | 2 | 2022-03-09T07:15:00Z |
+
+
+#### Command example
+```!microsoft-atp-advanced-hunting-cover-up query_purpose=compromised_information username=demisto```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "HuntCoverUp": {
+            "Result": {
+                "compromised_information": [
+                    {
+                        "ActionType": "LogonSuccess",
+                        "DeviceId": "deviceid",
+                        "DeviceName": "devicename_1",
+                        "FileName": "",
+                        "FolderPath": "",
+                        "InitiatingProcessFileName": "lsass.exe",
+                        "MD5": "",
+                        "SHA1": "",
+                        "SHA256": "",
+                        "Timestamp": "2022-03-16T08:05:44.8315718Z"
+                    },
+                    {
+                        "ActionType": "LogonSuccess",
+                        "DeviceId": "deviceid",
+                        "DeviceName": "devicename_1",
+                        "FileName": "",
+                        "FolderPath": "",
+                        "InitiatingProcessFileName": "lsass.exe",
+                        "MD5": "",
+                        "SHA1": "",
+                        "SHA256": "",
+                        "Timestamp": "2022-02-28T12:34:02.8853766Z"
+                    },
+                    {
+                        "ActionType": "LogonSuccess",
+                        "DeviceId": "deviceid",
+                        "DeviceName": "devicename_1",
+                        "FileName": "",
+                        "FolderPath": "",
+                        "InitiatingProcessFileName": "",
+                        "MD5": "",
+                        "SHA1": "",
+                        "SHA256": "",
+                        "Timestamp": "2022-02-28T12:34:02.8855892Z"
+                    },
+                    {
+                        "ActionType": "LogonSuccess",
+                        "DeviceId": "deviceid",
+                        "DeviceName": "devicename_1",
+                        "FileName": "",
+                        "FolderPath": "",
+                        "InitiatingProcessFileName": "lsass.exe",
+                        "MD5": "",
+                        "SHA1": "",
+                        "SHA256": "",
+                        "Timestamp": "2022-02-28T12:34:05.6575357Z"
+                    },
+                    {
+                        "ActionType": "LogonAttempted",
+                        "DeviceId": "deviceid",
+                        "DeviceName": "devicename_1",
+                        "FileName": "",
+                        "FolderPath": "",
+                        "InitiatingProcessFileName": "svchost.exe",
+                        "MD5": "",
+                        "SHA1": "",
+                        "SHA256": "",
+                        "Timestamp": "2022-02-28T12:34:05.7005903Z"
+                    },
+                    {
+                        "ActionType": "LogonFailed",
+                        "DeviceId": "deviceid",
+                        "DeviceName": "devicename_1",
+                        "FileName": "",
+                        "FolderPath": "",
+                        "InitiatingProcessFileName": "",
+                        "MD5": "",
+                        "SHA1": "",
+                        "SHA256": "",
+                        "Timestamp": "2022-03-16T08:05:36.0887779Z"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cover Up Hunt (compromised_information) Results
+>|ActionType|DeviceId|DeviceName|InitiatingProcessFileName|Timestamp|
+>|---|---|---|---|---|
+>| LogonSuccess | deviceid | devicename_1 | lsass.exe | 2022-03-16T08:05:44.8315718Z |
+>| LogonSuccess | deviceid | devicename_1 | lsass.exe | 2022-02-28T12:34:02.8853766Z |
+>| LogonSuccess | deviceid | devicename_1 |  | 2022-02-28T12:34:02.8855892Z |
+>| LogonSuccess | deviceid | devicename_1 | lsass.exe | 2022-02-28T12:34:05.6575357Z |
+>| LogonAttempted | deviceid | devicename_1 | svchost.exe | 2022-02-28T12:34:05.7005903Z |
+>| LogonFailed | deviceid | devicename_1 |  | 2022-03-16T08:05:36.0887779Z |
+
+### microsoft-atp-advanced-hunting-file-origin
+***
+How did the file get on the machine. Possible details are "dropped_file" - Was the file dropped? From where? "created_file" - Created by another File (script, compiled binary). "network_shared" - Shared via network. "execution_chain" - What is the process execution chain.
+
+
+#### Base Command
+
+`microsoft-atp-advanced-hunting-file-origin`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_name | Device name to look for. | Optional |
+| file_name | File name to look for. | Optional |
+| sha1 | SHA1 hash to look for. | Optional |
+| sha256 | SHA256 hash to look for. | Optional |
+| md5 | MD5 hash to look for. | Optional |
+| device_id | Device ID to look for. | Optional |
+| query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
+| limit | Max number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
+| page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.HuntFileOrigin.Result | String | The query results. |
+### microsoft-atp-advanced-hunting-privilege-escalation
+***
+Is there evidence for privilege escalation.
+
+
+#### Base Command
+
+`microsoft-atp-advanced-hunting-privilege-escalation`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_name | Device name to look for. | Optional |
+| device_id | Device ID to look for. | Optional |
+| query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
+| limit | Max number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
+| page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.HuntPrivilegeEscalation.Result | String | The query results. |
+
+### microsoft-atp-advanced-hunting-tampering
+***
+Detect if there was any evidence of MSDE agent/sensor manipulation.
+
+
+#### Base Command
+
+`microsoft-atp-advanced-hunting-tampering`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_name | Device name to look for. | Optional |
+| device_id | Device ID to look for. | Optional |
+| query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
+| limit | Max number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
+| page | The page number from which to start a search. Default is 1. | Optional |
+| show_query | Show the query as part of the entry result. | Optional |
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.HuntTampering.Result | String | The query results. |

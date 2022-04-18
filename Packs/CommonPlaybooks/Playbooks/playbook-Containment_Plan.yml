@@ -1227,13 +1227,6 @@ tasks:
           right:
             value: {}
           ignorecase: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Block Indicators.Answers
-                accessor: "1"
-            iscontext: true
     - label: IP or Domain
       condition:
       - - operator: isNotEmpty
@@ -2537,9 +2530,32 @@ tasks:
       DomainToBlock:
         complex:
           root: inputs.Domain
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: Block Indicators.Answers.1
+                iscontext: true
+          transformers:
+          - operator: uniq
       IP:
         complex:
           root: inputs.IP
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+              right:
+                value:
+                  simple: Block Indicators.Answers.1
+                iscontext: true
+              ignorecase: true
           transformers:
           - operator: uniq
       MD5:
@@ -2554,6 +2570,16 @@ tasks:
               right:
                 value:
                   simple: "32"
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              right:
+                value:
+                  simple: BlockIndicatorsList
+                iscontext: true
+              ignorecase: true
       SHA256:
         complex:
           root: inputs.FileHash
@@ -2566,6 +2592,18 @@ tasks:
               right:
                 value:
                   simple: "64"
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              right:
+                value:
+                  simple: BlockIndicatorsList
+                iscontext: true
+              ignorecase: true
+          transformers:
+          - operator: uniq
       URL:
         complex:
           root: inputs.URL

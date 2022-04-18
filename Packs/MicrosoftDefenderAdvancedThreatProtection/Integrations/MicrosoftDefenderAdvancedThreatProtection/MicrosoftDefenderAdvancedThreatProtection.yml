@@ -84,7 +84,6 @@ configuration:
   type: 8
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  hidden: false
   name: first_fetch_timestamp
   required: false
   type: 0
@@ -278,9 +277,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a collection of machines that have communicated with WDATP
-      cloud in the last 30 days. Note, only one of ip and hostname can be a comma
-      separeted list. If both given as lists, an error will appear.
+    description: Retrieves a collection of machines that communicated with WDATP
+      cloud in the last 30 days. Note - only IP or hostname can be a comma
+      separated list. If both are given as lists, an error will appear.
     execution: false
     name: microsoft-atp-get-machines
     outputs:
@@ -342,13 +341,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A comma-separated list of file SHA1 hash to get the related machines.
+      description: A comma-separated list of file SHA1 hashes to get the related machines.
       isArray: true
       name: file_hash
       required: true
       secret: false
     deprecated: false
-    description: Get a collection of machines related to a given file SHA1 hash.
+    description: Gets a collection of machines with a given file SHA1 hash.
     execution: false
     name: microsoft-atp-get-file-related-machines
     outputs:
@@ -359,11 +358,11 @@ script:
       description: The machine DNS name.
       type: String
     - contextPath: MicrosoftATP.FileMachine.Machines.FirstSeen
-      description: The first date and time where the machine was observed by Microsoft
+      description: The first date and time the machine was observed by Microsoft
         Defender ATP.
       type: Date
     - contextPath: MicrosoftATP.FileMachine.Machines.LastSeen
-      description: The last date and time where the machine was observed by Microsoft
+      description: The last date and time the machine was observed by Microsoft
         Defender ATP.
       type: Date
     - contextPath: MicrosoftATP.FileMachine.Machines.OSPlatform
@@ -431,11 +430,11 @@ script:
       description: The machine DNS name.
       type: String
     - contextPath: MicrosoftATP.Machine.FirstSeen
-      description: The first date and time where the machine was observed by Microsoft
+      description: The first date and time the machine was observed by Microsoft
         Defender ATP.
       type: Date
     - contextPath: MicrosoftATP.Machine.LastSeen
-      description: The last date and time where the machine was observed by Microsoft
+      description: The last date and time the machine was observed by Microsoft
         Defender ATP.
       type: Date
     - contextPath: MicrosoftATP.Machine.OSPlatform
@@ -507,7 +506,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Defines the type of the scan. Possible values: "Quick" and "Full".'
+      description: 'Defines the scan type. Possible values: "Quick" and "Full".'
       isArray: false
       name: scan_type
       predefined:
@@ -524,7 +523,7 @@ script:
       description: The machine action ID.
       type: String
     - contextPath: MicrosoftATP.MachineAction.Type
-      description: The type of the action.
+      description: The type of action.
       type: String
     - contextPath: MicrosoftATP.MachineAction.Scope
       description: The scope of the action.
@@ -545,10 +544,10 @@ script:
       description: The machine DNS name on which the action was executed.
       type: String
     - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
-      description: The date and time when the action was created.
+      description: The date and time the action was created.
       type: Date
     - contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
-      description: The last date and time when the action status was updated.
+      description: The last date and time the action status was updated.
       type: Date
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
       description: The file identifier.
@@ -590,7 +589,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The limit of files to display.
+      description: The limit of number of files to display.
       isArray: false
       name: limit
       required: false
@@ -602,7 +601,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a list of alerts present on the system. Filtering can be done
+    description: Gets a list of alerts present on the system. Filtering can be done
       only on a single argument.
     execution: false
     name: microsoft-atp-list-alerts
@@ -611,13 +610,13 @@ script:
       description: The alert ID.
       type: String
     - contextPath: MicrosoftATP.Alert.IncidentID
-      description: The Incident ID of the alert.
+      description: The incident ID of the alert.
       type: Number
     - contextPath: MicrosoftATP.Alert.InvestigationID
-      description: The Investigation ID related to the alert.
+      description: The investigation ID related to the alert.
       type: Number
     - contextPath: MicrosoftATP.Alert.InvestigationState
-      description: The current state of the Investigation.
+      description: The current state of the investigation.
       type: String
     - contextPath: MicrosoftATP.Alert.AssignedTo
       description: The owner of the alert.
@@ -629,7 +628,7 @@ script:
       description: The current status of the alert.
       type: String
     - contextPath: MicrosoftATP.Alert.Classification
-      description: The alert Classification.
+      description: The alert classification.
       type: String
     - contextPath: MicrosoftATP.Alert.Determination
       description: The determination of the alert.
@@ -659,14 +658,14 @@ script:
       description: The last event time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.Alert.LastUpdateTime
-      description: The first event time that triggered the alert on that machine.
+      description: The UTC time of the last update.
       type: Date
     - contextPath: MicrosoftATP.Alert.ResolvedTime
-      description: The date and time in which the status of the alert was changed
+      description: The date and time the alert status changed
         to 'Resolved'.
       type: Date
     - contextPath: MicrosoftATP.Alert.MachineID
-      description: The machine ID that is associated with the alert.
+      description: The machine ID associated with the alert.
       type: String
     - contextPath: MicrosoftATP.Alert.ComputerDNSName
       description: The machine DNS name.
@@ -741,7 +740,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Specifies the determination of the alert. Possible values: "NotAvailable",
-        "Apt", "Malware", "SecurityPersonnel", "SecurityTesting", Unwan"tedSoftware,
+        "Apt", "Malware", "SecurityPersonnel", "SecurityTesting", "UnwantedSoftware",
         and "Other".'
       isArray: false
       name: determination
@@ -770,13 +769,13 @@ script:
       description: The alert ID.
       type: String
     - contextPath: MicrosoftATP.Alert.IncidentID
-      description: The Incident ID of the alert.
+      description: The incident ID of the alert.
       type: Number
     - contextPath: MicrosoftATP.Alert.InvestigationID
-      description: The Investigation ID related to the alert.
+      description: The investigation ID related to the alert.
       type: Number
     - contextPath: MicrosoftATP.Alert.InvestigationState
-      description: The current state of the Investigation.
+      description: The current state of the investigation.
       type: String
     - contextPath: MicrosoftATP.Alert.AssignedTo
       description: The owner of the alert.
@@ -818,14 +817,14 @@ script:
       description: The last event time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.Alert.LastUpdateTime
-      description: The first event time that triggered the alert on that machine.
+      description: The UTC time of the last update.
       type: Date
     - contextPath: MicrosoftATP.Alert.ResolvedTime
-      description: The date and time in which the status of the alert was changed
+      description: The date and time the alert status changed
         to 'Resolved'.
       type: Date
     - contextPath: MicrosoftATP.Alert.MachineID
-      description: The machine ID that is associated with the alert.
+      description: The machine ID associated with the alert.
       type: String
     - contextPath: MicrosoftATP.Alert.ComputerDNSName
       description: The machine DNS name.
@@ -857,6 +856,14 @@ script:
       name: timeout
       required: false
       secret: false
+    - name: time_range
+      description: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
     description: 'Allows you to run programmatic queries like in Microsoft Defender
       ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can
@@ -959,7 +966,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Create a new alert entity using event data, as obtained from the
+    description: Creates a new alert entity using event data, as obtained from the
       Advanced Hunting.
     execution: false
     name: microsoft-atp-create-alert
@@ -974,7 +981,7 @@ script:
       description: The investigation ID related to the alert.
       type: Number
     - contextPath: MicrosoftATP.Alert.InvestigationState
-      description: The current state of the Investigation.
+      description: The current state of the investigation.
       type: String
     - contextPath: MicrosoftATP.Alert.AssignedTo
       description: The owner of the alert.
@@ -986,7 +993,7 @@ script:
       description: The current status of the alert.
       type: String
     - contextPath: MicrosoftATP.Alert.Classification
-      description: The alert Classification.
+      description: The alert classification.
       type: String
     - contextPath: MicrosoftATP.Alert.Determination
       description: The determination of the alert.
@@ -1016,14 +1023,14 @@ script:
       description: The last event time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.Alert.LastUpdateTime
-      description: The first event time that triggered the alert on that machine.
+      description: The UTC time of the last update.
       type: Date
     - contextPath: MicrosoftATP.Alert.ResolvedTime
-      description: The date and time in which the status of the alert was changed
+      description: The date and time the alert status changed
         to 'Resolved'.
       type: Date
     - contextPath: MicrosoftATP.Alert.MachineID
-      description: The machine ID that is associated with the alert.
+      description: The machine ID associated with the alert.
       type: String
     - contextPath: MicrosoftATP.Alert.ComputerDNSName
       description: The machine DNS name.
@@ -1080,13 +1087,13 @@ script:
       description: The user logon types.
       type: String
     - contextPath: MicrosoftATP.AlertUser.User.LogonCount
-      description: The count of user logon.
+      description: The count of user logons.
       type: Number
     - contextPath: MicrosoftATP.AlertUser.User.DomainAdmin
-      description: True if domain admin, False otherwise.
+      description: The domain admin.
       type: Number
     - contextPath: MicrosoftATP.AlertUser.User.NetworkUser
-      description: True if domain admin, False otherwise.
+      description: The network user.
       type: Number
     - contextPath: MicrosoftATP.AlertUser.AlertID
       description: The alert ID.
@@ -1100,7 +1107,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The limit of files to display.
+      description: The limit of number of files to display.
       isArray: false
       name: limit
       required: false
@@ -1113,7 +1120,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves the files associated to a specific alert.
+    description: Retrieves the files associated with a specific alert.
     execution: false
     name: microsoft-atp-get-alert-related-files
     outputs:
@@ -1130,7 +1137,7 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: MicrosoftATP.AlertFile.Files.IsValidCertificate
-      description: Was signing certificate successfully verified by Microsoft Defender
+      description: Whether the signing certificate was successfully verified by the Microsoft Defender
         ATP agent.
       type: Number
     - contextPath: MicrosoftATP.AlertFile.Files.Sha256
@@ -1140,7 +1147,7 @@ script:
       description: The file signer.
       type: String
     - contextPath: MicrosoftATP.AlertFile.Files.GlobalPrevalence
-      description: The file prevalence across organization.
+      description: The file prevalence across the organization.
       type: Number
     - contextPath: MicrosoftATP.AlertFile.Files.DeterminationValue
       description: The file determination value.
@@ -1178,7 +1185,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The limit of IPs to display.
+      description: The limit of number of IPs to display.
       isArray: false
       name: limit
       required: false
@@ -1210,7 +1217,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The limit of domains to display.
+      description: The limit of number of domains to display.
       isArray: false
       name: limit
       required: false
@@ -1294,7 +1301,7 @@ script:
       secret: false
     deprecated: false
     description: |-
-      Return the machine's actions. If you set an action id it returns the info on the specific action.
+      Return the machine's actions. If you set an action ID, it returns the info on the specific action.
       Filtering can be done only on one argument.
     execution: false
     name: microsoft-atp-list-machine-actions-details
@@ -1324,16 +1331,16 @@ script:
       description: The machine DNS name on which the action was executed.
       type: String
     - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
-      description: The date and time when the action was created.
+      description: The date and time the action was created.
       type: Date
     - contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
-      description: The last date and time when the action status was updated.
+      description: The last date and time the action status was updated.
       type: Date
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
       description: The file identifier.
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256",
+      description: 'The file identifier type. Possible values: "SHA1" ,"SHA256",
         and "MD5".'
       type: String
   - arguments:
@@ -1379,16 +1386,16 @@ script:
       description: The machine DNS name on which the action was executed.
       type: String
     - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
-      description: The date and time when the action was created.
+      description: The date and time the action was created.
       type: Date
     - contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
-      description: The last date and time when the action status was updated.
+      description: The last date and time the action status was updated.
       type: Date
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
       description: The file identifier.
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256",
+      description: 'The file identifier type. Possible values: "SHA1" ,"SHA256",
         and "MD5".'
       type: String
   - arguments:
@@ -1399,7 +1406,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a URI that allows downloading an investigation package.
+    description: Gets a URI that allows downloading an investigation package.
     execution: false
     name: microsoft-atp-get-investigation-package-sas-uri
     outputs:
@@ -1420,7 +1427,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Restrict the execution of all applications on the machine except
+    description: Restricts the execution of all applications on the machine except for
       a predefined set.
     execution: false
     name: microsoft-atp-restrict-app-execution
@@ -1450,16 +1457,16 @@ script:
       description: The machine DNS name on which the action was executed.
       type: String
     - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
-      description: The date and time when the action was created.
+      description: The date and time the action was created.
       type: Date
     - contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
-      description: The last date and time when the action status was updated.
+      description: The last date and time the action status was updated.
       type: Date
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
       description: The file identifier.
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256",
+      description: 'The file identifier type. Possible values: "SHA1" ,"SHA256",
         and "MD5".'
       type: String
   - arguments:
@@ -1505,16 +1512,16 @@ script:
       description: The machine DNS name on which the action was executed.
       type: String
     - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
-      description: The date and time when the action was created.
+      description: The date and time the action was created.
       type: Date
     - contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
-      description: The last date and time when the action status was updated.
+      description: The last date and time the action status was updated.
       type: Date
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
       description: The file identifier.
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256",
+      description: 'The file identifier type. Possible values: "SHA1" ,"SHA256",
         and "MD5".'
       type: String
   - arguments:
@@ -1568,16 +1575,16 @@ script:
       description: The machine DNS name on which the action was executed.
       type: String
     - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
-      description: The date and time when the action was created.
+      description: The date and time the action was created.
       type: Date
     - contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
-      description: The last date and time when the action status was updated.
+      description: The last date and time the action status was updated.
       type: Date
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
       description: The file identifier.
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256",
+      description: 'The file identifier type. Possible values: "SHA1" ,"SHA256",
         and "MD5".'
       type: String
   - arguments:
@@ -1590,7 +1597,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The limit of investigations to display.
+      description: The limit of number of investigations to display.
       isArray: false
       name: limit
       required: false
@@ -1614,10 +1621,10 @@ script:
       description: The investigation ID.
       type: String
     - contextPath: MicrosoftATP.Investigation.StartTime
-      description: The date and time when the investigation was created.
+      description: The date and time the investigation was created.
       type: Date
     - contextPath: MicrosoftATP.Investigation.EndTime
-      description: The date and time when the investigation was completed.
+      description: The date and time the investigation was completed.
       type: Date
     - contextPath: MicrosoftATP.Investigation.State
       description: The investigation state.
@@ -1659,7 +1666,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Start an automated investigation on a machine.
+    description: Starts an automated investigation on a machine.
     execution: false
     name: microsoft-atp-start-investigation
     outputs:
@@ -1667,10 +1674,10 @@ script:
       description: The investigation ID.
       type: String
     - contextPath: MicrosoftATP.Investigation.StartTime
-      description: The date and time when the investigation was created.
+      description: The date and time the investigation was created.
       type: Date
     - contextPath: MicrosoftATP.Investigation.EndTime
-      description: The date and time when the investigation was completed.
+      description: The date and time the investigation was completed.
       type: Date
     - contextPath: MicrosoftATP.Investigation.State
       description: The investigation state.
@@ -1784,11 +1791,11 @@ script:
       description: The first event time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.DomainAlert.Alerts.ResolvedTime
-      description: The date and time in which the status of the alert was changed.
+      description: The date and time the status of the alert was changed.
         to 'Resolved'
       type: Date
     - contextPath: MicrosoftATP.DomainAlert.Alerts.MachineID
-      description: The machine ID that is associated with the alert.
+      description: The machine ID associated with the alert.
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.ComputerDNSName
       description: The machine DNS name.
@@ -1828,11 +1835,11 @@ script:
       description: The machine DNS name.
       type: String
     - contextPath: MicrosoftATP.DomainMachine.Machines.FirstSeen
-      description: The first date and time where the machine was observed by Microsoft
+      description: The first date and time the machine was observed by Microsoft
         Defender ATP.
       type: Date
     - contextPath: MicrosoftATP.DomainMachine.Machines.LastSeen
-      description: The last date and time where the machine was observed by Microsoft
+      description: The last date and time the machine was observed by Microsoft
         Defender ATP.
       type: Date
     - contextPath: MicrosoftATP.DomainMachine.Machines.OSPlatform
@@ -1932,13 +1939,13 @@ script:
       description: The alert ID.
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.IncidentID
-      description: The Incident ID of the alert.
+      description: The incident ID of the alert.
       type: Number
     - contextPath: MicrosoftATP.FileAlert.Alerts.InvestigationID
-      description: The Investigation ID related to the alert.
+      description: The investigation ID related to the alert.
       type: Number
     - contextPath: MicrosoftATP.FileAlert.Alerts.InvestigationState
-      description: The current state of the Investigation.
+      description: The current state of the investigation.
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.AssignedTo
       description: The owner of the alert.
@@ -1950,7 +1957,7 @@ script:
       description: The current status of the alert.
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.Classification
-      description: The alert Classification.
+      description: The alert classification.
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.Determination
       description: The determination of the alert.
@@ -1974,7 +1981,7 @@ script:
       description: The date and time the alert was created.
       type: Date
     - contextPath: MicrosoftATP.FileAlert.Alerts.FirstEventTime
-      description: The first event time that triggered the alert on that machine
+      description: The first event time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.FileAlert.Alerts.LastEventTime
       description: The last event time that triggered the alert on that machine.
@@ -1983,11 +1990,11 @@ script:
       description: The first event time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.FileAlert.Alerts.ResolvedTime
-      description: The date and time in which the status of the alert was changed
+      description: The date and time the status of the alert was changed
         to 'Resolved'.
       type: Date
     - contextPath: MicrosoftATP.FileAlert.Alerts.MachineID
-      description: The machine ID that is associated with the alert.
+      description: The machine ID associated with the alert.
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.ComputerDNSName
       description: The machine DNS name.
@@ -2012,7 +2019,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves the statistics for the given IP.
+    description: Retrieves the statistics for a given IP.
     execution: false
     name: microsoft-atp-get-ip-statistics
     outputs:
@@ -2098,11 +2105,11 @@ script:
       description: The first event time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.IPAlert.Alerts.ResolvedTime
-      description: The date and time in which the status of the alert was changed
+      description: The date and time the status of the alert was changed
         to 'Resolved'.
       type: Date
     - contextPath: MicrosoftATP.IPAlert.Alerts.MachineID
-      description: The machine ID that is associated with the alert.
+      description: The machine ID associated with the alert.
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.ComputerDNSName
       description: The machine DNS name.
@@ -2123,7 +2130,7 @@ script:
     - default: false
       description: |-
         The user ID.  Note that the ID is not the full UPN, but only the user name.
-         (e.g., to retrieve alerts for user1@test.com use user1).
+         (e.g., to retrieve alerts for user1@test.com, use user1).
       isArray: false
       name: username
       required: true
@@ -2191,11 +2198,11 @@ script:
       description: The first event time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.UserAlert.Alerts.ResolvedTime
-      description: The date and time in which the status of the alert was changed.
+      description: The date and time the status of the alert was changed.
         to 'Resolved'
       type: Date
     - contextPath: MicrosoftATP.UserAlert.Alerts.MachineID
-      description: The machine ID that is associated with the alert.
+      description: The machine ID associated with the alert.
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.ComputerDNSName
       description: The machine DNS name.
@@ -2216,7 +2223,7 @@ script:
     - default: false
       description: |-
         The user ID.  Note that the ID is not the full UPN, but only the user name.
-        (e.g., to retrieve machines for user1@test.com use user1).
+        (e.g., to retrieve machines for user1@test.com, use user1).
       isArray: false
       name: username
       required: true
@@ -2236,11 +2243,11 @@ script:
       description: The machine DNS name.
       type: String
     - contextPath: MicrosoftATP.UserMachine.Machines.FirstSeen
-      description: The first date and time where the machine was observed by Microsoft
+      description: The first date and time the machine was observed by Microsoft
         Defender ATP.
       type: Date
     - contextPath: MicrosoftATP.UserMachine.Machines.LastSeen
-      description: The last date and time where the machine was observed by Microsoft
+      description: The last date and time the machine was observed by Microsoft
         Defender ATP.
       type: Date
     - contextPath: MicrosoftATP.UserMachine.Machines.OSPlatform
@@ -2320,11 +2327,11 @@ script:
       description: The machine DNS name.
       type: String
     - contextPath: MicrosoftATP.Machine.FirstSeen
-      description: The first date and time where the machine was observed by Microsoft
+      description: The first date and time the machine was observed by Microsoft
         Defender ATP.
       type: Date
     - contextPath: MicrosoftATP.Machine.LastSeen
-      description: The last date and time where the machine was observed by Microsoft
+      description: The last date and time the machine was observed by Microsoft
         Defender ATP.
       type: Date
     - contextPath: MicrosoftATP.Machine.OSPlatform
@@ -2379,7 +2386,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Specify the page size of the result set. Maximum is 200.
+      description: Specifies the page size of the result set. Maximum is 200.
       isArray: false
       name: page_size
       required: false
@@ -2407,7 +2414,7 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.azureTenantId
       description: Stamped by the system when the indicator is ingested. The Azure
-        Active Directory tenant ID of submitting client.
+        Active Directory tenant ID of the submitting client.
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within
@@ -2439,12 +2446,12 @@ script:
         provider’s system (e.g., a foreign key).
       type: String
     - contextPath: MicrosoftATP.Indicators.fileCompileDateTime
-      description: 'DateTime when the file was compiled. The timestamp type represents
+      description: 'DateTime the file was compiled. The timestamp type represents
         date and time information in ISO 8601 format and is always in UTC time. For
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileCreatedDateTime
-      description: 'DateTime when the file was created.The Timestamp type represents
+      description: 'DateTime the file was created.The Timestamp type represents
         date and time information in ISO 8601 format and is always in UTC time. For
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
@@ -2456,28 +2463,28 @@ script:
       description: The file hash value.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileMutexName
-      description: Mutex name used in file-based detections.
+      description: The Mutex name used in file-based detections.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileName
-      description: Name of the file if the indicator is file-based. Multiple file
+      description: The name of the file if the indicator is file-based. Multiple file
         names may be delimited by commas.
       type: String
     - contextPath: MicrosoftATP.Indicators.filePacker
       description: The packer used to build the file in question.
       type: String
     - contextPath: MicrosoftATP.Indicators.filePath
-      description: Path of the file indicating a compromise. Can be a Windows or *nix
+      description: The path of the file indicating a compromise. Can be a Windows or *nix
         style path.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileSize
-      description: Size of the file in bytes.
+      description: The size of the file in bytes.
       type: Number
     - contextPath: MicrosoftATP.Indicators.fileType
       description: Text description of the type of file. For example, “Word Document”
         or “Binary”.
       type: String
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
-      description: 'Timestamp when the indicator was ingested into the system. The
+      description: 'Timestamp the indicator was ingested into the system. The
         Timestamp type represents date and time information in ISO 8601 format and
         is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like:
         ''2014-01-01T00:00:00Z'''
@@ -2505,46 +2512,46 @@ script:
         in the indicator.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkDestinationCidrBlock
-      description: CIDR Block notation representation of the destination network in
+      description: The CIDR Block notation representation of the destination network in
         this indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationIPv4
-      description: IPv4 IP address destination.
+      description: The IPv4 IP address destination.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationIPv6
-      description: IPv6 IP address destination.
+      description: The IPv6 IP address destination.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationPort
-      description: TCP port destination.
+      description: The TCP port destination.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkIPv4
-      description: IPv4 IP address.
+      description: The IPv4 IP address.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkIPv6
-      description: IPv6 IP address.
+      description: The IPv6 IP address.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkPort
-      description: TCP port.
+      description: The TCP port.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkProtocol
-      description: Decimal representation of the protocol field in the IPv4 header.
+      description: The decimal representation of the protocol field in the IPv4 header.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkSourceAsn
       description: The source autonomous system identifier of the network referenced
         in the indicator.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkSourceCidrBlock
-      description: CIDR Block notation representation of the source network in this
+      description: The CIDR Block notation representation of the source network in this
         indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourceIPv4
-      description: IPv4 IP address source.
+      description: The IPv4 IP address source.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourceIPv6
-      description: IPv6 IP address source.
+      description: The IPv6 IP address source.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourcePort
-      description: TCP port source.
+      description: The TCP port source.
       type: Number
     - contextPath: MicrosoftATP.Indicators.passiveOnly
       description: Determines if the indicator should trigger an event that is visible
@@ -2594,7 +2601,7 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: The SHA1 hash of the file.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.SHA512
       description: The SHA512 hash of the file.
@@ -2610,7 +2617,7 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: IP.Address
-      description: IP address.
+      description: The IP address.
       type: String
     - contextPath: URL.Data
       description: The URL.
@@ -2644,7 +2651,7 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.azureTenantId
       description: Stamped by the system when the indicator is ingested. The Azure
-        Active Directory tenant id of submitting client.
+        Active Directory tenant ID of the submitting client.
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within
@@ -2676,12 +2683,12 @@ script:
         provider’s system (e.g., a foreign key).
       type: String
     - contextPath: MicrosoftATP.Indicators.fileCompileDateTime
-      description: 'DateTime when the file was compiled. The timestamp type represents
+      description: 'DateTime the file was compiled. The timestamp type represents
         date and time information in ISO 8601 format and is always in UTC time. For
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileCreatedDateTime
-      description: 'DateTime when the file was created.The Timestamp type represents
+      description: 'DateTime the file was created.The Timestamp type represents
         date and time information in ISO 8601 format and is always in UTC time. For
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
@@ -2693,28 +2700,28 @@ script:
       description: The file hash value.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileMutexName
-      description: Mutex name used in file-based detections.
+      description: The Mutex name used in file-based detections.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileName
-      description: Name of the file if the indicator is file-based. Multiple file
+      description: The name of the file if the indicator is file-based. Multiple file
         names may be delimited by commas.
       type: String
     - contextPath: MicrosoftATP.Indicators.filePacker
       description: The packer used to build the file in question.
       type: String
     - contextPath: MicrosoftATP.Indicators.filePath
-      description: Path of the file indicating a compromise. Can be a Windows or *nix
+      description: The path of the file indicating a compromise. Can be a Windows or *nix
         style path.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileSize
-      description: Size of the file in bytes.
+      description: The size of the file in bytes.
       type: Number
     - contextPath: MicrosoftATP.Indicators.fileType
       description: Text description of the type of file. For example, “Word Document”
         or “Binary”.
       type: String
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
-      description: 'Timestamp when the indicator was ingested into the system. The
+      description: 'Timestamp the indicator was ingested into the system. The
         Timestamp type represents date and time information in ISO 8601 format and
         is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like:
         ''2014-01-01T00:00:00Z'''
@@ -2746,42 +2753,42 @@ script:
         this indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationIPv4
-      description: IPv4 IP address destination.
+      description: The IPv4 IP address destination.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationIPv6
-      description: IPv6 IP address destination.
+      description: The IPv6 IP address destination.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationPort
-      description: TCP port destination.
+      description: The TCP port destination.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkIPv4
-      description: IPv4 IP address.
+      description: The IPv4 IP address.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkIPv6
-      description: IPv6 IP address.
+      description: The IPv6 IP address.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkPort
-      description: TCP port.
+      description: The TCP port.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkProtocol
-      description: Decimal representation of the protocol field in the IPv4 header.
+      description: The decimal representation of the protocol field in the IPv4 header.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkSourceAsn
       description: The source autonomous system identifier of the network referenced
         in the indicator.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkSourceCidrBlock
-      description: CIDR Block notation representation of the source network in this
+      description: The CIDR Block notation representation of the source network in this
         indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourceIPv4
-      description: IPv4 IP address source.
+      description: The IPv4 IP address source.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourceIPv6
-      description: IPv6 IP address source.
+      description: The IPv6 IP address source.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourcePort
-      description: TCP port source.
+      description: The TCP port source.
       type: Number
     - contextPath: MicrosoftATP.Indicators.passiveOnly
       description: Determines if the indicator should trigger an event that is visible
@@ -2831,7 +2838,7 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: The SHA1 hash of the file.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.SHA512
       description: The SHA512 hash of the file.
@@ -2847,7 +2854,7 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: IP.Address
-      description: IP address.
+      description: The IP address.
       type: String
     - contextPath: URL.Data
       description: The URL.
@@ -2947,7 +2954,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'DateTime when the file was compiled. The timestamp type represents
+      description: 'DateTime the file was compiled. The timestamp type represents
         date and time information in ISO 8601 format and is always in UTC time. For
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       isArray: false
@@ -2955,7 +2962,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'DateTime when the file was created.The Timestamp type represents
+      description: 'DateTime the file was created.The Timestamp type represents
         date and time information in ISO 8601 format and is always in UTC time. For
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       isArray: false
@@ -2985,13 +2992,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Mutex name used in file-based detections.
+      description: The Mutex name used in file-based detections.
       isArray: false
       name: file_mutex_name
       required: false
       secret: false
     - default: false
-      description: Name of the file if the indicator is file-based. Supports comma-separate
+      description: The name of the file if the indicator is file-based. Supports comma-separated
         list of file names.
       isArray: false
       name: file_name
@@ -3004,7 +3011,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Path of the file indicating a compromise. May be a Windows or *nix
+      description: The path of the file indicating a compromise. May be a Windows or *nix
         style path.
       isArray: false
       name: file_path
@@ -3077,12 +3084,12 @@ script:
         provider’s system (e.g., a foreign key).
       type: String
     - contextPath: MicrosoftATP.Indicators.fileCompileDateTime
-      description: 'DateTime when the file was compiled. The timestamp type represents
+      description: 'DateTime the file was compiled. The timestamp type represents
         date and time information in ISO 8601 format and is always in UTC time. For
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileCreatedDateTime
-      description: 'DateTime when the file was created.The Timestamp type represents
+      description: 'DateTime the file was created.The Timestamp type represents
         date and time information in ISO 8601 format and is always in UTC time. For
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
@@ -3094,28 +3101,28 @@ script:
       description: The file hash value.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileMutexName
-      description: Mutex name used in file-based detections.
+      description: The Mutex name used in file-based detections.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileName
-      description: Name of the file if the indicator is file-based. Multiple file
+      description: The name of the file if the indicator is file-based. Multiple file
         names may be delimited by commas.
       type: String
     - contextPath: MicrosoftATP.Indicators.filePacker
       description: The packer used to build the file in question.
       type: String
     - contextPath: MicrosoftATP.Indicators.filePath
-      description: Path of the file indicating a compromise. Can be a Windows or *nix
+      description: The path of the file indicating a compromise. Can be a Windows or *nix
         style path.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileSize
-      description: Size of the file in bytes.
+      description: The size of the file in bytes.
       type: Number
     - contextPath: MicrosoftATP.Indicators.fileType
       description: Text description of the type of file. For example, “Word Document”
         or “Binary”.
       type: String
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
-      description: 'Timestamp when the indicator was ingested into the system. The
+      description: 'Timestamp the indicator was ingested into the system. The
         Timestamp type represents date and time information in ISO 8601 format and
         is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like:
         ''2014-01-01T00:00:00Z'''
@@ -3143,46 +3150,46 @@ script:
         in the indicator.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkDestinationCidrBlock
-      description: CIDR Block notation representation of the destination network in
+      description: The CIDR Block notation representation of the destination network in
         this indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationIPv4
-      description: IPv4 IP address destination.
+      description: The IPv4 IP address destination.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationIPv6
-      description: IPv6 IP address destination.
+      description: The IPv6 IP address destination.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationPort
-      description: TCP port destination.
+      description: The TCP port destination.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkIPv4
-      description: IPv4 IP address.
+      description: The IPv4 IP address.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkIPv6
-      description: IPv6 IP address.
+      description: The IPv6 IP address.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkPort
-      description: TCP port.
+      description: The TCP port.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkProtocol
-      description: Decimal representation of the protocol field in the IPv4 header.
+      description: The decimal representation of the protocol field in the IPv4 header.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkSourceAsn
       description: The source autonomous system identifier of the network referenced
         in the indicator.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkSourceCidrBlock
-      description: CIDR Block notation representation of the source network in this
+      description: The CIDR Block notation representation of the source network in this
         indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourceIPv4
-      description: IPv4 IP address source.
+      description: The IPv4 IP address source.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourceIPv6
-      description: IPv6 IP address source.
+      description: The IPv6 IP address source.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourcePort
-      description: TCP port source.
+      description: The TCP port source.
       type: Number
     - contextPath: MicrosoftATP.Indicators.passiveOnly
       description: Determines if the indicator should trigger an event that is visible
@@ -3232,7 +3239,7 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: The SHA1 hash of the file.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.SHA512
       description: The SHA512 hash of the file.
@@ -3360,53 +3367,53 @@ script:
       required: false
       secret: false
     - default: false
-      description: CIDR Block notation representation of the destination network in
+      description: The CIDR Block notation representation of the destination network in
         this indicator.
       isArray: false
       name: network_destination_cidr_block
       required: false
       secret: false
     - default: false
-      description: IPv4 IP address destination.
+      description: The IPv4 IP address destination.
       isArray: false
       name: network_destination_ipv4
       required: false
       secret: false
     - default: false
       description: |
-        IPv6 IP address destination.
+        The IPv6 IP address destination.
       isArray: false
       name: network_destination_ipv6
       required: false
       secret: false
     - default: false
-      description: TCP port destination.
+      description: The TCP port destination.
       isArray: false
       name: network_destination_port
       required: false
       secret: false
     - default: false
-      description: IPv4 IP address. Use only if the Source and Destination cannot
+      description: The IPv4 IP address. Use only if the Source and Destination cannot
         be identified.
       isArray: false
       name: network_ipv4
       required: false
       secret: false
     - default: false
-      description: IPv6 IP address. Use only if the Source and Destination cannot
+      description: The IPv6 IP address. Use only if the Source and Destination cannot
         be identified.
       isArray: false
       name: network_ipv6
       required: false
       secret: false
     - default: false
-      description: TCP port. Use only if the Source and Destination cannot be identified.
+      description: The TCP port. Use only if the Source and Destination cannot be identified.
       isArray: false
       name: network_port
       required: false
       secret: false
     - default: false
-      description: Decimal representation of the protocol field in the IPv4 header.
+      description: The decimal representation of the protocol field in the IPv4 header.
       isArray: false
       name: network_protocol
       required: false
@@ -3419,26 +3426,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: CIDR Block notation representation of the source network in this
+      description: The CIDR Block notation representation of the source network in this
         indicator.
       isArray: false
       name: network_source_cidr_block
       required: false
       secret: false
     - default: false
-      description: IPv4 IP address source.
+      description: The IPv4 IP address source.
       isArray: false
       name: network_source_ipv4
       required: false
       secret: false
     - default: false
-      description: IPv6 IP address source.
+      description: The IPv6 IP address source.
       isArray: false
       name: network_source_ipv6
       required: false
       secret: false
     - default: false
-      description: TCP port source.
+      description: The TCP port source.
       isArray: false
       name: network_source_port
       required: false
@@ -3477,7 +3484,7 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.azureTenantId
       description: Stamped by the system when the indicator is ingested. The Azure
-        Active Directory tenant id of submitting client.
+        Active Directory tenant ID of the submitting client.
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within
@@ -3509,12 +3516,12 @@ script:
         provider’s system (e.g., a foreign key).
       type: String
     - contextPath: MicrosoftATP.Indicators.fileCompileDateTime
-      description: 'DateTime when the file was compiled. The timestamp type represents
+      description: 'DateTime the file was compiled. The timestamp type represents
         date and time information in ISO 8601 format and is always in UTC time. For
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileCreatedDateTime
-      description: 'DateTime when the file was created.The Timestamp type represents
+      description: 'DateTime the file was created.The Timestamp type represents
         date and time information in ISO 8601 format and is always in UTC time. For
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
@@ -3526,28 +3533,28 @@ script:
       description: The file hash value.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileMutexName
-      description: Mutex name used in file-based detections.
+      description: The Mutex name used in file-based detections.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileName
-      description: Name of the file if the indicator is file-based. Multiple file
+      description: The name of the file if the indicator is file-based. Multiple file
         names may be delimited by commas.
       type: String
     - contextPath: MicrosoftATP.Indicators.filePacker
       description: The packer used to build the file in question.
       type: String
     - contextPath: MicrosoftATP.Indicators.filePath
-      description: Path of the file indicating a compromise. Can be a Windows or *nix
+      description: The path of the file indicating a compromise. Can be a Windows or *nix
         style path.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileSize
-      description: Size of the file in bytes.
+      description: The size of the file in bytes.
       type: Number
     - contextPath: MicrosoftATP.Indicators.fileType
       description: Text description of the type of file. For example, “Word Document”
         or “Binary”.
       type: String
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
-      description: 'Timestamp when the indicator was ingested into the system. The
+      description: 'Timestamp the indicator was ingested into the system. The
         Timestamp type represents date and time information in ISO 8601 format and
         is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like:
         ''2014-01-01T00:00:00Z'''
@@ -3567,7 +3574,7 @@ script:
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.networkCidrBlock
-      description: CIDR Block notation representation of the network referenced in
+      description: The CIDR Block notation representation of the network referenced in
         this indicator. Use only if the Source and Destination cannot be identified.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationAsn
@@ -3575,46 +3582,46 @@ script:
         in the indicator.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkDestinationCidrBlock
-      description: CIDR Block notation representation of the destination network in
+      description: The CIDR Block notation representation of the destination network in
         this indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationIPv4
-      description: IPv4 IP address destination.
+      description: The IPv4 IP address destination.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationIPv6
-      description: IPv6 IP address destination.
+      description: The IPv6 IP address destination.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationPort
-      description: TCP port destination.
+      description: The TCP port destination.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkIPv4
-      description: IPv4 IP address.
+      description: The IPv4 IP address.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkIPv6
-      description: IPv6 IP address.
+      description: The IPv6 IP address.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkPort
-      description: TCP port.
+      description: The TCP port.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkProtocol
-      description: Decimal representation of the protocol field in the IPv4 header.
+      description: The decimal representation of the protocol field in the IPv4 header.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkSourceAsn
       description: The source autonomous system identifier of the network referenced
         in the indicator.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkSourceCidrBlock
-      description: CIDR Block notation representation of the source network in this
+      description: The CIDR Block notation representation of the source network in this
         indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourceIPv4
-      description: IPv4 IP address source.
+      description: The IPv4 IP address source.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourceIPv6
-      description: IPv6 IP address source.
+      description: The IPv6 IP address source.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourcePort
-      description: TCP port source.
+      description: The TCP port source.
       type: Number
     - contextPath: MicrosoftATP.Indicators.passiveOnly
       description: Determines if the indicator should trigger an event that is visible
@@ -3658,7 +3665,7 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: IP.Address
-      description: IP address.
+      description: The IP address.
       type: String
     - contextPath: URL.Data
       description: The URL.
@@ -3723,7 +3730,7 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.azureTenantId
       description: Stamped by the system when the indicator is ingested. The Azure
-        Active Directory tenant id of submitting client.
+        Active Directory tenant ID of the submitting client.
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within
@@ -3755,12 +3762,12 @@ script:
         provider’s system (e.g., a foreign key).
       type: String
     - contextPath: MicrosoftATP.Indicators.fileCompileDateTime
-      description: 'DateTime when the file was compiled. The timestamp type represents
+      description: 'DateTime the file was compiled. The timestamp type represents
         date and time information in ISO 8601 format and is always in UTC time. For
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileCreatedDateTime
-      description: 'DateTime when the file was created.The Timestamp type represents
+      description: 'DateTime the file was created.The Timestamp type represents
         date and time information in ISO 8601 format and is always in UTC time. For
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
@@ -3772,28 +3779,28 @@ script:
       description: The file hash value.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileMutexName
-      description: Mutex name used in file-based detections.
+      description: The Mutex name used in file-based detections.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileName
-      description: Name of the file if the indicator is file-based. Multiple file
+      description: The name of the file if the indicator is file-based. Multiple file
         names may be delimited by commas.
       type: String
     - contextPath: MicrosoftATP.Indicators.filePacker
       description: The packer used to build the file in question.
       type: String
     - contextPath: MicrosoftATP.Indicators.filePath
-      description: Path of the file indicating a compromise. Can be a Windows or *nix
+      description: The path of the file indicating a compromise. Can be a Windows or *nix
         style path.
       type: String
     - contextPath: MicrosoftATP.Indicators.fileSize
-      description: Size of the file in bytes.
+      description: The size of the file in bytes.
       type: Number
     - contextPath: MicrosoftATP.Indicators.fileType
       description: Text description of the type of file. For example, “Word Document”
         or “Binary”.
       type: String
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
-      description: 'Timestamp when the indicator was ingested into the system. The
+      description: 'Timestamp the indicator was ingested into the system. The
         Timestamp type represents date and time information in ISO 8601 format and
         is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like:
         ''2014-01-01T00:00:00Z'''
@@ -3813,7 +3820,7 @@ script:
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.networkCidrBlock
-      description: CIDR Block notation representation of the network referenced in
+      description: The CIDR Block notation representation of the network referenced in
         this indicator. Use only if the Source and Destination cannot be identified.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationAsn
@@ -3821,46 +3828,46 @@ script:
         in the indicator.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkDestinationCidrBlock
-      description: CIDR Block notation representation of the destination network in
+      description: The CIDR Block notation representation of the destination network in
         this indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationIPv4
-      description: IPv4 IP address destination.
+      description: The IPv4 IP address destination.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationIPv6
-      description: IPv6 IP address destination.
+      description: The IPv6 IP address destination.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkDestinationPort
-      description: TCP port destination.
+      description: The TCP port destination.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkIPv4
-      description: IPv4 IP address.
+      description: The IPv4 IP address.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkIPv6
-      description: IPv6 IP address.
+      description: The IPv6 IP address.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkPort
-      description: TCP port.
+      description: The TCP port.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkProtocol
-      description: Decimal representation of the protocol field in the IPv4 header.
+      description: The decimal representation of the protocol field in the IPv4 header.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkSourceAsn
       description: The source autonomous system identifier of the network referenced
         in the indicator.
       type: Number
     - contextPath: MicrosoftATP.Indicators.networkSourceCidrBlock
-      description: CIDR Block notation representation of the source network in this
+      description: The CIDR Block notation representation of the source network in this
         indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourceIPv4
-      description: IPv4 IP address source.
+      description: The IPv4 IP address source.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourceIPv6
-      description: IPv6 IP address source.
+      description: The IPv6 IP address source.
       type: String
     - contextPath: MicrosoftATP.Indicators.networkSourcePort
-      description: TCP port source.
+      description: The TCP port source.
       type: Number
     - contextPath: MicrosoftATP.Indicators.passiveOnly
       description: Determines if the indicator should trigger an event that is visible
@@ -3910,7 +3917,7 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: The SHA1 hash of the file.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.SHA512
       description: The SHA512 hash of the file.
@@ -4005,7 +4012,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Indicator alert title.
+      description: The indicator alert title.
       isArray: false
       name: indicator_title
       required: true
@@ -4017,13 +4024,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: TI indicator alert recommended actions.
+      description: The indicator alert recommended actions.
       isArray: false
       name: recommended_actions
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of RBAC group names the indicator is applied
+      description: A comma-separated list of RBAC group names the indicator is applied
         to.
       isArray: true
       name: rbac_group_names
@@ -4076,7 +4083,7 @@ script:
       description: A list of MITRE techniques.
       type: Unknown
     - contextPath: MicrosoftATP.Indicators.indicatorType
-      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256",
+      description: 'The indicator type. Possible values: "FileSha1", "FileSha256",
         "IpAddress", "DomainName" and "Url".'
       type: String
     - contextPath: MicrosoftATP.Indicators.lastUpdateTime
@@ -4089,19 +4096,19 @@ script:
       description: The application associated with the indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.title
-      description: Indicator title.
+      description: The indicator title.
       type: String
     - contextPath: MicrosoftATP.Indicators.createdBySource
-      description: Source of indicator creation. For example, PublicApi.
+      description: The source of indicator creation. For example, PublicApi.
       type: String
     - contextPath: MicrosoftATP.Indicators.historicalDetection
       description: Whether a historical detection exists.
       type: Boolean
     - contextPath: MicrosoftATP.Indicators.lastUpdatedBy
-      description: Identity of the user/application that last updated the indicator.
+      description: The identity of the user/application that last updated the indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.creationTimeDateTimeUtc
-      description: The date and time when the indicator was created.
+      description: The date and time the indicator was created.
       type: Date
     - contextPath: MicrosoftATP.Indicators.category
       description: An number representing the indicator category.
@@ -4122,7 +4129,7 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: IP.Address
-      description: IP address.
+      description: The IP address.
       type: String
     - contextPath: URL.Data
       description: The URL.
@@ -4201,7 +4208,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Indicator alert title.
+      description: The indicator alert title.
       isArray: false
       name: indicator_title
       required: true
@@ -4213,13 +4220,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: TI indicator alert recommended actions.
+      description: The indicator alert recommended actions.
       isArray: false
       name: recommended_actions
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of RBAC group names the indicator is applied
+      description: A comma-separated list of RBAC group names the indicator is applied
         to.
       isArray: true
       name: rbac_group_names
@@ -4279,13 +4286,13 @@ script:
       description: The last time the indicator was updated.
       type: Date
     - contextPath: MicrosoftATP.Indicators.createdByDisplayName
-      description: Display name of the created app.
+      description: The display name of the created app.
       type: String
     - contextPath: MicrosoftATP.Indicators.application
       description: The application associated with the indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.title
-      description: Indicator title.
+      description: The indicator title.
       type: String
     - contextPath: MicrosoftATP.Indicators.createdBySource
       description: Source of indicator creation. For example, PublicApi.
@@ -4294,10 +4301,10 @@ script:
       description: Whether a historical detection exists.
       type: Boolean
     - contextPath: MicrosoftATP.Indicators.lastUpdatedBy
-      description: Identity of the user/application that last updated the indicator.
+      description: The identity of the user/application that last updated the indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.creationTimeDateTimeUtc
-      description: The date and time when the indicator was created.
+      description: The date and time the indicator was created.
       type: Date
     - contextPath: MicrosoftATP.Indicators.category
       description: An number representing the indicator category.
@@ -4409,25 +4416,25 @@ script:
       description: The last time the indicator was updated.
       type: Date
     - contextPath: MicrosoftATP.Indicators.createdByDisplayName
-      description: Display name of the created app.
+      description: The display name of the created app.
       type: String
     - contextPath: MicrosoftATP.Indicators.application
       description: The application associated with the indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.title
-      description: Indicator title.
+      description: The indicator title.
       type: String
     - contextPath: MicrosoftATP.Indicators.createdBySource
-      description: Source of indicator creation. For example, PublicApi.
+      description: The source of indicator creation. For example, PublicApi.
       type: String
     - contextPath: MicrosoftATP.Indicators.historicalDetection
       description: Whether a historical detection exists.
       type: Boolean
     - contextPath: MicrosoftATP.Indicators.lastUpdatedBy
-      description: Identity of the user/application that last updated the indicator.
+      description: The identity of the user/application that last updated the indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.creationTimeDateTimeUtc
-      description: The date and time when the indicator was created.
+      description: The date and time the indicator was created.
       type: Date
     - contextPath: MicrosoftATP.Indicators.category
       description: A number representing the indicator category.
@@ -4448,7 +4455,7 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: IP.Address
-      description: IP address.
+      description: The IP address.
       type: String
     - contextPath: URL.Data
       description: The URL.
@@ -4527,25 +4534,25 @@ script:
       description: The last time the indicator was updated.
       type: Date
     - contextPath: MicrosoftATP.Indicators.createdByDisplayName
-      description: Display name of the created app.
+      description: The display name of the created app.
       type: String
     - contextPath: MicrosoftATP.Indicators.application
       description: The application associated with the indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.title
-      description: Indicator title.
+      description: The indicator title.
       type: String
     - contextPath: MicrosoftATP.Indicators.createdBySource
-      description: Source of indicator creation. For example, PublicApi.
+      description: The source of indicator creation. For example, PublicApi.
       type: String
     - contextPath: MicrosoftATP.Indicators.historicalDetection
       description: Whether a historical detection exists.
       type: Boolean
     - contextPath: MicrosoftATP.Indicators.lastUpdatedBy
-      description: Identity of the user/application that last updated the indicator.
+      description: The identity of the user/application that last updated the indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.creationTimeDateTimeUtc
-      description: The date and time when the indicator was created.
+      description: The date and time the indicator was created.
       type: Date
     - contextPath: MicrosoftATP.Indicators.category
       description: An number representing the indicator category.
@@ -4566,7 +4573,7 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: IP.Address
-      description: IP address.
+      description: The IP address.
       type: String
     - contextPath: URL.Data
       description: The URL.
@@ -4612,7 +4619,7 @@ script:
       type: Unknown
   - arguments:
     - default: true
-      description: A comma-separated list of file hashs (Sha1 or Sha256) to be used for getting the file info.
+      description: A comma-separated list of file hashes (Sha1 or Sha256) to be used for getting the file info.
       isArray: true
       name: hash
       required: true
@@ -4705,7 +4712,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required ip, hostanme ot id. Otherwise, an error appears.
+    description: Gets machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required - IP, hostname, or ID. Otherwise, an error appears.
     execution: false
     name: endpoint
     outputs:
@@ -4740,10 +4747,10 @@ script:
       description: The machine DNS name.
       type: String
     - contextPath: MicrosoftATP.Machine.FirstSeen
-      description: The first date and time where the machine was observed by Microsoft Defender ATP.
+      description: The first date and time the machine was observed by Microsoft Defender ATP.
       type: Date
     - contextPath: MicrosoftATP.Machine.LastSeen
-      description: The last date and time where the machine was observed by Microsoft Defender ATP.
+      description: The last date and time the machine was observed by Microsoft Defender ATP.
       type: Date
     - contextPath: MicrosoftATP.Machine.OSPlatform
       description: The operating system platform.
@@ -4797,7 +4804,7 @@ script:
       description: The machine operational status.
       type: String
     - contextPath: MicrosoftATP.Machine.IPAddresses.type
-      description: The machine macine IP address type.
+      description: The machine IP address type.
       type: String
     - contextPath: MicrosoftATP.Machine.AgentVersion
       description: The machine Agent version.
@@ -4811,7 +4818,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates batch of indicator. If an indicator does not exist, a new indicator will be created.
+    description: Updates a batch of indicators. If an indicator does not exist, a new indicator will be created.
     execution: false
     name: microsoft-atp-indicator-batch-update
     outputs:
@@ -4836,7 +4843,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves specific alert by the given alert ID.
+    description: Retrieves a specific alert by the given alert ID.
     execution: false
     name: microsoft-atp-get-alert-by-id
     outputs:
@@ -4862,7 +4869,7 @@ script:
       description: The current status of the alert.
       type: String
     - contextPath: MicrosoftATP.Alert.Classification
-      description: The alert Classification.
+      description: The alert classification.
       type: String
     - contextPath: MicrosoftATP.Alert.Determination
       description: The determination of the alert.
@@ -4892,14 +4899,14 @@ script:
       description: The last event time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.Alert.LastUpdateTime
-      description: The first event time that triggered the alert on that machine.
+      description: The UTC time of the last update.
       type: Date
     - contextPath: MicrosoftATP.Alert.ResolvedTime
       description: The date and time in which the status of the alert was changed
         to 'Resolved'.
       type: Date
     - contextPath: MicrosoftATP.Alert.MachineID
-      description: The machine ID that is associated with the alert.
+      description: The machine ID associated with the alert.
       type: String
     - contextPath: MicrosoftATP.Alert.ComputerDNSName
       description: The machine DNS name.
@@ -4936,7 +4943,7 @@ script:
       type: String
   - arguments:
       - default: true
-        description: Machine ID to add file to.
+        description: Machine ID to add the file to.
         isArray: false
         name: machine_id
         required: true
@@ -4948,7 +4955,7 @@ script:
         required: true
         secret: false
       - default: false
-        description: File path to get from device.
+        description: File path to get from the device.
         isArray: false
         name: path
         required: true
@@ -4961,7 +4968,7 @@ script:
         secret: false
         deprecated: true
       - default: false
-        description: interval between polling. Default is 10 seconds. Must be higher than 10.
+        description: Interval between polling. Default is 10 seconds. Must be higher than 10.
         isArray: false
         name: interval_in_seconds
         required: false
@@ -4975,7 +4982,7 @@ script:
         secret: false
         deprecated: false
     deprecated: false
-    description: 'Collect file from a device. NOTE: Backslashes in path must be escaped.'
+    description: 'Collects file from a device. Note: Backslashes in the path must be escaped.'
     execution: true
     polling: true
     name: microsoft-atp-live-response-get-file
@@ -5002,7 +5009,7 @@ script:
       description: The machine ID.
       type: String
     - contextPath: MicrosoftATP.LiveResponseAction.computerDnsName
-      description: The computerDnsName.
+      description: The computer DNS name.
       type: String
     - contextPath: MicrosoftATP.LiveResponseAction.creationDateTimeUtc
       description: The action creationDateTimeUtc.
@@ -5020,7 +5027,7 @@ script:
       description: The cancellationDateTimeUtc.
       type: String
     - contextPath: MicrosoftATP.LiveResponseAction.errorHResult
-      description: The errorHResult if exists.
+      description: The errorHResult if it exists.
       type: String
     - contextPath: MicrosoftATP.LiveResponseAction.scope
       description: The action scope.
@@ -5063,7 +5070,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Machine ID to add file to.
+      description: The machine ID to add the file to.
       isArray: false
       name: machine_id
       required: true
@@ -5075,26 +5082,26 @@ script:
       required: true
       secret: false
     - default: false
-      description: Script name to run on device
+      description: The script name to run on the device.
       isArray: false
       name: scriptName
       required: true
       secret: false
     - default: false
-      description: Arguments to run the script with
+      description: Arguments to run the script with.
       isArray: false
       name: arguments
       required: false
       secret: false
     - default: false
-      description: Action ID to retrieve status and data for.
+      description: The action ID to retrieve status and data for.
       isArray: false
       name: machine_action_id
       required: false
       secret: false
       deprecated: true
     - default: false
-      description: interval between polling. Default is 10 seconds. Must be higher than 10.
+      description: Interval between polling. Default is 10 seconds. Must be higher than 10.
       isArray: false
       name: interval_in_seconds
       required: false
@@ -5128,7 +5135,7 @@ script:
       type: String
   - arguments:
       - default: true
-        description: Machine ID to add file to.
+        description: The machine ID to add the file to.
         isArray: false
         name: machine_id
         required: true
@@ -5140,7 +5147,7 @@ script:
         required: true
         secret: false
       - default: false
-        description: File name to take from library to device.
+        description: File name to take from the library to the device.
         isArray: false
         name: file_name
         required: true
@@ -5153,7 +5160,7 @@ script:
         secret: false
         deprecated: true
       - default: false
-        description: interval between polling. Default is 10 seconds. Must be higher than 10.
+        description: Interval between polling. Default is 10 seconds. Must be higher than 10.
         isArray: false
         name: interval_in_seconds
         required: false
@@ -5195,7 +5202,7 @@ script:
       description: The machine ID.
       type: String
     - contextPath: MicrosoftATP.LiveResponseAction.computerDnsName
-      description: The computerDnsName.
+      description: The computer DNS name.
       type: String
     - contextPath: MicrosoftATP.LiveResponseAction.creationDateTimeUtc
       description: The action creationDateTimeUtc.
@@ -5256,13 +5263,13 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Action ID to retrieve status and data for.
+      description: The action ID to retrieve status and data for.
       isArray: false
       name: machine_action_id
       required: true
       secret: false
     - default: false
-      description: A command index to retrieve file for.
+      description: A command index to retrieve the file for.
       isArray: false
       name: command_index
       required: true
@@ -5289,10 +5296,811 @@ script:
         required: true
         secret: false
     deprecated: false
-    description: Cancel an action with an unfinished status.
+    description: Cancels an action with an unfinished status.
     execution: true
     name: microsoft-atp-live-response-cancel-action
     outputs: []
+  - name: microsoft-atp-advanced-hunting-lateral-movement-evidence
+    description: Detects evidence of attempted lateral movement. By selecting a “query_purpose”
+      argument, a designated query template will be used.
+    deprecated: false
+    arguments:
+    - name: query_purpose
+      auto: PREDEFINED
+      description: By selecting a “query_purpose” argument, a designated query template
+        will be used. "network_connections" - The network connections initiated by
+        the host/file to other internal hosts. "smb_connections" - SMB connections.
+        "credential_dumping" - Was there a use of credential dumping? If so can we
+        detect the use of the dumped users on other hosts on the network. "management_connection" - Management connection attempts to other hosts.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - network_connections
+      - smb_connections
+      - credential_dumping
+      - management_connection
+    - name: device_name
+      description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: remote_ip_count
+      description: Threshold for network enumeration in smb_connection
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: file_name
+      description: The file name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha1
+      description: The SHA1 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha256
+      description: The SHA256 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: md5
+      description: The MD5 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: device_id
+      description: The device ID to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: query_operation
+      auto: PREDEFINED
+      description: The query operator to use with provided arguments.
+      required: false
+      isArray: false
+      defaultValue: or
+      predefined:
+      - or
+      - and
+    - name: limit
+      description: The max number of results to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: time_range
+      required: false
+      isArray: false
+      description: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+    - default: false
+      defaultValue: "10"
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections
+      description: The query results for network_connections query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.smb_connections
+      description: The query results for smb_connections query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.credential_dumping
+      description: The query results for credential_dumping query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection
+      description: The query results for management_connection query_purpose.
+      type: String
+  - name: microsoft-atp-advanced-hunting-persistence-evidence
+    description: Detects evidence of persistence. By selecting a “query_purpose”
+      argument, a designated query template will be used.
+    deprecated: false
+    arguments:
+    - name: query_purpose
+      auto: PREDEFINED
+      description: By selecting a “query_purpose” argument, a designated query template
+        will be used.
+        "scheduled_job" - Did the process create any scheduled jobs?
+        "registry_entry" - Did it write to the registry? Requires also argument process_cmd to be provided.
+        "startup_folder_changes" - Was anything added to the startup folder?
+        "new_service_created" - Was a new service created?
+        "service_updated" - Was an existing service edited?
+        "file_replaced" - Was a file replaced in program files?
+        "new_user" - Was a new user created? (On the local machine).
+        "new_group" - Was a new group created?
+        "group_user_change" - Was a user added to a group?  (On the local machine)
+        "local_firewall_change" - Was there a change to the local FW rules?
+        "host_file_change" - Was there a change to the hosts file?
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - scheduled_job
+      - registry_entry
+      - startup_folder_changes
+      - new_service_created
+      - service_updated
+      - file_replaced
+      - new_user
+      - new_group
+      - group_user_change
+      - local_firewall_change
+      - host_file_change
+    - name: device_name
+      description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: file_name
+      description: File name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha1
+      description: SHA1 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha256
+      description: SHA256 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: md5
+      description: MD5 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: device_id
+      description: Device ID to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: query_operation
+      auto: PREDEFINED
+      description: Query operator to use with provided arguments.
+      required: false
+      isArray: false
+      defaultValue: or
+      predefined:
+      - or
+      - and
+    - name: limit
+      description: Max number of results to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: time_range
+      required: false
+      isArray: false
+      description: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+    - default: false
+      defaultValue: "10"
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
+    - default: false
+      description: Process command line that initiated the registry entry.
+        Can only be used with "registry_entry" query_purpose.
+      isArray: false
+      name: process_cmd
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
+      description: The query results for scheduled_job query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry
+      description: The query results for registry_entry query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes
+      description: The query results for startup_folder_changes query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_service_created
+      description: The query results for new_service_created query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.service_updated
+      description: The query results for service_updated query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.file_replaced
+      description: The query results for file_replaced query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_user
+      description: The query results for new_user query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_group
+      description: The query results for new_group query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.group_user_change
+      description: The query results for group_user_change query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change
+      description: The query results for local_firewall_change query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change
+      description: The query results for host_file_change query_purpose.
+      type: String
+  - name: microsoft-atp-advanced-hunting-file-origin
+    description: Indicates how the file got on the machine. Possible details are
+      "dropped_file" - Was the file dropped? From where?
+      "created_file" - Created by another File (script, compiled binary).
+      "network_shared" - Shared via network.
+      "execution_chain" - What is the process execution chain.
+    deprecated: false
+    arguments:
+    - name: device_name
+      description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: file_name
+      description: File name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha1
+      description: SHA1 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha256
+      description: SHA256 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: md5
+      description: MD5 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: device_id
+      description: Device ID to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: query_operation
+      auto: PREDEFINED
+      description: Query operator to use with provided arguments.
+      required: false
+      isArray: false
+      defaultValue: or
+      predefined:
+      - or
+      - and
+    - name: limit
+      description: Max number of results to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: time_range
+      required: false
+      isArray: false
+      description: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+    - default: false
+      defaultValue: "10"
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MicrosoftATP.HuntFileOrigin.Result
+      description: The query results.
+      type: String
+  - name: microsoft-atp-advanced-hunting-process-details
+    description: Detects process details. By selecting a “query_purpose”
+      argument, a designated query template will be used.
+    deprecated: false
+    arguments:
+    - name: query_purpose
+      auto: PREDEFINED
+      description: By selecting a “query_purpose” argument, a designated query template
+        will be used.
+        "parent_process" - Parent process.
+        "grandparent_process" - Grandparent process.
+        "process_details" - Process hash, path, signature details.
+        "beaconing_evidence" - Does the process appear to be beaconing?
+        "powershell_execution_unsigned_files" - Has the file executed PowerShell? Query without specifying processes.
+        No additional arguments are required.
+        "process_excecution_powershell" - Has the file executed PowerShell?
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - parent_process
+      - grandparent_process
+      - process_details
+      - beaconing_evidence
+      - powershell_execution_unsigned_files
+      - process_excecution_powershell
+    - name: device_name
+      description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: file_name
+      description: File name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha1
+      description: SHA1 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha256
+      description: SHA256 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: md5
+      description: MD5 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: device_id
+      description: Device ID to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: query_operation
+      auto: PREDEFINED
+      description: Query operator to use with provided arguments.
+      required: false
+      isArray: false
+      defaultValue: or
+      predefined:
+      - or
+      - and
+    - name: limit
+      description: Max number of results to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: time_range
+      required: false
+      isArray: false
+      description: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+    - default: false
+      defaultValue: "10"
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.parent_process
+      description: The query results for parent_process query_purposeThe query results.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.grandparent_process
+      description: The query results for grandparent_process query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.process_details
+      description: The query results for process_details query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.beaconing_evidence
+      description: The query results for beaconing_evidence query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.powershell_execution_unsigned_files
+      description: The query results for powershell_execution_unsigned_files query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
+      description: The query results for process_excecution_powershell query_purpose.
+      type: String
+  - name: microsoft-atp-advanced-hunting-network-connections
+    description: Detects network connections. By selecting a “query_purpose”
+      argument, a designated query template will be used.
+    deprecated: false
+    arguments:
+    - name: query_purpose
+      auto: PREDEFINED
+      description: By selecting a “query_purpose” argument, a designated query template
+        will be used.
+        "external_addresses" - Network connections to external addresses.
+        "dns_query" - DNS query.
+        Query by providing hash or filename or specific processes. At least one of file arguments
+        (file_name, sha1, sha256, md5) is required and one of device arguments (device_name, device_id).
+        "encoded_commands" - Are there commands with base 64 encoding? Only device arguments are required
+        (device_name, device_id), at least one.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - external_addresses
+      - dns_query
+      - encoded_commands
+    - name: device_name
+      description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: file_name
+      description: File name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha1
+      description: SHA1 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha256
+      description: SHA256 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: md5
+      description: MD5 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: device_id
+      description: Device ID to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: query_operation
+      auto: PREDEFINED
+      description: Query operator to use with provided arguments.
+      required: false
+      isArray: false
+      defaultValue: or
+      predefined:
+      - or
+      - and
+    - name: limit
+      description: Max number of results to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: time_range
+      required: false
+      isArray: false
+      description: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+    - default: false
+      defaultValue: "10"
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MicrosoftATP.HuntNetworkConnections.Result.external_addresses
+      description: The query results for external_addresses query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntNetworkConnections.Result.dns_query
+      description: The query results for dns_query query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntNetworkConnections.Result.encoded_commands
+      description: The query results for encoded_commands query_purpose.
+      type: String
+  - name: microsoft-atp-advanced-hunting-privilege-escalation
+    description: Detects evidence of privilege escalation.
+    deprecated: false
+    arguments:
+    - name: device_name
+      description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: device_id
+      description: Device ID to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: query_operation
+      auto: PREDEFINED
+      description: Query operator to use with provided arguments.
+      required: false
+      isArray: false
+      defaultValue: or
+      predefined:
+      - or
+      - and
+    - name: limit
+      description: Max number of results to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: time_range
+      required: false
+      isArray: false
+      description: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+    - default: false
+      defaultValue: "10"
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MicrosoftATP.HuntPrivilegeEscalation.Result
+      description: The query results.
+      type: String
+  - name: microsoft-atp-advanced-hunting-tampering
+    description: Detects evidence of MSDE agent/sensor manipulation.
+    deprecated: false
+    arguments:
+    - name: device_name
+      description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: device_id
+      description: Device ID to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: query_operation
+      auto: PREDEFINED
+      description: Query operator to use with provided arguments.
+      required: false
+      isArray: false
+      defaultValue: or
+      predefined:
+      - or
+      - and
+    - name: limit
+      description: Max number of results to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: time_range
+      required: false
+      isArray: false
+      description: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+    - default: false
+      defaultValue: "10"
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MicrosoftATP.HuntTampering.Result
+      description: The query results.
+      type: String
+  - name: microsoft-atp-advanced-hunting-cover-up
+    description: Detects cover up actions. By selecting a “query_purpose”
+      argument, a designated query template will be used.
+    deprecated: false
+    arguments:
+      - name: query_purpose
+        auto: PREDEFINED
+        description: By selecting a “query_purpose” argument, a designated query template
+          will be used.
+          "file_deleted" - Did the file delete itself?
+          "event_log_cleared" - Was the event log cleared? Requires at least one of device
+          arguments (device_name/device_id).
+          "compromised_information" - Information on a compromised user and its activities.
+          Requires only username argument.
+          "connected_devices" - All connected devices by compromised user
+          Requires only username argument.
+          "action_types" - All action types created by a user on each machine
+          Requires only username argument.
+          "common_files" - Most common files associated with a user
+          Requires only username argument
+        required: true
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - file_deleted
+          - event_log_cleared
+          - compromised_information
+          - connected_devices
+          - action_types
+          - common_files
+      - name: device_name
+        description: Device name to look for.
+        required: false
+        isArray: false
+        defaultValue: ""
+      - name: file_name
+        description: File name to look for.
+        required: false
+        isArray: false
+        defaultValue: ""
+      - name: sha1
+        description: SHA1 hash to look for.
+        required: false
+        isArray: false
+        defaultValue: ""
+      - name: sha256
+        description: SHA256 hash to look for.
+        required: false
+        isArray: false
+        defaultValue: ""
+      - name: md5
+        description: MD5 hash to look for.
+        required: false
+        isArray: false
+        defaultValue: ""
+      - name: device_id
+        description: Device ID to look for.
+        required: false
+        isArray: false
+        defaultValue: ""
+      - name: username
+        description: Username to look for in relevant query types.
+        required: false
+        isArray: false
+        defaultValue: ""
+      - name: query_operation
+        auto: PREDEFINED
+        description: Query operator to use with provided arguments.
+        required: false
+        isArray: false
+        defaultValue: or
+        predefined:
+          - or
+          - and
+      - name: limit
+        description: Max number of results to retrieve.
+        required: false
+        isArray: false
+        defaultValue: "50"
+      - name: time_range
+        required: false
+        isArray: false
+        description: Time range to look back. Expected syntax is a human readable time
+          range, e.g. 60 minutes, 6 hours, 1 day etc.
+      - default: false
+        defaultValue: "10"
+        description: The amount of time (in seconds) that a request waits for the query
+          response before a timeout occurs.
+        isArray: false
+        name: timeout
+        required: false
+        secret: false
+      - default: false
+        defaultValue: "1"
+        description: The page number from which to start a search. Default is 1.
+        isArray: false
+        name: page
+        required: false
+        secret: false
+      - default: false
+        defaultValue: "false"
+        description: Show the query as part of the entry result.
+        isArray: false
+        name: show_query
+        required: false
+        secret: false
+    outputs:
+      - contextPath: MicrosoftATP.HuntCoverUp.Result.file_deleted
+        description: The query results for file_deleted query_purpose.
+        type: String
+      - contextPath: MicrosoftATP.HuntCoverUp.Result.event_log_cleared
+        description: The query results for event_log_cleared query_purpose.
+        type: String
+      - contextPath: MicrosoftATP.HuntCoverUp.Result.compromised_information
+        description: The query results for compromised_information query_purpose.
+        type: String
+      - contextPath: MicrosoftATP.HuntCoverUp.Result.connected_devices
+        description: The query results for connected_devices query_purpose.
+        type: String
+      - contextPath: MicrosoftATP.HuntCoverUp.Result.action_types
+        description: The query results for action_types query_purpose.
+        type: String
+      - contextPath: MicrosoftATP.HuntCoverUp.Result.common_files
+        description: The query results for common_files query_purpose.
+        type: String
   dockerimage: demisto/crypto:1.0.0.27590
   feed: false
   isfetch: true

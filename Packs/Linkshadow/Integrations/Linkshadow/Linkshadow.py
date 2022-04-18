@@ -86,6 +86,8 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
     else:
         last_fetch = dateparser.parse(last_run.get('last_fetch'))
     latest_created_time = last_fetch
+    assert latest_created_time is not None, f"could not parse {last_run.get('last_fetch')}"
+
     diff_timedelta = float(datetime.utcnow().strftime('%s')) - float(latest_created_time.strftime('%s'))
     time_frame = int(math.ceil(diff_timedelta / 60))
     incidents = []
@@ -97,6 +99,7 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
                 incident_occurred_time = dic['time_seen']
                 incident_created_time = dateparser.parse(str(int(dic['action_time']) * 1000), settings={'TIMEZONE': 'UTC'})
                 if last_fetch:
+                    assert incident_created_time is not None
                     if incident_created_time.strftime('%s') <= last_fetch.strftime('%s'):
                         continue
                 incident_name = "Linkshadow-entityAnomaly"
@@ -119,6 +122,7 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
                 }
                 incidents.append(incident)
                 # Update last run and add incident if the incident is newer than last fetch
+                assert incident_created_time is not None
                 if incident_created_time.strftime('%s') > latest_created_time.strftime('%s'):
                     latest_created_time = incident_created_time
                 # print (max_alerts)

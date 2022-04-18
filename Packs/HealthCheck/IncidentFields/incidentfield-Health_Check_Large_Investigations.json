@@ -16,7 +16,7 @@
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "number",
+            "type": "shortText",
             "width": 100
         },
         {

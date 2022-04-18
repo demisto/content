@@ -874,6 +874,7 @@ def get_modified_remote_data_command(client: Client, args: dict):
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = remote_args.last_update
     last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
+    assert last_update_utc is not None, f'could not parse {last_update}'
     last_update_utc = last_update_utc.replace(tzinfo=None)
     last_timestamp = int(last_update_utc.timestamp() * 1000)
 

@@ -1,0 +1,174 @@
+{
+    "description": "Will be used to map all the incoming alert fields",
+    "feed": false,
+    "id": "Cyble Intel Alert Mapper",
+    "mapping": {
+        "Cyble Intel Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Cyble Events Bucket": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "cybleeventsbucket",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Event ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "eventid",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyble Events Keyword": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "cybleeventskeyword",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyble Events Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "cybleeventsname",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Event Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "eventtype",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "occurred",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Cyble Events Alias": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "cybleeventsalias",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyble Events Bucket": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "cybleeventsbucket",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Event ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "eventid",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyble Events Keyword": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "cybleeventskeyword",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyble Events Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "cybleeventsname",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Event Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "eventtype",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "occurred",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "Cyble Intel Alert Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
