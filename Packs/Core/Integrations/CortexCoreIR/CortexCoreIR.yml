@@ -2424,13 +2424,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'ENABLED'
+      defaultValue: ENABLED
       description: Status of exclusion. default value = ENABLED
       isArray: false
       name: status
       predefined:
-      - 'ENABLED'
-      - 'DISABLED'
+      - ENABLED
+      - DISABLED
       required: false
       secret: false
     deprecated: false
@@ -3090,7 +3090,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.4.27798
 tests:
 - No tests
 fromversion: 6.2.0

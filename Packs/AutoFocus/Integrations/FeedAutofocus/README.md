@@ -1,7 +1,6 @@
 Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 For more information click [here](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
 This Feed supports the AutoFocus Custom Feed and the AutoFocus Samples Feed.
-To ingest the Daily Feed, use the [AutoFocus Daily Feed](https://xsoar.pan.dev/docs/reference/integrations/auto-focus-daily-feed). 
 TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
 
 ## Configure AutoFocus Feed on Cortex XSOAR
@@ -13,7 +12,7 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | feed | The fetch indicators. | False |
-| indicator_feeds | The indicator feed. Choose the requested indicator feeds. The Custom Feeds and Daily Threat Feed. | True |
+| indicator_feeds | The indicator feed. Choose the requested indicator feeds. The Custom Feeds and Samples Feed. | True |
 | api_key | API Key. | False |
 | custom_feed_urls | The URL for the custom feed to fetch. This applies only in cases where a Custom Feed is requested. | False |
 | scope_type | The scope of the samples to be fetched. | False |
