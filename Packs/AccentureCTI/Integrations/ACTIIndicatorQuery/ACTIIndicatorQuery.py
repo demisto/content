@@ -219,9 +219,14 @@ def test_module(client: Client) -> str:
 
 
 def iair_to_context(analysis_info: dict):
-    ia, ir = [], []
+    ia, ir, mf, ta, tg, tc = [], [], [], [], [], []
+    
     alerts = analysis_info.get('Intelligence Alerts', [])
     reports = analysis_info.get('Intelligence Reports', [])
+    malware_families = analysis_info.get('MalwareFamily', [])
+    threat_actors = analysis_info.get('ThreatActors', [])
+    threat_groups = analysis_info.get('ThreatGroups', [])
+    threat_campaigns = analysis_info.get('ThreatCampaigns', [])
     if type(alerts) is dict:
         alerts = list(analysis_info.get('Intelligence Alerts', []).values())
         for alert in alerts:
@@ -230,10 +235,29 @@ def iair_to_context(analysis_info: dict):
         reports = list(analysis_info.get('Intelligence Reports', []).values())
         for report in reports:
             ir.append(report.split("/")[-1])
+    if malware_families:
+        for malware_family in malware_families:
+            mf.append(malware_family.split("/")[-1])
+            
+    if threat_actors:
+        for threat_actor in threat_actors:
+            ta.append(threat_actor.split("/")[-1])
+
+    if threat_groups:
+        for threat_group in threat_groups:
+            tg.append(threat_group.split("/")[-1])
+
+    if threat_campaigns:
+        for threat_campaign in threat_campaigns:
+            tc.append(threat_campaign.split("/")[-1])
 
     context = {
         "intelligence_alerts": ia,
-        "intelligence_reports": ir
+        "intelligence_reports": ir,
+        "acti_malware_family_uuid": mf,
+        "acti_threat_actors_uuid": ta,
+        "acti_threat_groups_uuid": tg,
+        "acti_threat_campaigns_uuid": tc
     }
     return context
 
