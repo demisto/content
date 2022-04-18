@@ -291,5 +291,5 @@ def test_fetch_incidents(mocker):
     assert demisto.incidents.call_count == 1
     incidents = demisto.incidents.call_args[0][0]
 
-    assert (len(incidents) == 1)
-    assert (incidents == expected_alert_output)
+    assert (len(incidents) == 3)
+    assert (incidents[-1] == expected_alert_output[0])
