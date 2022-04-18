@@ -97,7 +97,7 @@ script:
     deprecated: false
     arguments: []
     outputs: []
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.4.28442
   feed: true
   isfetch: false
   longRunning: false

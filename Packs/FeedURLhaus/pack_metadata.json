@@ -8,9 +8,9 @@
     "email": "",
     "created": "2022-04-04T16:04:45Z",
     "categories": [
-        "TIM"
+        "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": ["TIM"],
     "useCases": [],
     "keywords": [
         "URLhaus",

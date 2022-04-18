@@ -1,6 +1,6 @@
-id: URLhaus_test_playbook
+id: URLhausFeed_test
 version: -1
-name: URLhaus_test_playbook
+name: URLhausFeed_test
 starttaskid: "0"
 tasks:
   "0":
