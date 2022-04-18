@@ -40,7 +40,6 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix, params=data)
 
 
-
 def _validate_args(indicator_type: str, values: list) -> None:
     """
     Args:
@@ -95,7 +94,8 @@ def _get_malware_family(data: list, fundamental_client: Client):
     return malware_family
 
 
-def _extract_analysis_info(res: dict, dbot_score_type: str, reliability: DBotScoreReliability, fundamental_client: Client) -> List[dict]:
+def _extract_analysis_info(res: dict, dbot_score_type: str,
+                           reliability: DBotScoreReliability, fundamental_client: Client) -> List[dict]:
     """
     Extract context data from http-response and create corresponding DBotScore.
     If response is empty, return empty context and a none for DBotScore object
@@ -238,7 +238,8 @@ def iair_to_context(analysis_info: dict):
     return context
 
 
-def ip_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client, fundamental_client: Client) -> List[CommandResults]:
+def ip_command(client: Client, args: dict, reliability: DBotScoreReliability,
+               doc_search_client: Client, fundamental_client: Client) -> List[CommandResults]:
     """
     Args:
         client: iDefense client
@@ -276,7 +277,8 @@ def ip_command(client: Client, args: dict, reliability: DBotScoreReliability, do
     return command_results
 
 
-def url_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client, fundamental_client: Client) -> List[CommandResults]:
+def url_command(client: Client, args: dict, reliability: DBotScoreReliability,
+                doc_search_client: Client, fundamental_client: Client) -> List[CommandResults]:
     urls: list = argToList(args.get('url'))
     _validate_args("URL", urls)
 
@@ -340,7 +342,8 @@ def domain_command(client: Client, args: dict, reliability: DBotScoreReliability
     return command_results
 
 
-def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client, fundamental_client: Client) -> CommandResults:
+def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability,
+                 doc_search_client: Client, fundamental_client: Client) -> CommandResults:
     """
     Search for indicator with the given uuid. When response return, checks which indicator found.
     Args:
@@ -426,7 +429,7 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
                 link = THREAT_GROUP_URL + threatGroup['uuid']
                 threatGroups.append(f'{threat_group_name}: {link}')
             analysis_info['ThreatGroups'] = threatGroups
-            
+
         analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         context = iair_to_context(analysis_info)
 
@@ -464,7 +467,7 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
         last_modified_format = parse_date_string(last_modified, DATE_FORMAT)
         index_timestamp = res.get('index_timestamp', '')
         index_timestamp_format = parse_date_string(index_timestamp, DATE_FORMAT)
-        created_on = res.get('created_on','')
+        created_on = res.get('created_on', '')
         created_on_format = parse_date_string(created_on, DATE_FORMAT)
         display_name = res.get('display_text', '')
         description = markdown_postprocessing(res.get('description', ''))
@@ -515,7 +518,8 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             result_link: str = THREAT_ACTOR_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_campaign':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
-            indicator = Common.CustomIndicator('ACTI Threat Campaign', indicator_value, dbot, analysis_info, 'ACTI_ThreatCampaign')
+            indicator = Common.CustomIndicator('ACTI Threat Campaign', indicator_value, dbot, analysis_info,
+                                               'ACTI_ThreatCampaign')
             result_link: str = THREAT_CAMPAIGN_URL + res.get('uuid', '')
 
         return CommandResults(indicator=indicator,
@@ -759,7 +763,8 @@ def main():
         elif command == 'acti-get-fundamentals-by-uuid':  # pragma: no cover
             return_results(fundamental_uuid_command(fundamental_client, demisto.args(), reliability))  # pragma: no cover
         elif command in commands:  # pragma: no cover
-            return_results(commands[command](client, demisto.args(), reliability, document_search_client, fundamental_client))  # pragma: no cover
+            return_results(commands[command](client, demisto.args(), reliability,
+                                             document_search_client, fundamental_client))  # pragma: no cover
 
     except Exception as e:  # pragma: no cover
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')  # pragma: no cover
