@@ -197,11 +197,34 @@ def find_malformed_pack_id(error_message: str) -> List:
 
     """
     malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
-    malformed_pack_id = malformed_pack_pattern.findall(str(error_message))
+    malformed_pack_id = malformed_pack_pattern.findall(error_message)
     if malformed_pack_id:
         return malformed_pack_id
     else:
         return []
+
+
+def handle_malformed_pack_id(message, packs_to_install):
+    """
+    Handles the following cases:
+    1. The malformed id was not found - raise an error.
+    2. The malformed id failed the installation but it was not a part of the initial installaion - raise an error.
+    3. Otherwise, return the malformed id.
+    Args:
+        message: the message from the failed installation response,
+        packs_to_install: list of packs that was already installed that caused the failure.
+
+    Returns:
+        raises an error in cases 1 or 2 or returns the malformed pack id in case 3.
+    """
+    malformed_pack_id = find_malformed_pack_id(message)
+    if not malformed_pack_id:
+        raise Exception('The request to install packs has failed')
+    malformed_pack_id = malformed_pack_id[0]
+    if malformed_pack_id not in {pack['id'] for pack in packs_to_install}:
+        raise Exception(f'The pack {malformed_pack_id} has failed to install even '
+                        f'though it was not in the installation list')
+    return malformed_pack_id
 
 
 def install_nightly_packs(client: demisto_client,
@@ -314,47 +337,47 @@ def install_packs_private(client: demisto_client,
 def install_packs(client: demisto_client,
                   host: str,
                   packs_to_install: list,
-                  request_timeout: int = 999999,
-                  is_nightly: bool = False):
-    """ Make a packs installation request.
-
+                  request_timeout: int = 999999
+                  ):
+    """ Make a packs installation request. This function
+       If pack fails to install, this function catches the corrupted pack and call another request to install packs
+       again, this time without the corrupted pack.
     Args:
         client (demisto_client): The configured client to use.
         host (str): The server URL.
         packs_to_install (list): A list of the packs to install.
         request_timeout (int): Timeout settings for the installation request.
-        is_nightly (bool): Is the build nightly or not.
     """
-    if is_nightly:
-        install_nightly_packs(client, host, packs_to_install)
-        return
-    request_data = {
-        'packs': packs_to_install,
-        'ignoreWarnings': True
-    }
-    logging.info(f'Installing packs on server {host}')
-    packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
-    logging.debug(f'Installing the following packs on server {host}:\n{packs_to_install_str}')
 
-    # make the pack installation request
-    try:
+    def call_install_packs_request(packs):
+        logging.debug(f'Installing the following packs in server {host}:\n{packs}')
         response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                             path='/contentpacks/marketplace/install',
                                                                             method='POST',
-                                                                            body=request_data,
+                                                                            body={'packs': packs,
+                                                                                  'ignoreWarnings': True},
                                                                             accept='application/json',
                                                                             _request_timeout=request_timeout)
 
-        if 200 <= status_code < 300:
-            packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for
-                          pack in
+        if status_code in range(200, 300):
+            packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
                           ast.literal_eval(response_data)]
             logging.success(f'Packs were successfully installed on server {host}')
             logging.debug(f'The following packs were successfully installed on server {host}:\n{packs_data}')
+            return None
         else:
-            result_object = ast.literal_eval(response_data)
+            return ast.literal_eval(response_data)
+    try:
+        logging.info(f'Installing packs on server {host}')
+        result_object = call_install_packs_request(packs_to_install)
+        while result_object:
             message = result_object.get('message', '')
-            raise Exception(f'Failed to install packs - with status code {status_code}\n{message}')
+            malformed_pack_id = handle_malformed_pack_id(message, packs_to_install)
+            logging.warning(
+                f'The request to install packs on server {host} has failed, retrying without {malformed_pack_id}')
+            result_object = call_install_packs_request([pack for pack in packs_to_install
+                                                        if pack['id'] not in malformed_pack_id]) # TODO: verify in
+
     except Exception as e:
         logging.exception(f'The request to install packs has failed. Additional info: {str(e)}')
         global SUCCESS_FLAG
