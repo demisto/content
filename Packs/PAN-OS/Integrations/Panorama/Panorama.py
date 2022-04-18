@@ -2292,7 +2292,7 @@ def panorama_get_url_category(url_cmd: str, url: str, target: Optional[str] = No
         'cmd': f'<test><{url_cmd}>{url}</{url_cmd}></test>'
     }
     if target:
-        params.update({'target': target})
+        params['target'] = target
     raw_result = http_request(
         URL,
         'POST',
@@ -4405,7 +4405,7 @@ def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_
     params = {
         'type': 'log',
         'log-type': log_type,
-        'key': API_KEY,
+        'key': API_KEY
     }
     if target:
         params['target'] = target
@@ -9559,8 +9559,7 @@ def main():
             if USE_URL_FILTERING:  # default is false
                 panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
                                                   additional_suspicious=additional_suspicious,
-                                                  additional_malicious=additional_malicious,
-                                                  )
+                                                  additional_malicious=additional_malicious)
             # do not error out
 
         elif command == 'panorama-get-url-category' or command == 'pan-os-get-url-category':
@@ -9573,14 +9572,12 @@ def main():
         elif command == 'panorama-get-url-category-from-cloud' or command == 'pan-os-get-url-category-from-cloud':
             panorama_get_url_category_command(url_cmd='url-info-cloud', url=args.get('url'),
                                               additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious,
-                                              )
+                                              additional_malicious=additional_malicious)
 
         elif command == 'panorama-get-url-category-from-host' or command == 'pan-os-get-url-category-from-host':
             panorama_get_url_category_command(url_cmd='url-info-host', url=args.get('url'),
                                               additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious,
-                                              )
+                                              additional_malicious=additional_malicious)
 
         # URL Filter
         elif command == 'panorama-get-url-filter' or command == 'pan-os-get-url-filter':
