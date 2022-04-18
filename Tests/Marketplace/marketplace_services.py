@@ -1586,7 +1586,7 @@ class Pack(object):
                 PackFolders.LISTS.value: "list",
                 PackFolders.PREPROCESS_RULES.value: "preprocessrule",
                 PackFolders.JOBS.value: "job",
-                PackFolders.CASE_ADOPTION.value: "caseadoption"
+                PackFolders.WIZARD.value: "caseadoption"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -1799,12 +1799,13 @@ class Pack(object):
                             'details': content_item.get('details', ''),
                         })
 
-                    elif current_directory == PackFolders.CASE_ADOPTION.value:
-                        logging.info('Collected CASE_ADOPTION')
+                    elif current_directory == PackFolders.WIZARD.value:
+                        logging.info('Collected Wizard')  # TODO: remove this debug msg
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
-                            'details': content_item.get('details', '')
+                            'description': content_item.get('details', ''),
+                            'dependency_packs': content_item.get('dependency_packs', {})
                         })
 
                     else:
