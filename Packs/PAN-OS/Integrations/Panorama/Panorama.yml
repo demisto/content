@@ -7468,14 +7468,14 @@ script:
         type: String
   - arguments:
     - default: false
-      description: ID of host (serial or hostname) to reboot
+      description: ID of host (serial or hostname) to reboot.
       isArray: false
       name: hostid
       required: true
       secret: false
     deprecated: false
     description: >
-      Reboot the given device by hostid. Warning; this command has no confirmation and the device
+      Reboot the given device by hostid. Warning: This command has no confirmation and the device
       will immediately reboot.
     name: pan-os-platform-reboot
     outputs:
@@ -7483,7 +7483,7 @@ script:
       type: String
       description: Host ID
     - contextPath: PANOS.RestartStatus.Summary.started
-      description: Whether download process has started.
+      description: Whether the download process has started.
       type: String
   - arguments:
     - default: false
@@ -7494,12 +7494,12 @@ script:
       secret: false
     deprecated: false
     description: Checks the status of the given device, checking whether it's up or
-      down and the operational mode normal
+      down and if the operational mode is normal.
     name: pan-os-platform-get-system-status
     outputs:
     - contextPath: PANOS.SystemStatus.hostid
       type: String
-      description: Host ID
+      description: Host ID.
     - contextPath: PANOS.SystemStatus.up
       description: Whether the host device is up or still unavailable.
       type: String
@@ -7518,127 +7518,128 @@ script:
       secret: false
     deprecated: false
     description: Checks the status of the given device, checking whether it's up or
-      down and the operational mode normal
+      down and if the operational mode is normal.
     name: pan-os-platform-update-ha-state
     outputs:
     - contextPath: PANOS.HAStateUpdate.hostid
       type: String
       description: Host ID
     - contextPath: PANOS.HAStateUpdate.state
-      description: New HA State
+      description: New HA state.
       type: String
   - arguments:
     - default: false
       defaultValue: null
-      description: String to filter to only check given device
+      description: String by which to filter so that only the given device is checked.
       isArray: false
       name: device_filter_string
       required: false
       secret: false
     deprecated: false
-    description: Checks at least one Log forwarding profile is configured according to best practices.
+    description: Checks that at least one log forwarding profile is configured according to best practices.
     name: pan-os-hygiene-check-log-forwarding
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
-      description: The description of the check
+      description: The description of the hygiene check.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
-      description: The shorthand code for this hygiene check
+      description: The shorthand code for this hygiene check.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.result
-      description: Whether the check passed or failed
+      description: Whether the check passed or failed.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
-      description: Total number of matching issues
+      description: Total number of matching issues.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.hostid
       type: String
+      description: Host ID.
     - contextPath: PANOS.ConfigurationHygiene.Result.container_name
-      description: What parent container (DG, Template, VSYS) this object belongs
+      description: The parent container (DG, Template, VSYS) this object belongs
         to.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.issue_code
-      description: The shorthand code for the issue
+      description: The shorthand code for the issue.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.description
-      description: Human readable description of issue
+      description: Human readable description of the issue.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.name
-      description: The affected object name
+      description: The affected object name.
       type: String
   - arguments:
     - default: false
       defaultValue: null
-      description: String to filter to only check given device
+      description: String by which to filter so that only the given device is checked.
       isArray: false
       name: device_filter_string
       required: false
       secret: false
     - default: false
       defaultValue: critical,high
-      description: csv list of severities that must be in drop/reset/block-ip mode.
-      isArray: false
+      description: Comma-separated list of severities that must be in drop/reset/block-ip mode.
+      isArray: true
       name: minimum_block_severities
       required: false
       secret: false
     - default: false
       defaultValue: medium,low
-      description: csv list of severities that must be in alert/default or higher
+      description: Comma-separated list of severities that must be in alert/default or higher
         mode.
-      isArray: false
+      isArray: true
       name: minimum_alert_severities
       required: false
       secret: false
     deprecated: false
-    description: Checks the configured Vulnerability profiles to ensure at least one meets best practices.
+    description: Checks the configured vulnerability profiles to ensure at least one meets best practices.
     name: pan-os-hygiene-check-vulnerability-profiles
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
-      description: The description of the check
+      description: The description of the hygiene check.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
-      description: The shorthand code for this hygiene check
+      description: The shorthand code for this hygiene check.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.result
-      description: Whether the check passed or failed
+      description: Whether the check passed or failed.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
-      description: Total number of matching issues
-      type: Nunber
+      description: Total number of matching issues.
+      type: Number
     - contextPath: PANOS.ConfigurationHygiene.Result.hostid
       type: String
-      description: Host ID
+      description: Host ID.
     - contextPath: PANOS.ConfigurationHygiene.Result.container_name
-      description: What parent container (DG, Template, VSYS) this object belongs
+      description: The parent container (DG, Template, VSYS) this object belongs
         to.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.issue_code
-      description: The shorthand code for the issue
+      description: The shorthand code for the issue.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.description
-      description: Human readable description of issue
+      description: Human readable description of the issue.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.name
-      description: The affected object name
+      description: The affected object name.
       type: String
   - arguments:
       - default: false
-        description: software version to upgrade to, ex. 9.1.2
+        description: 'Software version to upgrade to, for example: 9.1.2.'
         isArray: false
         name: version
         required: true
         secret: false
       - default: false
         defaultValue: null
-        description: String to filter to only install to specific devices or serial
-          numbers
+        description: String by which to filter to only install to specific devices or 
+          serial numbers
         isArray: false
         name: device_filter_string
         required: false
         secret: false
       - default: false
         defaultValue: false
-        description: If provided, runs the download synchronously - make sure 'execution-timeout'
+        description: If provided, runs the download synchronously. Make sure 'execution-timeout'
           is increased.
         isArray: false
         name: sync
@@ -7646,14 +7647,14 @@ script:
         secret: false
     deprecated: false
     description: Install the given software version onto the device. Download the
-      software first with
+      software first with panorama-download-panos-version.
     name: pan-os-platform-install-software
     outputs:
       - contextPath: PANOS.InstallStatus.Summary.hostid
-        description: Host ID
+        description: Host ID.
         type: String
       - contextPath: PANOS.InstallStatus.Summary.started
-        description: Whether download process has started.
+        description: Whether the download process has started.
         type: String
   dockerimage: demisto/pan-os-python:1.0.0.28307
   feed: false
