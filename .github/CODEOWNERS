@@ -24,9 +24,9 @@
 /Packs/PaloAltoNetworksIoT3rdParty/Integrations/* @bakatzir
 /Packs/Palo_Alto_Networks_Enterprise_DLP/* @DeanArbel
 /Packs/PAN-OS/Integrations/* @GuyAfik
-/Packs/PrismaAccess/Integrations/* @anara123
+/Packs/PrismaAccess/Integrations/* @bakatzir
 /Packs/PrismaCloudCompute/Integrations/* @GuyAfik
-/Packs/PrismaCloud/Integrations/* @glicht
+/Packs/PrismaCloud/Integrations/* @bakatzir
 /Packs/PrismaSaasSecurity/Integrations/* @yaakovpraisler
 
 # Important Integrations
