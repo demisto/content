@@ -17,14 +17,16 @@ def get_past_time(current_time, hours_ago=HOURS_AGO) -> str:
 
 
 def get_hosts_changelog() -> Dict[str, Any]:
-    start_timestamp = get_past_time(demisto.incident()['occurred'])
+    incident_datetime = datetime.fromisoformat(demisto.incident()['occurred'])
+    start_timestamp = (incident_datetime - timedelta(hours=HOURS_AGO)).isoformat()
+
     return demisto.executeCommand('forescout-ei-hosts-changelog-list',
                                   {'start_timestamp': start_timestamp})
 
 
 def main():
     try:
-        demisto.results(get_hosts_changelog())
+        return_results(get_hosts_changelog())
     except Exception as e:
         demisto.error(fix_traceback_line_numbers(traceback.format_exc()))
         return_error(f'Failed to get pcap from Forescout EyeInspect incident.\nError:\n{e}')

@@ -31,23 +31,9 @@ def return_error_mock(message: str, *_):
     raise Exception(message)
 
 
-def execute_command_error_mock(*_):
-    raise ValueError('Failed to communicate with server')
-
-
-def execute_command_mock(command: str, args: Dict[str, Any]):
-    if command == 'GetTime':
-        assert args['dateFormat'] == 'ISO'
-
-        date = datetime.fromisoformat(args['date']) - timedelta(hours=args['hoursAgo'])
-        return [{'Contents': date.isoformat()}]
-    elif command == 'forescout-ei-hosts-changelog-list':
-        return HOSTS_CHANGELOG_MOCK
-
-
 def test_get_hosts_changelog(mocker: MockerFixture):
     mocker.patch.object(demisto, 'incident', return_value={'occurred': datetime.now().isoformat()})
-    mocker.patch.object(demisto, 'executeCommand', execute_command_mock)
+    mocker.patch.object(demisto, 'executeCommand', return_value=HOSTS_CHANGELOG_MOCK)
 
     assert get_hosts_changelog()[0]['id'] == 51
 
@@ -56,7 +42,9 @@ def test_command_error(mocker: MockerFixture):
     mocker.patch.object(demisto, 'incident', return_value={'occurred': datetime.now().isoformat()})
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(ForescoutEyeInspectButtonHostChangeLog, 'return_error', return_error_mock)
-    mocker.patch.object(demisto, 'executeCommand', execute_command_error_mock)
+    mocker.patch.object(demisto,
+                        'executeCommand',
+                        side_effect=Exception('Failed to communicate with server'))
 
     try:
         main()
