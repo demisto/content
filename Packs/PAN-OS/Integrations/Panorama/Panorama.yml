@@ -6623,6 +6623,14 @@ script:
           - block
           - sinkhole
         required: true
+      - auto: PREDEFINED
+        description: allows capturing packets on match. Select single-packet to capture the first packet of the session or extended-capture to set between 1-50 packets. Packet capture can be very CPU intensive and can degrade firewall performance. Only use this feature when necessary and make sure you turn it off after you have collected the required packets.
+        name: Packet_capture
+        predefined:
+          - disable
+          - single-packet
+          - extended-capture
+        defaultValue: disable
     name: pan-os-apply-dns-signature-policy
     description: Allows assigning of EDL to the Anti-Spyware profile under "DNS Signature Policies"
     outputs:
