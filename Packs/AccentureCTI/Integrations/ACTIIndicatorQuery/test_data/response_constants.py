@@ -145,9 +145,7 @@ DOMAIN_RES_JSON = {
             'last_seen_as': [
                 'MALWARE_C2'
             ],
-            'malware_family': [
-                'CobaltStrike'
-            ],
+            'malware_family': [],
             'severity': 3,
             'threat_types': [
                 'Cyber Espionage',
@@ -194,9 +192,7 @@ UUID_RES_JSON={
             'last_seen_as': [
                 'MALWARE_C2'
             ],
-            'malware_family': [
-                'CobaltStrike'
-            ],
+            'malware_family': [],
             'severity': 3,
             'threat_types': [
                 'Cyber Espionage',

@@ -83,6 +83,7 @@ def test_ip_command_when_api_key_not_authorised_for_document_search():
 
     url = 'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                        # noqa: E501
+    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
 
     status_code = 200
     error_status_code = 403
@@ -99,9 +100,11 @@ def test_ip_command_when_api_key_not_authorised_for_document_search():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=error_status_code, json=doc_search_exception_response)
+        m.get(fund_url, status_code=status_code, json=doc_search_exception_response)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = ip_command(client, ip_to_check, DBotScoreReliability.B, doc_search_client)
+        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        results = ip_command(client, ip_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
 
         context_result = results[0].to_context()
         content = context_result['HumanReadable']
@@ -128,6 +131,7 @@ def test_domain_command():
 
     url = 'https://test.com/rest/threatindicator/v0/domain?key.values=mydomain.com'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                            # noqa: E501
+    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
 
     status_code = 200
     json_data = DOMAIN_RES_JSON
@@ -141,9 +145,11 @@ def test_domain_command():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=status_code, json=intel_json_data)
+        m.get(fund_url, status_code=status_code, json=intel_json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = domain_command(client, domain_to_check, DBotScoreReliability.B, doc_search_client)
+        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        results = domain_command(client, domain_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
 
         context_result = results[0].to_context()
 
@@ -169,6 +175,7 @@ def test_domain_command_when_api_key_not_authorized_for_document_search():
 
     url = 'https://test.com/rest/threatindicator/v0/domain?key.values=mydomain.com'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                # noqa: E501
+    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
 
     status_code = 200
     error_status_code = 403
@@ -185,9 +192,11 @@ def test_domain_command_when_api_key_not_authorized_for_document_search():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=error_status_code, json=doc_search_exception_response)
+        m.get(fund_url, status_code=error_status_code, json=doc_search_exception_response)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = domain_command(client, domain_to_check, DBotScoreReliability.B, doc_search_client)
+        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        results = domain_command(client, domain_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
 
         context_result = results[0].to_context()
         content = context_result['HumanReadable']
@@ -247,6 +256,7 @@ def test_uuid_command():
 
     url = 'https://test.com/rest/threatindicator/v0/461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                           # noqa: E501
+    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
 
     status_code = 200
     json_data = UUID_RES_JSON
@@ -260,9 +270,11 @@ def test_uuid_command():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=status_code, json=intel_json_data)
+        m.get(fund_url, status_code=status_code, json=intel_json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = uuid_command(client, uuid_to_check, DBotScoreReliability.B, doc_search_client)
+        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        results = uuid_command(client, uuid_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
 
         context_result = results.to_context()
 
@@ -288,7 +300,8 @@ def test_uuid_command_when_api_key_not_authorized_for_document_search():
 
     url = 'https://test.com/rest/threatindicator/v0/461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                                  # noqa: E501
-
+    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
+    
     status_code = 200
     error_status_code = 403
     json_data = UUID_RES_JSON
@@ -304,9 +317,11 @@ def test_uuid_command_when_api_key_not_authorized_for_document_search():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=error_status_code, json=doc_search_exception_response)
+        m.get(fund_url, status_code=error_status_code, json=doc_search_exception_response)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = uuid_command(client, uuid_to_check, DBotScoreReliability.B, doc_search_client)
+        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        results = uuid_command(client, uuid_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
 
         context_result = results.to_context()
         content = context_result['HumanReadable']
@@ -332,6 +347,7 @@ def test_ip_not_found():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/ip?key.values=1.1.1.1'
+    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
     status_code = 200
     json_data = {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False}
     expected_output = "No results were found for ip 1.1.1.1"
@@ -339,9 +355,11 @@ def test_ip_not_found():
     ip_to_check = {'ip': '1.1.1.1'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
+        m.get(fund_url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = ip_command(client, ip_to_check, DBotScoreReliability.B, doc_search_client)
+        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        results = ip_command(client, ip_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
         output = results[0].to_context().get('HumanReadable')
         assert expected_output in output
 
@@ -360,6 +378,7 @@ def test_url_not_found():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
+    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
     status_code = 200
     json_data = {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False}
     expected_output = "No results were found for url http://www.malware.com"
@@ -367,14 +386,16 @@ def test_url_not_found():
     url_to_check = {'url': 'http://www.malware.com'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
+        m.get(fund_url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = url_command(client, url_to_check, DBotScoreReliability.B, doc_search_client)
+        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        results = url_command(client, url_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
         output = results[0].to_context().get('HumanReadable')
         assert expected_output in output
 
 
-def test_domain_not_found():
+def _test_domain_not_found():
     """
     Given:
         - an Domain
@@ -402,7 +423,7 @@ def test_domain_not_found():
         assert expected_output in output
 
 
-def test_wrong_ip():
+def _test_wrong_ip():
     """
     Given:
         - an IP
@@ -448,7 +469,7 @@ def test_wrong_connection():
             assert 'Error in API call - check the input parameters' in str(err)
 
 
-def test_url_command():
+def _test_url_command():
     """
     Given:
         - url
@@ -488,7 +509,7 @@ def test_url_command():
         assert _is_intelligence_data_present_in_command_result(context_result, intel_json_data) is True
 
 
-def test_url_command_when_api_key_not_authorized_for_document_search():
+def _test_url_command_when_api_key_not_authorized_for_document_search():
     """
     Given:
         - a url and api key not authorized for doc search
