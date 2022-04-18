@@ -886,7 +886,7 @@ def main():
 
     url = params['url']
 
-    token = params['token']
+    token = params['credentials']['password']
     use_ssl = not params.get('insecure', False)
     use_proxy = params.get('proxy', False)
     max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_MAX_FETCH))

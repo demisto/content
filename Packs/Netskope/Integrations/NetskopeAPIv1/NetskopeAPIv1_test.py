@@ -5,7 +5,7 @@ from hashlib import md5
 from urllib.parse import urljoin
 
 import demistomock as demisto
-from Netskope import Client
+from NetskopeAPIv1 import Client
 
 BASE_URL = 'https://api.com'
 FULL_BASE_URL = urljoin(BASE_URL, '/api/v1')
@@ -38,7 +38,7 @@ def test_list_events(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Netskope import list_events_command
+    from NetskopeAPIv1 import list_events_command
 
     client = mock_client()
     mock_response = load_mock_response('events')
@@ -68,7 +68,7 @@ def test_list_alerts(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Netskope import list_alerts_command
+    from NetskopeAPIv1 import list_alerts_command
 
     client = mock_client()
     mock_response = load_mock_response('alerts')
@@ -99,7 +99,7 @@ def test_list_quarantined_files(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Netskope import list_quarantined_files_command
+    from NetskopeAPIv1 import list_quarantined_files_command
 
     client = mock_client()
     mock_response = load_mock_response('quarantined_files')
@@ -129,7 +129,7 @@ def test_get_quarantined_file(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Netskope import get_quarantined_file_command
+    from NetskopeAPIv1 import get_quarantined_file_command
 
     client = mock_client()
     mock_response = load_raw_mock_response('quarantined_file.zip')
@@ -162,7 +162,7 @@ def test_update_quarantined_file(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Netskope import update_quarantined_file_command
+    from NetskopeAPIv1 import update_quarantined_file_command
 
     client = mock_client()
     requests_mock.post(f'{FULL_BASE_URL}/quarantine', text='')
@@ -190,7 +190,7 @@ def test_update_url_list(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Netskope import update_url_list_command
+    from NetskopeAPIv1 import update_url_list_command
 
     client = mock_client()
     requests_mock.post(f'{FULL_BASE_URL}/updateUrlList', json={'msg': ''})
@@ -218,7 +218,7 @@ def test_update_file_hash_list(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Netskope import update_file_hash_list_command
+    from NetskopeAPIv1 import update_file_hash_list_command
 
     client = mock_client()
     requests_mock.post(f'{FULL_BASE_URL}/updateFileHashList', json={'msg': ''})
@@ -244,7 +244,7 @@ def test_list_clients(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Netskope import list_clients_command
+    from NetskopeAPIv1 import list_clients_command
 
     client = mock_client()
     mock_response = load_mock_response('clients')
@@ -273,7 +273,7 @@ def test_list_host_associated_user(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Netskope import list_host_associated_user_command
+    from NetskopeAPIv1 import list_host_associated_user_command
 
     client = mock_client()
     mock_response = load_mock_response('clients')
@@ -300,7 +300,7 @@ def test_list_user_associated_host(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Netskope import list_user_associated_host_command
+    from NetskopeAPIv1 import list_user_associated_host_command
 
     client = mock_client()
     mock_response = load_mock_response('clients')
