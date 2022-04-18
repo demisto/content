@@ -39,6 +39,7 @@ def test_ip_command():
 
     url = 'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                     # noqa: E501
+    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
     status_code = 200
     json_data = IP_RES_JSON
     intel_json_data = IP_INTEL_JSON
@@ -52,9 +53,11 @@ def test_ip_command():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=status_code, json=intel_json_data)
+        m.get(fund_url, status_code=status_code, json=intel_json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = ip_command(client, ip_to_check, DBotScoreReliability.B, doc_search_client)
+        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        results = ip_command(client, ip_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
 
         context_result = results[0].to_context()
 
