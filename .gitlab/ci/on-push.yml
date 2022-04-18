@@ -20,6 +20,7 @@ trigger-private-build:
     - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
     - sleep 60
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
+  timeout: 2 hours
 
 
 .create-release-notes-and-common-docs:
