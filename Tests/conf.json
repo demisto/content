@@ -5244,7 +5244,8 @@
         "Recorded Future Test": "Issue 26741",
         "Git_Integration-Test": "Issue 37800",
         "RecordedFutureFeed - Test": "Issue 43923",
-        "RedLockTest": "Issue 24600"
+        "RedLockTest": "Issue 24600",
+        "SymantecEndpointProtection_Test": "Issue 30157"
     },
     "skipped_integrations": {
 
