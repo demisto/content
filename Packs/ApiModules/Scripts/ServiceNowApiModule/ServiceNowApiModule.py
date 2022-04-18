@@ -52,7 +52,8 @@ class ServiceNowClient(BaseClient):
                 })
             res = super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, resp_type='response',
                                         headers=headers, json_data=json_data, params=params, data=data, files=files,
-                                        ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth, timeout=timeout)
+                                        ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth,
+                                        timeout=timeout)
             if res.status_code in [200, 201]:
                 try:
                     return res.json()
