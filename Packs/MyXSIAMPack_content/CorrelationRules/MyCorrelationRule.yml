@@ -17,6 +17,7 @@ crontab: '*/10 * * * *'
 dataset: alerts
 description: Based on network connections and event id 4625
 drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
 global_rule_id: 93935bcc-b8c3-11ec-82b2-acde48001122
 investigation_query_link: 'dataset = xdr_data | filter agent_id=$agent_id '
 mapping_strategy: CUSTOM
