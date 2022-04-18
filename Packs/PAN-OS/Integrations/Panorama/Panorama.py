@@ -562,7 +562,7 @@ def panorama_commit(args):
     params = {
         'type': 'commit',
         'cmd': f'<commit>{command}</commit>',
-        'key': API_KEY,
+        'key': API_KEY
     }
     if target := args.get('target', None):
         params['target'] = target
