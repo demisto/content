@@ -43,6 +43,8 @@ def test_ip_command(requests_mock):
     assert isinstance(raw_results, list)
     assert isinstance(indicators, list)
     assert isinstance(markdown[0], str)
+    assert isinstance(raw_results[0]['UUID'], str)
+    assert isinstance(raw_results[0]['RSTReference'], str)
     assert indicators[0].ip == value_to_check
     assert raw_results[0]['Address'] == value_to_check
 
@@ -68,6 +70,7 @@ def test_domain_command(requests_mock):
     assert isinstance(raw_results, list)
     assert isinstance(indicators, list)
     assert isinstance(markdown[0], str)
+    assert isinstance(raw_results[0]['UUID'], str)
     assert indicators[0].domain == value_to_check
     assert raw_results[0]['Name'] == value_to_check
 
@@ -93,6 +96,7 @@ def test_url_command(requests_mock):
     assert isinstance(raw_results, list)
     assert isinstance(indicators, list)
     assert isinstance(markdown[0], str)
+    assert isinstance(raw_results[0]['UUID'], str)
     assert indicators[0].url == value_to_check
     assert raw_results[0]['Data'] == value_to_check
 
@@ -118,6 +122,7 @@ def test_file_command(requests_mock):
     assert isinstance(raw_results, list)
     assert isinstance(indicators, list)
     assert isinstance(markdown[0], str)
+    assert isinstance(raw_results[0]['UUID'], str)
     assert indicators[0].sha256 == value_to_check
     assert raw_results[0]['SHA256'] == value_to_check
 
@@ -164,3 +169,21 @@ def test_submitfp_command(requests_mock):
 
     assert isinstance(markdown, list)
     assert markdown[0] == f'Indicator: {value_to_check} was submitted as False Positive to RST Cloud\n'
+
+
+def test_test_command(requests_mock):
+    """Tests the Test command function.
+
+    Configures requests_mock instance to generate the appropriate
+    Test API response. Checks
+    the output of the command function with the expected output.
+    """
+    from RSTCloudThreatFeedAPI import Client, test_module
+
+    mock_response = util_load_json('test_data/test_response.json')
+    requests_mock.get('https://api.rstcloud.net/v1/ioc?value=1.1.1.1', json=mock_response)
+
+    client = Client(verify=False, apikey='test')
+    results = test_module(client)
+
+    assert isinstance(results, str)

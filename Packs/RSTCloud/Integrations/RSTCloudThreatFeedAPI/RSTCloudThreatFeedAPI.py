@@ -388,7 +388,7 @@ def test_module(client: Client) -> str:
     """
     result = ''
     params = ['threshold_ip', 'threshold_domain', 'threshold_url', 'threshold_hash', 'indicator_expiration_ip',
-              'indicator_expiration_domain', 'indicator_expiration_url']
+              'indicator_expiration_domain', 'indicator_expiration_url', 'indicator_expiration_hash']
     for param in params:
         result += check_arg_type(param, demisto.params().get(param))
     if result == '':
