@@ -2,7 +2,7 @@ export BUILD_STATUS_API=https://code.pan.run/api/v4/projects/2596/jobs   # disab
 
 
 function get_build_job_statuses() {
-	export BUILD_STATUSES=`echo $1 | tr ' ' '\n' | xargs -I {} curl --header "PRIVATE-TOKEN: $GITLAB_STATUS_TOKEN" $BUILD_STATUS_API/{} -s | jq -c '.[] | .status' | sed 's/"//g' | tr ' ' '\n' | sort | uniq`
+	export BUILD_STATUSES=`echo $1 | tr ' ' '\n' | xargs -I {} curl --header "PRIVATE-TOKEN: $GITLAB_STATUS_TOKEN" $BUILD_STATUS_API/{} -s | jq -c '. | .status' | sed 's/"//g' | tr ' ' '\n' | sort | uniq`
 }
 
 BUILDS="$( echo -e '12248062\n12248066\n12248063' )"
