@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: bmcdiscovery
+  id: BMC Discovery
   version: -1
 configuration:
 - display: Server URL
@@ -24,7 +24,7 @@ configuration:
 description: BMC Discovery is a SaaS-based, cloud-native discovery and dependency modeling system that provides instant visibility into hardware, software, and service dependencies across multi-cloud, hybrid, and on-premises environments.
 detaileddescription: ''
 display: BMC Discovery
-name: bmcdiscovery
+name: BMC Discovery
 script:
   commands:
   - arguments:
