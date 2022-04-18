@@ -1,5 +1,3 @@
-import json
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -13,11 +11,19 @@ def main():
     alert_status = alert_status.lower().replace(' ', '_')
     command_args['alert_status'] = alert_status
 
-    incident_json = json.loads(incident.get('rawJSON'))
-    command_args['alert_id'] = incident_json.get('id')
-    command_args['aggregate_alert_id'] = incident_json.get('aggregate_alert_id')
+    labels = incident.get('labels')
+    for label in labels:
+        if label.get('type') == 'id':
+            command_args['alert_id'] = label.get('value')
+        if label.get('type') == 'aggregate_alert_id':
+            command_args['aggregate_alert_id'] = label.get('value')
 
-    res = demisto.executeCommand("cybersixgill-update-alert-status", command_args)
+    demisto.info(
+        "Update status: alert id - {}, aggregate_alert_id - {}, new status - {}".format(command_args['alert_id'],
+                                                                                        command_args[
+                                                                                            'aggregate_alert_id'],
+                                                                                        alert_status))
+    res = demisto.executeCommand("cybersixgill-update-alert-status-new", command_args)
 
     if isError(res[0]):
         return_error('Failed to update Actionable alert status - {}'.format(res[0]['Contents']))
