@@ -5,12 +5,12 @@
 #==================================
 
 export GCS_LOCKS_PATH=gs://xsoar-ci-artifacts/content-locks-xsiam
-export GCS_QUEUE_FILE=queue
+export GCS_QUEUE_FILE=queue-master
 export LOCK_IDENTIFIER=lock
-export TEST_MACHINES_LIST=TestMachines
+export TEST_MACHINES_LIST=test-machines-master
 export ALLOWED_STATES=running
-export BUILD_STATUS_API=https://code.pan.run/api/v4/projects/2596/pipelines   # disable-secrets-detection
-export SELF_LOCK_PATTERN=*-$LOCK_IDENTIFIER-$CI_PIPELINE_ID
+export BUILD_STATUS_API=https://code.pan.run/api/v4/projects/2596/jobs   # disable-secrets-detection
+export SELF_LOCK_PATTERN=*-$LOCK_IDENTIFIER-$CI_JOB_ID
 
 #=================================
 #   Variables
@@ -19,14 +19,14 @@ export SELF_LOCK_PATTERN=*-$LOCK_IDENTIFIER-$CI_PIPELINE_ID
 export START=$SECONDS
 export QUEUE_FILE_PATH=$GCS_LOCKS_PATH/$GCS_QUEUE_FILE
 export QUEUE_LOCK_PATTERN=$GCS_QUEUE_FILE-$LOCK_IDENTIFIER-*
-export QUEUE_SELF_LOCK=$GCS_QUEUE_FILE-$LOCK_IDENTIFIER-$CI_PIPELINE_ID
+export QUEUE_SELF_LOCK=$GCS_QUEUE_FILE-$LOCK_IDENTIFIER-$CI_JOB_ID
 
 #=================================
 #   Functions & helpers
 #==================================
 
 function get_build_job_statuses() {
-	export BUILD_STATUSES=`echo $1 | tr ' ' '\n' | xargs -I {} curl --header "PRIVATE-TOKEN: $GITLAB_STATUS_TOKEN" $BUILD_STATUS_API/{}/jobs -s | jq -c '.[] | select(.name=="xsiam_server_master") | .status' | sed 's/"//g' | tr ' ' '\n' | sort | uniq`
+	export BUILD_STATUSES=`echo $1 | tr ' ' '\n' | xargs -I {} curl --header "PRIVATE-TOKEN: $GITLAB_STATUS_TOKEN" $BUILD_STATUS_API/{} -s | jq -c '. | .status' | sed 's/"//g' | tr ' ' '\n' | sort | uniq`
 }
 
 function is_status_exists() {
@@ -46,7 +46,7 @@ function lock_queue() {
     export QUEUE_LOCK_BUILDS=`gsutil -m ls $GCS_LOCKS_PATH/$QUEUE_LOCK_PATTERN 2> /dev/null | sed 's/.*-'$LOCK_IDENTIFIER'-//'`
 		if [ ! -z "$QUEUE_LOCK_BUILDS" ]
 		then
-			echo -e "The following builds have locks for queue: \n$QUEUE_LOCK_BUILDS"
+			echo -e "The following jobs have locks for queue: \n$QUEUE_LOCK_BUILDS"
 			get_build_job_statuses "$QUEUE_LOCK_BUILDS"
   		is_status_exists "$BUILD_STATUSES" "$ALLOWED_STATES"
 			if [ -z "$EXISTS" ]
@@ -75,11 +75,11 @@ function release_queue() {
 }
 
 function get_number_in_line() {
-	export NUMBER_IN_LINE=`cat $1 2> /dev/null | grep -n $CI_PIPELINE_ID | cut -d: -f1`
+	export NUMBER_IN_LINE=`cat $1 2> /dev/null | grep -n $CI_JOB_ID | cut -d: -f1`
 }
 
 function register_in_line() {
-	echo $CI_PIPELINE_ID >> $1
+	echo $CI_JOB_ID >> $1
 	export LOCK_CHANGED="true"
 }
 
@@ -100,7 +100,7 @@ function handle_previous_builds() {
   if [ -z $EXISTS ]
   then
     #remove previous line and continue
-  	echo -e "The build in place $(($1 - 1)) went stale. Removing it from queue"
+  	echo -e "The job in place $(($1 - 1)) went stale. Removing it from queue"
   	remove_previous_line "$1" "$2"
   fi
 }
@@ -111,7 +111,7 @@ function get_build_locks() {
 
 function lock_machine() {
         echo "Locking $TEST_MACHINE for testing"
-    	  export MACHINE_LOCK_FILE=$TEST_MACHINE-$LOCK_IDENTIFIER-$CI_PIPELINE_ID
+    	  export MACHINE_LOCK_FILE=$TEST_MACHINE-$LOCK_IDENTIFIER-$CI_JOB_ID
     		touch $MACHINE_LOCK_FILE
     		gsutil -m cp $MACHINE_LOCK_FILE $GCS_LOCKS_PATH/$MACHINE_LOCK_FILE
     		echo $TEST_MACHINE > ChosenMachine
@@ -135,12 +135,12 @@ function poll_for_env() {
     get_build_locks # lists all files that looks like: MACHINE_LOCK_PATTERN, return arg: BUILDS (id of builds)
 		if [ ! -z "$BUILDS" ]	# if BUILDS not empty
 		then
-		  echo -e "The following builds have locks for $TEST_MACHINE: \n$BUILDS"
-		  # This checks all build statuses and eliminates duplicates (we don't care which build has what status, we just need one)
+		  echo -e "The following jobs have locks for $TEST_MACHINE: \n$BUILDS"
+		  # This checks all jobs statuses and eliminates duplicates (we don't care which job has what status, we just need one)
 		  get_build_job_statuses "$BUILDS"
-      echo -e "Build statuses found are: \n $BUILD_STATUSES"
+      echo -e "Job statuses found are: \n $BUILD_STATUSES"
 
-      # We don't want to interfere with running builds. The rest are ok
+      # We don't want to interfere with running jobs. The rest are ok
       is_status_exists "$BUILD_STATUSES" "$ALLOWED_STATES"	# ALLOWED_STATES == blocking states, that we cant run if such states exists
       if [ ! -z "$EXISTS" ]
       then
