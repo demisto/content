@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+from CSVFeedApiModule import *
 
 
 def main():
@@ -17,13 +18,13 @@ def main():
             params['feed_url_to_config'][base_url + suffix] = {
                 "indicator_type": FeedIndicatorType.URL,
                 "ignore_regex": '#*',
-                'fieldnames': ['id', 'dateadded', 'url', 'url_status', 'last_online', 'threat', 'tags', 'urlhaus_link', 'reporter'],
+                'fieldnames': ['id', 'dateadded', 'url', 'url_status', 'last_online', 'threat',
+                               'tags', 'urlhaus_link', 'reporter'],
                 'mapping': {
                     'URLhaus ID': 'id',
                     'Creation Date': 'dateadded',
                     'Value': 'url',
                     'State': 'url_status',
-                    'Tags': 'threat',
                     'Tags': 'tags',
                     'Download URL': 'urlhaus_link',
                     'Reported By': 'reporter'
@@ -36,7 +37,6 @@ def main():
     feed_main('URLhaus Feed', params, 'urlhaus-feed-')
 
 
-from CSVFeedApiModule import *
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
