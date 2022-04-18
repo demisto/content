@@ -4400,7 +4400,7 @@
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
-            "timeout" : 1800
+            "timeout": 1800
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
@@ -4408,7 +4408,7 @@
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
-            "timeout" : 1800
+            "timeout": 1800
         },
         {
             "playbookID": "CrowdStrike_FalconX_Test",
@@ -4464,15 +4464,15 @@
             ],
             "external_playbook_config": {
                 "playbookID": "Phishing - Generic v3",
-                "input_parameters":{
+                "input_parameters": {
                     "InternalDomains": {
                         "simple": "demistodev.onmicrosoft.com"
                     }
                 }
             },
-            "instance_configuration":{
-                "classifier_id":"EWS v2",
-                "incoming_mapper_id":"EWS v2-mapper"
+            "instance_configuration": {
+                "classifier_id": "EWS v2",
+                "incoming_mapper_id": "EWS v2-mapper"
             },
             "memory_threshold": 160,
             "pid_threshold": 80
@@ -4495,15 +4495,21 @@
                 "virus_total_v3",
                 "ewso365_sec_eng_team"
             ],
-            "external_playbook_config": 
-            {
+            "external_playbook_config": {
                 "playbookID": "Phishing - Generic v3",
-                "input_parameters":
-                {
-                    "SearchAndDelete": {"simple": "True"},
-                    "GetOriginalEmail": {"simple": "True"},
-                    "SearchAndDeleteIntegration": {"simple": "O365"},
-                    "O365DeleteType": {"simple": "Soft"}
+                "input_parameters": {
+                    "SearchAndDelete": {
+                        "simple": "True"
+                    },
+                    "GetOriginalEmail": {
+                        "simple": "True"
+                    },
+                    "SearchAndDeleteIntegration": {
+                        "simple": "O365"
+                    },
+                    "O365DeleteType": {
+                        "simple": "Soft"
+                    }
                 }
             },
             "memory_threshold": 160,
@@ -5245,10 +5251,24 @@
         "Git_Integration-Test": "Issue 37800",
         "RecordedFutureFeed - Test": "Issue 43923",
         "RedLockTest": "Issue 24600",
-        "SymantecEndpointProtection_Test": "Issue 30157"
+        "SymantecEndpointProtection_Test": "Issue 30157",
+        "ParseEmailFiles-test": "Issue 44690",
+        "Microsoft Teams Management - Test": "Issue 33410",
+        "Azure NSG - Test": "Issue 33217",
+        "Cloaken-Test": "Issue 30325",
+        "Test_XFE_v2": "Issue 48034",
+        "Azure WAF - Test": "Issue 33741",
+        "playbook-AzureDevOps-Test": "Issue 47890",
+        "hashicorp_test": "Issue 47845",
+        "ThreatExchangeV2-test": "Issue 38036",
+        "Mail-Listener Test Playbook": "Issue 27845",
+        "QualysVulnerabilityManagement-Test": "Issue 38640",
+        "G Suite Security Alert Center-Test": "Issue 45114",
+        "Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test": "Issue 47888",
+        "OpsGenieV3TestPlaybook": "Issue 48038"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Vertica": "No insance issue 45719",
         "Ipstack": "Usage limit reached (Issue 38063)",
@@ -5342,16 +5362,16 @@
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "AzureKeyVault": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-
+        
         "_comment4": "~~~ OTHER ~~~",
         "Anomali ThreatStream v2": "Will be deprecated soon.",
         "Anomali ThreatStream": "Will be deprecated soon.",
@@ -5540,7 +5560,7 @@
         "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
