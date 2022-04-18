@@ -86,6 +86,7 @@ class Server:
         self.ssh_tunnel_port = None
         self.user_name = None
         self.password = None
+        self.name = ''
 
 
 class XSIAMServer(Server):
