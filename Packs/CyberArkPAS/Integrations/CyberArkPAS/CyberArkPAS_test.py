@@ -241,7 +241,7 @@ def test_fetch_incidents_with_specific_score(mocker):
     assert incidents == INCIDENTS_FILTERED_BY_SCORE
 
 
-@pytest.mark.parametrize('permission_exist', [False, True])
+@pytest.mark.parametrize('permission_exist', [True, False])
 def test_add_safe_member_permissions_validate(mocker, permission_exist):
     """
     Given
@@ -256,10 +256,10 @@ def test_add_safe_member_permissions_validate(mocker, permission_exist):
     client = Client(server_url="https://api.cyberark.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, max_fetch=50)
     mock = mocker.patch.object(Client, '_http_request')
-    if permission_exist:
+    if not permission_exist:
         args.get('permissions').remove('ManageSafeMembers')
     add_safe_member_command(client, **args)
     permissions = mock.call_args[1].get('json_data').get('member').get('Permissions')
     for permission in permissions:
-        if 'ManageSafeMembers' in permission:
+        if 'ManageSafeMembers' in permission.get('Key'):
             assert permission.get('Value') == permission_exist
