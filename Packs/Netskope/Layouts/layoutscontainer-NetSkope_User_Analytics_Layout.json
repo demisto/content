@@ -367,7 +367,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "cloudconfidencelevel",
+                                "fieldId": "netskopecloudconfidencelevel",
                                 "height": 53,
                                 "id": "f053bb90-aab3-11ec-add3-070eaee15e4c",
                                 "index": 0,

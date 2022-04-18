@@ -10,7 +10,7 @@
                     "complex": null,
                     "simple": "app"
                 },
-                "Cloud Confidence Level": {
+                "Netskope Cloud Confidence Level": {
                     "complex": null,
                     "simple": "ccl"
                 },
@@ -47,7 +47,7 @@
         "Netskope Compromised Credentials": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Cloud Confidence Level": {
+                "Netskope Cloud Confidence Level": {
                     "complex": null,
                     "simple": "ccl"
                 },
@@ -106,7 +106,7 @@
                     "complex": null,
                     "simple": "app"
                 },
-                "Cloud Confidence Level": {
+                "Netskope Cloud Confidence Level": {
                     "complex": null,
                     "simple": "ccl"
                 },
