@@ -14,7 +14,6 @@ def main():
             if source not in sources_enum:
                 continue
             suffix = sources_enum[source]
-            print(base_url + suffix)
             params['feed_url_to_config'][base_url + suffix] = {
                 "indicator_type": FeedIndicatorType.URL,
                 "ignore_regex": '#*',
