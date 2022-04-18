@@ -6216,32 +6216,31 @@ def get_anti_spyware_best_practice_command():
 
 
 def apply_dns_signature_policy_command(args) -> CommandResults:
-    name = args.get('name')
-    edl = args.get('edl')
-    desc = args.get('description')
-    action = args.get('action')
+    anti_spy_ware_name = args.get('Anti_spyware_profile_name')
+    edl = args.get('DNS_signature_source')
+    action = args.get('Action')
     params = {
         'action': 'set',
         'type': 'config',
-        'xpath': f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{DEVICE_GROUP}']/profiles/spyware/entry[@name='{name}']",
+        'xpath': f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{DEVICE_GROUP}']"
+                 f"/profiles/spyware/entry[@name='{anti_spy_ware_name}']",
         'key': API_KEY,
         'element': '<botnet-domains>'
                    f'<lists>'
-                   f'<entry name="default-paloalto-dns"><packet-capture>disable</packet-capture><action><sinkhole/></action></entry>'
-                   f'<entry name="default-paloalto-cloud"><packet-capture>disable</packet-capture><action><allow/></action></entry>'
                    f'<entry name="{edl}"><packet-capture>disable</packet-capture><action><{action}/></action></entry>'
                    f'</lists>'
-                   f'<sinkhole><ipv4-address>pan-sinkhole-default-ip</ipv4-address><ipv6-address>::1</ipv6-address></sinkhole>'
                    f'</botnet-domains>'
-                   f'<description>{desc}</description>'
-                   f'</request>'
     }
     result = http_request(
         URL,
-        'SET',
+        'POST',
         params=params,
     )
-    return CommandResults(outputs=result)
+    res_status = result.get('response', {}).get('@status')
+    return CommandResults(outputs=result,
+                          outputs_prefix='Panorama.ApplyDNS',
+                          readable_output=f'**{res_status}**',
+                         )
 
 
 @logger

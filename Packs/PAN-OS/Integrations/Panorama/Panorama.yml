@@ -6609,10 +6609,8 @@ script:
       type: String
   - arguments:
       - name: Anti_spyware_profile_name
-        description: The name of the anti spyware profile
+        description: The name of the anti spyware profile. if the profile exists will operate on it. else, if a new name is given a new Anti-Spyware Profile will be created.
         required: true
-      - name: description
-        description: The description of the anti spyware profile
       - name: DNS_signature_source
         description: The EDL name to link to the profile
         required: true
@@ -6627,7 +6625,9 @@ script:
         required: true
     name: pan-os-apply-dns-signature-policy
     description: Allows assigning of EDL to the Anti-Spyware profile under "DNS Signature Policies"
-    outputs: []
+    outputs:
+      - contextPath: Panorama.ApplyDNS
+      - description: The api response from the command.
   - arguments: []
     description: Get file-blocking best practices.
     name: pan-os-get-file-blocking-best-practice
