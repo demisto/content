@@ -10,4 +10,6 @@ When key algorithms are specified, the SSH connection will be established with t
 
 ### SSH Certificate
 Currently, OpenSSH keys are not supported, but only RSA keys (.PEM files) are supported. 
-In order to create a key which is RSA based, please use **ssh-keygen -p -m PEM -f <file_name>**.
+In order to create a key which is RSA based with ssh-keygen, use **ssh-keygen -p -m PEM -f <file_name>**.
+In case access is required to an instance in the cloud, make sure to add to the credentials object the content
+of the PEM file provided by the cloud provider to your instance.
