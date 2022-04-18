@@ -1,8 +1,8 @@
-Received: from GVAP278MB0549.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:45::14)
+Received: from GVAP278MB0549.CHEP278.PROD.OUTLOOK.COM
  by GVAP278MB0905.CHEP278.PROD.OUTLOOK.COM with HTTPS; Fri, 18 Mar 2022
  09:33:28 +0000
-Received: from GVAP278MB0905.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:46::13)
- by GVAP278MB0549.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:45::14) with
+Received: from GVAP278MB0905.CHEP278.PROD.OUTLOOK.COM
+ by GVAP278MB0549.CHEP278.PROD.OUTLOOK.COM with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 0.0.0.0; Fri, 18 Mar
  2022 09:33:28 +0000
@@ -11,7 +11,7 @@ Received: from GVAP278MB0905.CHEP278.PROD.OUTLOOK.COM
  ([fe80::74bd:d230:810:e8c7%3]) with mapi id 0.0.0.0; Fri, 18 Mar 2022
  09:33:28 +0000
 From: =?iso-8859-1?Q?test=2C_St=E9?=
- <test@terst.com>
+ <test@test.com>
 To: =?iso-8859-1?Q?test=2C_St=E9?= <test@test.com>
 Subject: =?iso-8859-1?Q?Those_characters_:_=FC=E0=E9=FC=F6_will_mess_with_the_pars?=
  =?iso-8859-1?Q?ing_automation?=
@@ -19,7 +19,7 @@ Thread-Topic: =?iso-8859-1?Q?Those_characters_:_=FC=E0=E9=FC=F6_will_mess_with_t
  =?iso-8859-1?Q?ing_automation?=
 Thread-Index: Adg6qzI2p77wnWvNT1KQeSc0qKqTFw==
 Date: Fri, 18 Mar 2022 09:33:28 +0000
-Message-ID: <GVAP278MB090503F494A4B4522F0E3562D6139@GVAP278MB0905.CHEP278.PROD.OUTLOOK.COM>
+Message-ID: <1234567890>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Exchange-Organization-AuthAs: Internal
@@ -40,7 +40,7 @@ msip_labels: MSIP_Label_4da52270-6ed3-4abe-ba7c-b9255dadcdf9_Enabled=True;
  MSIP_Label_4da52270-6ed3-4abe-ba7c-b9255dadcdf9_ActionId=850264f2-ec9d-427a-8b81-259978da9d44;
  MSIP_Label_4da52270-6ed3-4abe-ba7c-b9255dadcdf9_Extended_MSFT_Method=Automatic
 x-ms-exchange-organization-originalclientipaddress: 0.0.0.0
-x-ms-exchange-organization-originalserveripaddress: 0:0:0:0::0
+x-ms-exchange-organization-originalserveripaddress: 0.0.0.0
 x-ms-publictraffictype: Email
 x-ms-exchange-transport-endtoendlatency: 00:00:00.0
 x-ms-traffictypediagnostic: GVAP278MB0549:EE_
