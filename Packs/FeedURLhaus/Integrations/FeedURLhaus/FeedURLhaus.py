@@ -37,6 +37,5 @@ def main():
     feed_main('URLhaus Feed', params, 'urlhaus-feed-')
 
 
-
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
