@@ -258,6 +258,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Absolute",
+            "playbookID": "Absolute_TestPlaybook",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "ServiceDeskPlus",
             "playbookID": "Service Desk Plus Test",
             "instance_names": "sdp_instance_1",
@@ -5239,7 +5244,8 @@
         "Recorded Future Test": "Issue 26741",
         "Git_Integration-Test": "Issue 37800",
         "RecordedFutureFeed - Test": "Issue 43923",
-        "RedLockTest": "Issue 24600"
+        "RedLockTest": "Issue 24600",
+        "SymantecEndpointProtection_Test": "Issue 30157"
     },
     "skipped_integrations": {
 
