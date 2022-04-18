@@ -125,6 +125,36 @@ def test_prepare_fetch_incidents_query():
                                                               fetch_fields,
                                                               fetch_limit)
 
+    # Assert that an exception is raised in case the fetch filter_query and fetch subtype/severity are given:
+    filter_query = 'dest_port = 54321 AND session_id = 97425'
+    try:
+        prepare_fetch_incidents_query(timestamp,
+                                      firewall_severity,
+                                      table_name,
+                                      firewall_subtype,
+                                      fetch_fields,
+                                      fetch_limit,
+                                      filter_query)
+    except DemistoException as e:
+        assert 'Fetch Filter parameter cannot be used with Subtype/Severity parameters' in str(e)
+
+    # Given the fetch filter_query and no fetch subtype/severity filters, assert the returned response is as expected:
+    firewall_severity = []
+    firewall_subtype = []
+    expected_response = 'SELECT * FROM `firewall.threat` WHERE ' \
+                        'time_generated Between TIMESTAMP("2020-02-20T16:49:05") ' \
+                        'AND CURRENT_TIMESTAMP AND' \
+                        ' dest_port = 54321 AND session_id = 97425 ' \
+                        'ORDER BY time_generated ASC ' \
+                        'LIMIT 10'
+    assert expected_response == prepare_fetch_incidents_query(timestamp,
+                                                              firewall_severity,
+                                                              table_name,
+                                                              firewall_subtype,
+                                                              fetch_fields,
+                                                              fetch_limit,
+                                                              filter_query)
+
 
 MILLISECONDS_HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [(1582017903000000, '2020-02-18T09:25:03.001Z'),
                                                                (1582027208002000, '2020-02-18T12:00:08.003Z')]

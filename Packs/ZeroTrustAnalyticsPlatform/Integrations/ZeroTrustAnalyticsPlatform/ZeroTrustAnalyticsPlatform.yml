@@ -36,7 +36,7 @@ configuration:
   required: false
   type: 13
 - display: Incident Mirroring Direction
-  defaultvalue: Incoming
+  defaultvalue: Both
   name: mirror_direction
   options:
   - None
@@ -51,7 +51,7 @@ configuration:
   name: comment_tag
   type: 0
 - display: Escalate entry tag
-  additionalinfo: Adding this tag to a Note will reassign the alert back to CriticalStart SOC
+  additionalinfo: Adding this tag to a Note will reassign the alert back to Critical Start SOC
   defaultvalue: escalate
   name: escalate_tag
   type: 0
@@ -82,7 +82,7 @@ configuration:
   required: false
   type: 0
 description: Zero Trust Analytics Platform (ZTAP) is the underlying investigation
-  platform and user interface for CriticalStart's MDR service.
+  platform and user interface for Critical Start's MDR service.
 display: ZeroTrustAnalyticsPlatform
 name: ZeroTrustAnalyticsPlatform
 script:
@@ -127,7 +127,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.27798
 fromversion: 6.0.0
 defaultmapperin: ZeroTrustAnalyticsPlatform - Incoming Mapper
 defaultclassifier: ZeroTrustAnalyticsPlatform - Classifier
