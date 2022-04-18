@@ -332,8 +332,7 @@ bucket-upload-test-branch:
   stage: create-test-branch
   before_script:
     - mkdir ~/.ssh/
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-    - ssh-keyscan -t rsa $CI_SERVER_HOST >> ~/.ssh/known_hosts
+    - ssh-keyscan $CI_SERVER_HOST > ~/.ssh/known_hosts
     - echo "${SSH_PUSH_KEY}" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - git config user.email "iyeshaya@example.com"
