@@ -27,6 +27,7 @@ WORKFLOW_TYPES = {CONTENT_NIGHTLY, SDK_NIGHTLY, BUCKET_UPLOAD, PRIVATE_NIGHTLY}
 BUILD_NOTIFICATIONS_CHANNEL = 'dmst-build'
 SLACK_USERNAME = 'Content GitlabCI'
 
+
 def options_handler():
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
     parser.add_argument('-u', '--url', help='The gitlab server url', default=GITLAB_SERVER_URL)
