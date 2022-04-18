@@ -791,6 +791,7 @@ tasks:
       id: 5205d32a-2c3a-42ca-8586-04680de9bc5b
       version: -1
       name: Check for VT results
+      description: Checks whether there are results from VirusTotal.
       type: condition
       iscommand: false
       brand: ""
