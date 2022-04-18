@@ -1,7 +1,7 @@
 flake8==4.0.1
 bandit~=1.7.0
 demisto-py>=3.1.1
-git+https://github.com/demisto/demisto-sdk.git@8ec779a2ff6216616ec31533ff1b88e629b6746c#egg=demisto-sdk
+git+https://github.com/demisto/demisto-sdk.git@f762a10cfb9edb464f12667ca6e341ec5d13900f#egg=demisto-sdk
 pytest==7.0.1
 pytest-mock==3.7.0
 requests-mock==1.9.3
