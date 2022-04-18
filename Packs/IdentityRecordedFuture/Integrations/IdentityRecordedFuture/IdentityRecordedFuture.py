@@ -259,18 +259,18 @@ class Actions:
                             f"Authorization service url: {credential['authorization_service']['url']}\n"
                         )
                     if credential.get("exfiltration_date"):
-                        exfiltration_date = dateparser.parse(
-                            credential["exfiltration_date"]
-                        ).strftime("%b %Y")
+                        parsed_date = dateparser.parse(credential["exfiltration_date"])
+                        assert parsed_date is not None, f'could not parse {credential["exfiltration_date"]}'
+                        exfiltration_date = parsed_date.strftime("%b %Y")
                         passwords_section.append(
                             f"Exfiltration date: {exfiltration_date}"
                         )
                     for dump in credential["dumps"]:
                         dump_downloaded = dump.get("downloaded", "")
                         if dump_downloaded:
-                            dump_downloaded = dateparser.parse(
-                                dump_downloaded
-                            ).strftime("%b %Y")
+                            parsed_date = dateparser.parse(dump_downloaded)
+                            assert parsed_date is not None, f'could not parse {dump_downloaded}'
+                            dump_downloaded = parsed_date.strftime("%b %Y")
                             dump_text = f"__{dump['name']}__, {dump_downloaded},  {password_number_text}"
                         else:
                             dump_text = (
@@ -289,9 +289,9 @@ class Actions:
                         for breach in dump.get("breaches", []):
                             breach_date = breach.get("breached")
                             if breach_date:
-                                breach_date = dateparser.parse(
-                                    breach_date
-                                ).strftime("%b %Y")
+                                parsed_date = dateparser.parse(breach_date)
+                                assert parsed_date is not None, f'could not parse {breach_date}'
+                                breach_date = parsed_date.strftime("%b %Y")
                                 breaches_section.append(
                                     f"__{breach['name']}__, {breach_date}, {password_number_text}"
                                 )

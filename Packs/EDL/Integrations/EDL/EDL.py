@@ -95,7 +95,7 @@ class RequestArguments:
     FILTER_FIELDS_ON_FORMAT_JSON = "name,type"
 
     def __init__(self,
-                 query: str,
+                 query: str = '',
                  out_format: str = FORMAT_TEXT,
                  limit: int = 10000,
                  offset: int = 0,
@@ -784,7 +784,7 @@ def route_edl() -> Response:
     on_demand = params.get('on_demand')
     created = datetime.now(timezone.utc)
     edl = get_edl_on_demand() if on_demand else create_new_edl(request_args)
-    etag = f'"{hashlib.sha1(edl.encode()).hexdigest()}"'  # guardrails-disable-line
+    etag = f'"{hashlib.sha1(edl.encode()).hexdigest()}"'    # nosec
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
     edl_size = 0
     if edl.strip():

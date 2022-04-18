@@ -1905,8 +1905,7 @@ def handle_tags_in_message_sync(message: str) -> str:
             message = message.replace(match.group(0), f"<@{slack_user.get('id')}>")
         else:
             message = re.sub(USER_TAG_EXPRESSION, r'\1', message)
-    resolved_message = re.sub(URL_EXPRESSION, r'\1', message)
-    return resolved_message
+    return message
 
 
 def send_message(destinations: list, entry: str, ignore_add_url: bool, integration_context: dict, message: str,

@@ -1,0 +1,22 @@
+{
+  "folders": [
+    {
+      "name": "folders/folder-name-1",
+      "parent": "organizations/xsoar-organization",
+      "displayName": "integration folder",
+      "state": "ACTIVE",
+      "createTime": "2021-12-20T09:16:57.801Z",
+      "updateTime": "2021-12-20T09:16:57.801Z",
+      "etag": "/g1CJ4Mb4dkjg2g8I6eQbg=="
+    },
+    {
+      "name": "folders/folder-name-2",
+      "parent": "organizations/xsoar-organization",
+      "displayName": "my-test-folder",
+      "state": "ACTIVE",
+      "createTime": "2021-11-23T10:39:25.687Z",
+      "updateTime": "2021-11-23T10:39:25.687Z",
+      "etag": "IbtOzmi5nXqW/x56rDGrdQ=="
+    }
+  ]
+}

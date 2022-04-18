@@ -8,6 +8,7 @@ def date_to_epoch(date: str, formatter: Optional[str] = None) -> int:
     epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
     date_obj = datetime.strptime(date, formatter) if formatter \
         else dateparser.parse(date, settings={'RELATIVE_BASE': datetime(1900, 1, 1)})
+    assert date_obj is not None, f'could not parse {date}'
     return int(date_obj.strftime('%s') if date_obj.tzinfo is None else (date_obj - epoch).total_seconds())
 
 

@@ -266,8 +266,8 @@ def detection_to_incident(detection, detection_date):
     return incident
 
 
-def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: datetime) -> \
-        Tuple[List[Dict[str, str]], datetime]:
+def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: str) -> \
+        Tuple[List[Dict[str, str]], str]:
     """
     Given the detections retrieved from Azure Identity Protection, transforms their data to incidents format.
     """
@@ -275,13 +275,13 @@ def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetim
     latest_incident_time = last_fetch_datetime
 
     for detection in detections:
-        # 'activityDateTime': '2021-07-15T11:02:54Z' / 'activityDateTime': '2021-07-15T11:02:54.12345Z'
-        detection_date = date_str_to_azure_format(detection.get('detectedDateTime', ''))
-        incident = detection_to_incident(detection, detection_date)
+        detection_datetime = detection.get('detectedDateTime', '')
+        detection_datetime_in_azure_format = date_str_to_azure_format(detection_datetime)
+        incident = detection_to_incident(detection, detection_datetime_in_azure_format)
         incidents.append(incident)
 
-        detection_datetime = datetime.strptime(detection_date, DATE_FORMAT)
-        if detection_datetime > latest_incident_time:
+        if datetime.strptime(detection_datetime_in_azure_format, DATE_FORMAT) > \
+                datetime.strptime(date_str_to_azure_format(latest_incident_time), DATE_FORMAT):
             latest_incident_time = detection_datetime
 
     return incidents, latest_incident_time
@@ -294,20 +294,19 @@ def get_last_fetch_time(last_run, params):
         # handle first time fetch
         first_fetch = f"{params.get('first_fetch') or '1 days'} ago"
         default_fetch_datetime = dateparser.parse(date_string=first_fetch, date_formats=[DATE_FORMAT])
-        last_fetch = str(default_fetch_datetime.isoformat(timespec='milliseconds'))
+        assert default_fetch_datetime is not None, f'failed parsing {first_fetch}'
+        last_fetch = str(default_fetch_datetime.isoformat(timespec='milliseconds')) + 'Z'
 
-    last_fetch = date_str_to_azure_format(last_fetch)
-    last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT)
-    demisto.debug(f'[AzureADIdentityProtection] last_fetch: {last_fetch}, last_fetch_datetime: {last_fetch_datetime}')
-    return last_fetch, last_fetch_datetime
+    demisto.debug(f'[AzureADIdentityProtection] last_fetch: {last_fetch}')
+    return last_fetch
 
 
 def build_filter(last_fetch, params):
-    start_time_enforcing_filter = f"detectedDateTime gt {last_fetch}Z"
+    start_time_enforcing_filter = f"detectedDateTime gt {last_fetch}"
     user_supplied_filter = params.get('fetch_filter_expression', '')
-    query_filter = f'{user_supplied_filter} and {start_time_enforcing_filter}' if user_supplied_filter \
+    query_filter = f'({user_supplied_filter}) and {start_time_enforcing_filter}' if user_supplied_filter \
         else start_time_enforcing_filter
-    demisto.debug(f'[AzureADIdentityProtection] query_filter: {query_filter}Z')
+    demisto.debug(f'[AzureADIdentityProtection] query_filter: {query_filter}')
     return query_filter
 
 
@@ -332,7 +331,7 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
     last_run: Dict[str, str] = demisto.getLastRun()
     demisto.debug(f'[AzureIdentityProtection] last run: {last_run}')
 
-    last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, params)
+    last_fetch = get_last_fetch_time(last_run, params)
     query_filter = build_filter(last_fetch, params)
     demisto.debug(f'[AzureIdentityProtection] last fetch is: {last_fetch}, filter is: {query_filter}')
 
@@ -345,13 +344,12 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
 
     detections: list = risk_detection_list_raw.get('value', [])
 
-    incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch_datetime)
+    incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch)
     demisto.debug(f'[AzureIdentityProtection] Fetched {len(incidents)} incidents')
 
-    latest_detection_time = latest_detection_time.strftime(DATE_FORMAT)
     demisto.debug(f'[AzureIdentityProtection] next run latest_detection_found: {latest_detection_time}')
     last_run = {
-        'latest_detection_found': latest_detection_time
+        'latest_detection_found': latest_detection_time,
     }
 
     return incidents, last_run

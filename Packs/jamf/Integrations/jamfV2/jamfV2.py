@@ -1185,32 +1185,35 @@ def endpoint_command(client, args):
     endpoint_id_list = argToList(args.get('id'))
     endpoint_ip_list = argToList(args.get('ip'))
     endpoint_hostname_list = argToList(args.get('hostname'))
+
+    if not endpoint_id_list and not endpoint_ip_list and not endpoint_hostname_list:
+        raise Exception(f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
+
     outputs = []
-    command_results = []
-    standard_endpoints = []
+
     if endpoint_id_list:
         for endpoint_id in endpoint_id_list:
             computers_response = client.get_computer_subset_request(identifier='id', identifier_value=endpoint_id,
                                                                     subset='general')
             outputs.append(computers_response.get('computer').get('general'))
-            standard_endpoints = generate_endpoint_by_context_standard(outputs)
-        command_results.append(command_results_endpoint_command(standard_endpoints, outputs))
 
-    elif endpoint_ip_list:
+    if endpoint_ip_list:
         for endpoint_ip in endpoint_ip_list:
             computers_response = client.get_computers_request(match=endpoint_ip)
             outputs.append(computers_response.get('computers'))
-            standard_endpoints = generate_endpoint_by_context_standard(outputs)
-        command_results.append(command_results_endpoint_command(standard_endpoints, outputs))
 
-    elif endpoint_hostname_list:
+    if endpoint_hostname_list:
         for endpoint_hostname in endpoint_hostname_list:
             computers_response = client.get_computer_subset_request(identifier='name',
                                                                     identifier_value=endpoint_hostname,
                                                                     subset='general')
             outputs.append(computers_response.get('computer').get('general'))
-            standard_endpoints = generate_endpoint_by_context_standard(outputs)
-        command_results.append(command_results_endpoint_command(standard_endpoints, outputs))
+
+    # Remove duplicates by taking entries with unique `uuid`:
+    if outputs:
+        outputs = list({v['udid']: v for v in outputs}.values())
+    standard_endpoints = generate_endpoint_by_context_standard(outputs)
+    command_results = command_results_endpoint_command(standard_endpoints, outputs)
 
     return command_results
 

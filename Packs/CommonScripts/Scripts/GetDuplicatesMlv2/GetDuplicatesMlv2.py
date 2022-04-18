@@ -7,7 +7,7 @@ import re
 import dateutil.parser
 import pickle
 import ipaddress
-import tldextract
+import tldextract  # type: ignore
 import editdistance
 import zlib
 from rfc822 import parseaddr  # type:ignore

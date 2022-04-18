@@ -36,18 +36,20 @@ def load_host_url():
 
 def hash_file(filename):
     '''Calculate the SHA1 of a file'''
-    h = hashlib.sha1()
+    h = hashlib.sha1()  # nosec
     with open(filename, 'rb') as f:
         chunk = ''
-        while chunk != '':
+        while True:
             chunk = f.read(1024)
+            if not chunk:
+                break
             h.update(chunk)
     return h.hexdigest()
 
 
 def hash_url(url):
     '''Calculate the SHA1 of a URL'''
-    h = hashlib.sha1()
+    h = hashlib.sha1()  # nosec
     h.update(url)
     return h.hexdigest()
 
@@ -77,7 +79,7 @@ def calculate_checksum(api_key, headers, body=''):
                 temp += value
 
     temp += body
-    return hashlib.sha1(temp)  # lgtm [py/weak-sensitive-data-hashing]
+    return hashlib.sha1(temp)  # nosec
 
 
 def http_request(uri, method, headers, body={}, params={}, files={}):

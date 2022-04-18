@@ -19,8 +19,18 @@ configuration:
   type: 4
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
-  required: true
+  required: false
   type: 4
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
 - display: Default subscription ID to use
   name: default_sub_id
   required: false
@@ -557,7 +567,7 @@ script:
     - contextPath: Azure.Securescore.weight
       description: The relative weight for each subscription.
       type: String
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: demisto/crypto:1.0.0.27590
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -200,10 +200,14 @@ def map_guardicore_os(os: int) -> str:
 def test_module(client: Client, is_fetch: bool = False) -> str:
     message: str = ''
     try:
+        one_day = parse("1 days")
+        assert one_day is not None
         from_time = int(
-            parse("1 days").replace(tzinfo=utc).timestamp()) * 1000
+            one_day.replace(tzinfo=utc).timestamp()) * 1000
+        now = parse("now")
+        assert now is not None
         to_time = int(
-            parse("now").replace(tzinfo=utc).timestamp()) * 1000
+            now.replace(tzinfo=utc).timestamp()) * 1000
         client.get_incidents({"from_time": from_time, "to_time": to_time})
 
         if is_fetch:
@@ -234,12 +238,16 @@ def get_incidents(client: Client, args: Dict[str, Any]):
     try:
         from_time = date_to_timestamp(from_time, DATE_FORMAT)
     except ValueError:
-        from_time = int(parse(from_time).replace(tzinfo=utc).timestamp()) * 1000
+        from_time_date = parse(from_time)
+        assert from_time_date is not None
+        from_time = int(from_time_date.replace(tzinfo=utc).timestamp()) * 1000
 
     try:
         to_time = date_to_timestamp(to_time, DATE_FORMAT)
     except ValueError:
-        to_time = int(parse(to_time).replace(tzinfo=utc).timestamp()) * 1000
+        to_time_date = parse(to_time)
+        assert to_time_date is not None
+        to_time = int(to_time_date.replace(tzinfo=utc).timestamp()) * 1000
 
     limit = int(args.get('limit', 50))
     offset = int(args.get('offset', 0))

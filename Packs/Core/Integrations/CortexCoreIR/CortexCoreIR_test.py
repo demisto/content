@@ -1057,7 +1057,7 @@ def test_retrieve_file_details_command(requests_mock):
     }
 
     requests_mock.post(f'{Core_URL}/public_api/v1/actions/file_retrieval_details/', json=data)
-    requests_mock.get(f'{Core_URL}', json=data1)
+    requests_mock.get(f'{Core_URL}/public_api/v1/download/file_hash', json=data1)
     client = Client(
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
