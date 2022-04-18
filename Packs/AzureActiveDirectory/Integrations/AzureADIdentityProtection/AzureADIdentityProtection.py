@@ -87,12 +87,12 @@ class AADClient(MicrosoftClient):
                          auth_id=app_id,
                          grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
                          base_url=BASE_URL,
-                         token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+                         token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token'  # type: ignore
                          if not client_credentials else None,
                          verify=verify,
                          proxy=proxy,
                          scope=' '.join(REQUIRED_PERMISSIONS),
-                         tenant_id=tenant_id,
+                         tenant_id=tenant_id,  # type: ignore
                          enc_key=enc_key
                          )
 
