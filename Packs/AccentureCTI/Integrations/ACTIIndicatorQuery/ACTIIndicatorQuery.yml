@@ -190,12 +190,13 @@ script:
       description: The actual score.
       type: Number
   - name: acti-get-fundamentals-by-uuid
-    description: Checks reputation of a specific indicator(URL/IP/Domain) uuid.
+    description: Checks reputation of a specific Malware Family/ Threat Campaign/ Threat Group/ Threat Actor.
     arguments:
     - name: uuid
       required: true
-      default: false
-      description: Unique User ID.
+      default: true
+      isArray: false
+      description: Unique ID of the specific Malware Family/ Threat Campaign/ Threat Group/ Threat Actor.
     outputs:
     - contextPath: ACTI_MalwareFamily.display_text
       description: The display text of the Malware Family, for example, 'Artemis'
