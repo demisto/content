@@ -54,7 +54,7 @@ def main():
 
         # Acquire the server's host and install all content packs (one threaded execution)
         logging.info(f'Starting to install all content packs in {server_url}')
-        server_host: str = server.client.api_client.configuration.host
+        server_host: str = server.client.api_client.configuration.host #CHANGE
         success_flag = install_all_content_packs_from_build_bucket(
             client=server.client, host=server_host, server_version=server_version,
             bucket_packs_root_path=GCPConfig.BUILD_BUCKET_PACKS_ROOT_PATH.format(branch=branch_name,
