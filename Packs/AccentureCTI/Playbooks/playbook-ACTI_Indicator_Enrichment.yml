@@ -1,7 +1,7 @@
 id: ACTI Indicator Enrichment
 version: -1
 name: ACTI Indicator Enrichment
-description: This playbook enriches indicators.
+description: This playbook automatically queries ACTI Threat Indicator, Report, and Fundamental API to pull context for IOC and associated intelligence reports into XSOAR incidents.
 starttaskid: "0"
 tasks:
   "0":

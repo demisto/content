@@ -1,15 +1,15 @@
 id: ACTI Block Indicators from an Incident
 version: -1
 name: ACTI Block Indicators from an Incident
-description: This playbook extracts indicators from an incident and block them.
+description: Extracts indicators from an incident and sends them to your firewall to be blocked.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 77eeae08-77f6-4c1e-8396-d36dc50ec504
+    taskid: 691d1062-b2b8-4fcb-8436-4d5c4b15a900
     type: start
     task:
-      id: 77eeae08-77f6-4c1e-8396-d36dc50ec504
+      id: 691d1062-b2b8-4fcb-8436-4d5c4b15a900
       version: -1
       name: ""
       iscommand: false
@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "7"
     separatecontext: false
     view: |-
       {
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 1bb8d642-60cb-469b-8f38-408e571d4763
+    taskid: 1f9a78a4-dbe2-4aea-8630-4430d951ad4b
     type: regular
     task:
-      id: 1bb8d642-60cb-469b-8f38-408e571d4763
+      id: 1f9a78a4-dbe2-4aea-8630-4430d951ad4b
       version: -1
       name: Extract Indicators from Incident
       description: Extract all indicators according to server indicators configuration
@@ -48,7 +48,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+      - "8"
     scriptarguments:
       text:
         simple: ${incident}
@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -69,12 +69,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 41100fc5-c396-41f6-8c93-ac4041e2e3b9
+    taskid: fd625608-f0b6-40b5-8198-293d60999af5
     type: playbook
     task:
-      id: 41100fc5-c396-41f6-8c93-ac4041e2e3b9
+      id: fd625608-f0b6-40b5-8198-293d60999af5
       version: -1
-      name: ACTI Block High Severity Indicators
+      name: ACTI Block Indicators with severity greater than equal to 5
       description: Block Indicators with indicators with severity 5 or more
       playbookName: ACTI Block High Severity Indicators
       type: playbook
@@ -163,7 +163,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 720
         }
       }
     note: false
@@ -175,10 +175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 9c95a73e-b82b-436f-8721-d90dc162c4de
+    taskid: 214a3fe6-7d5f-4df2-8733-97c5d925216f
     type: title
     task:
-      id: 9c95a73e-b82b-436f-8721-d90dc162c4de
+      id: 214a3fe6-7d5f-4df2-8733-97c5d925216f
       version: -1
       name: Done
       type: title
@@ -186,6 +186,75 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ef0c19ae-aab4-4c0c-8f06-162baff69568
+    type: regular
+    task:
+      id: ef0c19ae-aab4-4c0c-8f06-162baff69568
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: subplaybook-2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 29d54684-b136-479e-8ceb-25d825073d97
+    type: playbook
+    task:
+      id: 29d54684-b136-479e-8ceb-25d825073d97
+      version: -1
+      name: ACTI Indicator Enrichment
+      description: This playbook enriches indicators.
+      playbookName: ACTI Indicator Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
     view: |-
       {
         "position": {
@@ -205,7 +274,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 560,
+        "height": 910,
         "width": 380,
         "x": 50,
         "y": 50

@@ -1,15 +1,15 @@
 id: ACTI Block High Severity Indicators
 version: -1
 name: ACTI Block High Severity Indicators
-description: Block Indicators with severity 5 or more
+description: Sends indicators imported from ACTI feeds with a severity rating of 5 or higher to your firewall to be blocked.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: be1ddbb4-be2f-4564-88fe-1db6182bee73
+    taskid: a8850535-59b1-4392-88f3-860af95e14c2
     type: start
     task:
-      id: be1ddbb4-be2f-4564-88fe-1db6182bee73
+      id: a8850535-59b1-4392-88f3-860af95e14c2
       version: -1
       name: ""
       iscommand: false
@@ -18,46 +18,12 @@ tasks:
     nexttasks:
       '#none#':
       - "9"
-      - "10"
-      - "11"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: a942d96b-1cd5-46eb-8b8a-28374ee55457
-    type: title
-    task:
-      id: a942d96b-1cd5-46eb-8b8a-28374ee55457
-      version: -1
-      name: Block Indicators
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "5"
-      - "6"
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
+          "y": 40
         }
       }
     note: false
@@ -69,15 +35,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 3e325450-e5a6-4d22-8852-00bcc0e70ad6
+    taskid: 888eb018-2021-4fec-8eed-ef16fcf2547e
     type: playbook
     task:
-      id: 3e325450-e5a6-4d22-8852-00bcc0e70ad6
+      id: 888eb018-2021-4fec-8eed-ef16fcf2547e
       version: -1
       name: Block IP - Generic v2
       description: |-
         This playbook blocks malicious IPs using all integrations that are enabled.
-
         Supported integrations for this playbook:
         * Check Point Firewall
         * Palo Alto Networks Minemeld
@@ -108,7 +73,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 515
+          "y": 545
         }
       }
     note: false
@@ -120,15 +85,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: eaa72b02-2d48-41fa-8e75-284e1db8ad2c
+    taskid: 7f6dc456-8214-430c-8d0c-df6e35f18b36
     type: playbook
     task:
-      id: eaa72b02-2d48-41fa-8e75-284e1db8ad2c
+      id: 7f6dc456-8214-430c-8d0c-df6e35f18b36
       version: -1
       name: Block URL - Generic
       description: |-
         This playbook blocks malicious URLs using all integrations that are enabled.
-
         Supported integrations for this playbook:
         * Palo Alto Networks Minemeld
         * Palo Alto Networks PAN-OS
@@ -159,7 +123,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 515
+          "y": 545
         }
       }
     note: false
@@ -171,15 +135,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 0b726b4d-90b6-43b1-8ed1-68b19f7a5adf
+    taskid: 4e698be5-bb0b-4822-8907-0a3c024a1baf
     type: playbook
     task:
-      id: 0b726b4d-90b6-43b1-8ed1-68b19f7a5adf
+      id: 4e698be5-bb0b-4822-8907-0a3c024a1baf
       version: -1
       name: Block Domain - Generic
       description: |-
         This playbook blocks malicious Domains using all integrations that are enabled.
-
         Supported integrations for this playbook:
         * Zscaler
         * Symantec Messaging Gateway
@@ -206,7 +169,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 515
+          "y": 545
         }
       }
     note: false
@@ -218,22 +181,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 94bc982d-a846-4838-89e6-ed9bc5cf8377
+    taskid: b1d239b3-9da1-4497-8645-0253b790a700
     type: title
     task:
-      id: 94bc982d-a846-4838-89e6-ed9bc5cf8377
+      id: b1d239b3-9da1-4497-8645-0253b790a700
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Title'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 690
+          "x": 490,
+          "y": 740
         }
       }
     note: false
@@ -245,97 +208,114 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: dca242c8-fbd2-4844-8a73-41e354a4924e
-    type: regular
+    taskid: 87a9378e-0548-4b40-8fa5-ec33b8640297
+    type: collection
     task:
-      id: dca242c8-fbd2-4844-8a73-41e354a4924e
+      id: 87a9378e-0548-4b40-8fa5-ec33b8640297
       version: -1
-      name: Enrich IP using ACTI Indicator Query Integration
-      description: Checks the reputation of the given IP address.
-      script: ACTI Indicator Query|||ip
-      type: regular
-      iscommand: true
-      brand: ACTI Indicator Query
+      name: Blocking indicator user choice
+      type: collection
+      iscommand: false
+      brand: ""
+      description: 'User input required for blocking indicators if there are any.'
     nexttasks:
       '#none#':
-      - "3"
-    scriptarguments:
-      ip:
-        simple: ${ExtractedIndicators.IP}
+      - "10"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 480,
+          "y": 185
         }
       }
-    note: false
+    note: true
     timertriggers: []
     ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: |-
+          Do you want to block these indicators:
+          ${inputs.IP}
+          ${inputs.URL}
+          ${inputs.Domain}
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Do you want to block these indicators:
+            ${inputs.IP}
+            ${inputs.URL}
+            ${inputs.Domain}
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: ACTIBlockChoice
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: aff4154b-c482-4ec9-86e7-ff9218e42240
-    type: regular
+    taskid: 96b68ea3-5c51-490a-858e-220d79ec8e08
+    type: condition
     task:
-      id: aff4154b-c482-4ec9-86e7-ff9218e42240
+      id: 96b68ea3-5c51-490a-858e-220d79ec8e08
       version: -1
-      name: Enrich URL using ACTI Indicator Query Integration
-      description: Checks the reputation of the given URL.
-      script: ACTI Indicator Query|||url
-      type: regular
-      iscommand: true
-      brand: ACTI Indicator Query
+      name: Branching condition for user choice
+      type: condition
+      iscommand: false
+      brand: ""
+      description: 'Branching condition based on user input (Yes/No).'
     nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      url:
-        simple: ${ExtractedIndicators.URL}
+      '#default#':
+      - "8"
+      "yes":
+      - "5"
+      - "6"
+      - "7"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ACTIBlockChoice.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: 403ea113-9089-44be-8672-3c3f2e183247
-    type: regular
-    task:
-      id: 403ea113-9089-44be-8672-3c3f2e183247
-      version: -1
-      name: Enrich Domain using ACTI Indicator Query Integration
-      description: Checks the reputation of the given domain.
-      script: ACTI Indicator Query|||domain
-      type: regular
-      iscommand: true
-      brand: ACTI Indicator Query
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      domain:
-        simple: ${ExtractedIndicators.Domain}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 195
+          "y": 340
         }
       }
     note: false
@@ -350,10 +330,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 705,
+        "height": 765,
         "width": 1240,
         "x": 50,
-        "y": 50
+        "y": 40
       }
     }
   }
@@ -379,12 +359,20 @@ inputs:
           right:
             value:
               simple: "3"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Vendor}
+            iscontext: true
+          right:
+            value:
+              simple: ACTI Indicator Query
       accessor: Indicator}
       transformers:
       - operator: uniq
   required: false
   description: Considers IP(s) which have severity 5 or more
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: URL
   value:
     complex:
@@ -406,12 +394,20 @@ inputs:
           right:
             value:
               simple: "3"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Vendor}
+            iscontext: true
+          right:
+            value:
+              simple: ACTI Indicator Query
       accessor: Indicator}
       transformers:
       - operator: uniq
   required: false
   description: Considers URL(s) which have severity 5 or more
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Domain
   value:
     complex:
@@ -433,12 +429,20 @@ inputs:
           right:
             value:
               simple: "3"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Vendor}
+            iscontext: true
+          right:
+            value:
+              simple: ACTI Indicator Query
       accessor: Indicator}
       transformers:
       - operator: uniq
   required: false
   description: Considers Domain(s) which have severity 5 or more
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)

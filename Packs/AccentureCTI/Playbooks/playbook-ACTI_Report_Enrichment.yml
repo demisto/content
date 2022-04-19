@@ -1,7 +1,7 @@
 id: ACTI Report Enrichment
 version: -1
 name: ACTI Report Enrichment
-description: This playbook enriches Intelligence Alerts & Intelligence Reports.
+description: This sub-playbook can be plugged into playbooks from other vendors in order to pull ACTI Intelligence Alerts & Intelligence Reports into an XSOAR incident.
 starttaskid: "0"
 tasks:
   "0":
