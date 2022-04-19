@@ -6240,8 +6240,9 @@ def apply_dns_signature_policy_command(args) -> CommandResults:
     )
     res_status = result.get('response', {}).get('@status')
     return CommandResults(outputs=result,
-                          outputs_prefix='Panorama.ApplyDNS',
+                          outputs_prefix='PAN-OS.ApplyDNS',
                           readable_output=f'**{res_status}**',
+                          raw_response=result
                          )
 
 
