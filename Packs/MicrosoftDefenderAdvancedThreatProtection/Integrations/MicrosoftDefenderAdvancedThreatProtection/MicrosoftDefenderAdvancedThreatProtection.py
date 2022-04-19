@@ -4134,6 +4134,7 @@ def get_indicator_dbot_object(indicator):
     else:
         return None
 
+
 def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves a list of devices affected by a vulnerability (by the given CVE ID).
 

@@ -9,7 +9,8 @@ import pytest
 from CommonServerPython import DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
-    get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params
+    get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
+    get_machine_users_command, get_machine_alerts_command
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 with open('test_data/expected_hunting_queries.json') as expected_json:
@@ -2198,7 +2199,7 @@ class TestHuntingQueryBuilder:
 
 def test_get_machine_users_command(mocker):
     mocker.patch.object(client_mocker, 'get_machine_users', return_value=MACHINE_USER_DATA)
-    results = get_machine_details_command(client_mocker, {'machine_id': "123abc"})
+    results = get_machine_users_command(client_mocker, {'machine_id': "123abc"})
     assert results.outputs == {
         "ID": "contoso\\user1",
         "AccountName": "user1",
@@ -2210,9 +2211,10 @@ def test_get_machine_users_command(mocker):
         "NetworkUser": False,
     }
 
+
 def test_get_machine_alerts_command(mocker):
     mocker.patch.object(client_mocker, 'get_machine_alerts', return_value=ALERTS_API_RESPONSE)
-    results = get_machine_details_command(client_mocker, {'machine_id': "123abc"})
+    results = get_machine_alerts_command(client_mocker, {'machine_id': "123abc"})
     assert results.outputs == {
         "ID": "123",
         "Title": "Network connection to a risky host",
