@@ -184,6 +184,8 @@ install-packs-in-xsiam-master:
   extends: .install-mpv2-pack-on-mpv2-instances
   variables:
     INSTANCE_ROLE: "XSIAM Master"
+    GCS_QUEUE_FILE: "queue-master"
+    TEST_MACHINES_LIST: "test-machines-master"
 
 
 upload-packs-to-marketplace:
