@@ -19,7 +19,7 @@
     "hidden": false,
     "openEnded": true,
     "associatedTypes": [
-        "Microsoft Defender For Endpoint"
+      "Microsoft Defender For Endpoint"
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -28,4 +28,4 @@
     "sla": 0,
     "threshold": 72,
     "fromVersion": "5.5.0"
-}
+  }
