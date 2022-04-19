@@ -25,8 +25,7 @@ configuration:
   name: verbose
   required: false
   type: 8
-- defaultvalue: ''
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
