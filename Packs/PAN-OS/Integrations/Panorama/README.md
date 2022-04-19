@@ -5845,7 +5845,7 @@ Checks the status of the given device, checking whether it's up or down and if t
         "SystemStatus": {
           "hostid": "11111111111111",
           "up": true
-        }U
+        }
     }
 }
 ```

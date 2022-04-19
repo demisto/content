@@ -9710,6 +9710,9 @@ def update_ha_state(topology: Topology, hostid: str, state: str) -> HighAvailabi
 def check_log_forwarding(topology: Topology,
                          device_filter_string: Optional[str] = None) -> ConfigurationHygieneCheckResult:
     """
+    Checks all log forwarding profiles to confirm at least one meets PAN best practices.  This will validate profiles
+    configured anywhere in Panorama or the firewalls - device groups, virtual systems, and templates.
+
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only check given device
     """
@@ -9723,7 +9726,8 @@ def check_vulnerability_profiles(
         minimum_alert_severities: str = "medium,low"
 ) -> ConfigurationHygieneCheckResult:
     """
-    Checks the configured Vulnerability profiles to ensure at least one meets best practices.
+    Checks the configured Vulnerability profiles to ensure at least one meets best practices. This will validate profiles
+    configured anywhere in Panorama or the firewalls - device groups, virtual systems, and templates.
 
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only check given device
@@ -9733,8 +9737,8 @@ def check_vulnerability_profiles(
     return HygieneLookups.check_vulnerability_profiles(
         topology,
         device_filter_str=device_filter_string,
-        minimum_block_severities=minimum_block_severities.split(","),
-        minimum_alert_severities=minimum_alert_severities.split(",")
+        minimum_block_severities=argToList(minimum_block_severities),
+        minimum_alert_severities=argToList(minimum_alert_severities)
     )
 
 
