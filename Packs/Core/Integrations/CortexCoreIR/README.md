@@ -1376,6 +1376,8 @@ Retrieve the results of a script execution action.
 | Core.ScriptResult.results.return_value | String | Value returned by the script in case the type is not a dictionary. | 
 | Core.ScriptResult.results.standard_output | String | The STDOUT and the STDERR logged by the script during the execution. | 
 | Core.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
+| Core.ScriptResult.results.command | String | The command that was executed by the script. | 
+| Core.ScriptResult.results.command_output | Array | The output of the command executed by the script. | 
 
 ### core-get-script-execution-result-files
 ***
