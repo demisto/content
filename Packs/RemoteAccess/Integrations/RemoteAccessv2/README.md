@@ -32,8 +32,7 @@ For login using root:
 
 ## Configure the instance with SSH certificate
 Currently, the only type of certificate which is supported is RSA private keys (.PEM) files.
-In case access is required to an instance in the cloud, make sure to add to the credentials object the content
-of the PEM file provided by the cloud provider to your instance.
+In case access is required to an instance in the cloud, use the PEM file provided by the cloud provider to access the instance.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
