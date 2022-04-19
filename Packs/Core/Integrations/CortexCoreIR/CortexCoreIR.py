@@ -2737,10 +2737,14 @@ def parse_get_script_execution_results(results: List[Dict]) -> List[Dict]:
     for result in results:
         result_keys = result.keys()
         difference_keys = list(set(result_keys) - set(api_keys))
-        for key in difference_keys:
+        if difference_keys:
+            for key in difference_keys:
+                parsed_res = result.copy()
+                parsed_res['command'] = key
+                parsed_res['command_output'] = result[key]
+                parsed_results.append(parsed_res)
+        else:
             parsed_results.append(result.copy())
-            parsed_results[-1]['command'] = key
-            parsed_results[-1]['command_output'] = result[key]
     return parsed_results
 
 
