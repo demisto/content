@@ -26,6 +26,21 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Create relationships | Create relationships between indicators as part of enrichment. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Configure Indicator Threshold Parameters
+Each indicator has a threshold parameter and an integer `confidence` value that impacts the indicator's DBotScore calculation.  
+The indicator DBotScore is calculated as follows:  
+- If you do not specify the threshold parameter value in your instance configuration (recommended):  
+If the indicator `confidence` > 65, the DBotScore value is set to 3 (Malicious).  
+If the indicator `confidence` is between 25 and 65, the DBotScore value is set to 2 (Suspicious).  
+If the indicator `confidence` < 25, the DBotScore value is set to 1 (Good).  
+For example, 
+If the **IP threshold** value is not specified during configuration and the IP indicator `confidence` value is 45, the DBotScore value is set to 2 (Suspicious).  
+- If you configure the threshold parameter value:   
+If the indicator `confidence` value is above the threshold parameter value, the DBotScore is set to 3 (Malicious). Otherwise the DBotScore is set to 1 (Good).  
+**Note:** You cannot define a threshold that sets the DBotScore to 2 (Suspicious).  
+For example, if in the instance configuration you set **File threshold** to 10 and the `confidence` value  is 15, the DBotScore is set to 3 (Malicious).
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

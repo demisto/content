@@ -48,4 +48,11 @@ ignore=SC101
 
 [known_words]
 CreateIndicatorRelationship
-
+CommonServerPython
+CommonServer
+mergeVersionedIntegrationContext
+SearchIndicatorRelationships 
+CommandResults
+YMLMetadataCollector
+siam
+XSIAM

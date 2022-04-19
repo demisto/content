@@ -655,7 +655,9 @@ def calc_run_at_time(selected_time: str) -> str:
     selected_iso_time = ""
     if not selected_time:
         return selected_iso_time
-    iso_with_timezone = parse(f"in {selected_time} UTC").isoformat()
+    selected_time_date = parse(f"in {selected_time} UTC")
+    assert selected_time_date is not None, f'could not parse {selected_time} UTC'
+    iso_with_timezone = selected_time_date.isoformat()
     return iso_with_timezone
 
 

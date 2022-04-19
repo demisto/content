@@ -28,20 +28,24 @@ def get_duration_html():
         diff = now - parsed_first_date
 
         return f"""
-                <div style="display: grid; grid-template-columns: auto auto auto auto auto auto; width: 300px;">
-                <div style="font-size: 25px; ">&#128345;</div>
-                <div style="font-size: 30px; text-align: center;">{diff.days}</div>
-                <div style="font-size: 30px; text-align: center;">:</div>
-                <div style="font-size: 30px; text-align: center;">{(diff.seconds // 3600) % 24}</div>
-                <div style="font-size: 30px; text-align: center;">:</div>
-                <div style="font-size: 30px; text-align: center;">{(diff.seconds // 60) % 60}</div>
-                <div style="font-size: 15px; text-align: center; padding-top: 10px;"></div>
-                <div style="font-size: 15px; text-align: center; padding-top: 10px;">Days</div>
-                <div style="font-size: 15px; text-align: center; padding-top: 10px;"></div>
-                <div style="font-size: 15px; text-align: center; padding-top: 10px;">Hours</div>
-                <div style="font-size: 15px; text-align: center; padding-top: 10px;"></div>
-                <div style="font-size: 15px; text-align: center; padding-top: 10px;">Minutes</div>
-                </div>
+                <table>
+                <tr>
+                <th style="font-size: 25px;">&#128345;</th>
+                <th style="font-size: 30px;">{diff.days}</th>
+                <th style="font-size: 30px;">:</th>
+                <th style="font-size: 30px;">{(diff.seconds // 3600) % 24}</th>
+                <th style="font-size: 30px;">:</th>
+                <th style="font-size: 30px;">{(diff.seconds // 60) % 60}</th>
+                </tr>
+                <tr>
+                <td style="font-size: 15px; text-align: center"></td>
+                <td style="font-size: 15px; text-align: center">Days</td>
+                <td style="font-size: 15px; text-align: center"></td>
+                <td style="font-size: 15px; text-align: center">Hours</td>
+                <td style="font-size: 15px; text-align: center"></td>
+                <td style="font-size: 15px; text-align: center">Minutes</td>
+                </tr>
+                </table>
         """
 
     except FieldNotFound:

@@ -1356,7 +1356,7 @@ class Client(BaseClient):
     def get_file(self, file_link):
         reply = self._http_request(
             method='GET',
-            full_url=file_link,
+            url_suffix=file_link,
             timeout=self.timeout,
             resp_type='content'
         )
@@ -2550,7 +2550,8 @@ def retrieve_file_details_command(client: Client, args):
             if link:
                 retrived_files_count += 1
                 obj['file_link'] = link
-                file = client.get_file(file_link=link)
+                file_link = "download" + link.split("download")[1]
+                file = client.get_file(file_link=file_link)
                 file_results.append(fileResult(filename=f'{endpoint}_{retrived_files_count}.zip', data=file))
             result.append(obj)
 
@@ -3118,14 +3119,14 @@ def main():
             "Content-Type": "application/json"
         }
         url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
-        LOG.add_replace_strs(demisto.getLicenseCustomField("Core.ApiKey"))
+        add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
     else:
         headers = {
             "Content-Type": "application/json",
             "x-xdr-auth-id": str(api_key_id),
             "Authorization": api_key
         }
-        LOG.add_replace_strs(api_key)
+        add_sensitive_log_strs(api_key)
 
     base_url = urljoin(url, '/public_api/v1')
     proxy = demisto.params().get('proxy')

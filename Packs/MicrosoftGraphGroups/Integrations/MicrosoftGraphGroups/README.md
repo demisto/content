@@ -31,6 +31,8 @@ For more details about the authentication used in this integration, see <a href=
    <li><strong>ID (received from the admin consent - see Detailed Instructions (?)</strong></li>
    <li><strong>Token (received from the admin consent - see Detailed Instructions (?) section)</strong></li>
    <li><strong>Key (received from the admin consent - see Detailed Instructions (?)</strong></li>
+   <li><strong>Certificate Thumbprint</strong></li>
+   <li><strong>Private Key</strong></li>
    <li><strong>Trust any certificate (not secure)</strong></li>
    <li><strong>Use system proxy settings</strong></li>
     </ul>

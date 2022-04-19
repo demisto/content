@@ -181,8 +181,9 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
             output = get_pdf(driver, width, height)
         elif r_type.lower() == 'json':
             html = driver.page_source
+            url = driver.current_url
             output = {'image_b64': base64.b64encode(get_image(driver, width, height)).decode('utf8'),
-                      'html': html}
+                      'html': html, 'current_url': url}
         else:
             output = get_image(driver, width, height)
 

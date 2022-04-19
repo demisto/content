@@ -11,6 +11,12 @@ For more details about the authentication used in this integration, see <a href=
 <li>User.ReadWrite.All - Application</li>
 <li>User.Read - Delegated</li>
 
+<h3>Authorize Cortex XSOAR for Azure Active Directory Users (Self deployed Azure App)</h3>
+<p>There are two different authentication methods for a self-deployed configuration: <li><a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow"> Client Credentials flow</a></li><li><a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow"> Authorization Code flow</a></li> We recommend using the Client Credentials flow.</p>
+<p>In order to use the  <strong>msgraph-user-change-password</strong> command, you must configure with the Authorization Code flow.
+
+Note: When using the Authorization Code flow, make sure the user you authenticate with has the correct roles in Azure AD in order to use the command.</p>
+
 <div class="cl-preview-section">
 <h2 id="configure-microsoft-graph-user-on-demisto">Configure Azure Active Directory Users on Cortex XSOAR</h2>
 </div>
@@ -25,6 +31,8 @@ For more details about the authentication used in this integration, see <a href=
 <li><strong>Host URL (e.g., <a href="https://graph.microsoft.com/">https://graph.microsoft.com</a>)</strong></li>
 <li><strong>ID you received from the admin consent</strong></li>
 <li><strong>Key you received from the admin consent</strong></li>
+<li><strong>Certificate Thumbprint</strong></li>
+<li><strong>Private Key</strong></li>
 <li><strong>Token you received from the admin consent</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>

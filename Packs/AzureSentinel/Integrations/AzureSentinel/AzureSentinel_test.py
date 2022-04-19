@@ -13,7 +13,7 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents
+    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents, build_threat_indicator_data
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -56,7 +56,9 @@ def mock_client():
         resource_group_name='resourceGroupName',
         workspace_name='workspaceName',
         verify=False,
-        proxy=False
+        proxy=False,
+        certificate_thumbprint=None,
+        private_key=None,
     )
 
     return client
@@ -530,14 +532,24 @@ ARGS_TO_UPDATE = {
 }
 
 MOCKED_RAW_INCIDENT_OUTPUT = {
-    'value': [{
-        'ID': 'inc_ID',
-        'Name': 'inc_name',
-        'IncidentNumber': 2,
-        'Title': 'title',
-        'Severity': 'High',
-        'CreatedTimeUTC': '2020-02-02T14:05:01.5348545Z',
-    }]
+    'value': [
+        {
+            'ID': 'inc_ID',
+            'Name': 'inc_name',
+            'IncidentNumber': 2,
+            'Title': 'title',
+            'Severity': 'High',
+            'CreatedTimeUTC': '2020-02-02T14:05:01.5348545Z',
+        },
+        {
+            'ID': 'inc_ID_3',
+            'Name': 'inc_name_3',
+            'IncidentNumber': 3,
+            'Title': 'title',
+            'Severity': 'Low',
+            'CreatedTimeUTC': '2020-02-02T14:05:01.5348545Z',
+        }
+    ]
 }
 
 
@@ -1241,7 +1253,7 @@ class TestHappyPath:
             case 2: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
         """
         # prepare
-        raw_incidents = MOCKED_RAW_INCIDENT_OUTPUT.get('value')
+        raw_incidents = [MOCKED_RAW_INCIDENT_OUTPUT.get('value')[0]]
         last_fetch_ids = args.get('last_fetch_ids')
         min_severity = args.get('min_severity')
         last_incident_number = args.get('last_incident_number')
@@ -1254,6 +1266,95 @@ class TestHappyPath:
         # validate
         assert next_run.get('last_fetch_ids') == expected_result.get('last_fetch_ids')
         assert next_run.get('last_incident_number') == expected_result.get('last_incident_number')
+
+    def test_last_run_in_fetch_incidents(self, mocker):
+        """
+        Scenario: First time fetching incidents after updating the integration.
+        Given:
+            - AzureSentinel client, last_run dictionary, first_fetch_time, and a minimum severity.
+
+            The last_run dictionary mimics a last_run dict from a previous version of the integration, containing an
+            empty 'last_fetch_ids' array and a valid 'last_fetch_time' string, but does not contain
+            'last_incident_number' that was added in the new version.
+
+        When:
+            - Calling the fetch_incidents command.
+
+        Then:
+            - Validate the call_args had the correct filter and orderby, to check that the fetch was handled by
+            created time and not by incident number.
+        """
+        # prepare
+        client = mock_client()
+        last_run = {'last_fetch_time': '2022-03-16T13:01:08Z',
+                    'last_fetch_ids': []}
+        first_fetch_time = '3 days'
+        minimum_severity = 0
+
+        mocker.patch('AzureSentinel.process_incidents', return_value=({}, []))
+        mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENTS_OUTPUT)
+
+        # run
+        fetch_incidents(client, last_run, first_fetch_time, minimum_severity)
+        call_args = client.http_request.call_args[1]
+
+        # validate
+        assert 'properties/createdTimeUtc ge' in call_args.get('params').get('$filter')
+        assert 'properties/createdTimeUtc asc' == call_args.get('params').get('$orderby')
+
+    @pytest.mark.parametrize('min_severity, expected_incident_num', [(1, 2), (3, 1)])
+    def test_last_fetched_incident_for_various_severity_levels(self, mocker, min_severity, expected_incident_num):
+        """
+        Given:
+            - Fetched incidents are with severity behind and over the lowest level defined in the integration instanse.
+
+        When:
+            - Calling the process_incidents function.
+
+        Then:
+            - Validate the last fetched incident contain also the low severity incidents.
+            - Validate only incidents with the expected severity level is returned.
+        """
+        # prepare
+        raw_incidents = MOCKED_RAW_INCIDENT_OUTPUT['value']
+        latest_created_time = dateparser.parse('2020-02-02T14:05:01.5348545Z')
+
+        # run
+        next_run, incidents = process_incidents(raw_incidents=raw_incidents,
+                                                last_fetch_ids=[],
+                                                min_severity=min_severity,
+                                                latest_created_time=latest_created_time,
+                                                last_incident_number=1)
+
+        # validate
+        assert next_run.get('last_fetch_ids') == ['inc_ID', 'inc_ID_3']
+        assert next_run.get('last_incident_number') == 3
+        assert len(incidents) == expected_incident_num
+
+    def test_build_threat_indicator_data(self):
+        """
+            Given:
+                - Args with values.
+            When:
+                - Calling function build_threat_indicator_data.
+            Then:
+                - Ensure the results holds the expected outcomes.
+        """
+        # prepare
+        args = {'display_name': 'displayname',
+                'indicator_type': 'ipv4',
+                'revoked': 'false',
+                'threat_types': 'compromised',
+                'value': '1.1.1.1',
+                }
+
+        # run
+        output = build_threat_indicator_data(args)
+
+        # validate
+
+        assert " '1.1.1.1'" in output.get('pattern')
+        assert output.get('patternType') == 'ipv4-addr'
 
 
 class TestEdgeCases:
