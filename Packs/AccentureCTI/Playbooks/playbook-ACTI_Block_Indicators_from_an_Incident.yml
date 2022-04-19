@@ -1,7 +1,7 @@
 id: ACTI Block Indicators from an Incident
 version: -1
 name: ACTI Block Indicators from an Incident
-description: This playbook extracts indicators from an incident and block them.
+description: Extracts indicators from an incident and sends them to your firewall to be blocked.
 starttaskid: "0"
 tasks:
   "0":
