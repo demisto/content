@@ -5794,7 +5794,25 @@ will immediately reboot.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PANOS.RestartStatus.Summary.hostid | String | Host ID. | 
-| PANOS.RestartStatus.Summary.started | String | Whether the download process has started. | 
+| PANOS.RestartStatus.Summary.started | String | Whether the system reboot has started. | 
+
+#### Command example
+```!pan-os-platform-reboot hostid=11111111111111```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "RestartStatus": {
+            "Summary": [
+                {
+                    "hostid": "11111111111111",
+                    "started": true
+                }
+            ]
+        }
+    }
+}
+```
 
 ### pan-os-platform-get-system-status
 ***
@@ -5818,6 +5836,20 @@ Checks the status of the given device, checking whether it's up or down and if t
 | PANOS.SystemStatus.hostid | String | Host ID. | 
 | PANOS.SystemStatus.up | String | Whether the host device is up or still unavailable. | 
 
+#### Command example
+```!pan-os-platform-get-system-status hostid=11111111111111```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "SystemStatus": {
+          "hostid": "11111111111111",
+          "up": true
+        }U
+    }
+}
+```
+
 ### pan-os-platform-update-ha-state
 ***
 Checks the status of the given device, checking whether it's up or down and the operational mode normal.
@@ -5840,6 +5872,20 @@ Checks the status of the given device, checking whether it's up or down and the 
 | --- | --- | --- |
 | PANOS.HAStateUpdate.hostid | String | Host ID. | 
 | PANOS.HAStateUpdate.state | String | New HA state. | 
+
+#### Command example
+```!pan-os-platform-update-ha-state hostid=11111111111111 state=functional```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "HAStateUpdate": {
+          "hostid": "11111111111111",
+          "state": "functional"
+        }
+    }
+}
+```
 
 ### pan-os-hygiene-check-log-forwarding
 ***

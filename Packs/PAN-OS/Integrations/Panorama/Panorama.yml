@@ -7527,6 +7527,11 @@ script:
     - contextPath: PANOS.HAStateUpdate.state
       description: New HA state.
       type: String
+      auto: PREDEFINED
+      predefined:
+        - functional
+        - peer
+        - suspend
   - arguments:
     - default: false
       description: String by which to filter so that only the given device is checked.
