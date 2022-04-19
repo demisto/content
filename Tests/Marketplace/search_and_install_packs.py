@@ -443,7 +443,7 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
             pack_version = get_latest_version_from_bucket(pack_id, production_bucket)
             if pack_version:
                 all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
-    install_packs(client, host, all_packs, is_nightly=True)
+    install_packs(client, host, all_packs)
 
 
 def install_all_content_packs_from_build_bucket(client: demisto_client, host: str, server_version: str,
