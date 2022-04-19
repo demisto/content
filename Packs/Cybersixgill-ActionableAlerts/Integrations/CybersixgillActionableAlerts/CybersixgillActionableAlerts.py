@@ -227,6 +227,7 @@ def fetch_incidents():
             })
     else:
         demisto.info(f'No new alerts since {last_fetch_time}')
+        demisto.incidents([])
 
 
 def update_alert_status():
