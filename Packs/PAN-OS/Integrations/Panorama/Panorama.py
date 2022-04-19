@@ -6216,10 +6216,10 @@ def get_anti_spyware_best_practice_command():
 
 
 def apply_dns_signature_policy_command(args) -> CommandResults:
-    anti_spy_ware_name = args.get('Anti_spyware_profile_name')
-    edl = args.get('DNS_signature_source')
-    action = args.get('Action')
-    packet_capture = args.get('Packet_capture', 'disable')
+    anti_spy_ware_name = args.get('anti_spyware_profile_name')
+    edl = args.get('dns_signature_source')
+    action = args.get('action')
+    packet_capture = args.get('packet_capture', 'disable')
     params = {
         'action': 'set',
         'type': 'config',
