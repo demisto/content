@@ -4,23 +4,23 @@ version: -1
 fromversion: 5.0.0
 name: Microsoft Defender Advanced Threat Protection Get Machine Action Status
 description: This playbook used generic polling to get machine action information.
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: e3affdb9-3767-4b46-8989-693a0d2c2f15
     type: start
     task:
       elasticcommonfields: {}
       id: e3affdb9-3767-4b46-8989-693a0d2c2f15
       version: -1
-      description: ''
-      name: ''
+      description: ""
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     separatecontext: false
     view: |-
       {
@@ -34,8 +34,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 767426ee-8220-4948-8102-f1ac19bb872b
     type: playbook
     task:
@@ -54,23 +54,23 @@ tasks:
       playbookName: GenericPolling
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
         simple: ${inputs.machine_action_id}
       Interval:
-        simple: '1'
+        simple: "1"
       PollingCommandArgName:
         simple: id
       PollingCommandName:
         simple: microsoft-atp-list-machine-actions-details
       Timeout:
-        simple: '60'
+        simple: "60"
       dt:
         simple: MicrosoftATP.MachineAction(val.Status == "Pending" || val.Status == "InProgress" ).ID
     separatecontext: true
@@ -86,8 +86,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: f8cf2cce-4eb5-43e5-83c7-55bd848e2b49
     type: regular
     task:
@@ -101,7 +101,7 @@ tasks:
       script: '|||microsoft-atp-list-machine-actions-details'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     scriptarguments:
       id:
         complex:
@@ -139,7 +139,7 @@ inputs:
 - key: machine_action_id
   value: {}
   required: false
-  description: ''
+  description: ""
   playbookInputQuery:
 outputs:
 - contextPath: MicrosoftATP.MachineAction.ID
