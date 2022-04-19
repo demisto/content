@@ -3,7 +3,7 @@ bandit==1.6.2
 demisto-py>=3.0.2
 requests==2.23.0
 PyYAML==5.3.1
-pylint==1.9.5
+pylint==2.13.5
 pykwalify==1.7.0
 pytest==4.6.5
 pytest-mock==2.0.0
