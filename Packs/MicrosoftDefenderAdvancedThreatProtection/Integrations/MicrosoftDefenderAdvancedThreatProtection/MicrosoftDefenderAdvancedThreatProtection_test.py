@@ -753,20 +753,20 @@ MACHINE_USER_DATA = {
 }
 
 MACHINE_USER_OUTPUT = {
-        "AccountName": "user1",
-        "AccountDomain": "contoso",
-        'AccountSID': None,
-        "DomainAdmin": True,
-        "FirstSeen": "2019-12-18T08:02:54Z",
-        "ID": "contoso\\user1",
-        "LastSeen": "2020-01-06T08:01:48Z",
-        'LeastPrevalentMachineID': None,
-        'LogonCount': None,
-        "LogonTypes": "Interactive",
-        'MachineID': '123abc',
-        'MostPrevalentMachineID': None,
-        "NetworkUser": False,
-    }
+    "AccountName": "user1",
+    "AccountDomain": "contoso",
+    'AccountSID': None,
+    "DomainAdmin": True,
+    "FirstSeen": "2019-12-18T08:02:54Z",
+    "ID": "contoso\\user1",
+    "LastSeen": "2020-01-06T08:01:48Z",
+    'LeastPrevalentMachineID': None,
+    'LogonCount': None,
+    "LogonTypes": "Interactive",
+    'MachineID': '123abc',
+    'MostPrevalentMachineID': None,
+    "NetworkUser": False,
+}
 
 MACHINE_ALERTS_OUTPUT = {
     'AADTenantID': None,
@@ -805,6 +805,7 @@ MACHINE_ALERTS_OUTPUT = {
     'ThreatName': None,
     "Title": "Network connection to a risky host",
 }
+
 
 def tests_get_future_time(mocker):
     from datetime import datetime
@@ -2264,7 +2265,6 @@ def test_get_machine_users_command(mocker):
     mocker.patch.object(client_mocker, 'get_machine_users', return_value=MACHINE_USER_DATA)
     results = get_machine_users_command(client_mocker, {'machine_id': "123abc"})
     assert results.outputs[0] == MACHINE_USER_OUTPUT
-
 
 
 def test_get_machine_alerts_command(mocker):
