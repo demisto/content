@@ -7724,11 +7724,12 @@ class Topology:
         :param filter_string: The exact ID of the device to return from the topology.
         """
         all_devices = {**self.firewall_objects, **self.panorama_objects}
-        if filter_string not in all_devices:
-            raise DemistoException(f"filter_str {filter_string} is not the exact ID of a host in this topology; " +
-                                   f"use a more specific filter string.")
+        if device := all_devices.get(filter_string):
+           return device
 
-        return all_devices.get(filter_string)
+        raise DemistoException(f"filter_str {filter_string} is not the exact ID of a host in this topology; " +
+                               f"use a more specific filter string.")
+
 
     def get_by_filter_str(self, filter_string: Optional[str] = None) -> dict:
         """
@@ -8680,10 +8681,9 @@ class HygieneCheckRegister:
         Gets a single Hygiene check by it's string issue code.
         :param issue_code: The string issue code, such as BP-V-1
         """
-        issue_check = self.register.get(issue_code)
-        if not issue_check:
-            raise DemistoException("Invalid Hygiene check issue name")
-        return issue_check
+        if issue_check := self.register.get(issue_code):
+            return issue_check
+        raise DemistoException("Invalid Hygiene check issue name")
 
     def values(self):
         return self.register.values()
@@ -8863,18 +8863,19 @@ class HygieneLookups:
                                  rule.is_drop, rule.is_block_ip]
                 alert_actions = [rule.is_default, rule.is_alert]
                 for rule_severity in rule.severity:
-
+                    is_blocked = any(block_actions)
+                    is_alert = any(alert_actions)
                     # If the block severities are blocked
-                    if any(block_actions) and rule_severity in block_severities:
+                    if is_blocked and rule_severity in block_severities:
                         block_severities.remove(rule_severity)
                         if rule_severity in alert_severities:
                             alert_severities.remove(rule_severity)
                     # If the alert severities are blocked
-                    elif any(block_actions) and rule_severity in alert_severities:
+                    elif is_blocked and rule_severity in alert_severities:
                         if rule_severity in alert_severities:
                             alert_severities.remove(rule_severity)
                     # If the alert severities are alert/default
-                    elif any(alert_actions) and rule_severity in alert_severities:
+                    elif is_alert and rule_severity in alert_severities:
                         if rule_severity in alert_severities:
                             alert_severities.remove(rule_severity)
 
@@ -9655,9 +9656,7 @@ def download_software(topology: Topology, version: str,
     :param version: software version to upgrade to, ex. 9.1.2
     :param sync: If provided, runs the download synchronously - make sure 'execution-timeout' is increased.
     """
-    _sync = argToBoolean(sync)
-       
-    return UniversalCommand.download_software(topology, version, device_filter_str=device_filter_string, sync=_sync)
+    return UniversalCommand.download_software(topology, version, device_filter_str=device_filter_string, sync=argToBoolean(sync))
 
 
 def install_software(topology: Topology, version: str,
@@ -9671,8 +9670,7 @@ def install_software(topology: Topology, version: str,
     :param version: software version to upgrade to, ex. 9.1.2
     :param sync: If provided, runs the download synchronously - make sure 'execution-timeout' is increased.
     """
-    _sync = argToBoolean(sync)
-    return UniversalCommand.install_software(topology, version, device_filter_str=device_filter_string, sync=_sync)
+    return UniversalCommand.install_software(topology, version, device_filter_str=device_filter_string, sync=argToBoolean(sync))
 
 
 def reboot(topology: Topology, hostid: str) -> RestartSystemCommandResult:

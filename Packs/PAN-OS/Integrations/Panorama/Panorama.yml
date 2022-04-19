@@ -7529,7 +7529,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: String by which to filter so that only the given device is checked.
       isArray: false
       name: device_filter_string
@@ -7569,7 +7568,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: String by which to filter so that only the given device is checked.
       isArray: false
       name: device_filter_string
