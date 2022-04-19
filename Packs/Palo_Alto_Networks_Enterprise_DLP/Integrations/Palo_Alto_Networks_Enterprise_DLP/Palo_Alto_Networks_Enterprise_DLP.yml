@@ -174,4 +174,4 @@ script:
   isfetch: false
 fromversion: 5.0.0
 tests:
-- Palo_Alto_Networks_Enterprise_DLP_-_Test
+- Palo_Alto_Networks_Enterprise_DLP - Test
