@@ -14,10 +14,10 @@ Add, remove, or modify logos from the URL Phishing model.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| logoimageId | "Entry ID" in XSOAR |
+| logoImageId | "Entry ID" of the uploaded logo in Cortex XSOAR. |
 | logoName | Name of the logo. The name is the unique identifier for the logo. |
 | associatedDomains | Comma-separated list of domains that are associated to the logo defined in the logoName argument. It will only be used if the action argument is AddLogo or ModifiedDomainForLogo. |
-| action | Action to execute on the model. Will be ignored if displayLogos is set to True. |
+| action | Action to execute on the model. |
 
 ## Outputs
 ---

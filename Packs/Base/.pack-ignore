@@ -54,3 +54,5 @@ mergeVersionedIntegrationContext
 SearchIndicatorRelationships 
 CommandResults
 YMLMetadataCollector
+siam
+XSIAM
