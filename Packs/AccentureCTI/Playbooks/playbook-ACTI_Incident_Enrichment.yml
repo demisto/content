@@ -44,7 +44,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: 'Enrich Indicator using ACTI integrations'
+      description: Enrich Indicator using ACTI integrations.
     nexttasks:
       '#none#':
       - "9"
@@ -114,73 +114,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1365
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: da31e1f5-ca0f-4b89-87dc-48d0e36eb9be
-    type: playbook
-    task:
-      id: da31e1f5-ca0f-4b89-87dc-48d0e36eb9be
-      version: -1
-      name: Create Relationships
-      playbookName: ACTI Create Report-Indicator Associations
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: 'Creates report-indicator associations'
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      Domain:
-        complex:
-          root: ${Domain
-          accessor: Name}
-          transformers:
-          - operator: uniq
-      IA:
-        complex:
-          root: ${intelligence_alerts}
-          transformers:
-          - operator: uniq
-      IP:
-        complex:
-          root: ${IP
-          accessor: Address}
-          transformers:
-          - operator: uniq
-      IR:
-        complex:
-          root: ${intelligence_reports}
-          transformers:
-          - operator: uniq
-      URL:
-        complex:
-          root: ${URL
-          accessor: Data}
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-      forEach: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1160
+          "y": 1390
         }
       }
     note: false
@@ -202,7 +136,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: 'ACTI Indicator Enrichment is a sub-playbook used to enrich indicators using ACTI Indicator Query integration'
+      description: ACTI Indicator Enrichment is a sub-playbook used to enrich indicators using ACTI Indicator Query integration.
     nexttasks:
       '#none#':
       - "10"
@@ -319,7 +253,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "14"
     scriptarguments:
       value:
         simple: |-
@@ -330,10 +264,95 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1010
+          "y": 1040
         }
       }
     note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: e563f279-a2bd-49d3-8198-be2455dc31be
+    type: playbook
+    task:
+      id: e563f279-a2bd-49d3-8198-be2455dc31be
+      version: -1
+      name: Create Relationships
+      description: Creates associations with intelligence reports, malware families, threat groups, threat campaigns, theat actors if present.
+      playbookName: ACTI Create Report-Indicator Associations
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Domain:
+        complex:
+          root: ${Domain
+          accessor: Name}
+          transformers:
+          - operator: uniq
+      IA:
+        complex:
+          root: ${intelligence_alerts}
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: ${IP
+          accessor: Address}
+          transformers:
+          - operator: uniq
+      IR:
+        complex:
+          root: ${intelligence_reports}
+          transformers:
+          - operator: uniq
+      MFam:
+        complex:
+          root: acti_malware_family_uuid
+          transformers:
+          - operator: uniq
+      TA:
+        complex:
+          root: acti_threat_actors_uuid
+          transformers:
+          - operator: uniq
+      TC:
+        complex:
+          root: acti_threat_campaigns_uuid
+          transformers:
+          - operator: uniq
+      TG:
+        complex:
+          root: acti_threat_groups_uuid
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: ${URL
+          accessor: Data}
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -345,7 +364,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1380,
+        "height": 1405,
         "width": 380,
         "x": 50,
         "y": 50
