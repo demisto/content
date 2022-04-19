@@ -283,7 +283,7 @@ def install_packs(client: demisto_client,
     """
 
     def call_install_packs_request(packs):
-        logging.debug(f'Installing the following packs in server {host}:\n{[pack["ID"] for pack in packs]}')
+        logging.debug(f'Installing the following packs in server {host}:\n{[pack["id"] for pack in packs]}')
         response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                             path='/contentpacks/marketplace/install',
                                                                             method='POST',
@@ -303,7 +303,7 @@ def install_packs(client: demisto_client,
     try:
         logging.info(f'Installing packs on server {host}')
         logging.info(f'TESTING: adding failing pack to pack list to create failure')
-        packs_to_install.append({'ID': 'PhishAI', 'CurrentVersion': '1.0.0'})  # TODO: remove failing pack!
+        packs_to_install.append({'id': 'PhishAI', 'CurrentVersion': '1.0.0'})  # TODO: remove failing pack!
         result_object = call_install_packs_request(packs_to_install)
         while result_object:
             message = result_object.get('message', '')
