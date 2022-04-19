@@ -752,6 +752,59 @@ MACHINE_USER_DATA = {
     ]
 }
 
+MACHINE_USER_OUTPUT = {
+        "AccountName": "user1",
+        "AccountDomain": "contoso",
+        'AccountSID': None,
+        "DomainAdmin": True,
+        "FirstSeen": "2019-12-18T08:02:54Z",
+        "ID": "contoso\\user1",
+        "LastSeen": "2020-01-06T08:01:48Z",
+        'LeastPrevalentMachineID': None,
+        'LogonCount': None,
+        "LogonTypes": "Interactive",
+        'MachineID': '123abc',
+        'MostPrevalentMachineID': None,
+        "NetworkUser": False,
+    }
+
+MACHINE_ALERTS_OUTPUT = {
+    'AADTenantID': None,
+    'AlertCreationTime': '2019-11-03T23:49:45.3823185Z',
+    'AssignedTo': 'test@test.com',
+    "Category": "CommandAndControl",
+    "Classification": "TruePositive",
+    'Comments': [
+        {
+            'Comment': None,
+            'CreatedBy': None,
+            'CreatedTime': None
+        }
+    ],
+    'ComputerDNSName': None,
+    "Description": "A network connection was made to a risky host which has exhibited malicious activity.",
+    'DetectionSource': 'WindowsDefenderAtp',
+    'DetectorID': None,
+    'Determination': None,
+    'Evidence': None,
+    'FirstEventTime': '2019-11-03T23:47:16.2288822Z',
+    "ID": "123",
+    "IncidentID": 123456,
+    'InvestigationID': 654321,
+    'InvestigationState': 'Running',
+    'LastEventTime': '2019-11-03T23:47:51.2966758Z',
+    'LastUpdateTime': '2019-11-03T23:55:52.6Z',
+    "MachineID": "123abc",
+    'MitreTechniques': None,
+    'RBACGroupName': None,
+    'RelatedUser': None,
+    'ResolvedTime': None,
+    "Severity": "Low",
+    "Status": "New",
+    "ThreatFamilyName": None,
+    'ThreatName': None,
+    "Title": "Network connection to a risky host",
+}
 
 def tests_get_future_time(mocker):
     from datetime import datetime
@@ -2198,18 +2251,33 @@ class TestHuntingQueryBuilder:
 
 
 def test_get_machine_users_command(mocker):
+    """
+    Tests conversion of user response
+
+    Given:
+        - user response as json
+    When:
+        - calling for machine users
+    Then:
+        - return user data dict
+    """
     mocker.patch.object(client_mocker, 'get_machine_users', return_value=MACHINE_USER_DATA)
     results = get_machine_users_command(client_mocker, {'machine_id': "123abc"})
-    assert results.outputs == MACHINE_USER_OUTPUT
+    assert results.outputs[0] == MACHINE_USER_OUTPUT
+
 
 
 def test_get_machine_alerts_command(mocker):
+    """
+    Tests conversion of alert response
+
+    Given:
+        - alert response as json
+    When:
+        - calling for machine alerts
+    Then:
+        - return alert data dict
+    """
     mocker.patch.object(client_mocker, 'get_machine_alerts', return_value=ALERTS_API_RESPONSE)
     results = get_machine_alerts_command(client_mocker, {'machine_id': "123abc"})
-    assert results.outputs == MACHINE_ALERTS_OUTPUT
-        "Severity": "Low",
-        "Status": "New",
-        "ThreatFamilyName": None,
-        'ThreatName': None,
-        "Title": "Network connection to a risky host",
-    }]
+    assert results.outputs[0] == MACHINE_ALERTS_OUTPUT
