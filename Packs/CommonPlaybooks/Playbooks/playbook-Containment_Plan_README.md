@@ -1,11 +1,11 @@
-This playbook handles all the containment actions available with Cortex XSIAM, including:  
+This playbook handles all the alert containment actions available with Cortex XSIAM, including the following tasks:
 * Isolate endpoint
 * Disable account
 * Quarantine file
 * Block indicators
 * Clear user session (currently, the playbook supports only Okta)
 
-Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
+**Note:** The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -23,12 +23,12 @@ This playbook does not use any integrations.
 
 ### Commands
 * okta-clear-user-sessions
-* core-get-endpoints
-* okta-get-user
-* core-blocklist-files
-* core-get-quarantine-status
 * core-isolate-endpoint
+* core-blocklist-files
+* okta-get-user
 * core-quarantine-files
+* core-get-endpoints
+* core-get-quarantine-status
 
 ## Playbook Inputs
 ---
