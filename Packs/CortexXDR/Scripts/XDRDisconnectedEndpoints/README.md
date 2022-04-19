@@ -1,4 +1,4 @@
-The widget returns the number of the disconnected endpoints using xdr-get-endpoints command.
+The widget returns the number of the disconnected endpoints using the ***xdr-get-endpoints*** command.
 
 ## Script Data
 ---
