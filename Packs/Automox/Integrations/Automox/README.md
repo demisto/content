@@ -821,6 +821,7 @@ List all groups in Automox based on organization permissions.
 | Automox.Groups.enable_os_auto_update | Boolean | Enable operating system auto updates |
 | Automox.Groups.server_count | Number | Number of devices assigned to group |
 | Automox.Groups.policies | Number | List of policies assigned to group |
+| Automox.Groups.deleted | Boolean | Whether a group is deleted |
 
 #### Command example
 ```!automox-groups-list limit=1```
@@ -845,7 +846,8 @@ List all groups in Automox based on organization permissions.
             ],
             "refresh_interval": 360,
             "server_count": 5,
-            "ui_color": "#059F1D"
+            "ui_color": "#059F1D",
+            "deleted": false
         }
     }
 }
@@ -853,9 +855,9 @@ List all groups in Automox based on organization permissions.
 
 #### Human Readable Output
 ##### Groups
-| id  | organization_id | name   | refresh_interval | parent_server_group_id | ui_color | notes  | enable_os_auto_update | server_count | policies |
-| --- | --------------- | ------ | ---------------- | ---------------------- | -------- | ------ | --------------------- | ------------ | -------- |
-| 0   | 0               | string | 0                | 0                      | string   | string | true                  | 0            | 0        |
+| id  | organization_id | name   | refresh_interval | parent_server_group_id | ui_color | notes  | enable_os_auto_update | server_count | policies | deleted |
+| --- | --------------- | ------ | ---------------- | ---------------------- | -------- | ------ | --------------------- | ------------ | -------- | ------- |
+| 0   | 0               | string | 0                | 0                      | string   | string | true                  | 0            | 0        | false   |
 ### automox-group-create
 ***
 Create a group in Automox

@@ -931,6 +931,10 @@ script:
     - contextPath: Automox.Groups.policies
       description: 'List of policies assigned to group'
       type: Number
+    - contextPath: Automox.Groups.deleted
+      description: 'Whether a group is deleted'
+      type: Boolean
+      defaultValue: false
   - name: automox-group-create
     description: "Create a group in Automox"
     arguments:

@@ -465,7 +465,15 @@ def delete_device(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     client.delete_device(org_id, device_id)
 
+    result = {
+        "id": device_id,
+        "deleted": True,
+    }
+
     return CommandResults(
+        outputs_prefix="Automox.Devices",
+        outputs_key_field="id",
+        outputs=result,
         mark_as_note=True,
         readable_output=f"Device: {device_id} successfully deleted from Automox"
     )
@@ -477,7 +485,15 @@ def delete_group(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     client.delete_group(org_id, group_id)
 
+    result = {
+        "id": group_id,
+        "deleted": True,
+    }
+
     return CommandResults(
+        outputs_prefix="Automox.Groups",
+        outputs_key_field="id",
+        outputs=result,
         mark_as_note=True,
         readable_output=f"Group: {group_id} successfully deleted from Automox"
     )
@@ -535,6 +551,7 @@ def list_groups(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     for i in range(len(result)):
         result[i] = remove_keys(excluded_keys, result[i])
+        result[i]['deleted'] = False
 
     return CommandResults(
         outputs_prefix="Automox.Groups",
