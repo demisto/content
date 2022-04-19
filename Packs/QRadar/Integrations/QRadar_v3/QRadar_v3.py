@@ -1853,6 +1853,7 @@ def long_running_execution_command(client: Client, params: Dict):
 
     while True:
         try:
+            demisto.updateModuleHealth('')
             perform_long_running_loop(
                 client=client,
                 offenses_per_fetch=offenses_per_fetch,
@@ -1868,8 +1869,9 @@ def long_running_execution_command(client: Client, params: Dict):
             )
 
         except Exception as e:
-            demisto.updateModuleHealth(f'Error occurred during long running loop: {e}')
-            demisto.error('Error occurred during long running loop')
+            msg = f'Error occurred during long running loop: {e}'
+            demisto.updateModuleHealth(msg)
+            demisto.error(f'Error occurred during long running loop: {e}')
             demisto.error(traceback.format_exc())
 
         finally:
