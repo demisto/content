@@ -1,7 +1,7 @@
 category: Network Security
 commonfields:
   id: Ncurion
-  version: 1
+  version: -1
 configuration:
 - defaultvalue: https://serverurl
   display: 'Server URL '
@@ -16,7 +16,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: username
+- display: Username
   name: username
   required: false
   type: 0
@@ -28,44 +28,38 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+  defaultvalue: 20
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: "false"
+- defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- defaultvalue: "1"
+- defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 9ba7c329-00e0-49b0-8b0e-b547b40a4e46
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: This is the Ncurion integration for getting started.
 display: Ncurion
 name: Ncurion
 script:
   commands:
   - arguments: []
-    description: Get the Ncurion Log server list  
+    description: Get the Ncurion Log server list
     name: ncurion-get-log-list
-    outputs:
-  dockerimage: demisto/python3:3.9.5.21272
+    outputs: []
+  dockerimage: demisto/python3:3.10.4.28442
   isFetchSamples: true
   isfetch: true
   runonce: false
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: Ncurion
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
