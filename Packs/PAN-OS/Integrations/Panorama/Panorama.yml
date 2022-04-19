@@ -6609,13 +6609,13 @@ script:
       type: String
   - arguments:
       - name: anti_spyware_profile_name
-        description: The name of the anti spyware profile. if the profile exists, the command will operate on it, otherwise, if a new name is given a new Anti-Spyware profile will be created.
+        description: The name of the anti spyware profile. If the profile exists, the command will operate on it, otherwise, if a new name is given, a new Anti-Spyware profile will be created.
         required: true
       - name: dns_signature_source
-        description: The EDL name to link to the profile
+        description: The EDL name to link to the profile.
         required: true
       - auto: PREDEFINED
-        description: Action on DNS queris
+        description: Action on the DNS queries
         name: action
         predefined:
           - alert
@@ -6624,7 +6624,7 @@ script:
           - sinkhole
         required: true
       - auto: PREDEFINED
-        description: allows capturing packets on match. Select single-packet to capture the first packet of the session or extended-capture to set between 1-50 packets. Packet capture can be very CPU intensive and can degrade firewall performance. Only use this feature when necessary and make sure you turn it off after you have collected the required packets.
+        description: Allows capturing packets on match. Select "single-packet" to capture the first packet of the session or "extended-capture" to set between 1-50 packets. Packet capture can be very CPU intensive and can degrade firewall performance. Only use this feature when necessary and make sure you turn it off after you have collected the required packets.
         name: packet_capture
         predefined:
           - disable
@@ -6632,10 +6632,10 @@ script:
           - extended-capture
         defaultValue: disable
     name: pan-os-apply-dns-signature-policy
-    description: Allows assigning of EDL to the Anti-Spyware profile under "DNS Signature Policies"
+    description: Allows assigning of EDL to the Anti-Spyware profile under "DNS Signature Policies".
     outputs:
       - contextPath: Panorama.ApplyDNS
-        description: The api response from the command.
+        description: The API response from the command.
   - arguments: []
     description: Get file-blocking best practices.
     name: pan-os-get-file-blocking-best-practice
