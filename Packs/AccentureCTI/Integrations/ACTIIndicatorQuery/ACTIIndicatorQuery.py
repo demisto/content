@@ -465,7 +465,12 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability,
 
 def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreReliability) -> CommandResults:
     """
-    doc...
+    Search for indicator with the given uuid. When response return, checks which indicator found.
+    Args:
+        client: iDefense client
+        args: arguments obtained with the command representing the value to search
+    Returns:
+        CommandResults containing the indicator, the response and a readable output
     """
     uuid: str = str(args.get('uuid'))
     res = {}
