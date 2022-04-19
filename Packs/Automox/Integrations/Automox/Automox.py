@@ -702,11 +702,15 @@ def update_device(client: Client, args: Dict[str, Any]) -> CommandResults:
     # Get original group to coalesce updated values to
     original_device = client.get_device(org_id, device_id)
 
-    tag_list = args.get('tags', None).split(",")
-    map(str.strip, tag_list)
+    tag_list = args.get('tags', None)
+    if tag_list is not None:
+        tag_list = tag_list.split(",")
+        map(str.strip, tag_list)
 
-    ip_list = args.get('ip_addrs', None).split(",")
-    map(str.strip, ip_list)
+    ip_list = args.get('ip_addrs', None)
+    if ip_list is not None:
+        ip_list = ip_list.split(",")
+        map(str.strip, ip_list)
 
     server_group_id = args.get('server_group_id', None) or original_device['server_group_id']
     custom_name = args.get('custom_name', None) or original_device['custom_name']
@@ -744,7 +748,10 @@ def update_group(client: Client, args: Dict[str, Any]) -> CommandResults:
     refresh_interval = args.get('refresh_interval', None) or original_group['refresh_interval']
 
     policies = args.get('policies', None)
-    map(str.strip, policies.split(",")) if policies else original_group['policies']
+    if policies is not None:
+        policies = policies.split(",")
+
+    map(str.strip, policies) if policies else original_group['policies']
 
     payload = {
         "color": color,
@@ -874,9 +881,25 @@ def main() -> None:
             return_results(upload_vulnerability_sync_file(client, demisto.args()))
 
     # Log exceptions and return errors
-    except Exception as e:
+    except DemistoException as err:
+        res = err.res
+
+        if res.status_code == 404:
+            message = "The requested Automox resource could not be found."
+        elif res.status_code == 403:
+            message = "You do not have access to this Automox resource."
+        else:
+            message = "Something went wrong. Your command could not be executed."
+
+        results = CommandResults(
+            mark_as_note=True,
+            readable_output=message
+        )
+
+        return_results(results)
+    except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(err)}')
 
 
 ''' ENTRY POINT '''
