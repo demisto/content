@@ -171,7 +171,7 @@ def reset_base_pack_version(client: demisto_client):
         return False
 
 
-def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 30):
+def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 100):
     """
     Query if there are still installed packs, as it might take time to complete.
     Args:
@@ -188,9 +188,9 @@ def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 3
             if retry > retries:
                 raise Exception('Waiting time for packs to be uninstalled has passed, there are still installed '
                                 'packs. Aborting.')
-            logging.debug(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
-                          f'packs installed. Sleeping for 5 seconds.')
-            sleep(5)
+            logging.info(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
+                         f'packs installed. Sleeping for 10 seconds.')
+            sleep(10)
             installed_packs = get_all_installed_packs(client)
             retry = retry + 1
 

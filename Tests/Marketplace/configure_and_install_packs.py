@@ -3,13 +3,14 @@ import sys
 
 from demisto_sdk.commands.common.tools import get_json
 
+from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.configure_and_test_integration_instances import MARKET_PLACE_CONFIGURATION, \
     XSOARBuild, XSOARServer, XSIAMBuild, get_json_file, XSIAMServer
 from Tests.Marketplace.search_and_install_packs import install_all_content_packs_from_build_bucket, \
     search_and_install_packs_and_their_dependencies
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
-from Tests.Marketplace.marketplace_constants import GCPConfig
+from Tests.Marketplace.marketplace_constants import GCPConfig, BucketUploadFlow, PackStatus
 
 
 def options_handler():
@@ -26,7 +27,8 @@ def options_handler():
     parser.add_argument('-e', '--extract_path', help=f'Full path of folder to extract the {GCPConfig.INDEX_NAME}.zip '
                                                      f'to', required=True)
     parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
-    parser.add_argument('--xsiam_servers_path', help='Path to secret xsiam server metadata file.')
+    parser.add_argument('--xsiam_servers_path', help='Path to the secret xsiam server metadata file.')
+    parser.add_argument('--packs_results', help='Path to the pack_results.json.')
 
     options = parser.parse_args()
     # disable-secrets-detection-end
@@ -34,17 +36,28 @@ def options_handler():
     return options
 
 
-def install_packs(servers):
+def get_successful_packs_ids(packs_dict: dict):
+    pack_ids = []
+    for pack_id, data in packs_dict.items():
+        if data.get('status') == PackStatus.SUCCESS.name:
+            pack_ids.append(pack_id)
+
+    return pack_ids
+
+
+def install_packs(servers, packs_results):
     """
     Install pack_ids from "$ARTIFACTS_FOLDER/pack_results.json" file, and packs dependencies.
     Args:
+        packs_results:
         servers: XSIAM or XSOAR Servers to install packs on it.
 
     Returns:
         installed_content_packs_successfully: Whether packs installed successfully
     """
-    # todo: get pack ids from packs_results.json
-    pack_ids = []
+    successful_packs_dict, _, _, _ = get_upload_data(packs_results, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+    pack_ids = get_successful_packs_ids(successful_packs_dict)
+
     installed_content_packs_successfully = True
     for server in servers:
         try:
@@ -117,7 +130,7 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
 
     # Acquire the server's host and install new uploaded content packs
     logging.info(f'Starting to install all content packs in {xsiam_machine}')
-    success_flag = install_packs([server])
+    success_flag = install_packs([server], options.packs_results)
     if success_flag:
         logging.success(f'Finished installing all content packs in {xsiam_machine}')
     else:
