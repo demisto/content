@@ -39,4 +39,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![ACTI Create Report-Indicator Associations](Insert the link to your image here)
+![ACTI Create Report-Indicator Associations](https://user-images.githubusercontent.com/40510780/164019981-8da85350-7c55-4c40-bd69-e1177119e64e.png)
