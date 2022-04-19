@@ -192,7 +192,7 @@ class PackFolders(enum.Enum):
     XSIAM_DASHBOARDS = 'XSIAMDashboards'
     XSIAM_REPORTS = 'XSIAMReports'
     TRIGGERS = 'Triggers'
-    WIZARD = 'Wizard'
+    WIZARD = 'Wizards'
 
     @classmethod
     def pack_displayed_items(cls):
