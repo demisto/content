@@ -186,7 +186,6 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(file_path):
     if os.path.exists(dec_file_path):
         os.remove(dec_file_path)
 
-    assert len(urls) == len(expected_output)
     assert urls == expected_output
 
 
@@ -233,7 +232,6 @@ def test_get_urls_and_emails_from_pdf_file_without_encrypt(file_path):
     # Extract URLs and Emails:
     urls = get_urls_and_emails_from_pdf_file(file_path)
 
-    assert len(urls) == len(expected_output)
     assert urls == expected_output
 
 
