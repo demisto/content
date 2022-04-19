@@ -1,4 +1,4 @@
-This playbook extracts indicators from an incident and block them.
+Extracts indicators from an incident and sends them to your firewall to be blocked.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
