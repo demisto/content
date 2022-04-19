@@ -140,7 +140,7 @@ def main():
             logging.critical(f'Failed to trigger private repo build, request to '
                              f'{TRIGGER_BUILD_URL} failed with error: {str(res.content)}')
             sys.exit(1)
-        logging.info(f'{res.status_code=} json={res.json()}')
+        logging.info(f'{res.status_code=} res?={res}')
 
         workflow_ids_diff = []
         for i in range(GET_WORKFLOWS_MAX_RETRIES):
