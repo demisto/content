@@ -1,7 +1,7 @@
 id: ACTI Block High Severity Indicators
 version: -1
 name: ACTI Block High Severity Indicators
-description: Block Indicators with severity 5 or more
+description: Sends indicators imported from ACTI feeds with a severity rating of 5 or higher to your firewall to be blocked.
 starttaskid: "0"
 tasks:
   "0":
