@@ -264,7 +264,7 @@ def main():
 
     while j < len(retVal):
 
-        PlaybookNameTempStr = retVal[j].get('id')
+        PlaybookNameTempStr = retVal[j].get('nameRaw')
 
         if (PlaybookNameTempStr == PlaybookName):
             PlaybookIndex = j
@@ -309,3 +309,5 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+register_module_line('CreatePlbkDoc', 'end', __line__())
