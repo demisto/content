@@ -22,8 +22,9 @@ from Tests.scripts.utils.content_packs_util import is_pack_deprecated
 from Tests.scripts.utils import logging_wrapper as logging
 
 PACK_METADATA_FILE = 'pack_metadata.json'
-PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
-                                     r'+\.zip$')
+PACK_PATH_VERSION_REGEX = re.compile(
+    fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
+    r'+\.zip$')
 SUCCESS_FLAG = True
 
 
@@ -189,44 +190,49 @@ def search_pack(client: demisto_client,
         return {}
 
 
-def find_malformed_pack_id(error_message: str) -> List:
+def find_malformed_pack_id_version(error_message: str) -> List:
     """
-    Find the pack ID from the installation error message.
+    Find the pack ID from the installation error message in the case the error is that the pack is not found or
+    in case that the error is that the pack's version is invalid.
     Args:
         error_message (str): The error message of the failed installation pack.
 
-    Returns: Pack_id (str)
+    Returns: malformed_pack_id (str)
 
     """
-    malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
-    malformed_pack_id = malformed_pack_pattern.findall(error_message)
-    if malformed_pack_id:
-        return malformed_pack_id
+    if 'pack id: ' in error_message:
+        return ast.literal_eval(error_message.split('pack id: ')[1])
     else:
-        return []
+        malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
+        malformed_pack_id = malformed_pack_pattern.findall(error_message)
+        if malformed_pack_id:
+            return malformed_pack_id
+        else:
+            return []
 
 
-def handle_malformed_pack_id(message, packs_to_install):
+def handle_malformed_pack_ids(error, packs_to_install):
     """
     Handles the following cases:
     1. The malformed id was not found - raise an error.
     2. The malformed id failed the installation but it was not a part of the initial installaion - raise an error.
     3. Otherwise, return the malformed id.
     Args:
-        message: the message from the failed installation response,
+        error: the message from the failed installation response,
         packs_to_install: list of packs that was already installed that caused the failure.
 
     Returns:
         raises an error in cases 1 or 2 or returns the malformed pack id in case 3.
     """
-    malformed_pack_id = find_malformed_pack_id(message)
-    if not malformed_pack_id:
+
+    malformed_pack_ids = find_malformed_pack_id_version(error)
+    if not malformed_pack_ids:
         raise Exception('The request to install packs has failed')
-    malformed_pack_id = malformed_pack_id[0]
-    if malformed_pack_id not in {pack['id'] for pack in packs_to_install}:
-        raise Exception(f'The pack {malformed_pack_id} has failed to install even '
-                        f'though it was not in the installation list')
-    return malformed_pack_id
+    for malformed_pack_id in malformed_pack_ids:
+        if malformed_pack_id not in {pack['id'] for pack in packs_to_install}:
+            raise Exception(f'The pack {malformed_pack_id} has failed to install even '
+                            f'though it was not in the installation list')
+    return malformed_pack_ids
 
 
 def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_path: str, pack_ids_to_install: List):
@@ -302,20 +308,21 @@ def install_packs(client: demisto_client,
                 logging.debug(f'The following packs were successfully installed on server {host}:\n{packs_data}')
                 return None
         except ApiException as ex:
-            print(ex.body)  # TESTING
-            return ast.literal_eval(ex.body)
+
+            if error_info := ex.body.get('error'):
+                return error_info
+
     try:
         logging.info(f'Installing packs on server {host}')
         logging.info(f'TESTING: adding failing pack to pack list to create failure')
         packs_to_install.append({'id': 'PhishAI', 'version': '1.0.0'})  # TODO: remove failing pack!
-        result_object = call_install_packs_request(packs_to_install)
-        while result_object:
-            message = result_object.get('message', '')
-            malformed_pack_id = handle_malformed_pack_id(message, packs_to_install)
+        error = call_install_packs_request(packs_to_install)
+        while error:
+            malformed_pack_ids = handle_malformed_pack_ids(error, packs_to_install)
             logging.warning(
-                f'The request to install packs on server {host} has failed, retrying without {malformed_pack_id}')
-            result_object = call_install_packs_request([pack for pack in packs_to_install
-                                                        if pack['id'] not in malformed_pack_id])  # TODO: verify in statement
+                f'The request to install packs on server {host} has failed, retrying without {malformed_pack_ids}')
+            error = call_install_packs_request([pack for pack in packs_to_install
+                                                if pack['id'] not in malformed_pack_ids])
 
     except Exception as e:
         logging.exception(f'The request to install packs has failed. Additional info: {str(e)}')
