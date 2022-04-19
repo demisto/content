@@ -7516,6 +7516,11 @@ script:
       name: state
       required: true
       secret: false
+      auto: PREDEFINED
+      predefined:
+        - functional
+        - peer
+        - suspend
     deprecated: false
     description: Checks the status of the given device, checking whether it's up or
       down and if the operational mode is normal.
@@ -7527,11 +7532,6 @@ script:
     - contextPath: PANOS.HAStateUpdate.state
       description: New HA state.
       type: String
-      auto: PREDEFINED
-      predefined:
-        - functional
-        - peer
-        - suspend
   - arguments:
     - default: false
       description: String by which to filter so that only the given device is checked.
@@ -7554,7 +7554,7 @@ script:
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
       description: Total number of matching issues.
-      type: String
+      type: Number
     - contextPath: PANOS.ConfigurationHygiene.Result.hostid
       type: String
       description: Host ID.
