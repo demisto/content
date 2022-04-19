@@ -2034,7 +2034,8 @@ def test_domains_by_certificate(requests_mock):
     assert results.outputs['SearchTerm'] == domain_to_test
     assert results.outputs['TotalDomainCount'] == 1
 
-def test_format_domain_data_empty_domainStatuses(requests_mock):
+
+def test_format_domain_data_empty_domainStatuses():
     """
     Given:
         - A domain with empty 'domainStatuses'.
