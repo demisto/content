@@ -192,7 +192,8 @@ def fetch_incidents():
                                                          channel_id=CHANNEL_CODE,
                                                          logger=demisto,
                                                          session=SESSION,
-                                                         verify=VERIFY)
+                                                         verify=VERIFY,
+                                                         num_of_attempts=3)
 
     filter_alerts_kwargs = get_incident_init_params()
     items = sixgill_alerts_client.get_actionable_alerts_bulk(limit=max_incidents_to_return, from_date=last_fetch_time,
