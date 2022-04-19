@@ -50,7 +50,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: 'The statuses of the incidents that will be fetched. If no status
-    is provided then incidents of all the statuses will be fetched. Note: An incident
+    is provided, incidents of all the statuses will be fetched. Note: An incident
     whose status was changed to a filtered status after its creation time will not
     be fetched.'
   display: Incident Statuses to Fetch
@@ -211,7 +211,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether incident is starred or not (Boolean value: true or false).'
+      description: 'Whether the incident is starred or not (Boolean value: true or false).'
       isArray: false
       name: starred
       predefined:
