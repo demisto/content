@@ -302,7 +302,7 @@ def install_packs(client: demisto_client,
                 logging.debug(f'The following packs were successfully installed on server {host}:\n{packs_data}')
                 return None
         except ApiException as ex:
-            print(ex)  # TESTING
+            print(ex.body)  # TESTING
             return ast.literal_eval(ex.body)
     try:
         logging.info(f'Installing packs on server {host}')
