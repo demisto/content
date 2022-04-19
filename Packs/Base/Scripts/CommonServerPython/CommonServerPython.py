@@ -3822,7 +3822,7 @@ class Common(object):
         def to_context(self):
             cve_context = {
                 'ID': self.id,
-                'CVSS': {}
+                'CVSS': {},
             }
 
             if self.cvss:
