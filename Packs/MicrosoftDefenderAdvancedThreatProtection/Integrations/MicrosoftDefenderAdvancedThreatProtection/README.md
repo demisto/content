@@ -5693,3 +5693,130 @@ Detect if there was any evidence of MSDE agent/sensor manipulation.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.HuntTampering.Result | String | The query results. |
+
+### microsoft-atp-get-machine-users
+---
+Retrieves a collection of logged on users on a specific device.
+
+##### Required Permissions
+User.Read.All
+
+#### Base Command
+
+`microsoft-atp-get-machine-users`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | A machine ID to be used for getting logged on users | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineUser.ID | String | The user ID. | 
+| MicrosoftATP.MachineUser.AccountName | String | The user account name. | 
+| MicrosoftATP.MachineUser.AccountDomain | String | The domain of the user account. | 
+| MicrosoftATP.MachineUser.FirstSeen | Date | The first date and time the user has logged on the machine. | 
+| MicrosoftATP.MachineUser.LastSeen | Date | The last date and time the user has logged on the machine. | 
+| MicrosoftATP.MachineUser.LogonTypes | String | The logon types of the user on the machine. | 
+| MicrosoftATP.MachineUser.DomainAdmin | Boolean | True if user is Domain Admin, False otherwise. | 
+| MicrosoftATP.MachineUser.NetworkUser | Boolean | True if user is network user, False otherwise. | 
+| MicrosoftATP.MachineUser.MachineID | String | The machine ID. | 
+
+#### Command example
+```!microsoft-atp-get-machine-users machine_id=0a3250e0693a109f1affc9217be9459028aa8424```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "MachineUser": [
+            {
+                "id": "contoso\\user1",
+                "accountName": "user1",
+                "accountDomain": "contoso",
+                "firstSeen": "2019-12-18T08:02:54Z",
+                "lastSeen": "2020-01-06T08:01:48Z",
+                "logonTypes": "Interactive",
+                "isDomainAdmin": true,
+                "isOnlyNetworkUser": false,
+                "machineId": "111e6dd8c833c8a052ea231ec1b19adaf497b625"
+            },
+            ...
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Microsoft Defender ATP logon users for machine 111e6dd8c833c8a052ea231ec1b19adaf497b625:
+>|ID|AccountName|AccountDomain|FirstSeen|LastSeen|LogonTypes|DomainAdmin|NetworkUser|
+>|---|---|---|---|---|---|---|---|
+>| contoso\\user1 | user1 | contoso | 2019-12-18T08:02:54Z | 2020-01-06T08:01:48Z | Interactive | True | False |
+
+
+### microsoft-atp-get-machine-alerts
+---
+Retrieves all Alerts related to a specific device.
+
+##### Required Permissions
+Alert.ReadWrite.All
+
+#### Base Command
+
+`microsoft-atp-get-machine-alerts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id |A machine ID to be used for getting machine related alerts, e.g. 0a3250e0693a109f1affc9217be9459028aa8424. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAlerts.ID | String | The alert ID. | 
+| MicrosoftATP.MachineAlerts.Title | String | The alert title. | 
+| MicrosoftATP.MachineAlerts.Description | String | The alert description. | 
+| MicrosoftATP.MachineAlerts.IncidentID | String | The incident ID, if alert belongs to one. | 
+| MicrosoftATP.MachineAlerts.Severity | String | The alert severtiy. | 
+| MicrosoftATP.MachineAlerts.Status | String | The alert status. | 
+| MicrosoftATP.MachineAlerts.Classification | String | The alert classification. | 
+| MicrosoftATP.MachineAlerts.Category | String | The alert category. | 
+| MicrosoftATP.MachineAlerts.ThreatFamilyName | String | The alert threat family name. | 
+| MicrosoftATP.MachineAlerts.MachineID | String | The alerts machine ID. | 
+
+#### Command example
+```!microsoft-atp-get-machine-alerts machine_id=0a3250e0693a109f1affc9217be9459028aa8424```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "MachineAlerts": [
+            {
+                "id": "da637472900382838869_1364969609",
+                "incidentId": 1126093,
+                "severity": "Low",
+                "status": "New",
+                "category": "Execution",
+                "classification": null,
+                "threatFamilyName": null,
+                "title": "Low-reputation arbitrary code executed by signed executable",
+                "description": "Binaries signed by Microsoft can be used to run low-reputation arbitrary code. This technique hides the execution of malicious code within a trusted process. As a result, the trusted process might exhibit suspicious behaviors, such as opening a listening port or connecting to a command-and-control (C&C) server.",
+                "machineId": "111e6dd8c833c8a052ea231ec1b19adaf497b625"
+            },
+            ...
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Alerts that are related to machine 111e6dd8c833c8a052ea231ec1b19adaf497b625:
+>|ID|Title|Description|IncidentID|Severity|Status|Classification|Category|ThreatFamilyName|MachineID|
+>|---|---|---|---|---|---|---|---|---|---|
+>| da637472900382838869_1364969609 | Low-reputation arbitrary code executed by signed executable | Binaries signed by Microsoft can be used to run low-reputation arbitrary code. This technique hides the execution of malicious code within a trusted process. As a result, the trusted process might exhibit suspicious behaviors, such as opening a listening port or connecting to a command-and-control (C&C) server. | 1126093 | Low | New |  | Execution |  | 111e6dd8c833c8a052ea231ec1b19adaf497b625 |

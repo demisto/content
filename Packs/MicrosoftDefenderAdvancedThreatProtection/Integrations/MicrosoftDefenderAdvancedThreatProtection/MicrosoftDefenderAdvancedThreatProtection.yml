@@ -6104,7 +6104,7 @@ script:
   - arguments:
     - default: true
       description: A machine ID to be used for getting logged on users
-      isArray: true
+      isArray: false
       name: machine_id
       required: true
       secret: false
@@ -6143,14 +6143,14 @@ script:
   - arguments:
     - default: true
       description: A machine ID to be used for getting machine related alerts
-      isArray: true
+      isArray: false
       name: machine_id
       required: true
       secret: false
     deprecated: false
-    description: Retrieves a collection of logged on users on a specific device.
+    description: Retrieves a collection of alerts related to a specific device.
     execution: false
-    name: microsoft-atp-get-machine-users
+    name: microsoft-atp-get-machine-alerts
     outputs:
     - contextPath: MicrosoftATP.MachineAlerts.ID
       description: The alert ID.

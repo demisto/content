@@ -735,6 +735,22 @@ MACHINE_DATA = {
     'ExposureLevel': "Medium"
 }
 
+MACHINE_USER_DATA = {
+    "@odata.context": "https://api.securitycenter.microsoft.com/api/$metadata#Users",
+    "value": [
+        {
+            "id": "contoso\\user1",
+            "accountName": "user1",
+            "accountDomain": "contoso",
+            "firstSeen": "2019-12-18T08:02:54Z",
+            "lastSeen": "2020-01-06T08:01:48Z",
+            "logonTypes": "Interactive",
+            "isDomainAdmin": True,
+            "isOnlyNetworkUser": False
+        }
+    ]
+}
+
 
 def tests_get_future_time(mocker):
     from datetime import datetime
@@ -2178,3 +2194,34 @@ class TestHuntingQueryBuilder:
             )
             actual = cu.build_common_files_query()
             assert actual == expected
+
+
+def test_get_machine_users_command(mocker):
+    mocker.patch.object(client_mocker, 'get_machine_users', return_value=MACHINE_USER_DATA)
+    results = get_machine_details_command(client_mocker, {'machine_id': "123abc"})
+    assert results.outputs == {
+        "ID": "contoso\\user1",
+        "AccountName": "user1",
+        "AccountDomain": "contoso",
+        "FirstSeen": "2019-12-18T08:02:54Z",
+        "LastSeen": "2020-01-06T08:01:48Z",
+        "LogonTypes": "Interactive",
+        "DomainAdmin": True,
+        "NetworkUser": False,
+    }
+
+def test_get_machine_alerts_command(mocker):
+    mocker.patch.object(client_mocker, 'get_machine_alerts', return_value=ALERTS_API_RESPONSE)
+    results = get_machine_details_command(client_mocker, {'machine_id': "123abc"})
+    assert results.outputs == {
+        "ID": "123",
+        "Title": "Network connection to a risky host",
+        "Description": "A network connection was made to a risky host which has exhibited malicious activity.",
+        "IncidentID": 123456,
+        "Severity": "Low",
+        "Status": "New",
+        "Classification": "TruePositive",
+        "Category": "CommandAndControl",
+        "ThreatFamilyName": None,
+        "MachineID": "123abc",
+    }
