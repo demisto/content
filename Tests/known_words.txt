@@ -162,6 +162,8 @@ ipstack
 SNDBOX
 C
 integrationReliability
+Mapper
+Mappers
 html
 maxPages
 pdf
