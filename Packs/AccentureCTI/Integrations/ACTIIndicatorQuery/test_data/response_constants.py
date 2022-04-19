@@ -31,7 +31,7 @@ URL_RES_JSON = {
                  'key': 'http://www.malware.com',
                  'last_modified': '2020-10-18T15:25:00.000Z',
                  'last_published': '2020-10-05T23:51:53.000Z', 'last_seen': '2020-10-06T00:59:33.000Z',
-                 'last_seen_as': ['MALWARE_C2'], 'malware_family': ['JavaScript Downloader'],
+                 'last_seen_as': ['MALWARE_C2'], 'malware_family': [],
                  'replication_id': 1603034700680000002,
                  'seen_at': [{'confidence': 50,
                               'display_text': 'JavaScript Downloader', 'key': 'JavaScript Downloader',

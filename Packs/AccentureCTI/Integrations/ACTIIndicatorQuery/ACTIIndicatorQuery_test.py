@@ -395,7 +395,7 @@ def test_url_not_found():
         assert expected_output in output
 
 
-def _test_domain_not_found():
+def test_domain_not_found():
     """
     Given:
         - an Domain
@@ -409,6 +409,7 @@ def _test_domain_not_found():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/domain?key.values=mydomain.com'
+    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
     status_code = 200
     json_data = {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False}
     expected_output = "No results were found for Domain mydomain.com"
@@ -416,14 +417,16 @@ def _test_domain_not_found():
     domain_to_check = {'domain': 'mydomain.com'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
+        m.get(fund_url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = domain_command(client, domain_to_check, DBotScoreReliability.B, doc_search_client)
+        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        results = domain_command(client, domain_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
         output = results[0].to_context().get('HumanReadable')
         assert expected_output in output
 
 
-def _test_wrong_ip():
+def test_wrong_ip():
     """
     Given:
         - an IP
@@ -439,8 +442,9 @@ def _test_wrong_ip():
     ip_to_check = {'ip': '1'}
     client = Client(API_URL, 'api_token', True, False)
     doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
+    fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
     try:
-        ip_command(client, ip_to_check, DBotScoreReliability.B, doc_search_client)
+        ip_command(client, ip_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
     except DemistoException as err:
         assert "Received wrong IP value" in str(err)
 
@@ -469,7 +473,7 @@ def test_wrong_connection():
             assert 'Error in API call - check the input parameters' in str(err)
 
 
-def _test_url_command():
+def test_url_command():
     """
     Given:
         - url
@@ -484,6 +488,7 @@ def _test_url_command():
 
     url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                             # noqa: E501
+    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
     status_code = 200
     json_data = URL_RES_JSON
     intel_json_data = URL_INTEL_JSON
@@ -497,9 +502,11 @@ def _test_url_command():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=status_code, json=intel_json_data)
+        m.get(fund_url, status_code=status_code, json=intel_json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = url_command(client, url_to_check, DBotScoreReliability.B, doc_search_client)
+        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        results = url_command(client, url_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
 
         context_result = results[0].to_context()
 
@@ -509,7 +516,7 @@ def _test_url_command():
         assert _is_intelligence_data_present_in_command_result(context_result, intel_json_data) is True
 
 
-def _test_url_command_when_api_key_not_authorized_for_document_search():
+def test_url_command_when_api_key_not_authorized_for_document_search():
     """
     Given:
         - a url and api key not authorized for doc search
@@ -524,7 +531,7 @@ def _test_url_command_when_api_key_not_authorized_for_document_search():
 
     url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                             # noqa: E501
-
+    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
     status_code = 200
     error_status_code = 403
     json_data = URL_RES_JSON
@@ -540,9 +547,11 @@ def _test_url_command_when_api_key_not_authorized_for_document_search():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=error_status_code, json=doc_search_exception_response)
+        m.get(fund_url, status_code=error_status_code, json=doc_search_exception_response)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = url_command(client, url_to_check, DBotScoreReliability.B, doc_search_client)
+        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        results = url_command(client, url_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
 
         context_result = results[0].to_context()
         content = context_result['HumanReadable']
