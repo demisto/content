@@ -1,4 +1,4 @@
-Block Indicators with severity 5 or more
+Sends indicators imported from ACTI feeds with a severity rating of 5 or higher to your firewall to be blocked.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
