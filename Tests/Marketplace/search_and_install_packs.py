@@ -303,7 +303,7 @@ def install_packs(client: demisto_client,
     try:
         logging.info(f'Installing packs on server {host}')
         logging.info(f'TESTING: adding failing pack to pack list to create failure')
-        packs_to_install.append({'id': 'PhishAI', 'CurrentVersion': '1.0.0'})  # TODO: remove failing pack!
+        packs_to_install.append({'id': 'PhishAI', 'version': '1.0.0'})  # TODO: remove failing pack!
         result_object = call_install_packs_request(packs_to_install)
         while result_object:
             message = result_object.get('message', '')
