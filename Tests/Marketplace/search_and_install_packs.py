@@ -8,7 +8,9 @@ import re
 import sys
 import demisto_client
 from threading import Thread, Lock
+from demisto_client.demisto_api.rest import ApiException
 from demisto_sdk.commands.common.tools import run_threads_list
+
 from google.cloud.storage import Bucket
 from packaging.version import Version
 from typing import List
@@ -283,23 +285,25 @@ def install_packs(client: demisto_client,
     """
 
     def call_install_packs_request(packs):
-        logging.debug(f'Installing the following packs in server {host}:\n{[pack["id"] for pack in packs]}')
-        response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                            path='/contentpacks/marketplace/install',
-                                                                            method='POST',
-                                                                            body={'packs': packs,
-                                                                                  'ignoreWarnings': True},
-                                                                            accept='application/json',
-                                                                            _request_timeout=request_timeout)
+        try:
+            logging.debug(f'Installing the following packs in server {host}:\n{[pack["id"] for pack in packs]}')
+            response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                                path='/contentpacks/marketplace/install',
+                                                                                method='POST',
+                                                                                body={'packs': packs,
+                                                                                      'ignoreWarnings': True},
+                                                                                accept='application/json',
+                                                                                _request_timeout=request_timeout)
 
-        if status_code in range(200, 300):
-            packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
-                          ast.literal_eval(response_data)]
-            logging.success(f'Packs were successfully installed on server {host}')
-            logging.debug(f'The following packs were successfully installed on server {host}:\n{packs_data}')
-            return None
-        else:
-            return ast.literal_eval(response_data)
+            if status_code in range(200, 300):
+                packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
+                              ast.literal_eval(response_data)]
+                logging.success(f'Packs were successfully installed on server {host}')
+                logging.debug(f'The following packs were successfully installed on server {host}:\n{packs_data}')
+                return None
+        except ApiException as ex:
+            print(ex)  # TESTING
+            return ast.literal_eval(ex.body)
     try:
         logging.info(f'Installing packs on server {host}')
         logging.info(f'TESTING: adding failing pack to pack list to create failure')
