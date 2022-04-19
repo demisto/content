@@ -15,8 +15,8 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | --- | --- | --- |
     | Default Hostname or IP Address |  | True |
     | User | For example, "root". | False |
-    | Password | The password of the remote machine | False |
-    | sshKey | The private RSA  key to authenticate to the remote machine, should be configured within the credentials object. | False
+    | Password | The password of the remote machine. | False |
+    | sshKey | The private RSA key to authenticate to the remote machine, should be configured within the credentials object. | False
     | Additional Password | Requires an additional password as an argument to run any command of this module. | False |
     | Ciphers | A comma-separated list of ciphers to use. If none of the specified ciphers are agreed to by the server, an error message specifying the supported ciphers is returned. | False |
     | Key Algorithms | A comma-separated list of key algorithms to use. If none of the specified key algorithms are agreed to by the server, an error specifying the supported key algorithms is returned. | False |
@@ -31,7 +31,7 @@ For login using root:
 2. Restart the sshd server: `service sshd restart`
 
 ## Configure the instance with SSH certificate
-Currently, the only type of certificate which is supported is the RSA private keys (.PEM) files.
+Currently, the only type of certificate which is supported is RSA private keys (.PEM) files.
 In case access is required to an instance in the cloud, make sure to add to the credentials object the content
 of the PEM file provided by the cloud provider to your instance.
 
