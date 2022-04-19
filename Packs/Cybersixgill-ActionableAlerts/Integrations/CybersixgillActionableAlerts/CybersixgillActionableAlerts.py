@@ -205,14 +205,17 @@ def fetch_incidents():
         newest_incident_date = items[-1].get('date')
         incidents = []
         for item in items:
-            item_info = sixgill_alerts_client.get_actionable_alert(actionable_alert_id=item.get('id'))
-            item_info['date'] = item.get('date')
-            new_incidents = item_to_incidents(item_info, sixgill_alerts_client)
-            incidents.extend(new_incidents)
-            # can increase because of sub alerts
-            if len(incidents) >= max_incidents_to_return:
-                newest_incident_date = item.get('date')
-                break
+            try:
+                item_info = sixgill_alerts_client.get_actionable_alert(actionable_alert_id=item.get('id'))
+                item_info['date'] = item.get('date')
+                new_incidents = item_to_incidents(item_info, sixgill_alerts_client)
+                incidents.extend(new_incidents)
+                # can increase because of sub alerts
+                if len(incidents) >= max_incidents_to_return:
+                    newest_incident_date = item.get('date')
+                    break
+            except Exception as e:
+                demisto.error(f"Could not get alert info: {e}")
 
         if len(incidents) > 0:
             demisto.info(f'Adding {len(incidents)} to demisto')
