@@ -1,0 +1,17 @@
+{
+    "name": "PcapStreams",
+    "description": "This pack supports to extract TCP/UDP streams from a PCAP encoded in standard format (wireshark can parse) or Cortex Data Lake format ingested from the Next-Generation Firewall.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Masahiko Inoue",
+    "url": "",
+    "email": "",
+    "created": "2022-04-19T04:40:30Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "spearmin10"
+    ]
+}
