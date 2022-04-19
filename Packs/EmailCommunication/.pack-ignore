@@ -15,3 +15,21 @@ ignore=SC106
 
 [known_words]
 SendEmailReply
+
+[file:incidentfield-Email_New_Body.json]
+ignore=IF113
+
+[file:incidentfield-Add_BCC_To_Email.json]
+ignore=IF113
+
+[file:incidentfield-Email_New_Recipients.json]
+ignore=IF113
+
+[file:incidentfield-Email_New_Attachment.json]
+ignore=IF113
+
+[file:incidentfield-Email_Generated_Codes.json]
+ignore=IF113
+
+[file:incidentfield-Email_Selected_Thread.json]
+ignore=IF113
