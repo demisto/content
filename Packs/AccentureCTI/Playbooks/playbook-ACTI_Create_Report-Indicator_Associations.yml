@@ -1,7 +1,7 @@
 id: ACTI Create Report-Indicator Associations
 version: -1
 name: ACTI Create Report-Indicator Associations
-description: Creates associations between indicators and reports.
+description: This sub-playbook makes the connections between ACTI indicators (from ACTI Indicator API) and ACTI intelligence reports (from ACTI Report API) that have pulled into an XSOAR incident via the Enrich Incidents with Indicators and Enrich Incidents with Intelligence Reports sub-playbooks.
 starttaskid: "0"
 tasks:
   "0":
