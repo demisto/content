@@ -17,42 +17,57 @@ FIRST_EDITABLE_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_editable_a
 SECOND_STATIC_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_static_attributes_second.json')
 SECOND_EDITABLE_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_editable_attributes_second.json')
 
+FIRST_INCIDENT_DETAILS = json.dumps({"ID": 3620, "severity": "High", "customAttributeGroup": [
+    {"name": "custom_attribute_group.default",
+     "customAttribute": [{"name": "Custom Attribue1", "index": 1}, {"name": "cust2", "index": 2},
+                         {"name": "bla", "index": 3}]},
+    {"name": "att group2", "customAttribute": [{"name": "kjv", "index": 4}]}], "policyVersion": 4, "attachmentInfo": [
+    {"componentType": 3, "messageComponentName": "token", "messageComponentId": 4623, "wasCracked": False,
+     "documentFormat": "unknown", "mimeType": "application/octet-stream", "originalSize": 0}],
+                                     "messageSubject": "HTTP incident", "policyName": "Network Test policy",
+                                     "policyGroupName": "policy_group.default.name", "policyGroupId": 1,
+                                     "messageSource": "NETWORK", "messageId": 2104, "messageOriginatorID": 828,
+                                     "matchCount": 3, "creationDate": "2022-03-06T15:23:53.245",
+                                     "isBlockedStatusSuperseded": False,
+                                     "detectionServerName": "Detection - Network monitor", "networkSenderPort": 59637,
+                                     "messageType": "HTTP", "policyId": 2, "detectionDate": "2022-03-06T15:23:39.197",
+                                     "messageTypeId": 3, "detectionServerId": 1,
+                                     "messageDate": "2022-03-06T15:23:39.197", "senderIPAddress": "1.1.1.1",
+                                     "endpointMachineIpAddress": "1.1.1.1", "recipientInfo": [
+        {"recipientType": 1, "recipientPort": 80, "recipientDomain": "2.2.2.254",
+         "recipientIdentifier": "http://2.2.2.254/latest/api/token", "recipientIPAddress": "2.2.2.254",
+         "recipientUrl": "http://2.2.2.254/latest/api/token"}], "networkSenderIdentifier": "1.1.1.1",
+                                     "isHidingNotAllowed": False, "incidentStatusName": "incident.status.New",
+                                     "incidentStatusId": 1, "isHidden": False, "preventOrProtectStatusId": 0})
 
-FIRST_INCIDENT_DETAILS = json.dumps({"ID": 3620, "creationDate": "2022-03-06T15:23:53.245", "policyId": 2,
-                                     "severity": "High",
-                                     "incidentStatusId": 1, "detectionDate": "2022-03-06T15:23:39.197",
-                                     "senderIPAddress": "1.1.1.1",
-                                     "endpointMachineIpAddress": "1.1.1.1", "policyName": "Network Test policy",
-                                     "policyVersion": 4,
-                                     "messageSource": "NETWORK", "messageType": "HTTP",
-                                     "detectionServerName": "Detection - Network monitor",
-                                     "policyGroupName": "policy_group.default.name", "matchCount": 3,
-                                     "preventOrProtectStatusId": 0,
-                                     "customAttributeGroup": [
-                                         {"name": "custom_attribute_group.default",
-                                          "customAttribute": [{"name": "Custom Attribue1", "index": 1},
-                                                              {"name": "cust2", "index": 2},
-                                                              {"name": "bla", "index": 3}]},
-                                         {"name": "att group2", "customAttribute": [{"name": "kjv", "index": 4}]}],
-                                     "messageSubject": "HTTP incident", "networkSenderPort": 59637,
-                                     "recipientInfo": {"recipientDomain": "2.2.2.254", "recipientPort": 80,
-                                                       "recipientUrl": "http://2.2.2.254/latest/api/token"}})
-
-SECOND_INCIDENT_DETAILS = json.dumps(
-    {"ID": 3629, "creationDate": "2022-03-06T15:23:53.246", "policyId": 43, "severity": "High",
-     "incidentStatusId": 1, "detectionDate": "2022-03-06T15:23:39.197", "policyName": "Illegal Drugs",
-     "policyVersion": 1, "messageSource": "DISCOVER", "messageType": "RAW",
-     "detectionServerName": "Detection - Discovery", "policyGroupName": "Test Policy group for Endpoint Discover",
-     "matchCount": 100, "preventOrProtectStatusId": 0,
-     "customAttributeGroup": [{"name": "custom_attribute_group.default",
-                               "customAttribute": [{"name": "Custom Attribue1", "index": 1},
-                                                   {"name": "cust2", "index": 2},
-                                                   {"name": "bla", "index": 3}]},
-                              {"name": "att group2",
-                               "customAttribute": [{"name": "kjv", "index": 4}]}],
-     "discoverName": "423.txt", "discoverRepositoryLocation": "c:/das/423.txt",
-     "fileOwner": "BUILTIN\\Administrators", "fileAccessDate": "2022-01-05T14:10:04.798", "discoverServer": "c:",
-     "discoverTargetName": "Discovery server - File system", "discoverScanStartDate": "2022-03-06T07:00:00"})
+SECOND_INCIDENT_DETAILS = json.dumps({"ID": 3629, "severity": "High", "customAttributeGroup": [
+    {"name": "custom_attribute_group.default",
+     "customAttribute": [{"name": "Custom Attribue1", "index": 1}, {"name": "cust2", "index": 2},
+                         {"name": "bla", "index": 3}]},
+    {"name": "att group2", "customAttribute": [{"name": "kjv", "index": 4}]}], "policyVersion": 1, "attachmentInfo": [
+    {"componentType": 3, "messageComponentName": "423.txt", "messageComponentId": 4638, "wasCracked": False,
+     "documentFormat": "ascii", "originalSize": 3928}], "fileCreateDate": "2022-01-05T14:10:04.798",
+                                      "discoverServer": "c:", "fileAccessDate": "2022-01-05T14:10:04.798",
+                                      "discoverTargetName": "Discovery server - File system", "messageType": "RAW",
+                                      "discoverRepositoryLocation": "c:/das/423.txt", "discoverScanId": 216,
+                                      "discoverContentRootPath": "c:/das", "policyName": "Illegal Drugs",
+                                      "policyGroupName": "Test Policy group for Endpoint Discover", "policyGroupId": 21,
+                                      "messageSource": "DISCOVER", "messageId": 2110, "matchCount": 100,
+                                      "creationDate": "2022-03-06T15:23:53.246",
+                                      "discoverMillisSinceFirstSeen": 5244552861, "isBlockedStatusSuperseded": False,
+                                      "detectionServerName": "Detection - Discovery", "messageAclEntries": [
+        {"principal": "NT AUTHORITY\\SYSTEM", "aclType": "FILE", "permission": "READ", "grantDeny": "GRANT"},
+        {"principal": "NT AUTHORITY\\SYSTEM", "aclType": "FILE", "permission": "WRITE", "grantDeny": "GRANT"},
+        {"principal": "BUILTIN\\Administrators", "aclType": "FILE", "permission": "READ", "grantDeny": "GRANT"},
+        {"principal": "BUILTIN\\Administrators", "aclType": "FILE", "permission": "WRITE", "grantDeny": "GRANT"},
+        {"principal": "BUILTIN\\Users", "aclType": "FILE", "permission": "READ", "grantDeny": "GRANT"}], "policyId": 43,
+                                      "detectionDate": "2022-03-06T15:23:39.197", "messageTypeId": 9,
+                                      "discoverTargetId": 2, "discoverScanStartDate": "2022-03-06T07:00:00",
+                                      "discoverName": "423.txt", "detectionServerId": 21,
+                                      "messageDate": "2022-01-05T14:10:16.548", "fileOwner": "BUILTIN\\Administrators",
+                                      "discoverUrl": "c:/das/423.txt", "isHidingNotAllowed": False,
+                                      "incidentStatusName": "incident.status.New", "detectedRemediationStatus": 0,
+                                      "incidentStatusId": 1, "isHidden": False, "preventOrProtectStatusId": 0})
 
 
 def test_parse_custom_attribute():
