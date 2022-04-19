@@ -259,6 +259,33 @@ class EntryType(object):
     WIDGET = 17
 
 
+class Incidents(object):
+    def __init__(self, query: str = None):
+        self.query = query
+        self.size = 5
+        self.page = 0
+
+    def __iter__(self):
+        res = demisto.executeCommand("getIncidents", {"query": self.query, "size": self.size, "page": self.page})[0]['Contents']
+        while(res.get('data')):
+            for incident in res.get('data'):
+                yield incident
+            self.page += 1
+            res = demisto.executeCommand("getIncidents", {"query": self.query, "size": self.size, "page": self.page})[0]['Contents']
+
+    def __len__(self):
+        res = demisto.executeCommand("getIncidents", {"query": self.query, "size": 1, "page": 0})[0]['Contents']
+        length = res.get('total', 0)
+        return length
+
+    def __bool__(self):
+        length = self.__len__()
+        if length > 0:
+            return True
+        else:
+            return False
+
+
 class IncidentStatus(object):
     """
     Enum: contains all the incidents status types (e.g. pending, active, done, archive)
