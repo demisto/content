@@ -2220,37 +2220,7 @@ def test_get_machine_users_command(mocker):
 def test_get_machine_alerts_command(mocker):
     mocker.patch.object(client_mocker, 'get_machine_alerts', return_value=ALERTS_API_RESPONSE)
     results = get_machine_alerts_command(client_mocker, {'machine_id': "123abc"})
-    assert results.outputs == [{
-        'AADTenantID': None,
-        'AlertCreationTime': '2019-11-03T23:49:45.3823185Z',
-        'AssignedTo': 'test@test.com',
-        "Category": "CommandAndControl",
-        "Classification": "TruePositive",
-        'Comments': [
-            {
-                'Comment': None,
-                'CreatedBy': None,
-                'CreatedTime': None
-            }
-        ],
-        'ComputerDNSName': None,
-        "Description": "A network connection was made to a risky host which has exhibited malicious activity.",
-        'DetectionSource': 'WindowsDefenderAtp',
-        'DetectorID': None,
-        'Determination': None,
-        'Evidence': None,
-        'FirstEventTime': '2019-11-03T23:47:16.2288822Z',
-        "ID": "123",
-        "IncidentID": 123456,
-        'InvestigationID': 654321,
-        'InvestigationState': 'Running',
-        'LastEventTime': '2019-11-03T23:47:51.2966758Z',
-        'LastUpdateTime': '2019-11-03T23:55:52.6Z',
-        "MachineID": "123abc",
-        'MitreTechniques': None,
-        'RBACGroupName': None,
-        'RelatedUser': None,
-        'ResolvedTime': None,
+    assert results.outputs == MACHINE_ALERTS_OUTPUT
         "Severity": "Low",
         "Status": "New",
         "ThreatFamilyName": None,
