@@ -17,6 +17,7 @@ crontab: '*/20 * * * *'
 dataset: alerts
 description: Agent disconnection use case for Magnitude software
 drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
 global_rule_id: 93935c1c-b8c3-11ec-84db-acde48001122
 investigation_query_link: null
 mapping_strategy: AUTO
