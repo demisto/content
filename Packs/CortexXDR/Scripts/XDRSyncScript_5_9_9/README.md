@@ -1,4 +1,4 @@
-Syncs a single incident between Demisto and XDR. This script always uses the xdr-get-incident-extra-data command and outputs to the context the entire incident JSON. When the incident is updated in XDR, the Demisto incident will be updated accordingly and the default playbook will rerun. When an incident is updated in Demisto, the script will execute the xdr-update-incident command and update the incident in XDR.
+Syncs a single incident between Cortex XSOAR and Cortex XDR. This script always uses the ***xdr-get-incident-extra-data*** command and outputs to the context the entire incident JSON. When the incident is updated in Cortex XDR, the Cortex XSOAR incident will be updated accordingly and the default playbook will rerun. When an incident is updated in Cortex XSOAR, the script will execute the ***xdr-update-incident*** command and update the incident in Cortex XDR.
 
 ## Script Data
 ---
@@ -22,32 +22,32 @@ This script is used in the following playbooks and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| interval | How often the script will sync incidents between Demisto and XDR \(in minutes\). |
-| incident_id | The ID of incident in XDR. |
-| playbook_to_run | When an incident is the latest incident in XDR it will be updated in Demisto and the playbook will rerun. |
-| assigned_user_mail | The assigned_user_mail field name in Demisto. |
-| assigned_user_pretty_name | The assigned_user_pretty_name field name in Demisto. |
-| status | The status field name in Demisto. |
-| severity | The severity field name in Demisto. |
-| resolve_comment | The resolve_comment field name in Demisto.  |
-| alert_count | The alert_count field name in Demisto. |
-| host_count | The host_count field name in Demisto. |
-| description | The description field name in Demisto. |
-| xdr_url | The xdr_url field name in Demisto. |
-| notes | The notes field name in Demisto. |
-| low_severity_alert_count | The low_severity_alert_count field name in Demisto. |
-| med_severity_alert_count | The med_severity_alert_count field name in Demisto. |
-| high_severity_alert_count | The high_severity_alert_count field name in Demisto. |
-| user_count | The user_count field name in Demisto. |
+| interval | How often the script will sync incidents between Cortex XSOAR and Cortex XDR \(in minutes\). |
+| incident_id | The ID of incident in Cortex XDR. |
+| playbook_to_run | When an incident is the latest incident in Cortex XDR it will be updated in Cortex XSOAR and the playbook will rerun. |
+| assigned_user_mail | The assigned_user_mail field name in Cortex XSOAR. |
+| assigned_user_pretty_name | The assigned_user_pretty_name field name in Cortex XSOAR. |
+| status | The status field name in Cortex XSOAR. |
+| severity | The severity field name in Cortex XSOAR. |
+| resolve_comment | The resolve_comment field name in Cortex XSOAR.  |
+| alert_count | The alert_count field name in Cortex XSOAR. |
+| host_count | The host_count field name in Cortex XSOAR. |
+| description | The description field name in Cortex XSOAR. |
+| xdr_url | The xdr_url field name in Cortex XSOAR. |
+| notes | The notes field name in Cortex XSOAR. |
+| low_severity_alert_count | The low_severity_alert_count field name in Cortex XSOAR. |
+| med_severity_alert_count | The med_severity_alert_count field name in Cortex XSOAR. |
+| high_severity_alert_count | The high_severity_alert_count field name in Cortex XSOAR. |
+| user_count | The user_count field name in Cortex XSOAR. |
 | xdr_incident_markdown_field | DEPRECATED |
 | first | Whether this is the first time this script is running or is scheduled. Can be "true" or "false". The default value is "true". There is no need to change the value. |
-| xdr_incident_from_previous_run | The user should not modify this argument. This argument should be passed from the parent task to the next scheduled task. It should contain the incident's JSON from XDR. |
+| xdr_incident_from_previous_run | The user should not modify this argument. This argument should be passed from the parent task to the next scheduled task. It should contain the incident's JSON from Cortex XDR. |
 | verbose | Whether to print messages to the War Room. Can be "true" or "false". The default value is "true". |
-| xdr_alerts | The XDR alerts field; must be of type "grid". |
-| xdr_file_artifacts | The XDR file artifacts field; must be of type "grid".  |
-| xdr_network_artifacts | The XDR network artifacts field. |
-| modification_time | The modification_time field name in Demisto. |
-| manual_severity | The manual_severity field name in Demisto. |
+| xdr_alerts | The Cortex XDR alerts field. Must be of type "grid". |
+| xdr_file_artifacts | The Cortex XDR file artifacts field. Must be of type "grid".  |
+| xdr_network_artifacts | The Cortex XDR network artifacts field. |
+| modification_time | The modification_time field name in Cortex XSOAR. |
+| manual_severity | The manual_severity field name in Cortex XSOAR. |
 
 ## Outputs
 ---
@@ -55,7 +55,7 @@ This script is used in the following playbooks and scripts.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.Incident.incident_id | Unique ID assigned to each returned incident. | String |
-| PaloAltoNetworksXDR.Incident.creation_time | Date and time that the incident was created in XDR. | Date |
+| PaloAltoNetworksXDR.Incident.creation_time | Date and time that the incident was created in Cortex XDR. | Date |
 | PaloAltoNetworksXDR.Incident.modification_time | Date and time that the incident was last modified. | Date |
 | PaloAltoNetworksXDR.Incident.detection_time | Date and time that the first alert occurred in the incident. | Date |
 | PaloAltoNetworksXDR.Incident.status | Current status of the incident:<br/>"new","under_investigation","resolved_threat_handled","resolved_true_positive", "resolved_security_testing","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_other" | String |
@@ -73,7 +73,7 @@ This script is used in the following playbooks and scripts.
 | PaloAltoNetworksXDR.Incident.resolve_comment | Comments entered by the user when the incident was resolved. | String |
 | PaloAltoNetworksXDR.Incident.manual_severity | Incident severity assigned by the user. This does not affect the calculated severity. | String |
 | PaloAltoNetworksXDR.Incident.manual_description | Incident description provided by the user. | String |
-| PaloAltoNetworksXDR.Incident.xdr_url | A link to the incident view in XDR. | String |
+| PaloAltoNetworksXDR.Incident.xdr_url | A link to the incident view in Cortex XDR. | String |
 | PaloAltoNetworksXDR.Incident.starred | Whether the incident was starred. | Boolean |
 | PaloAltoNetworksXDR.Incident.alerts.alert_id | Unique ID for each alert. | String |
 | PaloAltoNetworksXDR.Incident.alerts.detection_timestamp | Date and time that the alert occurred. | Date |
