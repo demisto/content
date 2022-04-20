@@ -191,26 +191,28 @@ def search_pack(client: demisto_client,
         return {}
 
 
-def find_malformed_pack_id(error_message: str) -> List:
+def find_malformed_pack_id(body: str) -> List:
     """
     Find the pack ID from the installation error message in the case the error is that the pack is not found or
     in case that the error is that the pack's version is invalid.
     Args:
-        error_message (str): The error message of the failed installation pack.
+        body (str): The response message of the failed installation pack.
 
     Returns: malformed_pack_id (str)
 
     """
-    if 'pack id: ' in error_message:
-        return ast.literal_eval(error_message.split('pack id: ')[1])
-    else:
-        malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
-        malformed_pack_id = malformed_pack_pattern.findall(error_message)
-        if malformed_pack_id:
-            return malformed_pack_id
+    if body:
+        error_info = json.loads(body).get('error')
+        if 'pack id: ' in error_info:
+            return error_info.split('pack id: ')[1].replace(']', '').replace('[', '').split(', ')  # TODO: surely there's a regex for this
         else:
-            return []
-
+            malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
+            malformed_pack_id = malformed_pack_pattern.findall(error_info)
+            if malformed_pack_id and error_info:
+                return malformed_pack_id
+            else:
+                return []
+    return []
 
 def handle_malformed_pack_ids(malformed_pack_ids, packs_to_install):
     """
@@ -290,11 +292,13 @@ def install_packs(client: demisto_client,
     class GCPTimeOutException(ApiException):
         def __init__(self, error):
             if '/packs/' in error:
-                self.pack_id = Path(error.split('/packs/')[1]).parent.absolute()
+                self.pack_id = error.split('/packs/')[1].split('.zip')[0].split('/')[0] # TODO: regex?
+            super().__init__()
 
     class MalformedPackException(ApiException):
         def __init__(self, pack_ids):
             self.malformed_ids = pack_ids
+            super().__init__()
 
     def call_install_packs_request(packs):
         try:
@@ -314,11 +318,10 @@ def install_packs(client: demisto_client,
                 logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
 
         except ApiException as ex:
-            if error_info := json.loads(ex.body).get('error'):
-                if 'timeout awaiting response' in error_info:
-                    raise GCPTimeOutException(error_info)
-                if malformed_ids := find_malformed_pack_id(error_info):
-                    raise MalformedPackException(malformed_ids)
+            if 'timeout awaiting response' in ex.body:
+                raise GCPTimeOutException(ex.body)
+            if malformed_ids := find_malformed_pack_id(ex.body):
+                raise MalformedPackException(malformed_ids)
             raise ex
 
     try:

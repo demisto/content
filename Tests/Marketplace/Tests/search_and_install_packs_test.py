@@ -2,6 +2,7 @@ import demisto_client
 import pytest
 import timeout_decorator
 import Tests.Marketplace.search_and_install_packs as script
+from demisto_client.demisto_api.rest import ApiException
 from Tests.Marketplace.marketplace_constants import GCPConfig
 from google.cloud.storage import Blob
 import json
@@ -340,3 +341,37 @@ def test_is_pack_hidden(tmp_path, pack_metadata_content, expected):
     pack_metadata_file = tmp_path / PACKS_PACK_META_FILE_NAME
     pack_metadata_file.write_text(json.dumps(pack_metadata_content))
     assert script.is_pack_hidden(str(tmp_path)) == expected
+
+
+class MockHttpRequest:
+    def __init__(self, body):
+        self.status = ''
+        self.reason = ''
+        self.data = body
+
+    def getheaders(self):
+        return ''
+
+
+GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY ='{"id":"errInstallContentPack","status":400,"title":"Could not install content ' \
+                                     'pack","detail":"Could not install content pack","error":"Get' \
+                                     ' \"https://storage.googleapis.com/marketplace-ci-build/content/builds' \
+                                     '/master%2F2788053%2Fxsoar/content/packs/pack2/1.0.2/pack2.zip\": http2: ' \
+                                     'timeout awaiting response headers","encrypted":false,"multires":null}'
+MALFORMED_PACK_RESPONSE_BODY = '{"id":"errGetContentPack","status":400,"title":"Failed getting content pack",' \
+                               '"detail":"Failed getting content pack","error":"Item not found (8), pack id: ' \
+                               '[pack1]","encrypted":false,"multires":null}'
+
+
+class TestInstallPacks:
+    def test_gcp_timeout_exception(self, mocker):
+        http_resp = MockHttpRequest(GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY)
+        mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(http_resp=http_resp))
+        client = MockClient()
+        assert not script.install_packs(client, 'my_host', packs_to_install=[{'id': 'pack1'}, {'id': 'pack3'}])
+
+    def test_malformed_pack_exception(self, mocker):
+        http_resp = MockHttpRequest(MALFORMED_PACK_RESPONSE_BODY)
+        mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(http_resp=http_resp))
+        client = MockClient()
+        assert not script.install_packs(client, 'my_host', packs_to_install=[{'id': 'pack1'}, {'id': 'pack2'}])
