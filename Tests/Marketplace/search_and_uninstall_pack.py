@@ -135,7 +135,7 @@ def reset_base_pack_version(client: demisto_client):
         return False
 
 
-def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 100):
+def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 30):
     """
     Query if there are still installed packs, as it might take time to complete.
     Args:
