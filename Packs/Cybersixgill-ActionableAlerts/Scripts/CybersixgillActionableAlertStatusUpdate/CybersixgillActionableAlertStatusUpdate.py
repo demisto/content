@@ -22,7 +22,7 @@ def main():
         "Update status: alert id - {}, aggregate_alert_id - {}, new status - {}".format(command_args.get('alert_id', ''),
                                                                                         command_args.get('aggregate_alert_id', ''),
                                                                                         alert_status))
-    res = demisto.executeCommand("cybersixgill-update-alert-status-new", command_args)
+    res = demisto.executeCommand("cybersixgill-update-alert-status", command_args)
 
     if isError(res[0]):
         return_error('Failed to update Actionable alert status - {}'.format(res[0]['Contents']))
