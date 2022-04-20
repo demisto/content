@@ -150,7 +150,8 @@ def main():
             headers = {
                 "Content-Type": "application/json"
             }
-            response = requests.request("POST", api_url, data=payload, headers=headers, verify=False)
+            verify_certificate = demisto.params().get('insecure', False)
+            response = requests.request("POST", api_url, data=payload, headers=headers, verify=verify_certificate)
             if response.status_code == 200:
                 return_outputs('ok')
         elif command == 'fetch-incidents':
