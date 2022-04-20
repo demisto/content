@@ -8862,9 +8862,10 @@ class HygieneLookups:
                 block_actions = [rule.is_reset_both, rule.is_reset_client, rule.is_reset_server,
                                  rule.is_drop, rule.is_block_ip]
                 alert_actions = [rule.is_default, rule.is_alert]
+                is_blocked = any(block_actions)
+                is_alert = any(alert_actions)
                 for rule_severity in rule.severity:
-                    is_blocked = any(block_actions)
-                    is_alert = any(alert_actions)
+
                     # If the block severities are blocked
                     if is_blocked and rule_severity in block_severities:
                         block_severities.remove(rule_severity)
