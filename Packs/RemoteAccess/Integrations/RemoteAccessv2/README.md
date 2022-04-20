@@ -31,8 +31,8 @@ For login using root:
 2. Restart the sshd server: `service sshd restart`
 
 ## Configure the instance with SSH certificate
-Currently, the only type of certificate which is supported is RSA private keys (.PEM) files.
-In case access is required to an instance in the cloud, use the PEM file provided by the cloud provider to access the instance.
+Currently, the only type of certificate that is supported is RSA private keys (.PEM) files.
+In case access is required to an instance in the cloud, use the PEM file provided by the cloud provider.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
