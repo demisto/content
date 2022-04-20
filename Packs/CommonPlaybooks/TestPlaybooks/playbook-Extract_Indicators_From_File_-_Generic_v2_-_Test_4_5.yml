@@ -140,17 +140,17 @@ tasks:
               complex:
                 root: File
                 filters:
-                  - - operator: containsString
-                      left:
-                        value:
-                          simple: File.Text
-                        iscontext: true
-                      right:
-                        value:
-                          simple: 'This is an example of a non-text-searchable '
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: File.Text
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 'This is an example of a non-text-searchable '
                 accessor: Text
                 transformers:
-                  - operator: toUpperCase
+                - operator: toUpperCase
             iscontext: true
       - - operator: containsGeneral
           left:
