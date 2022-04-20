@@ -73,52 +73,22 @@ def uninstall_packs(client: demisto_client, pack_ids: list):
     return True
 
 
-def uninstall_all_packs(client: demisto_client):
+def uninstall_all_packs(client: demisto_client, hostname):
     """ Lists all installed packs and uninstalling them.
     Args:
         client (demisto_client): The client to connect to.
+        hostname (str): xsiam hostname
 
     Returns (list, bool):
         A flag that indicates if the operation succeeded or not.
     """
-    host = client.api_client.configuration.host
-
-    logging.info(f'Starting to search and uninstall packs in server: {host}')
+    logging.info(f'Starting to search and uninstall packs in server: {hostname}')
 
     packs_to_uninstall: list = get_all_installed_packs(client)
     if packs_to_uninstall:
         return uninstall_packs(client, packs_to_uninstall)
     logging.debug('Skipping packs uninstallation - nothing to uninstall')
     return True
-
-
-def check_base_pack_version(client: demisto_client):
-    """
-
-        Args:
-            client (demisto_client): The client to connect to.
-
-        Returns:
-            list of installed python
-        """
-    try:
-        logging.info("Attempting to fetch installed Base pack.")
-        response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                            path='/contentpacks/installed/Base',
-                                                                            method='GET',
-                                                                            accept='application/json',
-                                                                            _request_timeout=None)
-        if 200 <= status_code < 300:
-            installed_base = ast.literal_eval(response_data)
-            logging.success(f'Successfully fetched Base pack with version {installed_base.get("currentVersion")}')
-            return installed_base.get("currentVersion")
-        else:
-            result_object = ast.literal_eval(response_data)
-            message = result_object.get('message', '')
-            raise Exception(f'Failed to fetch Base pack - with status code {status_code}\n{message}')
-    except Exception as e:
-        logging.exception(f'The request to fetch installed packs has failed. Additional info: {str(e)}')
-        return None
 
 
 def reset_base_pack_version(client: demisto_client):
@@ -143,12 +113,6 @@ def reset_base_pack_version(client: demisto_client):
 
             if result_object and result_object.get('currentVersion'):
                 logging.debug('Found Base pack in bucket!')
-
-                current_installed_base_version = check_base_pack_version(client)
-                if current_installed_base_version is not None and current_installed_base_version == result_object.get(
-                        'currentVersion'):
-                    logging.debug('Installed Base pack is at the same version as the pack in the bucket.')
-                    return True
 
                 pack_data = {
                     'id': result_object.get('id'),
@@ -188,7 +152,8 @@ def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 1
             if retry > retries:
                 raise Exception('Waiting time for packs to be uninstalled has passed, there are still installed '
                                 'packs. Aborting.')
-            logging.info(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
+            logging.info(f'Retry: {retry}. '
+                         f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
                          f'packs installed. Sleeping for 10 seconds.')
             sleep(10)
             installed_packs = get_all_installed_packs(client)
@@ -243,16 +208,19 @@ def main():
     os.environ.pop('DEMISTO_USERNAME', None)
 
     options = options_handler()
+    host = options.xsiam_machine
     xsiam_servers = get_json_file(options.xsiam_servers_path)
     api_key, base_url, xdr_auth_id = get_xsiam_configuration(options.xsiam_machine, xsiam_servers)
-    logging.info(f'Starting cleanup for XSIAM server {options.xsiam_machine}')
+    logging.info(f'Starting cleanup for XSIAM server {host}')
 
     client = demisto_client.configure(base_url=base_url,
                                       verify_ssl=False,
                                       api_key=api_key,
                                       auth_id=xdr_auth_id)
 
-    success = reset_base_pack_version(client) and uninstall_all_packs(client) and wait_for_uninstallation_to_complete(client)
+    success = reset_base_pack_version(client) and uninstall_all_packs(client,
+                                                                      host) and wait_for_uninstallation_to_complete(
+        client)
     if not success:
         sys.exit(2)
     logging.info('Uninstalling packs done.')

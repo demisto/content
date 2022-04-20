@@ -92,7 +92,7 @@ def test_uninstall_all_packs(mocker):
     mocker.patch.object(script, 'get_all_installed_packs', return_value=MOCK_PACKS_ID_TO_UNINSTALL)
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
 
-    success = script.uninstall_all_packs(client)
+    success = script.uninstall_all_packs(client, 'hostname')
 
     assert success is True
 
