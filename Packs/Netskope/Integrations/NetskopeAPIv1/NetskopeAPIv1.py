@@ -914,12 +914,13 @@ def main():
         command = demisto.command()
 
         if command == 'test-module':
-            test_module(client,
-                        max_fetch=max_fetch,
-                        first_fetch=first_fetch,
-                        fetch_events=fetch_events,
-                        max_events_fetch=max_events_fetch,
-                        event_types=event_types)
+            return_results(
+                test_module(client,
+                            max_fetch=max_fetch,
+                            first_fetch=first_fetch,
+                            fetch_events=fetch_events,
+                            max_events_fetch=max_events_fetch,
+                            event_types=event_types))
         elif command == 'fetch-incidents':
             fetch_incidents(client,
                             max_fetch=max_fetch,
