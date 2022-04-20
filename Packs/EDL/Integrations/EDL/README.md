@@ -66,8 +66,12 @@ When running without --network=host the python port is not exposed to the machin
 
 ### Safeguards
 There are two integrations parameters used as safeguards: `Maximum CIDR network prefix bits size` and `Exclude top level domainGlobs`.
+
 These parameters prevent the integration from incorrectly inserting unwanted TLDs or a CIDR with a too wide range.
+
 The default value for `Maximum CIDR network prefix bits size` is 8, which means that CIDRs with a lower network prefix bits number are not included (such as 0.0.0.0/2).
+
+
 The default value for `Exclude top level domainGlobs` is off. If enabled, the exported list does not hold indicators such as \*.com, \*.co.uk, \*.org and other top level domains.
 ### Access the Export Indicators Service by Instance Name (HTTPS)
 **Note**: By default, the route is open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to the integration.
