@@ -89,8 +89,6 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
     max_fetch = demisto.params().get('max_fetch')
     if last_fetch is None:
         last_fetch = first_fetch_time
-    else:
-        last_fetch = last_fetch
     next_run_time = int(time.time())
     last_fetch_time = datetime.fromtimestamp(last_fetch)
     last_fetch_format = last_fetch_time.strftime(NCURION_DATE_FORMAT)
