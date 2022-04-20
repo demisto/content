@@ -3,7 +3,7 @@ Unit and Integrationt tests for Securities API
 """
 import json
 import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import pytest
 
 BASE_URL = "https://security.paloaltonetworks.com/api/v1"
@@ -20,7 +20,7 @@ def test_client_get_products():
     from Palo_Alto_Networks_Security_Advisories import Client
     test_client = Client(base_url=BASE_URL)
     result = test_client.get_products()
-    assert result.get("success") == True
+    assert result.get("success") is True
     assert isinstance(result.get("data"), list)
 
 
@@ -32,7 +32,7 @@ def test_client_get_pan_os_advisories():
     from Palo_Alto_Networks_Security_Advisories import Client
     test_client = Client(base_url=BASE_URL)
     result = test_client.get_advisories("PAN-OS", {})
-    assert result.get("success") == True
+    assert result.get("success") is True
     assert isinstance(result.get("data"), list)
 
     result = test_client.get_advisories("PAN-OS", {"sort": "-cvss"})

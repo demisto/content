@@ -77,7 +77,6 @@ def dataclass_to_command_results(result: Any, raw_response: Union[List, Dict]) -
     return command_result
 
 
-
 @dataclass
 class Advisory:
     """

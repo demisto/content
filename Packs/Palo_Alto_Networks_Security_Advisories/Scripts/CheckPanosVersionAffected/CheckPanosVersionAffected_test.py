@@ -1,7 +1,4 @@
-import json
-
 import pytest
-import os
 
 
 # TEST_ADVISORIES_JSON = os.path.sep.join(["..", "Palo_Alto_Networks_Security_Advisories", "test_data", "advisories.json"])
