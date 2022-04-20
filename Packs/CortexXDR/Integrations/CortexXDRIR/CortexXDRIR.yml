@@ -1,3 +1,4 @@
+beta: false
 category: Endpoint
 commonfields:
   id: Cortex XDR - IR
@@ -90,6 +91,9 @@ configuration:
   - resolved_auto
   required: false
   type: 16
+defaultclassifier: Cortex XDR - IR
+defaultmapperin: Cortex XDR - IR-mapper
+defaultmapperout: Cortex XDR - IR-out-mapper
 description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
@@ -3140,21 +3144,223 @@ script:
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.ingestion_time
       description: Ingestion time.
       type: String
+  - arguments:
+    - default: false
+      isArray: true
+      name: alert_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: true
+      name: severity
+      predefined:
+      - low.meduim
+      - high
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: true
+      name: Identity_type
+      predefined:
+      - ANONYMOUS
+      - ' APPLICATION'
+      - ' COMPUTE'
+      - ' FEDERATED_IDENTITY'
+      - ' SERVICE'
+      - ' SERVICE_ACCOUNT'
+      - ' TEMPORARY_CREDENTIALS'
+      - ' TOKEN'
+      - ' UNKNOWN'
+      - ' USER'
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: agent_id
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: action_external_hostname
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: rule_id
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: rule_name
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: alert_name
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: alert_source
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: time_frame
+      predefined:
+      - last_30_days
+      - ' last_14_days'
+      - ' last_7_days'
+      - ' last_2_days'
+      - ' last_24_hours'
+      - ' last_12_hours'
+      - ' last_3_hours'
+      - ' last_60_minutes'
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: custom_timeframe
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: user_name
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: actor_process_image_name
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: causality_actor_process_image_command_line
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: actor_process_image_command_line
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: action_process_image_command_line
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: actor_process_image_sha256
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: causality_actor_process_image_sha256
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: action_process_image_sha256
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: action_file_image_sha256
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: action_registry_name
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: action_registry_key_data
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: host_ip
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: action_local_ip
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: action_remote_ip
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: action_local_port
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: action_remote_port
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: dst_action_external_hostname
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: action_external_hostname
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: sort_field
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: sort_order
+      predefined:
+      - DESC
+      - ASC
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    hidden: false
+    name: xdr-get-alerts
   dockerimage: demisto/python3:3.10.1.27636
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   type: python
 tests:
 - Test XDR Playbook
-defaultmapperin: Cortex XDR - IR-mapper
-defaultclassifier: Cortex XDR - IR
-defaultmapperout: Cortex XDR - IR-out-mapper
 fromversion: 5.0.0

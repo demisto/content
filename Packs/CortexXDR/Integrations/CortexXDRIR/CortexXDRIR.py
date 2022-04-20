@@ -176,6 +176,128 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
+SEARCH_FIELD = 'search_field'
+SEARCH_TYPE = 'search_type'
+SEARCH_VALUE = 'search_value'
+ALERT_FILTER_SEARCH_FIELDS_AND_VALUES = {
+    'alert_id': {
+        SEARCH_FIELD: 'internal_id',
+        SEARCH_TYPE: 'EQ',
+    },
+    'severity': {
+        SEARCH_FIELD: 'severity',
+        SEARCH_TYPE: 'EQ',
+        SEARCH_VALUE: {
+            'low': 'SEV_020_LOW',
+            'medium': 'SEV_030_MEDIUM',
+            'high': 'SEV_040_HIGH'
+        }
+    },
+    'Identity_type': {
+        SEARCH_FIELD: 'Identity_type',
+        SEARCH_TYPE: 'EQ',
+    },
+    'agent_id': {
+        SEARCH_FIELD: 'agent_id',
+        SEARCH_TYPE: 'EQ',
+    },
+    'action_external_hostname': {
+        SEARCH_FIELD: 'action_external_hostname',
+        SEARCH_TYPE: 'CONTAINS',
+    },
+    'rule_id': {
+        SEARCH_FIELD: 'matching_service_rule_id',
+        SEARCH_TYPE: 'EQ',
+    },
+    'rule_name': {
+        SEARCH_FIELD: 'fw_rule',
+        SEARCH_TYPE: 'EQ',
+    },
+    'alert_name': {
+        SEARCH_FIELD: 'alert_name',
+        SEARCH_TYPE: 'CONTAINS',
+    },
+    'alert_source': {
+        SEARCH_FIELD: 'alert_source',
+        SEARCH_TYPE: 'CONTAINS',
+    },
+    'timeframe': {
+        SEARCH_FIELD: 'source_insert_ts',
+        SEARCH_TYPE: 'RELATIVE_TIMESTAMP',
+    },
+    'custom_timeframe': {
+        SEARCH_FIELD: 'source_insert_ts',
+        SEARCH_TYPE: 'RANGE',
+    },
+    'user_name': {
+        SEARCH_FIELD: 'actor_effective_username',
+        SEARCH_TYPE: 'CONTAINS',
+    },
+    'actor_process_image_name': {
+        SEARCH_FIELD: 'actor_process_image_name',
+        SEARCH_TYPE: 'CONTAINS',
+    },
+    'causality_actor_process_image_command_line': {
+        SEARCH_FIELD: 'causality_actor_process_command_line',
+        SEARCH_TYPE: 'EQ',
+    },
+    'actor_process_image_command_line': {
+        SEARCH_FIELD: 'actor_process_command_line',
+        SEARCH_TYPE: 'EQ',
+    },
+    'action_process_image_command_line': {
+        SEARCH_FIELD: 'action_process_image_command_line',
+        SEARCH_TYPE: 'EQ',
+    },
+    'actor_process_image_sha256': {
+        SEARCH_FIELD: 'actor_process_image_sha256',
+        SEARCH_TYPE: 'EQ',
+    },
+    'causality_actor_process_image_sha256': {
+        SEARCH_FIELD: 'causality_actor_process_image_sha256',
+        SEARCH_TYPE: 'EQ',
+    },
+    'action_process_image_sha256': {
+        SEARCH_FIELD: 'action_process_image_sha256',
+        SEARCH_TYPE: 'EQ',
+    },
+    'action_file_image_sha256': {
+        SEARCH_FIELD: 'action_file_sha256',
+        SEARCH_TYPE: 'EQ',
+    },
+    'action_registry_name': {
+        SEARCH_FIELD: 'action_registry_key_name',
+        SEARCH_TYPE: 'EQ',
+    },
+    'action_registry_key_data': {
+        SEARCH_FIELD: 'action_registry_data',
+        SEARCH_TYPE: 'CONTAINS',
+    },
+    'host_ip': {
+        SEARCH_FIELD: 'agent_ip_addresses',
+        SEARCH_TYPE: 'IPLIST_MATCH',
+    },
+    'action_local_ip': {
+        SEARCH_FIELD: 'action_local_ip',
+        SEARCH_TYPE: 'IP_MATCH',
+    },
+    'action_remote_ip': {
+        SEARCH_FIELD: 'action_remote_ip',
+        SEARCH_TYPE: 'IP_MATCH',
+    },
+    'action_local_port': {
+        SEARCH_FIELD: 'action_local_port',
+        SEARCH_TYPE: 'EQ',
+    },
+    'action_remote_port': {
+        SEARCH_FIELD: 'action_remote_port',
+        SEARCH_TYPE: 'EQ',
+    },
+    'dst_action_external_hostname': {
+        SEARCH_FIELD: 'dst_action_external_hostname',
+        SEARCH_TYPE: 'CONTAINS',
+    },
+}
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -1425,6 +1547,18 @@ class Client(BaseClient):
         res = self._http_request(
             method='POST',
             url_suffix='/alerts/get_original_alerts/',
+            json_data={
+                'request_data': {
+                    'alert_id_list': alert_id_list,
+                }
+            },
+        )
+        return res.get('reply', {})
+
+    def get_alerts_by_filter_data(self, alert_id_list):
+        res = self._http_request(
+            method='POST',
+            url_suffix='/alerts/get_alerts_by_filter_data/',
             json_data={
                 'request_data': {
                     'alert_id_list': alert_id_list,
