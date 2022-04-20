@@ -446,7 +446,7 @@ def enrich_dbot_and_display_file_analysis_results(intezer_result):
     if verdict == 'malicious':
         file['Malicious'] = {'Vendor': 'Intezer'}
 
-    md = tableToMarkdown('Analysis Report', intezer_result, url_keys=('analysis_url',))
+    md = tableToMarkdown('Analysis Report', intezer_result, url_keys=['analysis_url'])
 
     presentable_result = '## Intezer File analysis result\n'
     presentable_result += f' SHA256: {sha256}\n'
@@ -485,7 +485,7 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result):
     if verdict == 'malicious':
         url['Malicious'] = {'Vendor': 'Intezer'}
 
-    md = tableToMarkdown('Analysis Report', intezer_result, url_keys=('analysis_url',))
+    md = tableToMarkdown('Analysis Report', intezer_result, url_keys=['analysis_url'])
 
     presentable_result = '## Intezer Url analysis result\n'
     presentable_result += f' Url: {submitted_url}\n'
