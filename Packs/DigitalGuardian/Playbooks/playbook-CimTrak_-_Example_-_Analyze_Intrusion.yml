@@ -1,0 +1,529 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 25043b93-4265-49a0-8858-04aed0ec4edd
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Example to analyze intrusion
+id: CimTrak - Example - Analyze Intrusion
+inputs:
+- description: ""
+  key: ""
+  playbookInputQuery:
+    daterange:
+      fromdate: "0001-01-01T00:00:00Z"
+      fromdatelicenseval: "0001-01-01T00:00:00Z"
+      period:
+        by: ""
+        byfrom: ""
+        byto: ""
+        field: ""
+        fromvalue: null
+        tovalue: null
+      todate: "0001-01-01T00:00:00Z"
+    query: ""
+    queryEntity: indicators
+    results: null
+    runFromLastJobTime: true
+  required: false
+  value: {}
+- description: ""
+  key: lObjectDetailID
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      accessor: objectDetailId}
+      root: ${incident.labels
+name: CimTrak - Example - Analyze Intrusion
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9f2ff3c3-c076-4dc8-8ae2-37dba245b135
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 9f2ff3c3-c076-4dc8-8ae2-37dba245b135
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ObjectDetailId:
+        simple: ${inputs.lObjectDetailID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CimTrak
+      description: Returns File Analysis by Object Detail ID
+      id: 4ced97d9-8d26-44ea-8b8c-509780b3c3dc
+      iscommand: true
+      name: file-analysis-by-objectdetail-id
+      script: CimTrak|||file-analysis-by-objectdetail-id
+      type: regular
+      version: -1
+    taskid: 4ced97d9-8d26-44ea-8b8c-509780b3c3dc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: analysisResults.positives
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: CimTrak.FileAnalysis.analysisEngine
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: VirusTotal
+                root: CimTrak.FileAnalysis
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "0"
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: analysisResults.total
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: CimTrak.FileAnalysis.analysisEngine
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: VirusTotal
+                root: CimTrak.FileAnalysis
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "50"
+      label: File is not malicious
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: analysisResults.positives
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: CimTrak.FileAnalysis.analysisEngine
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: VirusTotal
+                root: CimTrak.FileAnalysis
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "5"
+      label: File is malicious
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "11"
+      File is malicious:
+      - "4"
+      - "9"
+      - "10"
+      File is not malicious:
+      - "3"
+      - "6"
+      - "7"
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Queries Virus Total and checks if the file is a known virus, or
+        known to be a valid file, if the file is malicious add it to the deny lists,
+        if is a valid known file add to allow list, else pass it to manual resolution.
+      id: 2ee22b8e-6653-4391-8f0f-f8ae0729f248
+      iscommand: false
+      name: Check if file is malicious
+      type: condition
+      version: -1
+    taskid: 2ee22b8e-6653-4391-8f0f-f8ae0729f248
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 410
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hash:
+        complex:
+          accessor: md5
+          root: CimTrak.FileAnalysis.analysisResults
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'MD5:'
+              suffix: {}
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CimTrak
+      description: Add Hash to allow list
+      id: 9f5f5635-3627-4777-87de-2feac42c8d67
+      iscommand: true
+      name: add-hash-allow-list MD5
+      script: CimTrak|||add-hash-allow-list
+      type: regular
+      version: -1
+    taskid: 9f5f5635-3627-4777-87de-2feac42c8d67
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 610
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hash:
+        complex:
+          accessor: md5
+          root: CimTrak.FileAnalysis.analysisResults
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'MD5:'
+              suffix: {}
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CimTrak
+      description: Add Hash to deny list
+      id: e8f06fc1-b395-4df4-8bb9-453c2f2ab530
+      iscommand: true
+      name: add-hash-deny-list MD5
+      script: CimTrak|||add-hash-deny-list
+      type: regular
+      version: -1
+    taskid: e8f06fc1-b395-4df4-8bb9-453c2f2ab530
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -840,
+          "y": 610
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hash:
+        complex:
+          accessor: sha256
+          root: CimTrak.FileAnalysis.analysisResults
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'SHA256:'
+              suffix: {}
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CimTrak
+      description: Add Hash to allow list
+      id: d3b18ba8-1e5e-444b-8626-1b9ff4692291
+      iscommand: true
+      name: add-hash-allow-list SHA256
+      script: CimTrak|||add-hash-allow-list
+      type: regular
+      version: -1
+    taskid: d3b18ba8-1e5e-444b-8626-1b9ff4692291
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 610
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hash:
+        complex:
+          accessor: sha1
+          root: CimTrak.FileAnalysis.analysisResults
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'SHA1:'
+              suffix: {}
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CimTrak
+      description: Add Hash to allow list
+      id: 446c3706-4656-4649-87a0-15191926b748
+      iscommand: true
+      name: add-hash-allow-list SHA1
+      script: CimTrak|||add-hash-allow-list
+      type: regular
+      version: -1
+    taskid: 446c3706-4656-4649-87a0-15191926b748
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 610
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ObjectDetaildIds:
+        simple: ${inputs.lObjectDetailID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CimTrak
+      description: Promote baseline files
+      id: 48513c40-c8fd-49fa-8271-fb6b2bd2dcde
+      iscommand: true
+      name: promote-authoritative-baseline-files
+      script: CimTrak|||promote-authoritative-baseline-files
+      type: regular
+      version: -1
+    taskid: 48513c40-c8fd-49fa-8271-fb6b2bd2dcde
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 610
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hash:
+        complex:
+          accessor: sha256
+          root: CimTrak.FileAnalysis.analysisResults
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'SHA256:'
+              suffix: {}
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CimTrak
+      description: Add Hash to deny list
+      id: 036750cc-0436-4d44-8caf-2584377544a3
+      iscommand: true
+      name: add-hash-deny-list SHA256
+      script: CimTrak|||add-hash-deny-list
+      type: regular
+      version: -1
+    taskid: 036750cc-0436-4d44-8caf-2584377544a3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 610
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hash:
+        complex:
+          accessor: sha1
+          root: CimTrak.FileAnalysis.analysisResults
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'SHA1:'
+              suffix: {}
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CimTrak
+      description: Add Hash to deny list
+      id: 1d1cb662-a9b4-4b5e-84eb-b856bf49edd6
+      iscommand: true
+      name: add-hash-deny-list SHA1
+      script: CimTrak|||add-hash-deny-list
+      type: regular
+      version: -1
+    taskid: 1d1cb662-a9b4-4b5e-84eb-b856bf49edd6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 610
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Review the incident to determine if the account activity is malicious.\n\nIf
+        malicious, consider the following:\n* Quarantine the account/ endpoint \n*
+        Revoke the account password\n* Query the account/ IPs logs in the SIEM\n*
+        Block the external IPs in the firewall/ proxy\n* Check the account's privileges
+        and change if needed"
+      id: c1608521-8134-4120-85f2-aca13ff86a25
+      iscommand: false
+      name: Manually remediate  the incident
+      type: regular
+      version: -1
+    taskid: c1608521-8134-4120-85f2-aca13ff86a25
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2210,
+          "y": 610
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_11_#default#": 0.9,
+      "2_6_File is not malicious": 0.84,
+      "2_7_File is not malicious": 0.9,
+      "2_8_File is not malicious": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 655,
+        "width": 3430,
+        "x": -840,
+        "y": 50
+      }
+    }
+  }
