@@ -6215,7 +6215,7 @@ def get_anti_spyware_best_practice_command():
     })
 
 
-def apply_dns_signature_policy_command(args) -> CommandResults:
+def apply_dns_signature_policy_command(args: dict) -> CommandResults:
     anti_spy_ware_name = args.get('anti_spyware_profile_name')
     edl = args.get('dns_signature_source')
     action = args.get('action')
@@ -6239,11 +6239,10 @@ def apply_dns_signature_policy_command(args) -> CommandResults:
         params=params,
     )
     res_status = result.get('response', {}).get('@status')
-    return CommandResults(outputs=result,
-                          outputs_prefix='PAN-OS.ApplyDNS',
-                          readable_output=f'**{res_status}**',
-                          raw_response=result
-                         )
+    return CommandResults(
+        readable_output=f'**{res_status}**',
+        raw_response=result,
+    )
 
 
 @logger
