@@ -1626,16 +1626,16 @@ class TestFirewallCommand:
                                        {
                                            'action': 'set',
                                            'type': 'config',
-                                           'xpath': f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']"
-                                                    f"/profiles/spyware/entry[@name='fake_profile_name']",
+                                           'xpath': "/config/devices/entry[@name='localhost.localdomain']"
+                                                    "/device-group/entry[@name='fakeDeviceGroup']"
+                                                    "/profiles/spyware/entry[@name='fake_profile_name']",
                                            'key': 'fakeAPIKEY!',
                                            'element': '<botnet-domains>'
-                                                      f'<lists>'
-                                                      f'<entry name="edl_name"><packet-capture>disable</packet-capture>'
-                                                      f'<action><allow/></action></entry>'
-                                                      f'</lists>'
-                                                      f'</botnet-domains>'
-                                       },
+                                                      '<lists>'
+                                                      '<entry name="edl_name"><packet-capture>disable</packet-capture>'
+                                                      '<action><allow/></action></entry>'
+                                                      '</lists>'
+                                                      '</botnet-domains>'},
                                        MockedResponse(text='<response status="success" code="20"><msg>'
                                                            'command succeeded</msg></response>', status_code=200,
                                                       reason=''),
