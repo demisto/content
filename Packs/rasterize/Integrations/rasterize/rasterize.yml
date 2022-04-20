@@ -85,6 +85,16 @@ script:
       name: file_name
       required: false
       secret: false
+    - default: true
+      defaultValue: 'false'
+      description: include the url in the screenshot or not.
+      isArray: false
+      name: include_url
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Converts the contents of a URL to an image file or a PDF file.
     execution: false
