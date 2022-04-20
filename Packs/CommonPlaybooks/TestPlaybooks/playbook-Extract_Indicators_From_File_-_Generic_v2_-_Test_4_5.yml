@@ -134,6 +134,24 @@ tasks:
           right:
             value:
               simple: http://www.msn.com
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                  - - operator: containsString
+                      left:
+                        value:
+                          simple: File.Text
+                        iscontext: true
+                      right:
+                        value:
+                          simple: 'This is an example of a non-text-searchable '
+                accessor: Text
+                transformers:
+                  - operator: toUpperCase
+            iscontext: true
       - - operator: containsGeneral
           left:
             value:
