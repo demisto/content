@@ -1,16 +1,16 @@
 {
-  "trigger_id": "uuid-32-here-1",
-  "playbook_id": "<ID_OF_PLAYBOOK-ALPHNUMERIC-STRING-1>",
-  "suggestion_reason": "it is a good playbook for these alerts",
-  "description": "trigger description",
-  "trigger_name": "A nice trigger name",
+  "trigger_id": "36c7e2a690b24f238bdea5620e0af09b",
+  "playbook_id": "AutoFocusPolling",
+  "suggestion_reason": "it is an awesome playbook for these alerts",
+  "description": "live trigger description 2",
+  "trigger_name": "live trigger 2",
   "alerts_filter": {
     "filter": {
-      "and": [
+      "AND": [
         {
-          "search_field": "alert_source",
-          "search_type": "EQ",
-          "search_value": "FW"
+          "SEARCH_FIELD": "alert_source",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "FW"
         }
       ]
     }
