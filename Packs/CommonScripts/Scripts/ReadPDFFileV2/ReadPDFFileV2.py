@@ -324,6 +324,34 @@ def get_urls_and_emails_from_pdf_annots(file_path):
     return urls_and_emails_set
 
 
+def extract_urls_and_emails_from_pdf_file(file_path, output_folder):
+    """
+    Extract URLs and Emails from the PDF file.
+
+    Args:
+        file_path (str): The path of the PDF file.
+        output_folder (str): The output folder for html files.
+    Returns:
+        tuple[set, set]: A set including the URLs and emails that were found, A set including only emails that were
+         extracted from the html content.
+    """
+
+    # Get urls from the binary file:
+    binary_file_urls = get_urls_from_binary_file(file_path)
+
+    # Get URLS + emails:
+    annots_urls_and_emails = get_urls_and_emails_from_pdf_annots(file_path)
+    html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(file_path, output_folder)
+
+    # This url is always generated with the pdf html file, and that's why we remove it
+    html_urls.remove('http://www.w3.org/1999/xhtml')
+
+    # Unify urls:
+    urls_and_emails_set = annots_urls_and_emails.union(html_urls, binary_file_urls)
+
+    return urls_and_emails_set, html_emails
+
+
 def separate_urls_and_emails(urls_and_emails_set, emails_set=None):
     """
     Gets a set containing URLs and email addresses that were extracted from the PDF, and separates URLs from emails.
@@ -394,15 +422,8 @@ def main():
                 pdf_text_output_path = f'{output_folder}/PDFText.txt'
                 text = get_pdf_text(cpy_file_path, pdf_text_output_path)
 
-                # Get urls from the binary file
-                binary_file_urls = get_urls_from_binary_file(cpy_file_path)
-
                 # Get URLS + emails:
-                annots_urls_and_emails = get_urls_and_emails_from_pdf_annots(cpy_file_path)
-                html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(cpy_file_path, output_folder)
-                # This url is always generated with the pdf html file, and that's why we remove it
-                html_urls.remove('http://www.w3.org/1999/xhtml')
-                urls_and_emails_set = annots_urls_and_emails.union(html_urls, binary_file_urls)
+                urls_and_emails_set, html_emails = extract_urls_and_emails_from_pdf_file(cpy_file_path, output_folder)
 
                 # Separate urls from email addresses:
                 urls_ec, emails_ec = separate_urls_and_emails(urls_and_emails_set, html_emails)
