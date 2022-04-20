@@ -19,9 +19,10 @@ def main():
             command_args['aggregate_alert_id'] = label.get('value')
 
     demisto.info(
-        "Update status: alert id - {}, aggregate_alert_id - {}, new status - {}".format(command_args.get('alert_id', ''),
-                                                                                        command_args.get('aggregate_alert_id', ''),
-                                                                                        alert_status))
+        "Update status: alert id - {}, aggregate_alert_id - {}, new status - {}".format(
+            command_args.get('alert_id', ''),
+            command_args.get('aggregate_alert_id', ''),
+            alert_status))
     res = demisto.executeCommand("cybersixgill-update-alert-status", command_args)
 
     if isError(res[0]):
