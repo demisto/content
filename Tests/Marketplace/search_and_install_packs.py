@@ -274,15 +274,19 @@ def install_packs(client: demisto_client,
                   packs_to_install: list,
                   request_timeout: int = 999999
                   ):
-    """ Make a packs installation request. This function
-       If pack fails to install, this function catches the corrupted pack and call another request to install packs
-       again, this time without the corrupted pack.
+    """ Make a packs installation request.
+       If a pack fails to install due to malformed pack, this function catches the corrupted pack and call another
+       request to install packs again, this time without the corrupted pack.
+       If a pack fails to install due to timeout when sending a request to GCP,
+       request to install all packs again once more.
+
     Args:
         client (demisto_client): The configured client to use.
         host (str): The server URL.
         packs_to_install (list): A list of the packs to install.
         request_timeout (int): Timeout settings for the installation request.
     """
+
     class GCPTimeOutException(ApiException):
         def __init__(self, error):
             if '/packs/' in error:
@@ -294,7 +298,7 @@ def install_packs(client: demisto_client,
 
     def call_install_packs_request(packs):
         try:
-            logging.debug(f'Installing the following packs in server {host}:\n{[pack["id"] for pack in packs]}')
+            logging.debug(f'Installing the following packs on server {host}:\n{[pack["id"] for pack in packs]}')
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
                                                                                 method='POST',
@@ -307,11 +311,10 @@ def install_packs(client: demisto_client,
                 packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
                               ast.literal_eval(response_data)]
                 logging.success(f'Packs were successfully installed on server {host}')
-                logging.debug(
-                    f'The following packs were successfully installed on server {host}:\n{packs_data}')
-                return None
+                logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
+
         except ApiException as ex:
-            if error_info := ex.body.get('error'):
+            if error_info := json.loads(ex.body).get('error'):
                 if 'timeout awaiting response' in error_info:
                     raise GCPTimeOutException(error_info)
                 if malformed_ids := find_malformed_pack_id(error_info):
@@ -326,15 +329,17 @@ def install_packs(client: demisto_client,
             call_install_packs_request(packs_to_install)
 
         except MalformedPackException as e:
+            # if this is malformed pack error, remove malformed packs and retry until success
             handle_malformed_pack_ids(e.malformed_ids, packs_to_install)
-            logging.warning(f'The request to install packs on server {host} has failed, retrying without '
+            logging.warning(f'The request to install packs on server {host} has failed, retrying without packs '
                             f'{e.malformed_ids}')
             return install_packs(client, host, [pack for pack in packs_to_install if pack['id'] not in e.malformed_ids],
                                  request_timeout)
 
         except GCPTimeOutException as e:
-            logging.warning(f'The request to install packs on server {host} has failed due to timeout awaiting response '
-                            f'headers while trying to install pack {e.pack_id}, trying again')
+            # if this is a gcp timeout, try only once more
+            logging.warning(f'The request to install packs on server {host} has failed due to timeout awaiting response'
+                            f' headers while trying to install pack {e.pack_id}, trying again for one time')
             call_install_packs_request(packs_to_install)
 
     except Exception as e:
