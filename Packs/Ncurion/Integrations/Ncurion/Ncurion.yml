@@ -23,7 +23,7 @@ configuration:
 - display: Password
   name: password
   required: false
-  type: 0
+  type: 4
 - display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
