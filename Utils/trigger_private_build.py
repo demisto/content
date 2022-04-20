@@ -103,6 +103,7 @@ def get_dispatch_workflows_ids(github_token: str, branch: str) -> List[int]:
         sys.exit(1)
 
     workflows = workflows.get('workflow_runs', [])
+    logging.info([workflow.get('created_at') for workflow in workflows])
     return [workflow.get('id') for workflow in workflows]
 
 
