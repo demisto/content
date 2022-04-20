@@ -128,7 +128,7 @@ def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
     """Given a dictionary advisory, return an `Advisory` object"""
     affects_dict = {}
 
-    for vendor_data_dict in advisory_dict.get("affects").get("vendor").get("vendor_data"):
+    for vendor_data_dict in advisory_dict.get("affects", {}).get("vendor", {}).get("vendor_data", []):
         affects_dict["affects_vendor_name"] = vendor_data_dict.get("vendor_name")
 
     return Advisory(
@@ -163,10 +163,12 @@ def get_advisories(client: Client, product: str, sort: str = "-date", severity: 
     :param severity: Filter advisories to this severity level only.
     :param q: Text search query
     """
-    params_dict = locals_to_dict(locals())
-    if params_dict.get("q"):
-        # oh, what fun
-        params_dict["q"] = f"\"{params_dict.get('q')}\""
+    params_dict = {
+        "q": f"\"{q}\"",
+        "severity": severity,
+        "sort": sort,
+        "product": product
+    }
 
     advisory_data = client.get_advisories(product, params_dict).get("data", {})
 
