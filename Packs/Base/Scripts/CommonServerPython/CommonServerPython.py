@@ -18,6 +18,7 @@ import time
 import traceback
 import types
 import urllib
+import gzip
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -36,9 +37,9 @@ def __line__():
     return cf.f_back.f_lineno
 
 
-# 41 - The line offset from the beggining of the file.
+# 42 - The line offset from the beggining of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 41, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 42, 'end': float('inf')},
 }
 
 
@@ -1764,7 +1765,7 @@ def FormatIso8601(t):
     return t.strftime("%Y-%m-%dT%H:%M:%S")
 
 
-def argToList(arg, separator=','):
+def argToList(arg, separator=',', transform=None):
     """
        Converts a string representation of args to a python list
 
@@ -1774,18 +1775,30 @@ def argToList(arg, separator=','):
        :type separator: ``str``
        :param separator: A string separator to separate the strings, the default is a comma.
 
+       :type transform: ``callable``
+       :param transform: A function transformer to transfer the returned list arguments.
+
        :return: A python list of args
        :rtype: ``list``
     """
     if not arg:
         return []
+
+    result = []
     if isinstance(arg, list):
-        return arg
-    if isinstance(arg, STRING_TYPES):
+        result = arg
+    elif isinstance(arg, STRING_TYPES):
         if arg[0] == '[' and arg[-1] == ']':
-            return json.loads(arg)
-        return [s.strip() for s in arg.split(separator)]
-    return [arg]
+            result = json.loads(arg)
+        else:
+            result = [s.strip() for s in arg.split(separator)]
+    else:
+        result = [arg]
+
+    if transform:
+        return [transform(s) for s in result]
+
+    return result
 
 
 def remove_duplicates_from_list_arg(args, field):
@@ -9693,6 +9706,226 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
     last_run.update(updated_last_run)
 
     return last_run
+
+
+# YML metadata collector mocked classes.
+class ParameterTypes:
+    """YML ConfKey key_type type.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The ParameterTypes enum
+    :rtype: ``ParameterTypes``
+    """
+    STRING = 0
+    NUMBER = 1
+    ENCRYPTED = 4
+    BOOLEAN = 8
+    AUTH = 9
+    DOWNLOAD_LINK = 11
+    TEXT_AREA = 12
+    INCIDENT_TYPE = 13
+    TEXT_AREA_ENCRYPTED = 14
+    SINGLE_SELECT = 15
+    MULTI_SELECT = 16
+
+
+class OutputArgument:
+    """YML output argument.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The OutputArgument object
+    :rtype: ``OutputArgument``
+    """
+    def __init__(self,
+                 name,
+                 output_type=dict,
+                 description=None,
+                 prefix=None):
+        pass
+
+
+class InputArgument:
+    """YML input argument for a command.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The InputArgument object
+    :rtype: ``InputArgument``
+    """
+    def __init__(self,
+                 name=None,
+                 description=None,
+                 required=False,
+                 default=None,
+                 is_array=False,
+                 secret=False,
+                 execution=False,
+                 options=None,
+                 input_type=None):
+        pass
+
+
+class ConfKey:
+    """YML configuration key fields.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The ConfKey object
+    :rtype: ``ConfKey``
+    """
+    def __init__(self,
+                 name,
+                 display=None,
+                 default_value=None,
+                 key_type=0,  # Expects ParameterType
+                 required=False,
+                 additional_info=None,
+                 options=None,
+                 input_type=None):
+        pass
+
+
+class YMLMetadataCollector:
+    """The YMLMetadataCollector class provides decorators for integration
+    functions which contain details relevant to yml generation.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The YMLMetadataCollector object
+    :rtype: ``YMLMetadataCollector``
+    """
+    def __init__(self, integration_name, docker_image="demisto/python3:latest",
+                 description=None, category="Utilities", conf=None,
+                 is_feed=False, is_fetch=False, is_runonce=False,
+                 detailed_description=None, image=None, display=None,
+                 tests=["No tests"], fromversion="6.0.0",
+                 long_running=False, long_running_port=False, integration_type="python",
+                 integration_subtype="python3", deprecated=None, systemd=None,
+                 timeout=None, default_classifier=None,
+                 default_mapper_in=None, integration_name_x2=None, default_enabled_x2=None,
+                 default_enabled=None, verbose=False):
+        pass
+
+    def command(self, command_name, outputs_prefix=None,
+                outputs_list=None, inputs_list=None,
+                execution=None, file_output=False,
+                multiple_output_prefixes=False, deprecated=False, restore=False,
+                description=None):
+        def command_wrapper(func):
+            def get_out_info(*args, **kwargs):
+                if restore:
+                    kwargs['command_name'] = command_name
+                    kwargs['outputs_prefix'] = outputs_prefix
+                    kwargs['execution'] = execution
+                return func(*args, **kwargs)
+
+            return get_out_info
+
+        return command_wrapper
+
+
+def send_events_to_xsiam(events, vendor, product, data_format=None):
+    """
+    Send the fetched events into the XDR data-collector private api.
+
+    :type events: ``Union[str, list]``
+    :param events: The events to send to send to XSIAM server. Should be of the following:
+        1. List of strings or dicts where each string or dict represents an event.
+        2. String containing raw events separated by a new line.
+
+    :type vendor: ``str``
+    :param vendor: The vendor corresponding to the integration that originated the events.
+
+    :type product: ``str``
+    :param product: The product corresponding to the integration that originated the events.
+
+    :type data_format: ``str``
+    :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
+        events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
+
+    :return: None
+    :rtype: ``None``
+    """
+    data = events
+    amount_of_events = 0
+    # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
+    if isinstance(events, list):
+        amount_of_events = len(events)
+        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
+        if isinstance(events[0], dict):
+            events = [json.dumps(event) for event in events]
+            data_format = 'json'
+        # Separating each event with a new line
+        data = '\n'.join(events)
+
+    elif isinstance(events, str):
+        amount_of_events = len(events.split('\n'))
+
+    else:
+        raise DemistoException(('Unsupported type: {type_events} for the "events" parameter. Should be a string or '
+                                'dict.').format(type_events=type(events)))
+
+    if not data_format:
+        data_format = 'text'
+
+    xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
+    xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
+    xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
+    headers = {
+        'authorization': xsiam_api_token,
+        'format': data_format,
+        'product': product,
+        'vendor': vendor,
+        'content-encoding': 'gzip'
+    }
+
+    header_msg = 'Error sending new events into XSIAM. \n'
+
+    def events_error_handler(response):
+        """
+        Internal function to parse the XSIAM API errors
+        """
+        try:
+            response = response.json()
+            error = res.reason
+            if response.get('error').lower() == 'false':
+                xsiam_server_err_msg = response.get('error')
+                error += ": " + xsiam_server_err_msg
+
+        except ValueError:
+            error = '\n{}'.format(res.text)
+
+        api_call_info = (
+            'Parameters used:\n'
+            '\tURL: {xsiam_url}\n'
+            '\tHeaders: {headers}\n\n'
+            'Error received:\n\t{error}'
+        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=4), error=error)
+
+        demisto.error(header_msg + api_call_info)
+        raise DemistoException(header_msg + error, DemistoException)
+
+    zipped_data = gzip.compress(data.encode('utf-8'))   # type: ignore[AttributeError,attr-defined]
+    client = BaseClient(base_url=xsiam_url)
+    res = client._http_request(method='POST', full_url=urljoin(xsiam_url, '/logs/v1/xsiam'), data=zipped_data,
+                               headers=headers,
+                               error_handler=events_error_handler)
+    if res.get('error').lower() != 'false':
+        raise DemistoException(header_msg + res.get('error'))
+
+    demisto.updateModuleHealth({'eventsPulled': amount_of_events})
 
 
 ###########################################
