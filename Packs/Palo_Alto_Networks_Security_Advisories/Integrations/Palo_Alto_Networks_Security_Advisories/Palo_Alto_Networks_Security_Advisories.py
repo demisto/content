@@ -51,6 +51,7 @@ def dataclass_to_command_results(result: Any, raw_response: Union[List, Dict]) -
         )
         return command_result
 
+    outputs: Union[List[Dict], Dict, Any]
     if type(result) is list:
         outputs = [vars(x) for x in result]
         summary_list = [vars(x) for x in result]
@@ -123,7 +124,7 @@ def locals_to_dict(locals_data: dict) -> dict:
     return result_dict
 
 
-def flatten_advisory_dict(advisory_dict: dict) -> Optional[Advisory]:
+def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
     """Given a dictionary advisory, return an `Advisory` object"""
     affects_dict = {}
 

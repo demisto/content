@@ -38,7 +38,7 @@ class Advisory:
     _output_prefix = "MatchingSecurityAdvisory"
 
 
-def return_result_dataclass(result: list[Advisory]):
+def return_result_dataclass(result: List[Advisory]):
     """Converts the resultant dataclasses into command results"""
     if not result:
         command_result = CommandResults(
@@ -72,7 +72,7 @@ def simplify_affected_version_list(affected_version_list: List[str]):
     return simplified_version_list
 
 
-def compare_version_with_advisories(panos_version: str, advisories_list: list[Advisory]):
+def compare_version_with_advisories(panos_version: str, advisories_list: List[Advisory]):
     """
     Given a list of PAN-OS security advisories, compare the given panos-version to see if the version matches the affected list
 
