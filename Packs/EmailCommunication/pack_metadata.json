@@ -25,5 +25,9 @@
     },
     "marketplaces": [
         "xsoar"
+    ],
+    "itemPrefix": [
+        "Email",
+        "Add"
     ]
 }
