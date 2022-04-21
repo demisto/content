@@ -934,7 +934,6 @@ script:
     - contextPath: Automox.Groups.deleted
       description: 'Whether a group is deleted'
       type: Boolean
-      defaultValue: false
   - name: automox-group-create
     description: "Create a group in Automox"
     arguments:
@@ -1105,7 +1104,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.4.28442
 fromversion: 6.0.0
 tests:
 - No tests
