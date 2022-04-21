@@ -276,22 +276,6 @@
             "pcap": []
         }
     }, {
-        "value": {
-            "pcap": "0123456789ACBDEF"
-        },
-        "path": "pcap",
-        "pcap_type": "",
-        "bin2txt_mode": "text-based-protocol",
-        "pcap_filter": "",
-        "rsa_decrypt_key": "",
-        "wpa_password": "",
-        "filter_keys": "",
-        "error_action": "keep",
-        "server_ports": "",
-        "result": {
-            "pcap": "0123456789ACBDEF"
-        }
-    }, {
         "value": "Cg0NCsAAAABNPCsaAQAAAP//////////AgA4AEFNRCBSeXplbiA3IFBSTyA0NzUwVSB3aXRoIFJhZGVvbiBHcmFwaGljcyAod2l0aCBTU0U0LjIpAwAlADY0LWJpdCBXaW5kb3dzIDEwICgyMDA5KSwgYnVpbGQgMTkwNDMAAAAEADIARHVtcGNhcCAoV2lyZXNoYXJrKSAzLjQuMiAodjMuNC4yLTAtZ2E4ODljZjFiMWJmOSkAAAAAAADAAAAAAQAAAJAAAAABAAAAAAAEAAIAMgBcRGV2aWNlXE5QRl97QjQ0QjAwODAtMTI3MS00MkMxLTlFNzAtRUIwRjJEMkZEMjlGfQAAAwAFAFdpLUZpAAAACQABAAYAAAAMACUANjQtYml0IFdpbmRvd3MgMTAgKDIwMDkpLCBidWlsZCAxOTA0MwAAAAAAAACQAAAABgAAAHwAAAAAAAAARdwFAEgCqltbAAAAWwAAADj4XssGz6h+6rxrUAgARQAATforQACABgAAwKgKZKzZH4Ts0QBQBM566SShLfJQGAIBl6kAAEdFVCAvIEhUVFAvMS4wDQpDb250ZW50LUxlbmd0aDogMA0KDQoAfAAAAAYAAAAAAgAAAAAAAEXcBQDg6qtb3QEAAN0BAACofuq8a1A4+F7LBs8IAEWAAc/zcgAAeQa0zKzZH4TAqApkAFDs0SSh9woEznsOUBkBAKdlAAAyOlx4MjImIzMwMDExOyYjMjA2ODc7JiMxMjM5MTsmIzI2OTA4OyYjMzIwMzQ7XHgyMixceDIyc3JjaFx4MjI6XHgyMkdvb2dsZSAmIzI2OTA4OyYjMzIwMzQ7XHgyMn0sXHgyMm92clx4MjI6e30sXHgyMnBxXHgyMjpceDIyXHgyMixceDIycmVmcGRceDIyOnRydWUsXHgyMnJmc1x4MjI6W10sXHgyMnNiYXNceDIyOlx4MjIwIDNweCA4cHggMCByZ2JhKDAsMCwwLDAuMiksMCAwIDAgMXB4IHJnYmEoMCwwLDAsMC4wOClceDIyLFx4MjJzYnBsXHgyMjoxNixceDIyc2Jwclx4MjI6MTYsXHgyMnNjZFx4MjI6MTAsXHgyMnN0b2tceDIyOlx4MjJNLWZqeHFRWHUteVNOcEl3YzkzWUloNVpBYndceDIyLFx4MjJ1aGRlXHgyMjpmYWxzZX19Jztnb29nbGUucG1jPUpTT04ucGFyc2UocG1jKTt9KSgpOzwvc2NyaXB0PiAgICAgICAgPC9ib2R5PjwvaHRtbD4AAAAAAgAA",
         "path": "",
         "pcap_type": "",
