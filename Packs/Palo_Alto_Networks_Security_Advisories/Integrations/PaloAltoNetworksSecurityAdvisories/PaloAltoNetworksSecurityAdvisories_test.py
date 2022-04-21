@@ -17,7 +17,7 @@ def test_client_get_products():
     if not RUN_INTEGRATION_TESTS:
         pytest.skip("Integration tests disabled.")
 
-    from Palo_Alto_Networks_Security_Advisories import Client
+    from PaloAltoNetworksSecurityAdvisories import Client
     test_client = Client(base_url=BASE_URL)
     result = test_client.get_products()
     assert result.get("success") is True
@@ -29,7 +29,7 @@ def test_client_get_pan_os_advisories():
     if not RUN_INTEGRATION_TESTS:
         pytest.skip("Integration tests disabled.")
 
-    from Palo_Alto_Networks_Security_Advisories import Client
+    from PaloAltoNetworksSecurityAdvisories import Client
     test_client = Client(base_url=BASE_URL)
     result = test_client.get_advisories("PAN-OS", {})
     assert result.get("success") is True
@@ -44,7 +44,7 @@ def test_client_get_pan_os_advisories():
 
 def test_locals_to_dict():
     """Unit test: Tests locals_to_dict"""
-    from Palo_Alto_Networks_Security_Advisories import locals_to_dict
+    from PaloAltoNetworksSecurityAdvisories import locals_to_dict
     test_local_dict = {
         "arg1": "value1",
         "arg2": None
@@ -55,10 +55,10 @@ def test_locals_to_dict():
     assert locals_to_dict(test_local_dict) == assert_dict
 
 
-@patch("Palo_Alto_Networks_Security_Advisories.Client.get_advisories")
+@patch("PaloAltoNetworksSecurityAdvisories.Client.get_advisories")
 def test_get_advisories_command(patched_get_advisories):
     patched_get_advisories.return_value = json.load(open("test_data" + os.sep + "advisories.json"))
-    from Palo_Alto_Networks_Security_Advisories import Client, get_advisories
+    from PaloAltoNetworksSecurityAdvisories import Client, get_advisories
     test_client = Client(base_url=BASE_URL)
     result = get_advisories(test_client, "PANOS")
     assert result
