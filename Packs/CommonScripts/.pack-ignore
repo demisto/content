@@ -70,3 +70,6 @@ ignore=SC106
 [known_words]
 UnzipFile
 ZipStrings
+ExtractInbetween
+TLDs
+ParseEmailFiles

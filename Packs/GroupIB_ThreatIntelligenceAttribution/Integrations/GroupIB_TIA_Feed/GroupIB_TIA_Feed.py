@@ -616,7 +616,9 @@ def unpack_iocs(iocs, ioc_type, fields, fields_names, collection_name):
         # Transforming into correct date format
         for date_field in DATE_FIELDS_LIST:
             if fields_dict.get(date_field):
-                fields_dict[date_field] = dateparser.parse(fields_dict.get(date_field)).strftime('%Y-%m-%dT%H:%M:%SZ')
+                parsed_dated = dateparser.parse(fields_dict.get(date_field))  # type: ignore
+                assert parsed_dated is not None, f'could not parse {fields_dict.get(date_field)}'
+                fields_dict[date_field] = parsed_dated.strftime('%Y-%m-%dT%H:%M:%SZ')
 
         fields_dict.update({'gibcollection': collection_name})
         unpacked.append({'value': iocs, 'type': ioc_type,
@@ -714,12 +716,12 @@ def fetch_indicators_command(client: Client, last_run: Dict, first_fetch_time: s
             if date_from is None:
                 raise DemistoException('Inappropriate indicators_first_fetch format, '
                                        'please use something like this: 2020-01-01 or January 1 2020 or 3 days')
-            date_from = date_from.strftime('%Y-%m-%d')
+            date_from = date_from.strftime('%Y-%m-%d')  # type: ignore
         else:
             seq_update = last_fetch
 
         portions = client.create_update_generator(collection_name=collection_name,
-                                                  date_from=date_from, seq_update=seq_update)
+                                                  date_from=date_from, seq_update=seq_update)  # type: ignore
         k = 0
         for portion in portions:
             for feed in portion:
