@@ -28,7 +28,7 @@ def test_main(mocker):
         mocker.patch.object(demisto, 'results')
         main()
         assert demisto.results.call_count == 1
-        
+
         results = demisto.results.call_args[0][0]
         contents = results['Contents']
         if json.dumps(contents) != json.dumps(t['contents']):
