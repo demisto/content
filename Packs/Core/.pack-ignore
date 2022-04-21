@@ -9,3 +9,6 @@ ignore=RM104
 
 [file:impossibleTravelerGetDistance.yml]
 ignore=CJ105
+
+[known_words]
+XSIAM
