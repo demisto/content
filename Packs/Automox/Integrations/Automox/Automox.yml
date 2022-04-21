@@ -1108,4 +1108,4 @@ script:
   dockerimage: demisto/python3:3.10.4.27798
 fromversion: 6.0.0
 tests:
-- Upload_Vulnerability_Report_to_Automox
+- No tests
