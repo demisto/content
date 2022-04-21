@@ -7040,6 +7040,8 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
     deprecated: false
     description: Gets information from all PAN-OS systems in the topology.
     name: pan-os-platform-get-system-info

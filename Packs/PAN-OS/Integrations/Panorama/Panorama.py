@@ -7691,11 +7691,15 @@ class Topology:
                     serial: device
                 }
 
-    def firewalls(self, filter_string: Optional[str] = None) -> Iterator[Firewall]:
+    def firewalls(self, filter_string: Optional[str] = None, target: Optional[str] = None) -> Iterator[Firewall]:
         """
         Returns an iterable of firewalls in the topology
         :param filter_string: The filter string to filter he devices on
+        :param target: Instead of a filter string, target can be used to only ever return one device.
         """
+        if target:
+            return self.get_single_device(filter_string=target)
+
         firewall_objects = Topology.filter_devices(self.firewall_objects, filter_string)
         if not firewall_objects:
             raise DemistoException("Filter string returned no devices known to this topology.")
@@ -7703,11 +7707,14 @@ class Topology:
         for firewall in firewall_objects.values():
             yield firewall
 
-    def all(self, filter_string: Optional[str] = None) -> Iterator[Union[Firewall, Panorama]]:
+    def all(self, filter_string: Optional[str] = None, target: Optional[str] = None) -> Iterator[Union[Firewall, Panorama]]:
         """
         Returns an iterable for all devices in the topology
         :param filter_string: The filter string to filter he devices on
         """
+        if target:
+            return self.get_single_device(filter_string=target)
+
         all_devices = {**self.firewall_objects, **self.panorama_objects}
         all_devices = Topology.filter_devices(all_devices, filter_string)
         # Raise if we get an empty dict back
@@ -7729,7 +7736,6 @@ class Topology:
 
         raise DemistoException(f"filter_str {filter_string} is not the exact ID of a host in this topology; " +
                                f"use a more specific filter string.")
-
 
     def get_by_filter_str(self, filter_string: Optional[str] = None) -> dict:
         """
@@ -9105,15 +9111,20 @@ class UniversalCommand:
     SHOW_JOBS_COMMAND = "show jobs all"
 
     @staticmethod
-    def get_system_info(topology: Topology, device_filter_str: str = None) -> ShowSystemInfoCommandResult:
+    def get_system_info(
+            topology: Topology,
+            device_filter_str: str = None,
+            target: Optional[str] = None
+    ) -> ShowSystemInfoCommandResult:
         """
         Get the running system information
         :param topology: `Topology` instance.
         :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single target device, by serial number
         """
         result_data: List[ShowSystemInfoResultData] = []
         summary_data: List[ShowSystemInfoSummaryData] = []
-        for device in topology.all(filter_string=device_filter_str):
+        for device in topology.all(filter_string=device_filter_str, target=target):
             response = run_op_command(device, UniversalCommand.SYSTEM_INFO_COMMAND)
             result_data.append(dataclass_from_element(device, ShowSystemInfoResultData,
                                                       response.find("./result/system")))
@@ -9560,13 +9571,18 @@ def get_routes(topology: Topology, device_filter_string: Optional[str] = None) -
     return FirewallCommand.get_routes(topology, device_filter_string)
 
 
-def get_system_info(topology: Topology, device_filter_string: Optional[str] = None) -> ShowSystemInfoCommandResult:
+def get_system_info(
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        target: Optional[str] = None
+) -> ShowSystemInfoCommandResult:
     """
     Gets information from all PAN-OS systems in the topology.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single target device, by serial number
     """
-    return UniversalCommand.get_system_info(topology, device_filter_string)
+    return UniversalCommand.get_system_info(topology, device_filter_string, target)
 
 
 def get_device_groups(topology: Topology, device_filter_string: Optional[str] = None) -> List[DeviceGroupInformation]:
