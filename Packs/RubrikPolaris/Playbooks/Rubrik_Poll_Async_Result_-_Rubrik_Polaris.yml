@@ -1,0 +1,209 @@
+id: Rubrik Poll Async Result - Rubrik Polaris
+version: -1
+name: Rubrik Poll Async Result - Rubrik Polaris
+description: Poll async result for any asynchronous request made to rubrik.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5f79deee-3355-46a6-89b7-389326b6121e
+    type: start
+    task:
+      id: 5f79deee-3355-46a6-89b7-389326b6121e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 97ecc205-d585-4b9e-8b79-99a416713f03
+    type: playbook
+    task:
+      id: 97ecc205-d585-4b9e-8b79-99a416713f03
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: cluster_id
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.ClusterId
+      Ids:
+        complex:
+          root: inputs.RequestId
+      Interval:
+        complex:
+          root: inputs.PollingInterval
+      PollingCommandArgName:
+        simple: request_id
+      PollingCommandName:
+        simple: rubrik-gps-async-result
+      Timeout:
+        complex:
+          root: inputs.PollingTimeout
+      dt:
+        simple: RubrikPolaris.GPSAsyncResult(val.status === 'RUNNING' || val.status
+          === 'QUEUED' || val.status === 'ACQUIRING').id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 5e3c09a3-62c7-475e-8f49-ceab510e5afa
+    type: regular
+    task:
+      id: 5e3c09a3-62c7-475e-8f49-ceab510e5afa
+      version: -1
+      name: Get async results
+      description: Retrieve the result of an asynchronous request. This command will
+        retrieve the result of requests made by commands "rubrik-gps-snapshot-files-download",
+        "rubrik-gps-vm-livemount", "rubrik-gps-vm-export" and "rubrik-gps-vm-snapshot-create".
+      script: '|||rubrik-gps-async-result'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: inputs.ClusterId
+      request_id:
+        complex:
+          root: inputs.RequestId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 7991cbac-80b8-4747-8b50-d5c09bace317
+    type: title
+    task:
+      id: 7991cbac-80b8-4747-8b50-d5c09bace317
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 595,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ClusterId
+  value: {}
+  required: true
+  description: Cluster ID of the object.
+  playbookInputQuery:
+- key: RequestId
+  value: {}
+  required: true
+  description: ID of the asynchronous request.
+  playbookInputQuery:
+- key: PollingInterval
+  value:
+    simple: "5"
+  required: false
+  description: Frequency with which the polling command will run (minutes).
+  playbookInputQuery:
+- key: PollingTimeout
+  value:
+    simple: "720"
+  required: false
+  description: Amount of time to poll before declaring a timeout and resuming the
+    playbook (in minutes).
+  playbookInputQuery:
+outputs:
+- contextPath: RubrikPolaris.GPSAsyncResult
+  description: Response of async result.
+tests:
+- RubrikPolaris-Test
+fromversion: 6.0.0
