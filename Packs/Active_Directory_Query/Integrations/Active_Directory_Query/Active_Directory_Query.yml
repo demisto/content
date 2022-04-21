@@ -24,7 +24,6 @@ configuration:
   required: true
 - display: NTLM authentication
   name: ntlm
-  defaultvalue: ""
   type: 8
   required: false
 - display: Base DN (for example "dc=company,dc=com")
@@ -48,7 +47,6 @@ configuration:
   - TLS
 - display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: ""
   type: 8
   required: false
 - additionalinfo: Used in the IAM commands.
