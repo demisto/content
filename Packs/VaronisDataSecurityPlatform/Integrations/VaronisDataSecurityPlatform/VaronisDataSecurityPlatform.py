@@ -438,9 +438,11 @@ class SearchQueryBuilder(object):
         }
         query['query'] = {
             'entityName': self._entity_name,
-            'requestParams': self._request_params,
             'filter': {'filterOperator': 0, 'filters': self._filters}
         }
+
+        query['requestParams'] = self._request_params
+
         return query
 
 
@@ -970,7 +972,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
             enrich_with_url(alert, client._base_url, alert['ID'])
 
     readable_output = tableToMarkdown('Varonis Alerts', alerts, headers=[
-                                      'Name', 'Severity', 'Time', 'Category', 'UserName', 'Status', 'Url'])
+                                      'Name', 'Severity', 'Time', 'Category', 'UserName', 'Status'])
 
     return CommandResults(
         readable_output=readable_output,
