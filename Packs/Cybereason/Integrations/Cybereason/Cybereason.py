@@ -854,228 +854,205 @@ def unprevent_file(file_hash):
     return http_request('POST', '/rest/classification/update', json_body=json_body)
 
 
-def kill_process_command():
-    machine_name = demisto.getArg('machine')
-    file_content = demisto.getArg('file')
-    malop_guid = demisto.getArg('malop')
-    user_name = demisto.getArg('userName')
-    is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
-    if is_machine_conntected == True:
-        operation_status = get_kill_process_status(malop_guid, machine_name, file_content, user_name)
-        success_status = []
-        failure_status = []
-        pending_status = []
-        for item in operation_status:
-            status = item["status"]
-            target_Id = item["targetId"]
-            if status == "SUCCESS":
-                success_status.append({"Target ID": target_Id})
-            elif status == "FAILURE":
-                reason = item["error"]["message"]
-                error_type = item["error"]["errorType"]
-                failure_status.append({"Target ID": target_Id, "Message": reason, "Error Type": error_type})
-            else:
-                pending_status.append({"Timeout while fetching progress for kill process operation on target ID: ": target_Id})
-        demisto.results("Success responses (if any):" + "\n{}".format(success_status) + "\n\n" + "Failure responses (if any):" + "\n{}".format(failure_status) + "\n\n" + "Pending responses (if any):" + "\n{}".format(pending_status))
-    else:
-        demisto.results('Machine must be connected to Cybereason in order to perform this action.')
-
-
-def get_kill_process_status(malop_guid, machine_name, file_content, user_name):
-    machine_guid = get_machine_guid(machine_name)
-    all_machine_guid = []
-    procceses = query_processes(machine_name, file_content)
-    process_data = dict_safe_get(procceses, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
-    for process_guid in process_data.keys():
-        all_machine_guid.append({"targetId": process_guid, "actionType": 'KILL_PROCESS'})
-    response = kill_process(malop_guid, machine_guid, all_machine_guid)
-    remediation_Id = dict_safe_get(response, ['remediationId'])
-    progress_api_response = get_remediation_action_progress(user_name, malop_guid, remediation_Id)
-    return progress_api_response['statusLog']
-
-
-def kill_process(malop_guid, machine_guid, process_guid):
+def available_remediation_actions_command():
+    malop_guid = demisto.getArg('malopGuid')
     json_body = {
-        'malopId': malop_guid,
-        'actionsByMachine': {
-            machine_guid: process_guid
-        }
+        "detectionEventMalopGuids": [], 
+        "processMalopGuids": [malop_guid]
     }
 
-    return http_request('POST', '/rest/remediate', json_body=json_body)
+    response = http_request('POST', '/rest/detection/custom-remediation', json_body=json_body)
+    demisto.results(response)
+
+
+def kill_process_command():
+    malop_guid = demisto.getArg('malopGuid')
+    machine_name = demisto.getArg('machine')
+    target_id = demisto.getArg('targetId')
+    user_name = demisto.getArg('userName')
+    timeout_second = demisto.getArg('timeout')
+    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
+    remediation_action = 'KILL_PROCESS'
+    is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
+    if is_machine_conntected == True:
+        response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
+        action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
+        if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
+            demisto.results("Kill process remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])))
+        elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
+            demisto.results("Kill process remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])))
+    else:
+        demisto.results('Machine must be connected to Cybereason in order to perform this action.')
 
 
 def quarantine_file_command():
+    malop_guid = demisto.getArg('malopGuid')
     machine_name = demisto.getArg('machine')
-    malop_guid = demisto.getArg('malop')
+    target_id = demisto.getArg('targetId')
     user_name = demisto.getArg('userName')
+    timeout_second = demisto.getArg('timeout')
+    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
+    remediation_action = 'QUARANTINE_FILE'
     is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
     if is_machine_conntected == True:
-        files_list = get_quarantine_status(malop_guid, machine_name, user_name)
-        result = []
-        for item in range(len(files_list)):
-            status = files_list[item].get("Status")
-            filename = files_list[item].get("FileName")
-            if status == "SUCCESS":
-                result.append("The quarantine file operation for '{1}' is {0}".format(str(status), str(filename)))
-            elif status == "FAILURE":
-                result.append("The quarantine file operation for '{1}' is {0}".format(str(status), str(filename)))
-            else:
-                result.append("Timeout while fetching progress for quarantine operation on file '{}'".format(str(filename)))
-        demisto.results(result)
+        response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
+        action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
+        if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
+            demisto.results("Quarantine file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])))
+        elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
+            demisto.results("Quarantine file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])))
     else:
         demisto.results('Machine must be connected to Cybereason in order to perform this action.')
 
 
-def get_quarantine_status(malop_guid, machine_name, user_name):
-    machine_guid = get_machine_guid(machine_name)
-    all_file_guids = get_file_guids(malop_guid)
-    final_status = []
-    for filename, file_guid in all_file_guids.items():
-        response = quarantine_file(malop_guid, machine_guid, file_guid)
-        if dict_safe_get(response, ['statusLog', 0, 'error', 'errorType']) == "INVALID_ARGUMENT":
-            demisto.results("{0}, please provide correct input for file '{1}'.".format(dict_safe_get(response, ['statusLog', 0, 'error', 'errorType']), str(filename)))
-        else:
-            remediation_Id = response['remediationId']
-            timeout_sec = 60
-            interval_sec = 10
-            all_file_status = []
-            while timeout_sec > 0:
-                progress_api_response = get_remediation_action_progress(user_name, malop_guid, remediation_Id)
-                remediation_resp = dict_safe_get(progress_api_response, ['statusLog', 2, 'status'])
-                all_file_status.append({"Status": remediation_resp, "FileName": filename})
-                time.sleep(interval_sec)
-                timeout_sec = timeout_sec - interval_sec
-            final_status.append(all_file_status[-1])
-    return final_status
-
-
-def quarantine_file(malop_guid, machine_guid, process_guid):
-    json_body = {
-        'malopId': malop_guid,
-        'actionsByMachine': {
-            machine_guid: [{
-                'targetId': process_guid,
-                'actionType': 'QUARANTINE_FILE'
-            }]
-        }
-    }
-
-    return http_request('POST', '/rest/remediate', json_body=json_body)
+def unquarantine_file_command():
+    malop_guid = demisto.getArg('malopGuid')
+    machine_name = demisto.getArg('machine')
+    target_id = demisto.getArg('targetId')
+    user_name = demisto.getArg('userName')
+    timeout_second = demisto.getArg('timeout')
+    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
+    remediation_action = 'UNQUARANTINE_FILE'
+    is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
+    if is_machine_conntected == True:
+        response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
+        action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
+        if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
+            demisto.results("Unquarantine file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])))
+        elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
+            demisto.results("Unquarantine file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])))
+    else:
+        demisto.results('Machine must be connected to Cybereason in order to perform this action.')
 
 
 def block_file_command():
+    malop_guid = demisto.getArg('malopGuid')
     machine_name = demisto.getArg('machine')
-    malop_guid = demisto.getArg('malop')
+    target_id = demisto.getArg('targetId')
     user_name = demisto.getArg('userName')
+    timeout_second = demisto.getArg('timeout')
+    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
+    remediation_action = 'BLOCK_FILE'
     is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
     if is_machine_conntected == True:
-        files_list = get_block_file_status(malop_guid, machine_name, user_name)
-        result = []
-        for item in range(len(files_list)):
-            status = files_list[item].get("Status")
-            filename = files_list[item].get("FileName")
-            if status == "SUCCESS":
-                result.append("The block file operation for '{1}' is {0}".format(str(status), str(filename)))
-            elif status == "FAILURE":
-                result.append("The block file operation for '{1}' is {0}".format(str(status), str(filename)))
-            else:
-                result.append("Timeout while fetching progress for block operation on file '{}'".format(str(filename)))
-        demisto.results(result)
+        response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
+        action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
+        if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
+            demisto.results("Block file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])))
+        elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
+            demisto.results("Block file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])))
     else:
         demisto.results('Machine must be connected to Cybereason in order to perform this action.')
-
-
-def get_block_file_status(malop_guid, machine_name, user_name):
-    machine_guid = get_machine_guid(machine_name)
-    all_file_guids = get_file_guids(malop_guid)
-    final_status = []
-    for filename, file_guid in all_file_guids.items():
-        response = block_file(malop_guid, machine_guid, file_guid)
-        if dict_safe_get(response, ['statusLog', 0, 'error', 'errorType']) == "INVALID_ARGUMENT":
-            demisto.results("{0}, please provide correct input for file '{1}'.".format(dict_safe_get(response, ['statusLog', 0, 'error', 'errorType']), str(filename)))
-        else:
-            remediation_Id = response['remediationId']
-            timeout_sec = 60
-            interval_sec = 10
-            all_file_status = []
-            while timeout_sec > 0:
-                progress_api_response = get_remediation_action_progress(user_name, malop_guid, remediation_Id)
-                remediation_resp = dict_safe_get(progress_api_response, ['statusLog', 2, 'status'])
-                all_file_status.append({"Status": remediation_resp, "FileName": filename})
-                time.sleep(interval_sec)
-                timeout_sec = timeout_sec - interval_sec
-            final_status.append(all_file_status[-1])
-    return final_status
-
-
-def block_file(malop_guid, machine_guid, process_guid):
-    json_body = {
-        'malopId': malop_guid,
-        'actionsByMachine': {
-            machine_guid: [{
-                'targetId': process_guid,
-                'actionType': 'BLOCK_FILE'
-            }]
-        }
-    }
-
-    return http_request('POST', '/rest/remediate', json_body=json_body)
-
-
-def get_remediation_action_progress(username, malop_id, remediation_id):
-    return http_request('GET', '/rest/remediate/progress/' + username + '/' +str(malop_id) + '/' + remediation_id)
 
 
 def delete_registry_key_command():
+    malop_guid = demisto.getArg('malopGuid')
     machine_name = demisto.getArg('machine')
-    file_content = demisto.getArg('file')
-    malop_guid = demisto.getArg('malop')
+    target_id = demisto.getArg('targetId')
     user_name = demisto.getArg('userName')
+    timeout_second = demisto.getArg('timeout')
+    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
+    remediation_action = 'DELETE_REGISTRY_KEY'
     is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
     if is_machine_conntected == True:
-        operation_status = get_delete_registry_key_status(malop_guid, machine_name, file_content, user_name)
-        success_status = []
-        failure_status = []
-        pending_status = []
-        for item in operation_status:
-            status = item["status"]
-            target_Id = item["targetId"]
-            if status == "SUCCESS":
-                success_status.append({"Target ID": target_Id})
-            elif status == "FAILURE":
-                reason = item["error"]["message"]
-                error_type = item["error"]["errorType"]
-                failure_status.append({"Target ID": target_Id, "Message": reason, "Error Type": error_type})
-            else:
-                pending_status.append({"Timeout while fetching progress for delete registry key operation on target ID: ": target_Id})
-        demisto.results("Success responses (if any):" + "\n{}".format(success_status) + "\n\n" + "Failure responses (if any):" + "\n{}".format(failure_status) + "\n\n" + "Pending responses (if any):" + "\n{}".format(pending_status))
+        response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
+        action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
+        if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
+            demisto.results("Delete registry key remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])))
+        elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
+            demisto.results("Delete registry key remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])))
     else:
         demisto.results('Machine must be connected to Cybereason in order to perform this action.')
 
 
-def get_delete_registry_key_status(malop_guid, machine_name, file_content, user_name):
+def kill_prevent_unsuspend_command():
+    malop_guid = demisto.getArg('malopGuid')
+    machine_name = demisto.getArg('machine')
+    target_id = demisto.getArg('targetId')
+    user_name = demisto.getArg('userName')
+    timeout_second = demisto.getArg('timeout')
+    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
+    remediation_action = 'KILL_PREVENT_UNSUSPEND'
+    is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
+    if is_machine_conntected == True:
+        response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
+        action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
+        if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
+            demisto.results("Kill prevent unsuspend remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])))
+        elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
+            demisto.results("Kill prevent unsuspend remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])))
+    else:
+        demisto.results('Machine must be connected to Cybereason in order to perform this action.')
+
+
+def unsuspend_process_command():
+    malop_guid = demisto.getArg('malopGuid')
+    machine_name = demisto.getArg('machine')
+    target_id = demisto.getArg('targetId')
+    user_name = demisto.getArg('userName')
+    timeout_second = demisto.getArg('timeout')
+    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
+    remediation_action = 'UNSUSPEND_PROCESS'
+    is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
+    if is_machine_conntected == True:
+        response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
+        action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
+        if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
+            demisto.results("Unsuspend process remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])))
+        elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
+            demisto.results("Unsuspend process remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])))
+    else:
+        demisto.results('Machine must be connected to Cybereason in order to perform this action.')
+
+
+def get_remediation_action(malop_guid, machine_name, target_id, remediation_action):
     machine_guid = get_machine_guid(machine_name)
-    all_machine_guid = []
-    procceses = query_processes(machine_name, file_content)
-    process_data = dict_safe_get(procceses, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
-    for process_guid in process_data.keys():
-        all_machine_guid.append({"targetId": process_guid, "actionType": 'DELETE_REGISTRY_KEY'})
-    response = delete_registry_key(malop_guid, machine_guid, all_machine_guid)
-    remediation_Id = dict_safe_get(response, ['remediationId'])
-    progress_api_response = get_remediation_action_progress(user_name, malop_guid, remediation_Id)
-    return progress_api_response['statusLog']
-
-
-def delete_registry_key(malop_guid, machine_guid, process_guid):
     json_body = {
         'malopId': malop_guid,
         'actionsByMachine': {
-            machine_guid: process_guid
+            machine_guid: [
+                {
+                    'targetId': target_id,
+                    'actionType': remediation_action
+                }
+            ]
         }
     }
 
     return http_request('POST', '/rest/remediate', json_body=json_body)
+
+
+def get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment):
+    remediation_id = dict_safe_get(response, ['remediationId'])
+    progress_api_response = get_remediation_action_progress(user_name, malop_guid, remediation_id, timeout_second)
+    status = dict_safe_get(progress_api_response, ['Remediation status'])
+    if status == 'SUCCESS' and bool(comment) == True:
+        add_comment(malop_guid, comment.encode('utf-8'))
+    return progress_api_response
+
+
+def get_remediation_action_progress(username, malop_id, remediation_id, timeout_second):
+    timeout_sec = int(timeout_second)
+    interval_sec = 10
+    final_response = ''
+    if timeout_sec < 10:
+        raise Exception("Timeout second value should not be less than 10")
+    else:
+        while timeout_sec > 0:
+            final_response = http_request('GET', '/rest/remediate/progress/' + username + '/' +str(malop_id) + '/' + remediation_id)
+            time.sleep(interval_sec)
+            timeout_sec = timeout_sec - interval_sec
+        statusLog_lenght = len(dict_safe_get(final_response, ['statusLog']))
+        if statusLog_lenght == 0:
+            raise Exception("The given target ID is incorrect.")
+        else:
+            statusLog_final_response = dict_safe_get(final_response, ['statusLog', statusLog_lenght-1])
+            statusLog_final_error =  dict_safe_get(statusLog_final_response, ['error'])
+            statusLog_final_status = dict_safe_get(statusLog_final_response, ['status'])
+            if statusLog_final_error == None:
+                return {"Remediation status": statusLog_final_status}
+            else:
+                return {"Remediation status": statusLog_final_status, "Reason": dict_safe_get(statusLog_final_error, ['message'])}
 
 
 def query_file_command():
@@ -1871,17 +1848,29 @@ def main():
         elif demisto.command() == 'cybereason-unprevent-file':
             unprevent_file_command()
 
+        elif demisto.command() == 'cybereason-available-remediation-actions':
+            available_remediation_actions_command()
+
         elif demisto.command() == 'cybereason-kill-process':
             kill_process_command()
 
         elif demisto.command() == 'cybereason-quarantine-file':
             quarantine_file_command()
 
-        elif demisto.command() == 'cybereason-delete-registry-key':
-            delete_registry_key_command()
+        elif demisto.command() == 'cybereason-unquarantine-file':
+            unquarantine_file_command()
 
         elif demisto.command() == 'cybereason-block-file':
             block_file_command()
+
+        elif demisto.command() == 'cybereason-delete-registry-key':
+            delete_registry_key_command()
+
+        elif demisto.command() == 'cybereason-kill-prevent-unsuspend':
+            kill_prevent_unsuspend_command()
+
+        elif demisto.command() == 'cybereason-unsuspend-process':
+            unsuspend_process_command()
 
         elif demisto.command() == 'cybereason-query-file':
             query_file_command()
