@@ -805,7 +805,7 @@ script:
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    - description: Mention the timeout(in Second) as long as user wants to perform this action. (Default value is 60 second)
+    - description: Timeout (in seconds) to wait for the remediation response
       name: timeout
       defaultValue: "60"
       auto: PREDEFINED
@@ -829,7 +829,7 @@ script:
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    - description: Mention the timeout(in Second) as long as user wants to perform this action. (Default value is 60 second)
+    - description: Timeout (in seconds) to wait for the remediation response
       name: timeout
       defaultValue: "60"
       auto: PREDEFINED
@@ -853,7 +853,7 @@ script:
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    - description: Mention the timeout(in Second) as long as user wants to perform this action. (Default value is 60 second)
+    - description: Timeout (in seconds) to wait for the remediation response
       name: timeout
       defaultValue: "60"
       auto: PREDEFINED
@@ -871,13 +871,13 @@ script:
     - description: Machine name whose files needs to be blocked
       name: machine
       required: true
-    - description: Target ID whose files needs to be blocked
+    - description: Target ID of file to be blocked
       name: targetId
       required: true
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    - description: Mention the timeout(in Second) as long as user wants to perform this action. (Default value is 60 second)
+    - description: Timeout (in seconds) to wait for the remediation response
       name: timeout
       defaultValue: "60"
       auto: PREDEFINED
@@ -901,7 +901,7 @@ script:
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    - description: Mention the timeout(in Second) as long as user wants to perform this action. (Default value is 60 second)
+    - description: Timeout (in seconds) to wait for the remediation response
       name: timeout
       defaultValue: "60"
       auto: PREDEFINED
@@ -925,7 +925,7 @@ script:
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    - description: Mention the timeout(in Second) as long as user wants to perform this action. (Default value is 60 second)
+    - description: Timeout (in seconds) to wait for the remediation response
       name: timeout
       defaultValue: "60"
       auto: PREDEFINED
@@ -949,7 +949,7 @@ script:
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    - description: Mention the timeout(in Second) as long as user wants to perform this action. (Default value is 60 second)
+    - description: Timeout (in seconds) to wait for the remediation response
       name: timeout
       defaultValue: "60"
       auto: PREDEFINED

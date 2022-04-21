@@ -1036,7 +1036,7 @@ def get_remediation_action_progress(username, malop_id, remediation_id, timeout_
     interval_sec = 10
     final_response = ''
     if timeout_sec < 10:
-        raise Exception("Timeout second value should not be less than 10")
+        raise Exception("Timeout second value should not be less than 10 seconds")
     else:
         while timeout_sec > 0:
             final_response = http_request('GET', '/rest/remediate/progress/' + username + '/' +str(malop_id) + '/' + remediation_id)
