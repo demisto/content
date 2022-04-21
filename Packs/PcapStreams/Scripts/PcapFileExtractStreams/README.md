@@ -1,4 +1,4 @@
-Extract payloads of each stream from a pcap file
+Extract payloads of each stream from a pcap file.
 
 ## Script Data
 ---

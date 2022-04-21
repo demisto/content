@@ -29,7 +29,7 @@ The payloads will be retrieved with an array of dictionary of these keys:
 | **Argument Name** | **Description** |
 | --- | --- |
 | value | The data of a PCAP in base64 to extract streams. |
-| path | The context path to the pcap |
+| path | The context path to the pcap (e.g. PcapData.pcap). If you add a comma plus a node name after the path, the output will be set to the node (e.g. PcapData.pcap,out). |
 | pcap_type | The data type of the pcap data. |
 | bin2txt_mode | The mode of how to convert the binary to text |
 | pcap_filter | Filter to apply on PCAP. Wireshark syntax as can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html |
