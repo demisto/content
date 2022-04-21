@@ -8,6 +8,7 @@ Organization, group, device, policy, and patch management all at your fingertips
 For API reference, visit: https://developer.automox.com/
 """
 
+import time
 import traceback
 from typing import Any, Dict, List
 
@@ -30,6 +31,9 @@ DEVICE_IDENTIFIER = 'device_id'
 GROUP_IDENTIFIER = 'group_id'
 LIMIT_IDENTIFIER = 'limit'
 PAGE_IDENTIFIER = 'page'
+
+OUTCOME_FAIL = "failure"
+OUTCOME_SUCCESS = "success"
 
 DEFAULT_ORG_ID = demisto.params().get(ORG_IDENTIFIER, None)
 
@@ -79,6 +83,31 @@ class Client(BaseClient):
             params['page'] += 1
 
         return results
+
+    def report_api_outcome(self, outcome: str, function: str, elapsed_time: int, fail_reason: str = ""):
+        try:
+            url_suffix = "/integration-health"
+
+            data = {
+                "name": "cortex-xsoar",
+                "version": VERSION,
+                "function": function,
+                "outcome": outcome,
+                "elapsed_time": elapsed_time
+            }
+
+            if outcome == OUTCOME_FAIL:
+                data['reason_for_failure'] = fail_reason
+
+            self._http_request(
+                method="POST",
+                url_suffix=url_suffix,
+                data=data,
+                resp_type='response'
+            )
+        except DemistoException:
+            # Do nothing
+            return
 
     def action_on_vulnerability_sync_batch(self, org_id: int, batch_id: int, action: str):
         url_suffix = f"/orgs/{org_id}/tasks/batches/{batch_id}/"
@@ -393,12 +422,25 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
+        start_time = time.time()
+
         client.list_organizations(limit=1, page=0)
         message = 'ok'
+
+        end_time = time.time()
+        elapsed_time = int(end_time - start_time)
+
+        client.report_api_outcome(OUTCOME_SUCCESS, "connection_test", elapsed_time)
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
+            end_time = time.time()
+            elapsed_time = int(end_time - start_time)
+            failure_message = "Unable to list orgs during api test."
+
+            client.report_api_outcome(OUTCOME_FAIL, "connection_test", elapsed_time, failure_message)
+
             raise e
     return message
 
