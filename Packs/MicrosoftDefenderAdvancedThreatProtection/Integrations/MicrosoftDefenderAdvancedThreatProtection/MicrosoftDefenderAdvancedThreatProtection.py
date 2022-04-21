@@ -49,7 +49,7 @@ INDICATOR_TYPE_TO_DBOT_TYPE = {
     'Url': DBotScoreType.URL,
     'DomainName': DBotScoreType.DOMAIN,
     'IpAddress': DBotScoreType.IP,
-    'CertificateThumbprint':None,
+    'CertificateThumbprint': None,
 }
 
 HEALTH_STATUS_TO_ENDPOINT_STATUS = {
