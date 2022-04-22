@@ -64,7 +64,7 @@ dockerimage: demisto/pcap-miner:1.0.0.26513
 enabled: true
 name: PcapExtractStreams
 runas: DBotWeakRole
-runonce: true
+runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

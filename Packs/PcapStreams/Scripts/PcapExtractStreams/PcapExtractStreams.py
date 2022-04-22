@@ -269,7 +269,8 @@ class PcapParser:
             custom_parameters = {'-o': f'uat:rsa_keys:"{rsa_key_file_path}",""'}
 
         # Parse the pcap
-        with redirect_stderr(None):
+        with open(os.devnull, 'w') as devnull:
+            sys.stderr = devnull
             cap = None
             try:
                 cap = pyshark.FileCapture(pcap_file_path,
@@ -278,13 +279,20 @@ class PcapParser:
                                           encryption_type='WPA-PWD',
                                           keep_packets=False,
                                           custom_parameters=custom_parameters)
-                return self.__parse(cap)
+                streams = self.__parse(cap)
+                cap.close()
+                cap = None
+                return streams
             except pyshark.capture.capture.TSharkCrashException:
                 raise ValueError('Could not find packets. Make sure that the file is a .cap/.pcap/.pcapng file, '
                                  'the filter is of the correct syntax and that the rsa key is added correctly.')
             finally:
                 if cap:
-                    cap.close()
+                    try:
+                        cap.close()
+                    except:
+                        pass
+                sys.stderr = sys.__stderr__
 
     def parse_bytes(self, pcap: bytes, wpa_password: str, rsa_decrypt_key: Optional[bytes], pcap_filter: str) -> Streams:
         """

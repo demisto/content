@@ -25,11 +25,11 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.10.4.28442
+dockerimage: demisto/pcap-miner:1.0.0.26513
 enabled: true
 name: PcapConvert
 runas: DBotWeakRole
-runonce: true
+runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
