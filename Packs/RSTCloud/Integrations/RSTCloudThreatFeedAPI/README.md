@@ -89,20 +89,20 @@ Returns IP information and reputation.
 
 
 #### Command Example
-```!ip ip=1.32.54.12 threshold=50```
+```!ip ip=1.2.3.4 threshold=50```
 
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "1.32.54.12",
+        "Indicator": "1.2.3.4",
         "Score": 2,
         "Type": "ip",
         "Vendor": "RST Cloud"
     },
     "IP": {
         "ASN": "4788",
-        "Address": "1.32.54.12",
+        "Address": "1.2.3.4",
         "Geo": {
             "Country": "Malaysia"
         },
@@ -114,7 +114,7 @@ Returns IP information and reputation.
     "RST": {
         "IP": {
             "ASN": "4788",
-            "Address": "1.32.54.12",
+            "Address": "1.2.3.4",
             "CloudHosting": "",
             "FalsePositive": "false",
             "FalsePositiveDesc": "",
@@ -147,7 +147,7 @@ Returns IP information and reputation.
 
 #### Human Readable Output
 
->### RST Threat Feed IP Reputation for: 1.32.54.12
+>### RST Threat Feed IP Reputation for: 1.2.3.4
 >
 >|Description|Last Seen|Relevance|Score|Tags|Threat|
 >|---|---|---|---|---|---|
@@ -206,19 +206,19 @@ Returns Domain information and reputation.
 
 
 #### Command Example
-```!domain domain="02.xn--kprv2p5ncce060cgo9d.cc" threshold=40```
+```!domain domain="domaintovalidate.local" threshold=40```
 
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "02.xn--kprv2p5ncce060cgo9d.cc",
+        "Indicator": "domaintovalidate.local",
         "Score": 2,
         "Type": "domain",
         "Vendor": "RST Cloud"
     },
     "Domain": {
-        "Name": "02.xn--kprv2p5ncce060cgo9d.cc",
+        "Name": "domaintovalidate.local",
         "Tags": [
             "malware"
         ]
@@ -229,7 +229,7 @@ Returns Domain information and reputation.
             "FalsePositiveDesc": "Domain not resolved. Whois records not found",
             "FirstSeen": "2020-06-26T00:00:00.000Z",
             "LastSeen": "2021-01-25T00:00:00.000Z",
-            "Name": "02.xn--kprv2p5ncce060cgo9d.cc",
+            "Name": "domaintovalidate.local",
             "RSTReference": "https://rstcloud.net/uuid?id=552fdbe7-7265-3a9d-b364-83426d1c2dbc",
             "Related": {
                 "a": [],
@@ -256,7 +256,7 @@ Returns Domain information and reputation.
 
 #### Human Readable Output
 
->### RST Threat Feed Domain Reputation for: 02.xn--kprv2p5ncce060cgo9d.cc
+>### RST Threat Feed Domain Reputation for: domaintovalidate.local
 >
 >|Description|Last Seen|Relevance:|Score|Tags|
 >|---|---|---|---|---|
@@ -310,13 +310,13 @@ Returns URL information and reputation.
 
 
 #### Command Example
-```!url url="https://cwa.mx/himalaya/ziqqbxu4f7cwsordfxkihmhwfcc"threshold=30```
+```!url url="https://domain.local/testurl" threshold=30```
 
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "https://cwa.mx/himalaya/ziqqbxu4f7cwsordfxkihmhwfcc",
+        "Indicator": "https://domain.local/testurl",
         "Score": 2,
         "Type": "url",
         "Vendor": "RST Cloud"
@@ -324,16 +324,16 @@ Returns URL information and reputation.
     "RST": {
         "URL": {
             "CVE": [],
-            "Data": "https://cwa.mx/himalaya/ziqqbxu4f7cwsordfxkihmhwfcc",
+            "Data": "https://domain.local/testurl",
             "FalsePositive": "true",
             "FalsePositiveDesc": "Resource unavailable",
             "FirstSeen": "2021-01-05T00:00:00.000Z",
             "LastSeen": "2021-01-26T00:00:00.000Z",
             "Parsed": {
                 "anchor": null,
-                "domain": "cwa.mx",
+                "domain": "domain.local",
                 "params": null,
-                "path": "/himalaya/ziqqbxu4f7cwsordfxkihmhwfcc",
+                "path": "/testurl",
                 "port": "443",
                 "schema": "https"
             },
@@ -351,7 +351,7 @@ Returns URL information and reputation.
         }
     },
     "URL": {
-        "Data": "https://cwa.mx/himalaya/ziqqbxu4f7cwsordfxkihmhwfcc",
+        "Data": "https://domain.local/testurl",
         "Tags": [
             "malware"
         ]
@@ -361,7 +361,7 @@ Returns URL information and reputation.
 
 #### Human Readable Output
 
->### RST Threat Feed URL Reputation for: `https://cwa.mx/himalaya/ziqqbxu4f7cwsordfxkihmhwfcc`
+>### RST Threat Feed URL Reputation for: `https://domain.local/testurl`
 >
 >|Description|Last Seen|Relevance|Score|Tags|Threat|
 >|---|---|---|---|---|---|
@@ -467,7 +467,7 @@ Returns File information and reputation.
 
 #### Human Readable Output
 
->### RST Threat Feed File Reputation for: `https://cwa.mx/himalaya/ziqqbxu4f7cwsordfxkihmhwfcc`
+>### RST Threat Feed File Reputation for: `https://domain.local/testurl`
 >
 >|Description|Last Seen|Relevance|Score|Tags|Threat|
 >|---|---|---|---|---|---|
