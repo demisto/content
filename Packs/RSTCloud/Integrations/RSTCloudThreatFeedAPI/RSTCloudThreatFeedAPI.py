@@ -725,7 +725,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list
             table = {'Score': total_score,
                      'Relevance': human_readable_score,
                      'Threat': ', '.join(threat for threat in indicator.get('threat', '')),
-                     'Last Seen': time.strftime('%Y-%m-%d', time.localtime(int(indicator.get('lseen', '')))),
+                     'Last Seen': time.strftime('%Y-%m-%d', time.localtime(int(indicator.get('lseen', 0)))),
                      'Description': f"{string_to_context_key(indicator.get('description', ''))}\n",
                      'Tags': ', '.join(tag for tag in indicator.get('tags', '').get('str', ''))}
             markdown_item += tableToMarkdown(f'RST Threat Feed File Reputation for: {indicator["ioc_value"]}\n',

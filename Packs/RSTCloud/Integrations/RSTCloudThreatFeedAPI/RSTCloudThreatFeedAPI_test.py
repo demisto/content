@@ -31,7 +31,7 @@ def test_ip_command(requests_mock):
 
     from RSTCloudThreatFeedAPI import Client, ip_command
 
-    value_to_check = '118.243.83.70'
+    value_to_check = '1.2.3.4'
     mock_response = util_load_json('test_data/ip_reputation.json')
     requests_mock.get(f'https://api.rstcloud.net/v1/ioc?value={value_to_check}', json=mock_response)
 
@@ -58,7 +58,7 @@ def test_domain_command(requests_mock):
     """
     from RSTCloudThreatFeedAPI import Client, domain_command
 
-    value_to_check = 'thec0de-22249.portmap.io'
+    value_to_check = 'malicious-domain.local'
     mock_response = util_load_json('test_data/domain_reputation.json')
     requests_mock.get(f'https://api.rstcloud.net/v1/ioc?value={value_to_check}', json=mock_response)
 
@@ -84,7 +84,7 @@ def test_url_command(requests_mock):
     """
     from RSTCloudThreatFeedAPI import Client, url_command
 
-    value_to_check = 'http://zpmagura.com/wp-content/nux5wem-08'
+    value_to_check = 'http://malicious-domain.local/uri/test'
     mock_response = util_load_json('test_data/url_reputation.json')
     requests_mock.get(f'https://api.rstcloud.net/v1/ioc?value={value_to_check}', json=mock_response)
 
@@ -110,7 +110,7 @@ def test_file_command(requests_mock):
     """
     from RSTCloudThreatFeedAPI import Client, file_command
 
-    value_to_check = 'fe3d38316dc38a4ec63eac80e34cb157c9d896460f9b7b3bfbd2cec4e2cb8cdc'
+    value_to_check = 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
     mock_response = util_load_json('test_data/hash_reputation.json')
     requests_mock.get(f'https://api.rstcloud.net/v1/ioc?value={value_to_check}', json=mock_response)
 
