@@ -272,11 +272,11 @@ class PcapParser:
             sys.stderr = devnull
             try:
                 with pyshark.FileCapture(pcap_file_path,
-                                          display_filter=pcap_filter,
-                                          decryption_key=wpa_password,
-                                          encryption_type='WPA-PWD',
-                                          keep_packets=False,
-                                          custom_parameters=custom_parameters) as cap:
+                                         display_filter=pcap_filter,
+                                         decryption_key=wpa_password,
+                                         encryption_type='WPA-PWD',
+                                         keep_packets=False,
+                                         custom_parameters=custom_parameters) as cap:
                     return self.__parse(cap)
             except pyshark.capture.capture.TSharkCrashException:
                 raise ValueError('Could not find packets. Make sure that the file is a .cap/.pcap/.pcapng file, '
