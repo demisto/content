@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+register_module_line('Okta v2', 'start', __line__())
+
 
 # IMPORTS
 # Disable insecure warnings
@@ -201,8 +203,8 @@ class Client(BaseClient):
                 if (not os) or os.lower() == 'unknown':
                     os = 'Unknown OS'
                 device = log.get('client', {}).get('device')
-            if (not device) or device.lower() == 'unknown':
-                device = 'Unknown device'
+                if (not device) or device.lower() == 'unknown':
+                    device = 'Unknown device'
             targets = ''
             if log.get('target'):
                 for target in log.get('target'):
@@ -1209,3 +1211,5 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+register_module_line('Okta v2', 'end', __line__())
