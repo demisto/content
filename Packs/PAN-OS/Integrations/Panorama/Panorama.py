@@ -7698,7 +7698,8 @@ class Topology:
         :param target: Instead of a filter string, target can be used to only ever return one device.
         """
         if target:
-            return self.get_single_device(filter_string=target)
+            yield self.get_single_device(filter_string=target)
+            return
 
         firewall_objects = Topology.filter_devices(self.firewall_objects, filter_string)
         if not firewall_objects:
@@ -7713,7 +7714,8 @@ class Topology:
         :param filter_string: The filter string to filter he devices on
         """
         if target:
-            return self.get_single_device(filter_string=target)
+            yield self.get_single_device(filter_string=target)
+            return
 
         all_devices = {**self.firewall_objects, **self.panorama_objects}
         all_devices = Topology.filter_devices(all_devices, filter_string)
@@ -8953,7 +8955,10 @@ class PanoramaCommand:
     GET_TEMPLATE_STACK_COMMAND = "show template-stack"
 
     @staticmethod
-    def get_device_groups(topology: Topology, device_filter_str: str = None) -> List[DeviceGroupInformation]:
+    def get_device_groups(
+            topology: Topology,
+            device_filter_str: str = None,
+    ) -> List[DeviceGroupInformation]:
         """
         Get all the device groups from Panorama and their associated devices.
         :param topology: `Topology` instance.
@@ -8975,7 +8980,10 @@ class PanoramaCommand:
         return result
 
     @staticmethod
-    def get_template_stacks(topology: Topology, device_filter_str: str = None) -> List[TemplateStackInformation]:
+    def get_template_stacks(
+            topology: Topology,
+            device_filter_str: str = None,
+    ) -> List[TemplateStackInformation]:
         """
         Get all the template-stacks from Panorama and their associated devices.
         :param topology: `Topology` instance.
@@ -9135,14 +9143,15 @@ class UniversalCommand:
 
     @staticmethod
     def get_available_software(topology: Topology,
-                               device_filter_str: Optional[str] = None) -> SoftwareVersionCommandResult:
+                               device_filter_str: Optional[str] = None,
+                               target: Optional[str] = None) -> SoftwareVersionCommandResult:
         """
         Get all available software updates
         :param topology: `Topology` instance.
         :param device_filter_str: If provided, filters this command to only the devices specified.
         """
         summary_data = []
-        for device in topology.all(filter_string=device_filter_str):
+        for device in topology.all(filter_string=device_filter_str, target=target):
             device.software.check()
             for version_dict in device.software.versions.values():
                 summary_data.append(dataclass_from_dict(device, version_dict, SoftwareVersion))
@@ -9151,7 +9160,8 @@ class UniversalCommand:
 
     @staticmethod
     def download_software(topology: Topology, version: str,
-                          sync: bool = False, device_filter_str: Optional[str] = None) -> DownloadSoftwareCommandResult:
+                          sync: bool = False, device_filter_str: Optional[str] = None,
+                          target: Optional[str] = None) -> DownloadSoftwareCommandResult:
         """
         Download the given software version to the device. This is an async command, and returns
         immediately.
@@ -9161,7 +9171,7 @@ class UniversalCommand:
         :param version: The software version to download
         """
         result = []
-        for device in topology.all(filter_string=device_filter_str):
+        for device in topology.all(filter_string=device_filter_str, target=target):
             device.software.download(version, sync=sync)
             result.append(GenericSoftwareStatus(
                 hostid=resolve_host_id(device),
@@ -9172,7 +9182,8 @@ class UniversalCommand:
 
     @staticmethod
     def install_software(topology: Topology, version: str,
-                         sync: Optional[bool] = False, device_filter_str: Optional[str] = None) -> InstallSoftwareCommandResult:
+                         sync: Optional[bool] = False, device_filter_str: Optional[str] = None,
+                         target: Optional[str] = None) -> InstallSoftwareCommandResult:
 
         """
         Start the installation process for the given software version.
@@ -9182,7 +9193,7 @@ class UniversalCommand:
         :param `Topology` class instance
         """
         result = []
-        for device in topology.all(filter_string=device_filter_str):
+        for device in topology.all(filter_string=device_filter_str, target=target):
             device.software.install(version, sync=sync)
             result.append(GenericSoftwareStatus(
                 hostid=resolve_host_id(device),
@@ -9298,7 +9309,7 @@ class UniversalCommand:
 
     @staticmethod
     def show_jobs(topology: Topology, device_filter_str: Optional[str] = None, job_type: Optional[str] = None,
-                  status=None, id: Optional[int] = None) -> List[ShowJobsAllResultData]:
+                  status=None, id: Optional[int] = None, target: Optional[str] = None) -> List[ShowJobsAllResultData]:
 
         """
         Returns all jobs running on the system.
@@ -9309,7 +9320,7 @@ class UniversalCommand:
         :param id: Only returns the specific job by it's ID
         """
         result_data = []
-        for device in topology.all(filter_string=device_filter_str):
+        for device in topology.all(filter_string=device_filter_str, target=target):
             response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
             for job in response.findall("./result/job"):
                 result_data_obj: ShowJobsAllResultData = dataclass_from_element(device, ShowJobsAllResultData,
@@ -9341,15 +9352,17 @@ class FirewallCommand:
     REQUEST_STATE_PREFIX = "request high-availability state"
 
     @staticmethod
-    def get_arp_table(topology: Topology, device_filter_str: Optional[str] = None) -> ShowArpCommandResult:
+    def get_arp_table(topology: Topology, device_filter_str: Optional[str] = None,
+                      target: Optional[str] = None) -> ShowArpCommandResult:
         """
         Gets the ARP (Address Resolution Protocol) table
         :param topology: `Topology` instance.
         :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command
         """
         result_data: List[ShowArpCommandResultData] = []
         summary_data: List[ShowArpCommandSummaryData] = []
-        for firewall in topology.firewalls(filter_string=device_filter_str):
+        for firewall in topology.firewalls(filter_string=device_filter_str, target=target):
             response = run_op_command(firewall, FirewallCommand.ARP_COMMAND, cmd_xml=False)
             summary_data.append(dataclass_from_element(firewall, ShowArpCommandSummaryData,
                                                        response.find("./result")))
@@ -9362,15 +9375,17 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_counter_global(topology: Topology, device_filter_str: Optional[str] = None) -> ShowCounterGlobalCommmandResult:
+    def get_counter_global(topology: Topology, device_filter_str: Optional[str] = None,
+                           target: Optional[str] = None) -> ShowCounterGlobalCommmandResult:
         """
         Gets the global counter details
         :param topology: `Topology` instance.
         :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command
         """
         result_data: List[ShowCounterGlobalResultData] = []
         summary_data: List[ShowCounterGlobalSummaryData] = []
-        for firewall in topology.firewalls(filter_string=device_filter_str):
+        for firewall in topology.firewalls(filter_string=device_filter_str, target=target):
             response = run_op_command(firewall, FirewallCommand.GLOBAL_COUNTER_COMMAND)
             for entry in response.findall("./result/global/counters/entry"):
                 summary_data.append(dataclass_from_element(firewall, ShowCounterGlobalSummaryData, entry))
@@ -9383,15 +9398,16 @@ class FirewallCommand:
 
     @staticmethod
     def get_routing_summary(
-            topology: Topology, device_filter_str: Optional[str] = None
+            topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
     ) -> ShowRouteSummaryCommandResult:
         """
         Gets the routing summary table
         :param topology: `Topology` instance.
         :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command
         """
         summary_data = []
-        for firewall in topology.firewalls(filter_string=device_filter_str):
+        for firewall in topology.firewalls(filter_string=device_filter_str, target=target):
             response = run_op_command(firewall, FirewallCommand.ROUTING_SUMMARY_COMMAND)
             summary_data.append(dataclass_from_element(firewall, ShowRoutingCommandSummaryData,
                                                        response.find("./result/entry/All-Routes")))
@@ -9403,16 +9419,17 @@ class FirewallCommand:
 
     @staticmethod
     def get_bgp_peers(
-            topology: Topology, device_filter_str: Optional[str] = None
+            topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
     ) -> ShowRoutingProtocolBGPCommandResult:
         """
         Gets all BGP peers
         :param topology: `Topology` instance.
         :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command
         """
         summary_data = []
         result_data = []
-        for firewall in topology.firewalls(filter_string=device_filter_str):
+        for firewall in topology.firewalls(filter_string=device_filter_str, target=target):
             response = run_op_command(firewall, FirewallCommand.ROUTING_PROTOCOL_BGP_PEER_COMMAND)
             summary_data.append(dataclass_from_element(firewall, ShowRoutingProtocolBGPPeersSummaryData,
                                                        response.find("./result/entry")))
@@ -9438,14 +9455,15 @@ class FirewallCommand:
             return direct_firewall_connection.xapi.export_result.get("content")
 
     @staticmethod
-    def get_ha_status(topology: Topology, device_filter_str: Optional[str] = None) -> List[ShowHAState]:
+    def get_ha_status(topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None) -> List[ShowHAState]:
         """
         Gets the HA status of the device. If HA is not enabled, assumes the device is active.
         :param topology: `Topology` instance.
         :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command
         """
         result: List[ShowHAState] = []
-        for firewall in topology.all(filter_string=device_filter_str):
+        for firewall in topology.all(filter_string=device_filter_str, target=target):
             firewall_host_id: str = resolve_host_id(firewall)
 
             peer_serial: str = topology.get_peer(firewall_host_id)
@@ -9487,7 +9505,7 @@ class FirewallCommand:
         :param hostid: The ID of the host to change
         :param state: The HA state to change the device to
         """
-        firewall = list(topology.firewalls(filter_string=hostid))[0]
+        firewall = topology.get_single_device(hostid)
         run_op_command(firewall, f'{FirewallCommand.REQUEST_STATE_PREFIX} {state}')
         return HighAvailabilityStateStatus(
             hostid=resolve_host_id(firewall),
@@ -9495,15 +9513,16 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_routes(topology: Topology, device_filter_str: Optional[str] = None) -> ShowRoutingRouteCommandResult:
+    def get_routes(topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None) -> ShowRoutingRouteCommandResult:
         """
         Gets the entire routing table.
         :param topology: `Topology` instance.
         :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command
         """
         summary_data = []
         result_data = []
-        for firewall in topology.firewalls(filter_string=device_filter_str):
+        for firewall in topology.firewalls(filter_string=device_filter_str, target=target):
             response = run_op_command(firewall, FirewallCommand.ROUTING_ROUTE_COMMAND)
             for entry in response.findall("./result/entry"):
                 result_data.append(
@@ -9542,33 +9561,38 @@ def test_topology_connectivity(topology: Topology):
     return "ok"
 
 
-def get_arp_tables(topology: Topology, device_filter_string: Optional[str] = None) -> ShowArpCommandResult:
+def get_arp_tables(topology: Topology, device_filter_string: Optional[str] = None,
+                   target: Optional[str] = None) -> ShowArpCommandResult:
     """
     Gets all arp tables from all firewalls in the topology.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command
     """
-    return FirewallCommand.get_arp_table(topology, device_filter_string)
+    return FirewallCommand.get_arp_table(topology, device_filter_string, target)
 
 
 def get_route_summaries(
-        topology: Topology, device_filter_string: Optional[str] = None
+        topology: Topology, device_filter_string: Optional[str] = None, target: Optional[str] = None
 ) -> ShowRouteSummaryCommandResult:
     """
     Pulls all route summary information from the topology
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command
     """
-    return FirewallCommand.get_routing_summary(topology, device_filter_string)
+    return FirewallCommand.get_routing_summary(topology, device_filter_string, target)
 
 
-def get_routes(topology: Topology, device_filter_string: Optional[str] = None) -> ShowRoutingRouteCommandResult:
+def get_routes(topology: Topology,
+               device_filter_string: Optional[str] = None, target: Optional[str] = None) -> ShowRoutingRouteCommandResult:
     """
     Pulls all route summary information from the topology
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command
     """
-    return FirewallCommand.get_routes(topology, device_filter_string)
+    return FirewallCommand.get_routes(topology, device_filter_string, target)
 
 
 def get_system_info(
@@ -9585,7 +9609,10 @@ def get_system_info(
     return UniversalCommand.get_system_info(topology, device_filter_string, target)
 
 
-def get_device_groups(topology: Topology, device_filter_string: Optional[str] = None) -> List[DeviceGroupInformation]:
+def get_device_groups(
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+) -> List[DeviceGroupInformation]:
     """
     Gets the operational information of the device groups in the topology.
     :param topology: `Topology` instance !no-auto-argument
@@ -9595,7 +9622,8 @@ def get_device_groups(topology: Topology, device_filter_string: Optional[str] = 
 
 
 def get_template_stacks(
-        topology: Topology, device_filter_string: Optional[str] = None
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
 ) -> List[TemplateStackInformation]:
     """
     Gets the operational information of the template-stacks in the topology.
@@ -9605,44 +9633,71 @@ def get_template_stacks(
     return PanoramaCommand.get_template_stacks(topology, device_filter_string)
 
 
-def get_global_counters(topology: Topology, device_filter_string: Optional[str] = None) -> ShowCounterGlobalCommmandResult:
+def get_global_counters(
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        target: Optional[str] = None
+) -> ShowCounterGlobalCommmandResult:
     """
     Gets global counter information from all the PAN-OS firewalls in the topology
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command
     """
-    return FirewallCommand.get_counter_global(topology, device_filter_string)
+    return FirewallCommand.get_counter_global(topology, device_filter_string, target)
 
 
-def get_bgp_peers(topology: Topology, device_filter_string: Optional[str] = None) -> ShowRoutingProtocolBGPCommandResult:
+def get_bgp_peers(
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        target: Optional[str] = None
+) -> ShowRoutingProtocolBGPCommandResult:
     """
     Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command
     """
-    return FirewallCommand.get_bgp_peers(topology, device_filter_string)
+    return FirewallCommand.get_bgp_peers(topology, device_filter_string, target)
 
 
-def get_available_software(topology: Topology, device_filter_string: Optional[str] = None) -> SoftwareVersionCommandResult:
+def get_available_software(
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        target: Optional[str] = None
+) -> SoftwareVersionCommandResult:
     """
     Check the devices for software that is available to be installed.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command
     """
-    return UniversalCommand.get_available_software(topology, device_filter_string)
+    return UniversalCommand.get_available_software(topology, device_filter_string, target)
 
 
-def get_ha_state(topology: Topology, device_filter_string: Optional[str] = None) -> List[ShowHAState]:
+def get_ha_state(
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        target: Optional[str] = None
+) -> List[ShowHAState]:
     """
     Get the HA state and associated details from the given device and any other details.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command
+    :param target: Single serial number to target with this command
     """
-    return FirewallCommand.get_ha_status(topology, device_filter_string)
+    return FirewallCommand.get_ha_status(topology, device_filter_string, target)
 
 
-def get_jobs(topology: Topology, device_filter_string: Optional[str] = None, status: Optional[str] = None,
-             job_type: Optional[str] = None, id: Optional[str] = None) -> List[ShowJobsAllResultData]:
+def get_jobs(
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        status: Optional[str] = None,
+        job_type: Optional[str] = None,
+        id: Optional[str] = None,
+        target: Optional[str] = None
+) -> List[ShowJobsAllResultData]:
     """
     Get all the jobs from the devices in the environment, or a single job when ID is specified.
 
@@ -9652,6 +9707,7 @@ def get_jobs(topology: Topology, device_filter_string: Optional[str] = None, sta
     :param status: Filter returned jobs by status
     :param job_type: Filter returned jobs by type
     :param id: Filter by ID
+    :param target: Single serial number to target with this command
     """
     _id = arg_to_number(id)
 
@@ -9660,24 +9716,37 @@ def get_jobs(topology: Topology, device_filter_string: Optional[str] = None, sta
         device_filter_string,
         job_type=job_type,
         status=status,
-        id=_id
+        id=_id,
+        target=target
     )
 
 
-def download_software(topology: Topology, version: str,
-                      device_filter_string: Optional[str] = None, sync: Optional[bool] = False) -> DownloadSoftwareCommandResult:
+def download_software(
+        topology: Topology,
+        version: str,
+        device_filter_string: Optional[str] = None,
+        sync: Optional[bool] = False,
+        target: Optional[str] = None
+) -> DownloadSoftwareCommandResult:
     """
     Download The provided software version onto the device.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only install to sepecific devices or serial numbers
     :param version: software version to upgrade to, ex. 9.1.2
     :param sync: If provided, runs the download synchronously - make sure 'execution-timeout' is increased.
+    :param target: Single serial number to target with this command
     """
-    return UniversalCommand.download_software(topology, version, device_filter_str=device_filter_string, sync=argToBoolean(sync))
+    return UniversalCommand.download_software(
+        topology, version, device_filter_str=device_filter_string, sync=argToBoolean(sync), target=target)
 
 
-def install_software(topology: Topology, version: str,
-                     device_filter_string: Optional[str] = None, sync: Optional[bool] = False) -> InstallSoftwareCommandResult:
+def install_software(
+        topology: Topology,
+        version: str,
+        device_filter_string: Optional[str] = None,
+        sync: Optional[bool] = False,
+        target: Optional[str] = None
+) -> InstallSoftwareCommandResult:
     """
     Install the given software version onto the device. Download the software first with
     pan-os-platform-download-software
@@ -9687,38 +9756,39 @@ def install_software(topology: Topology, version: str,
     :param version: software version to upgrade to, ex. 9.1.2
     :param sync: If provided, runs the download synchronously - make sure 'execution-timeout' is increased.
     """
-    return UniversalCommand.install_software(topology, version, device_filter_str=device_filter_string, sync=argToBoolean(sync))
+    return UniversalCommand.install_software(
+        topology, version, device_filter_str=device_filter_string, sync=argToBoolean(sync), target=target)
 
 
-def reboot(topology: Topology, hostid: str) -> RestartSystemCommandResult:
+def reboot(topology: Topology, target: str) -> RestartSystemCommandResult:
     """
     Reboot the given host.
 
     :param topology: `Topology` instance !no-auto-argument
-    :param hostid: ID of host (serial or hostname) to reboot
+    :param target: ID of host (serial or hostname) to reboot
     """
-    return UniversalCommand.reboot(topology, hostid=hostid)
+    return UniversalCommand.reboot(topology, hostid=target)
 
 
-def system_status(topology: Topology, hostid: str) -> CheckSystemStatus:
-    """
-    Checks the status of the given device, checking whether it's up or down and the operational mode normal
-
-    :param topology: `Topology` instance !no-auto-argument
-    :param hostid: ID of host (serial or hostname) to check.
-    """
-    return UniversalCommand.check_system_availability(topology, hostid=hostid)
-
-
-def update_ha_state(topology: Topology, hostid: str, state: str) -> HighAvailabilityStateStatus:
+def system_status(topology: Topology,  target: str) -> CheckSystemStatus:
     """
     Checks the status of the given device, checking whether it's up or down and the operational mode normal
 
     :param topology: `Topology` instance !no-auto-argument
-    :param hostid: ID of host (serial or hostname) to update the state.
+    :param target: ID of host (serial or hostname) to check.
+    """
+    return UniversalCommand.check_system_availability(topology, hostid=target)
+
+
+def update_ha_state(topology: Topology, target: str, state: str) -> HighAvailabilityStateStatus:
+    """
+    Checks the status of the given device, checking whether it's up or down and the operational mode normal
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param target: ID of host (serial or hostname) to update the state.
     :param state: New state.
     """
-    return FirewallCommand.change_status(topology, hostid=hostid, state=state)
+    return FirewallCommand.change_status(topology, hostid=target, state=state)
 
 
 """Hygiene Commands"""

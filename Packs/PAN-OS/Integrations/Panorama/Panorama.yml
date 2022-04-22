@@ -6923,6 +6923,8 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
     deprecated: false
     description: Gets all ARP tables from all firewalls in the topology.
     name: pan-os-platform-get-arp-tables
@@ -6970,6 +6972,8 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
     deprecated: false
     description: Pulls all route summary information from the topology.
     name: pan-os-platform-get-route-summary
@@ -6993,6 +6997,8 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
     deprecated: false
     description: Pulls all route summary information from the topology.
     name: pan-os-platform-get-routes
@@ -7198,6 +7204,8 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
     deprecated: false
     description: Gets global counter information from all the PAN-OS firewalls in the topology.
     name: pan-os-platform-get-global-counters
@@ -7251,6 +7259,8 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
     deprecated: false
     description: Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
     name: pan-os-platform-get-bgp-peers
@@ -7313,6 +7323,8 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
     deprecated: false
     description: Check the devices for software that is available to be installed.
     name: pan-os-platform-get-available-software
@@ -7354,6 +7366,8 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
     deprecated: false
     description: Get the HA state and associated details from the given device and any other details.
     name: pan-os-platform-get-ha-state
@@ -7395,6 +7409,8 @@ script:
       name: id
       required: false
       secret: false
+    - description: Target number of the firewall. Use only on a Panorama instance.
+      name: target
     deprecated: false
     description: Get all the jobs from the devices in the environment, or a single job when the ID is specified.
     name: pan-os-platform-get-jobs
@@ -7470,9 +7486,9 @@ script:
         type: String
   - arguments:
     - default: false
-      description: ID of host (serial or hostname) to reboot.
+      description: Serial number, or IP address if Panorama Instance, to reboot.
       isArray: false
-      name: hostid
+      name: target
       required: true
       secret: false
     deprecated: false
@@ -7490,9 +7506,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of host (serial or hostname) to check.
+      description: Serial number, or IP address if Panorama Instance, to reboot.
       isArray: false
-      name: hostid
+      name: target
       required: true
       secret: false
     deprecated: false
@@ -7508,9 +7524,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of host (serial or hostname) to update the state.
+      description: Serial number, or IP address if Panorama Instance, to reboot.
       isArray: false
-      name: hostid
+      name: target
       required: true
       secret: false
     - default: false
