@@ -2,7 +2,6 @@ import base64
 import codecs
 import os
 import unicodedata
-from contextlib import redirect_stderr
 from tempfile import NamedTemporaryFile
 from typing import Any, Dict, Generator, List, Optional, Tuple
 
@@ -287,11 +286,6 @@ class PcapParser:
                 raise ValueError('Could not find packets. Make sure that the file is a .cap/.pcap/.pcapng file, '
                                  'the filter is of the correct syntax and that the rsa key is added correctly.')
             finally:
-                if cap:
-                    try:
-                        cap.close()
-                    except:
-                        pass
                 sys.stderr = sys.__stderr__
 
     def parse_bytes(self, pcap: bytes, wpa_password: str, rsa_decrypt_key: Optional[bytes], pcap_filter: str) -> Streams:
