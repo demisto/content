@@ -298,6 +298,23 @@ def get_unique_code():
 def create_thread_context(email_code, email_cc, email_bcc, email_text, email_from, email_html,
                           email_latest_message, email_received, email_replyto, email_subject, email_to,
                           incident_id, attachments):
+    """Creates a new context entry to store the email in the incident context.  Checks current threads
+    stored on the incident to get the thread number associated with this new message, if present.
+    Args:
+        email_code: The random code that was generated when the email was received
+        email_cc: The email CC
+        email_bcc: The email BCC
+        email_text: The email body plaintext
+        email_from: The email sender address
+        email_html: The email body HTML
+        email_latest_message: The email message ID
+        email_received: Mailbox that received the email at XSOAR is fetching from
+        email_replyto: The replyTo address from the email
+        email_subject: The email subject
+        email_to: The address the email was delivered to
+        incident_id: ID of the related incident
+        attachments: File attachments from the email
+    """
     thread_number = str()
     thread_found = False
     try:

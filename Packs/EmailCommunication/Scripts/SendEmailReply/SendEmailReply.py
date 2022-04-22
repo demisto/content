@@ -134,6 +134,23 @@ def get_email_threads(incident_id):
 def create_thread_context(email_code, email_cc, email_bcc, email_text, email_from, email_html,
                           email_latest_message, email_received, email_replyto, email_subject, email_to,
                           incident_id, new_attachment_names):
+    """Creates a new context entry to store the email in the incident context.  Checks current threads
+    stored on the incident to get the thread number associated with this new message, if present.
+    Args:
+        email_code: The random code that was generated when the email was received
+        email_cc: The email CC
+        email_bcc: The email BCC
+        email_text: The email body plaintext
+        email_from: The email sender address
+        email_html: The email body HTML
+        email_latest_message: The email message ID
+        email_received: Mailbox that received the email at XSOAR is fetching from
+        email_replyto: The replyTo address from the email
+        email_subject: The email subject
+        email_to: The address the email was delivered to
+        incident_id: ID of the related incident
+        new_attachment_names: File attachments sent with the email
+    """
     thread_number = str()
     thread_found = False
     try:
@@ -530,6 +547,10 @@ def get_unique_code():
 
 
 def reset_fields():
+    """
+    Clears fields used to send the email message so that they can be used again to create another new message.
+    Args: None
+    """
     demisto.executeCommand('setIncident', {'emailnewrecipients': '', 'emailnewsubject': '',
                                            'emailnewbody': '', 'addcctoemail': '', 'addbcctoemail': ''})
 
@@ -635,8 +656,8 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
 def multi_thread_new(new_email_subject, new_email_recipients, new_email_body, incident_id, email_codes,
                      new_email_attachments, files, service_mail, add_cc, add_bcc, mail_sender_instance,
                      new_attachment_names):
-    """
-            Retrieve all entries in the EmailThreads context key
+    """Validates that all necessary fields are set to send a new email, gets a unique code to associate replies
+    to the current incident, prepares the final HTML email message body, then sends the email.
     Args:
         email_codes: The random code that was generated when the incident was created.
         new_email_body: The email body
@@ -771,8 +792,10 @@ def collect_thread_details(incident_email_threads, email_selected_thread):
 
 def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_email_attachments, files, add_cc,
                        add_bcc, service_mail, mail_sender_instance, new_attachment_names):
-    """
-    Retrieve all entries in the EmailThreads context key
+    """Validates that all necessary fields are set to send a reply email, retrieves details about the thread from
+    incident context (subject, list of recipients, etc).  In the event this reply is for an email thread that has no
+     inbound messages from end users this function will re-use details from the previous outbound first-contact email
+     and create a new email to send. Prepares the final HTML email message body, then sends the email.
     Args:
         new_email_body: The email body
         incident_id: The incident ID.
