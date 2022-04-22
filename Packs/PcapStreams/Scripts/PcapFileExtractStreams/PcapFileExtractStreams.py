@@ -1,6 +1,7 @@
 import base64
 import codecs
 import unicodedata
+import logging
 from typing import Any, Dict, List, Optional, Tuple
 
 import demistomock as demisto  # noqa: F401
@@ -266,20 +267,17 @@ class PcapParser:
             custom_parameters = {'-o': f'uat:rsa_keys:"{rsa_key_file_path}",""'}
 
         # Parse the pcap
+        logging.getLogger('asyncio').setLevel(logging.ERROR)
         with open(os.devnull, 'w') as devnull:
             sys.stderr = devnull
-            cap = None
             try:
-                cap = pyshark.FileCapture(pcap_file_path,
+                with pyshark.FileCapture(pcap_file_path,
                                           display_filter=pcap_filter,
                                           decryption_key=wpa_password,
                                           encryption_type='WPA-PWD',
                                           keep_packets=False,
-                                          custom_parameters=custom_parameters)
-                streams = self.__parse(cap)
-                cap.close()
-                cap = None
-                return streams
+                                          custom_parameters=custom_parameters) as cap:
+                    return self.__parse(cap)
             except pyshark.capture.capture.TSharkCrashException:
                 raise ValueError('Could not find packets. Make sure that the file is a .cap/.pcap/.pcapng file, '
                                  'the filter is of the correct syntax and that the rsa key is added correctly.')
