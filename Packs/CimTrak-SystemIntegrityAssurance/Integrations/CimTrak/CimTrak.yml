@@ -40,8 +40,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-- defaultvalue: ''
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
