@@ -85,6 +85,22 @@ class Client:
         return self.ms_client.http_request(
             'GET', f'v1.0/identity/conditionalAccess/namedLocations/{ip_id}')
 
+    def update_ip_named_location(self, ip_id: str, data: dict) -> dict:
+        """Update an ip named location by id
+
+        Args:
+            data: the request necessary to create the ip named location, json body.
+            ip_id: the id of the ip named location to update.
+
+        Returns:
+            None
+
+        Docs:
+            https://docs.microsoft.com/en-us/graph/api/ipnamedlocation-update?view=graph-rest-1.0&tabs=http
+        """
+        return self.ms_client.http_request(
+            'PUT', f'v1.0/identity/conditionalAccess/namedLocations/{ip_id}', return_empty_response=True, json_data=data)
+
     def delete_ip_named_location(self, ip_id: str) -> dict:
         """Delete an ip named location by id
 
@@ -342,6 +358,38 @@ def ip_named_location_get(ms_client: Client, args: dict) -> CommandResults:
     return CommandResults(readable_output=f"No ip location found for {ip_id}")
 
 
+def ip_named_location_update(ms_client: Client, args: dict) -> CommandResults:
+    print(args)
+    if ip_id := args.get('ip_id'):
+        if results := ms_client.get_ip_named_location(ip_id):
+            data = {
+                '@odata.type': '#microsoft.graph.ipNamedLocation',
+                'displayName': results.get('displayName'),
+                'isTrusted': results.get('isTrusted'),
+                'ipRanges': results.get('ipRanges')
+            }
+            ips = args.get('ips')
+            is_trusted = args.get('is_trusted')
+            display_name = args.get('display_name')
+            if ips is not None:
+                ips = ms_ip_string_to_list(ips)
+                data['ipRanges'] = ips
+            if is_trusted is not None:
+                data['isTrusted'] = is_trusted
+            if display_name is not None:
+                data['displayName'] = display_name
+            ms_client.update_ip_named_location(ip_id, data)
+            return CommandResults(
+                'MSGraph.conditionalAccess.namedIpLocations',
+                'namedIpLocations',
+                outputs={},
+                raw_response={},
+                readable_output=tableToMarkdown(
+                    f'Trying to update ip named location \'{ip_id}\':', {'Success': 'True'})
+            )
+    return CommandResults(readable_output=tableToMarkdown(f'Trying to update ip named location \'{ip_id}\':', {'Success': 'True'}))
+
+
 def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
     print(args)
     print(demisto.getIntegrationContext())
@@ -351,18 +399,7 @@ def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
     if ips is not None and display_name is not None and is_trusted is not None:
         ips_arr = []
         is_trusted = str(is_trusted).lower() == 'true'
-        ips = str(ips).split(',')
-        for ip in ips:
-            temp = {'cidrAddress': ip}
-            # ipv4 check
-            if '.' in ip:
-                temp['@odata.type'] = '#microsoft.graph.iPv4CidrRange'
-            # ipv6 check
-            elif ':' in ip:
-                temp['@odata.type'] = '#microsoft.graph.iPv6CidrRange'
-            else:
-                continue
-            ips_arr.append(temp)
+        ips_arr = ms_ip_string_to_list(ips)
         data = {
             '@odata.type': '#microsoft.graph.ipNamedLocation',
             'displayName': display_name,
@@ -401,10 +438,10 @@ def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:
                 outputs={},
                 raw_response={},
                 readable_output=tableToMarkdown(
-                    f'Ip named location \'{ip_id}\' was deleted:', {'Success': 'True'})
+                    f'Trying to delete ip named location \'{ip_id}\':', {'Success': 'True'})
             )
     return CommandResults(readable_output=tableToMarkdown(
-        f'Ip named location \'{ip_id}\' was deleted:', {'Success': 'False'}))
+        f'Trying to delete ip named location \'{ip_id}\':', {'Success': 'False'}))
 
 
 def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
@@ -440,6 +477,21 @@ def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
         return CommandResults(readable_output=f"No ip location found for {ip_id}")
 
 
+def ms_ip_string_to_list(ips):
+    ips_arr = []
+    ips = str(ips).split(',')
+    for ip in ips:
+        temp = {'cidrAddress': ip}
+        # ipv4 check
+        if '.' in ip:
+            temp['@odata.type'] = '#microsoft.graph.iPv4CidrRange'
+        # ipv6 check
+        elif ':' in ip:
+            temp['@odata.type'] = '#microsoft.graph.iPv6CidrRange'
+        else:
+            continue
+        ips_arr.append(temp)
+    return ips_arr
 def main():
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -479,8 +531,8 @@ def main():
             return_results(ip_named_location_create(client, args))
         elif command == 'msgraph-identity-ip-named-locations-get':
             return_results(ip_named_location_get(client, args))
-        # elif command == 'msgraph-ip-named-location-update':
-        #     return_results(remove_member_from_role(client, args))
+        elif command == 'msgraph-identity-ip-named-locations-update':
+            return_results(ip_named_location_update(client, args))
         elif command == 'msgraph-identity-ip-named-locations-delete':
             return_results(ip_named_location_delete(client, args))
         elif command == 'msgraph-identity-ip-named-locations-list':

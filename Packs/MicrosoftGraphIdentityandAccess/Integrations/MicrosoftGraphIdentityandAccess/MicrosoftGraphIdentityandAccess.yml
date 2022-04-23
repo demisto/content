@@ -274,6 +274,35 @@ script:
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_ranges
       description: List of ip ranges for the ip named location
       type: Array
+  - deprecated: false
+    description: update an ip named location by id.
+    execution: false
+    name: msgraph-identity-ip-named-locations-update
+    arguments:
+    - name: ip_id
+      default: false
+      description: The id of the named ip location to get from the api.
+      isArray: false
+      required: false
+      secret: false
+    - name: ips
+      default: false
+      description: Alist of ip addresses to ad to the named location, it should be a string with the addresses separated by the delimiter ','.
+      isArray: false
+      required: false
+      secret: false
+    - name: is_trusted
+      default: false
+      description: Boolean that indicates if the ip can be trusted.
+      isArray: false
+      required: false
+      secret: false
+    - name: display_name
+      default: false
+      description: The disply name for the named ip location.
+      isArray: false
+      required: false
+      secret: false
   isfetch: false
   runonce: false
   script: '-'
