@@ -1,42 +1,37 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 9c23ed3f-f561-49f2-8772-22dc518ce660
     propagationLabels:
     - all
-    toServerVersion: ""
-id: 2cd62482-cfbc-461a-8a69-be69f9ab2692
+id: Hurukai - Get Artefact Hives
 inputs:
-- description: ""
+- description: ''
   key: agentid
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 name: Hurukai - Get Artefact Hives
 outputs: []
-sourceplaybookid: 6eae88c6-c7cb-4f91-8d20-5d597be9b13d
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 02d74837-0a4b-4ef0-8b9b-624f73b0ad3a
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: 02d74837-0a4b-4ef0-8b9b-624f73b0ad3a
     timertriggers: []
     type: start
@@ -47,38 +42,38 @@ tasks:
           "y": -980
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 0
       wait: 1
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     note: false
     quietmode: 0
     scriptarguments:
       Ids:
         simple: ${Harfanglab.Job.ID}
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: ids
       PollingCommandName:
         simple: harfanglab-job-info
       Timeout:
-        simple: "10"
+        simple: '10'
       dt:
         simple: Harfanglab.Job.Info(val.Status !== 'finished').ID
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -103,8 +98,8 @@ tasks:
           "y": -260
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -113,12 +108,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: afafcc66-b38e-4568-819f-5b1ad168ad62
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: afafcc66-b38e-4568-819f-5b1ad168ad62
     timertriggers: []
     type: title
@@ -129,14 +125,14 @@ tasks:
           "y": 100
         }
       }
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     scriptarguments:
@@ -163,18 +159,18 @@ tasks:
           "y": -450
         }
       }
-  "7":
+  '7':
     evidencedata:
       customfields: {}
       description:
         simple: Raw hive files
-    id: "7"
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
@@ -201,7 +197,7 @@ tasks:
           "y": -90
         }
       }
-  "8":
+  '8':
     conditions:
     - condition:
       - - left:
@@ -221,26 +217,27 @@ tasks:
             value:
               simple: windows
       label: windows
-    id: "8"
+    id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "5"
+      - '5'
       windows:
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: c3268dff-73dc-4a2e-889a-4344ba2015e3
       iscommand: false
       name: Which platform is the agent running on ?
       type: condition
       version: -1
+      description: ''
     taskid: c3268dff-73dc-4a2e-889a-4344ba2015e3
     timertriggers: []
     type: condition
@@ -251,14 +248,14 @@ tasks:
           "y": -670
         }
       }
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     note: false
     quietmode: 0
     scriptarguments:
@@ -298,3 +295,7 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
+description: Get the RAW hives

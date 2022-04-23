@@ -1,43 +1,38 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 9c23ed3f-f561-49f2-8772-22dc518ce660
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Get a CSV list of files in a Linux filesystem
-id: be240a07-ad91-4235-85f1-d1ed977ab26b
+id: Hurukai - Get Artefact Filesystem
 inputs:
-- description: ""
+- description: ''
   key: agentid
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 name: Hurukai - Get Artefact Filesystem
 outputs: []
-sourceplaybookid: 6eae88c6-c7cb-4f91-8d20-5d597be9b13d
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 24306413-1bdc-4b22-8293-7d89b12eec38
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: 24306413-1bdc-4b22-8293-7d89b12eec38
     timertriggers: []
     type: start
@@ -48,38 +43,38 @@ tasks:
           "y": -980
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 0
       wait: 1
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     note: false
     quietmode: 0
     scriptarguments:
       Ids:
         simple: ${Harfanglab.Job.ID}
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: ids
       PollingCommandName:
         simple: harfanglab-job-info
       Timeout:
-        simple: "10"
+        simple: '10'
       dt:
         simple: Harfanglab.Job.Info(val.Status !== 'finished').ID
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -104,8 +99,8 @@ tasks:
           "y": -260
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -114,12 +109,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 7f987e4c-288f-4f81-883a-2338c7eaf3a2
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 7f987e4c-288f-4f81-883a-2338c7eaf3a2
     timertriggers: []
     type: title
@@ -130,14 +126,14 @@ tasks:
           "y": 100
         }
       }
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     scriptarguments:
@@ -164,18 +160,18 @@ tasks:
           "y": -450
         }
       }
-  "7":
+  '7':
     evidencedata:
       customfields: {}
       description:
         simple: CSV file of Linux file system entries
-    id: "7"
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
@@ -202,7 +198,7 @@ tasks:
           "y": -90
         }
       }
-  "8":
+  '8':
     conditions:
     - condition:
       - - left:
@@ -222,26 +218,27 @@ tasks:
             value:
               simple: linux
       label: linux
-    id: "8"
+    id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "5"
+      - '5'
       linux:
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 8a35267a-7580-49a2-83e5-23fd4962de36
       iscommand: false
       name: Which platform is the agent running on ?
       type: condition
       version: -1
+      description: ''
     taskid: 8a35267a-7580-49a2-83e5-23fd4962de36
     timertriggers: []
     type: condition
@@ -252,14 +249,14 @@ tasks:
           "y": -670
         }
       }
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     note: false
     quietmode: 0
     scriptarguments:
@@ -299,3 +296,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

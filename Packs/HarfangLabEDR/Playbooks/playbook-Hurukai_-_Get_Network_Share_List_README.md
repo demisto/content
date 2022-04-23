@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Network Share List](Insert the link to your image here)
+![Hurukai - Get Network Share List](Hurukai_-_Get_Network_Share_List.png)

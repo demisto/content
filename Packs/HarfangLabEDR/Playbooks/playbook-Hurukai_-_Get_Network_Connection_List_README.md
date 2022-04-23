@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Network Connection List](Insert the link to your image here)
+![Hurukai - Get Network Connection List](Hurukai_-_Get_Network_Connection_List.png)

@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Persistence List](Insert the link to your image here)
+![Hurukai - Get Persistence List](Hurukai_-_Get_Persistence_List.png)

@@ -1,42 +1,37 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 9c23ed3f-f561-49f2-8772-22dc518ce660
     propagationLabels:
     - all
-    toServerVersion: ""
-id: cf18c33f-939f-46d8-89e7-3e64a40f2fd5
+id: Hurukai - Get Service List
 inputs:
-- description: ""
+- description: ''
   key: agentid
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 name: Hurukai - Get Service List
 outputs: []
-sourceplaybookid: 6eae88c6-c7cb-4f91-8d20-5d597be9b13d
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: b08a0fa2-1a84-42af-838c-958e09b54ce5
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: b08a0fa2-1a84-42af-838c-958e09b54ce5
     timertriggers: []
     type: start
@@ -47,38 +42,38 @@ tasks:
           "y": -980
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 0
       wait: 1
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     note: false
     quietmode: 0
     scriptarguments:
       Ids:
         simple: ${Harfanglab.Job.ID}
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: ids
       PollingCommandName:
         simple: harfanglab-job-info
       Timeout:
-        simple: "10"
+        simple: '10'
       dt:
         simple: Harfanglab.Job.Info(val.Status !== 'finished').ID
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -103,8 +98,8 @@ tasks:
           "y": -260
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -113,12 +108,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 3318b61c-00df-4fd5-8187-499d825255ae
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 3318b61c-00df-4fd5-8187-499d825255ae
     timertriggers: []
     type: title
@@ -129,14 +125,14 @@ tasks:
           "y": 100
         }
       }
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     scriptarguments:
@@ -163,18 +159,18 @@ tasks:
           "y": -450
         }
       }
-  "7":
+  '7':
     evidencedata:
       customfields: {}
       description:
         simple: Service list
-    id: "7"
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
@@ -201,7 +197,7 @@ tasks:
           "y": -90
         }
       }
-  "8":
+  '8':
     conditions:
     - condition:
       - - left:
@@ -221,26 +217,27 @@ tasks:
             value:
               simple: windows
       label: windows
-    id: "8"
+    id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "5"
+      - '5'
       windows:
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 2179aa51-d20f-4bd8-8cfa-d7dda95efe5f
       iscommand: false
       name: Which platform is the agent running on ?
       type: condition
       version: -1
+      description: ''
     taskid: 2179aa51-d20f-4bd8-8cfa-d7dda95efe5f
     timertriggers: []
     type: condition
@@ -251,14 +248,14 @@ tasks:
           "y": -670
         }
       }
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     note: false
     quietmode: 0
     scriptarguments:
@@ -298,3 +295,7 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
+description: Get the list of services

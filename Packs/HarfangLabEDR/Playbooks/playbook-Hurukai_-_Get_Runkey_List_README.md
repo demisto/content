@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Runkey List](Insert the link to your image here)
+![Hurukai - Get Runkey List](Hurukai_-_Get_Runkey_List.png)

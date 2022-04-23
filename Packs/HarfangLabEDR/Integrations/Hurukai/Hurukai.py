@@ -40,9 +40,10 @@ MAX_NUMBER_OF_ALERTS_PER_CALL=25
 def _construct_request_parameters(args: dict, keys: list, params={}):
     """A helper function to add the keys arguments to the dict parameters"""
 
-    parameters = params
-    if parameters is None:
-        parameters = {}
+    parameters = {}
+    if params is not None:
+        for p in params:
+            parameters[p] = params[p] 
 
     for (arg_field, filter_field) in keys:
         value = args.get(arg_field, None)
@@ -471,8 +472,6 @@ def endpoint_search(client, args):
     hostname = args.get('hostname', None)
 
     data = client.endpoint_search(hostname)
-
-    count = data['count']
 
     readable_output = tableToMarkdown(f'Endpoint information for Hostname : {hostname}', data['results'])
 

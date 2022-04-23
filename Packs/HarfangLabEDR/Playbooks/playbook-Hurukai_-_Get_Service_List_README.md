@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Service List](Insert the link to your image here)
+![Hurukai - Get Service List](Hurukai_-_Get_Service_List.png)

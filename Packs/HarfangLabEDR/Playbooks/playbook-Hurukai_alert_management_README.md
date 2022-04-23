@@ -43,4 +43,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai alert management](Insert the link to your image here)
+![Hurukai alert management](Hurukai_alert_management.png)

@@ -1,12 +1,7 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 9c23ed3f-f561-49f2-8772-22dc518ce660
     propagationLabels:
     - all
-    toServerVersion: ""
 description: |-
   Build a global archive with:
   - MFT (Windows)
@@ -16,36 +11,36 @@ description: |-
   - EVT/EVTX files (Windows)
   - Log files (Linux)
   - Filesystem content (Linux)
-id: a2bc705a-4709-4870-8498-64b624b88830
+id: Hurukai - Get All Artefacts
 inputs:
-- description: ""
+- description: ''
   key: agentid
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 name: Hurukai - Get All Artefacts
 outputs: []
-sourceplaybookid: 6eae88c6-c7cb-4f91-8d20-5d597be9b13d
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 9c19c423-f7df-4468-8862-0cfd2ab407d5
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: 9c19c423-f7df-4468-8862-0cfd2ab407d5
     timertriggers: []
     type: start
@@ -56,38 +51,38 @@ tasks:
           "y": -980
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 0
       wait: 1
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     note: false
     quietmode: 0
     scriptarguments:
       Ids:
         simple: ${Harfanglab.Job.ID}
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: ids
       PollingCommandName:
         simple: harfanglab-job-info
       Timeout:
-        simple: "10"
+        simple: '10'
       dt:
         simple: Harfanglab.Job.Info(val.Status !== 'finished').ID
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -112,8 +107,8 @@ tasks:
           "y": -260
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -122,12 +117,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: d9e8ae42-ae1f-421b-8f54-6acfa3a6f95d
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: d9e8ae42-ae1f-421b-8f54-6acfa3a6f95d
     timertriggers: []
     type: title
@@ -138,14 +134,14 @@ tasks:
           "y": 100
         }
       }
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     scriptarguments:
@@ -155,8 +151,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Hurukai
-      description: Start a job to download all artefacts from a host (Windows MFT,
-        Hives, evt/evtx, Prefetch, USN, Linux logs and file list)
+      description: Start a job to download all artefacts from a host (Windows MFT, Hives, evt/evtx, Prefetch, USN, Linux logs and file list)
       id: 97d0710e-746f-42f6-840c-ae2356893e1d
       iscommand: true
       name: harfanglab-job-artefact-all
@@ -173,18 +168,18 @@ tasks:
           "y": -450
         }
       }
-  "7":
+  '7':
     evidencedata:
       customfields: {}
       description:
         simple: Global artefact package
-    id: "7"
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
@@ -211,7 +206,7 @@ tasks:
           "y": -90
         }
       }
-  "8":
+  '8':
     conditions:
     - condition:
       - - left:
@@ -247,24 +242,25 @@ tasks:
             value:
               simple: linux
       label: windows/linux
-    id: "8"
+    id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "5"
+      - '5'
       windows/linux:
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 85c2518a-4bd2-43e4-88d4-d33c2a304390
       iscommand: false
       name: Which platform is the agent running on ?
+      description: ''
       type: condition
       version: -1
     taskid: 85c2518a-4bd2-43e4-88d4-d33c2a304390
@@ -277,14 +273,14 @@ tasks:
           "y": -670
         }
       }
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     note: false
     quietmode: 0
     scriptarguments:
@@ -324,3 +320,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

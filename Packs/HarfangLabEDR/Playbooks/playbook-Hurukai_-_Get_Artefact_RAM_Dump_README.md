@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Artefact RAM Dump](Insert the link to your image here)
+![Hurukai - Get Artefact RAM Dump](Hurukai_-_Get_Artefact_RAM_Dump.png)

@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Artefact Hives](Insert the link to your image here)
+![Hurukai - Get Artefact Hives](Hurukai_-_Get_Artefact_Hives.png)

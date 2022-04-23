@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Prefetch List](Insert the link to your image here)
+![Hurukai - Get Prefetch List](Hurukai_-_Get_Prefetch_List.png)
