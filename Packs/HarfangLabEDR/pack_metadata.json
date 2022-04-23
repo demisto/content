@@ -1,0 +1,17 @@
+{
+    "name": "HarfangLab EDR",
+    "description": "# Harfanglab EDR\n\nThis connector allows to fetch security events from a HarfangLab EDR Manager and manage the incident response. \n\nIt is shiped with:\n\n  * one integration with 60+ commands/tasks, \n  * an alert management playbook including 20+ subplaybooks,\n  * one alert type along with its associated incident mapper.\n\nThe alert management playbook illustrates several steps of a typical incident response with forensics activities:\n\n  1. Endpoint isolation\n  2. Forensics data collection \n  3. Raw artefacts collection\n  4. Agent reconnection\n  5. Case closing\n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Pierre-HarfangLab",
+    "url": "",
+    "email": "",
+    "created": "2022-04-23T11:16:06Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "Pierre-HarfangLab"
+    ]
+}

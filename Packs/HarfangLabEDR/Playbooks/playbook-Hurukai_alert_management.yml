@@ -1,0 +1,1451 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 9c23ed3f-f561-49f2-8772-22dc518ce660
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 618f9176-eb24-4971-8ffe-295d83fea641
+inputs: []
+name: Hurukai alert management
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7229c647-e04d-4545-8271-7df8296207b9
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 7229c647-e04d-4545-8271-7df8296207b9
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -570
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      isolated:
+        simple: Agent successfully isolated.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: d73b09e1-e5da-46ad-899a-f322818c2679
+      iscommand: true
+      name: 'Set incident isolated flag '
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: d73b09e1-e5da-46ad-899a-f322818c2679
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 855
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5a1ace82-e3cf-4393-8d61-adf89585af81
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 5a1ace82-e3cf-4393-8d61-adf89585af81
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3460
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Agent
+                root: Harfanglab
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: policy
+                  operator: getField
+                - args:
+                    field:
+                      value:
+                        simple: use_isolation
+                  operator: getField
+          operator: isEqualString
+          right:
+            value:
+              simple: "false"
+      label: "No"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Agent
+                root: Harfanglab
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: policy
+                  operator: getField
+                - args:
+                    field:
+                      value:
+                        simple: use_isolation
+                  operator: getField
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "Yes"
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "No":
+      - "11"
+      "Yes":
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dfa76392-582d-45fd-8268-0468d1dd641a
+      iscommand: false
+      name: Can the agent be isolated ?
+      type: condition
+      version: -1
+    taskid: dfa76392-582d-45fd-8268-0468d1dd641a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 485
+        }
+      }
+  "11":
+    defaultassigneecomplex:
+      simple: Analyst
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    sla:
+      days: 0
+      hours: 0
+      minutes: 5
+      weeks: 0
+    task:
+      brand: ""
+      id: 3c82a694-2ca3-4ef1-841d-8dcdfe9c8ab5
+      iscommand: false
+      name: Manually isolate endpoint
+      type: regular
+      version: -1
+    taskid: 3c82a694-2ca3-4ef1-841d-8dcdfe9c8ab5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 670
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 558a273e-e4b5-44fb-88f9-0f9af8ddea29
+      iscommand: false
+      name: Agent isolation
+      type: title
+      version: -1
+    taskid: 558a273e-e4b5-44fb-88f9-0f9af8ddea29
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 190
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 913b844f-7429-4b3b-8d68-3dc832f80b58
+      iscommand: false
+      name: Forensics data collection
+      type: title
+      version: -1
+    taskid: 913b844f-7429-4b3b-8d68-3dc832f80b58
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1035
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 847322cb-60a9-404c-8e5f-ea83b90781c2
+      iscommand: false
+      name: Agent reconnection
+      type: title
+      version: -1
+    taskid: 847322cb-60a9-404c-8e5f-ea83b90781c2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2580
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${incident.agentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Get endpoint information from agent_id
+      id: 249c874e-5008-4cc0-8351-5995b239c4e8
+      iscommand: true
+      name: Get endpoint information (OS, policy...)
+      script: Hurukai|||harfanglab-get-endpoint-info
+      type: regular
+      version: -1
+    taskid: 249c874e-5008-4cc0-8351-5995b239c4e8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 320
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${incident.agentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Command used to isolate an endpoint from the network while remaining
+        connected to the EDR manager
+      id: d796ce69-3ecc-4e14-834f-0a7ec01d03a9
+      iscommand: true
+      name: harfanglab-isolate-endpoint
+      script: Hurukai|||harfanglab-isolate-endpoint
+      type: regular
+      version: -1
+    taskid: d796ce69-3ecc-4e14-834f-0a7ec01d03a9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 670
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "59"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${incident.agentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Command used to deisolate an endpoint and reconnect it to the network
+      id: aa7c529c-92ec-4093-8e48-76456747a2e6
+      iscommand: true
+      name: harfanglab-deisolate-endpoint
+      script: Hurukai|||harfanglab-deisolate-endpoint
+      type: regular
+      version: -1
+    taskid: aa7c529c-92ec-4093-8e48-76456747a2e6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2730
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.alertcategory
+          operator: isEqualString
+          right:
+            value:
+              simple: ransom
+        - left:
+            iscontext: true
+            value:
+              simple: incident.alertcategory
+          operator: isEqualString
+          right:
+            value:
+              simple: yara
+        - left:
+            iscontext: true
+            value:
+              simple: incident.alertcategory
+          operator: isEqualString
+          right:
+            value:
+              simple: sigma
+        - left:
+            iscontext: true
+            value:
+              simple: incident.alertcategory
+          operator: isEqualString
+          right:
+            value:
+              simple: hlai
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.severityStr
+          operator: isEqualString
+          right:
+            value:
+              simple: Critical
+      label: Critical severity and yara / sigma / ransomware / hlai type
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "58"
+      Critical severity and yara / sigma / ransomware / hlai type:
+      - "60"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 2d362140-e4ac-442b-8306-238cb8e5da93
+      iscommand: false
+      name: Should the alert be investigated (type, severity) ?
+      type: condition
+      version: -1
+    taskid: 2d362140-e4ac-442b-8306-238cb8e5da93
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -420
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: df1158e3-0b12-4b1b-8bed-123f27d3ffc7
+      iscommand: false
+      name: Hurukai - Get Driver List
+      playbookId: 042223f8-f804-40db-807e-98ffe9edd936
+      type: playbook
+      version: -1
+    taskid: df1158e3-0b12-4b1b-8bed-123f27d3ffc7
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1190
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+      ostype:
+        simple: ${incident.ostype}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f51f45dc-342c-443a-8d8c-27337dffdac1
+      iscommand: false
+      name: Hurukai - Get Process List
+      playbookId: f8dba8cd-4309-496b-8065-c75f7b905ebf
+      type: playbook
+      version: -1
+    taskid: f51f45dc-342c-443a-8d8c-27337dffdac1
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 1180
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "54"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cb2d8e84-2582-4071-8ecf-2c3f93e9f14d
+      iscommand: false
+      name: Advanced Forensics
+      type: title
+      version: -1
+    taskid: cb2d8e84-2582-4071-8ecf-2c3f93e9f14d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 645,
+          "y": 1925
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: Should I collect raw forensics artefacts ?
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - "Yes"
+      - "No"
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      "No":
+      - "14"
+      "Yes":
+      - "37"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 163d9bc9-6077-42bb-86f4-d6308d20a912
+      iscommand: false
+      name: Should we perform advanced forensics ?
+      type: condition
+      version: -1
+    taskid: 163d9bc9-6077-42bb-86f4-d6308d20a912
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1750
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8d515208-a7cc-4315-86c2-3d1b38ab7dc2
+      iscommand: false
+      name: Investigate the incident
+      type: regular
+      version: -1
+    taskid: 8d515208-a7cc-4315-86c2-3d1b38ab7dc2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 645,
+          "y": 2410
+        }
+      }
+  "41":
+    id: "41"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "56"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9d9811ca-83a4-43fc-886c-c255955da4ec
+      iscommand: false
+      name: Hurukai - Get Pipe List
+      playbookId: ad6d6eb6-f904-4844-8a92-8fa66047d25a
+      type: playbook
+      version: -1
+    taskid: 9d9811ca-83a4-43fc-886c-c255955da4ec
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1190
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 746b0128-0f13-4f51-8441-ea3a5e5502bf
+      iscommand: false
+      name: Hurukai - Get Prefetch List
+      playbookId: 260672bf-fe36-48ae-8a42-173b3f173c85
+      type: playbook
+      version: -1
+    taskid: 746b0128-0f13-4f51-8441-ea3a5e5502bf
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 1190
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "51"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: daf1e8f9-5ea6-43ef-872e-77937255760b
+      iscommand: false
+      name: Hurukai - Get Runkey List
+      playbookId: 30d429f7-07bf-402e-812b-f2534b5fd7d9
+      type: playbook
+      version: -1
+    taskid: daf1e8f9-5ea6-43ef-872e-77937255760b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 1560
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "53"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 092cd0de-c17e-409a-82cb-46be6a6cbd1b
+      iscommand: false
+      name: Hurukai - Get Scheduled Task List
+      playbookId: fe6bd901-e90b-48a9-819b-23d6d100fc6a
+      type: playbook
+      version: -1
+    taskid: 092cd0de-c17e-409a-82cb-46be6a6cbd1b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1570
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5e3706c9-0c0a-434e-8a46-e7b8cfb8c7c4
+      iscommand: false
+      name: Hurukai - Get Service List
+      playbookId: cf18c33f-939f-46d8-89e7-3e64a40f2fd5
+      type: playbook
+      version: -1
+    taskid: 5e3706c9-0c0a-434e-8a46-e7b8cfb8c7c4
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1190
+        }
+      }
+  "50":
+    id: "50"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 86948d43-a623-465d-80fb-4debbf764b2c
+      iscommand: false
+      name: Hurukai - Get Artefact RAM Dump
+      playbookId: 8df35d93-1182-4b79-852f-9dd357277cfa
+      type: playbook
+      version: -1
+    taskid: 86948d43-a623-465d-80fb-4debbf764b2c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 645,
+          "y": 2245
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a5538716-c8d0-48c5-8b33-e33a0264f8f4
+      iscommand: false
+      name: Hurukai - Get Startup List
+      playbookId: 7176b0fc-ea58-46dc-8c7a-042f4590a386
+      type: playbook
+      version: -1
+    taskid: a5538716-c8d0-48c5-8b33-e33a0264f8f4
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 1570
+        }
+      }
+  "52":
+    id: "52"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cc9fc87f-6ccd-4b83-84ba-d1f13b38ccb2
+      iscommand: false
+      name: Hurukai - Get WMI List
+      playbookId: 5ca4d0eb-7f20-480a-8e3d-3b1fc890de47
+      type: playbook
+      version: -1
+    taskid: cc9fc87f-6ccd-4b83-84ba-d1f13b38ccb2
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1570
+        }
+      }
+  "53":
+    id: "53"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "52"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: beab5b53-a23d-4aa6-8f76-789de3d1e646
+      iscommand: false
+      name: Hurukai - Get Persistence List
+      playbookId: cc5dbf4d-05f0-426c-8cea-644841d8b9b9
+      type: playbook
+      version: -1
+    taskid: beab5b53-a23d-4aa6-8f76-789de3d1e646
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1570
+        }
+      }
+  "54":
+    id: "54"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "50"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6bcb81e7-3e05-481e-8eec-60e4b4044db5
+      iscommand: false
+      name: Hurukai - Get All Artefacts
+      playbookId: a2bc705a-4709-4870-8498-64b624b88830
+      type: playbook
+      version: -1
+    taskid: 6bcb81e7-3e05-481e-8eec-60e4b4044db5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 645,
+          "y": 2075
+        }
+      }
+  "55":
+    id: "55"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e8def961-bfac-481d-8f87-ef6720eb17d9
+      iscommand: false
+      name: Hurukai - Get Network Share List
+      playbookId: cea9e3d1-0df0-4c95-8789-01a995080789
+      type: playbook
+      version: -1
+    taskid: e8def961-bfac-481d-8f87-ef6720eb17d9
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1390
+        }
+      }
+  "56":
+    id: "56"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "57"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d47cec4a-ceee-4fa7-8260-5a302bbc365f
+      iscommand: false
+      name: Hurukai - Get Session List
+      playbookId: 616b37ba-3f17-49c3-88c9-e1b0853c8014
+      type: playbook
+      version: -1
+    taskid: d47cec4a-ceee-4fa7-8260-5a302bbc365f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 1370
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "55"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentid:
+        simple: ${incident.agentid}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6548e31d-c107-4c45-83f9-276c3cfb6898
+      iscommand: false
+      name: Hurukai - Get Network Connection List
+      playbookId: 1b8d5fd8-e141-4846-8571-b9c98e643c69
+      type: playbook
+      version: -1
+    taskid: 6548e31d-c107-4c45-83f9-276c3cfb6898
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1390
+        }
+      }
+  "58":
+    id: "58"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e6616385-f488-4163-8729-740919d41c4d
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: e6616385-f488-4163-8729-740919d41c4d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": -185
+        }
+      }
+  "59":
+    id: "59"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "62"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      isolated:
+        simple: Agent successfully reconnected.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: ede50747-073c-4958-8519-ab6cfddf6fe4
+      iscommand: true
+      name: 'Set incident isolated flag '
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: ede50747-073c-4958-8519-ab6cfddf6fe4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2900
+        }
+      }
+  "60":
+    id: "60"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "64"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      security_event_id:
+        simple: ${incident.alertid}
+      status:
+        simple: Investigating
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Command used to change the status of a security event
+      id: 6c26974f-1a74-4298-8bd4-f809bb238a77
+      iscommand: true
+      name: Set incident status to 'Investigating' in Harfanglab Manager
+      script: Hurukai|||harfanglab-change-security-event-status
+      type: regular
+      version: -1
+    taskid: 6c26974f-1a74-4298-8bd4-f809bb238a77
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -185
+        }
+      }
+  "61":
+    id: "61"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      security_event_id:
+        simple: ${incident.alertid}
+      status:
+        simple: Closed
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Command used to change the status of a security event
+      id: 806d0a66-b165-4ac0-879b-6aa254c49012
+      iscommand: true
+      name: Set incident status to 'Closed' in Harfanglab Manager
+      script: Hurukai|||harfanglab-change-security-event-status
+      type: regular
+      version: -1
+    taskid: 806d0a66-b165-4ac0-879b-6aa254c49012
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 3270
+        }
+      }
+  "62":
+    id: "62"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: Should I collect raw forensics artefacts ?
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - "Yes"
+      - "No"
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      "No":
+      - "61"
+      "Yes":
+      - "63"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 2c85a826-efdf-4ebe-88a4-e8d22bcac752
+      iscommand: false
+      name: Was it a false positive ?
+      type: condition
+      version: -1
+    taskid: 2c85a826-efdf-4ebe-88a4-e8d22bcac752
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3090
+        }
+      }
+  "63":
+    id: "63"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      security_event_id:
+        simple: ${incident.alertid}
+      status:
+        simple: False Positive
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Command used to change the status of a security event
+      id: e5253bff-3c67-4f86-857c-a9041f184e73
+      iscommand: true
+      name: Set incident status to 'False Positive' in Harfanglab Manager
+      script: Hurukai|||harfanglab-change-security-event-status
+      type: regular
+      version: -1
+    taskid: e5253bff-3c67-4f86-857c-a9041f184e73
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 545,
+          "y": 3270
+        }
+      }
+  "64":
+    id: "64"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: Should I collect raw forensics artefacts ?
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - "Yes"
+      - "No"
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      "No":
+      - "13"
+      "Yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 7de368e2-6abf-47d0-8880-ce21071a43fa
+      iscommand: false
+      name: Should I isolate the endpoint before starting investigation ?
+      type: condition
+      version: -1
+    taskid: 7de368e2-6abf-47d0-8880-ce21071a43fa
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 10
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_18_Yes": 0.54,
+      "23_60_Critical severity and yara / sigma / ransomware / hlai type": 0.42,
+      "38_37_Yes": 0.72
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4095,
+        "width": 2120,
+        "x": -610,
+        "y": -570
+      }
+    }
+  }
