@@ -176,6 +176,104 @@ script:
       isArray: false
       required: true
       secret: false
+  - deprecated: false
+    description: Retrieve an ip named location by id.
+    execution: false
+    name: msgraph-identity-ip-named-locations-get
+    arguments:
+    - name: ip_id
+      default: false
+      description: The id of the named ip location to get from the api.
+      isArray: false
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_created
+      description: The time when an ip named location was created.
+      type: Date
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_modified
+      description: The time when an ip named location was updated.
+      type: Date
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.display_name
+      description: The display name of the ip named location.
+      type: String
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.id
+      description: The unique identifier of the ip named location.
+      type: String
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.is_trusted
+      description: Abollean that taled if the ip named location is a trusted source.
+      type: String
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_ranges
+      description: List of ip ranges for the ip named location
+      type: Array
+  - deprecated: false
+    description: Retrieve all ip named locations.
+    execution: false
+    name: msgraph-identity-ip-named-locations-list
+    arguments:
+    - name: limit
+      default: false
+      description: The limit for results we get from the api.
+      isArray: false
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_named_locations
+      description: List of ip named locations.
+      type: Array
+  - deprecated: false
+    description: Delete an ip named location by id.
+    execution: false
+    name: msgraph-identity-ip-named-locations-delete
+    arguments:
+    - name: ip_id
+      default: false
+      description: The id of the named ip location to get from the api.
+      isArray: false
+      required: false
+      secret: false
+  - deprecated: false
+    description: Create an ip named location.
+    execution: false
+    name: msgraph-identity-ip-named-locations-create
+    arguments:
+    - name: ips
+      default: false
+      description: Alist of ip addresses to ad to the named location, it should be a string with the addresses separated by the delimiter ','.
+      isArray: false
+      required: false
+      secret: false
+    - name: is_trusted
+      default: false
+      description: Boolean that indicates if the ip can be trusted.
+      isArray: false
+      required: false
+      secret: false
+    - name: display_name
+      default: false
+      description: The disply name for the named ip location.
+      isArray: false
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_created
+      description: The time when an ip named location was created.
+      type: Date
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_modified
+      description: The time when an ip named location was updated.
+      type: Date
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.display_name
+      description: The display name of the ip named location.
+      type: String
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.id
+      description: The unique identifier of the ip named location.
+      type: String
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.is_trusted
+      description: Abollean that taled if the ip named location is a trusted source.
+      type: String
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_ranges
+      description: List of ip ranges for the ip named location
+      type: Array
   isfetch: false
   runonce: false
   script: '-'

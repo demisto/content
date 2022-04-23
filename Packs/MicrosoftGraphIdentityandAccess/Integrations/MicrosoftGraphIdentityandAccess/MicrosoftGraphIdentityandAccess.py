@@ -2,6 +2,7 @@
 An integration to MS Graph Identity and Access endpoint.
 https://docs.microsoft.com/en-us/graph/api/resources/serviceprincipal?view=graph-rest-1.0
 """
+import json
 
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -69,12 +70,72 @@ class Client:
         return self.ms_client.http_request(
             'GET', f'v1.0/directoryRoles/{role_id}/members')['value'][:limit]
 
+    def get_ip_named_location(self, ip_id: str) -> dict:
+        """Get an ip named location by id
+
+        Args:
+            ip_id: the id of the requested ip named location.
+
+        Returns:
+            a dictionary with the object from the api
+
+        Docs:
+            https://docs.microsoft.com/en-us/graph/api/ipnamedlocation-get?view=graph-rest-1.0&tabs=http
+        """
+        return self.ms_client.http_request(
+            'GET', f'v1.0/identity/conditionalAccess/namedLocations/{ip_id}')
+
+    def delete_ip_named_location(self, ip_id: str) -> dict:
+        """Delete an ip named location by id
+
+        Args:
+            ip_id: the id of the requested ip named location.
+
+        Returns:
+            None
+
+        Docs:
+            https://docs.microsoft.com/en-us/graph/api/ipnamedlocation-delete?view=graph-rest-1.0&tabs=http
+        """
+        return self.ms_client.http_request(
+            'DELETE', f'v1.0/identity/conditionalAccess/namedLocations/{ip_id}', return_empty_response=True)
+
+    def create_ip_named_location(self, data: dict) -> dict:
+        """Create an ip named location
+
+        Args:
+            data: the request necessary to create the ip named location, json body.
+
+        Returns:
+            THe created ip named location
+
+        Docs:
+            https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations?view=graph-rest-1.0&tabs=http
+        """
+        return self.ms_client.http_request(
+            'POST', f'v1.0/identity/conditionalAccess/namedLocations', json_data=data)
+
+    def list_ip_named_location(self, limit: int) -> list:
+        """Get a list of all ip named locations
+
+        Args:
+            limit: limit: Maximum ip named locations to get.
+
+        Returns:
+            a list of dictionaries with the object from the api
+
+        Docs:
+            https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-list-namedlocations?view=graph-rest-1.0&tabs=http
+        """
+        return self.ms_client.http_request(
+            'GET', f'v1.0/identity/conditionalAccess/namedLocations?$top={limit}')['value']
+
     def activate_directory_role(self, template_id: str) -> dict:
         """Activating a role in the directory.
         Args:
             template_id: A template id to activate
 
-        Returns:
+        Returns:40.66.23.55/32
             directoryRole object.
 
         Docs:
@@ -255,12 +316,137 @@ def remove_member_from_role(client: Client, args: dict) -> str:
     return f"User ID {user_id} has been removed from role {role_object_id}"
 
 
+def ip_named_location_get(ms_client: Client, args: dict) -> CommandResults:
+    print(args)
+    print(demisto.getIntegrationContext())
+    if ip_id := args.get('ip_id'):
+        if results := ms_client.get_ip_named_location(ip_id):
+            context = {
+                'id': ip_id,
+                'display_name': results.get('displayName'),
+                'time_created': results.get('createdDateTime'),
+                'time_modified': results.get('modifiedDateTime'),
+                'is_trusted': results.get('isTrusted'),
+                'ip_ranges': results.get('ipRanges')
+            }
+            return CommandResults(
+                'MSGraph.conditionalAccess.namedIpLocations',
+                'namedIpLocations',
+                outputs=context,
+                raw_response=results,
+                readable_output=tableToMarkdown(
+                    f'Ip named location \'{ip_id}\':',
+                    context
+                )
+            )
+    return CommandResults(readable_output=f"No ip location found for {ip_id}")
+
+
+def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
+    print(args)
+    print(demisto.getIntegrationContext())
+    ips = args.get('ips')
+    is_trusted = args.get('is_trusted')
+    display_name = args.get('display_name')
+    if ips is not None and display_name is not None and is_trusted is not None:
+        ips_arr = []
+        is_trusted = str(is_trusted).lower() == 'true'
+        ips = str(ips).split(',')
+        for ip in ips:
+            temp = {'cidrAddress': ip}
+            # ipv4 check
+            if '.' in ip:
+                temp['@odata.type'] = '#microsoft.graph.iPv4CidrRange'
+            # ipv6 check
+            elif ':' in ip:
+                temp['@odata.type'] = '#microsoft.graph.iPv6CidrRange'
+            else:
+                continue
+            ips_arr.append(temp)
+        data = {
+            '@odata.type': '#microsoft.graph.ipNamedLocation',
+            'displayName': display_name,
+            'isTrusted': is_trusted,
+            'ipRanges': ips_arr
+        }
+        if results := ms_client.create_ip_named_location(data):
+            id = results.get('id')
+            context = {
+                'id': id,
+                'display_name': results.get('displayName'),
+                'time_created': results.get('createdDateTime'),
+                'time_modified': results.get('modifiedDateTime'),
+                'is_trusted': results.get('isTrusted'),
+                'ip_ranges': results.get('ipRanges')
+            }
+            return CommandResults(
+                'MSGraph.conditionalAccess.namedIpLocations',
+                'namedIpLocations',
+                outputs=context,
+                raw_response=results,
+                readable_output=tableToMarkdown(
+                    f'created Ip named location \'{id}\':',
+                    context
+                )
+            )
+    return CommandResults(readable_output=f"No ip location found for {ip_id}")
+
+
+def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:
+    if ip_id := args.get('ip_id'):
+        if results := ms_client.delete_ip_named_location(ip_id):
+            return CommandResults(
+                'MSGraph.conditionalAccess.namedIpLocations',
+                'namedIpLocations',
+                outputs={},
+                raw_response={},
+                readable_output=tableToMarkdown(
+                    f'Ip named location \'{ip_id}\' was deleted:', {'Success': 'True'})
+            )
+    return CommandResults(readable_output=tableToMarkdown(
+        f'Ip named location \'{ip_id}\' was deleted:', {'Success': 'False'}))
+
+
+def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
+    limit = args.get('limit')
+    if limit is None:
+        limit = 100
+    if results := ms_client.list_ip_named_location(limit):
+        ip_named_locations = []
+        for result in results:
+            ip_named_location = {
+                'id': result['id'],
+                'display_name': result['displayName'],
+                'time_created': result['createdDateTime'],
+                'time_modified': result['modifiedDateTime'],
+                'is_trusted': result['isTrusted'],
+                'ip_ranges': result['ipRanges']
+            }
+            ip_named_locations.append(ip_named_location)
+        context = {
+            'ip_named_locations': ip_named_locations
+        }
+        return CommandResults(
+            'MSGraph.conditionalAccess.namedIpLocations',
+            'namedIpLocations',
+            outputs=context,
+            raw_response=results,
+            readable_output=tableToMarkdown(
+                f'Ip named locations:',
+                context
+            )
+        )
+    else:
+        return CommandResults(readable_output=f"No ip location found for {ip_id}")
+
+
 def main():
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         command = demisto.command()
         params = demisto.params()
         args = demisto.args()
+        print(args)
         handle_proxy()
         client = Client(
             app_id=params['app_id'],
@@ -289,6 +475,16 @@ def main():
             return_results(add_member_to_role_command(client, args))
         elif command == 'msgraph-identity-directory-role-member-remove':
             return_results(remove_member_from_role(client, args))
+        elif command == 'msgraph-identity-ip-named-locations-create':
+            return_results(ip_named_location_create(client, args))
+        elif command == 'msgraph-identity-ip-named-locations-get':
+            return_results(ip_named_location_get(client, args))
+        # elif command == 'msgraph-ip-named-location-update':
+        #     return_results(remove_member_from_role(client, args))
+        elif command == 'msgraph-identity-ip-named-locations-delete':
+            return_results(ip_named_location_delete(client, args))
+        elif command == 'msgraph-identity-ip-named-locations-list':
+            return_results(ip_named_location_list(client, args))
         else:
             raise NotImplementedError(f"Command '{command}' not found.")
 
