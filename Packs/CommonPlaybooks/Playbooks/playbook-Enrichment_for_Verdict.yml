@@ -341,7 +341,18 @@ tasks:
             value:
               complex:
                 root: inputs.IP
+                filters:
+                - - operator: IsNotInCidrRanges
+                    left:
+                      value:
+                        simple: inputs.IP
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {

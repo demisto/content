@@ -29,10 +29,10 @@
   - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_script.yml  
   - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/layoutscontainer-demisto_sdk_e2e_test_inident_layout.json
   - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/layoutscontainer-demsito_sdk_e2e_indicator_layout.json
-  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demsito_sdk_e2e_incident_type.json
   - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_incident_field.json
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demsito_sdk_e2e_incident_type.json
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_indicator_field.json  
   - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_Indicator_type.json
-  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_indicator_field.json
   - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_reputation.json
   - section_end "Upload E2E tests Entities to Cortex XSOAR"
 
