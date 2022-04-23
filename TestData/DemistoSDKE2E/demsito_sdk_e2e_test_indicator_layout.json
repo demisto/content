@@ -9,7 +9,7 @@
 	"edit": null,
 	"fromServerVersion": "",
 	"group": "indicator",
-	"id": "b150bfc1-0395-4ac2-8d45-7bf450f39074",
+	"id": "demisto_sdk_e2e_test_indicator_layout",
 	"indicatorsDetails": {
 		"TypeName": "",
 		"tabs": [
@@ -271,7 +271,7 @@
 	"itemVersion": "",
 	"locked": false,
 	"mobile": null,
-	"name": "demsito_sdk_e2e_indicator_layout",
+	"name": "demsito_sdk_e2e_test_indicator_layout",
 	"packID": "",
 	"propagationLabels": [
 		"all"

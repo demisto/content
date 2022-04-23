@@ -2,7 +2,7 @@
 	"cacheVersn": 0,
 	"close": null,
 	"definitionId": "",
-	"description": "demisto_sdk_e2e_test_inident_layout",
+	"description": "demisto_sdk_e2e_test_incident_layout",
 	"detached": false,
 	"details": null,
 	"detailsV2": {
@@ -316,13 +316,13 @@
 	"edit": null,
 	"fromServerVersion": "",
 	"group": "incident",
-	"id": "a73d0c31-2bcd-4695-814b-40205401cf9f",
+	"id": "demisto_sdk_e2e_test_incident_layout",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
 	"itemVersion": "",
 	"locked": false,
 	"mobile": null,
-	"name": "demisto_sdk_e2e_test_inident_layout",
+	"name": "demisto_sdk_e2e_test_incident_layout",
 	"packID": "",
 	"propagationLabels": [
 		"all"

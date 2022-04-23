@@ -1,8 +1,8 @@
 {
 	"id": "incident_demistosdke2etestincidentfield",
-	"version": 1,
+	"version": 4,
 	"cacheVersn": 0,
-	"modified": "2022-04-10T11:37:06.607084+03:00",
+	"modified": "2022-04-23T13:44:08.572615+03:00",
 	"packID": "",
 	"itemVersion": "",
 	"fromServerVersion": "",
@@ -29,7 +29,7 @@
 	"fieldCalcScript": "",
 	"neverSetAsRequired": false,
 	"isReadOnly": false,
-	"selectValues": null,
+	"selectValues": [],
 	"autoCompleteTags": null,
 	"validationRegex": "",
 	"x2_fields": "",
@@ -41,9 +41,11 @@
 	"mergeStrategy": "",
 	"hidden": false,
 	"openEnded": false,
-	"associatedTypes": null,
+	"associatedTypes": [
+		"demisto_sdk_e2e_incident_type"
+	],
 	"systemAssociatedTypes": null,
-	"associatedToAll": true,
+	"associatedToAll": false,
 	"unmapped": false,
 	"unsearchable": true,
 	"caseInsensitive": true,
