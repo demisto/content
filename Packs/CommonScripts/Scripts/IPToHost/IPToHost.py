@@ -3,43 +3,35 @@ import socket
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-ip = demisto.args().get('ip')
+def ip_to_host(ip):
+    try:
+        host_info = socket.gethostbyaddr(ip)
+    except Exception as e:
+        return_error("Couln't get the ip host info. Error information: \"{0}\"".format(str(e)))
 
-try:
-    host_info = socket.gethostbyaddr(ip)
-except Exception as e:
-    demisto.results({
-        "Type": entryTypes["error"],
-        "ContentsFormat": formats["text"],
-        "Contents": "Couln't get the ip host info. Error information: \"{0}\"".format(str(e))
-    })
-    sys.exit(0)
+    if not host_info:
+        return_error("Received an error while trying to get the host information")
 
-if not host_info:
-    demisto.results({
-        "Type": entryTypes["error"],
-        "ContentsFormat": formats["text"],
-        "Contents": "Received an error while trying to get the host information"
-    })
-    sys.exit(0)
+    hostname = host_info[0]
 
-hostname = host_info[0]
+    output = {
+        "Hostname": str(hostname),
+        "IP": ip
+    }
 
-output = {
-    "Hostname": str(hostname),
-    "IP": ip
-}
+    md = tableToMarkdown("IP to Host", [output])
 
-context = {}
-context["Endpoint(val.Hostname && val.Hostname === obj.Hostname)"] = output
+    return CommandResults(
+        outputs=output,
+        outputs_prefix='Endpoint',
+        outputs_key_field='Hostname',
+        readable_output=md,
+    )
 
-md = tableToMarkdown("IP to Host", [output])
+def main():
+    ip = demisto.args().get('ip')
+    return_results(ip_to_host(ip))
 
-demisto.results({
-    'Type': entryTypes['note'],
-    'Contents': output,
-    'ContentsFormat': formats['json'],
-    'HumanReadable': md,
-    'ReadableContentsFormat': formats['markdown'],
-    'EntryContext': context
-})
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
