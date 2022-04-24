@@ -8,21 +8,21 @@ description: "This playbook handles ransomware alerts based on the Cortex XDR Tr
   \ and verify if it is malicious using:\n\nXDR trusted signers\n\nVT trusted signers\n\
   \nVT detection rate\n\nNSRL DB\n\n**Response Actions:**\n\nThe playbook’s first\
   \ response action is a remediation plan which includes two sub-playbooks, **Containment\
-  \ Plan** and **Eradication Plan**, and is based on the initial data provided within\
+  \ Plan** and **Eradication Plan**, which is based on the initial data provided within\
   \ the alert. In that phase, the playbooks will execute:\n\nAuto endpoint isolation\n\
   \nAuto block indicators\n\nAuto file quarantine\n\nAuto user disable\n\nAuto process\
-  \ termination\n\nNext, the playbook will execute an enrichment and response phase\
+  \ termination\n\nNext, the playbook executes an enrichment and response phase\
   \ which includes two sub-playbooks, **Ransomware Enrich and Contain** & **Account\
-  \ Enrichment - Generic v2.1**.\nThe Ransomware Enrich and Contain playbook will\
-  \ do the following:\n\n1.Checks if the initiator is a remote attacker and allow\
-  \ isolating the remote host if possible. \n\n2.Retrieve the WildFire sandbox report\
-  \ and extract the indicators within it. * The playbook will try retrieving the report,\
-  \ if there is no report available, the playbook will try fetching the ransomware\
-  \ file for detonation. \n\n3.Hunt for the ransomware alert indicators over the alert\
-  \ table and searches for endpoints that have been seen with them and allows containing\
+  \ Enrichment - Generic v2.1**.\nThe Ransomware Enrich and Contain playbook does\
+  \ the following:\n\n1.Checks if the initiator is a remote attacker and allows\
+  \ isolating the remote host, if possible. \n\n2.Retrieves the WildFire sandbox report\
+  \ and extracts the indicators within it. * The playbook tries to retrieve the report,\
+  \ but if there is no report available, the playbook tries to fetch the ransomware\
+  \ file for detonation. \n\n3.Hunts for the ransomware alert indicators from the alert\
+  \ table, searches for endpoints that have been seen with them, and allows containing\
   \ the identified endpoints.\n\nNext, an advanced analysis playbook, which is currently\
   \ done mostly manually, will be executed. This sub-playbook, **Ransomware Advanced\
-  \ Analysis** will allow the analyst to upload the ransomware note and for the ransomware\
+  \ Analysis** allows the analyst to upload the ransomware note and for the ransomware\
   \ identification. Using the **ID-Ransomware** service, the analyst will be able\
   \ to get the ransomware type and the decryptor if available.\n\nWhen the playbook\
   \ executes, it checks for additional activity using the Endpoint Investigation Plan\
@@ -298,15 +298,15 @@ tasks:
       version: -1
       name: Containment Plan
       description: |-
-        This playbook handles all the containment actions available with XSIAM.
-        The playbook allows to contain the incident with one of the following tasks:
+        This playbook handles all the containment actions available with Cortex XSIAM.
+        The playbook allows you to contain the alert with one of the following tasks:
         * Isolate endpoint
         * Disable account
         * Quarantine file
         * Block indicators
         * Clear user session (currently, the playbook supports only Okta)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -385,15 +385,15 @@ tasks:
       version: -1
       name: Containment Plan
       description: |-
-        This playbook handles all the containment actions available with XSIAM.
-        The playbook allows to contain the incident with one of the following tasks:
+        This playbook handles all the containment actions available with Cortex XSIAM.
+        The playbook allows you to contain the alert with one of the following tasks:
         * Isolate endpoint
         * Disable account
         * Quarantine file
         * Block indicators
         * Clear user session (currently, the playbook supports only Okta)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -484,12 +484,12 @@ tasks:
         This playbook is responsible for alert data enrichment and response.
         The playbook executes the following:
 
-        1.Checks if the initiator is a remote attacker and allow isolating the remote host if possible.
+        1.Checks if the initiator is a remote attacker and allows isolating the remote host, if possible.
 
-        2.Retrieve the WildFire sandbox report and extract the indicators within it.
-            * The playbook will try retrieving the report, if there is no report available, the playbook will try fetching the ransomware file for detonation.
+        2.Retrieves the WildFire sandbox report and extract the indicators within it.
+            * The playbook tries to retrieve the report, but if there is no report available, the playbook tries to fetch the ransomware file for detonation.
 
-        3.Hunt for the ransomware alert indicators over the alert table and searches for endpoints that have been seen with them and allows containing the identified endpoints.
+        3.Hunts for the ransomware alert indicators from the alert table, searches for endpoints that have been seen with them, and allows containing the identified endpoints.
       playbookName: Ransomware Enrich and Contain
       type: playbook
       iscommand: false
@@ -749,7 +749,7 @@ tasks:
       id: 48d129cf-955d-49c1-8227-b754d5f8f2af
       version: -1
       name: Ransomware investigation steps
-      description: Please follow the [CISA ransomware investigation checklist](https://www.cisa.gov/stopransomware/ransomware-guide)
+      description: Follow the [CISA ransomware investigation checklist](https://www.cisa.gov/stopransomware/ransomware-guide).
       type: regular
       iscommand: false
       brand: ""
@@ -780,12 +780,12 @@ tasks:
       version: -1
       name: Recovery Plan
       description: |-
-        This playbook handles all the recovery actions available with XSIAM.
-        The playbook allows to recover  from the incident with one of the following tasks:
+        This playbook handles all the recovery actions available with Cortex XSIAM.
+        The playbook allows you, from the incident, to recover one of the following tasks:
         * Unisolate endpoint
         * Restore quarantined file
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs allow you to manipulate the execution flow. Review the inputs description.
       playbookName: Recovery Plan
       type: playbook
       iscommand: false
@@ -920,7 +920,7 @@ tasks:
       id: 4dbf4631-7419-4a88-83c2-c9d2a0761149
       version: -1
       name: Found relevant information?
-      description: Checks if relevant alerts found in the previous query.
+      description: Checks if relevant alerts were found in the previous query.
       type: condition
       iscommand: false
       brand: ""
@@ -996,7 +996,7 @@ tasks:
       id: 4a1fda2c-53f2-4931-835f-693ca1e803dc
       version: -1
       name: Got possible verdict?
-      description: Checks the verdict received from Enrichment for Verdict sub-playbook.
+      description: Checks the verdict received from the Enrichment for Verdict sub-playbook.
       type: condition
       iscommand: false
       brand: ""
@@ -1108,15 +1108,15 @@ tasks:
       version: -1
       name: Endpoint Investigation Plan
       description: |-
-        This playbook handles all the endpoint investigation actions available with XSIAM.
-        The playbook allows to investigate and hunt for more information using one of the following tasks:
+        This playbook handles all the endpoint investigation actions available with Cortex XSIAM.
+        The playbook allows you to investigate and hunt for more information using one of the following tasks:
         * Pre-defined MITRE Tactics
         * Host fields (Host ID)
         * Attacker fields (Attacker IP, External host)
         * MITRE techniques
         * File hash (currently, the playbook supports only SHA256)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs allow you to manipulate the execution flow. Review the inputs description.
       playbookName: Endpoint Investigation Plan
       type: playbook
       iscommand: false
@@ -1188,13 +1188,13 @@ tasks:
       version: -1
       name: Eradication Plan
       description: |-
-        This playbook handles all the eradication actions available with XSIAM.
-        The playbook allows to eradicate the incident with one of the following tasks:
+        This playbook handles all the eradication actions available with Cortex XSIAM.
+        The playbook allows you to eradicate the alert with one of the following tasks:
         * Reset user password
         * Delete file
         * Kill process (currently, the playbook supports terminating a process by name)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
       playbookName: Eradication Plan
       type: playbook
       iscommand: false
@@ -1293,7 +1293,7 @@ tasks:
       version: -1
       name: Ransomware Advanced Analysis
       description: |-
-        This playbook is responsible for detecting the ransomware type and searching for available decryptor.
+        This playbook is responsible for detecting the ransomware type and searching for available decryptors.
 
         The playbook uses the ID-Ransomware service, which allows detecting the ransomware using multiple methods.
       playbookName: Ransomware Advanced Analysis
@@ -1395,3 +1395,5 @@ tests:
 - No tests (auto formatted)
 marketplaces: ["marketplacev2"]
 fromversion: 6.6.0
+
+
