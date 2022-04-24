@@ -5841,4 +5841,4 @@ Cancels an action with an unfinished status.
 There is no context output for this command.
 
 #### Command example
-```!microsoft-atp-live-response-cancel-action machine_id="4899036531e374137f63289c3267bad772c13fef" comment="testing"```
+```!microsoft-atp-live-response-cancel-action machine_action_id=11a86b87-12b8-423b-9e8d-9775ab2da78f comment="testing"```
