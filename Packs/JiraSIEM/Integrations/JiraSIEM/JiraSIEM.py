@@ -121,33 +121,19 @@ class GetEvents:
 
     def run(self, max_fetch: int = 100) -> list[dict]:
         stored = []
+        last_run = demisto.getLastRun()
 
         for logs in self._iter_events():
             stored.extend(logs)
 
-            if len(stored) >= max_fetch:
-                last_run = demisto.getLastRun()
+            if len(stored) > max_fetch:
                 last_run['offset'] = last_run.get('offset', 0) + max_fetch
                 demisto.setLastRun(last_run)
-
                 return stored[:max_fetch]
 
-        last_run = demisto.getLastRun()
         last_run['offset'] = 0
         demisto.setLastRun(last_run)
-
         return stored
-
-    def set_next_run(self, log: dict) -> dict:
-        last_run = demisto.getLastRun()
-
-        if not last_run.get('offset'):
-            last_time = log.get('created', '').removesuffix('+0000')
-            next_time = last_time[:-1] + str(int(last_time[-1]) + 1)
-
-            last_run['from'] = next_time
-
-        return last_run
 
     @staticmethod
     def events_to_incidents(events: list):
@@ -155,8 +141,7 @@ class GetEvents:
 
         for event in events:
             incident = {
-                # 'name': f"JiraSIEM - {event['summary']} - {event['id']}",
-                'name': event['id'],
+                'name': f"JiraSIEM - {event['summary']} - {event['id']}",
                 'occurred': event.get('created', '').removesuffix('+0000') + 'Z',
                 'rawJSON': json.dumps(event)
             }
@@ -164,18 +149,30 @@ class GetEvents:
 
         demisto.incidents(incidents)
 
+    @staticmethod
+    def set_next_run(log: dict) -> dict:
+        last_run = demisto.getLastRun()
+
+        if not last_run.get('next_time'):
+            last_time = log.get('created', '').removesuffix('+0000')
+            next_time = last_time[:-1] + str(int(last_time[-1]) + 1)
+
+            if last_run.get('offset'):
+                last_run['next_time'] = next_time
+            else:
+                last_run['from'] = next_time
+
+        else:
+            if not last_run.get('offset'):
+                last_run['from'] = last_run.pop('next_time')
+
+        return last_run
+
 
 def main():
 
-    demisto.info('Main called')
-    demisto.info(f'This is the last_run: {demisto.getLastRun()}')
-    demisto.info(f'This is the args: {demisto.args()}')
-    demisto.info(f'This is the params: {demisto.params()}')
-
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
-
-    demisto.info(f'This is the paramsssss: {demisto_params}')
 
     demisto_params['params'] = ReqParams.parse_obj(demisto_params)
 
@@ -187,11 +184,14 @@ def main():
     if command == 'test-module':
         get_events.run(max_fetch=1)
         demisto.results('ok')
+
     else:
         events = get_events.run(min(int(demisto_params.get('max_fetch', 100)), 1000))
+
         if events:
             get_events.events_to_incidents(events)
             demisto.setLastRun(get_events.set_next_run(events[0]))
+
         command_results = CommandResults(
             readable_output=tableToMarkdown('Jira records', events, removeNull=True, headerTransform=pascalToSpace),
             outputs_prefix='Jira.Records',
@@ -199,6 +199,7 @@ def main():
             outputs=events,
             raw_response=events,
         )
+
         return_results(command_results)
 
 
