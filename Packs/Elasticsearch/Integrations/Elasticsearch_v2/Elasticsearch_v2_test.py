@@ -38,7 +38,7 @@ ES_V6_RESPONSE = {
                 '_id': '456',
                 '_score': 0.9517491,
                 '_source': {
-                    'Date': '2019-08-29T14:46:00Z'
+                    'Date': '2019-08-29T14:46:00.123456Z'
                 }
             }
         ]
@@ -75,7 +75,7 @@ ES_V7_RESPONSE = {
                 '_id': '456',
                 '_score': 0.6814878,
                 '_source': {
-                    'Date': '2019-08-27T18:01:00Z'
+                    'Date': '2019-08-27T18:01:25.343212Z'
                 }
             }
         ]
@@ -653,7 +653,8 @@ def test_incident_creation_e6(params, mocker):
     last_fetch = parse('2019-08-29T14:44:00Z')
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
 
-    assert str(last_fetch2) == '2019-08-29T14:46:00Z'
+    # last fetch should not truncate the milliseconds
+    assert str(last_fetch2) == '2019-08-29T14:46:00.123456+00:00'
     if params.get('map_labels'):
         assert str(incidents) == MOCK_ES6_INCIDETNS
     else:
@@ -668,7 +669,8 @@ def test_incident_creation_e7(params, mocker):
     last_fetch = parse('2019-08-27T17:59:00')
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
 
-    assert str(last_fetch2) == '2019-08-27T18:01:00Z'
+    # last fetch should not truncate the milliseconds
+    assert str(last_fetch2) == '2019-08-27T18:01:25.343212+00:00'
     if params.get('map_labels'):
         assert str(incidents) == MOCK_ES7_INCIDENTS
     else:
