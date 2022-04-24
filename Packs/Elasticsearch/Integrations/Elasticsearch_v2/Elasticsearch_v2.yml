@@ -1,6 +1,6 @@
 category: Database
 commonfields:
-  id: Elasticsearch v2 - fetch-incidents-fix
+  id: Elasticsearch v2
   version: -1
 configuration:
 - display: Server URL
@@ -81,8 +81,8 @@ configuration:
   type: 8
 description: "Search for and analyze data in real time. \n Supports version 6 and\
   \ later."
-display: Elasticsearch v2 - fetch-incidents-fix
-name: Elasticsearch v2 - fetch-incidents-fix
+display: Elasticsearch v2
+name: Elasticsearch v2
 script:
   commands:
   - arguments:
