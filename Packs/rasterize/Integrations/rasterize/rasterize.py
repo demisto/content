@@ -1,3 +1,5 @@
+import io
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -7,7 +9,7 @@ from selenium.common.exceptions import NoSuchElementException, InvalidArgumentEx
 from PyPDF2 import PdfFileReader
 from pdf2image import convert_from_path
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 import tempfile
 from io import BytesIO
 import base64
@@ -166,6 +168,10 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
     :param r_type: result type: .png/.pdf
     :param wait_time: time in seconds to wait before taking a screenshot
     """
+    include_url = demisto.args().get("include_url", False)
+    include_url = True if include_url == "true" else False
+    if include_url and r_type.lower() in ["pdf", "json"]:
+        return_error("when returning full page (url included) the return type should be an image format.")
     driver = init_driver(offline_mode)
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
     try:
@@ -183,10 +189,10 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
         elif r_type.lower() == 'json':
             html = driver.page_source
             url = driver.current_url
-            output = {'image_b64': base64.b64encode(get_image(driver, width, height)).decode('utf8'),
+            output = {'image_b64': base64.b64encode(get_image(driver, width, height, include_url)).decode('utf8'),
                       'html': html, 'current_url': url}
         else:
-            output = get_image(driver, width, height)
+            output = get_image(driver, width, height, include_url)
 
         return output
 
@@ -206,17 +212,38 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
         quit_driver_and_reap_children(driver)
 
 
-def get_image(driver, width: int, height: int):
+def get_image(driver, width: int, height: int, include_url: bool):
     """
     Uses the Chrome driver to generate an image out of a currently loaded path
     :return: .png file of the loaded path
     """
     demisto.debug('Capturing screenshot')
+    demisto.log(f"include url: {demisto.args().get('include_url')}")
+    include_url=False
+    if include_url:
+        demisto.log("in  include url")
+        # Get window size
+        size = driver.get_window_size()
+        # obtain browser height and width
+        w = driver.execute_script('return document.documentElement.scrollWidth')
+        h = driver.execute_script('return document.documentElement.scrollHeight')
+        demisto.log(f"after getting: h:{h}, w:{w}")
+        driver.set_window_size(w, h + 200)
+        image = driver.get_screenshot_as_png()
+        demisto.log(f"returned result: {image}")
+        # temp = Image.open(io.BytesIO(image))
+        # I1 = ImageDraw.Draw(temp)
+        #
+        # I1.text((28, h + 36), "testingggg", fill=(255, 0, 0))
+        # demisto.log("after getting screenshot")
+        # driver.set_window_size(size['width'], size['height'])
+        # image = temp.tobytes("hex", "rgb")
+    else:
+        # Set windows size
+        driver.set_window_size(width, height)
 
-    # Set windows size
-    driver.set_window_size(width, height)
+        image = driver.get_screenshot_as_png()
 
-    image = driver.get_screenshot_as_png()
     driver.quit()
 
     demisto.debug('Capturing screenshot - COMPLETED')
