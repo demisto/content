@@ -8,7 +8,7 @@ tags:
 - cve
 - reputation
 comment: Provides severity of CVE based on CVSS score where available
-enabled: true
+enabled: false
 args:
 - name: input
   required: true
