@@ -201,13 +201,13 @@ MOCK_ES7_INCIDENTS = str([
                    '"_type": "doc", '
                    '"_id": "456", '
                    '"_score": 0.6814878, '
-                   '"_source": {"Date": "2019-08-27T18:01:00Z"}'
+                   '"_source": {"Date": "2019-08-27T18:01:25.343212Z"}'
                    '}',
-        'occurred': '2019-08-27T18:01:00Z',
+        'occurred': '2019-08-27T18:01:25Z',
         'labels': [
             {
                 'type': 'Date',
-                'value': '2019-08-27T18:01:00Z'
+                'value': '2019-08-27T18:01:25.343212Z'
             }
         ]
     }
@@ -231,9 +231,9 @@ MOCK_ES7_INCIDENTS_WITHOUT_LABELS = str([
                    '"_type": "doc", '
                    '"_id": "456", '
                    '"_score": 0.6814878, '
-                   '"_source": {"Date": "2019-08-27T18:01:00Z"}'
+                   '"_source": {"Date": "2019-08-27T18:01:25.343212Z"}'
                    '}',
-        'occurred': '2019-08-27T18:01:00Z'
+        'occurred': '2019-08-27T18:01:25Z'
     }
 ])
 
@@ -262,14 +262,14 @@ MOCK_ES6_INCIDETNS = str([
                    '"_type": "_doc", '
                    '"_id": "456", '
                    '"_score": 0.9517491, '
-                   '"_source": {"Date": "2019-08-29T14:46:00Z"}'
+                   '"_source": {"Date": "2019-08-29T14:46:00.123456Z"}'
                    '}',
         'occurred': '2019-08-29T14:46:00Z',
         'labels':
             [
                 {
                     'type': 'Date',
-                    'value': '2019-08-29T14:46:00Z'
+                    'value': '2019-08-29T14:46:00.123456Z'
                 }
             ]
     }
@@ -293,7 +293,7 @@ MOCK_ES6_INCIDETNS_WITHOUT_LABELS = str([
                    '"_type": "_doc", '
                    '"_id": "456", '
                    '"_score": 0.9517491, '
-                   '"_source": {"Date": "2019-08-29T14:46:00Z"}'
+                   '"_source": {"Date": "2019-08-29T14:46:00.123456Z"}'
                    '}',
         'occurred': '2019-08-29T14:46:00Z',
     }
