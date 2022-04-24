@@ -279,10 +279,11 @@ def get_urls_and_emails_from_pdf_annots(file_path):
     Args:
         file_path (str): The path of the PDF file.
 
-    Returns: A set includes the URLs and emails that were found.
+    Returns: A set includes the URLs that were found, A set includes the Emails that were found
 
     """
-    urls_and_emails_set = set()
+    urls_set = set()
+    emails_set = set()
 
     pdf_file = open(file_path, 'rb')
     pdf = PyPDF2.PdfFileReader(pdf_file)
@@ -315,13 +316,18 @@ def get_urls_and_emails_from_pdf_annots(file_path):
                         if url := a.get('/URI'):
                             if isinstance(url, PyPDF2.generic.IndirectObject):
                                 url = url.getObject()
-                            # Removes slash suffix to prevent url duplications
-                            url = url.removesuffix('/')
-                            urls_and_emails_set.add(url)
+                            matched_url = re.findall(URL_EXTRACTION_REGEX, url)
+                            if len(matched_url) != 0:
+                                urls_set.add(matched_url[0])
+                            matched_email = re.findall(EMAIL_REGXEX, url)
+                            if len(matched_email) != 0:
+                                emails_set.add(matched_email[0])
 
-    if len(urls_and_emails_set) == 0:
-        demisto.debug('No URLs or Emails were extracted from the PDF.')
-    return urls_and_emails_set
+    if len(urls_set) == 0:
+        demisto.debug('No URLs were extracted from the PDF.')
+    if len(emails_set) == 0:
+        demisto.debug('No Emails were extracted from the PDF.')
+    return urls_set, emails_set
 
 
 def extract_urls_and_emails_from_pdf_file(file_path, output_folder):
@@ -340,50 +346,17 @@ def extract_urls_and_emails_from_pdf_file(file_path, output_folder):
     binary_file_urls = get_urls_from_binary_file(file_path)
 
     # Get URLS + emails:
-    annots_urls_and_emails = get_urls_and_emails_from_pdf_annots(file_path)
+    annots_urls, annots_emails = get_urls_and_emails_from_pdf_annots(file_path)
     html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(file_path, output_folder)
 
     # This url is always generated with the pdf html file, and that's why we remove it
     html_urls.remove('http://www.w3.org/1999/xhtml')
 
     # Unify urls:
-    urls_and_emails_set = annots_urls_and_emails.union(html_urls, binary_file_urls)
+    urls_set = annots_urls.union(html_urls, binary_file_urls)
+    emails_set = annots_emails.union(html_emails)
 
-    return urls_and_emails_set, html_emails
-
-
-def separate_urls_and_emails(urls_and_emails_set, emails_set=None):
-    """
-    Gets a set containing URLs and email addresses that were extracted from the PDF, and separates URLs from emails.
-    Args:
-        urls_and_emails_set: A set containing URLs and email addresses.
-        emails_set: A set containing only email addresses.
-
-    Returns: tuple[List, List]: A list containing all the URLs that were found, A list containing all the emails that
-                                were found.
-    """
-    urls_ec = []
-    emails_ec = []
-
-    if not emails_set:
-        emails_set = set()
-
-    for extracted_object in urls_and_emails_set:
-        if email_match := re.search(EMAIL_REGXEX, extracted_object):
-            # the extracted object is an email
-            emails_set.add(email_match.group(0))
-
-            if re.search(URL_EXTRACTION_REGEX, extracted_object):
-                # the extracted object contains both url and email
-                urls_ec.append({"Data": extracted_object})
-        else:
-            # the extracted object is a url
-            urls_ec.append({"Data": extracted_object})
-
-    for email in emails_set:
-        emails_ec.append(email)
-
-    return urls_ec, emails_ec
+    return urls_set, emails_set
 
 
 def main():
@@ -396,6 +369,9 @@ def main():
 
     # URLS
     folders_to_remove = []
+    urls_ec = []
+    emails_ec = []
+
     try:
         path = demisto.getFilePath(entry_id).get('path')
         if path:
@@ -423,10 +399,12 @@ def main():
                 text = get_pdf_text(cpy_file_path, pdf_text_output_path)
 
                 # Get URLS + emails:
-                urls_and_emails_set, html_emails = extract_urls_and_emails_from_pdf_file(cpy_file_path, output_folder)
+                urls_set, emails_set = extract_urls_and_emails_from_pdf_file(cpy_file_path, output_folder)
 
-                # Separate urls from email addresses:
-                urls_ec, emails_ec = separate_urls_and_emails(urls_and_emails_set, html_emails)
+                for email in emails_set:
+                    emails_ec.append(email)
+                for url in urls_set:
+                    urls_ec.append(url)
 
                 # Get images:
                 images = get_images_paths_in_path(output_folder)

@@ -228,9 +228,11 @@ def test_get_urls_and_emails_from_pdf_annots_with_encrypt(file_path):
     """
     from ReadPDFFileV2 import get_urls_and_emails_from_pdf_annots, decrypt_pdf_file
 
-    expected_output = {'https://test1.com', 'https://test2.com', 'http://www.test3.net', 'mailto:user@test4.com',
-                       'https://test5.com.co/ed/trn/update?email=user@test6.net', 'http://www.test7.com',
-                       'https://test8.com'}
+    expected_urls = {'https://test1.com', 'https://test2.com', 'http://www.test3.net',
+                     'https://test5.com.co/ed/trn/update?email=user@test6.net', 'http://www.test7.com',
+                     'https://test8.com'}
+
+    expected_emails = {'user@test4.com', 'user@test6.net'}
 
     # Decrypt the PDF:
     file_path = f'{CWD}/{file_path}'
@@ -238,13 +240,14 @@ def test_get_urls_and_emails_from_pdf_annots_with_encrypt(file_path):
     decrypt_pdf_file(file_path, '123456', dec_file_path)
 
     # Extract URLs and Emails:
-    urls = get_urls_and_emails_from_pdf_annots(dec_file_path)
+    urls, emails = get_urls_and_emails_from_pdf_annots(dec_file_path)
 
     # Delete Decrypted file:
     if os.path.exists(dec_file_path):
         os.remove(dec_file_path)
 
-    assert urls == expected_output
+    assert urls == expected_urls
+    assert emails == expected_emails
 
 
 @pytest.mark.parametrize('file_path', [
@@ -280,16 +283,19 @@ def test_get_urls_and_emails_from_pdf_annots_without_encrypt(file_path):
     """
     from ReadPDFFileV2 import get_urls_and_emails_from_pdf_annots
 
-    expected_output = {'https://test1.com', 'https://test2.com', 'http://www.test3.net', 'mailto:user@test4.com',
-                       'https://test5.com.co/ed/trn/update?email=user@test6.net', 'http://www.test7.com',
-                       'https://test8.com'}
+    expected_urls = {'https://test1.com', 'https://test2.com', 'http://www.test3.net',
+                     'https://test5.com.co/ed/trn/update?email=user@test6.net', 'http://www.test7.com',
+                     'https://test8.com'}
+
+    expected_emails = {'user@test4.com', 'user@test6.net'}
 
     file_path = f'{CWD}/{file_path}'
 
     # Extract URLs and Emails:
-    urls = get_urls_and_emails_from_pdf_annots(file_path)
+    urls, emails = get_urls_and_emails_from_pdf_annots(file_path)
 
-    assert urls == expected_output
+    assert urls == expected_urls
+    assert emails == expected_emails
 
 
 def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
@@ -308,11 +314,10 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
     """
     from ReadPDFFileV2 import extract_urls_and_emails_from_pdf_file, decrypt_pdf_file
 
-    expected_urls_and_emails = {'www.hiddenvirusaddress.cn', 'www.msn.com', 'http://www.docxtesturl.com',
-                                'www.google.com', 'mailto:userthatdoesnotexist@demisto.com', 'www.docxtesturl.com',
-                                'http://www.msn.com'}
-    expected_html_emails = {'Userthatdoesnotexist3@demis', 'userthatdoesnotexist@demisto.com',
-                            'userthatdoesnotexist4@demis', 'Userthatdoesnotexist2@demisto.com'}
+    expected_urls = {'www.hiddenvirusaddress.cn', 'www.msn.com', 'http://www.docxtesturl.com', 'www.google.com',
+                     'www.docxtesturl.com', 'http://www.msn.com'}
+    expected_emails = {'Userthatdoesnotexist3@demis', 'userthatdoesnotexist@demisto.com',
+                       'userthatdoesnotexist4@demis', 'Userthatdoesnotexist2@demisto.com'}
 
     # Decrypt the PDF:
     file_path = f'{CWD}/URLs_Extraction_Test_PDF_Encoding_LibreOffice_protected.pdf'
@@ -320,14 +325,14 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
     decrypt_pdf_file(file_path, '123456', dec_file_path)
 
     # Extract URLs and Emails:
-    urls_and_emails, html_emails = extract_urls_and_emails_from_pdf_file(dec_file_path, tmp_path)
+    urls, emails = extract_urls_and_emails_from_pdf_file(dec_file_path, tmp_path)
 
     # Delete Decrypted file:
     if os.path.exists(dec_file_path):
         os.remove(dec_file_path)
 
-    assert urls_and_emails == expected_urls_and_emails
-    assert html_emails == expected_html_emails
+    assert urls == expected_urls
+    assert emails == expected_emails
 
 
 def test_get_urls_and_emails_from_pdf_file_without_encrypt(tmp_path):
@@ -346,51 +351,15 @@ def test_get_urls_and_emails_from_pdf_file_without_encrypt(tmp_path):
     """
     from ReadPDFFileV2 import extract_urls_and_emails_from_pdf_file
 
-    expected_urls_and_emails = {'www.hiddenvirusaddress.cn', 'www.msn.com', 'http://www.docxtesturl.com',
-                                'www.google.com', 'mailto:userthatdoesnotexist@demisto.com', 'www.docxtesturl.com',
-                                'http://www.msn.com'}
-    expected_html_emails = {'Userthatdoesnotexist3@demis', 'userthatdoesnotexist@demisto.com',
-                            'userthatdoesnotexist4@demis', 'Userthatdoesnotexist2@demisto.com'}
+    expected_urls = {'www.hiddenvirusaddress.cn', 'www.msn.com', 'http://www.docxtesturl.com',
+                     'www.google.com', 'www.docxtesturl.com', 'http://www.msn.com'}
+    expected_emails = {'Userthatdoesnotexist3@demis', 'userthatdoesnotexist@demisto.com',
+                       'userthatdoesnotexist4@demis', 'Userthatdoesnotexist2@demisto.com'}
 
     file_path = f'{CWD}/URLs_Extraction_Test_PDF_Encoding_LibreOffice.pdf'
 
     # Extract URLs and Emails:
-    urls_and_emails, html_emails = extract_urls_and_emails_from_pdf_file(file_path, tmp_path)
+    urls, emails = extract_urls_and_emails_from_pdf_file(file_path, tmp_path)
 
-    assert urls_and_emails == expected_urls_and_emails
-    assert html_emails == expected_html_emails
-
-
-def test_separate_urls_and_emails():
-    """
-        Given:
-        A set including urls and emails that were extracted from a PDF file.
-
-        When:
-            Running 'separate_urls_and_emails' function on the given set.
-
-        Then:
-            Verify the expected amount of URLs identified.
-            Verify the expected amount of Emails identified.
-            Verify that each url was classified as a url, ans email address was classified as an email.
-            Verify that the 'special url' that included both url and email was classified as a url, and the inner email
-            was classified as an email.
-    """
-    from ReadPDFFileV2 import separate_urls_and_emails
-
-    urls_and_emails_input_set = {'https://test.com/', 'www.test.net',
-                                 'https://test.com.co/ed/trn/update?email=user@test.net',
-                                 'mailto:user@testtest.com', 'user@testing.com'}
-
-    # Define the expected outputs:
-    expected_urls = {'https://test.com/', 'www.test.net', 'https://test.com.co/ed/trn/update?email=user@test.net'}
-    expected_emails = {'user@testing.com', 'user@testtest.com', 'user@test.net'}
-
-    # Separate URLs from Emails:
-    urls_ec, emails_ec = separate_urls_and_emails(urls_and_emails_input_set)
-    urls_ec = [item.get('Data') for item in urls_ec]
-    urls_ec_set = set(urls_ec)
-    emails_ec_set = set(emails_ec)
-
-    assert urls_ec_set == expected_urls
-    assert emails_ec_set == expected_emails
+    assert urls == expected_urls
+    assert emails == expected_emails
