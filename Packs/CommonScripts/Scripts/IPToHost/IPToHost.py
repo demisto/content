@@ -3,14 +3,12 @@ import socket
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-def ip_to_host(ip):
-    try:
-        host_info = socket.gethostbyaddr(ip)
-    except Exception as e:
-        return_error("Couln't get the ip host info. Error information: \"{0}\"".format(str(e)))
+
+def ip_to_host(ip: str) -> CommandResults:
+    host_info = socket.gethostbyaddr(ip)
 
     if not host_info:
-        return_error("Received an error while trying to get the host information")
+        raise DemistoException("Received an error while trying to get the host information")
 
     hostname = host_info[0]
 
@@ -28,9 +26,14 @@ def ip_to_host(ip):
         readable_output=md,
     )
 
+
 def main():
-    ip = demisto.args().get('ip')
-    return_results(ip_to_host(ip))
+    try:
+        ip = demisto.args().get('ip')
+        return_results(ip_to_host(ip))
+    except Exception as e:
+        demisto.error(traceback.format_exc())
+        return_error(f'Couldn\'t get the IP host info. Error information: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
