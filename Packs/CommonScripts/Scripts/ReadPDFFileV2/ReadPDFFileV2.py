@@ -402,11 +402,7 @@ def main():
                 urls_set, emails_set = extract_urls_and_emails_from_pdf_file(cpy_file_path, output_folder)
 
                 for url in urls_set:
-                    if re.match(emailRegex, url):
-                        emails_set.add(url)
-                    else:
-                        urls_ec.append({"Data": url})
-
+                    urls_ec.append({"Data": url})
                 for email in emails_set:
                     emails_ec.append(email)
 
