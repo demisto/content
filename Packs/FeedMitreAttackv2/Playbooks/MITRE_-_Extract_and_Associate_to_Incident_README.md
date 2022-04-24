@@ -17,7 +17,6 @@ This playbook does not use any scripts.
 ### Commands
 * attack-pattern
 * mitre-get-indicator-name
-* associateIndicatorsToIncident
 
 ## Playbook Inputs
 ---
