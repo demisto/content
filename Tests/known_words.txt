@@ -119,6 +119,7 @@ hashes
 FTPs
 afterwards
 http
+HTML
 runtime
 dns
 Ubuntu
@@ -161,3 +162,5 @@ ipstack
 SNDBOX
 C
 integrationReliability
+Mapper
+Mappers
