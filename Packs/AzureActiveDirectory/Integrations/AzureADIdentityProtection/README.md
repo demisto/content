@@ -16,7 +16,7 @@ Theres two ways to connect to the Azure Active Directory Identity Protection:
     - Self Deployed Azure app
    
    Both of the flows use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code)
-2. Client credentials
+2. Client credentials [Client Credentials](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow)
 
 ### Azure app flows
 
