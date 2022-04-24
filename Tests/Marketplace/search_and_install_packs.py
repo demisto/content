@@ -13,7 +13,6 @@ from demisto_sdk.commands.common.tools import run_threads_list
 
 from google.cloud.storage import Bucket
 from packaging.version import Version
-from pathlib import Path
 from typing import List
 
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, load_json
@@ -300,6 +299,11 @@ def install_packs(client: demisto_client,
             self.malformed_ids = pack_ids
             super().__init__()
 
+    class GeneralItemNotFoundError(ApiException):
+        def __init__(self, error_msg):
+            self.error_msg = error_msg
+            super().__init__()
+
     def call_install_packs_request(packs):
         try:
             logging.debug(f'Installing the following packs on server {host}:\n{[pack["id"] for pack in packs]}')
@@ -322,12 +326,12 @@ def install_packs(client: demisto_client,
                 raise GCPTimeOutException(ex.body)
             if malformed_ids := find_malformed_pack_id(ex.body):
                 raise MalformedPackException(malformed_ids)
+            if 'Item not found' in ex.body:
+                raise GeneralItemNotFoundError(ex.body)
             raise ex
 
     try:
         logging.info(f'Installing packs on server {host}')
-        logging.info(f'TESTING: adding failing pack to pack list to create failure')
-        packs_to_install.append({'id': 'PhishAI', 'version': '1.0.0'})  # TODO: remove failing pack!
         try:
             call_install_packs_request(packs_to_install)
 
@@ -342,7 +346,12 @@ def install_packs(client: demisto_client,
         except GCPTimeOutException as e:
             # if this is a gcp timeout, try only once more
             logging.warning(f'The request to install packs on server {host} has failed due to timeout awaiting response'
-                            f' headers while trying to install pack {e.pack_id}, trying again for one time')
+                            f' headers while trying to install pack {e.pack_id}, trying again for one more time')
+            call_install_packs_request(packs_to_install)
+
+        except GeneralItemNotFoundError as e:
+            logging.warning(f'The request to install all packs on server {host} has failed due to an item not found '
+                            f'error, with the message: {e.error_msg}.\n trying again for one more time')
             call_install_packs_request(packs_to_install)
 
     except Exception as e:
