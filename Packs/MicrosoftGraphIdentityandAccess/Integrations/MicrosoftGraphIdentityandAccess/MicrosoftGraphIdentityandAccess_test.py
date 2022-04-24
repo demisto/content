@@ -10,14 +10,13 @@ ipv6 = {'@odata.type': '#microsoft.graph.iPv6CidrRange','cidrAddress': '2001:0:9
 def test_ms_ip_string_to_list(ips, expected):
     """
     Given:
-    -   is_event_level (bool): whether this is a dict of event. False is for attribute level.
-        ATTRIBUTE_TAG_LIMIT: list includes a dict of MISP tags.
+    -   Ips in a string
 
     When:
-    -   parsing a reputation response from MISP.
+    -   Convetting them to an ip list.
 
     Then:
-    - Ensure that the Tag section is limited to include only name and id.
+    - Ensure that the list we get is what we expected.
     """
 
     assert MicrosoftGraphIdentityandAccess.ms_ip_string_to_list(ips) == expected

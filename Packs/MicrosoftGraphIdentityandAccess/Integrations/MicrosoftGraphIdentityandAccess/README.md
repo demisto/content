@@ -217,6 +217,33 @@ There is no context output for this command.
 
 >User ID :id: has been added to role :role:
 
+### msgraph-identity-directory-role-member-remove
+***
+Removes a user from a role.
+
+
+#### Base Command
+
+`msgraph-identity-directory-role-member-remove`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| role_id | ID of the role from which to remove the user. Can be retrieved using the msgraph-identity-directory-roles-list command. | Required |
+| user_id | ID of the user to remove from the role. Can be retrieved using the msgraph-identity-directory-role-members-list command. | Required |
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!msgraph-identity-directory-role-member-remove role_id=:role: user_id=:id:```
+
+#### Human Readable Output
+
+>User ID :id: has been removed from role :role:
+
 ### msgraph-identity-ip-named-locations-create
 ***
 Creates an ip named location.

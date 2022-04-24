@@ -2,7 +2,6 @@
 An integration to MS Graph Identity and Access endpoint.
 https://docs.microsoft.com/en-us/graph/api/resources/serviceprincipal?view=graph-rest-1.0
 """
-import json
 
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -151,8 +150,7 @@ class Client:
         Args:
             template_id: A template id to activate
 
-        Returns:40.66.23.55/32
-            directoryRole object.
+        Returns: directoryRole object.
 
         Docs:
             https://docs.microsoft.com/en-us/graph/api/directoryrole-post-directoryroles?view=graph-rest-1.0&tabs=http
