@@ -152,14 +152,12 @@ def test_connection(client, params):
     if params.get('self_deployed', False) and not params.get('client_credentials') and not params.get('auth_code'):
         return_error('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
-    if not params.get('client_credentials'):
-        if not params.get('self_deployed', False):
-            try:
-                execute_query_command(client, {'query': 'Usage | take 1'})
-            except Exception as e:
-                return_error('Could not authorize to `api.loganalytics.io` resource. This could be due to one of the following:'
-                             '\n1. Workspace ID is wrong.'
-                             '\n2. Missing necessary grant IAM privileges in your workspace to the AAD Application.', e)
+    try:
+        execute_query_command(client, {'query': 'Usage | take 1'})
+    except Exception as e:
+        return_error('Could not authorize to `api.loganalytics.io` resource. This could be due to one of the following:'
+                     '\n1. Workspace ID is wrong.'
+                     '\n2. Missing necessary grant IAM privileges in your workspace to the AAD Application.', e)
     return_outputs('```✅ Success!```')
 
 
@@ -321,12 +319,14 @@ def main():
     try:
         self_deployed = params.get('self_deployed', False)
         client_credentials = params.get('client_credentials', False)
+        auth_and_token_url = params.get('auth_id') or params.get('credentials', {}).get('identifier')  # client_id
         enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')  # client_secret
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
+        self_deployed = True if client_credentials else self_deployed
         if client_credentials and not enc_key:
             raise DemistoException("Client Secret must be provided for client credentials flow.")
-        if not self_deployed and not enc_key:
+        elif not self_deployed and not enc_key:
             raise DemistoException('Key must be provided. For further information see '
                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
         elif not enc_key and not (certificate_thumbprint and private_key):
@@ -334,11 +334,11 @@ def main():
 
         client = Client(
             self_deployed=self_deployed,
-            auth_and_token_url=params.get('auth_id'),  # client_id
-            refresh_token=params.get('refresh_token'),  # tenant_id
-            enc_key=enc_key,  # client_secret
+            auth_and_token_url=auth_and_token_url,  # client_id or auth_id
+            refresh_token=params.get('refresh_token'),  # tenant_id or token
+            enc_key=enc_key,  # client_secret or enc_key
             redirect_uri=params.get('redirect_uri', ''),
-            auth_code=params.get('auth_code'),
+            auth_code=params.get('auth_code') if not client_credentials else '',
             subscription_id=params.get('subscriptionID'),
             resource_group_name=params.get('resourceGroupName'),
             workspace_name=params.get('workspaceName'),
