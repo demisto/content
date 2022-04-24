@@ -362,6 +362,10 @@ MALFORMED_PACK_RESPONSE_BODY = '{"id":"errGetContentPack","status":400,"title":"
                                '"detail":"Failed getting content pack","error":"Item not found (8), pack id: ' \
                                '[pack1]","encrypted":false,"multires":null}'
 
+MALFORMED_PACK_RESPONSE_BODY_TWO_PACKS = '{"id":"errGetContentPack","status":400,"title":"Failed getting content pack",' \
+                               '"detail":"Failed getting content pack","error":"Item not found (8), pack id: ' \
+                               '[pack1, pack2]","encrypted":false,"multires":null}'
+
 
 class TestInstallPacks:
     def test_gcp_timeout_exception(self, mocker):
@@ -385,7 +389,7 @@ class TestInstallPacks:
         """
 
         Given:
-            An error response noting that the installtaion failed due to malformed pack
+            An error response noting that the installation failed due to malformed pack
         When:
             installing packs on servers
         Then:
@@ -397,3 +401,12 @@ class TestInstallPacks:
         mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(http_resp=http_resp))
         client = MockClient()
         assert not script.install_packs(client, 'my_host', packs_to_install=[{'id': 'pack1'}, {'id': 'pack2'}])
+
+
+def test_malformed_pack_id():
+    assert script.find_malformed_pack_id(MALFORMED_PACK_RESPONSE_BODY) == ['pack1']
+    assert script.find_malformed_pack_id(MALFORMED_PACK_RESPONSE_BODY_TWO_PACKS) == ['pack1', 'pack2']
+
+
+def test_get_pack_id_from_error_with_gcp_path():
+    assert script.get_pack_id_from_error_with_gcp_path(GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY) == 'pack2'

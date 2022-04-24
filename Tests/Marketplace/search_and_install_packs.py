@@ -28,6 +28,18 @@ PACK_PATH_VERSION_REGEX = re.compile(
 SUCCESS_FLAG = True
 
 
+def get_pack_id_from_error_with_gcp_path(error: str) -> str:
+    """
+        Gets the id of the pack from the pack's path in GCP that is mentioned in the error msg.
+    Args:
+        error: path of pack in GCP.
+
+    Returns:
+        The id of given pack.
+    """
+    return error.split('/packs/')[1].split('.zip')[0].split('/')[0]
+
+
 def get_pack_display_name(pack_id: str) -> str:
     """
     Gets the display name of the pack from the pack ID.
@@ -197,13 +209,13 @@ def find_malformed_pack_id(body: str) -> List:
     Args:
         body (str): The response message of the failed installation pack.
 
-    Returns: malformed_pack_id (str)
+    Returns: list of malformed ids (list)
 
     """
     if body:
         error_info = json.loads(body).get('error')
         if 'pack id: ' in error_info:
-            return error_info.split('pack id: ')[1].replace(']', '').replace('[', '').split(', ')  # TODO: surely there's a regex for this
+            return error_info.split('pack id: ')[1].replace(']', '').replace('[', '').replace(' ', '').split(',')
         else:
             malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
             malformed_pack_id = malformed_pack_pattern.findall(error_info)
@@ -212,6 +224,7 @@ def find_malformed_pack_id(body: str) -> List:
             else:
                 return []
     return []
+
 
 def handle_malformed_pack_ids(malformed_pack_ids, packs_to_install):
     """
@@ -291,7 +304,7 @@ def install_packs(client: demisto_client,
     class GCPTimeOutException(ApiException):
         def __init__(self, error):
             if '/packs/' in error:
-                self.pack_id = error.split('/packs/')[1].split('.zip')[0].split('/')[0] # TODO: regex?
+                self.pack_id = get_pack_id_from_error_with_gcp_path(error)
             super().__init__()
 
     class MalformedPackException(ApiException):
