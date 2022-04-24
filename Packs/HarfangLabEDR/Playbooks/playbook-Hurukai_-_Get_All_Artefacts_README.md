@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get All Artefacts](Hurukai_-_Get_All_Artefacts.png)
+![Hurukai - Get All Artefacts](./doc_files/Hurukai_-_Get_All_Artefacts.png)
