@@ -1,6 +1,5 @@
 The playbook accepts as an input MITRE techniques ID's
 provides the MITRE technique name and grabs all the technique data using the MITRE integration.
-After extracting the MITRE data the techniques get associated to the incident.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -35,4 +34,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![MITRE - Extract and Associate to Incident]!(../doc_files/MITRE_-_Extract_and_Associate_to_Incident.png)
+![MITRE - Extract and Associate to Incident]!(../doc_files/Mitre_Attack _-_Extract_Technique_Information_From_ID.png)
