@@ -125,10 +125,10 @@ class Client:
             THe created ip named location
 
         Docs:
-            https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations?view=graph-rest-1.0&tabs=http
+            https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations?view=graph-rest-1.0&tabs=http # noqa
         """
         return self.ms_client.http_request(
-            'POST', f'v1.0/identity/conditionalAccess/namedLocations', json_data=data)
+            'POST', 'v1.0/identity/conditionalAccess/namedLocations', json_data=data)
 
     def list_ip_named_location(self, limit: int) -> list:
         """Get a list of all ip named locations
@@ -140,7 +140,7 @@ class Client:
             a list of dictionaries with the object from the api
 
         Docs:
-            https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-list-namedlocations?view=graph-rest-1.0&tabs=http
+            https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-list-namedlocations?view=graph-rest-1.0&tabs=http # noqa
         """
         return self.ms_client.http_request(
             'GET', f'v1.0/identity/conditionalAccess/namedLocations?$top={limit}')['value']
@@ -419,12 +419,12 @@ def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
                     context
                 )
             )
-    return CommandResults(readable_output=f"No ip location found for {ip_id}")
+    return CommandResults(readable_output=f"Could not create ip named location")
 
 
 def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:
     if ip_id := args.get('ip_id'):
-        if results := ms_client.delete_ip_named_location(ip_id):
+        if results := ms_client.delete_ip_named_location(ip_id): # noqa
             return CommandResults(
                 'MSGraph.conditionalAccess.namedIpLocations',
                 'namedIpLocations',
@@ -460,12 +460,12 @@ def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
             outputs=context,
             raw_response=results,
             readable_output=tableToMarkdown(
-                f'Ip named locations:',
+                'Ip named locations:',
                 ip_named_locations,
             )
         )
     else:
-        return CommandResults(readable_output=f"No ip location found for {ip_id}")
+        return CommandResults(readable_output=f"could not list ip named locations")
 
 
 def ms_ip_string_to_list(ips):
