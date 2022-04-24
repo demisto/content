@@ -1637,7 +1637,7 @@ class TestFirewallCommand:
                                      'key': 'fakeAPIKEY!',
                                  },
                                  None,
-                             ),
+                         ),
                          ])
 def test_add_target_arg(mocker, expected_request_params, target):
     """
@@ -1650,7 +1650,6 @@ def test_add_target_arg(mocker, expected_request_params, target):
     """
     import Panorama
     from Panorama import panorama_show_device_version
-    from Panorama import http_request
 
     Panorama.API_KEY = 'fakeAPIKEY!'
     Panorama.DEVICE_GROUP = 'fakeDeviceGroup'
@@ -1664,33 +1663,33 @@ def test_add_target_arg(mocker, expected_request_params, target):
 
 @pytest.mark.parametrize('rule , expected_result',
                          [pytest.param({'target':
-                                            {'devices':
-                                                 {'entry':
-                                                      [{'@name': 'fw1'},
-                                                       {'@name': 'fw2'}]
-                                                  }
-                                             }
+                                        {'devices':
+                                         {'entry':
+                                          [{'@name': 'fw1'},
+                                           {'@name': 'fw2'}]
+                                          }
+                                         }
                                         },
                                        True
                                        ),
                           pytest.param(
                               {'target':
-                                   {'devices':
-                                        {'entry': {'@name': 'fw1'}}
-                                    }
+                               {'devices':
+                                {'entry': {'@name': 'fw1'}}
+                                }
                                },
                               True),
                           pytest.param({'target':
-                                            {'devices':
-                                                 {'entry': {'@name': 'fw2'}
-                                                  }
-                                             }
+                                        {'devices':
+                                         {'entry': {'@name': 'fw2'}
+                                          }
+                                         }
                                         },
                                        False),
                           pytest.param({'target':
-                                            {'devices':
-                                                 {'entry': [{'@name': 'fw1'}]}
-                                             }
+                                        {'devices':
+                                         {'entry': [{'@name': 'fw1'}]}
+                                         }
                                         },
                                        True),
 
@@ -1705,7 +1704,6 @@ def test_target_filter(rule, expected_result):
     Then:
         - return True if the rule contains the target and False otherwise
     """
-    import Panorama
     from Panorama import target_filter
     assert target_filter(rule, 'fw1') == expected_result
 
