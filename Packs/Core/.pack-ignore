@@ -11,4 +11,5 @@ ignore=RM104
 ignore=CJ105
 
 [known_words]
+XSIAM
 CoreIRApiModule
