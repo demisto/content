@@ -278,7 +278,7 @@ script:
         - contextPath: Intezer.Analysis.SubAnalyses.Metadata
           description: A Sub Analysis metadata
           type: Unknown
-  dockerimage: demisto/py3-tools:0.0.1.28621
+  dockerimage: demisto/py3-tools:0.0.1.28780
   isfetch: false
   runonce: false
   script: '-'
