@@ -440,9 +440,7 @@ def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:
 
 
 def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
-    limit = args.get('limit')
-    if limit is None:
-        limit = 100
+    limit = args.get('limit', '100')
     if results := ms_client.list_ip_named_location(limit):
         ip_named_locations = []
         for result in results:
