@@ -2831,10 +2831,10 @@ def target_filter(rule: dict, target: str):
     Returns:
         if the rule contains the target return True else False.
     """
-    target_entry = rule.get('target', {}).get('devices', {}).get('entry')
-    if not isinstance(target_entry, list):
-        target_entry = [target_entry]
-    for entry in target_entry:
+    firewalls_the_rule_applies_to = rule.get('target', {}).get('devices', {}).get('entry')
+    if not isinstance(firewalls_the_rule_applies_to, list):
+        firewalls_the_rule_applies_to = [firewalls_the_rule_applies_to]
+    for entry in firewalls_the_rule_applies_to:
         if entry.get('@name') == target:
             return True
 
@@ -5477,10 +5477,10 @@ def panorama_check_latest_panos_software_command(target: Optional[str] = None):
     if len(versions) > 5:
         versions = versions[:5]
     human_readable = tableToMarkdown('5 latest pan-os software releases', versions, ['version', 'filename', 'size', 'released-on', 'downloaded' , 'current' , 'latest', 'uploaded'] )
-    return_results(CommandResults(readable_output=human_readable,
+    return CommandResults(readable_output=human_readable,
                                   outputs=to_context,
                                   raw_response=result,
-                                  ))
+                                  )
 
 
 @logger
@@ -9716,7 +9716,7 @@ def main():
 
         # Check PAN-OS latest software update
         elif command == 'panorama-check-latest-panos-software' or command == 'pan-os-check-latest-panos-software':
-            panorama_check_latest_panos_software_command(args.get('target'))
+            return_results(panorama_check_latest_panos_software_command(args.get('target')))
 
         # Download target PAN-OS version
         elif command == 'panorama-download-panos-version' or command == 'pan-os-download-panos-version':

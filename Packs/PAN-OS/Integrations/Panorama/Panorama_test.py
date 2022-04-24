@@ -8,7 +8,7 @@ from unittest.mock import patch, MagicMock
 from panos.device import Vsys
 from panos.panorama import Panorama, DeviceGroup, Template
 from panos.firewall import Firewall
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, CommandResults
 
 integration_params = {
     'port': '443',
@@ -1618,3 +1618,117 @@ class TestFirewallCommand:
             for value in result_dataclass.__dict__.values():
                 # Attribute may be int 0
                 assert value is not None
+
+
+@pytest.mark.parametrize('expected_request_params, target',
+                         [pytest.param(
+                             {
+                                 'type': 'op',
+                                 'cmd': '<show><system><info/></system></show>',
+                                 'key': 'fakeAPIKEY!',
+                                 'target': 'fake-target'
+                             },
+                             'fake-target',
+                         ),
+                             pytest.param(
+                                 {
+                                     'type': 'op',
+                                     'cmd': '<show><system><info/></system></show>',
+                                     'key': 'fakeAPIKEY!',
+                                 },
+                                 None,
+                             ),
+                         ])
+def test_add_target_arg(mocker, expected_request_params, target):
+    """
+    Given:
+        - a call to the function with or without the target args
+    When:
+        - panorama_show_device_version_command - (or any other function with the target arg)
+    Then:
+        - Assert that the target param was added or not to the https request
+    """
+    import Panorama
+    from Panorama import panorama_show_device_version
+    from Panorama import http_request
+
+    Panorama.API_KEY = 'fakeAPIKEY!'
+    Panorama.DEVICE_GROUP = 'fakeDeviceGroup'
+    request_mock = mocker.patch.object(Panorama, 'http_request',
+                                       return_value={'response': {'result': {'system': 'fake_data'}}})
+
+    panorama_show_device_version(target)
+    called_request_params = request_mock.call_args.kwargs['params']
+    assert called_request_params == expected_request_params
+
+
+@pytest.mark.parametrize('rule , expected_result',
+                         [pytest.param({'target':
+                                            {'devices':
+                                                 {'entry':
+                                                      [{'@name': 'fw1'},
+                                                       {'@name': 'fw2'}]
+                                                  }
+                                             }
+                                        },
+                                       True
+                                       ),
+                          pytest.param(
+                              {'target':
+                                   {'devices':
+                                        {'entry': {'@name': 'fw1'}}
+                                    }
+                               },
+                              True),
+                          pytest.param({'target':
+                                            {'devices':
+                                                 {'entry': {'@name': 'fw2'}
+                                                  }
+                                             }
+                                        },
+                                       False),
+                          pytest.param({'target':
+                                            {'devices':
+                                                 {'entry': [{'@name': 'fw1'}]}
+                                             }
+                                        },
+                                       True),
+
+                          ]
+                         )
+def test_target_filter(rule, expected_result):
+    """
+    Given:
+        - a rule (dict) and a target (str) - 'fw1'
+    When:
+        - filtering rules by target
+    Then:
+        - return True if the rule contains the target and False otherwise
+    """
+    import Panorama
+    from Panorama import target_filter
+    assert target_filter(rule, 'fw1') == expected_result
+
+
+def test_check_latest_version_hr(mocker):
+    """
+    Given:
+        - a response from panorma of latest version
+    When:
+        - calling the command - pan-os-check-latest-panos-software
+    Then:
+        - filter the 5 latest results and present in a markdown
+    """
+    from Panorama import panorama_check_latest_panos_software_command
+    import requests
+    with open('test_data/latest_versions.xml') as xml_file:
+        text = xml_file.read()
+    with open('test_data/5_latest_version.md') as md_file:
+        markdown_assert = md_file.read()
+    mr = MockedResponse(text=text,
+                        status_code=200,
+                        reason='')
+    mocker.patch.object(requests, 'request', return_value=mr)
+    command_res: CommandResults = panorama_check_latest_panos_software_command()
+
+    assert markdown_assert == command_res.readable_output
