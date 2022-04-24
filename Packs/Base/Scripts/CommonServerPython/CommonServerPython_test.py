@@ -6824,7 +6824,6 @@ class TestFetchWithLookBack:
             [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
         ),
     ])
-    @freeze_time("2022-04-01 11:00:00")
     def test_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
                                   expected_last_run_phase1, expected_last_run_phase2, new_incidents, index):
         """
@@ -6845,6 +6844,7 @@ class TestFetchWithLookBack:
         self.LAST_RUN = {}
         incidents = self.INCIDENTS[:]
 
+        mocker.patch.object(CommonServerPython, 'get_current_time', return_value=datetime(2022, 4, 1, 11, 0, 0))
         mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
