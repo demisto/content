@@ -333,8 +333,6 @@ def remove_member_from_role(client: Client, args: dict) -> str:
 
 
 def ip_named_location_get(ms_client: Client, args: dict) -> CommandResults:
-    print(args)
-    print(demisto.getIntegrationContext())
     if ip_id := args.get('ip_id'):
         if results := ms_client.get_ip_named_location(ip_id):
             context = {
@@ -359,7 +357,6 @@ def ip_named_location_get(ms_client: Client, args: dict) -> CommandResults:
 
 
 def ip_named_location_update(ms_client: Client, args: dict) -> CommandResults:
-    print(args)
     if ip_id := args.get('ip_id'):
         if results := ms_client.get_ip_named_location(ip_id):
             data = {
@@ -391,8 +388,6 @@ def ip_named_location_update(ms_client: Client, args: dict) -> CommandResults:
 
 
 def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
-    print(args)
-    print(demisto.getIntegrationContext())
     ips = args.get('ips')
     is_trusted = args.get('is_trusted')
     display_name = args.get('display_name')
@@ -470,7 +465,7 @@ def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
             raw_response=results,
             readable_output=tableToMarkdown(
                 f'Ip named locations:',
-                context
+                ip_named_locations,
             )
         )
     else:
@@ -492,13 +487,14 @@ def ms_ip_string_to_list(ips):
             continue
         ips_arr.append(temp)
     return ips_arr
+
+
 def main():
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         command = demisto.command()
         params = demisto.params()
         args = demisto.args()
-        print(args)
         handle_proxy()
         client = Client(
             app_id=params['app_id'],

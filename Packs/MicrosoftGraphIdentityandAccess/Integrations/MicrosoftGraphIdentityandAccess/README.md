@@ -217,29 +217,161 @@ There is no context output for this command.
 
 >User ID :id: has been added to role :role:
 
-### msgraph-identity-directory-role-member-remove
+### msgraph-identity-ip-named-locations-create
 ***
-Removes a user from a role.
+Creates an ip named location.
 
 
 #### Base Command
 
-`msgraph-identity-directory-role-member-remove`
+`msgraph-identity-ip-named-locations-create`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| role_id | ID of the role from which to remove the user. Can be retrieved using the msgraph-identity-directory-roles-list command. | Required |
-| user_id | ID of the user to remove from the role. Can be retrieved using the msgraph-identity-directory-role-members-list command. | Required |
+| **Argument Name** | **Description**                                        | **Required** |
+|-------------------|--------------------------------------------------------| --- |
+| display_name      | The display name for the ip named location.            | Required |
+| is_trusted        | A boolean to show if the ip named location is trusted. | Required |
+| ips               | The ip ranges for the ip named location.               | Required |
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| -- | --- | --- |
+| MSGraph.conditionalAccess.namedIpLocations.time_created | Date | The time of the ip named location creation. |
+| MSGraph.conditionalAccess.namedIpLocations.time_modified | Date | The time the ip named location was last modified. |
+| MSGraph.conditionalAccess.namedIpLocations.display_name | String | The ip named location display name. |
+| MSGraph.conditionalAccess.namedIpLocations.id | String | The unique identifier of the ip named location. |
+| MSGraph.conditionalAccess.namedIpLocations.is_trusted | String | The ip named location trust status. |
+| MSGraph.conditionalAccess.namedIpLocations.ip_ranges | Array | The ip named location ip ranges. |
+
 
 #### Command Example
-```!msgraph-identity-directory-role-member-remove role_id=:role: user_id=:id:```
+```!msgraph-identity-ip-named-locations-create ips=12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63 display_name=test is_trusted=True:```
 
 #### Human Readable Output
 
->User ID :id: has been removed from role :role:
+>created Ip named location 'ID': :ipNamedLocation:  
+
+### msgraph-identity-ip-named-locations-get
+***
+Gets an ip named location.
+
+
+#### Base Command
+
+`msgraph-identity-ip-named-locations-get`
+#### Input
+
+| **Argument Name** | **Description**                         | **Required** |
+|-------------------|-----------------------------------------| --- |
+| ip_id             | The id of the ip named location to get. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| -- | --- | --- |
+| MSGraph.conditionalAccess.namedIpLocations.time_created | Date | The time of the ip named location creation. |
+| MSGraph.conditionalAccess.namedIpLocations.time_modified | Date | The time the ip named location was last modified. |
+| MSGraph.conditionalAccess.namedIpLocations.display_name | String | The ip named location display name. |
+| MSGraph.conditionalAccess.namedIpLocations.id | String | The unique identifier of the ip named location. |
+| MSGraph.conditionalAccess.namedIpLocations.is_trusted | String | The ip named location trust status. |
+| MSGraph.conditionalAccess.namedIpLocations.ip_ranges | Array | The ip named location ip ranges. |
+
+
+#### Command Example
+```!msgraph-identity-ip-named-locations-get ip_id=03f8c56f-2ffd-4699-84af-XXXXXXXCX```
+
+#### Human Readable Output
+
+>Ip named location 'ID': :ipNamedLocation:
+
+
+### msgraph-identity-ip-named-locations-delete
+***
+Deletes an ip named location.
+
+
+#### Base Command
+
+`msgraph-identity-ip-named-locations-delete`
+#### Input
+
+| **Argument Name** | **Description**                            | **Required** |
+|-------------------|--------------------------------------------| --- |
+| ip_id             | The id of the ip named location to delete. | Required |
+
+
+#### Context Output
+
+No context output
+
+
+#### Command Example
+```!msgraph-identity-ip-named-locations-delete ip_id=03f8c56f-2ffd-4699-84af-XXXXXXXCX```
+
+#### Human Readable Output
+
+>Trying to delete ip named location 'ID': :success:
+
+
+### msgraph-identity-ip-named-locations-update
+***
+Updates an ip named location.
+
+
+#### Base Command
+
+`msgraph-identity-ip-named-locations-update`
+#### Input
+
+| **Argument Name** | **Description**                                        | **Required** |
+|-------------------|--------------------------------------------------------| --- |
+| ip_id             | The id of the ip named location to delete.             | Required |
+| display_name      | The display name for the ip named location.            | Required |
+| is_trusted        | A boolean to show if the ip named location is trusted. | Required |
+| ips               | The ip ranges for the ip named location.               | Required |
+
+
+#### Context Output
+
+No context output
+
+
+#### Command Example
+```!msgraph-identity-ip-named-locations-update ips=12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63 display_name=test is_trusted=True ip_id=098699fc-10ad-420e-9XXXXXXXXXX```
+
+#### Human Readable Output
+
+>Trying to update ip named location 'ID': :success:
+
+
+## msgraph-identity-ip-named-locations-list
+***
+Lists an ip named locations.
+
+
+#### Base Command
+
+`msgraph-identity-ip-named-locations-list`
+#### Input
+
+| **Argument Name** | **Description**                | **Required** |
+|-------------------|--------------------------------|--------------|
+| limit             | The get request results limit. | Optional     |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| -- | --- | --- |
+| MSGraph.conditionalAccess.namedIpLocations.ip_named_locations | Array | List of ip named locations. |
+
+
+#### Command Example
+```!msgraph-identity-ip-named-locations-update ips=12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63 display_name=test is_trusted=True ip_id=098699fc-10ad-420e-9XXXXXXXXXX```
+
+#### Human Readable Output
+
+>Trying to update ip named location 'ID': :success:

@@ -239,7 +239,7 @@ script:
     arguments:
     - name: ips
       default: false
-      description: Alist of ip addresses to ad to the named location, it should be a string with the addresses separated by the delimiter ','.
+      description: A list of ip addresses to ad to the named location, it should be a string with the addresses separated by the delimiter ','.
       isArray: false
       required: false
       secret: false
@@ -287,7 +287,7 @@ script:
       secret: false
     - name: ips
       default: false
-      description: Alist of ip addresses to ad to the named location, it should be a string with the addresses separated by the delimiter ','.
+      description: A list of ip addresses to ad to the named location, it should be a string with the addresses separated by the delimiter ','.
       isArray: false
       required: false
       secret: false
@@ -308,7 +308,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.27590
+  dockerimage: demisto/crypto:1.0.0.28507
 fromversion: 5.0.0
 tests:
 - Identity & Access test playbook
