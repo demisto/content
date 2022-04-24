@@ -5,10 +5,10 @@ description: |-
   This playbook is responsible for alert data enrichment and response.
   The playbook executes the following:
 
-  1.Checks if the initiator is a remote attacker and allow isolating the remote host if possible.
+  1.Checks if the initiator is a remote attacker and allows isolating the remote host, if possible.
 
   2.Retrieve the WildFire sandbox report and extract the indicators within it.
-      * The playbook will try retrieving the report, if there is no report available, the playbook will try fetching the ransomware file for detonation.
+      * The playbook tries to retrieve the report, but if there is no report available, the playbook tries to fetch the ransomware file for detonation.
 
   3.Hunt for the ransomware alert indicators over the alert table and searches for endpoints that have been seen with them and allows containing the identified endpoints.
 starttaskid: "0"
@@ -168,11 +168,7 @@ tasks:
       version: -1
       name: Robust search of IoCs
       description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        Searches Cortex XSIAM indicators. 
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -365,15 +361,15 @@ tasks:
       version: -1
       name: Containment Plan
       description: |-
-        This playbook handles all the containment actions available with XSIAM.
-        The playbook allows to contain the incident with one of the following tasks:
+        This playbook handles all the containment actions available with Cortex XSIAM.
+        The playbook allows you to contain the alert with one of the following tasks:
         * Isolate endpoint
         * Disable account
         * Quarantine file
         * Block indicators
         * Clear user session (currently, the playbook supports only Okta)
 
-        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -591,7 +587,7 @@ tasks:
       name: WildFire - Detonate file
       description: |-
         Detonate one or more files using the Wildfire integration. This playbook
-        returns relevant reports to the War Room and file reputations to the context data.
+        returns relevant reports to the Alerts War Room and file reputations to the context data.
         The detonation supports the following file types -
         APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL.
       playbookName: WildFire - Detonate file
@@ -725,7 +721,7 @@ tasks:
       version: -1
       name: Retrieve file to the playbook's war room
       description: View the file retrieved by the core-retrieve-files command according
-        to the action ID. Before running this command, you can use the core-action-status-get
+        to the action ID. Before running this command, use the core-action-status-get
         command to check if this action completed successfully.
       script: '|||core-retrieve-file-details'
       type: regular
@@ -802,7 +798,7 @@ tasks:
       id: 28922639-6ad8-4bf1-8aba-df6392955d35
       version: -1
       name: Checks if the containment plan completed successfully
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+      description: Check whether given entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
       scriptName: isError
