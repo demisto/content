@@ -5,8 +5,6 @@ import requests
 import traceback
 from typing import Dict, Any
 
-# THIS IS A TEST 🤡
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
