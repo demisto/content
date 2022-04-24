@@ -28,7 +28,6 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: 'Fetch type: cases/comments (Only fetch comments when using the SalesforceAskUser
@@ -39,7 +38,6 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: useproxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: Fetch incidents
