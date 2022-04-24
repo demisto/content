@@ -11,7 +11,7 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
-    | --- |--------------| --- |
+    | --- | --- | --- |
     | defaultRegion | AWS Default Region | False        |
     | roleArn | Role Arn Role Arn | False        |
     | roleSessionName | Role Session Name | False        |
