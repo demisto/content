@@ -5250,6 +5250,7 @@
     "skipped_integrations": {
 
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "FortiSIEMV2": "No instance",
         "Vertica": "No insance issue 45719",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
