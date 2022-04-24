@@ -5820,3 +5820,25 @@ Alert.ReadWrite.All
 >|ID|Title|Description|IncidentID|Severity|Status|Classification|Category|ThreatFamilyName|MachineID|
 >|---|---|---|---|---|---|---|---|---|---|
 >| da637472900382838869_1364969609 | Low-reputation arbitrary code executed by signed executable | Binaries signed by Microsoft can be used to run low-reputation arbitrary code. This technique hides the execution of malicious code within a trusted process. As a result, the trusted process might exhibit suspicious behaviors, such as opening a listening port or connecting to a command-and-control (C&C) server. | 1126093 | Low | New |  | Execution |  | 111e6dd8c833c8a052ea231ec1b19adaf497b625 |
+### microsoft-atp-live-response-cancel-action
+***
+Cancels an action with an unfinished status.
+
+
+#### Base Command
+
+`microsoft-atp-live-response-cancel-action`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_action_id | Action ID to retrieve status and data for. | Required | 
+| comment | A comment to associate with the action. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!microsoft-atp-live-response-cancel-action machine_id="4899036531e374137f63289c3267bad772c13fef" comment="testing"```
