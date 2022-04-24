@@ -1,14 +1,8 @@
 category: Analytics & SIEM
 commonfields:
-  id: Azure Log Analytics test
+  id: Azure Log Analytics
   version: -1
 configuration:
-#- additionalinfo: Received from the authorization process or from the self-deployed
-#    configuration process.
-#  display: ID / (Client ID :For client credentials flow)
-#  name: auth_id
-#  required: true
-#  type: 0
 - additionalinfo: Received from the authorization process or from the self-deployed
     configuration process (find the tenant ID in your app overview page in the Azure
     portal)
@@ -77,8 +71,8 @@ configuration:
   type: 8
 description: Log Analytics is a service that helps you collect and analyze data generated
   by resources in your cloud and on-premises environments.
-display: Azure Log Analytics test
-name: Azure Log Analytics test
+display: Azure Log Analytics
+name: Azure Log Analytics
 script:
   commands:
   - arguments:
