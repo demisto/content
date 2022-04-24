@@ -1,4 +1,4 @@
-This playbook is responsible for detecting the ransomware type and searching for available decryptor.
+This playbook is responsible for detecting the ransomware type and searching for available decryptors.
 
 The playbook uses the ID-Ransomware service, which allows detecting the ransomware using multiple methods.
 
