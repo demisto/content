@@ -2,9 +2,9 @@ id: Ransomware Advanced Analysis
 version: -1
 name: Ransomware Advanced Analysis
 description: |-
-  This playbook is responsible for detecting the ransomware type and searching for available decryptor.
+  This playbook detects the ransomware type and searches for available decryptors.
 
-  The playbook uses the ID-Ransomware service, which allows detecting the ransomware using multiple methods.
+  The playbook uses the ID-Ransomware service, which allows you to detect the ransomware using multiple methods.
 starttaskid: "0"
 tasks:
   "0":
@@ -101,7 +101,7 @@ tasks:
       id: c7f23da2-0676-45c4-8dd7-57cff68e0bb2
       version: -1
       name: Read the ransomware note
-      description: Load the content of a file into context.
+      description: Loads the content of a file into context.
       scriptName: ReadFile
       type: regular
       iscommand: false
@@ -200,7 +200,7 @@ tasks:
       id: fa354c56-3f26-4e78-8218-c8bf57b54d28
       version: -1
       name: Upload the ransomware note
-      description: Upload the ransomware note for advanced analysis.
+      description: Uploads the ransomware note for advanced analysis.
       type: regular
       iscommand: false
       brand: ""
@@ -304,7 +304,7 @@ tasks:
 
         2.The contact link provided in the ransomware note.
 
-        3.An encrypted file sample. (Be careful when uploading encrypted files, some may include sensitive information)
+        3.An encrypted file sample (be careful when uploading encrypted files, as some may include sensitive information).
       type: regular
       iscommand: false
       brand: ""
@@ -366,7 +366,7 @@ tasks:
       id: d7f9e68e-b92e-46f3-8fee-1afd80d3c922
       version: -1
       name: Test the decryptor
-      description: Manual task for the analyst to verify the decryptor found works.
+      description: A manual task for the analyst to verify that the decryptor works.
       type: regular
       iscommand: false
       brand: ""
@@ -396,7 +396,7 @@ tasks:
       id: ea3e7ea6-ad7e-4b2d-83d9-e5c019523008
       version: -1
       name: Extract indicator from the ransomware note
-      description: Extract all indicators according to server indicators configuration
+      description: Extract all indicators according to the server's indicator extraction configuration.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
