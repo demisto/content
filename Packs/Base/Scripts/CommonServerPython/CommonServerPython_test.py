@@ -11,7 +11,6 @@ import requests
 from pytest import raises, mark
 import pytest
 import warnings
-from freezegun import freeze_time
 
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
