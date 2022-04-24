@@ -612,6 +612,7 @@ def search_users(default_base_dn, page_size):
 
     for user in entries['flat']:
         user_account_control = user.get('userAccountControl')[0]
+        demisto.debug(f"user account control number is: {user_account_control}")
         user['userAccountControlFields'] = user_account_to_boolean_fields(user_account_control)
 
         # display a literal translation of the numeric account control flag
