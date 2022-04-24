@@ -146,7 +146,8 @@ class GetEvents:
             next_time = last_time[:-1] + str(int(last_time[-1]) + 1)
 
             last_run['from'] = next_time
-            return last_run
+
+        return last_run
 
     @staticmethod
     def events_to_incidents(events: list):
@@ -154,7 +155,8 @@ class GetEvents:
 
         for event in events:
             incident = {
-                'name': f"JiraSIEM - {event['summary']} - {event['id']}",
+                # 'name': f"JiraSIEM - {event['summary']} - {event['id']}",
+                'name': event['id'],
                 'occurred': event.get('created', '').removesuffix('+0000') + 'Z',
                 'rawJSON': json.dumps(event)
             }
@@ -173,7 +175,7 @@ def main():
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
 
-    demisto.info(f'This is the params: {demisto_params}')
+    demisto.info(f'This is the paramsssss: {demisto_params}')
 
     demisto_params['params'] = ReqParams.parse_obj(demisto_params)
 
@@ -186,7 +188,7 @@ def main():
         get_events.run(max_fetch=1)
         demisto.results('ok')
     else:
-        events = get_events.run(max_fetch=min(int(demisto_params.get('max_fetch', 100)), 1000))
+        events = get_events.run(min(int(demisto_params.get('max_fetch', 100)), 1000))
         if events:
             get_events.events_to_incidents(events)
             demisto.setLastRun(get_events.set_next_run(events[0]))
