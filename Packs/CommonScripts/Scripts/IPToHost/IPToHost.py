@@ -8,16 +8,16 @@ def ip_to_host(ip: str) -> CommandResults:
     host_info = socket.gethostbyaddr(ip)
 
     if not host_info:
-        raise DemistoException("Received an error while trying to get the host information")
+        raise DemistoException('No results were found for the given value.')
 
     hostname = host_info[0]
 
     output = {
-        "Hostname": str(hostname),
-        "IP": ip
+        'Hostname': str(hostname),
+        'IP': ip
     }
 
-    md = tableToMarkdown("IP to Host", [output])
+    md = tableToMarkdown('IP to Host', [output])
 
     return CommandResults(
         outputs=output,
