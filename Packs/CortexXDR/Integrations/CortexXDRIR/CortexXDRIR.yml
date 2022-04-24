@@ -715,6 +715,38 @@ script:
     execution: false
     name: xdr-insert-cef-alerts
   - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: The endpoint ID (string) to isolate. You can retrieve the string from the xdr-get-endpoints command.
+        isArray: false
+        name: endpoint_id
+        required: true
+        secret: false
+      - auto: PREDEFINED
+        default: false
+        defaultValue: 'false'
+        description: Whether to suppress an error when trying to isolate a disconnected endpoint. When sets to false, an error will be returned.
+        isArray: false
+        name: suppress_disconnected_endpoint_error
+        predefined:
+          - 'true'
+          - 'false'
+        required: false
+        secret: false
+    deprecated: false
+    description: Isolates the specified endpoint.
+    execution: true
+    name: xdr-endpoint-isolate
+    outputs:
+      - contextPath: PaloAltoNetworksXDR.Isolation.endpoint_id
+        description: The endpoint ID.
+        type: String
+  - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
       isArray: false
@@ -739,13 +771,45 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Isolates the specified endpoint.
+    description: Isolates the specified endpoint. This command will be deprecated soon, use `xdr-endpoint-isolate` instead.
     execution: true
     name: xdr-isolate-endpoint
     outputs:
     - contextPath: PaloAltoNetworksXDR.Isolation.endpoint_id
       description: The endpoint ID.
       type: String
+  - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints command.
+        isArray: false
+        name: endpoint_id
+        required: true
+        secret: false
+      - auto: PREDEFINED
+        default: false
+        defaultValue: 'false'
+        description: Whether to suppress an error when trying to unisolate a disconnected endpoint. When sets to false, an error will be returned.
+        isArray: false
+        name: suppress_disconnected_endpoint_error
+        predefined:
+          - 'true'
+          - 'false'
+        required: false
+        secret: false
+    deprecated: false
+    description: Reverses the isolation of an endpoint.
+    execution: true
+    name: xdr-endpoint-unisolate
+    outputs:
+      - contextPath: PaloAltoNetworksXDR.UnIsolation.endpoint_id
+        description: Isolates the specified endpoint.
+        type: String
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -771,7 +835,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Reverses the isolation of an endpoint.
+    description: Reverses the isolation of an endpoint. This command will be deprecated soon, use `xdr-endpoint-unisolate` instead.
     execution: true
     name: xdr-unisolate-endpoint
     outputs:
@@ -1548,6 +1612,35 @@ script:
     execution: false
     name: xdr-whitelist-files
   - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: List of endpoint IDs.
+        isArray: true
+        name: endpoint_id_list
+        required: true
+        secret: false
+      - default: false
+        description: String that represents the path of the file you want to quarantine.
+        isArray: false
+        name: file_path
+        required: true
+        secret: false
+      - default: false
+        description: String that represents the file’s hash. Must be a valid SHA256 hash.
+        isArray: false
+        name: file_hash
+        required: true
+        secret: false
+    deprecated: false
+    description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
+    execution: false
+    name: xdr-file-quarantine
+  - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
       isArray: false
@@ -1573,7 +1666,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
+    description: Quarantines a file on selected endpoints. This command will be deprecated soon, use `xdr-file-quarantine` instead.
     execution: false
     name: xdr-quarantine-files
   - arguments:
@@ -1600,6 +1693,29 @@ script:
     execution: false
     name: xdr-get-quarantine-status
   - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: String that represents the file in hash. Must be a valid SHA256 hash.
+        isArray: false
+        name: file_hash
+        required: true
+        secret: false
+      - default: false
+        description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
+        isArray: false
+        name: endpoint_id
+        required: false
+        secret: false
+    deprecated: false
+    description: Restores a quarantined file on requested endpoints.
+    execution: false
+    name: xdr-file-restore
+  - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
       isArray: false
@@ -1619,9 +1735,120 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Restores a quarantined file on requested endpoints.
+    description: Restores a quarantined file on requested endpoints. This command will be deprecated soon, use `xdr-file-restore` instead.
     execution: false
     name: xdr-restore-file
+  - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: List of endpoint IDs.
+        isArray: true
+        name: endpoint_id_list
+        required: false
+        secret: false
+      - default: false
+        description: Name of the distribution list.
+        isArray: true
+        name: dist_name
+        required: false
+        secret: false
+      - default: false
+        description: Epoch timestamp in milliseconds.
+        isArray: false
+        name: gte_first_seen
+        required: false
+        secret: false
+      - default: false
+        description: Epoch timestamp in milliseconds.
+        isArray: false
+        name: gte_last_seen
+        required: false
+        secret: false
+      - default: false
+        description: Epoch timestamp in milliseconds.
+        isArray: false
+        name: lte_first_seen
+        required: false
+        secret: false
+      - default: false
+        description: Epoch timestamp in milliseconds.
+        isArray: false
+        name: lte_last_seen
+        required: false
+        secret: false
+      - default: false
+        description: List of IP addresses.
+        isArray: true
+        name: ip_list
+        required: false
+        secret: false
+      - default: false
+        description: Name of the endpoint group.
+        isArray: true
+        name: group_name
+        required: false
+        secret: false
+      - auto: PREDEFINED
+        default: false
+        description: Type of operating system.
+        isArray: true
+        name: platform
+        predefined:
+          - windows
+          - linux
+          - macos
+          - android
+        required: false
+        secret: false
+      - default: false
+        description: Endpoint alias name.
+        isArray: true
+        name: alias
+        required: false
+        secret: false
+      - auto: PREDEFINED
+        default: false
+        description: Whether an endpoint has been isolated. Can be "isolated" or "unisolated".
+        isArray: false
+        name: isolate
+        predefined:
+          - isolated
+          - unisolated
+        required: false
+        secret: false
+      - default: false
+        description: Name of the host.
+        isArray: true
+        name: hostname
+        required: false
+        secret: false
+      - auto: PREDEFINED
+        default: false
+        defaultValue: 'false'
+        description: Whether to scan all of the endpoints or not. Default is false. Scanning all of the endpoints may cause performance issues and latency.
+        isArray: false
+        name: all
+        predefined:
+          - 'true'
+          - 'false'
+        required: false
+        secret: false
+    deprecated: false
+    description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
+    execution: true
+    name: xdr-endpoint-scan-execute
+    outputs:
+      - contextPath: PaloAltoNetworksXDR.endpointScan.actionId
+        description: The action ID of the scan request.
+        type: Number
+      - contextPath: PaloAltoNetworksXDR.endpointScan.aborted
+        description: Was the scan aborted.
+        type: Boolean
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -1723,7 +1950,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
+    description: Runs a scan on a selected endpoint. This command will be deprecated soon, use `xdr-endpoint-scan-execute` instead.
     execution: true
     name: xdr-endpoint-scan
     outputs:
@@ -2154,6 +2381,51 @@ script:
       description: Endpoint ID of the violation.
       type: string
   - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: Comma-separated list of endpoint IDs.
+        isArray: true
+        name: endpoint_ids
+        required: true
+        secret: false
+      - default: false
+        description: A comma-separated list of file paths on the Windows platform.
+        isArray: true
+        name: windows_file_paths
+        required: false
+        secret: false
+      - default: false
+        description: A comma-separated list of file paths on the Linux platform.
+        isArray: true
+        name: linux_file_paths
+        required: false
+        secret: false
+      - default: false
+        description: A comma-separated list of file paths on the Mac platform.
+        isArray: true
+        name: mac_file_paths
+        required: false
+        secret: false
+      - default: false
+        description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.
+        isArray: true
+        name: generic_file_path
+        required: false
+        secret: false
+    deprecated: false
+    description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
+    execution: false
+    name: xdr-file-retrieve
+    outputs:
+      - contextPath: PaloAltoNetworksXDR.RetrievedFiles.action_id
+        description: ID of the action to retrieve files from selected endpoints.
+        type: string
+  - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
       isArray: false
@@ -2191,7 +2463,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
+    description: Retrieves files from selected endpoints. This command will be deprecated soon, use `xdr-file-retrieve` instead.
     execution: false
     name: xdr-retrieve-files
     outputs:
@@ -2383,6 +2655,36 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
+        isArray: false
+        name: endpoint_ids
+        required: true
+        secret: false
+      - default: false
+        description: Section of a script you want to initiate on an endpoint (e.g., print("7")).
+        isArray: false
+        name: snippet_code
+        required: true
+        secret: false
+    deprecated: false
+    description: Initiates a new endpoint script execution action using the provided snippet code.
+    execution: false
+    name: xdr-snippet-code-script-execute
+    outputs:
+      - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+        description: ID of the action initiated.
+        type: Number
+      - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+        description: Number of endpoints the action was initiated on.
+        type: Number
+  - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
       isArray: false
@@ -2402,7 +2704,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Initiates a new endpoint script execution action using the provided snippet code.
+    description: Initiates a new endpoint script execution action using the provided snippet code. This command will be deprecated soon, use `xdr-snippet-code-script-execute` instead.
     execution: false
     name: xdr-run-snippet-code-script
     outputs:
@@ -2560,6 +2862,43 @@ script:
       description: The extension of the file.
       type: String
   - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
+        isArray: false
+        name: endpoint_ids
+        required: true
+        secret: false
+      - default: false
+        description: Comma-separated list of shell commands to execute.
+        isArray: false
+        name: commands
+        required: true
+        secret: false
+      - default: false
+        defaultValue: '600'
+        description: The timeout in seconds for this execution.
+        isArray: false
+        name: timeout
+        required: false
+        secret: false
+    deprecated: false
+    description: Initiate a new endpoint script execution of shell commands.
+    execution: false
+    name: xdr-snippet-code-script-execute
+    outputs:
+      - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+        description: ID of the action initiated.
+        type: Number
+      - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+        description: Number of endpoints the action was initiated on.
+        type: Number
+  - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
       isArray: false
@@ -2586,7 +2925,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Initiate a new endpoint script execution of shell commands.
+    description: Initiate a new endpoint script execution of shell commands. This command will be deprecated soon, use `xdr-snippet-code-script-execute` instead.
     execution: false
     name: xdr-run-script-execute-commands
     outputs:
@@ -2596,6 +2935,43 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+  - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
+        isArray: true
+        name: endpoint_ids
+        required: true
+        secret: false
+      - default: false
+        description: Paths of the files to delete, in a comma-separated list. Paths of the files to check for existence. All of the given file paths will run on all of the endpoints.
+        isArray: true
+        name: file_path
+        required: true
+        secret: false
+      - default: false
+        defaultValue: '600'
+        description: The timeout in seconds for this execution.
+        isArray: false
+        name: timeout
+        required: false
+        secret: false
+    deprecated: false
+    description: Initiates a new endpoint script execution to delete the specified file.
+    execution: false
+    name: xdr-file-delete-script-execute
+    outputs:
+      - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+        description: ID of the action initiated.
+        type: Number
+      - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+        description: Number of endpoints the action was initiated on.
+        type: Number
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -2623,7 +2999,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Initiates a new endpoint script execution to delete the specified file.
+    description: Initiates a new endpoint script execution to delete the specified file. This command will be deprecated soon, use `xdr-file-delete-script-execute` instead.
     execution: false
     name: xdr-run-script-delete-file
     outputs:
@@ -2633,6 +3009,43 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+  - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
+        isArray: true
+        name: endpoint_ids
+        required: true
+        secret: false
+      - default: false
+        description: Paths of the files to check for existence, in a comma-separated list. All of the given file paths will run on all of the endpoints.
+        isArray: true
+        name: file_path
+        required: true
+        secret: false
+      - default: false
+        defaultValue: '600'
+        description: The timeout in seconds for this execution.
+        isArray: false
+        name: timeout
+        required: false
+        secret: false
+    deprecated: false
+    description: Initiates a new endpoint script execution to check if file exists.
+    execution: false
+    name: xdr-file-exist-script-execute
+    outputs:
+      - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+        description: ID of the action initiated.
+        type: Number
+      - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+        description: Number of endpoints the action was initiated on.
+        type: Number
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -2660,7 +3073,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Initiates a new endpoint script execution to check if file exists.
+    description: Initiates a new endpoint script execution to check if file exists. This command will be deprecated soon, use `xdr-file-exist-script-execute` instead.
     execution: false
     name: xdr-run-script-file-exists
     outputs:
@@ -2670,6 +3083,43 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+  - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
+        isArray: true
+        name: endpoint_ids
+        required: true
+        secret: false
+      - default: false
+        description: Names of processes to kill. Will kill all of the given processes on all of the endpoints.
+        isArray: true
+        name: process_name
+        required: true
+        secret: false
+      - default: false
+        defaultValue: '600'
+        description: The timeout in seconds for this execution.
+        isArray: false
+        name: timeout
+        required: false
+        secret: false
+    deprecated: false
+    description: Initiates a new endpoint script execution kill process.
+    execution: false
+    name: xdr-kill-process-script-execute
+    outputs:
+      - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+        description: ID of the action initiated.
+        type: Number
+      - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+        description: Number of endpoints the action was initiated on.
+        type: Number
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -2697,7 +3147,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Initiates a new endpoint script execution kill process.
+    description: Initiates a new endpoint script execution kill process. This command will be deprecated soon, use `xdr-kill-process-script-execute` instead.
     execution: false
     name: xdr-run-script-kill-process
     outputs:
