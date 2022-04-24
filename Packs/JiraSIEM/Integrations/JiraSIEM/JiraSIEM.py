@@ -10,7 +10,6 @@ from datetime import datetime
 
 urllib3.disable_warnings()
 
-
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 
@@ -25,7 +24,10 @@ class Method(str, Enum):
 
 class Args(BaseModel):
     from_: str = Field(
-        datetime.strftime(dateparser.parse(demisto.params().get('first_fetch', '3 days')), DATETIME_FORMAT),
+        datetime.strftime(
+            dateparser.parse(demisto.params().get('first_fetch', '3 days'), settings={'TIMEZONE': 'UTC'}),
+            DATETIME_FORMAT
+        ),
         alias='from'
     )
     limit: int = 1000
@@ -34,7 +36,10 @@ class Args(BaseModel):
 
 class ReqParams(BaseModel):
     from_: str = Field(
-        datetime.strftime(dateparser.parse(demisto.params().get('first_fetch', '3 days')), DATETIME_FORMAT),
+        datetime.strftime(
+            dateparser.parse(demisto.params().get('first_fetch', '3 days'), settings={'TIMEZONE': 'UTC'}),
+            DATETIME_FORMAT
+        ),
         alias='from'
     )
     limit: int = 1000
@@ -49,7 +54,12 @@ class Request(BaseModel):
     insecure: bool = Field(not demisto.params().get('insecure', False), alias='verify')
     proxy: bool = Field(demisto.params().get('proxy', False), alias='proxies')
     data: Optional[str]
-    auth: Optional[HTTPBasicAuth]
+    auth: Optional[HTTPBasicAuth] = Field(
+        HTTPBasicAuth(
+            demisto.params().get('credentials', {}).get('identifier'),
+            demisto.params().get('credentials', {}).get('password')
+        )
+    )
 
     class Config(BaseConfig):
         arbitrary_types_allowed = True
@@ -79,7 +89,7 @@ class Client:
             raise DemistoException(msg) from exc
 
     def prepare_next_run(self, offset: int):
-        self.request.params.offset = offset
+        self.request.params.offset += offset
 
     def _set_cert_verification(self):
         if not self.request.insecure:
@@ -102,63 +112,84 @@ class GetEvents:
 
     def _iter_events(self):
         events = self.call()
-        offset = 0
 
-        while events:  # Run as long there are logs
+        while events:
             yield events
 
-            offset += self.client.request.params.limit
-            self.client.prepare_next_run(offset)
+            self.client.prepare_next_run(self.client.request.params.limit)
             events = self.call()
 
-    def run(self, mas_fetch: int = 100) -> list[dict]:
+    def run(self, max_fetch: int = 100) -> list[dict]:
         stored = []
+
         for logs in self._iter_events():
             stored.extend(logs)
-            if len(stored) >= mas_fetch:
-                return stored[:mas_fetch]
+
+            if len(stored) >= max_fetch:
+                last_run = demisto.getLastRun()
+                last_run['offset'] = last_run.get('offset', 0) + max_fetch
+                demisto.setLastRun(last_run)
+
+                return stored[:max_fetch]
+
+        last_run = demisto.getLastRun()
+        last_run['offset'] = 0
+        demisto.setLastRun(last_run)
+
         return stored
 
+    def set_next_run(self, log: dict) -> dict:
+        last_run = demisto.getLastRun()
 
-def set_last_run(log: dict) -> dict:
-    last_time = log.get('created').removesuffix('+0000')
-    next_time = last_time[:-1] + str(int(last_time[-1])+1)
-    return {'from': next_time}
+        if not last_run.get('offset'):
+            last_time = log.get('created', '').removesuffix('+0000')
+            next_time = last_time[:-1] + str(int(last_time[-1]) + 1)
 
+            last_run['from'] = next_time
+            return last_run
 
-def events_to_incidents(events: list):
-    incidents = []
+    @staticmethod
+    def events_to_incidents(events: list):
+        incidents = []
 
-    for event in events:
-        incident = {
-            'name': f"JiraSIEM - {event['summary']} - {event['id']}",
-            'occurred': event.get('created', '').removesuffix('+0000') + 'Z',
-            'rawJSON': json.dumps(event)
-        }
-        incidents.append(incident)
+        for event in events:
+            incident = {
+                'name': f"JiraSIEM - {event['summary']} - {event['id']}",
+                'occurred': event.get('created', '').removesuffix('+0000') + 'Z',
+                'rawJSON': json.dumps(event)
+            }
+            incidents.append(incident)
 
-    demisto.incidents(incidents)
+        demisto.incidents(incidents)
 
 
 def main():
+
+    demisto.info('Main called')
+    demisto.info(f'This is the last_run: {demisto.getLastRun()}')
+    demisto.info(f'This is the args: {demisto.args()}')
+    demisto.info(f'This is the params: {demisto.params()}')
+
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
-    credentials = demisto_params.get('credentials', {})
-    demisto_params['auth'] = HTTPBasicAuth(credentials.get('identifier'), credentials.get('password'))
+
+    demisto.info(f'This is the params: {demisto_params}')
+
     demisto_params['params'] = ReqParams.parse_obj(demisto_params)
+
     request = Request.parse_obj(demisto_params)
     client = Client(request)
     get_events = GetEvents(client)
     command = demisto.command()
 
     if command == 'test-module':
-        get_events.run(mas_fetch=1)
+        get_events.run(max_fetch=1)
         demisto.results('ok')
     else:
-        events = get_events.run(mas_fetch=int(demisto_params.get('max_fetch', 100)))
+        events = get_events.run(max_fetch=min(int(demisto_params.get('max_fetch', 100)), 1000))
         if events:
-            events_to_incidents(events)
-            demisto.setLastRun(set_last_run(events[0]))
+            get_events.events_to_incidents(events)
+            demisto.setLastRun(get_events.set_next_run(events[0]))
         command_results = CommandResults(
             readable_output=tableToMarkdown('Jira records', events, removeNull=True, headerTransform=pascalToSpace),
             outputs_prefix='Jira.Records',
