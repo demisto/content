@@ -1,12 +1,12 @@
 This playbook is responsible for alert data enrichment and response.
 The playbook executes the following:
 
-1.Checks if the initiator is a remote attacker and allow isolating the remote host if possible.
+1.Checks if the initiator is a remote attacker and allows isolating the remote host, if possible.
 
-2.Retrieve the WildFire sandbox report and extract the indicators within it.
-    * The playbook will try retrieving the report, if there is no report available, the playbook will try fetching the ransomware file for detonation.
+2.Retrieves the WildFire sandbox report and extracts the indicators within it.
+    * The playbook tries to retrieve the report, but if there is no report available, the playbook tries to fetch the ransomware file for detonation.
 
-3.Hunt for the ransomware alert indicators over the alert table and searches for endpoints that have been seen with them and allows containing the identified endpoints.
+3.Hunts for the ransomware alert indicators from the alert table, searches for endpoints that have been seen with them, and allows containing the identified endpoints.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
