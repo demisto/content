@@ -2721,6 +2721,33 @@ def get_script_execution_status_command(client: Client, args: Dict) -> List[Comm
     return command_results
 
 
+def parse_get_script_execution_results(results: List[Dict]) -> List[Dict]:
+    parsed_results = []
+    api_keys = ['endpoint_name',
+                'endpoint_ip_address',
+                'endpoint_status',
+                'domain',
+                'endpoint_id',
+                'execution_status',
+                'return_value',
+                'standard_output',
+                'retrieved_files',
+                'failed_files',
+                'retention_date']
+    for result in results:
+        result_keys = result.keys()
+        difference_keys = list(set(result_keys) - set(api_keys))
+        if difference_keys:
+            for key in difference_keys:
+                parsed_res = result.copy()
+                parsed_res['command'] = key
+                parsed_res['command_output'] = result[key]
+                parsed_results.append(parsed_res)
+        else:
+            parsed_results.append(result.copy())
+    return parsed_results
+
+
 def get_script_execution_results_command(client: Client, args: Dict) -> List[CommandResults]:
     action_ids = argToList(args.get('action_id', ''))
     command_results = []
@@ -2729,7 +2756,7 @@ def get_script_execution_results_command(client: Client, args: Dict) -> List[Com
         results = response.get('reply', {}).get('results')
         context = {
             'action_id': int(action_id),
-            'results': results,
+            'results': parse_get_script_execution_results(results),
         }
         command_results.append(CommandResults(
             readable_output=tableToMarkdown(f'Script Execution Results - {action_id}', results),
