@@ -382,7 +382,8 @@ def ip_named_location_update(ms_client: Client, args: dict) -> CommandResults:
                 readable_output=tableToMarkdown(
                     f'Trying to update ip named location \'{ip_id}\':', {'Success': 'True'})
             )
-    return CommandResults(readable_output=tableToMarkdown(f'Trying to update ip named location \'{ip_id}\':', {'Success': 'True'}))
+    return CommandResults(readable_output=tableToMarkdown(f'Trying to update ip named location \'{ip_id}\':',
+                                                          {'Success': 'True'}))
 
 
 def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
@@ -419,7 +420,7 @@ def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
                     context
                 )
             )
-    return CommandResults(readable_output=f"Could not create ip named location")
+    return CommandResults(readable_output="Could not create ip named location")
 
 
 def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:
@@ -465,7 +466,7 @@ def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
             )
         )
     else:
-        return CommandResults(readable_output=f"could not list ip named locations")
+        return CommandResults(readable_output="could not list ip named locations")
 
 
 def ms_ip_string_to_list(ips):
