@@ -5093,6 +5093,11 @@
             "fromversion": "6.1.0"
         },
         {
+            "integrations": "FortiSIEMV2",
+            "playbookID": "playbook-FortiSIEMV2_Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "HttpV2-test",
             "fromversion": "6.5.0",
             "scripts": [
