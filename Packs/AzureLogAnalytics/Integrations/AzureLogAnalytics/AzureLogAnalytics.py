@@ -30,7 +30,7 @@ class Client:
                  subscription_id, resource_group_name, workspace_name, verify, proxy, certificate_thumbprint,
                  private_key, client_credentials):
 
-        tenant_id = refresh_token if self_deployed or client_credentials else ''
+        tenant_id = refresh_token if self_deployed else ''
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
             f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}'
