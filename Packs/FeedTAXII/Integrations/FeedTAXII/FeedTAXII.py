@@ -527,6 +527,7 @@ class TAXIIClient(object):
         self.last_taxii_run = demisto.getLastRun()
         if isinstance(self.last_taxii_run, dict):
             self.last_taxii_run = self.last_taxii_run.get('time')
+            demisto.debug(f'--- \n last run time : {self.last_taxii_run}')
         self.last_stix_package_ts = None
         self.last_taxii_content_ts = None
         self.verify_cert = not insecure
@@ -881,6 +882,8 @@ class TAXIIClient(object):
         while cbegin < end:
             cend = min(end, cbegin + dt)
 
+            demisto.debug(f'--- \n cbegin: {cbegin}  -- cend: {cend}')
+
             result = self._poll_collection(
                 poll_service=poll_service,
                 begin=cbegin,
@@ -903,11 +906,11 @@ class TAXIIClient(object):
             discovered_poll_service = self._discover_poll_service()
 
         last_run = self.last_taxii_run
-
         if last_run is None:
             last_run = now - (self.initial_interval * 1000)
             self.last_taxii_run = last_run
 
+        demisto.debug(f'---\n last rum: {self.last_taxii_run}')
         begin = datetime.utcfromtimestamp(last_run / 1000)
         begin = begin.replace(microsecond=0, tzinfo=pytz.UTC)
 
@@ -917,6 +920,7 @@ class TAXIIClient(object):
         # lower time precision - solve issues with certain taxii servers
         end = end.replace(second=0, microsecond=0)
         begin = begin.replace(second=0, microsecond=0)
+        demisto.debug(f'---\n begin: {begin} , end: {end}')
         return self._incremental_poll_collection(
             discovered_poll_service,
             begin=begin,
@@ -1165,7 +1169,10 @@ def fetch_indicators_command(client):
 
     # Create the indicators from the observables
     iterator = client.build_iterator(date_to_timestamp(datetime.now()))
+    iterator = list(iterator)
+    demisto.debug(f'---\n iterator list len: {len(iterator)}')
     for item in iterator:
+        demisto.debug(f'---\n the iterator item: \n {item}')
         if indicator := item.get('indicator'):
             item['value'] = indicator
             indicator_obj = {
@@ -1239,6 +1246,7 @@ def get_indicators_command(client, args):
 
 
 def main():
+    demisto.debug('--- \nstarted main')
     # Write configure here
     params = {key: value for key, value in demisto.params().items() if value is not None}
     handle_proxy()
@@ -1251,6 +1259,7 @@ def main():
         'get-indicators': get_indicators_command
     }
     try:
+        demisto.debug('--- \n entered try')
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators_command(client)
             # we submit the indicators in batches
