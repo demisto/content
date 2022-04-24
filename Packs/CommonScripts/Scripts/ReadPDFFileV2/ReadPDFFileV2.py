@@ -368,9 +368,9 @@ def main():
     }
 
     # URLS
-    folders_to_remove = []
     urls_ec = []
     emails_ec = []
+    folders_to_remove = []
 
     try:
         path = demisto.getFilePath(entry_id).get('path')
@@ -401,10 +401,14 @@ def main():
                 # Get URLS + emails:
                 urls_set, emails_set = extract_urls_and_emails_from_pdf_file(cpy_file_path, output_folder)
 
+                for url in urls_set:
+                    if re.match(emailRegex, url):
+                        emails_set.add(url)
+                    else:
+                        urls_ec.append({"Data": url})
+
                 for email in emails_set:
                     emails_ec.append(email)
-                for url in urls_set:
-                    urls_ec.append(url)
 
                 # Get images:
                 images = get_images_paths_in_path(output_folder)
