@@ -33,13 +33,13 @@ Auto process termination
 Next, the playbook will execute an enrichment and response phase which includes two sub-playbooks, **Ransomware Enrich and Contain** & **Account Enrichment - Generic v2.1**.
 The Ransomware Enrich and Contain playbook will do the following:
 
-1.Checks if the initiator is a remote attacker and allow isolating the remote host if possible. 
+1.Checks if the initiator is a remote attacker and allows isolating the remote host, if possible. 
 
-2.Retrieve the WildFire sandbox report and extract the indicators within it. * The playbook will try retrieving the report, if there is no report available, the playbook will try fetching the ransomware file for detonation. 
+2.Retrieves the WildFire sandbox report and extracts the indicators within it. * The playbook tries to retrieve the report, but if there is no report available, the playbook tries to fetch the ransomware file for detonation. 
 
-3.Hunt for the ransomware alert indicators over the alert table and searches for endpoints that have been seen with them and allows containing the identified endpoints.
+3.Hunts for the ransomware alert indicators from the alert table, searches for endpoints that have been seen with them, and allows containing the identified endpoints.
 
-Next, an advanced analysis playbook, which is currently done mostly manually, will be executed. This sub-playbook, **Ransomware Advanced Analysis** will allow the analyst to upload the ransomware note and for the ransomware identification. Using the **ID-Ransomware** service, the analyst will be able to get the ransomware type and the decryptor if available.
+Next, an advanced analysis playbook, which is currently done mostly manually, will be executed. This sub-playbook, **Ransomware Advanced Analysis** allows the analyst to upload the ransomware note and for the ransomware identification. Using the **ID-Ransomware** service, the analyst will be able to get the ransomware type and the decryptor, if available.
 
 When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan sub-playbook, is executed.
 
