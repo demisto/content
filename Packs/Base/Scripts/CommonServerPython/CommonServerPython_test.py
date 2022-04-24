@@ -11,6 +11,7 @@ import requests
 from pytest import raises, mark
 import pytest
 import warnings
+from freezegun import freeze_time
 
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
@@ -6777,6 +6778,7 @@ class TestFetchWithLookBack:
 
         self.LAST_RUN = {}
 
+        mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
@@ -6796,7 +6798,8 @@ class TestFetchWithLookBack:
     def mock_dateparser(self, date_string, settings):
         date_arr = date_string.split(' ')
         if len(date_arr) > 1 and date_arr[0].isdigit():
-            return datetime(2022, 4, 1, 11, 0, 0) - timedelta(minutes=int(date_arr[0]))
+            return datetime(2022, 4, 1, 11, 0, 0) - timedelta(minutes=int(date_arr[0])) if date_arr[1] == 'minutes' \
+                else datetime(2022, 4, 1, 11, 0, 0) - timedelta(hours=int(date_arr[0]))
         return datetime(2022, 4, 1, 11, 0, 0) - (datetime(2022, 4, 1, 11, 0, 0) - datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S'))
 
     @pytest.mark.parametrize('params, result_phase1, result_phase2, result_phase3, expected_last_run_phase1, expected_last_run_phase2, new_incidents, index', [
@@ -6821,7 +6824,7 @@ class TestFetchWithLookBack:
             [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
         ),
     ])
-    @pytest.mark.skip(reason="Failing, will be reviewed.")
+    @freeze_time("2022-04-01 11:00:00")
     def test_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
                                   expected_last_run_phase1, expected_last_run_phase2, new_incidents, index):
         """
