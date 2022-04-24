@@ -9487,7 +9487,7 @@ def get_current_time(time_zone=0):
 
     :return: The current time.
     :rtype: ``datetime``
-    """    
+    """
     return datetime.utcnow() + timedelta(hours=time_zone)
 
 
