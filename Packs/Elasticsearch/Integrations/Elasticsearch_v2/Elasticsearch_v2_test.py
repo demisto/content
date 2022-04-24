@@ -108,7 +108,7 @@ MOCK_ES7_SEARCH_CONTEXT = str({
             '_type': 'doc',
             '_id': '456',
             '_score': 0.6814878,
-            '_source': {'Date': '2019-08-27T18:01:00Z'}
+            '_source': {'Date': '2019-08-27T18:01:25.343212Z'}
         }
     ]
 })
@@ -126,7 +126,7 @@ MOCK_ES7_HIT_CONTEXT = str([
         '_id': '456',
         '_type': 'doc',
         '_score': 0.6814878,
-        'Date': '2019-08-27T18:01:00Z'
+        'Date': '2019-08-27T18:01:25.343212Z'
     }
 ])
 
@@ -155,7 +155,7 @@ MOCK_ES6_SEARCH_CONTEXT = str({
             '_type': '_doc',
             '_id': '456',
             '_score': 0.9517491,
-            '_source': {'Date': '2019-08-29T14:46:00Z'}
+            '_source': {'Date': '2019-08-29T14:46:00.123456Z'}
         }
     ]
 })
@@ -173,7 +173,7 @@ MOCK_ES6_HIT_CONTEXT = str([
         '_id': '456',
         '_type': '_doc',
         '_score': 0.9517491,
-        'Date': '2019-08-29T14:46:00Z'
+        'Date': '2019-08-29T14:46:00.123456Z'
     }
 ])
 
