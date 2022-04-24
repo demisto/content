@@ -19,21 +19,39 @@ To add the role, refer to the following [Microsoft article](https://docs.microso
 3. Click the **Accept** button and you will receive your ID, token, and key. You will need to enter these when you configure the Azure Log Analytics integration instance in Cortex XSOAR.
 
 ## Authorize Cortex XSOAR for Azure Log Analytics (self-deployed configuration)
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 
-Follow these steps for a self-deployed configuration.
+### Required permissions
+- Azure Service Management - permission `user_impersonation` of type `Delegated`
+- Log Analytics API - permission `Data.Read` of type `Delegated`
 
-1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
-2. Make sure the following permissions are granted for the app registration:
-   - Azure Service Management - permission `user_impersonation` of type `Delegated`
-   - Log Analytics API - permission `Data.Read` of type `Delegated`
-3. Copy the following URL and replace the ***CLIENT_ID*** and ***REDIRECT_URI*** with your own client ID and redirect URI, accordingly.
+There are two flows to authenticate in self-deployed mode
+1. Authentication code flow.
+2. Client Credentials flow.
+
+### Authentication Code flow
+
+---
+1. Copy the following URL and replace the ***CLIENT_ID*** and ***REDIRECT_URI*** with your own client ID and redirect URI, accordingly.
 ```https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&resource=https://management.core.windows.net&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI```
-4. Enter the link and you will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. You will be automatically redirected to a link with the following structure:
+2. Enter the link and you will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
-5. Copy the ***AUTH_CODE*** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization code** parameter. 
-6. Enter your client ID in the ***ID*** parameter. 
-7. Enter your client secret in the ***Key*** parameter.
-8. Enter your tenant ID in the ***Token*** parameter.
+3. Copy the ***AUTH_CODE*** (without the “code=” prefix, and the session_state parameter) and paste it in your instance configuration under the **Authorization code** parameter. 
+4. Enter your client ID in the ***ID*** parameter. 
+5. Enter your client secret in the ***Key*** parameter.
+6. Enter your tenant ID in the ***Token*** parameter.
+7. Enter your redirect URI in the ***Redirect URI*** parameter.
+
+
+## Authorize Cortex XSOAR for Azure Log Analytics (client-credentials configuration)
+
+Follow these steps for client-credentials configuration.
+
+1. In the instance configuration, select the ***client-credentials*** checkbox.
+2. Enter your Client ID in the ***ID/Client ID*** parameter. 
+3. Enter your Client Secret in the ***password*** parameter.
+4. Enter your Tenant ID in the ***Tenant ID*** parameter.
+5. Run the ***azure-log-analytics-test*** command to test the connection and the authorization process.
 9. Enter your redirect URI in the ***Redirect URI*** parameter.
 
 ## Get the additional instance parameters
@@ -48,12 +66,13 @@ To get the ***Subscription ID***, ***Workspace Name***, ***Workspace ID*** and *
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| auth_id | ID \(received from the authorization step - see Detailed Instructions \(?\) section\) | True |
-| refresh_token | Token \(received from the authorization step - see Detailed Instructions \(?\) section\) | True |
-| enc_key | Key \(received from the authorization step - see Detailed Instructions \(?\) section\) | False |
+| credentials - identifier | ID\Client ID \(received from the authorization step or from the self-deployed configuration process - see Detailed Instructions \(?\) section\) | True |
+| refresh_token | Token\tenant_id \(received from the authorization step or from the self-deployed configuration process - see Detailed Instructions \(?\) section\) | True |
+| credentials - password | Key\Client secret \(received from the authorization step - see Detailed Instructions \(?\) section\) | False |
 | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
 | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | self_deployed | Use a self-deployed Azure application | False |
+| Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
 | redirect_uri | Application redirect URI \(for self-deployed mode\) | False |
 | auth_code | Authorization code \(received from the authorization step - see Detailed Instructions \(?\) section\) | False |
 | subscriptionID | Subscription ID | True |
