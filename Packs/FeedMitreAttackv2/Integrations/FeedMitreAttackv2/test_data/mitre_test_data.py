@@ -44,7 +44,7 @@ ATTACK_PATTERN = {
     'map_result': {
         'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
         'firstseenbysource': '2017-05-31T21:30:44.329Z',
-        'killchainphases': ['Defense Evasion', 'Privilege Escalation', 'resource-development'],
+        'killchainphases': ['Defense Evasion', 'Privilege Escalation'],
         'modified': "2020-05-13T22:50:51.258Z",
         'description': "Adversaries may abuse Windows Management Instrumentation (WMI) to achieve execution.",
         'operatingsystemrefs': ['Windows'],
@@ -60,7 +60,7 @@ ATTACK_PATTERN = {
     'indicator': ([{'fields': {'description': 'Adversaries may abuse Windows Management '
                                               'Instrumentation (WMI) to achieve execution.',
                                'firstseenbysource': '2017-05-31T21:30:44.329Z',
-                               'killchainphases': ['Defense Evasion', 'Privilege Escalation'],
+                               'killchainphases': ['Defense Evasion', 'Privilege Escalation', 'resource-development'],
                                'mitreid': 'T1047',
                                'modified': '2020-05-13T22:50:51.258Z',
                                'operatingsystemrefs': ['Windows'],
@@ -97,7 +97,10 @@ ATTACK_PATTERN = {
                                 'kill_chain_phases': [{'kill_chain_name': 'mitre-attack',
                                                        'phase_name': 'defense-evasion'},
                                                       {'kill_chain_name': 'mitre-attack',
-                                                       'phase_name': 'privilege-escalation'}],
+                                                       'phase_name': 'privilege-escalation'},
+                                                      {'kill_chain_name': 'mitre-attack',
+                                                       'phase_name': 'resource-development'}
+                                                      ],
                                 'modified': '2020-05-13T22:50:51.258Z',
                                 'name': 'ATTACK_PATTERN 1',
                                 'type': 'attack-pattern',
