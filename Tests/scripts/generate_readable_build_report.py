@@ -30,7 +30,7 @@ def get_file_data(file_path: str) -> dict:
         return {}
 
 
-def create_pr_comment(validate_pr_comment, unit_tests_pr_comment):
+def create_pr_comment(validate_pr_comment, unit_tests_pr_comment) -> str:
     comment = ''
     comment += validate_pr_comment
     comment += unit_tests_pr_comment
@@ -43,10 +43,19 @@ def convert_json_to_html(json_obj):
     return json_obj
 
 
-def build_summary_report(validate_summary, unit_tests_summary):
+def build_summary_report(validate_summary,
+                         unit_tests_summary,
+                         create_instances_summary,
+                         server_6_1_summary,
+                         server_6_2_summary,
+                         server_master_summary):
     json_summary = {
         'Validate': validate_summary,
         'Unit tests': unit_tests_summary,
+        'Create instances': create_instances_summary,
+        'server 6.1': server_6_1_summary,
+        'server 6.2': server_6_2_summary,
+        'server master': server_master_summary,
     }
     convert_json_to_html(json_summary)
 

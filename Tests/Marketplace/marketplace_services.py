@@ -110,7 +110,7 @@ class Pack(object):
         self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
         self._is_modified = None  # initialized in detect_modified function
         self._is_siem = False  # initialized in collect_content_items function
-
+        self.error = ""
         # Dependencies attributes - these contain only packs that are a part of this marketplace
         self._first_level_dependencies = {}  # initialized in set_pack_dependencies function
         self._all_levels_dependencies = []  # initialized in set_pack_dependencies function
