@@ -44,7 +44,7 @@ ATTACK_PATTERN = {
     'map_result': {
         'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
         'firstseenbysource': '2017-05-31T21:30:44.329Z',
-        'killchainphases': ['Defense Evasion', 'Privilege Escalation'],
+        'killchainphases': ['Defense Evasion', 'Privilege Escalation', 'resource-development'],
         'modified': "2020-05-13T22:50:51.258Z",
         'description': "Adversaries may abuse Windows Management Instrumentation (WMI) to achieve execution.",
         'operatingsystemrefs': ['Windows'],
