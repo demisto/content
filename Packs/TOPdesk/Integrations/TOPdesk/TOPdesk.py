@@ -143,15 +143,14 @@ class Client(BaseClient):
         result = []
         try:
             result = self._http_request(
-            method='GET',
-            url_suffix=url_suffix,
-            json_data=request_params
-        )
+                method='GET',
+                url_suffix=url_suffix,
+                json_data=request_params
+            )
         except Exception:
             demisto.debug('No items found')
             result = []
         return(result)
-
 
     def get_list(self, endpoint: str) -> List[Dict[str, Any]]:
         """Get list of objects using the API endpoint."""
@@ -1311,7 +1310,9 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
     ticket_id = args.get('id', '')
     demisto.debug(f'Getting update for remote {ticket_id}')
-    last_update = dateparser.parse(args.get('lastUpdate'), settings={'TIMEZONE': 'UTC'})
+    last_update = dateparser.parse(str(args.get('lastUpdate')), settings={'TIMEZONE': 'UTC'})  # type: ignore
+    assert last_update is not None
+
     demisto.debug(f'last_update is {last_update}')
 
     _args = {}
@@ -1325,7 +1326,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         demisto.debug('Ticket was found!')
 
     ticket = result[0]
-    ticket_last_update = dateparser.parse(ticket["modificationDate"], settings={'TIMEZONE': 'UTC'})
+    ticket_last_update = dateparser.parse(str(ticket["modificationDate"]), settings={'TIMEZONE': 'UTC'})  # type: ignore
+    assert ticket_last_update is not None
 
     if last_update > ticket_last_update:
         demisto.debug('Nothing new in the ticket')
@@ -1341,7 +1343,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     # Filter actions
     for action in actions:
         if 'Mirrored from Cortex XSOAR' not in action['memoText']:
-            entry_date = dateparser.parse(action["entryDate"], settings={'TIMEZONE': 'UTC'})
+            entry_date = dateparser.parse(action["entryDate"], settings={'TIMEZONE': 'UTC'})  # type: ignore
+            assert entry_date is not None
             if last_update > entry_date:
                 demisto.debug('skip entry')
             else:
@@ -1382,7 +1385,9 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
 def get_modified_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
-    query_date = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'}).strftime('%Y-%m-%dT%H:%M:%SZ')
+    query_date = dateparser.parse(remote_args.last_update,
+                                  settings={'TIMEZONE': 'UTC'}).strftime('%Y-%m-%dT%H:%M:%SZ')  # type: ignore
+    assert query_date is not None
 
     demisto.debug(f'Running get-modified-remote-data command. Last update is: {query_date}')
 
