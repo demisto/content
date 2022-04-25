@@ -1509,11 +1509,13 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
                 files_string = '\n'.join([files_string, packs_diff])
         else:
             # todo: if upload flow: take last upload commit
-            commit_string = tools.run_command("git log -n 2 --pretty='%H'")
-            logging.debug(f'commit string: {commit_string}')
-
-            commit_string = commit_string.replace("'", "")
-            last_commit, second_last_commit = commit_string.split()
+            if os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
+                last_commit, second_last_commit = ('', '')
+            else:
+                commit_string = tools.run_command("git log -n 2 --pretty='%H'")
+                logging.debug(f'commit string: {commit_string}')
+                commit_string = commit_string.replace("'", "")
+                last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
 
         logging.info(f'IFRA_ENV_TYPE = {os.environ.get("IFRA_ENV_TYPE")}')

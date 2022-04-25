@@ -28,7 +28,7 @@ GET_WORKFLOW_URL = 'https://api.github.com/repos/demisto/content-private/actions
 
 PRIVATE_REPO_WORKFLOW_ID_FILE = 'PRIVATE_REPO_WORKFLOW_ID.txt'
 
-GET_WORKFLOWS_MAX_RETRIES = 15
+GET_WORKFLOWS_MAX_RETRIES = 5
 
 GET_WORKFLOWS_TIMEOUT_THRESHOLD = int(60 * 60 * 1.5)  # 1h 30m
 
@@ -124,7 +124,6 @@ def main():
     if branch_has_private_build_infra_change(branch_name):
         # get the workflows ids before triggering the build
         pre_existing_workflow_ids = get_dispatch_workflows_ids(github_token, 'master')
-        logging.info(f'{pre_existing_workflow_ids=}')
 
         # trigger private build
         payload = {'event_type': f'Trigger private build from content/{branch_name}',
@@ -140,7 +139,6 @@ def main():
             logging.critical(f'Failed to trigger private repo build, request to '
                              f'{TRIGGER_BUILD_URL} failed with error: {str(res.content)}')
             sys.exit(1)
-        logging.info(f'{res.status_code=} json={res.json()}')
 
         workflow_ids_diff = []
         for i in range(GET_WORKFLOWS_MAX_RETRIES):
@@ -148,13 +146,11 @@ def main():
             time.sleep(5)
             workflow_ids_after_dispatch = get_dispatch_workflows_ids(github_token, 'master')
 
-            logging.info(f'{workflow_ids_after_dispatch=}')
             # compare with the first workflows list to get the current id
             workflow_ids_diff = [x for x in workflow_ids_after_dispatch if x not in pre_existing_workflow_ids]
             if workflow_ids_diff:
                 break
 
-        logging.info(f'{workflow_ids_diff=}')
         if len(workflow_ids_diff) == 1:
             workflow_id = workflow_ids_diff[0]
             logging.success(f'Private repo build triggered successfully, workflow id: {workflow_id}\n URL:'
