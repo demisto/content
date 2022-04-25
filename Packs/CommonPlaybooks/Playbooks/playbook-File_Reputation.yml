@@ -30,8 +30,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -660,
-          "y": -450
+          "x": -700,
+          "y": -600
         }
       }
     note: false
@@ -57,7 +57,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -660,
+          "x": -700,
           "y": 530
         }
       }
@@ -87,8 +87,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -660,
-          "y": -290
+          "x": -700,
+          "y": -440
         }
       }
     note: false
@@ -113,8 +113,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
-      - "15"
+      - "24"
     scriptarguments:
       file:
         complex:
@@ -123,8 +122,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -660,
-          "y": -160
+          "x": -700,
+          "y": -300
         }
       }
     note: false
@@ -153,8 +152,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": -290
+          "x": 670,
+          "y": -440
         }
       }
     note: false
@@ -240,8 +239,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": -160
+          "x": 670,
+          "y": -300
         }
       }
     note: false
@@ -283,8 +282,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": -5
+          "x": 670,
+          "y": -120
         }
       }
     note: false
@@ -329,8 +328,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 160
+          "x": 670,
+          "y": 90
         }
       }
     note: false
@@ -365,7 +364,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 460,
           "y": 350
         }
       }
@@ -460,7 +459,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1200,
+          "x": -1170,
           "y": 90
         }
       }
@@ -496,7 +495,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -990,
+          "x": -960,
           "y": 350
         }
       }
@@ -563,7 +562,7 @@ tasks:
       {
         "position": {
           "x": -2070,
-          "y": -290
+          "y": -440
         }
       }
     note: false
@@ -701,7 +700,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
+          "x": 880,
           "y": 350
         }
       }
@@ -737,7 +736,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1410,
+          "x": -1380,
           "y": 350
         }
       }
@@ -784,24 +783,66 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 5205d32a-2c3a-42ca-8586-04680de9bc5b
+    type: condition
+    task:
+      id: 5205d32a-2c3a-42ca-8586-04680de9bc5b
+      version: -1
+      name: Check for VT results
+      description: Checks whether there are results from VirusTotal.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "15"
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "12_13_Found Results": 0.43,
-      "12_21_#default#": 0.29,
-      "15_16_Trusted Signers": 0.56,
-      "15_22_#default#": 0.57,
-      "19_20_Trusted Signers": 0.57,
-      "19_23_#default#": 0.6,
-      "8_14_Benign": 0.6,
-      "8_17_#default#": 0.56
+      "12_13_Found Results": 0.64,
+      "12_21_#default#": 0.84,
+      "15_16_Trusted Signers": 0.64,
+      "15_22_#default#": 0.8,
+      "19_20_Trusted Signers": 0.66,
+      "19_23_#default#": 0.81,
+      "8_14_Benign": 0.78,
+      "8_17_#default#": 0.8
     },
     "paper": {
       "dimensions": {
-        "height": 1045,
-        "width": 3530,
+        "height": 1195,
+        "width": 3540,
         "x": -2280,
-        "y": -450
+        "y": -600
       }
     }
   }
@@ -823,7 +864,7 @@ inputs:
 - key: FileSHA256
   value: {}
   required: false
-  description: ""
+  description: The file SHA256.
   playbookInputQuery:
 outputs:
 - contextPath: VTFileVerdict
