@@ -285,8 +285,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bo
     demisto.debug(f'Loading file at Path: {path}')
     input_pdf = PdfFileReader(open(path, "rb"), strict=False)
     pages = min(input_pdf.numPages, MAXPAGES_LIMIT) if max_pages == "*" else min(int(max_pages), input_pdf.numPages)
-    # pages = min(max_pages, input_pdf.numPages)
-
+    demisto.log(f'pages is {pages}')
     with tempfile.TemporaryDirectory() as output_folder:
         demisto.debug('Converting PDF')
         convert_from_path(
@@ -306,7 +305,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bo
             if os.path.isfile(os.path.join(output_folder, page)) and 'converted_pdf_' in page:
                 images.append(Image.open(os.path.join(output_folder, page)))
         min_shape = min([(np.sum(page_.size), page_.size) for page_ in images])[1]  # get the minimal width
-
+        demisto.log(f'len images: {len(images)}')
         # Divide the list of images into separate lists with constant length (20),
         # due to the limitation of images in jpeg format (max size ~65,000 pixels).
         # Create a list of lists (length == 20) of images to combine each list (20 images) to one image
