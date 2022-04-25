@@ -8,7 +8,7 @@ import splunklib.results as results
 import json
 from datetime import timedelta, datetime
 import pytz
-import dateparser  # type: ignore
+# import dateparser  # type: ignore
 import urllib2
 import hashlib
 import ssl
@@ -547,9 +547,8 @@ class Notable:
             incident["severity"] = severity_to_level(notable_data['urgency'])
         if demisto.get(notable_data, 'rule_description'):
             incident["details"] = notable_data["rule_description"]
-        if demisto.get(notable_data, "owner"):
-            owner = mapper.get_xsoar_user_by_splunk(
-                notable_data["owner"]) if mapper.should_map else notable_data["owner"]
+        if demisto.get(notable_data, "owner") and mapper.should_map:
+            owner = mapper.get_xsoar_user_by_splunk(notable_data["owner"])
             if owner:
                 incident["owner"] = owner
         incident["occurred"] = occurred
