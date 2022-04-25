@@ -39,7 +39,7 @@ configuration:
   required: true
   type: 0
 - defaultvalue: 100
-  display: The maximum number of incidents per fetch. Default is 100 maximum is 1000.
+  display: The maximum number of incidents per fetch. Default is 100.
   name: max_fetch
   required: true
   type: 0
@@ -54,7 +54,7 @@ script:
     execution: false
     name: fetch-events
     arguments:
-    - description: The maximum number of incidents per fetch. Default is 100 maximum is 1000.
+    - description: The maximum number of incidents per fetch. Default is 100.
       isArray: true
       name: max_fetch
       required: false

@@ -2,7 +2,7 @@ from enum import Enum
 import urllib3
 from CommonServerPython import *
 import demistomock as demisto
-from pydantic import BaseConfig, BaseModel, AnyUrl, Json, validator, Field
+from pydantic import BaseConfig, BaseModel, AnyUrl, Json, Field
 import requests
 from requests.auth import HTTPBasicAuth
 import dateparser
@@ -186,7 +186,7 @@ def main():
         demisto.results('ok')
 
     else:
-        events = get_events.run(min(int(demisto_params.get('max_fetch', 100)), 1000))
+        events = get_events.run(int(demisto_params.get('max_fetch', 100)))
 
         if events:
             get_events.events_to_incidents(events)
