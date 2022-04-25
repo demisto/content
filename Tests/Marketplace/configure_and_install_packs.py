@@ -3,8 +3,8 @@ import sys
 
 from demisto_sdk.commands.common.tools import get_json
 
-from Tests.configure_and_test_integration_instances import set_marketplace_url, MARKET_PLACE_CONFIGURATION, \
-    Build, Server
+from Tests.configure_and_test_integration_instances import MARKET_PLACE_CONFIGURATION, \
+    XSOARBuild, XSOARServer
 from Tests.Marketplace.search_and_install_packs import install_all_content_packs_from_build_bucket
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
@@ -35,7 +35,7 @@ def main():
     options = options_handler()
 
     # Get the host by the ami env
-    server_to_port_mapping, server_version = Build.get_servers(ami_env=options.ami_env)
+    server_to_port_mapping, server_version = XSOARBuild.get_servers(ami_env=options.ami_env)
 
     logging.info('Retrieving the credentials for Cortex XSOAR server')
     secret_conf_file = get_json(file_path=options.secret)
@@ -46,11 +46,11 @@ def main():
 
     # Configure the Servers
     for server_url, port in server_to_port_mapping.items():
-        server = Server(internal_ip=server_url, port=port, user_name=username, password=password)
+        server = XSOARServer(internal_ip=server_url, port=port, user_name=username, password=password)
         logging.info(f'Adding Marketplace configuration to {server_url}')
         error_msg: str = 'Failed to set marketplace configuration.'
         server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
-        set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
+        XSOARBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
 
         # Acquire the server's host and install all content packs (one threaded execution)
         logging.info(f'Starting to install all content packs in {server_url}')
