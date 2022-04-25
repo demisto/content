@@ -67,16 +67,16 @@ configuration:
   name: file_tag
   required: false
   type: 0
-- additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.
+- additionalinfo: When selected, closing the TOPdesk ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   hidden: false
   name: close_incident
   required: false
   type: 8
-- additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
+- additionalinfo: When selected, closing the XSOAR incident is mirrored in TOPdesk.
   defaultvalue: 'false'
-  display: Close Mirrored ServiceNow Ticket
+  display: Close Mirrored TOPdesk Ticket
   hidden: false
   name: close_ticket
   required: false

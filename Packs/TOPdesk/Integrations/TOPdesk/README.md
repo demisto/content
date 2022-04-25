@@ -1745,9 +1745,9 @@ Get list of incidents.
 List all actions for specific incident
 
 #### Permissions:
-**Operator**:
+**Operator**: With read permission on 1st/2nd line incident; Category/Branch/Operator filters apply
 
-**Persons**:
+**Persons**: Accessible; Person visibility settings apply
 
 #### Base Command
 
@@ -1764,14 +1764,14 @@ List all actions for specific incident
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TOPdesk.Action.EntryDate | Date | |
-| TOPdesk.Action.Flag | Unknown | | 
-| TOPdesk.Action.Operator.Id | String | |
-| TOPdesk.Action.Operator.Name | String | |
-| TOPdesk.Action.InvisibleForCaller | Bool | |
-| TOPdesk.Action.Person | String | |
-| TOPdesk.Action.Id | String | |
-| TOPdesk.Action.Memotext | String | |
+| TOPdesk.Action.EntryDate | Date | Date of entry of the action |
+| TOPdesk.Action.Flag | Unknown | Unknown |
+| TOPdesk.Action.Operator.Id | String | Id of operator who created the action |
+| TOPdesk.Action.Operator.Name | String | Name of operator who created the action |
+| TOPdesk.Action.InvisibleForCaller | Bool | If action is visible for person |
+| TOPdesk.Action.Person | String | Person who creted the action, not operator |
+| TOPdesk.Action.Id | String | Id of the action |
+| TOPdesk.Action.Memotext | String | Content of the action |
 
 ### topdesk-incident-create
 ***
