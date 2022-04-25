@@ -509,9 +509,11 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
         intezer_result['redirect_chain'] = redirect_chain
 
     if 'indicators' in intezer_result:
-        indicators = {}
+        indicators: Dict[str, List[str]] = {}
         for indicator in intezer_result['indicators']:
-            indicators.setdefault(indicator["classification"], []).append(indicator["text"])
+            if indicator['classification'] not in indicators:
+                indicators['classification'] = []
+            indicators[indicator['classification']].append(indicator['text'])
         indicators_text = [
             get_indicator_text('malicious', indicators),
             get_indicator_text('suspicious', indicators),
@@ -535,7 +537,6 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
 
     md = tableToMarkdown('Analysis Report', intezer_result, url_keys=['analysis_url'])
     presentable_result += md + downloaded_file_presentable_result
-
 
     return CommandResults(
         readable_output=presentable_result,

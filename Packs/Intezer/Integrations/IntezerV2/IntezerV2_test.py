@@ -221,6 +221,7 @@ def test_check_analysis_status_and_get_results_url_command_single_success(reques
     url = 'https://intezer.com'
     analysis_id = 'analysis_id'
     _setup_access_token(requests_mock)
+    file_analysis_id = '8db9a401-a142-41be-9a31-8e5f3642db62'
     requests_mock.get(
         f'{full_url}/url/{analysis_id}',
         json={
@@ -232,7 +233,7 @@ def test_check_analysis_status_and_get_results_url_command_single_success(reques
                 },
                 'submitted_url': url,
                 'downloaded_file': {
-                    'analysis_id': '8db9a401-a142-41be-9a31-8e5f3642db62',
+                    'analysis_id': file_analysis_id,
                     'analysis_summary': {
                         'verdict_description':
                             "This file contains code from malicious s"
@@ -248,6 +249,19 @@ def test_check_analysis_status_and_get_results_url_command_single_success(reques
             'status': 'succeeded'
         }
     )
+
+    requests_mock.get(
+        f'{full_url}/analyses/{file_analysis_id}',
+        json={
+            'result': {
+                'analysis_id': file_analysis_id,
+                'sub_verdict': 'trusted',
+                'sha256': 'a' * 64,
+                'verdict': 'trusted',
+                'analysis_url': 'bla'
+            },
+            'status': 'succeeded'
+        })
 
     args = dict(analysis_id=analysis_id, analysis_type='Url')
 
