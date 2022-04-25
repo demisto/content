@@ -1524,23 +1524,23 @@ def test_owner_mapping_mechanism_splunk_to_xsoar(mocker, splunk_name, expected_x
 
 COMMAND_CASES = [
     ({'xsoar_username': 'test_xsoar'},  # case normal single username was provided
-     [{'Splunk User': u'test_splunk', 'Xsoar User': 'test_xsoar'}]),
+     [{'SplunkUser': u'test_splunk', 'XsoarUser': 'test_xsoar'}]),
     ({'xsoar_username': 'test_xsoar, Non existing'},  # case normal multiple usernames were provided
-     [{'Splunk User': u'test_splunk', 'Xsoar User': 'test_xsoar'},
-      {'Splunk User': 'unassigned', 'Xsoar User': 'Non existing'}]),
+     [{'SplunkUser': u'test_splunk', 'XsoarUser': 'test_xsoar'},
+      {'SplunkUser': 'unassigned', 'XsoarUser': 'Non existing'}]),
     ({'xsoar_username': 'Non Existing,'},  # case normal&empty multiple usernames were provided
-     [{'Splunk User': 'unassigned', 'Xsoar User': 'Non Existing'},
-      {'Splunk User': 'Could not map splunk user, Check logs for more info.', 'Xsoar User': ''}]),
+     [{'SplunkUser': 'unassigned', 'XsoarUser': 'Non Existing'},
+      {'SplunkUser': 'Could not map splunk user, Check logs for more info.', 'XsoarUser': ''}]),
     ({'xsoar_username': ['test_xsoar', 'Non existing']},  # case normal&missing multiple usernames were provided
-     [{'Splunk User': u'test_splunk', 'Xsoar User': 'test_xsoar'},
-      {'Splunk User': 'unassigned', 'Xsoar User': 'Non existing'}]),
+     [{'SplunkUser': u'test_splunk', 'XsoarUser': 'test_xsoar'},
+      {'SplunkUser': 'unassigned', 'XsoarUser': 'Non existing'}]),
     ({'xsoar_username': ['test_xsoar', 'Non existing'], 'map_missing': False},
      # case normal & missing multiple usernames were provided without missing's mapping activated
-     [{'Splunk User': u'test_splunk', 'Xsoar User': 'test_xsoar'},
-      {'Splunk User': 'Could not map splunk user, Check logs for more info.', 'Xsoar User': 'Non existing'}]),
+     [{'SplunkUser': u'test_splunk', 'XsoarUser': 'test_xsoar'},
+      {'SplunkUser': 'Could not map splunk user, Check logs for more info.', 'XsoarUser': 'Non existing'}]),
     ({'xsoar_username': 'Non Existing,', 'map_missing': False},  # case missing&empty multiple usernames were provided
-     [{'Splunk User': 'Could not map splunk user, Check logs for more info.', 'Xsoar User': 'Non Existing'},
-      {'Splunk User': 'Could not map splunk user, Check logs for more info.', 'Xsoar User': ''}]
+     [{'SplunkUser': 'Could not map splunk user, Check logs for more info.', 'XsoarUser': 'Non Existing'},
+      {'SplunkUser': 'Could not map splunk user, Check logs for more info.', 'XsoarUser': ''}]
      ),
 ]
 
