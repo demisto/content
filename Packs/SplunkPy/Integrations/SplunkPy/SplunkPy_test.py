@@ -129,7 +129,8 @@ SAMPLE_RESPONSE = [{
     'source': 'Endpoint - Recurring Malware Infection - Rule',
     'sourcetype': 'stash',
     'splunk_server': 'ip-172-31-44-193',
-    'urgency': 'low'
+    'urgency': 'low',
+    'owner': 'unassigned'
 }]
 
 EXPECTED = {
@@ -508,6 +509,18 @@ def test_get_kv_store_config(fields, expected_output, mocker):
 
 
 def test_fetch_incidents(mocker):
+    """
+    Given
+    - mocked incidents api response
+    - a mapper which should not map the user owner into the incident response
+
+    When
+    - executing the fetch incidents flow
+
+    Then
+    - make sure the incident response is valid.
+    - make sure that the owner is not part of the incident response
+    """
     from SplunkPy import UserMappingObject
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
@@ -524,6 +537,7 @@ def test_fetch_incidents(mocker):
     assert len(incidents) == 1
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
                                    "Recurring Malware Infection - Rule"
+    assert not incidents[0].get('owner')
 
 
 SPLUNK_RESULTS = [
@@ -556,6 +570,18 @@ def test_create_mapping_dict():
 
 
 def test_fetch_notables(mocker):
+    """
+    Given
+    - mocked incidents api response
+    - a mapper which should not map the user owner into the incident response
+
+    When
+    - executing the fetch notables flow
+
+    Then
+    - make sure the incident response is valid.
+    - make sure that the owner is not part of the incident response
+    """
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
@@ -571,6 +597,7 @@ def test_fetch_notables(mocker):
     assert len(incidents) == 1
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
                                    "Recurring Malware Infection - Rule"
+    assert not incidents[0].get('owner')
 
 
 """ ========== Enriching Fetch Mechanism Tests ========== """
@@ -1419,11 +1446,6 @@ OWNER_MAPPING = [{u'xsoar_user': u'test_xsoar', u'splunk_user': u'test_splunk', 
                  {u'xsoar_user': u'', u'splunk_user': u'test_not_full', u'wait': True}, ]
 
 MAPPER_CASES_XSOAR_TO_SPLUNK = [
-    # ('test_xsoar', 'test_splunk', None),
-    # ('test_not_full', 'unassigned',
-    #  "Splunk user matching Xsoar's  is empty. Fix the record in splunk_xsoar_users lookup."),
-    # ('unassigned', 'unassigned',
-    #  "Could not find splunk user matching xsoar's unassigned. Consider adding it to the splunk_xsoar_users lookup."),
     ('', 'unassigned',
      'Could not find splunk user matching xsoar\'s . Consider adding it to the splunk_xsoar_users lookup.'),
     ('not_in_table', 'unassigned',
@@ -1435,15 +1457,15 @@ MAPPER_CASES_XSOAR_TO_SPLUNK = [
 @pytest.mark.parametrize('xsoar_name, expected_splunk, expected_msg', MAPPER_CASES_XSOAR_TO_SPLUNK)
 def test_owner_mapping_mechanism_xsoar_to_splunk(mocker, xsoar_name, expected_splunk, expected_msg):
     """
-        Given:
-            - different xsoar values
+    Given:
+        - different xsoar values
 
-        When:
-            - fetching, or mirroring
+    When:
+        - fetching, or mirroring
 
-        Then:
-            - validates the splunk user is correct
-        """
+    Then:
+        - validates the splunk user is correct
+    """
 
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING[:-1])
@@ -1475,15 +1497,15 @@ MAPPER_CASES_SPLUNK_TO_XSOAR = [
 @pytest.mark.parametrize('splunk_name, expected_xsoar, expected_msg', MAPPER_CASES_SPLUNK_TO_XSOAR)
 def test_owner_mapping_mechanism_splunk_to_xsoar(mocker, splunk_name, expected_xsoar, expected_msg):
     """
-        Given:
-            - different xsoar values
+    Given:
+        - different xsoar values
 
-        When:
-            - fetching, or mirroring
+    When:
+        - fetching, or mirroring
 
-        Then:
-            - validates the splunk user is correct
-        """
+    Then:
+        - validates the splunk user is correct
+    """
 
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING)
