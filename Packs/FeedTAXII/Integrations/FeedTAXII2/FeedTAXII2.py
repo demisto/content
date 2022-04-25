@@ -65,44 +65,51 @@ def fetch_indicators_command(
     :param fetch_full_feed: when set to true, will ignore last run, and try to fetch the entire feed
     :return: indicators in cortex TIM format
     """
-    if initial_interval:
-        initial_interval, _ = parse_date_range(
-            initial_interval, date_format=TAXII_TIME_FORMAT
-        )
-
-    last_fetch_time = (
-        last_run_ctx.get(client.collection_to_fetch.id)
-        if client.collection_to_fetch
-        else None
-    )
-
-    if client.collection_to_fetch is None:
-        # fetch all collections
-        if client.collections is None:
-            raise DemistoException(ERR_NO_COLL)
-        indicators: list = []
-        for collection in client.collections:
-            client.collection_to_fetch = collection
-            added_after = get_added_after(
-                fetch_full_feed, initial_interval, last_run_ctx.get(collection.id)
+    try:
+        if initial_interval:
+            initial_interval, _ = parse_date_range(
+                initial_interval, date_format=TAXII_TIME_FORMAT
             )
-            fetched_iocs = client.build_iterator(limit, added_after=added_after)
-            indicators.extend(fetched_iocs)
-            last_run_ctx[collection.id] = client.last_fetched_indicator__modified
-            if limit >= 0:
-                limit -= len(fetched_iocs)
-                if limit <= 0:
-                    break
-    else:
-        # fetch from a single collection
-        added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
-        indicators = client.build_iterator(limit, added_after=added_after)
-        last_run_ctx[client.collection_to_fetch.id] = (
-            client.last_fetched_indicator__modified
-            if client.last_fetched_indicator__modified
-            else added_after
+
+        last_fetch_time = (
+            last_run_ctx.get(client.collection_to_fetch.id)
+            if client.collection_to_fetch
+            else None
         )
-    return indicators, last_run_ctx
+
+        if client.collection_to_fetch is None:
+            # fetch all collections
+            if client.collections is None:
+                raise DemistoException(ERR_NO_COLL)
+            indicators: list = []
+            for collection in client.collections:
+                client.collection_to_fetch = collection
+                added_after = get_added_after(
+                    fetch_full_feed, initial_interval, last_run_ctx.get(collection.id)
+                )
+                fetched_iocs = client.build_iterator(limit, added_after=added_after)
+                indicators.extend(fetched_iocs)
+                last_run_ctx[collection.id] = client.last_fetched_indicator__modified
+                if limit >= 0:
+                    limit -= len(fetched_iocs)
+                    if limit <= 0:
+                        break
+        else:
+            # fetch from a single collection
+            added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
+            indicators = client.build_iterator(limit, added_after=added_after)
+            last_run_ctx[client.collection_to_fetch.id] = (
+                client.last_fetched_indicator__modified
+                if client.last_fetched_indicator__modified
+                else added_after
+            )
+        return indicators, last_run_ctx
+    except Exception as e:
+        try:
+            demisto.error(f'TAXII 2 Server Error - \n\n{e.__context__.doc}\n\n')
+        except:
+            pass
+        raise e from None
 
 
 def get_added_after(
