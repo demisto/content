@@ -5106,7 +5106,7 @@
             ],
             "playbookID": "GoogleSheets-Test",
             "fromversion": "6.1.0"
-        },
+        }
     ],
     "skipped_tests": {
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
