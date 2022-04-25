@@ -227,31 +227,6 @@ It must be JSON.","error":"invalid version 1.2.0 for pack with ID AutoFocus (350
 """
 
 
-def test_find_malformed_pack_id():
-    """
-    Given
-    - Error message.
-    When
-    - Run find_malformed_pack_id command.
-    Then
-    - Ensure the pack ID is caught.
-   """
-    malformed_pack_id = script.find_malformed_pack_id(ERROR_MESSAGE)
-    assert 'AutoFocus' in malformed_pack_id
-
-
-def test_not_find_malformed_pack_id():
-    """
-    Given
-    - Error message without any pack ID.
-    When
-    - Run find_malformed_pack_id command.
-    Then
-    - Ensure an empty list is returned.
-    """
-    assert script.find_malformed_pack_id('This is an error message without pack ID') == []
-
-
 @timeout_decorator.timeout(3)
 def test_install_nightly_packs_endless_loop(mocker):
     """
@@ -353,7 +328,7 @@ class MockHttpRequest:
         return ''
 
 
-GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY ='{"id":"errInstallContentPack","status":400,"title":"Could not install content ' \
+GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY = '{"id":"errInstallContentPack","status":400,"title":"Could not install content ' \
                                      'pack","detail":"Could not install content pack","error":"Get' \
                                      ' \"https://storage.googleapis.com/marketplace-ci-build/content/builds' \
                                      '/master%2F2788053%2Fxsoar/content/packs/pack2/1.0.2/pack2.zip\": http2: ' \
@@ -362,9 +337,9 @@ MALFORMED_PACK_RESPONSE_BODY = '{"id":"errGetContentPack","status":400,"title":"
                                '"detail":"Failed getting content pack","error":"Item not found (8), pack id: ' \
                                '[pack1]","encrypted":false,"multires":null}'
 
-MALFORMED_PACK_RESPONSE_BODY_TWO_PACKS = '{"id":"errGetContentPack","status":400,"title":"Failed getting content pack",' \
-                               '"detail":"Failed getting content pack","error":"Item not found (8), pack id: ' \
-                               '[pack1, pack2]","encrypted":false,"multires":null}'
+MALFORMED_PACK_RESPONSE_BODY_TWO_PACKS = '{"id":"errGetContentPack","status":400,"title":"Failed getting ' \
+                                         'content pack", "detail":"Failed getting content pack","error":"Item not ' \
+                                         'found (8), pack id: [pack1, pack2]","encrypted":false,"multires":null}'
 
 
 class TestInstallPacks:
