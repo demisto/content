@@ -28,23 +28,26 @@ def get_duration_html():
         diff = now - parsed_first_date
 
         return f"""
-                    <div class="demisto-duration vertical-strech">
-                        <div class="duration-widget">
-                            <div class="grid-container">
-                                <div class="duration-icon"><i class="wait icon home"></i></div>
-                                <div class="days-number">{diff.days}</div>
-                                <div class="colon center aligned">:</div>
-                                <div class="hours-number">{(diff.seconds // 3600) % 24}</div>
-                                <div class="colon-2 center aligned">:</div>
-                                <div class="one column wide minutes-number">{(diff.seconds // 60) % 60}</div>
-                                <div class="days-label time-unit title-h5 opacity-description">DAYS</div>
-                                <div class="hours-label time-unit title-h5 opacity-description">HOURS</div>
-                                <div class="minutes-label time-unit title-h5 opacity-description">MIN</div>
-                            </div>
-                        </div>
-                    </div>
+                <table>
+                <tr>
+                <th style="font-size: 25px;">&#128345;</th>
+                <th style="font-size: 30px;">{diff.days}</th>
+                <th style="font-size: 30px;">:</th>
+                <th style="font-size: 30px;">{(diff.seconds // 3600) % 24}</th>
+                <th style="font-size: 30px;">:</th>
+                <th style="font-size: 30px;">{(diff.seconds // 60) % 60}</th>
+                </tr>
+                <tr>
+                <td style="font-size: 15px; text-align: center"></td>
+                <td style="font-size: 15px; text-align: center">Days</td>
+                <td style="font-size: 15px; text-align: center"></td>
+                <td style="font-size: 15px; text-align: center">Hours</td>
+                <td style="font-size: 15px; text-align: center"></td>
+                <td style="font-size: 15px; text-align: center">Minutes</td>
+                </tr>
+                </table>
+        """
 
-    """
     except FieldNotFound:
         return '<div style="text-align: center;">Duration is not available.</div>'
     except Exception as e:

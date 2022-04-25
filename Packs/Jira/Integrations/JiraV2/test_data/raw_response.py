@@ -229,8 +229,8 @@ GET_ISSUE_RESPONSE = {
         'security': None,
         'customfield_10007': None, 'customfield_10008': None, 'customfield_10009': None,
         'attachment': [
-            {'self': '',
-             'content': 'https://someurl.com',
+            {'self': 'https://localhost/rest/attachment/15451',
+             'content': 'https://localhost/rest/attachment/content/15451',
              'id': '15451',
              'filename': 'entry_artifact_5@317.json', 'author': {
                 'accountId': 'accountid',

@@ -100,7 +100,7 @@ tasks:
       version: -1
       name: Panorama - Create custom block rule
       description: Creates a policy rule.
-      script: '|||panorama-create-rule'
+      script: '|||pan-os-create-rule'
       type: regular
       iscommand: true
       brand: ""
@@ -191,7 +191,7 @@ tasks:
       version: -1
       name: PAN-OS - Create address object
       description: Creates an address object
-      script: '|||panorama-create-address'
+      script: '|||pan-os-create-address'
       type: regular
       iscommand: true
       brand: ""
@@ -438,7 +438,7 @@ tasks:
       version: -1
       name: List Panorama Services
       description: Returns a list of addresses.
-      script: '|||panorama-list-services'
+      script: '|||pan-os-list-services'
       type: regular
       iscommand: true
       brand: ""
@@ -583,7 +583,7 @@ tasks:
       version: -1
       name: Create Panorama Service
       description: Creates a service.
-      script: '|||panorama-create-service'
+      script: '|||pan-os-create-service'
       type: regular
       iscommand: true
       brand: ""
@@ -664,7 +664,7 @@ tasks:
       version: -1
       name: Panorama - Create custom block rule
       description: Creates a policy rule.
-      script: '|||panorama-create-rule'
+      script: '|||pan-os-create-rule'
       type: regular
       iscommand: true
       brand: ""

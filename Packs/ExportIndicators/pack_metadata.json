@@ -16,7 +16,6 @@
         "Export Indicators"
     ],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }

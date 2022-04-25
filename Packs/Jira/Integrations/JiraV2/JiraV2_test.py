@@ -425,7 +425,7 @@ def test_get_mapping_fields(mocker):
     ]
 
 
-def test_get_new_attachment_return_result(mocker):
+def test_get_new_attachment_return_result(requests_mock):
     """
     Given:
         - attachment related to an issue
@@ -441,17 +441,13 @@ def test_get_new_attachment_return_result(mocker):
     from test_data.expected_results import JIRA_ATTACHMENT
     from dateparser import parse
 
-    class file:
-        def __init__(self):
-            self.content = b"content"
-
-    file_content = file()
-    mocker.patch("JiraV2.jira_req", return_value=file_content)
+    requests_mock.get('https://localhost/rest/attachment/content/14848', json={})
+    requests_mock.get('https://localhost/rest/attachment/14848', json={'filename': 'download.png'})
     res = get_attachments(JIRA_ATTACHMENT, parse("1996-11-25T16:29:35.277764067Z"))
     assert res[0]["File"] == "download.png"
 
 
-def test_get_all_attachment_return_result(mocker):
+def test_get_all_attachment_return_result(requests_mock):
     """
     Given:
         - attachment related to an issue
@@ -467,18 +463,16 @@ def test_get_all_attachment_return_result(mocker):
     from test_data.expected_results import JIRA_ATTACHMENT_ALL
     from dateparser import parse
 
-    class file:
-        def __init__(self):
-            self.content = b"content"
+    for attachment in JIRA_ATTACHMENT_ALL:
+        requests_mock.get(attachment.get('content'), json={})
+        requests_mock.get(attachment.get('self'), json={'filename': attachment.get('filename')})
 
-    file_content = file()
-    mocker.patch("JiraV2.jira_req", return_value=file_content)
     res = get_attachments(
         JIRA_ATTACHMENT_ALL, parse("1996-11-25T16:29:35.277764067Z"), only_new=False
     )
-    assert res[0]["File"] == "download.png"
-    assert res[1]["File"] == "download1.png"
-    assert res[2]["File"] == "download2.png"
+    assert res[0]["File"] == "filename1"
+    assert res[1]["File"] == "filename2"
+    assert res[2]["File"] == "filename3"
 
 
 def test_get_new_attachment_without_return_new_attachment(mocker):
@@ -1180,11 +1174,18 @@ def test_get_issue_and_attachments(mocker, get_attachments_arg, should_get_attac
     """
     from test_data.raw_response import GET_ISSUE_RESPONSE
     from JiraV2 import get_issue
+    from requests import Response
 
     def jira_req_mock(method: str, resource_url: str, body: str = '', link: bool = False, resp_type: str = 'text',
                       headers: dict = None, files: dict = None):
 
-        if resp_type == 'json':
+        response = Response()
+        response.status_code = 200
+        response._content = b'{"filename": "filename"}'
+
+        if resource_url == 'rest/attachment/15451':
+            return response
+        elif resp_type == 'json':
             return GET_ISSUE_RESPONSE
         else:
             return type("RequestObjectNock", (OptionParser, object), {"content": 'Some zip data'})
@@ -1298,6 +1299,7 @@ def test_get_attachment_data_request(mocker, requests_mock):
 
     mocker.patch.object(demisto, "params", return_value=integration_params)
     requests_mock.get('https://localhost/rest/api/2/attachment/content/16188', json={})
+    requests_mock.get('https://localhost/rest/api/2/attachment/16188', json={'filename': 'filename'})
 
     assert get_attachment_data(ATTACHMENT), 'There was a request to the wrong url'
 
@@ -1314,14 +1316,113 @@ def test_get_attachment_data_url_processing(mocker, requests_mock):
     from JiraV2 import get_attachment_data
     from test_data.raw_response import ATTACHMENT
 
-    class file:
-        def __init__(self):
-            self.content = b"content"
-
-    file_content = file()
-    request = mocker.patch("JiraV2.jira_req", return_value=file_content)
+    request = requests_mock.get('https://localhost/rest/api/2/attachment/content/16188', json={})
+    requests_mock.get('https://localhost/rest/api/2/attachment/16188', json={'filename': 'filename'})
     mocker.patch.object(demisto, "params", return_value=integration_params)
     filename, _ = get_attachment_data(ATTACHMENT)
 
-    assert filename == '16188'
-    assert request.call_args[1].get("resource_url") == 'rest/api/2/attachment/content/16188'
+    assert filename == 'filename'
+    assert request.last_request.path == '/rest/api/2/attachment/content/16188'
+
+
+attribute_mock_response_email_exists = [
+    {'self': 'https://test.atlassian.net',
+     'accountId': 'TEST-ID',
+     'accountType': 'atlassian',
+     'emailAddress': 'some_email@mail.com',
+     'avatarUrls': {},
+     'displayName': 'some user',
+     'active': True,
+     'timeZone': 'Asia',
+     'locale': 'en_US'
+     }]
+
+attribute_mock_response_no_email = [
+    {'self': 'https://test.atlassian.net',
+     'accountId': 'TEST-ID',
+     'accountType': 'atlassian',
+     'emailAddress': '',
+     'avatarUrls': {},
+     'displayName': 'some user',
+     'active': True,
+     'timeZone': 'Asia',
+     'locale': 'en_US'
+     }]
+
+attribute_mock_response_no_email_multiple = [
+    {'self': 'https://test1.atlassian.net',
+     'accountId': 'TEST-ID1',
+     'accountType': 'atlassian',
+     'emailAddress': '',
+     'avatarUrls': {},
+     'displayName': 'some user1',
+     'active': True,
+     'timeZone': 'Asia',
+     'locale': 'en_US'
+     },
+    {'self': 'https://test2.atlassian.net',
+     'accountId': 'TEST-ID2',
+     'accountType': 'atlassian',
+     'emailAddress': '',
+     'avatarUrls': {},
+     'displayName': 'some user2',
+     'active': True,
+     'timeZone': 'Asia',
+     'locale': 'en_US'
+     }
+]
+
+
+@pytest.mark.parametrize('mock_response, expected_output', [(attribute_mock_response_email_exists, 'TEST-ID'),
+                                                            (attribute_mock_response_no_email, 'TEST-ID'),
+                                                            (attribute_mock_response_no_email_multiple,
+                                                             'Multiple account IDs found')])
+def test_get_account_id_from_attribute_valid_attribute_match(mocker, mock_response, expected_output):
+    """
+    Given:
+        - An email attribute.
+    When
+        - Running the get_account_id_from_attribute command when:
+         1. email matches the email in the response.
+         2. email in the response is hidden but there is only one option.
+         3. email in the response is hidden and there are multiple options.
+    Then
+        - Ensure the attribute was found and the output is correct.
+    """
+    from JiraV2 import get_account_id_from_attribute
+
+    mocker.patch('JiraV2.search_user', return_value=mock_response)
+    mocker.patch.object(demisto, "params", return_value=integration_params)
+    res = get_account_id_from_attribute(attribute='some_email@mail.com')
+    if len(mock_response) == 2:  # case number three
+        assert expected_output in res
+    else:
+        assert expected_output == res.outputs['AccountID']
+
+
+def test_get_account_id_from_attribute_attribute_do_not_match(mocker):
+    """
+    Given:
+        - An email attribute.
+    When
+        - Running the get_account_id_from_attribute command.
+    Then
+        - Ensure the attribute was found but no match for the email.
+    """
+    from JiraV2 import get_account_id_from_attribute
+    mock_response = [
+        {'self': 'https://test.atlassian.net',
+         'accountId': 'TEST-ID',
+         'accountType': 'atlassian',
+         'emailAddress': '',
+         'avatarUrls': {},
+         'displayName': 'some user',
+         'active': True,
+         'timeZone': 'Asia',
+         'locale': 'en_US'
+         }]
+    mocker.patch('JiraV2.search_user', return_value=mock_response)
+    mocker.patch.object(demisto, "params", return_value=integration_params)
+    res = get_account_id_from_attribute(attribute='some_email@mail.com')
+
+    assert res.outputs['AccountID'] == 'TEST-ID'

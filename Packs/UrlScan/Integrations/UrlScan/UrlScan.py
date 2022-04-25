@@ -1,14 +1,14 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 '''IMPORTS'''
-import time
-import requests
 import collections
 import json as JSON
-from urlparse import urlparse
+import time
+
+import requests
 from requests.utils import quote  # type: ignore
+from urlparse import urlparse
 
 """ POLLING FUNCTIONS"""
 try:
@@ -20,8 +20,8 @@ except ImportError:
 requests.packages.urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
-BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist, ' \
-                                'we will not scan it.'
+BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
+                                'For your own safety we did not perform this scan...'
 BRAND = 'urlscan.io'
 
 """ RELATIONSHIP TYPE"""
@@ -42,10 +42,11 @@ RELATIONSHIP_TYPE = {
 
 
 class Client:
-    def __init__(self, api_key='', threshold=None, use_ssl=False, reliability=DBotScoreReliability.C):
+    def __init__(self, api_key='', scan_visibility='public', threshold=None, use_ssl=False, reliability=DBotScoreReliability.C):
         self.base_url = 'https://urlscan.io/api/v1/'
         self.api_key = api_key
         self.threshold = threshold
+        self.scan_visibility = scan_visibility
         self.use_ssl = use_ssl
         self.reliability = reliability
 
@@ -185,12 +186,15 @@ def poll(target, step, args=(), kwargs=None, timeout=60,
 
 def urlscan_submit_url(client):
     submission_dict = {}
-    if demisto.args().get('public'):
+    if demisto.args().get('scan_visibility'):
+        submission_dict['visibility'] = demisto.args().get('scan_visibility')
+    elif client.scan_visibility:
+        submission_dict['visibility'] = client.scan_visibility
+    elif demisto.args().get('public'):
         if demisto.args().get('public') == 'public':
             submission_dict['visibility'] = 'public'
-    else:
-        if demisto.params().get('is_public') is True:
-            submission_dict['visibility'] = 'public'
+    elif demisto.params().get('is_public') is True:
+        submission_dict['visibility'] = 'public'
 
     submission_dict['url'] = demisto.args().get('url')
 
@@ -501,7 +505,12 @@ def urlscan_submit_command(client):
 
 
 def urlscan_search(client, search_type, query):
-    r = http_request(client, 'GET', 'search/?q=' + search_type + ':"' + query + '"')
+
+    if search_type == 'advanced':
+        r = http_request(client, 'GET', 'search/?q=' + query)
+    else:
+        r = http_request(client, 'GET', 'search/?q=' + search_type + ':"' + query + '"')
+
     return r
 
 
@@ -526,16 +535,18 @@ def urlscan_search_command(client):
     LIMIT = int(demisto.args().get('limit'))
     HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date']
     raw_query = demisto.args().get('searchParameter', '')
-    if is_ip_valid(raw_query, accept_v6_ips=True):
-        search_type = 'ip'
-    else:
-        # Parsing query to see if it's a url
-        parsed = urlparse(raw_query)
-        # Checks to see if Netloc is present. If it's not a url, Netloc will not exist
-        if parsed[1] == '' and len(raw_query) == 64:
-            search_type = 'hash'
+    search_type = demisto.args().get('searchType', '')
+    if not search_type:
+        if is_ip_valid(raw_query, accept_v6_ips=True):
+            search_type = 'ip'
         else:
-            search_type = 'page.url'
+            # Parsing query to see if it's a url
+            parsed = urlparse(raw_query)
+            # Checks to see if Netloc is present. If it's not a url, Netloc will not exist
+            if parsed[1] == '' and len(raw_query) == 64:
+                search_type = 'hash'
+            else:
+                search_type = 'page.url'
 
     # Making the query string safe for Elastic Search
     query = quote(raw_query, safe='')
@@ -685,7 +696,8 @@ def format_http_transaction_list(client):
 def main():
     params = demisto.params()
 
-    api_key = params.get('apikey')
+    api_key = params.get('apikey') or (params.get('creds_apikey') or {}).get('password', '')
+    scan_visibility = params.get('scan_visibility')
     threshold = int(params.get('url_threshold', '1'))
     use_ssl = not params.get('insecure', False)
     reliability = params.get('integrationReliability')
@@ -698,6 +710,7 @@ def main():
 
     client = Client(
         api_key=api_key,
+        scan_visibility=scan_visibility,
         threshold=threshold,
         use_ssl=use_ssl,
         reliability=reliability
@@ -726,7 +739,7 @@ def main():
     except Exception as e:
         LOG(e)
         LOG.print_log(False)
-        return_error(e.message)
+        return_error(e)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -1,0 +1,102 @@
+commonfields:
+  id: Pipl
+  version: -1
+name: Pipl
+fromversion: 5.0.0
+display: Pipl
+category: Data Enrichment & Threat Intelligence
+description: Get contact, social, and professional information about people
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  defaultvalue: https://api.pipl.com/search/
+  type: 0
+  required: false
+- display: API Key
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: pipl-search
+    arguments:
+    - name: email
+      description: Email address to search
+    - name: phone
+      description: Home/work/mobile phone number to search
+    - name: username
+      description: Username/screen-name to search. Minimum 4 characters
+    - name: first-name
+      description: First name to search. Minimum 2 characters
+    - name: last-name
+      description: Last name to search. Minimum 2 characters
+    - name: middle-name
+      description: Middle name or middle initial to search
+    - name: raw-name
+      description: Full name to search. Use this parameter if the accurate name parts
+        (first/middle/last) are not available, this parameter will only be used in
+        absence of first-name and last-name
+    - name: country
+      description: A two-letter country code to searchs
+    - name: state
+      description: A United States, Canada, Great Britain or Australia state code.
+        If a US state is provided and no country specified, we’ll assume the country
+        to be US.
+    - name: city
+      description: City to search
+    - name: zipcode
+      description: ZIP code to search
+    - name: raw-address
+      description: Full address to search
+    - name: age
+      description: Age to search in String, an exact (YY) or approximate (YY-YY) age
+    - name: columns
+      description: Order of columns to be displayed in results (comma seperated list
+        of values)
+    outputs:
+    - contextPath: Account.Email.Address
+      description: Email addresses
+    - contextPath: Account.IDs
+      description: User IDs
+    - contextPath: Account.Addresses
+      description: Addresses (geographic)
+    - contextPath: Account.Names
+      description: Full names
+    - contextPath: Account.Phones
+      description: Phone numbers
+    - contextPath: Account.Usernames
+      description: Online platforms usernames
+    description: Search for required query
+  - name: email
+    arguments:
+    - name: email
+      required: true
+      description: Email address to search for
+    outputs:
+    - contextPath: Account.Email.Address
+      description: Email addresses
+    - contextPath: Account.IDs
+      description: User IDs
+    - contextPath: Account.Addresses
+      description: Addresses (geographic)
+    - contextPath: Account.Names
+      description: Full names
+    - contextPath: Account.Phones
+      description: Phone numbers
+    - contextPath: Account.Usernames
+      description: Online platforms usernames
+    description: Searches for information regarding given email address
+  runonce: false

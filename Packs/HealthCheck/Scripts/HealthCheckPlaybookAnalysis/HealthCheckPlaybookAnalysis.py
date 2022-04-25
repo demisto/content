@@ -2,6 +2,41 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+def findTopUsedPLaybooks(accountName):
+    stats = demisto.executeCommand(
+        "demisto-api-post",
+        {
+            "uri": f"{accountName}statistics/widgets/query",
+            "body": {
+                "size": 3,
+                "dataType": "incidents",
+                "query": "",
+                "dateRange": {
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    }
+                },
+                "widgetType": "pie",
+                "params": {
+                    "groupBy": [
+                        "playbookId"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+            },
+        })
+    res = stats[0]["Contents"]["response"]
+    topUsed = []
+    for playbook in res:
+        pb = {}
+        pb['playbookname'] = playbook['name']
+        topUsed.append(pb)
+
+    # print(topUsed)
+    demisto.executeCommand('setIncident', {"healthchecktopusedplaybooks": topUsed})
+
+
 args = demisto.args()
 
 DESCRIPTION = [
@@ -89,7 +124,7 @@ if customPlaybooks is not None:
                         "description": f"{DESCRIPTION[4]}".format(customPlaybook["name"]),
                         "resolution": f"{RESOLUTION[4]}"
                         })
-
+findTopUsedPLaybooks(account_name)
 results = CommandResults(
     readable_output="HealthCheckPlaybookAnalysis Done",
     outputs_prefix="HealthCheck.ActionableItems",

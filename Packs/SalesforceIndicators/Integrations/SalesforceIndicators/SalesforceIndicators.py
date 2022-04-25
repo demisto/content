@@ -96,8 +96,9 @@ def fetch_indicators_command(client, params, manual_run=False):
     indicators_unparsed = list()
     indicators = list()
     now = datetime.utcnow()
-    date_filter = dateparser.parse(f"{client.history} days ago", settings={
-                                   'RELATIVE_BASE': now}).strftime("%Y-%m-%dT%H:%M:%S.000+0000")
+    history_date = dateparser.parse(f"{client.history} days ago", settings={'RELATIVE_BASE': now})
+    assert history_date is not None, f'could not parse {client.history} days ago'
+    date_filter = history_date.strftime("%Y-%m-%dT%H:%M:%S.000+0000")
     integration_context = get_integration_context()
     if integration_context:
         last_run = integration_context.get('lastRun')

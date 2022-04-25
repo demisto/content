@@ -1,0 +1,692 @@
+commonfields:
+  id: Nessus
+  version: -1
+name: Nessus
+display: Nessus
+category: Vulnerability Management
+description: Vulnerability scanner for auditors and security analysts by Tenable Network
+  Security
+configuration:
+- display: 'Server Url (format : https://127.0.0.1:8834)'
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Password
+  name: password
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: nessus-list-scans
+    arguments:
+    - name: foldersHeaders
+      description: The table's headers to be shown by order
+    - name: scansHeaders
+      description: The table's headers to be shown by order
+    outputs:
+    - contextPath: NessusScan.UUID
+      description: The uuid for the scan.
+    - contextPath: NessusScan.Name
+      description: The name of the scan.
+    - contextPath: NessusScan.Status
+      description: The status of the scan.
+    - contextPath: NessusScan.FolderID
+      description: The unique id of the folder housing the scan.
+    - contextPath: NessusScan.ID
+      description: The unique id of the scan.
+    - contextPath: NessusScan.UserPermissions
+      description: The sharing permissions for the scan.
+    - contextPath: NessusScan.CreationDate
+      description: The creation date for the scan in unixtime.
+    - contextPath: NessusScan.LastModificationDate
+      description: The last modification date for the scan in unixtime.
+    - contextPath: NessusScan.Type
+      description: The type of scan (local, remote, or agent).
+    - contextPath: NessusScan.Policy
+      description: The policy if the scan.
+    - contextPath: NessusFolder.UnreadCount
+      description: The number of unread scans in the folder.
+    - contextPath: NessusFolder.Custom
+      description: The custom status of the folder (1 or 0).
+    - contextPath: NessusFolder.DefaultTag
+      description: Whether or not the folder is the default (1 or 0).
+    - contextPath: NessusFolder.Type
+      description: The type of the folder (main, trash, custom).
+    - contextPath: NessusFolder.Name
+      description: The name of the folder.
+    - contextPath: NessusFolder.ID
+      description: The unique id of the folder.
+    description: Returns the scan list
+  - name: scans-list
+    deprecated: true
+    arguments:
+    - name: foldersHeaders
+      description: The table's headers to be shown by order
+    - name: scansHeaders
+      description: The table's headers to be shown by order
+    outputs:
+    - contextPath: NessusScan.UUID
+      description: The uuid for the scan.
+    - contextPath: NessusScan.Name
+      description: The name of the scan.
+    - contextPath: NessusScan.Status
+      description: The status of the scan.
+    - contextPath: NessusScan.FolderID
+      description: The unique id of the folder housing the scan.
+    - contextPath: NessusScan.ID
+      description: The unique id of the scan.
+    - contextPath: NessusScan.UserPermissions
+      description: The sharing permissions for the scan.
+    - contextPath: NessusScan.CreationDate
+      description: The creation date for the scan in unixtime.
+    - contextPath: NessusScan.LastModificationDate
+      description: The last modification date for the scan in unixtime.
+    - contextPath: NessusScan.Type
+      description: The type of scan (local, remote, or agent).
+    - contextPath: NessusScan.Policy
+      description: The policy if the scan.
+    - contextPath: NessusFolder.UnreadCount
+      description: The number of unread scans in the folder.
+    - contextPath: NessusFolder.Custom
+      description: The custom status of the folder (1 or 0).
+    - contextPath: NessusFolder.DefaultTag
+      description: Whether or not the folder is the default (1 or 0).
+    - contextPath: NessusFolder.Type
+      description: The type of the folder (main, trash, custom).
+    - contextPath: NessusFolder.Name
+      description: The name of the folder.
+    - contextPath: NessusFolder.ID
+      description: The unique id of the folder.
+    description: Returns the scan list
+  - name: nessus-launch-scan
+    arguments:
+    - name: scanId
+      required: true
+      default: true
+      description: The Scan ID (use command list-scans to get possible scan ID's)
+    - name: targets
+      description: If specified, these targets will be scanned instead of the default.
+        Value can be single host or of comma separated targets.
+    outputs:
+    - contextPath: ScanUUID
+      description: The uuid of the launched scan.
+    description: Launches a new vulnerability scan
+  - name: scan-launch
+    deprecated: true
+    arguments:
+    - name: scanId
+      required: true
+      default: true
+      description: The Scan ID (use command list-scans to get possible scan ID's)
+    - name: targets
+      description: If specified, these targets will be scanned instead of the default.
+        Value can be single host or of comma separated targets.
+    outputs:
+    - contextPath: ScanUUID
+      description: The uuid of the launched scan.
+    description: Launches a new vulnerability scan
+  - name: nessus-scan-details
+    arguments:
+    - name: scanId
+      required: true
+      default: true
+      description: The Scan ID (use command list-scans to get possible scan ID's)
+    - name: historyId
+      description: The history_id of the historical data that should be returned.
+    - name: tables
+      description: The tables to be shown by order
+    outputs:
+    - contextPath: NessusScan.UUID
+      description: The uuid for the scan.
+    - contextPath: NessusScan.Name
+      description: The name of the scan.
+    - contextPath: NessusScan.Status
+      description: The status of the scan.
+    - contextPath: NessusScan.FolderID
+      description: The unique id of the folder housing the scan.
+    - contextPath: NessusScan.ID
+      description: The unique id of the scan.
+    - contextPath: NessusScan.UserPermissions
+      description: The sharing permissions for the scan.
+    - contextPath: NessusScan.CreationDate
+      description: The creation date for the scan in unixtime.
+    - contextPath: NessusScan.LastModificationDate
+      description: The last modification date for the scan in unixtime.
+    - contextPath: NessusScan.Type
+      description: The type of scan (local, remote, or agent).
+    - contextPath: NessusScan.Policy
+      description: The policy if the scan.
+    - contextPath: NessusScan.Endpoint.ID
+      description: The unique id of the host.
+    - contextPath: NessusScan.Endpoint.Index
+      description: The index for the host.
+    - contextPath: NessusScan.Endpoint.Hostname
+      description: The overall severity rating of the host.
+    - contextPath: NessusScan.Endpoint.Progress
+      description: The scan progress of the host.
+    - contextPath: NessusScan.Endpoint.Critical
+      description: The percentage of critical findings on the host.
+    - contextPath: NessusScan.Endpoint.High
+      description: The percentage of high findings on the host.
+    - contextPath: NessusScan.Endpoint.Medium
+      description: The percentage of medium findings on the host.
+    - contextPath: NessusScan.Endpoint.Low
+      description: The percentage of low findings on the host.
+    - contextPath: NessusScan.Endpoint.Info
+      description: The percentage of info findings on the host.
+    - contextPath: NessusScan.Endpoint.TotalChecksConsidered
+      description: The total number of checks considered on the host.
+    - contextPath: NessusScan.Endpoint.NumChecksConsidered
+      description: The number of checks considered on the host.
+    - contextPath: NessusScan.Endpoint.ScanProgressTotal
+      description: The total scan progress for the host.
+    - contextPath: NessusScan.Endpoint.ScanProgressCurrent
+      description: The current scan progress for the host.
+    - contextPath: NessusScan.Endpoint.Score
+      description: The overall score for the host.
+    - contextPath: NessusScan.Vulnerability.PluginID
+      description: The unique id of the vulnerability plugin.
+    - contextPath: NessusScan.Vulnerability.PluginName
+      description: The name of the vulnerability plugin.
+    - contextPath: NessusScan.Vulnerability.PluginFamily
+      description: The parent family of the vulnerability plugin.
+    - contextPath: NessusScan.Vulnerability.Count
+      description: The number of vulnerabilities found.
+    - contextPath: NessusScan.Vulnerability.VulnerabilityIndex
+      description: The index of the vulnerability plugin.
+    - contextPath: NessusScan.Vulnerability.SeverityIndex
+      description: The severity index order of the plugin.
+    - contextPath: NessusScan.Note.Title
+      description: The title of the note.
+    - contextPath: NessusScan.Note.Message
+      description: The specific message of the note.
+    - contextPath: NessusScan.Note.Sevirity
+      description: The severity of the note.
+    - contextPath: NessusScan.Filter.Name
+      description: The short name of the filter.
+    - contextPath: NessusScan.Filter.ReadableName
+      description: The long name of the filter.
+    - contextPath: NessusScan.Filter.Operators
+      description: The comparison options for the filter.
+    - contextPath: NessusScan.Filter.Type
+      description: The input type for the filter.
+    - contextPath: NessusScan.Filter.ReadableRegest
+      description: The input placeholder for the filter.
+    - contextPath: NessusScan.Filter.Regex
+      description: The input regex values for the filter.
+    - contextPath: NessusScan.Filter.Options
+      description: Other input options for the filter.
+    - contextPath: NessusScan.History.ID
+      description: The unique id of the historical data.
+    - contextPath: NessusScan.History.UUID
+      description: The uuid of the historical data.
+    - contextPath: NessusScan.History.OwnerID
+      description: The unique id of the owner of the scan.
+    - contextPath: NessusScan.History.Status
+      description: The status of the historical data.
+    - contextPath: NessusScan.History.CreationDate
+      description: The creation date for the historical data in unixtime.
+    - contextPath: NessusScan.History.LastModification_date
+      description: The last modification date for the historical data in unixtime.
+    - contextPath: NessusScan.Remediations.Remediations
+      description: Remedy to vulnerabilites found during the scan.
+    - contextPath: NessusScan.Remediations.NumHosts
+      description: Number of hosts of Remediations
+    - contextPath: NessusScan.Remediations.NumCVEs
+      description: Number of CVE's
+    - contextPath: NessusScan.Remediations.NumImpactedHosts
+      description: Number of impacted hosts
+    - contextPath: NessusScan.Remediations.NumRemediatedCVEs
+      description: Number of Remediated CVE's
+    description: Returns details for the given scan
+  - name: scan-details
+    deprecated: true
+    arguments:
+    - name: scanId
+      required: true
+      default: true
+      description: The Scan ID (use command list-scans to get possible scan ID's)
+    - name: historyId
+      description: The history_id of the historical data that should be returned.
+    - name: tables
+      description: The tables to be shown by order
+    outputs:
+    - contextPath: NessusScan.UUID
+      description: The uuid for the scan.
+    - contextPath: NessusScan.Name
+      description: The name of the scan.
+    - contextPath: NessusScan.Status
+      description: The status of the scan.
+    - contextPath: NessusScan.FolderID
+      description: The unique id of the folder housing the scan.
+    - contextPath: NessusScan.ID
+      description: The unique id of the scan.
+    - contextPath: NessusScan.UserPermissions
+      description: The sharing permissions for the scan.
+    - contextPath: NessusScan.CreationDate
+      description: The creation date for the scan in unixtime.
+    - contextPath: NessusScan.LastModificationDate
+      description: The last modification date for the scan in unixtime.
+    - contextPath: NessusScan.Type
+      description: The type of scan (local, remote, or agent).
+    - contextPath: NessusScan.Policy
+      description: The policy if the scan.
+    - contextPath: Endpoint.ID
+      description: The unique id of the host.
+    - contextPath: Endpoint.Index
+      description: The index for the host.
+    - contextPath: Endpoint.Hostname
+      description: The overall severity rating of the host.
+    - contextPath: Endpoint.Progress
+      description: The scan progress of the host.
+    - contextPath: Endpoint.Critical
+      description: The percentage of critical findings on the host.
+    - contextPath: Endpoint.High
+      description: The percentage of high findings on the host.
+    - contextPath: Endpoint.Medium
+      description: The percentage of medium findings on the host.
+    - contextPath: Endpoint.Low
+      description: The percentage of low findings on the host.
+    - contextPath: Endpoint.Info
+      description: The percentage of info findings on the host.
+    - contextPath: Endpoint.TotalChecksConsidered
+      description: The total number of checks considered on the host.
+    - contextPath: Endpoint.NumChecksConsidered
+      description: The number of checks considered on the host.
+    - contextPath: Endpoint.ScanProgressTotal
+      description: The total scan progress for the host.
+    - contextPath: Endpoint.ScanProgressCurrent
+      description: The current scan progress for the host.
+    - contextPath: Endpoint.Score
+      description: The overall score for the host.
+    - contextPath: Vulnerability.PluginID
+      description: The unique id of the vulnerability plugin.
+    - contextPath: Vulnerability.PluginName
+      description: The name of the vulnerability plugin.
+    - contextPath: Vulnerability.PluginFamily
+      description: The parent family of the vulnerability plugin.
+    - contextPath: Vulnerability.Count
+      description: The number of vulnerabilities found.
+    - contextPath: Vulnerability.VulnerabilityIndex
+      description: The index of the vulnerability plugin.
+    - contextPath: Vulnerability.SeverityIndex
+      description: The severity index order of the plugin.
+    - contextPath: Note.Title
+      description: The title of the note.
+    - contextPath: Note.Message
+      description: The specific message of the note.
+    - contextPath: Note.Sevirity
+      description: The severity of the note.
+    - contextPath: Filter.Name
+      description: The short name of the filter.
+    - contextPath: Filter.ReadableName
+      description: The long name of the filter.
+    - contextPath: Filter.Operators
+      description: The comparison options for the filter.
+    - contextPath: Filter.Type
+      description: The input type for the filter.
+    - contextPath: Filter.ReadableRegest
+      description: The input placeholder for the filter.
+    - contextPath: Filter.Regex
+      description: The input regex values for the filter.
+    - contextPath: Filter.Options
+      description: Other input options for the filter.
+    - contextPath: History.ID
+      description: The unique id of the historical data.
+    - contextPath: History.UUID
+      description: The uuid of the historical data.
+    - contextPath: History.OwnerID
+      description: The unique id of the owner of the scan.
+    - contextPath: History.Status
+      description: The status of the historical data.
+    - contextPath: History.CreationDate
+      description: The creation date for the historical data in unixtime.
+    - contextPath: History.LastModification_date
+      description: The last modification date for the historical data in unixtime.
+    - contextPath: Remediations.Remediations
+      description: Remedy to vulnerabilites found during the scan.
+    - contextPath: Remediations.NumHosts
+      description: Number of hosts of Remediations
+    - contextPath: Remediations.NumCVEs
+      description: Number of CVE's
+    - contextPath: Remediations.NumImpactedHosts
+      description: Number of impacted hosts
+    - contextPath: Remediations.NumRemediatedCVEs
+      description: Number of Remediated CVE's
+    description: Returns details for the given scan
+  - name: scan-host-details
+    deprecated: true
+    arguments:
+    - name: scanId
+      required: true
+      default: true
+      description: The Scan ID (use command list-scans to get possible scan ID's)
+    - name: historyId
+      description: The history_id of the historical data that should be returned.
+    - name: hostId
+      required: true
+      description: The id of the host to retrieve.
+    outputs:
+    - contextPath: Endpoint.ID
+      description: The unique id of the host.
+    - contextPath: Endpoint.Index
+      description: The index for the host.
+    - contextPath: Endpoint.Hostname
+      description: The overall severity rating of the host.
+    - contextPath: Endpoint.Progress
+      description: The scan progress of the host.
+    - contextPath: Endpoint.Critical
+      description: The percentage of critical findings on the host.
+    - contextPath: Endpoint.High
+      description: The percentage of high findings on the host.
+    - contextPath: Endpoint.Medium
+      description: The percentage of medium findings on the host.
+    - contextPath: Endpoint.Low
+      description: The percentage of low findings on the host.
+    - contextPath: Endpoint.Info
+      description: The percentage of info findings on the host.
+    - contextPath: Endpoint.TotalChecksConsidered
+      description: The total number of checks considered on the host.
+    - contextPath: Endpoint.NumChecksConsidered
+      description: The number of checks considered on the host.
+    - contextPath: Endpoint.ScanProgressTotal
+      description: The total scan progress for the host.
+    - contextPath: Endpoint.ScanProgressCurrent
+      description: The current scan progress for the host.
+    - contextPath: Endpoint.Score
+      description: The overall score for the host.
+    description: Returns details for the given host.
+  - name: nessus-scan-host-details
+    arguments:
+    - name: scanId
+      required: true
+      default: true
+      description: The Scan ID (use command list-scans to get possible scan ID's)
+    - name: historyId
+      description: The history_id of the historical data that should be returned.
+    - name: hostId
+      required: true
+      description: The id of the host to retrieve.
+    outputs:
+    - contextPath: Endpoint.ID
+      description: The unique id of the host.
+    - contextPath: Endpoint.Index
+      description: The index for the host.
+    - contextPath: Endpoint.Hostname
+      description: The overall severity rating of the host.
+    - contextPath: Endpoint.Progress
+      description: The scan progress of the host.
+    - contextPath: Endpoint.Critical
+      description: The percentage of critical findings on the host.
+    - contextPath: Endpoint.High
+      description: The percentage of high findings on the host.
+    - contextPath: Endpoint.Medium
+      description: The percentage of medium findings on the host.
+    - contextPath: Endpoint.Low
+      description: The percentage of low findings on the host.
+    - contextPath: Endpoint.Info
+      description: The percentage of info findings on the host.
+    - contextPath: Endpoint.TotalChecksConsidered
+      description: The total number of checks considered on the host.
+    - contextPath: Endpoint.NumChecksConsidered
+      description: The number of checks considered on the host.
+    - contextPath: Endpoint.ScanProgressTotal
+      description: The total scan progress for the host.
+    - contextPath: Endpoint.ScanProgressCurrent
+      description: The current scan progress for the host.
+    - contextPath: Endpoint.Score
+      description: The overall score for the host.
+    description: Returns details for the given host.
+  - name: nessus-scan-export
+    arguments:
+    - name: scanId
+      required: true
+      default: true
+      description: The Scan ID (use command list-scans to get possible scan ID's)
+    - name: historyId
+      description: The history_id of the historical data that should be returned.
+    - name: format
+      required: true
+      description: scan report file format (nessus, csv, html, db, pdf)
+    - name: password
+      description: The password used to encrypt database exports (*Required when exporting
+        as DB).
+    - name: chapters
+      description: 'The chapters to include in the export (expecting a semi-colon
+        delimited string comprised of some combination of the following options: vuln_hosts_summary,
+        vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance)'
+    outputs:
+    - contextPath: ScanReportID
+      description: ID of the scan report.
+    description: Export the given scan (Nessus, HTML, PDF, CSV, or DB format)
+  - name: scan-export
+    deprecated: true
+    arguments:
+    - name: scanId
+      required: true
+      default: true
+      description: The Scan ID (use command list-scans to get possible scan ID's)
+    - name: historyId
+      description: The history_id of the historical data that should be returned.
+    - name: format
+      required: true
+      description: scan report file format (nessus, csv, html, db, pdf)
+    - name: password
+      description: The password used to encrypt database exports (*Required when exporting
+        as DB).
+    - name: chapters
+      description: 'The chapters to include in the export (expecting a semi-colon
+        delimited string comprised of some combination of the following options: vuln_hosts_summary,
+        vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance)'
+    outputs:
+    - contextPath: ScanReportID
+      description: ID of the scan report.
+    description: Export the given scan (Nessus, HTML, PDF, CSV, or DB format)
+  - name: scan-report-download
+    deprecated: true
+    arguments:
+    - name: scanId
+      required: true
+      default: true
+      description: The Scan ID (use command list-scans to get possible scan ID's)
+    - name: fileId
+      required: true
+      description: The id of the file to download (result from command export-scan).
+    description: Download an exported scan
+  - name: nessus-scan-report-download
+    arguments:
+    - name: scanId
+      required: true
+      default: true
+      description: The Scan ID (use command list-scans to get possible scan ID's)
+    - name: fileId
+      required: true
+      description: The id of the file to download (result from command export-scan).
+    description: Download an exported scan
+  - name: scan-create
+    deprecated: true
+    arguments:
+    - name: editor
+      required: true
+      default: true
+      description: The uuid for the editor template to use
+    - name: name
+      required: true
+      description: The name of the scan
+    - name: description
+      description: The description of the scan
+    - name: policyId
+      description: The unique id of the policy to use(number)
+    - name: folderId
+      description: The unique id of the destination folder for the scan(number)
+    - name: scannerId
+      description: The unique id of the scanner to use(number)
+    - name: schedule
+      required: true
+      description: If true, the schedule for the scan is enabled(true/false)
+    - name: launch
+      description: When to launch the scan. (i.e. ON_DEMAND, DAILY, WEEKLY, MONTHLY,
+        YEARLY)
+    - name: startTime
+      description: The starting time and date for the scan (i.e. YYYYMMDDTHHMMSS).
+    - name: rules
+      description: Expects a semi-colon delimited string comprised of three values.
+        The frequency (FREQ=ONCE or DAILY or WEEKLY or MONTHLY or YEARLY), the interval
+        (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA).
+        To create a scan that runs every three weeks on Monday Wednesday and Friday
+        the string would be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'
+    - name: timeZone
+      description: The timezone for the scan schedule
+    - name: targets
+      required: true
+      description: The list of targets to scan, Value can be single host or of comma
+        separated targets.
+    - name: emails
+      description: A comma separated list of accounts who will recieve the email summary
+        report
+    - name: acls
+      description: An array containing permissions to apply to the scan
+    - name: fileTargets
+      description: The name of a file containing the list of targets to scan
+    outputs:
+    - contextPath: NessusScan.UUID
+      description: The uuid for the scan.
+    - contextPath: NessusScan.Name
+      description: The name of the scan.
+    - contextPath: NessusScan.Status
+      description: The status of the scan.
+    - contextPath: NessusScan.FolderID
+      description: The unique id of the folder housing the scan.
+    - contextPath: NessusScan.ID
+      description: The unique id of the scan.
+    - contextPath: NessusScan.UserPermissions
+      description: The sharing permissions for the scan.
+    - contextPath: NessusScan.CreationDate
+      description: The creation date for the scan in unixtime.
+    - contextPath: NessusScan.LastModificationDate
+      description: The last modification date for the scan in unixtime.
+    - contextPath: NessusScan.Type
+      description: The type of scan (local, remote, or agent).
+    - contextPath: NessusScan.Policy
+      description: The policy if the scan.
+    description: Creates a new scan
+  - name: nessus-scan-create
+    arguments:
+    - name: editor
+      required: true
+      default: true
+      description: The uuid for the editor template to use
+    - name: name
+      required: true
+      description: The name of the scan
+    - name: description
+      description: The description of the scan
+    - name: policyId
+      description: The unique id of the policy to use(number)
+    - name: folderId
+      description: The unique id of the destination folder for the scan(number)
+    - name: scannerId
+      description: The unique id of the scanner to use(number)
+    - name: schedule
+      required: true
+      description: If true, the schedule for the scan is enabled(true/false)
+    - name: launch
+      description: When to launch the scan. (i.e. ON_DEMAND, DAILY, WEEKLY, MONTHLY,
+        YEARLY)
+    - name: startTime
+      description: The starting time and date for the scan (i.e. YYYYMMDDTHHMMSS).
+    - name: rules
+      description: Expects a semi-colon delimited string comprised of three values.
+        The frequency (FREQ=ONCE or DAILY or WEEKLY or MONTHLY or YEARLY), the interval
+        (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA).
+        To create a scan that runs every three weeks on Monday Wednesday and Friday
+        the string would be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'
+    - name: timeZone
+      description: The timezone for the scan schedule
+    - name: targets
+      required: true
+      description: The list of targets to scan, Value can be single host or of comma
+        separated targets.
+    - name: emails
+      description: A comma separated list of accounts who will recieve the email summary
+        report
+    - name: acls
+      description: An array containing permissions to apply to the scan
+    - name: fileTargets
+      description: The name of a file containing the list of targets to scan
+    outputs:
+    - contextPath: NessusScan.UUID
+      description: The uuid for the scan.
+    - contextPath: NessusScan.Name
+      description: The name of the scan.
+    - contextPath: NessusScan.Status
+      description: The status of the scan.
+    - contextPath: NessusScan.FolderID
+      description: The unique id of the folder housing the scan.
+    - contextPath: NessusScan.ID
+      description: The unique id of the scan.
+    - contextPath: NessusScan.UserPermissions
+      description: The sharing permissions for the scan.
+    - contextPath: NessusScan.CreationDate
+      description: The creation date for the scan in unixtime.
+    - contextPath: NessusScan.LastModificationDate
+      description: The last modification date for the scan in unixtime.
+    - contextPath: NessusScan.Type
+      description: The type of scan (local, remote, or agent).
+    - contextPath: NessusScan.Policy
+      description: The policy if the scan.
+    description: Creates a new scan
+  - name: nessus-get-scans-editors
+    arguments: []
+    description: Returns all scan editors template list
+  - name: scan-export-status
+    deprecated: true
+    arguments:
+    - name: scanId
+      required: true
+      description: The Scan ID (use command list-scans to get possible scan ID's)
+    - name: fileId
+      required: true
+      description: The id of the file to download (result from command export-scan).
+    outputs:
+    - contextPath: NessusScan.ScanReportStatus
+      description: The status of the scan report.
+    description: Check the file status of an exported scan
+  - name: nessus-scan-export-status
+    arguments:
+    - name: scanId
+      required: true
+      description: The Scan ID (use command list-scans to get possible scan ID's)
+    - name: fileId
+      required: true
+      description: The id of the file to download (result from command export-scan).
+    outputs:
+    - contextPath: NessusScan.ScanReportStatus
+      description: The status of the scan report.
+    description: Check the file status of an exported scan
+  - name: nessus-scan-status
+    description: Get scan status by scan id
+    arguments:
+    - name: scanId
+      required: true
+      description: The Scan ID (use command list-scans to get possible scan ID's)
+    outputs:
+    - contextPath: NessusScan.Status
+      description: The status of the scan report.
+tests:
+- Nessus - Test
+fromversion: 5.0.0

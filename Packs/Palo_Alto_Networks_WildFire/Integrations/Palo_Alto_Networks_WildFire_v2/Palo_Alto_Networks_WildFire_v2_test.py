@@ -1,13 +1,13 @@
 import json
 import io
-
 from requests import Response
 
 import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
     file_args_handler, wildfire_get_sample_command, wildfire_get_report_command, run_polling_command, \
-    wildfire_upload_url_command, prettify_url_verdict, create_dbot_score_from_url_verdict, parse_file_report
+    wildfire_upload_url_command, prettify_url_verdict, create_dbot_score_from_url_verdict, parse_file_report, \
+    parse_wildfire_object
 
 
 def test_will_return_ok():
@@ -305,6 +305,26 @@ def test_running_polling_command_new_search(mocker):
     assert command_results[0].scheduled_command is not None
 
 
+def test_parse_wildfire_object():
+
+    report = {"process_list": {
+              "process": {"@command": "C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE",
+                          "@name": "WINWORD.EXE",
+                          "@pid": "952",
+                          "file": "test",
+                          "java_api": "test",
+                          "service": None}}}
+    expected_results = {'ProcessCommand': 'C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE',
+                        'ProcessName': 'WINWORD.EXE',
+                        'ProcessPid': '952',
+                        'ProcessFile': 'test'}
+    keys = [("@command", "ProcessCommand"), ("@name", "ProcessName"),
+            ("@pid", "ProcessPid"), ("file", "ProcessFile"), ("service", "Service")]
+    results = parse_wildfire_object(report=report['process_list']['process'], keys=keys)
+
+    assert results == expected_results
+
+
 def test_parse_file_report_network():
     """
     Given:
@@ -362,12 +382,89 @@ def test_parse_file_report_network():
                         "@host": "test1.com",
                         "@method": "GET",
                         "@uri": "/test/72t0jjhmv7takwvisfnz_eejvf_h6v2ix/",
-                        "@user_agent": ""
+                        "@user_agent": "test"
                     }
-            }
+            },
+        "platform": "60",
+        "process_list": {
+            "process": {
+                "@command": "C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE",
+                "@name": "WINWORD.EXE",
+                "@pid": "952",
+                "file": 'test',
+                "java_api": 'test',
+                "service": 'test'
+            }},
+        "process_tree": {
+            "process": {
+                "@name": "WINWORD.EXE",
+                "@pid": "952",
+                "@text": "C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE",
+                'child': {
+                    'process': {
+                        '@name': 'test',
+                        '@pid': 'test',
+                        '@text': 'test'
+                    }
+                }
+            }},
+        'summary': {
+            'entry': {
+                '#text': 'test',
+                '@details': 'test',
+                '@behavior': 'test'
+            }},
+        'extracted_urls': {
+            'entry': {
+                '@url': 'test',
+                '@verdict': 'test'
+            }},
+        'elf_info': {
+            'Shell_Commands': {
+                'entry': 'test'
+            }}
     }
-    expected_outputs_network = {'TCP': {'IP': ['1.1.1.1', '1.0.1.0'], 'Port': ['443', '80']},
-                                'UDP': {'IP': ['1.1.1.1'], 'Port': ['55']},
-                                'DNS': {'Query': ['test.com'], 'Response': ['1.1.1.1.']}}
-    outputs, feed_related_indicators, behavior = parse_file_report(reports=report, file_info={})
-    assert expected_outputs_network == outputs.get('Network')
+    expected_outputs_network_info = {'TCP': [{'IP': '1.1.1.1',
+                                              'Port': '443',
+                                              'Country': 'US',
+                                              'JA3': 'test',
+                                              'JA3S': 'test'},
+                                             {'IP': '1.0.1.0',
+                                              'Port': '80',
+                                              'Country': 'US',
+                                              'JA3': 'test'}],
+                                     'UDP': [{'IP': '1.1.1.1', 'Port': '55', 'Country': 'US', 'JA3': 'test', 'JA3S': 'test'}],
+                                     'DNS': [{'Query': 'test.com', 'Response': '1.1.1.1.', 'Type': 'A'}],
+                                     'URL': [{'Host': 'test1.com',
+                                              'Method': 'GET',
+                                              'URI': '/test/72t0jjhmv7takwvisfnz_eejvf_h6v2ix/',
+                                              'UserAgent': 'test'}]}
+    expected_outputs_ProcessTree = [{'ProcessName': 'WINWORD.EXE',
+                                     'ProcessPid': '952',
+                                     'ProcessText': 'C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE',
+                                     'Process': {
+                                         'ChildName': 'test',
+                                         'ChildPid': 'test',
+                                         'ChildText': 'test'
+                                     }}]
+    expected_outputs_ProcessList = [{'ProcessCommand': 'C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE',
+                                     'ProcessName': 'WINWORD.EXE',
+                                     'ProcessPid': '952',
+                                     'ProcessFile': 'test',
+                                     'Service': 'test'}]
+    expected_outputs_Summary = [{
+        'Text': 'test',
+        'Details': 'test',
+        'Behavior': 'test'
+    }]
+    expected_outputs_elf = {'ShellCommands': ['test']}
+    outputs, feed_related_indicators, behavior, relationships = parse_file_report(file_hash='test',
+                                                                                  reports=report,
+                                                                                  file_info={},
+                                                                                  extended_data=True)
+    # assert expected_outputs_network == outputs.get('Network')
+    assert expected_outputs_network_info == outputs.get('NetworkInfo')
+    assert expected_outputs_ProcessTree == outputs.get('ProcessTree')
+    assert expected_outputs_ProcessList == outputs.get('ProcessList')
+    assert expected_outputs_Summary == outputs.get('Summary')
+    assert expected_outputs_elf == outputs.get('ELF')

@@ -39,8 +39,10 @@ def hash_file(filename):
     h = hashlib.sha1()
     with open(filename, 'rb') as f:
         chunk = ''
-        while chunk != '':
+        while True:
             chunk = f.read(1024)
+            if not chunk:
+                break
             h.update(chunk)
     return h.hexdigest()
 

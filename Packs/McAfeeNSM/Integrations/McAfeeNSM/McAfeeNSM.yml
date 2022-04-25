@@ -1,0 +1,329 @@
+commonfields:
+  id: McAfee NSM
+  version: -1
+name: McAfee NSM
+display: McAfee NSM
+category: Network Security
+description: McAfee Network Security Manager
+configuration:
+- display: 'URL (for example: https://192.168.0.1:5000)'
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: nsm-get-sensors
+    arguments:
+    - name: domainID
+      default: true
+      description: The domain of the sensors. If blank, returns all sensors.
+    outputs:
+    - contextPath: NSM.Sensors.ID
+      description: Sensor ID
+      type: string
+    - contextPath: NSM.Sensors.Description
+      description: Sensor Description
+      type: string
+    - contextPath: NSM.Sensors.DomainID
+      description: Sensor's Domain ID
+      type: string
+    description: get a sensor list of a given domain
+  - name: nsm-get-domains
+    arguments:
+    - name: domain
+      default: true
+      description: Specific domain details. Leave blank for all domains.
+    outputs:
+    - contextPath: NSM.Domains.ID
+      description: Domain ID
+      type: number
+    - contextPath: NSM.Domains.Name
+      description: Domain Name
+      type: string
+    description: Get all domains
+  - name: nsm-get-alerts
+    arguments:
+    - name: time_period
+      auto: PREDEFINED
+      predefined:
+      - LAST_5_MINUTES
+      - LAST_1_HOUR
+      - LAST_6_HOURS
+      - LAST_12_HOURS
+      - LAST_24_HOURS
+      - LAST_7_DAYS
+      - LAST_14_DAYS
+      - CUSTOM
+      description: Time Period
+    - name: start_time
+      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time
+        only
+    - name: end_time
+      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time
+        only
+    - name: state
+      auto: PREDEFINED
+      predefined:
+      - ANY
+      - Acknowledged
+      - Unacknowledged
+      description: Alert State
+      defaultValue: ANY
+    - name: search
+      description: Search string in alert details
+    - name: filter
+      description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4".'
+    outputs:
+    - contextPath: NSM.Alerts.ID
+      description: Alert ID
+      type: number
+    - contextPath: NSM.Alerts.Name
+      description: Alert Name
+      type: string
+    - contextPath: NSM.Alerts.State
+      description: Alert State (Acknowledged,Unacknowledged)
+      type: string
+    - contextPath: NSM.Alerts.CreatedTime
+      description: Alert Creation Time
+      type: string
+    - contextPath: NSM.Alerts.Assignee
+      description: Alert Assignee
+      type: string
+    - contextPath: NSM.Alerts.AttackSeverity
+      description: Alert Severity
+      type: string
+    - contextPath: NSM.Alerts.Application
+      description: The Application assosiated to the alert
+      type: string
+    - contextPath: NSM.Alerts.EventResult
+      description: Event Result
+    - contextPath: NSM.Alerts.Event
+      description: The Event who triggered the alert
+    - contextPath: NSM.Alerts.Attack
+      description: Alert's Attack
+    - contextPath: NSM.Alerts.Attacker
+      description: The Attacker who committed the attack
+    - contextPath: NSM.Alerts.Target
+      description: The Attack's Target
+    - contextPath: NSM.Alerts.MalwareFile
+      description: Malware File used in the attack
+    description: Get alerts
+  - name: nsm-update-alerts
+    arguments:
+    - name: state
+      auto: PREDEFINED
+      predefined:
+      - ANY
+      - Acknowledged
+      - Unacknowledged
+      description: Alert State
+      defaultValue: ANY
+    - name: time_period
+      auto: PREDEFINED
+      predefined:
+      - LAST_5_MINUTES
+      - LAST_1_HOUR
+      - LAST_6_HOURS
+      - LAST_12_HOURS
+      - LAST_24_HOURS
+      - LAST_7_DAYS
+      - LAST_14_DAYS
+      - CUSTOM
+      description: Time Period
+    - name: start_time
+      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time
+        only
+    - name: end_time
+      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time
+        only
+    - name: new_state
+      auto: PREDEFINED
+      predefined:
+      - Acknowledged
+      - Unacknowledged
+      description: The new alert state
+    - name: new_assignee
+      description: The new assignee
+    - name: search
+      description: Search string in alert details
+    - name: filter
+      description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4"'
+    outputs:
+    - contextPath: NSM.Alerts.ID
+      description: Alert ID
+      type: number
+    - contextPath: NSM.Alerts.Name
+      description: Alert Name
+      type: string
+    - contextPath: NSM.Alerts.State
+      description: Alert State (Acknowledged,Unacknowledged)
+      type: string
+    - contextPath: NSM.Alerts.CreatedTime
+      description: Alert Creation Time
+      type: string
+    - contextPath: NSM.Alerts.Assignee
+      description: Alert Assignee
+      type: string
+    - contextPath: NSM.Alerts.AttackSeverity
+      description: Alert Severity
+      type: string
+    - contextPath: NSM.Alerts.Application
+      description: The Application assosiated to the alert
+      type: string
+    - contextPath: NSM.Alerts.EventResult
+      description: Event Result
+    - contextPath: NSM.Alerts.Event
+      description: The Event who triggered the alert
+    - contextPath: NSM.Alerts.Attack
+      description: Alert's Attack
+    - contextPath: NSM.Alerts.Attacker
+      description: The Attacker who committed the attack
+    - contextPath: NSM.Alerts.Target
+      description: The Attack's Target
+    - contextPath: NSM.Alerts.MalwareFile
+      description: Malware File used in the attack
+    description: Update state or assignee of alerts
+  - name: nsm-get-alert-details
+    arguments:
+    - name: alert_id
+      required: true
+      default: true
+      description: Alert ID
+    - name: sensor_id
+      description: Sensor ID
+    outputs:
+    - contextPath: NSM.Alerts.ID
+      description: Alert ID
+      type: string
+    - contextPath: NSM.Alerts.Name
+      description: Alert Name
+      type: string
+    - contextPath: NSM.Alerts.State
+      description: Alert State (Acknowledged,Unacknowledged)
+      type: string
+    - contextPath: NSM.Alerts.CreatedTime
+      description: Alert Creation Time
+      type: date
+    - contextPath: NSM.Alerts.Assignee
+      description: Alert assignee
+      type: string
+    - contextPath: NSM.Alerts.Description
+      description: Alert Description
+      type: string
+    - contextPath: NSM.Alerts.EventResult
+      description: Event Result
+      type: string
+    - contextPath: NSM.Alerts.Event
+      description: Alert Event
+    - contextPath: NSM.Alerts.Attack
+      description: Alert's Attack
+    - contextPath: NSM.Alerts.Attacker
+      description: The Attacker who committed the attack
+    - contextPath: NSM.Alerts.Target
+      description: The Attack's target
+    - contextPath: NSM.Alerts.MalwareFile
+      description: Malware File used in the attack
+      type: string
+    - contextPath: NSM.Alerts.Details
+      description: Extra details
+    description: Get a single alert details
+  - name: nsm-get-ips-policies
+    arguments:
+    - name: domain_id
+      required: true
+      default: true
+      description: Domain ID
+    outputs:
+    - contextPath: NSM.IPSPolicies.ID
+      description: IPS Policy ID
+      type: number
+    - contextPath: NSM.IPSPolicies.Name
+      description: IPS Policy Name
+      type: string
+    - contextPath: NSM.IPSPolicies.DomainID
+      description: IPS Policy Domain ID
+      type: number
+    - contextPath: NSM.IPSPolicies.IsEditable
+      description: Whether the IPS policy is editable
+      type: boolean
+    - contextPath: NSM.IPSPolicies.VisibleToChildren
+      description: Whether the IPS Policy is visible to domain's children
+      type: boolean
+    description: Get IPS Policies in a domain
+  - name: nsm-get-ips-policy-details
+    arguments:
+    - name: policy_id
+      required: true
+      default: true
+      description: IPS Policy ID
+    outputs:
+    - contextPath: NSM.IPSPolicies.ID
+      description: IPS Policy ID
+      type: number
+    - contextPath: NSM.IPSPolicies.Name
+      description: IPS Policy Name
+      type: string
+    - contextPath: NSM.IPSPolicies.Description
+      description: IPS Policy information
+      type: string
+    - contextPath: NSM.IPSPolicies.CreatedTime
+      description: Policy creation time
+      type: string
+    - contextPath: NSM.IPSPolicies.IsEditable
+      description: Whether the IPS policy is editable
+      type: boolean
+    - contextPath: NSM.IPSPolicies.VisibleToChildren
+      description: Whether the IPS Policy is visible to domain's children
+      type: boolean
+    - contextPath: NSM.IPSPolicies.Version
+      description: IPS Policy Version
+      type: number
+    - contextPath: NSM.IPSPolicies.InboundRuleSet
+      description: Inbound Rule Set
+    - contextPath: NSM.IPSPolicies.OutboundRuleSet
+      description: Outbound Rule Set
+    - contextPath: NSM.IPSPolicies.ExploitAttacks
+      description: A list of exploit attacks related to the IPS Policy
+    description: Get the policy details for the specific IPS policy
+  - name: nsm-get-attacks
+    arguments:
+    - name: attack_id
+      default: true
+      description: Particular Attack ID
+    outputs:
+    - contextPath: NSM.Attacks.ID
+      description: Attack ID
+      type: string
+    - contextPath: NSM.Attacks.Name
+      description: Attack Name
+      type: string
+    - contextPath: NSM.Attacks.Severity
+      description: Attack Severity
+      type: number
+    - contextPath: NSM.Attacks.Direction
+      description: Attack Direction
+      type: string
+    - contextPath: NSM.Attacks.Category
+      description: Attack Category
+      type: string
+    description: Get all available attack definitions in NSM
+  runonce: false
+fromversion: 5.0.0

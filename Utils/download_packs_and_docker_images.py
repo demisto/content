@@ -127,7 +127,7 @@ def download_and_save_docker_images(docker_images: set, output_path: str) -> Non
             print(f"\tDownloading docker image: {image}")
             image_pair = image.split(':')
             image_data = cli.images.pull(image_pair[0], image_pair[1])
-            image_file_name = os.path.join(temp_dir.name, os.path.basename(image) + '.tar')
+            image_file_name = os.path.join(temp_dir.name, os.path.basename(f"{image_pair[0]}_{image_pair[1]}.tar"))
             with open(image_file_name, 'wb') as f:
                 for chunk in image_data.save(named=True):
                     f.write(chunk)

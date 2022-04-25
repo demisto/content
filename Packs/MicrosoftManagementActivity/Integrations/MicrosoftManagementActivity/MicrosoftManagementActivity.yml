@@ -22,6 +22,16 @@ configuration:
   name: refresh_token
   required: false
   type: 4
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
 - display: Use a self-deployed Azure application
   name: self_deployed
   required: false
@@ -248,7 +258,7 @@ script:
     - contextPath: MicrosoftManagement.ContentRecord.UserID
       description: The ID of the record's user.
       type: string
-  dockerimage: demisto/pyjwt3:1.0.0.23674
+  dockerimage: demisto/pyjwt3:1.0.0.27257
   feed: false
   isfetch: true
   longRunning: false

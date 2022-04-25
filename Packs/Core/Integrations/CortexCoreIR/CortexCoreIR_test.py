@@ -2514,3 +2514,29 @@ def test_get_original_alerts_command(requests_mock):
     assert event.get('_time') == 'DATE'  # assert general filter is correct
     assert event.get('cloud_provider') == 'AWS'  # assert general filter is correct
     assert event.get('raw_log', {}).get('userIdentity', {}).get('accountId') == 'ID'  # assert vendor filter is correct
+
+
+def test_get_dynamic_analysis(requests_mock):
+    """
+    Given:
+        - Core client
+        - Alert IDs
+    When
+        - Running get_dynamic_analysis_command command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexCoreIR import get_dynamic_analysis_command, Client
+    api_response = load_test_data('./test_data/get_dynamic_analysis.json')
+    requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_original_alerts/', json=api_response)
+    client = Client(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'alert_ids': '6536',
+    }
+
+    response = get_dynamic_analysis_command(client, args)
+    dynamic_analysis = response.outputs[0]
+    assert dynamic_analysis.get('causalityId') == 'AAA'

@@ -17,6 +17,16 @@ configuration:
   name: tenant_id
   required: false
   type: 0
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   hidden: false
@@ -132,7 +142,7 @@ script:
     description: Tests connectivity to Microsoft when using Cortex XSOAR Azure app.
     execution: false
     name: msgraph-api-test
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: demisto/crypto:1.0.0.27590
   feed: false
   isfetch: false
   longRunning: false

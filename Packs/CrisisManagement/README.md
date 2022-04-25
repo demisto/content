@@ -15,4 +15,4 @@ As part of this pack, you will also get out-of-the-box incident fields, type and
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/employee-status-survey)_
 
-[![Crisis Management in Cortex XSOAR](https://img.youtube.com/vi/J6DcD5y5B_U/0.jpg)](https://www.youtube.com/watch?v=J6DcD5y5B_U "Crisis Management in Cortex XSOAR")
+[![Crisis Management in Cortex XSOAR](https://img.youtube.com/vi/J6DcD5y5B_U/0.jpg)](https://www.youtube.com/watch?v=J6DcD5y5B_U)

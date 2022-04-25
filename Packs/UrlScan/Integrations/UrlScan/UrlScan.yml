@@ -3,10 +3,20 @@ commonfields:
   id: urlscan.io
   version: -1
 configuration:
-- display: API Key (only required for scanning URLs)
-  name: apikey
+- displaypassword: API Key (only required for scanning URLs)
+  name: creds_apikey
   required: false
-  type: 4
+  type: 9
+  hiddenusername: true
+- additionalinfo: Determines the visibility level of the scan. This will override the 'public submissions' setting.
+  display: Scan Visibility
+  name: scan_visibility
+  options:
+  - public
+  - private
+  - unlisted
+  required: false
+  type: 15
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -51,6 +61,11 @@ configuration:
   type: 0
   required: false
   additionalinfo: User Agent to perform requests
+- display: API Key (only required for scanning URLs)
+  name: apikey
+  required: false
+  type: 4
+  hidden: true
 description: Use urlscan.io integration to perform scans on suspected URLs and see their reputation.
 display: urlscan.io
 name: urlscan.io
@@ -64,6 +79,12 @@ script:
       name: searchParameter
       required: true
       secret: false
+    - auto: PREDEFINED
+      description: The search type. When advanced, allows to query multiple search parameters.
+      predefined:
+        - advanced
+      isArray: false
+      name: searchType
     - default: false
       defaultValue: '20'
       description: The maximum number of results to return. Default is 20.
@@ -119,6 +140,17 @@ script:
         before timeout. Default is 60.
       isArray: false
       name: timeout
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: 'public'
+      description: The submission visibility. If specified, overrides the 'public' parameter.
+      predefined:
+        - public
+        - private
+        - unlisted
+      isArray: false
+      name: scan_visibility
       required: false
       secret: false
     - default: false
@@ -233,6 +265,17 @@ script:
       isArray: true
       name: url
       required: true
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: 'public'
+      description: The submission visibility. If specified, overrides the 'public' parameter.
+      predefined:
+        - public
+        - private
+        - unlisted
+      isArray: false
+      name: scan_visibility
+      required: false
       secret: false
     - default: false
       defaultValue: '60'

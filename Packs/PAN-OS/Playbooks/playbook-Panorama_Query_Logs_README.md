@@ -13,9 +13,9 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ### Commands
-* panorama-check-logs-status
-* panorama-get-logs
-* panorama-query-logs
+* pan-os-check-logs-status
+* pan-os-get-logs
+* pan-os-query-logs
 
 ## Playbook Inputs
 ---

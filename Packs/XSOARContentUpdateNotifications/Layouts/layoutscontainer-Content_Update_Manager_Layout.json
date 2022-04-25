@@ -248,6 +248,10 @@
      {
       "fieldId": "incident_contentnotificationslackchannel",
       "isVisible": true
+     },
+     {
+      "fieldId": "incident_contentnotificationslackchannelid",
+      "isVisible": true
      }
     ],
     "isVisible": true,

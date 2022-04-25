@@ -320,6 +320,15 @@ def test_get_all_endpoints_using_limit(requests_mock):
 
 
 def test_endpoint_command(requests_mock):
+    """
+    Given:
+        - endpoint_command
+    When:
+        - Filtering using both id and hostname
+    Then:
+        - Verify that duplicates are removed (since the mock is called twice the same endpoint is retrieved, but if
+        working properly, only one result should be returned).
+    """
     from CortexXDRIR import endpoint_command, Client
 
     get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
@@ -328,7 +337,7 @@ def test_endpoint_command(requests_mock):
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
-    args = {'id': 'identifier'}
+    args = {'id': 'identifier', 'hostname': 'hostname'}
 
     outputs = endpoint_command(client, args)
 
