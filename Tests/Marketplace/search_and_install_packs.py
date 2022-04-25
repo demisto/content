@@ -231,7 +231,7 @@ def install_nightly_packs(client: demisto_client,
     while not all_packs_install_successfully:
         try:
             packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
-            logging.debug(f'Installing the following packs in server {host}:\n{packs_to_install_str}')
+            logging.info(f'Installing the following packs in server {host}:\n{packs_to_install_str}')
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
                                                                                 method='POST',
@@ -344,8 +344,9 @@ def install_packs(client: demisto_client,
                                                                             body=request_data,
                                                                             accept='application/json',
                                                                             _request_timeout=request_timeout)
-
-        if 200 <= status_code < 300:
+        if status_code == 204 and not response_data:
+            pass
+        elif 200 <= status_code < 300:
             packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for
                           pack in
                           ast.literal_eval(response_data)]
@@ -546,6 +547,7 @@ def upload_zipped_packs(client: demisto_client,
     header_params = {
         'Content-Type': 'multipart/form-data'
     }
+    auth_settings = ['api_key', 'csrf_token', 'x-xdr-auth-id']
     file_path = os.path.abspath(pack_path)
     files = {'file': file_path}
 
@@ -555,6 +557,7 @@ def upload_zipped_packs(client: demisto_client,
     try:
         response_data, status_code, _ = client.api_client.call_api(resource_path='/contentpacks/installed/upload',
                                                                    method='POST',
+                                                                   auth_settings=auth_settings,
                                                                    header_params=header_params, files=files)
 
         if 200 <= status_code < 300:
@@ -591,18 +594,19 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
 
 
 def search_and_install_packs_and_their_dependencies(pack_ids: list,
-                                                    client: demisto_client):
+                                                    client: demisto_client, hostname: str = ''):
     """ Searches for the packs from the specified list, searches their dependencies, and then
     installs them.
     Args:
         pack_ids (list): A list of the pack ids to search and install.
         client (demisto_client): The client to connect to.
+        hostname (str): Hostname of instance. Using for logs.
 
     Returns (list, bool):
         A list of the installed packs' ids, or an empty list if is_nightly == True.
         A flag that indicates if the operation succeeded or not.
     """
-    host = client.api_client.configuration.host
+    host = hostname if hostname else client.api_client.configuration.host
 
     logging.info(f'Starting to search and install packs in server: {host}')
 
