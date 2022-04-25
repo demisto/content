@@ -1514,6 +1514,11 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
         if path_to_pack:
             changed_files = get_list_of_files_in_the_pack(path_to_pack)
             files_string = changed_files_to_string(changed_files)
+        elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
+            last_commit = get_last_commit_from_index(service_account)
+            logging.info(f'Last upload commit : {last_commit}')
+            second_last_commit = branch_name if branch_name != 'master' else 'origin/master'
+            files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
         elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
@@ -1521,24 +1526,11 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
                 packs_diff = tools.run_command('git status -uall --porcelain -- Packs').replace('??', 'A')
                 files_string = '\n'.join([files_string, packs_diff])
         else:
-            # todo: if upload flow: take last upload commit
-            if os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
-                last_commit = get_last_commit_from_index(service_account)
-                second_last_commit = 'origin/master'
-            else:
-                commit_string = tools.run_command("git log -n 2 --pretty='%H'")
-                logging.debug(f'commit string: {commit_string}')
-                commit_string = commit_string.replace("'", "")
-                last_commit, second_last_commit = commit_string.split()
+            commit_string = tools.run_command("git log -n 2 --pretty='%H'")
+            logging.debug(f'commit string: {commit_string}')
+            commit_string = commit_string.replace("'", "")
+            last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
-
-        # todo: remove this block:
-        if os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
-            last_commit = get_last_commit_from_index(service_account)
-            logging.info(f'Last upload commit : {last_commit}')
-            second_last_commit = branch_name
-            files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
-        # todo: finish block
 
         logging.info(f'Files string: {files_string}')
 
