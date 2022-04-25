@@ -7,7 +7,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: https://example.com/
+- defaultvalue: https://<your-domain>.atlassian.net/rest/api/3/auditing/record
   display: Your server URL
   name: url
   required: true
