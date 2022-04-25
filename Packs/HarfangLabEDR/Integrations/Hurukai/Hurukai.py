@@ -2065,10 +2065,9 @@ def get_function_from_command_name(command):
 
         'harfanglab-change-security-event-status': change_security_event_status,
 
-        'harfanglab-assign-policy-to-agent': assign_policy_to_agent,
+        'harfanglab-assign-policy-to-agent': assign_policy_to_agent
 
-        'fetch-incidents': fetch_incidents,
-        'test-module': test_module,
+#        'fetch-incidents': fetch_incidents,
     }
 
     return commands.get(command)
