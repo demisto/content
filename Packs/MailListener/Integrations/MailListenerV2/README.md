@@ -200,3 +200,4 @@ There is no context output for this command.
 
 ## Additional Information
 In the first fetch iteration, it might take a few minutes for email messages to be ingested due to filter limitations on the IMAP client.
+Some emails may be skipped and not fetched as incidents, due to the fact that they are lacking the date field that shows the time when the email was received.
