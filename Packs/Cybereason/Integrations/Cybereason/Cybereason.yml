@@ -788,58 +788,178 @@ script:
     name: cybereason-close-file-batch-id
   - arguments:
     - description: The unique ID assigned by the Cybereason platform for the Malop
-      name: malop
+      name: malopGuid
+      required: true
+    description: Get all remediation action details whatever available for that malop
+    name: cybereason-available-remediation-actions
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop
+      name: malopGuid
       required: true
     - description: Machine name to kill the process
       name: machine
       required: true
-    - description: File to kill the process
-      name: file
+    - description: Target ID to kill the process
+      name: targetId
       required: true
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    description: Kill all processes for that malicious file
+    - description: Timeout (in seconds) to wait for the remediation response
+      name: timeout
+      defaultValue: "60"
+      auto: PREDEFINED
+      predefined:
+      - "30"
+      - "60"
+    - description: Comment to add to the malop
+      name: comment
+    description: Kill a processes for the malicious file. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
     name: cybereason-kill-process
   - arguments:
     - description: The unique ID assigned by the Cybereason platform for the Malop
-      name: malop
+      name: malopGuid
       required: true
-    - description: Machine name to delete the registry key
+    - description: Machine name to quarantine a file
       name: machine
       required: true
-    - description: File to delete the registry key
-      name: file
+    - description: Target ID to quarantine a file
+      name: targetId
       required: true
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    description: Delete a registry entry associated with a malicious process
-    name: cybereason-delete-registry-key
-  - arguments:
-    - description: The unique ID assigned by the Cybereason platform for the Malop
-      name: malop
-      required: true
-    - description: Machine name whose files needs to be quarantined
-      name: machine
-      required: true
-    - description: The complete Cybereason user name string for the user performing the request
-      name: userName
-      required: true
-    description: Quarantine the detected malicious file in a secure location
+    - description: Timeout (in seconds) to wait for the remediation response
+      name: timeout
+      defaultValue: "60"
+      auto: PREDEFINED
+      predefined:
+      - "30"
+      - "60"
+    - description: Comment to add to the malop
+      name: comment
+    description: Quarantine the detected malicious file in a secure location. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
     name: cybereason-quarantine-file
   - arguments:
     - description: The unique ID assigned by the Cybereason platform for the Malop
-      name: malop
+      name: malopGuid
+      required: true
+    - description: Machine name to unquarantine a file
+      name: machine
+      required: true
+    - description: Target ID to unquarantine a file
+      name: targetId
+      required: true
+    - description: The complete Cybereason user name string for the user performing the request
+      name: userName
+      required: true
+    - description: Timeout (in seconds) to wait for the remediation response
+      name: timeout
+      defaultValue: "60"
+      auto: PREDEFINED
+      predefined:
+      - "30"
+      - "60"
+    - description: Comment to add to the malop
+      name: comment
+    description: Unquarantine the detected malicious file in a secure location. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
+    name: cybereason-unquarantine-file
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop
+      name: malopGuid
       required: true
     - description: Machine name whose files needs to be blocked
       name: machine
       required: true
+    - description: Target ID of file to be blocked
+      name: targetId
+      required: true
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    description: Block a file only in particular machine
+    - description: Timeout (in seconds) to wait for the remediation response
+      name: timeout
+      defaultValue: "60"
+      auto: PREDEFINED
+      predefined:
+      - "30"
+      - "60"
+    - description: Comment to add to the malop
+      name: comment
+    description: Block a file only in particular machine. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
     name: cybereason-block-file
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop
+      name: malopGuid
+      required: true
+    - description: Machine name to delete the registry key
+      name: machine
+      required: true
+    - description: Target ID to delete the registry key
+      name: targetId
+      required: true
+    - description: The complete Cybereason user name string for the user performing the request
+      name: userName
+      required: true
+    - description: Timeout (in seconds) to wait for the remediation response
+      name: timeout
+      defaultValue: "60"
+      auto: PREDEFINED
+      predefined:
+      - "30"
+      - "60"
+    - description: Comment to add to the malop
+      name: comment
+    description: Delete a registry entry associated with a malicious process. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
+    name: cybereason-delete-registry-key
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop
+      name: malopGuid
+      required: true
+    - description: Machine name to prevent detected ransomware from running on the machine
+      name: machine
+      required: true
+    - description: Target ID to prevent detected ransomware from running on the machine
+      name: targetId
+      required: true
+    - description: The complete Cybereason user name string for the user performing the request
+      name: userName
+      required: true
+    - description: Timeout (in seconds) to wait for the remediation response
+      name: timeout
+      defaultValue: "60"
+      auto: PREDEFINED
+      predefined:
+      - "30"
+      - "60"
+    - description: Comment to add to the malop
+      name: comment
+    description: Prevent detected ransomware from running on the machine. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
+    name: cybereason-kill-prevent-unsuspend
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop
+      name: malopGuid
+      required: true
+    - description: Machine name to prevent a file associated with ransomware
+      name: machine
+      required: true
+    - description: Target ID to prevent a file associated with ransomware
+      name: targetId
+      required: true
+    - description: The complete Cybereason user name string for the user performing the request
+      name: userName
+      required: true
+    - description: Timeout (in seconds) to wait for the remediation response
+      name: timeout
+      defaultValue: "60"
+      auto: PREDEFINED
+      predefined:
+      - "30"
+      - "60"
+    - description: Comment to add to the malop
+      name: comment
+    description: Prevent a file associated with ransomware. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
+    name: cybereason-unsuspend-process
   - arguments:
     - description: Filter for Fetching Malwares by Malware needsAttention.
       name: needsAttention
