@@ -1,0 +1,11 @@
+!axonius-get-devices-by-savedquery saved_query_name=example_query
+!axonius-get-users-by-savedquery saved_query_name=example_query
+!axonius-get-users-by-mail value=Administrator@testdomain.test
+!axonius-get-users-by-username value=test_ldap_login_user
+!axonius-get-devices-by-hostname value=DC4
+!axonius-get-devices-by-ip value=192.168.20.17
+!axonius-get-devices-by-mac value=00:0C:29:B6:DA:46
+!axonius-get-savedqueries type=users
+!axonius-get-tags type type=devices
+!axonius-add-tag type=users tag_name=tag ids="e17ebcf985a70881b255c16f4fdd76b6"
+!axonius-remove-tag tag_name="api test1" type="devices" ids="[\"e17ebcf985a70881b255c16f4fdd76b6\",\"5d0e353ed75feef1ef92c74b31db195e\"]"
