@@ -15,6 +15,9 @@ import os
 import sys
 
 import demisto_sdk.commands.common.tools as tools
+
+from Tests.Marketplace.marketplace_constants import GCPConfig
+from Tests.Marketplace.marketplace_services import init_storage_client
 from Tests.scripts.utils import collect_helpers
 from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
 from Tests.scripts.utils.content_packs_util import should_test_content_pack, should_install_content_pack, \
@@ -1464,7 +1467,17 @@ def changed_files_to_string(changed_files):
     return '\n'.join(files_with_status)
 
 
-def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_version='xsoar'):
+def get_last_commit_from_index(service_account):
+    storage_client = init_storage_client(service_account)
+    storage_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
+    index_storage_path = os.path.join('content/packs/', f"{GCPConfig.INDEX_NAME}.json")
+    index_blob = storage_bucket.blob(index_storage_path)
+    index_string = index_blob.download_as_string()
+    index_json = json.loads(index_string)
+    return index_json.get('commit')
+
+
+def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_version='xsoar', service_account=None):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
         if marketplace_version == 'marketplacev2':
@@ -1510,7 +1523,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
         else:
             # todo: if upload flow: take last upload commit
             if os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
-                last_commit, second_last_commit = ('', '')
+                last_commit = get_last_commit_from_index(service_account)
+                second_last_commit = 'origin/master'
             else:
                 commit_string = tools.run_command("git log -n 2 --pretty='%H'")
                 logging.debug(f'commit string: {commit_string}')
@@ -1518,8 +1532,15 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
                 last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
 
-        logging.info(f'IFRA_ENV_TYPE = {os.environ.get("IFRA_ENV_TYPE")}')
-        logging.debug(f'Files string: {files_string}')
+        # todo: remove this block:
+        if os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
+            last_commit = get_last_commit_from_index(service_account)
+            logging.info(f'Last upload commit : {last_commit}')
+            second_last_commit = 'origin/master'
+            files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
+        # todo: finish block
+
+        logging.info(f'Files string: {files_string}')
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
                                                                              marketplace_version)
@@ -1564,10 +1585,12 @@ if __name__ == "__main__":
                         help='Skipping saving the test filter file (good for simply doing validation)')
     parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
     parser.add_argument('-mp', '--marketplace', help='marketplace version.', default='xsoar')
+    parser.add_argument('--service_account', help="Path to gcloud service account")
     options = parser.parse_args()
 
     # Create test file based only on committed files
-    create_test_file(options.nightly, options.skip_save, options.changed_pack_path, options.marketplace)
+    create_test_file(options.nightly, options.skip_save, options.changed_pack_path, options.marketplace,
+                     options.service_account)
     if not _FAILED:
         logging.info("Finished test configuration")
         sys.exit(0)
