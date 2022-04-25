@@ -6,16 +6,18 @@ This integration was integrated and tested with version 3 of JiraSIEM rest API
 2. Search for Jira SIEM.
 3. Click **Add instance** to create and configure a new integration instance.
 
-   | **Parameter** | **Description** | **Required** |
-   | --- | --- | --- |
-   | Your server URL |  | True |
-   | Method request |  | False |
-   | User name | The user name \(admin@example.com\) and password | True |
-   | Password |  | True |
-   | Trust any certificate (not secure) |  | False |
-   | Use system proxy settings |  | False |
-   | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 1 day, 3 months). default is 3 days. |  | True |
-   | The maximum number of incidents per fetch. Default is 100 maximum is 1000. |  | True |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Incident type |  | False |
+    | Your server URL |  | True |
+    | Method request |  | False |
+    | User name | The user name \(admin@example.com\) and password | True |
+    | Password |  | True |
+    | Fetch incidents |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 1 day, 3 months). default is 3 days. |  | True |
+    | The maximum number of incidents per fetch. Default is 100 maximum is 1000. |  | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
