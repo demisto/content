@@ -153,14 +153,14 @@ class UserMappingObject:
         for user in xsoar_users:
             splunk_user = self.get_splunk_user_by_xsoar(user, map_missing=map_missing) if user else None
             outputs.append(
-                {'Xsoar User': user,
-                 'Splunk User': splunk_user if splunk_user else 'Could not map splunk user, Check logs for more info.'})
+                {'XsoarUser': user,
+                 'SplunkUser': splunk_user if splunk_user else 'Could not map splunk user, Check logs for more info.'})
 
         return CommandResults(
             outputs=outputs,
             outputs_prefix='Splunk.UserMapping',
             readable_output=tableToMarkdown('Xsoar-Splunk Username Mapping', outputs,
-                                            headers=['Xsoar User', 'Splunk User'])
+                                            headers=['XsoarUser', 'SplunkUser'])
         )
 
 
