@@ -260,21 +260,60 @@ class EntryType(object):
 
 
 class Incidents(object):
-    def __init__(self, query: str = None):
-        self.query = query
-        self.size = 5
-        self.page = 0
+    def __init__(
+                    self,
+                    id: str = None,
+                    name: str = None,
+                    status: str = None,
+                    nostatus: str = None,
+                    reason: str = None,
+                    fromdate: str = None,
+                    todate: str = None,
+                    fromclosedate: str = None,
+                    toclosedate: str = None,
+                    fromduedate: str = None,
+                    toduedate: str = None,
+                    level: str = None,
+                    owner: str = None,
+                    details: str = None,
+                    type: str = None,
+                    query: str = None,
+                    searchInNotIndexed: bool = False,
+                    populateFields: str = None
+                    ):
+        self.params = {
+            "id": id,
+            "name": name,
+            "status": status,
+            "nostatus": nostatus,
+            "reason": reason,
+            "fromdate": fromdate,
+            "todate": todate,
+            "fromcloseddate": fromclosedate,
+            "toclosedate": toclosedate,
+            "fromduedate": fromduedate,
+            "toduedate": toduedate,
+            "level": level,
+            "owner": owner,
+            "details": details,
+            "type": type,
+            "query": query,
+            "searchInNotIndexed": searchInNotIndexed,
+            "populateFields": populateFields,
+            "page": 0,
+            "size": 5
+        }
 
     def __iter__(self):
-        res = demisto.executeCommand("getIncidents", {"query": self.query, "size": self.size, "page": self.page})[0]['Contents']
+        res = demisto.executeCommand("getIncidents", self.params)[0]['Contents']
         while(res.get('data')):
             for incident in res.get('data'):
                 yield incident
-            self.page += 1
-            res = demisto.executeCommand("getIncidents", {"query": self.query, "size": self.size, "page": self.page})[0]['Contents']
+            self.params['page'] += 1
+            res = demisto.executeCommand("getIncidents", self.params)[0]['Contents']
 
     def __len__(self):
-        res = demisto.executeCommand("getIncidents", {"query": self.query, "size": 1, "page": 0})[0]['Contents']
+        res = demisto.executeCommand("getIncidents", self.params)[0]['Contents']
         length = res.get('total', 0)
         return length
 
