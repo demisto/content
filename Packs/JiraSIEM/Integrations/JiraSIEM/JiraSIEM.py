@@ -149,9 +149,20 @@ class GetEvents:
 
     @staticmethod
     def set_next_run(log: dict) -> dict:
-        '''
-            Handles the last_run
-        '''
+        """
+            Handles and saves the values required for next fetch.
+
+            There are 3 values:
+                * from: From which time to fetch
+                * next_run: Time of creation of the last event fetched
+                * offset: The size of the offset (how many events to skip)
+
+            Since the rest API returns the events in desc order (the last event returns first), We have to save this
+            time in some variable (next_run) for the next fetches, in addition we need to save in another variable
+            (offset) the number of how many events we already fetched to skip them in the next fetch to avoid
+            duplicates, in addition we need to skip the time (from) from when to fetch if there is still some incident
+            to fetch with offset
+        """
         last_run = demisto.getLastRun()
 
         if not last_run.get('next_time'):

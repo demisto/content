@@ -35,12 +35,12 @@ def calculate_next_run(time):
 def test_fetch_incidents_few_incidents(mocker):
     """
     Given
-        - raw response of the http request
+        - 3 events was created in Jira side in the last 3 days.
     When
-        - fetching incidents
+        - fetch-events is running (with max_fetch set to 100).
     Then
-        - check the number of incidents that are being created
-        check that the time in last_run is the on of the latest incident
+        - Verify that all 3 events were created in XSIAM.
+        - Verify last_run was set as expected.
     """
 
     mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
@@ -58,19 +58,19 @@ def test_fetch_incidents_few_incidents(mocker):
     assert last_run.return_value.get('from') == calculate_next_run(incidents.call_args[0][0][0].get('occurred')[:-1])
     assert not last_run.return_value.get('next_time')
     assert last_run.return_value.get('offset') == 0
-    assert incidents.call_args[0][0][0].get('name') == 'JiraSIEM - User Changed - 3'
+    assert len(incidents.call_args[0][0]) == 3
 
 
 @freeze_time('2022-04-14T00:00:00Z')
 def test_fetch_events_no_incidents(mocker):
     """
     Given
-        - raw response of the http request
+        - No events was created in Jira side in the last 3 days.
     When
-        - fetching incidents
+        - fetch-events is running.
     Then
-        - check the number of incidents that are being created
-        check that the time in last_run is the on of the latest incident
+        - Make sure no events was created in XSIAM.
+        - Make sure last_run was set as expected.
     """
 
     mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
@@ -93,15 +93,17 @@ def test_fetch_events_no_incidents(mocker):
 def test_fetch_events_max_fetch_set_to_one(mocker):
     """
     Given
-        - raw response of the http request
+        - 3 events was created in Jira side in the last 3 days.
     When
-        - fetching incidents
+        - fetch-events is running (with max_fetch set to 1).
     Then
-        - check the number of incidents that are being created
-        check that the time in last_run is the on of the latest incident
+        - Verify that only 1 event were created in XSIAM.
+        - Verify last_run was set as expected.
     """
+
     params = DEMISTO_PARAMS
     params['max_fetch'] = 1
+
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'args', return_value={})
     last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
@@ -117,4 +119,4 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
     assert not last_run.return_value.get('from')
     assert last_run.return_value.get('next_time') == '2022-04-12T18:45:42.968'
     assert last_run.return_value.get('offset') == 1
-    assert incidents.call_args[0][0][0].get('name') == 'JiraSIEM - User Changed - 3'
+    assert len(incidents.call_args[0][0]) == 1
