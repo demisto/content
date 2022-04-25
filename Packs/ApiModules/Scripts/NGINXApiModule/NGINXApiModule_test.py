@@ -1,8 +1,10 @@
+from CommonServerPython import DemistoException
 import pytest
 import requests
 import demistomock as demisto
 from pathlib import Path
 import os
+from pytest import raises
 from pytest_mock import MockerFixture
 from time import sleep
 import subprocess
@@ -179,3 +181,21 @@ def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
     # make sure log was rolled over files should be of size 0
     assert not Path(module.NGINX_SERVER_ACCESS_LOG).stat().st_size
     assert not Path(module.NGINX_SERVER_ERROR_LOG).stat().st_size
+
+
+def test_nginx_web_server_is_down(requests_mock, capfd):
+    import NGINXApiModule as module
+    with capfd.disabled():
+        requests_mock.get('http://localhost:9009/nginx-test', status_code=404)
+        with raises(DemistoException,
+                    match='Testing nginx server: 404 Client Error: None for url: http://localhost:9009/nginx-test'):
+            module.test_nginx_web_server(9009, {})
+
+
+def test_nginx_web_server_is_up_running(requests_mock):
+    import NGINXApiModule as module
+    requests_mock.get('http://localhost:9009/nginx-test', status_code=200, text='Welcome to nginx')
+    try:
+        module.test_nginx_web_server(9009, {})
+    except DemistoException as ex:
+        assert False, f'Raised an exception unexpectedly. {ex}'
