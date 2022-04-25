@@ -58,7 +58,7 @@ def test_fetch_incidents_few_incidents(mocker):
     assert last_run.return_value.get('from') == calculate_next_run(incidents.call_args[0][0][0].get('occurred')[:-1])
     assert not last_run.return_value.get('next_time')
     assert last_run.return_value.get('offset') == 0
-    assert incidents.call_args[0][0][0].get('name') == f'JiraSIEM - User Changed - 3'
+    assert incidents.call_args[0][0][0].get('name') == 'JiraSIEM - User Changed - 3'
 
 
 @freeze_time('2022-04-14T00:00:00Z')
@@ -117,5 +117,4 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
     assert not last_run.return_value.get('from')
     assert last_run.return_value.get('next_time') == '2022-04-12T18:45:42.968'
     assert last_run.return_value.get('offset') == 1
-    assert incidents.call_args[0][0][0].get('name') == f'JiraSIEM - User Changed - 3'
-
+    assert incidents.call_args[0][0][0].get('name') == 'JiraSIEM - User Changed - 3'

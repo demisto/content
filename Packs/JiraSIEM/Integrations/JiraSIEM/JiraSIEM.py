@@ -23,11 +23,10 @@ class Method(str, Enum):
 
 
 class Args(BaseModel):
+    from_day = demisto.params().get('first_fetch', '3 days')
+    default_from_day = datetime.now() - timedelta(days=3)
     from_: str = Field(
-        datetime.strftime(
-            dateparser.parse(demisto.params().get('first_fetch', '3 days'), settings={'TIMEZONE': 'UTC'}),
-            DATETIME_FORMAT
-        ),
+        datetime.strftime(dateparser.parse(from_day, settings={'TIMEZONE': 'UTC'}) or default_from_day, DATETIME_FORMAT),
         alias='from'
     )
     limit: int = 1000
@@ -35,11 +34,10 @@ class Args(BaseModel):
 
 
 class ReqParams(BaseModel):
+    from_day = demisto.params().get('first_fetch', '3 days')
+    default_from_day = datetime.now() - timedelta(days=3)
     from_: str = Field(
-        datetime.strftime(
-            dateparser.parse(demisto.params().get('first_fetch', '3 days'), settings={'TIMEZONE': 'UTC'}),
-            DATETIME_FORMAT
-        ),
+        datetime.strftime(dateparser.parse(from_day, settings={'TIMEZONE': 'UTC'}) or default_from_day, DATETIME_FORMAT),
         alias='from'
     )
     limit: int = 1000
@@ -50,7 +48,7 @@ class Request(BaseModel):
     method: Method
     url: AnyUrl
     headers: Union[Json, dict] = {}
-    params: Optional[ReqParams]
+    params: ReqParams
     insecure: bool = Field(not demisto.params().get('insecure', False), alias='verify')
     proxy: bool = Field(demisto.params().get('proxy', False), alias='proxies')
     data: Optional[str]
@@ -119,7 +117,7 @@ class GetEvents:
             self.client.prepare_next_run(self.client.request.params.limit)
             events = self.call()
 
-    def run(self, max_fetch: int = 100) -> list[dict]:
+    def run(self, max_fetch: int = 100) -> List[dict]:
         stored = []
         last_run = demisto.getLastRun()
 
@@ -151,6 +149,9 @@ class GetEvents:
 
     @staticmethod
     def set_next_run(log: dict) -> dict:
+        '''
+            Handles the last_run
+        '''
         last_run = demisto.getLastRun()
 
         if not last_run.get('next_time'):
@@ -170,7 +171,6 @@ class GetEvents:
 
 
 def main():
-
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
 
@@ -185,7 +185,7 @@ def main():
         get_events.run(max_fetch=1)
         demisto.results('ok')
 
-    else:
+    elif command == 'fetch-events':
         events = get_events.run(int(demisto_params.get('max_fetch', 100)))
 
         if events:
