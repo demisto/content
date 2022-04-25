@@ -1,5 +1,6 @@
+import json
 import requests_mock
-from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths                          # noqa: E501
+from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, convert_inline_image_to_encoded                          # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import *
 import demistomock as demisto
@@ -658,3 +659,17 @@ def test_addBaseUrlToPartialPaths():
 
     assert ialink_output == IA_link_expected_output
     assert imagelink_output == image_link_expected_output
+
+
+def test_convert_inline_image_to_encoded():
+    md_text = "China has.\n\n ![Arctic Map](https://intelgraph.idefense.com/rest/files/download/0f/6c/6f/91de9ef8d8d38345dc270f8915d9faa496a00b5babe2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg)"
+    url = "https://intelgraph.idefense.com/rest/files/download/0f/6c/6f/91de9ef8d8d38345dc270f8915d9faa496a00b5babe2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg"
+    status_code = 200
+    expected_res = "China has.\n\n ![Arctic Map](data:image/jpg;base64,eyJjb250ZW50IjogIkNoaW5hIGhhcy5cblxuICFbQXJjdGljIE1hcF0oZGF0YTppbWFnZS9qcGc7YmFzZTY0LCkifQ==)"
+    raw_res = {
+        'content': 'China has.\n\n ![Arctic Map](data:image/jpg;base64,)'
+    }
+    with requests_mock.Mocker() as m:
+        m.get(url, status_code = status_code, json=raw_res)
+        res = convert_inline_image_to_encoded(md_text)
+        assert res == expected_res
