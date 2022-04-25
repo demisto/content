@@ -36,8 +36,9 @@ There are two flows to authenticate in self-deployed mode
 7. Enter your redirect URI in the ***Redirect URI*** parameter.
 
 
-## Authorize Cortex XSOAR for Azure Log Analytics (client-credentials configuration)
+### Authorize Cortex XSOAR for Azure Log Analytics (client-credentials configuration)
 
+---
 Follow these steps for client-credentials configuration.
 
 1. In the instance configuration, select the ***client-credentials*** checkbox.
