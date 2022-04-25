@@ -1740,6 +1740,39 @@ Get list of incidents.
 >| some-id | XSOAR-1337 | firstLine | some-caller | Logged |
 
 
+### topdesk-incident-actions
+***
+List all actions for specific incident
+
+#### Permissions:
+**Operator**:
+
+**Persons**:
+
+#### Base Command
+
+`topdesk-incident-actions-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident id. An id or a number must be set. If both are set, the id will be used | Optional |
+| incident_number | The incident number. An id or a number must be set. If both are set, the id will be used | Optional |
+| limit | The limit for the amount of actions. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TOPdesk.Action.EntryDate | Date | |
+| TOPdesk.Action.Flag | Unknown | | 
+| TOPdesk.Action.Operator.Id | String | |
+| TOPdesk.Action.Operator.Name | String | |
+| TOPdesk.Action.InvisibleForCaller | Bool | |
+| TOPdesk.Action.Person | String | |
+| TOPdesk.Action.Id | String | |
+| TOPdesk.Action.Memotext | String | |
+
 ### topdesk-incident-create
 ***
 Create an incident in TOPdesk.

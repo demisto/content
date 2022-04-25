@@ -7,7 +7,9 @@ from TOPdesk import Client, INTEGRATION_NAME, MAX_API_PAGE_SIZE, \
     list_persons_command, list_operators_command, branches_command, get_incidents_list_command, \
     get_incidents_with_pagination, incident_do_command, incident_touch_command, attachment_upload_command, \
     escalation_reasons_command, deescalation_reasons_command, archiving_reasons_command, capitalize_for_outputs, \
-    list_attachments_command
+    list_attachments_command, get_mapping_fields_command
+
+# TODO: add tests for get_remote_data_command, update_remote_system_command, get_modified_remote_data_command
 
 
 def util_load_json(path):
@@ -878,34 +880,40 @@ def test_unsupported_old_query_param(client, command_args):
 @pytest.mark.parametrize('topdesk_incidents_override, last_fetch_time, updated_fetch_time', [
     ([{  # Last fetch is before incident creation
         'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
         'creationDate': '2020-02-10T06:32:36.303000+0000',
         'occurred': '2020-02-10T06:32:36Z',
         'will_be_fetched': True
     }], '2020-01-11T06:32:36.303000+0000', '2020-02-10T06:32:36.303000+0000'),
     ([{  # Last fetch is after one incident creation and before other.
         'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
         'creationDate': '2020-01-10T06:32:36.303000+0000',
         'occurred': '2020-01-10T06:32:36Z',
         'will_be_fetched': False
     }, {
         'number': 'TEST-2',
+        'briefDescription': 'some_brief_description',
         'creationDate': '2020-03-10T06:32:36.303000+0000',
         'occurred': '2020-03-10T06:32:36Z',
         'will_be_fetched': True
     }], '2020-02-11T06:32:36.303000+0000', '2020-03-10T06:32:36.303000+0000'),
     ([{  # Last fetch is at incident creation
         'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
         'creationDate': '2020-02-10T06:32:36.303+0000',
         'occurred': '2020-02-10T06:32:36Z',
         'will_be_fetched': False
     }], '2020-02-10T06:32:36.303000+0000', '2020-02-10T06:32:36.303000+0000'),
     ([{  # Same incident returned twice.
         'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
         'creationDate': '2020-03-10T06:32:36.303000+0000',
         'occurred': '2020-03-10T06:32:36Z',
         'will_be_fetched': True
     }, {
         'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
         'creationDate': '2020-03-10T06:32:36.303000+0000',
         'occurred': '2020-03-10T06:32:36Z',
         'will_be_fetched': False
@@ -929,10 +937,13 @@ def test_fetch_incidents(client, requests_mock, topdesk_incidents_override, last
         response_incident = mock_topdesk_incident.copy()
         response_incident['number'] = incident_override['number']
         response_incident['creationDate'] = incident_override['creationDate']
+        response_incident['mirror_direction'] = None
+        response_incident['mirror_tags'] = [None, None, None]
+        response_incident['mirror_instance'] = ""
         mock_topdesk_response.append(response_incident)
         if incident_override['will_be_fetched']:
             expected_incidents.append({
-                'name': f"TOPdesk incident {incident_override['number']}",
+                'name': f"{incident_override['briefDescription']}",
                 'details': json.dumps(response_incident),
                 'occurred': incident_override['occurred'],
                 'rawJSON': json.dumps(response_incident),
@@ -946,7 +957,9 @@ def test_fetch_incidents(client, requests_mock, topdesk_incidents_override, last
     }
     last_fetch, incidents = fetch_incidents(client=client,
                                             last_run=last_run,
-                                            demisto_params={})
+                                            demisto_params={
+                                                'mirror_direction': 'both'
+                                            })
 
     assert len(incidents) == len(expected_incidents)
     for incident, expected_incident in zip(incidents, expected_incidents):
@@ -955,3 +968,26 @@ def test_fetch_incidents(client, requests_mock, topdesk_incidents_override, last
         assert incident['occurred'] == expected_incident['occurred']
         assert incident['rawJSON'] == expected_incident['rawJSON']
     assert last_fetch == {'last_fetch': updated_fetch_time}
+
+
+def test_get_mapping_fields(client):
+    """
+    Given:
+        -  TOPdesk client
+        -  TOPdesk mapping fields
+    When
+        - running get_mapping_fields_command
+    Then
+        - the result fits the expected mapping.
+    """
+    # client = Client(base_url='https://server_url.com/', verify=False, auth=("username","password"))
+    res = get_mapping_fields_command(client)
+    expected_mapping = {
+        "incident": {
+            'processingStatus': "",
+            'priority': "",
+            'urgency': "",
+            'impact': ""
+        }
+    }
+    assert expected_mapping == res.extract_mapping()
