@@ -138,9 +138,9 @@ get specific device by ID
 
 ##### Human Readable Output
 ### Device
-|agent_version|brain_version|connectivity_status|deployment_status|distinguished_name|domain|group_id|group_name|hostname|id|ip_address|last_contact|last_registration|license_status|log_status|logged_in_users|mac_address|msp_id|msp_name|os|osv|policy_id|policy_name|scanned_files|tag|tenant_id|tenant_name|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-3.3.1.15 | 126w | ONLINE | REGISTERED | 2022-01-09T07:05:18.406894Z | CN=TEST-DC,OU=Computers,OU=acme,DC=acme,DC=local | acme.local | 13 | Windows Servers | TEST-DC | 12 | 10.10.10.10 | 2022-01-14T01:33:01.512439Z | 2020-03-20T21:48:14.771125Z | ACTIVATED | NA |  | 00:50:56:bd:47:ef | 2 | Server Lab | WINDOWS_SERVER | Windows Server 2016 Datacenter | 13 | Windows Servers | 2065772 |  | 4 | Server Lab
+>|agent_version|brain_version|connectivity_status|deployment_status|distinguished_name|domain|group_id|group_name|hostname|id|ip_address|last_contact|last_registration|license_status|log_status|logged_in_users|mac_address|msp_id|msp_name|os|osv|policy_id|policy_name|scanned_files|tag|tenant_id|tenant_name|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>3.3.1.15 | 126w | ONLINE | REGISTERED | 2022-01-09T07:05:18.406894Z | CN=TEST-DC,OU=Computers,OU=acme,DC=acme,DC=local | acme.local | 13 | Windows Servers | TEST-DC | 12 | 10.10.10.10 | 2022-01-14T01:33:01.512439Z | 2020-03-20T21:48:14.771125Z | ACTIVATED | NA |  | 00:50:56:bd:47:ef | 2 | Server Lab | WINDOWS_SERVER | Windows Server 2016 Datacenter | 13 | Windows Servers | 2065772 |  | 4 | Server Lab
 
 
 ### 2. deepinstinct-get-events
