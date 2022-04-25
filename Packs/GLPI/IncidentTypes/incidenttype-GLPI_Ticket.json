@@ -1,0 +1,27 @@
+{
+    "autorun": false,
+    "color": "#7C71F5",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "GLPI Ticket",
+    "layout": "440a091b-8f42-4393-8467-d80d3968e578",
+    "locked": false,
+    "name": "GLPI Ticket",
+    "onChangeRepAlg": 1,
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.2.0"
+}

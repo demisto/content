@@ -86,6 +86,12 @@ configuration:
     defaultvalue: comments
     type: 0
     additionalinfo: null
+  - name: file_tag
+    display: Tag used for file mirroring
+    required: false
+    defaultvalue: forGLPI
+    type: 0
+    additionalinfo: null
   - name: first_fetch
     display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
     required: false

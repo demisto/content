@@ -1,0 +1,53 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "959face3-9d84-4034-83f5-8edf90baaa01",
+    "keyTypeMap": {
+        "Incident": "GLPI Ticket",
+        "Request": "GLPI Ticket"
+    },
+    "name": "GLPI - Classifier",
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": "type",
+            "transformers": [
+                {
+                    "args": {
+                        "limit": {},
+                        "replaceWith": {
+                            "value": {
+                                "simple": "Incident"
+                            }
+                        },
+                        "toReplace": {
+                            "value": {
+                                "simple": "1"
+                            }
+                        }
+                    },
+                    "operator": "replace"
+                },
+                {
+                    "args": {
+                        "limit": {},
+                        "replaceWith": {
+                            "value": {
+                                "simple": "Request"
+                            }
+                        },
+                        "toReplace": {
+                            "value": {
+                                "simple": "2"
+                            }
+                        }
+                    },
+                    "operator": "replace"
+                }
+            ]
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}
