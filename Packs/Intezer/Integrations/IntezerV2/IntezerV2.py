@@ -254,7 +254,7 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
                     enrich_dbot_and_display_endpoint_analysis_results(analysis_result, indicator_name))
             elif analysis_result and analysis_type == 'Url':
                 command_results.append(
-                    enrich_dbot_and_display_url_analysis_results(analysis_result))
+                    enrich_dbot_and_display_url_analysis_results(analysis_result, intezer_api))
             elif analysis_result:
                 command_results.append(enrich_dbot_and_display_file_analysis_results(analysis_result))
 
@@ -446,15 +446,7 @@ def enrich_dbot_and_display_file_analysis_results(intezer_result):
     if verdict == 'malicious':
         file['Malicious'] = {'Vendor': 'Intezer'}
 
-    md = tableToMarkdown('Analysis Report', intezer_result, url_keys=['analysis_url'])
-
-    presentable_result = '## Intezer File analysis result\n'
-    presentable_result += f' SHA256: {sha256}\n'
-    presentable_result += f' Verdict: **{verdict}** ({intezer_result["sub_verdict"]})\n'
-    if 'family_name' in intezer_result:
-        presentable_result += f'Family: **{intezer_result["family_name"]}**\n'
-    presentable_result += f'[Analysis Link]({intezer_result["analysis_url"]})\n'
-    presentable_result += md
+    presentable_result = _file_analysis_presentable_code(intezer_result, sha256, verdict)
 
     return CommandResults(
         readable_output=presentable_result,
@@ -467,8 +459,34 @@ def enrich_dbot_and_display_file_analysis_results(intezer_result):
     )
 
 
-def enrich_dbot_and_display_url_analysis_results(intezer_result):
-    summary = intezer_result['summary']
+def _file_analysis_presentable_code(intezer_result: dict, sha256: str = None, verdict: str = None):
+    if not sha256:
+        sha256 = intezer_result['sha256']
+    if not verdict:
+        verdict = intezer_result['verdict']
+
+    md = tableToMarkdown('Analysis Report', intezer_result, url_keys=['analysis_url'])
+    presentable_result = '## Intezer File analysis result\n'
+    presentable_result += f' SHA256: {sha256}\n'
+    presentable_result += f' Verdict: **{verdict}** ({intezer_result["sub_verdict"]})\n'
+    if 'family_name' in intezer_result:
+        presentable_result += f'Family: **{intezer_result["family_name"]}**\n'
+    presentable_result += f'[Analysis Link]({intezer_result["analysis_url"]})\n'
+    presentable_result += md
+    return presentable_result
+
+
+def get_indicator_text(classification: str, indicators: dict) -> str:
+    if classification in indicators:
+        return f'{classification.capitalize()}: {", ".join(indicators[classification])}'
+    return ''
+
+
+def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
+    summary = intezer_result.pop('summary')
+    _refine_gene_counts(summary)
+
+    intezer_result.update(summary)
     verdict = summary['title']
     submitted_url = intezer_result['submitted_url']
     analysis_id = intezer_result['analysis_id']
@@ -485,18 +503,39 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result):
     if verdict == 'malicious':
         url['Malicious'] = {'Vendor': 'Intezer'}
 
-    md = tableToMarkdown('Analysis Report', intezer_result, url_keys=['analysis_url'])
+    if 'redirect_chain' in intezer_result:
+        redirect_chain = ' → '.join(f'{node["response_status"]}: {node["url"]}'
+                                    for node in intezer_result['redirect_chain'])
+        intezer_result['redirect_chain'] = redirect_chain
+
+    if 'indicators' in intezer_result:
+        indicators = {}
+        for indicator in intezer_result['indicators']:
+            indicators.setdefault(indicator["classification"], []).append(indicator["text"])
+        indicators_text = [
+            get_indicator_text('malicious', indicators),
+            get_indicator_text('suspicious', indicators),
+            get_indicator_text('informative', indicators),
+        ]
+
+        intezer_result['indicators'] = '\n'.join(indicator_text for indicator_text in indicators_text if indicator_text)
 
     presentable_result = '## Intezer Url analysis result\n'
     presentable_result += f' Url: {submitted_url}\n'
     presentable_result += f' Verdict: **{verdict}** ({summary["verdict_name"]})\n'
+    presentable_result += f'[Analysis Link]({intezer_result["analysis_url"]})\n'
 
+    downloaded_file_presentable_result = ''
     if 'downloaded_file' in intezer_result:
-        downloaded_file = intezer_result['downloaded_file']
+        downloaded_file = intezer_result.pop('downloaded_file')
         presentable_result += f'Downloaded file SHA256: {downloaded_file["sha256"]}\n'
         presentable_result += f'Downloaded file Verdict: **{downloaded_file["analysis_summary"]["verdict_type"]}**\n'
-    presentable_result += f'[Analysis Link]({intezer_result["analysis_url"]})\n'
-    presentable_result += md
+        downloaded_file_analysis = get_file_analysis_by_id(downloaded_file['analysis_id'], intezer_api)
+        downloaded_file_presentable_result = _file_analysis_presentable_code(downloaded_file_analysis.result())
+
+    md = tableToMarkdown('Analysis Report', intezer_result, url_keys=['analysis_url'])
+    presentable_result += md + downloaded_file_presentable_result
+
 
     return CommandResults(
         readable_output=presentable_result,
@@ -507,6 +546,15 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result):
             'Intezer.Analysis(val.ID && val.ID == obj.ID)': {'ID': analysis_id, 'Status': 'Done'}
         }
     )
+
+
+def _refine_gene_counts(summary: dict):
+    summary.pop('main_connection_gene_count', None)
+    summary.pop('main_connection_gene_percentage', None)
+    summary.pop('main_connection', None)
+    summary.pop('main_connection_family_id', None)
+    summary.pop('main_connection_software_type', None)
+    summary.pop('main_connection_classification', None)
 
 
 def enrich_dbot_and_display_endpoint_analysis_results(intezer_result, indicator_name=None) -> CommandResults:

@@ -142,6 +142,7 @@ script:
           predefined:
             - File
             - Endpoint
+            - Url
           required: false
           secret: false
         - default: false
