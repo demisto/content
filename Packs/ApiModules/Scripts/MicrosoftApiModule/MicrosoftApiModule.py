@@ -9,8 +9,6 @@ import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Tuple, List, Optional
 
-#CHANGE nnnn
-
 
 class Scopes:
     graph = 'https://graph.microsoft.com/.default'
