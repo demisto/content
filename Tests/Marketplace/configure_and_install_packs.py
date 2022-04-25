@@ -45,8 +45,6 @@ def install_packs(servers, pack_ids_to_install_path):
         installed_content_packs_successfully: Whether packs installed successfully
     """
     pack_ids = Build.fetch_pack_ids_to_install(pack_ids_to_install_path)
-    logging.info(f'{pack_ids}')
-
     installed_content_packs_successfully = True
     for server in servers:
         try:
