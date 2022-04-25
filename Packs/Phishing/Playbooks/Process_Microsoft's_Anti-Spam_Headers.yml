@@ -1189,7 +1189,7 @@ tasks:
               period_matches_newline: {}
               regex:
                 value:
-                  simple: '[5-9]'
+                  simple: '[4-9]'
           - operator: uniq
     separatecontext: false
     view: |-

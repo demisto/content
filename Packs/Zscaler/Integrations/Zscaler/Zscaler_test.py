@@ -1,5 +1,6 @@
 import demistomock as demisto
 import CommonServerPython
+from CommonServerPython import urljoin
 import pytest
 import json
 import requests_mock
@@ -62,6 +63,20 @@ def test_url_command(mocker):
                      response_path='test_data/responses/url.json',
                      expected_result_path='test_data/results/url.json',
                      mocker=mocker)
+
+
+def test_url_fails_unknown_error_code(mocker, requests_mock):
+    """url"""
+    import Zscaler
+    Zscaler.BASE_URL = 'http://cloud/api/v1'
+
+    requests_mock.post(urljoin(Zscaler.BASE_URL, 'urlLookup'), status_code=501)
+    args = {'url': 'https://www.demisto-news.com,https://www.demisto-search.com'}
+
+    try:
+        Zscaler.url_lookup(args)
+    except Exception as ex:
+        assert 'following error: 501' in str(ex)
 
 
 def test_url_command_with_urlClassificationsWithSecurityAlert(mocker):

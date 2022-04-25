@@ -73,7 +73,7 @@ script:
     - contextPath: Armorblox.Threat.remediation_actions
       description: Should be the remediation action name for the incident under inspection
       type: string
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   isfetch: true
   runonce: false
   script: ''

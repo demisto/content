@@ -22,3 +22,7 @@ Findings Minimum Asset Category: This parameter helps to filter the record based
 Findings Grade: This parameter helps to filter the record based on Grade. You can choose multiple grades listed. 
 
 Risk Vector: Parameter helps to filter the record based on Risk Vector. By default 'All' will be selected, if you need only particular values you can unselect 'All' and select the required values Listed.
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/bit-sight-for-security-performance-management)

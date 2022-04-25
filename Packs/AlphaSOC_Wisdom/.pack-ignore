@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:AlphaSOCWisdom.yml]
 ignore=IN145
+
+[file:AlphaSOCWisdom_image.png]
+ignore=IM111

@@ -12,7 +12,7 @@ To use the Cortex XSOAR Azure app, use the default application ID `4ffef4a4-601f
 To use a self-deployed Azure app, add a new Azure App Registration in the Azure Portal
 1. The app must allow public client flows (which can be found under the **Authentication** section of the app).
 2. The app must be multi-tenant.
-3. The app should be granted the permissions listed in the [required permissions](#required-permissions) section above. 
+3. The app should be granted the permissions listed in [here](https://xsoar.pan.dev/docs/reference/integrations/azure-active-directory-identity-protection#required-permissions). 
 4. Copy the **Application (client) ID** and **Subscription ID** in the Azure Portal and add it to the instance settings in Cortex XSOAR. 
  
 ---

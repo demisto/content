@@ -43,7 +43,7 @@ description: Zscaler is a cloud security solution built for performance and flex
   scalability. This integration enables you to manage URL and IP address allow lists
   and block lists, manage and update categories, get Sandbox reports, and manually
   log in, log out, and activate changes in a Zscaler session.
-display: Zscaler
+display: Zscaler Internet Access
 name: Zscaler
 script:
   commands:

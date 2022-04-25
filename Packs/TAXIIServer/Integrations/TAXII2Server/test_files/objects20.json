@@ -1,0 +1,242 @@
+{
+    "id": "bundle--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
+    "objects": [
+        {
+            "created": "2021-12-08T09:32:24.104143Z",
+            "extensions": {
+                "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
+                    "CustomFields": {
+                        "service": "Daily Threat Feed"
+                    },
+                    "aggregatedReliability": "A - Completely reliable",
+                    "calculatedTime": "2021-12-08T09:32:24.104143+02:00",
+                    "comments": [
+                        {
+                            "category": "Sighting",
+                            "content": "Sighted",
+                            "created": "2021-12-08T12:05:28.570995+02:00",
+                            "entryId": "",
+                            "id": "f814296f-6dca-4c88-86ad-68fd3871ecfa",
+                            "modified": "0001-01-01T00:00:00Z",
+                            "sortValues": null,
+                            "source": "Some Feed.Some Feed_instance_1",
+                            "type": "IndicatorCommentTimeLine",
+                            "user": "@DBot",
+                            "version": 0
+                        }
+                    ],
+                    "expiration": "2021-12-15T12:05:31.570698+02:00",
+                    "expirationSource": {
+                        "brand": "Some Feed",
+                        "expirationInterval": 10080,
+                        "expirationPolicy": "indicatorType",
+                        "instance": "Some Feed_instance_1",
+                        "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                        "setTime": "2021-12-08T12:05:28.570985+02:00",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "expirationStatus": "active",
+                    "extension_type": "property_extension",
+                    "firstSeen": "0001-01-01T00:00:00Z",
+                    "firstSeenEntryID": "API",
+                    "id": "5188347",
+                    "indicator_type": "IP",
+                    "lastSeen": "0001-01-01T00:00:00Z",
+                    "lastSeenEntryID": "API",
+                    "modified": "2021-12-08T12:05:28.617414+02:00",
+                    "modifiedTime": "2021-12-08T12:05:11+02:00",
+                    "moduleToFeedMap": {
+                        "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15": {
+                            "ExpirationSource": {
+                                "brand": "Some Feed",
+                                "expirationInterval": 10080,
+                                "expirationPolicy": "indicatorType",
+                                "instance": "Some Feed_instance_1",
+                                "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                                "setTime": "2021-12-08T12:05:28.570985+02:00",
+                                "source": "indicatorType",
+                                "user": ""
+                            },
+                            "bypassExclusionList": false,
+                            "classifierId": "",
+                            "classifierVersion": 0,
+                            "expirationInterval": 20160,
+                            "expirationPolicy": "indicatorType",
+                            "fetchTime": "2021-12-08T12:05:11+02:00",
+                            "fields": {
+                                "service": "Daily Threat Feed"
+                            },
+                            "isEnrichment": false,
+                            "mapperId": "",
+                            "mapperVersion": 0,
+                            "modifiedTime": "2021-12-08T12:05:11+02:00",
+                            "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                            "rawJSON": null,
+                            "reliability": "A - Completely reliable",
+                            "score": 3,
+                            "sourceBrand": "Some Feed",
+                            "sourceInstance": "Some Feed_instance_1",
+                            "timestamp": "0001-01-01T00:00:00Z",
+                            "type": "IP",
+                            "value": "8.8.8.8"
+                        }
+                    },
+                    "score": 3,
+                    "sortValues": [
+                        " \u0001\u0016_-f0\u000b\u0019Q\u0018",
+                        "5188347"
+                    ],
+                    "sourceBrands": [
+                        "Some Feed"
+                    ],
+                    "sourceInstances": [
+                        "Some Feed_instance_1"
+                    ],
+                    "timestamp": "2021-12-08T09:32:24.104143+02:00",
+                    "value": "8.8.8.8",
+                    "version": 15
+                }
+            },
+            "id": "ipv4-addr--2f689bf9-0ff2-545f-aa61-e495eb8cecc7",
+            "modified": "2021-12-08T12:05:28.617414Z",
+            "spec_version": "2.0",
+            "type": "ipv4-addr",
+            "value": "8.8.8.8"
+        },
+        {
+            "created": "2021-12-08T09:32:24.104143Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
+            "modified": "2021-12-08T12:05:28.617414Z",
+            "name": "Cortex XSOAR TIM IP",
+            "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.0",
+            "type": "extension-definition",
+            "version": "1.0"
+        },
+        {
+            "created": "2021-12-08T09:32:24.102219Z",
+            "extensions": {
+                "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
+                    "CustomFields": {
+                        "service": "Daily Threat Feed"
+                    },
+                    "aggregatedReliability": "A - Completely reliable",
+                    "calculatedTime": "2021-12-08T09:32:24.102219+02:00",
+                    "comments": [
+                        {
+                            "category": "Sighting",
+                            "content": "Sighted",
+                            "created": "2021-12-08T12:05:28.566272+02:00",
+                            "entryId": "",
+                            "id": "ed12a2bf-8aea-4492-8181-975f456d303f",
+                            "modified": "0001-01-01T00:00:00Z",
+                            "sortValues": null,
+                            "source": "Some Feed.Some Feed_instance_1",
+                            "type": "IndicatorCommentTimeLine",
+                            "user": "@DBot",
+                            "version": 0
+                        }
+                    ],
+                    "expiration": "2021-12-15T12:05:31.570698+02:00",
+                    "expirationSource": {
+                        "brand": "Some Feed",
+                        "expirationInterval": 10080,
+                        "expirationPolicy": "indicatorType",
+                        "instance": "Some Feed_instance_1",
+                        "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                        "setTime": "2021-12-08T12:05:28.566261+02:00",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "expirationStatus": "active",
+                    "extension_type": "property_extension",
+                    "firstSeen": "0001-01-01T00:00:00Z",
+                    "firstSeenEntryID": "API",
+                    "id": "5188266",
+                    "indicator_type": "IP",
+                    "lastSeen": "0001-01-01T00:00:00Z",
+                    "lastSeenEntryID": "API",
+                    "modified": "2021-12-08T12:05:28.615431+02:00",
+                    "modifiedTime": "2021-12-08T12:05:11+02:00",
+                    "moduleToFeedMap": {
+                        "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15": {
+                            "ExpirationSource": {
+                                "brand": "Some Feed",
+                                "expirationInterval": 10080,
+                                "expirationPolicy": "indicatorType",
+                                "instance": "Some Feed_instance_1",
+                                "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                                "setTime": "2021-12-08T12:05:28.566261+02:00",
+                                "source": "indicatorType",
+                                "user": ""
+                            },
+                            "bypassExclusionList": false,
+                            "classifierId": "",
+                            "classifierVersion": 0,
+                            "expirationInterval": 20160,
+                            "expirationPolicy": "indicatorType",
+                            "fetchTime": "2021-12-08T12:05:11+02:00",
+                            "fields": {
+                                "service": "Daily Threat Feed"
+                            },
+                            "isEnrichment": false,
+                            "mapperId": "",
+                            "mapperVersion": 0,
+                            "modifiedTime": "2021-12-08T12:05:11+02:00",
+                            "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                            "rawJSON": null,
+                            "reliability": "A - Completely reliable",
+                            "score": 3,
+                            "sourceBrand": "Some Feed",
+                            "sourceInstance": "Some Feed_instance_1",
+                            "timestamp": "0001-01-01T00:00:00Z",
+                            "type": "IP",
+                            "value": "1.1.1.1"
+                        }
+                    },
+                    "score": 3,
+                    "sortValues": [
+                        " \u0001\u0016_-f0\n$\u0019x",
+                        "5188266"
+                    ],
+                    "sourceBrands": [
+                        "Some Feed"
+                    ],
+                    "sourceInstances": [
+                        "Some Feed_instance_1"
+                    ],
+                    "timestamp": "2021-12-08T09:32:24.102219+02:00",
+                    "value": "1.1.1.1",
+                    "version": 15
+                }
+            },
+            "id": "ipv4-addr--cbd67181-b9f8-595b-8bc3-3971e34fa1cc",
+            "modified": "2021-12-08T12:05:28.615431Z",
+            "spec_version": "2.0",
+            "type": "ipv4-addr",
+            "value": "1.1.1.1"
+        },
+        {
+            "created": "2021-12-08T09:32:24.102219Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
+            "modified": "2021-12-08T12:05:28.615431Z",
+            "name": "Cortex XSOAR TIM IP",
+            "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.0",
+            "type": "extension-definition",
+            "version": "1.0"
+        }
+    ],
+    "type": "bundle"
+}

@@ -1,0 +1,57 @@
+commonfields:
+  id: Twilio
+  version: -1
+name: Twilio
+display: Twilio
+category: Messaging
+description: Send SMS notifications
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://api.twilio.com/2010-04-01/Accounts
+  type: 0
+  required: true
+- display: Account SID
+  name: sid
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Auth token
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Default sending number (e.g. +123456789101)
+  name: from
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: TwilioSendSMS
+    arguments:
+    - name: to
+      required: true
+      description: Phone number of SMS reciever (e.g. +123456789101)
+    - name: body
+      required: true
+      description: Message body
+    - name: from
+      description: Phone number of SMS sender (e.g. +123456789101)
+    description: send an SMS
+hidden: false
+fromversion: 5.0.0
+tests:
+- no test

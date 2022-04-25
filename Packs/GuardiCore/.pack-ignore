@@ -3,3 +3,7 @@ ignore=RM104
 
 [file:GuardiCoreV2.yml]
 ignore=IN144
+
+
+[file:GuardiCore_image.png]
+ignore=IM111

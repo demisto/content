@@ -54,6 +54,7 @@ FETCH_SIZE = int(param.get('fetch_size', 50))
 INSECURE = not param.get('insecure', False)
 TIME_METHOD = param.get('time_method', 'Simple-Date')
 TIMEOUT = int(param.get('timeout') or 60)
+MAP_LABELS = param.get('map_labels', True)
 
 
 def get_timestamp_first_fetch(last_fetch):
@@ -513,9 +514,12 @@ def results_to_incidents_timestamp(response, last_fetch):
                 inc = {
                     'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
                     'rawJSON': json.dumps(hit),
-                    'labels': incident_label_maker(hit.get('_source')),
                     'occurred': hit_date.isoformat() + 'Z'
                 }
+
+                if MAP_LABELS:
+                    inc['labels'] = incident_label_maker(hit.get('_source'))
+
                 incidents.append(inc)
 
     return incidents, last_fetch
@@ -551,15 +555,18 @@ def results_to_incidents_datetime(response, last_fetch):
                 inc = {
                     'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
                     'rawJSON': json.dumps(hit),
-                    'labels': incident_label_maker(hit.get('_source')),
                     # parse function returns iso format sometimes as YYYY-MM-DDThh:mm:ss+00:00
                     # and sometimes as YYYY-MM-DDThh:mm:ss
                     # we want to return format: YYYY-MM-DDThh:mm:ssZ in our incidents
                     'occurred': format_to_iso(hit_date.isoformat())
                 }
+
+                if MAP_LABELS:
+                    inc['labels'] = incident_label_maker(hit.get('_source'))
+
                 incidents.append(inc)
 
-    return incidents, format_to_iso(last_fetch.isoformat())
+    return incidents, last_fetch.isoformat()
 
 
 def format_to_iso(date_string):
@@ -571,6 +578,9 @@ def format_to_iso(date_string):
     Returns:
         str. A date string in the format: YYYY-MM-DDThh:mm:ssZ
     """
+    if '.' in date_string:
+        date_string = date_string.split('.')[0]
+
     if len(date_string) > 19 and not date_string.endswith('Z'):
         date_string = date_string[:-6]
 

@@ -1,0 +1,23 @@
+commonfields:
+  id: NexposeEmailParserForVuln
+  version: -1
+name: NexposeEmailParserForVuln
+script: ''
+type: javascript
+tags:
+- nexpose
+- ingestion
+comment: |-
+  Parses nexpose report into a clear table that contain risk score and vulnerability count for each server,
+  And creates a new incident for each server.
+system: true
+args:
+- name: report
+  description: Full XML contents of the Nexpose report. If not provided, it will be
+    taken from the Incident Details.
+scripttarget: 0
+dependson:
+  must:
+  - nexpose
+timeout: 0s
+fromversion: 5.0.0

@@ -39,9 +39,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      No:
+      'No':
       - '4'
-      Yes:
+      'Yes':
       - '2'
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 416,\n    \"y\": -80\n  }\n}"
@@ -117,9 +117,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      Yes:
+      'Yes':
       - '11'
-      no:
+      'No':
       - '5'
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 416,\n    \"y\": 601\n  }\n}"

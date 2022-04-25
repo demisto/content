@@ -1,0 +1,31 @@
+{
+  "id": "incident_microsoftdefenderforendpointevidencetype",
+  "version": -1,
+  "modified": "2022-02-21T15:53:35.218569+02:00",
+  "name": "Microsoft Defender for Endpoint Evidence Type",
+  "ownerOnly": false,
+  "cliName": "microsoftdefenderforendpointevidencetype",
+  "type": "multiSelect",
+  "closeForm": false,
+  "editForm": true,
+  "required": false,
+  "neverSetAsRequired": false,
+  "isReadOnly": false,
+  "useAsKpi": false,
+  "locked": false,
+  "system": false,
+  "content": true,
+  "group": 0,
+  "hidden": false,
+  "openEnded": true,
+  "associatedTypes": [
+    "Microsoft Defender For Endpoint"
+  ],
+  "associatedToAll": false,
+  "unmapped": false,
+  "unsearchable": true,
+  "caseInsensitive": true,
+  "sla": 0,
+  "threshold": 72,
+  "fromVersion": "5.5.0"
+}

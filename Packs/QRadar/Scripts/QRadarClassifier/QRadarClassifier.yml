@@ -1,0 +1,34 @@
+commonfields:
+  id: QRadarClassifier
+  version: -1
+name: QRadarClassifier
+deprecated: true
+script: ''
+type: javascript
+tags:
+- QRadar
+- Classifier
+comment: Deprecated. No available replacement. This script Classifies QRadar incidents.\nThe
+  'QRADAR_CATEGORIES' dictionary translate QRadar 'High level Categories' to its 'Demisto
+  Types' counterpart.\n\nFor custom categories, use the 'customCategories' argument.\nThe
+  offense high level category will be put to context.
+system: true
+args:
+- name: customCategories
+  default: true
+  description: 'Option to add custom Categories to the classifier, JSON with QRadar
+    high level category and their Demisto type counterparts. i.e {"QRadarCategory1"
+    : "DemistoType1", "QRadarCategory2" : "DemistoType2"} '
+- name: contextOutput
+  description: The High level category output. Default set to 'Classifier/Description'
+scripttarget: 0
+dependson:
+  must:
+  - qradar-searches
+outputs:
+- contextPath: Classifier/Description
+  description: The QRadar offense 'High level category'
+important:
+- contextPath: Classifier/Description
+  description: Classifier Description
+fromversion: 5.0.0

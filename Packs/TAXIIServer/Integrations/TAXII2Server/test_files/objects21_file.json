@@ -1,0 +1,162 @@
+{
+    "more": true,
+    "next": "3",
+    "objects": [
+        {
+            "created": "2021-12-28T14:58:19.711496Z",
+            "extensions": {
+                "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
+                    "CustomFields": {
+                        "sha1": "some_sha1_2"
+                    },
+                    "calculatedTime": "2021-12-28T14:58:19.704369+02:00",
+                    "comments": [
+                        {
+                            "category": "Sighting",
+                            "content": "Created",
+                            "created": "2021-12-28T14:58:19.627304+02:00",
+                            "entryId": "",
+                            "id": "c49a6bf4-8eb2-4a53-816a-a7b6b3fc1fc4",
+                            "modified": "0001-01-01T00:00:00Z",
+                            "sortValues": null,
+                            "source": "@DBot",
+                            "type": "IndicatorCommentTimeLine",
+                            "user": "@DBot",
+                            "version": 0
+                        }
+                    ],
+                    "expirationSource": {
+                        "brand": "",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "",
+                        "moduleId": "",
+                        "setTime": "2021-12-28T14:58:19.627296+02:00",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "expirationStatus": "active",
+                    "extension_type": "property_extension",
+                    "firstSeen": "2021-12-28T14:58:19.70437+02:00",
+                    "firstSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
+                    "id": "5214274",
+                    "indicator_type": "File",
+                    "investigationIDs": [
+                        "e99f97d1-7225-4c75-896c-3c960febbe8c"
+                    ],
+                    "lastReputationRun": "2021-12-28T14:58:19.002986+02:00",
+                    "lastSeen": "2021-12-28T14:58:19.704369+02:00",
+                    "lastSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
+                    "modified": "2021-12-28T14:58:19.711497+02:00",
+                    "score": 0,
+                    "sortValues": [
+                        " \u0001\u0016b;\u0012x\u00014~h",
+                        "5214274"
+                    ],
+                    "source": "DBot",
+                    "timestamp": "2021-12-28T14:58:19.711496+02:00",
+                    "value": "some_sha1_2",
+                    "version": 1
+                }
+            },
+            "id": "file--37bd8c5e-e9f9-5a3b-92d1-75c34907455f",
+            "modified": "2021-12-28T14:58:19.711497Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "some_sha1_2"
+        },
+        {
+            "created": "2021-12-28T14:58:19.711496Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
+            "modified": "2021-12-28T14:58:19.711497Z",
+            "name": "Cortex XSOAR TIM File",
+            "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.1",
+            "type": "extension-definition",
+            "version": "1.0"
+        },
+        {
+            "created": "2021-12-28T14:58:19.711459Z",
+            "extensions": {
+                "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
+                    "CustomFields": {
+                        "sha1": "some_sha1_3"
+                    },
+                    "calculatedTime": "2021-12-28T14:58:19.703576+02:00",
+                    "comments": [
+                        {
+                            "category": "Sighting",
+                            "content": "Created",
+                            "created": "2021-12-28T14:58:19.622504+02:00",
+                            "entryId": "",
+                            "id": "aa194f38-baa6-4818-8ad1-619570a1399b",
+                            "modified": "0001-01-01T00:00:00Z",
+                            "sortValues": null,
+                            "source": "@DBot",
+                            "type": "IndicatorCommentTimeLine",
+                            "user": "@DBot",
+                            "version": 0
+                        }
+                    ],
+                    "expirationSource": {
+                        "brand": "",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "",
+                        "moduleId": "",
+                        "setTime": "2021-12-28T14:58:19.622495+02:00",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "expirationStatus": "active",
+                    "extension_type": "property_extension",
+                    "firstSeen": "2021-12-28T14:58:19.703576+02:00",
+                    "firstSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
+                    "id": "5214272",
+                    "indicator_type": "File",
+                    "investigationIDs": [
+                        "e99f97d1-7225-4c75-896c-3c960febbe8c"
+                    ],
+                    "lastReputationRun": "2021-12-28T14:58:18.991725+02:00",
+                    "lastSeen": "2021-12-28T14:58:19.703576+02:00",
+                    "lastSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
+                    "modified": "2021-12-28T14:58:19.711461+02:00",
+                    "score": 0,
+                    "sortValues": [
+                        " \u0001\u0016b;\u0012x\u0001\u0004K@",
+                        "5214272"
+                    ],
+                    "source": "DBot",
+                    "timestamp": "2021-12-28T14:58:19.711459+02:00",
+                    "value": "some_sha1_3",
+                    "version": 1
+                }
+            },
+            "id": "file--e6c3aa71-d6be-56c3-85ee-b714df13f1f0",
+            "modified": "2021-12-28T14:58:19.711461Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "some_sha1_3"
+        },
+        {
+            "created": "2021-12-28T14:58:19.711459Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
+            "modified": "2021-12-28T14:58:19.711461Z",
+            "name": "Cortex XSOAR TIM File",
+            "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.1",
+            "type": "extension-definition",
+            "version": "1.0"
+        }
+    ]
+}

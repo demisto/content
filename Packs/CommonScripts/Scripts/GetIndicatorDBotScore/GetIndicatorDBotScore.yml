@@ -36,4 +36,4 @@ runonce: false
 fromversion: 5.0.0
 tests:
 - GetIndicatorDBotScore Test
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.1.25933

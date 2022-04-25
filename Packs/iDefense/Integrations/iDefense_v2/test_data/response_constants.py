@@ -85,6 +85,7 @@ IP_RES_JSON = {
           'key': '0.0.0.0',
           'last_modified': '2020-10-08T20:55:58.000Z',
           'last_published': '2018-01-04T15:22:25.000Z',
+          'last_seen': '2020-10-06T00:59:33.000Z',
           'last_seen_as': ['MALWARE_DOWNLOAD', 'MALWARE_C2'],
           'malware_family': [], 'replication_id': 1602190558122000000,
           'severity': 4,
@@ -124,6 +125,7 @@ DOMAIN_RES_JSON = {
             'display_text': 'mydomain.com',
             'key': 'mydomain.com',
             'last_published': '2021-08-12T19:12:58.000Z',
+            'last_seen': '2020-10-06T00:59:33.000Z',
             'last_seen_as': [
                 'MALWARE_C2'
             ],
@@ -172,6 +174,7 @@ UUID_RES_JSON={
             'display_text': 'mydomain.com',
             'key': 'mydomain.com',
             'last_published': '2021-08-12T19:12:58.000Z',
+            'last_seen': '2020-10-06T00:59:33.000Z',
             'last_seen_as': [
                 'MALWARE_C2'
             ],

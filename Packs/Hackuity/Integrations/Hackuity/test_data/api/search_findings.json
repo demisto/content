@@ -1,0 +1,43 @@
+{
+  "~~~NOTE~~~": "unknown data should be ignored",
+  "count": 2,
+  "kind": "hy#searchFindingList",
+  "limit": 20,
+  "offset": 0,
+  "searchFindings": [
+    {
+      "~~~NOTE~~~": "unknown data should be ignored",
+      "assetId": "DE9qZUZkOequ21mzpmTK69",
+      "assetAbsoluteName": "notcorebusiness.notld",
+      "assetType": "DOMAIN",
+      "findingStatus": {
+        "ignored": true,
+        "score": {
+          "environmental": 5.8,
+          "hyScore": 671
+        },
+        "state": "OPEN",
+        "subState": "POTENTIAL"
+      },
+      "findingId": "nDoKTtbR6tanVtgmtP5BQo",
+      "vulnTypeId": "123"
+    },
+    {
+      "assetAbsoluteName": "192.168.13.37",
+      "assetId": "zjLoHvffL9c3i2hyVCF3h2",
+      "assetType": "IPV4",
+      "findingId": "RE5isckTYGbU9LVCc76NTV",
+      "findingStatus": {
+        "score": {
+          "environmental": 10,
+          "hyScore": 980
+        },
+        "state": "CLOSED",
+        "subState": "FP"
+      },
+      "findingAttributes": { "cve_id": "CVE-2014-0160" },
+      "vulnTypeId": "456"
+    }
+  ],
+  "total": 2
+}

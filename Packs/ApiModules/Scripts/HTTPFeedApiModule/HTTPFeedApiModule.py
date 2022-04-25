@@ -531,13 +531,19 @@ def feed_main(feed_name, params=None, prefix=''):
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
             if is_demisto_version_ge('6.5.0'):
-                # we submit the indicators in batches
-                for b in batch(indicators, batch_size=2000):
-                    demisto.createIndicators(b, noUpdate=no_update)
+                if not indicators:
+                    demisto.createIndicators(indicators, noUpdate=no_update)  # type: ignore
+                else:
+                    # we submit the indicators in batches
+                    for b in batch(indicators, batch_size=2000):
+                        demisto.createIndicators(b, noUpdate=no_update)  # type: ignore
             else:
                 # call createIndicators without noUpdate arg
-                for b in batch(indicators, batch_size=2000):
-                    demisto.createIndicators(b)
+                if not indicators:
+                    demisto.createIndicators(indicators)  # type: ignore
+                else:
+                    for b in batch(indicators, batch_size=2000):  # type: ignore
+                        demisto.createIndicators(b)
 
         else:
             args = demisto.args()

@@ -526,7 +526,8 @@ class Client(BaseClient):
             if len(data) < 100:
                 no_data_flag = 1
                 page = 0
-                starting_date_from = (dateparser.parse(starting_date_to) + timedelta(seconds=1)).strftime(DATE_FORMAT)
+                starting_date_from = (dateparser.parse(starting_date_to)   # type: ignore
+                                      + timedelta(seconds=1)).strftime(DATE_FORMAT)
                 starting_date_to = datetime.now().strftime(DATE_FORMAT)
                 date_to = starting_date_to
             else:
@@ -537,8 +538,9 @@ class Client(BaseClient):
                     page = 0
                     for i in range(len(data) - 1, -1, -1):
                         if data[i].get("uploadTime") != data[-1].get("uploadTime"):
-                            date_to = (dateparser.parse(
-                                data[i].get("uploadTime")) - timedelta(seconds=1)).strftime(DATE_FORMAT)
+                            upload_time_parsed = dateparser.parse(data[i].get("uploadTime"))
+                            assert upload_time_parsed is not None, f'could not parse {data[i].get("uploadTime")}'
+                            date_to = (upload_time_parsed - timedelta(seconds=1)).strftime(DATE_FORMAT)
                             data = data[:i + 1:]
                             break
 
@@ -611,11 +613,11 @@ class Client(BaseClient):
         date_from = None
         last_fetch = kwargs.get("last_fetch")
         if not last_fetch:
-            date_from = dateparser.parse(kwargs.get("first_fetch_time"))
+            date_from = dateparser.parse(kwargs.get("first_fetch_time"))  # type: ignore
             if date_from is None:
                 raise DemistoException('Inappropriate first_fetch format, '
                                        'please use something like this: 2020-01-01 or January 1 2020 or 3 days')
-            date_from = date_from.strftime('%Y-%m-%d')
+            date_from = date_from.strftime('%Y-%m-%d')  # type: ignore
 
         if collection_name == "compromised/breached":
             # we need the isinstance check for BC because it used to be a string
@@ -638,7 +640,7 @@ class Client(BaseClient):
             return self._create_legacy_generator(action="domain", max_requests=max_requests, last=last_fetch)
         else:
             return self._create_update_generator(collection_name=collection_name, max_requests=max_requests,
-                                                 date_from=date_from, seq_update=last_fetch)
+                                                 date_from=date_from, seq_update=last_fetch)  # type: ignore
 
     def create_manual_generator(self, collection_name: str, date_from: str = None,
                                 date_to: str = None, query: str = None) -> Generator:
@@ -1047,6 +1049,7 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
                         related_indicators_data.append(find_element_by_key(feed, i["main_field"]))
 
                 incident_created_time = dateparser.parse(feed.get(mapping.get("date")))
+                assert incident_created_time is not None
                 feed.update({"relatedIndicatorsData": related_indicators_data})
                 feed.update({"systemSeverity": system_severity})
                 if collection_name in ["osi/git_leak", "osi/public_leak", "bp/phishing_kit"]:
@@ -1189,7 +1192,7 @@ def local_search_command(client: Client, args: Dict):
                                    'please use something like this: 2020-01-01 or January 1 2020')
         date_from_parsed = date_from_parsed.strftime('%Y-%m-%dT%H:%M:%SZ')
     else:
-        date_from_parsed = date_from
+        date_from_parsed = date_from  # type: ignore
     if date_to is not None:
         date_to_parsed = dateparser.parse(date_to)
         if date_to_parsed is None:
@@ -1197,7 +1200,7 @@ def local_search_command(client: Client, args: Dict):
                                    'please use something like this: 2020-01-01 or January 1 2020')
         date_to_parsed = date_to_parsed.strftime('%Y-%m-%dT%H:%M:%SZ')
     else:
-        date_to_parsed = date_to
+        date_to_parsed = date_to  # type: ignore
 
     portions = client.create_manual_generator(collection_name=collection_name, query=query,
                                               date_from=date_from_parsed, date_to=date_to_parsed)

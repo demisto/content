@@ -23,8 +23,9 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### remedy-incident-create
 ***
-Create new ticket incident
-
+Create new ticket incident.<br/>
+<br/>
+Note: according to Remedy AR API documentation it is recommended to provide all of the non-custom arguments. However, there is no accurate specification, and it is possible to provide other fields using the custom-fields argument alone.
 
 #### Base Command
 

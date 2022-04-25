@@ -1,0 +1,17 @@
+{
+  "createTime": "2021-11-24T14:58:00.013344Z",
+  "name": "groups/group-2-name/memberships/membership-2",
+  "preferredMemberKey": {
+    "id": "service-account-1@project-id-1.iam.gserviceaccount.com"
+  },
+  "roles": [
+    {
+      "name": "OWNER"
+    },
+    {
+      "name": "MEMBER"
+    }
+  ],
+  "type": "SERVICE_ACCOUNT",
+  "updateTime": "2021-11-24T14:58:00.013344Z"
+}

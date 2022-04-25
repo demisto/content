@@ -14,7 +14,9 @@
     "selectValues": [
         "Attachments",
         "Google Cloud Storage",
-        "HTTP request"
+        "AWS S3",
+        "HTTP request",
+        "No Custom Packs"
     ],
     "useAsKpi": false,
     "locked": false,

@@ -13,5 +13,9 @@
     "keywords": [],
     "githubUser": [
         "lfarvour"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

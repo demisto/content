@@ -132,6 +132,7 @@ MISP_DISTRIBUTION_TO_IDS = {
     'This_community_only': 1,
     'Connected_communities': 2,
     'All_communities': 3,
+    'Sharing_group': 4,
     'Inherit_event': 5
 }
 
@@ -494,9 +495,18 @@ def get_new_misp_event_object(args):
     """
     event = MISPEvent()
     event.distribution = MISP_DISTRIBUTION_TO_IDS[args.get('distribution')]
+
+    sharing_group_id = args.get('sharing_group_id')
+    if event.distribution == 4 and not sharing_group_id:
+        raise DemistoException("Error: When setting distribution to be 'Sharing_group', you have to specify the "
+                               "'sharing_group_id' argument.")
+    if sharing_group_id:
+        event.sharing_group_id = arg_to_number(sharing_group_id)
+
     threat_level_id_arg = args.get('threat_level_id')
     if threat_level_id_arg:
         event.threat_level_id = THREAT_LEVELS_TO_ID[threat_level_id_arg]
+
     analysis_arg = args.get('analysis')
     event.analysis = MISP_ANALYSIS_TO_IDS.get(analysis_arg) if analysis_arg in MISP_ANALYSIS_TO_IDS else analysis_arg
     event.info = args.get('info') if args.get('info') else 'Event from XSOAR'
@@ -548,8 +558,12 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
     }
     event_id = event_id if event_id else arg_to_number(demisto_args.get('event_id'), "event_id")
     attributes_args.update({'id': event_id}) if event_id else None
+
     distribution = demisto_args.get('distribution')
     attributes_args.update({'distribution': MISP_DISTRIBUTION_TO_IDS[distribution]}) if distribution else None
+
+    sharing_group_id = demisto_args.get('sharing_group_id')
+    attributes_args.update({'sharing_group_id': sharing_group_id}) if sharing_group_id else None
 
     if not new_event:
         response = PYMISP.search(eventid=event_id, pythonify=True)
@@ -1105,8 +1119,9 @@ def add_tag(demisto_args: dict, is_attribute=False):
     """
     uuid = demisto_args.get('uuid')
     tag = demisto_args.get('tag')
+    is_local_tag = argToBoolean(demisto_args.get('is_local', False))
     try:
-        PYMISP.tag(uuid, tag)  # add the tag
+        PYMISP.tag(uuid, tag, local=is_local_tag)  # add the tag
     except PyMISPError:
         raise DemistoException("Adding the required tag was failed. Please make sure the UUID exists.")
     if is_attribute:
@@ -1314,7 +1329,7 @@ def add_url_object(demisto_args: dict):
     url = demisto_args.get('url')
     url_parse = urlparse(url)
     url_obj = [{'url': url}]
-    url_obj.extend({'scheme': url_parse.scheme}) if url_parse.scheme else None
+    url_obj.append({'scheme': url_parse.scheme}) if url_parse.scheme else None
     url_obj.append({'resource_path': url_parse.path}) if url_parse.path else None
     url_obj.append({'query_string': url_parse.query}) if url_parse.query else None
     url_obj.append({'domain': url_parse.netloc}) if url_parse.netloc else None
@@ -1446,6 +1461,33 @@ def update_attribute_command(demisto_args: dict) -> CommandResults:
     )
 
 
+def delete_attribute_command(demisto_args: dict) -> CommandResults:
+    """
+    Gets an attribute id and deletes it.
+    """
+    attribute_id = demisto_args.get('attribute_id')
+    response = PYMISP.delete_attribute(attribute_id)
+    if 'errors' in response:
+        raise DemistoException(f'Attribute ID: {attribute_id} has not found in MISP: \nError message: {response}')
+    else:
+        human_readable = f'Attribute {attribute_id} has been deleted'
+        return CommandResults(readable_output=human_readable, raw_response=response)
+
+
+def publish_event_command(demisto_args: dict) -> CommandResults:
+    """
+    Gets an event id and publishes it.
+    """
+    event_id = demisto_args.get('event_id')
+    alert = argToBoolean(demisto_args.get('alert', False))
+    response = PYMISP.publish(event_id, alert=alert)
+    if 'errors' in response:
+        raise DemistoException(f'Event ID: {event_id} has not found in MISP: \nError message: {response}')
+    else:
+        human_readable = f'Event {event_id} has been published'
+        return CommandResults(readable_output=human_readable, raw_response=response)
+
+
 def main():
     params = demisto.params()
     malicious_tag_ids = argToList(params.get('malicious_tag_ids'))
@@ -1519,6 +1561,10 @@ def main():
             return_results(add_generic_object_command(args))
         elif command == 'misp-update-attribute':
             return_results(update_attribute_command(args))
+        elif command == 'misp-delete-attribute':
+            return_results(delete_attribute_command(args))
+        elif command == 'misp-publish-event':
+            return_results(publish_event_command(args))
     except PyMISPError as e:
         return_error(e.message)
     except Exception as e:

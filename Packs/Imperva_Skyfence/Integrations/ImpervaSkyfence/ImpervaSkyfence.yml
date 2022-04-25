@@ -1,0 +1,56 @@
+commonfields:
+  id: Imperva Skyfence
+  version: -1
+name: Imperva Skyfence
+display: Imperva Skyfence
+category: Network Security
+system: true
+description: The Imperva Skyfence Cloud Gateway is a Cloud Access Security Broker
+  (CASB) that provides visibility and control over sanctioned and unsanctioned cloud
+  apps to enable their safe and productive use.
+configuration:
+- display: Server URL (e.g., 123.168.01.222)  # disable-secrets-detection
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Client ID
+  name: clientId
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Client Secret
+  name: clientSecret
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: imp-sf-list-endpoints
+    arguments: []
+    description: Returns a list of, and basic details for, all managed and un-managed
+      endpoints.
+  - name: imp-sf-set-endpoint-status
+    arguments:
+    - name: endpointId
+      required: true
+      default: true
+      description: The ID of the endpoint. Run the "imp-sf-list-endpoints" command
+        to return a list.
+    - name: action
+      required: true
+      description: Enroll/Revoke endpoint status. Can be "enroll" or "revoke".
+    description: 'Updates the status (enroll or revoke) of an endpoint. You can run
+      this command on an endpoint with any status, but the most common use case is
+      endpoints with a status of pending.'
+    execution: true
+tests:
+- No tests
+fromversion: 5.0.0

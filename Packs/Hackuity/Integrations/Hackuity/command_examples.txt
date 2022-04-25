@@ -1,0 +1,5 @@
+!hackuity-search-findings asset_name=example.com
+!hackuity-search-provider-vulnerabilities asset_name=example.com
+!hackuity-search-vulndb-vulnerabilities asset_name=example.com
+!hackuity-dashboard-widgets
+!hackuity-dashboard-data widget_id=abcd3fgh1jklmn0pqrstuv

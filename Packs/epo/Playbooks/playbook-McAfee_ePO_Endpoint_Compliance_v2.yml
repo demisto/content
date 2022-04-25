@@ -71,9 +71,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      No:
+      'No':
       - '9'
-      Yes:
+      'Yes':
       - '11'
     scriptarguments:
       repoversions:
@@ -103,9 +103,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      No:
+      'No':
       - '7'
-      Yes:
+      'Yes':
       - '12'
     scriptarguments:
       data:

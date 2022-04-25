@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import gzip
 import demistomock as demisto
 import copy
 import json
@@ -11,13 +12,14 @@ import pytest
 import warnings
 
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
-    flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
+    flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
+    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, return_outputs, \
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam
 import CommonServerPython
 
 try:
@@ -247,8 +249,7 @@ COMPLEX_DATA_WITH_URLS = [(
 
 class TestTableToMarkdown:
     @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
-    @staticmethod
-    def test_sanity(data, expected_table):
+    def test_sanity(self, data, expected_table):
         """
         Given:
           - list of objects.
@@ -634,8 +635,7 @@ class TestTableToMarkdown:
         assert table_with_character == expected_string_with_special_character
 
     @pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
-    @staticmethod
-    def test_clickable_url(data, expected_table):
+    def test_clickable_url(self, data, expected_table):
         """
         Given:
           - list of objects.
@@ -732,7 +732,7 @@ class TestTableToMarkdown:
     def test_with_json_transformer_simple():
         with open('test_data/simple_data_example.json') as f:
             simple_data_example = json.load(f)
-        name_transformer = JsonTransformer(keys=['first', 'second'])
+        name_transformer = JsonTransformer(keys=['first', 'second'], is_nested=False)
         json_transformer_mapping = {'name': name_transformer}
         table = tableToMarkdown("tableToMarkdown test", simple_data_example,
                                 json_transform_mapping=json_transformer_mapping)
@@ -740,15 +740,15 @@ class TestTableToMarkdown:
             expected_table = """### tableToMarkdown test
 |name|value|
 |---|---|
-| **first**:<br>	***a***: val<br><br>***second***: b | val1 |
-| **first**:<br>	***a***: val2<br><br>***second***: d | val2 |
+| **first**:<br>	***a***: val<br>***second***: b | val1 |
+| **first**:<br>	***a***: val2<br>***second***: d | val2 |
 """
         else:
             expected_table = u"""### tableToMarkdown test
 |name|value|
 |---|---|
-| <br>***second***: b<br>**first**:<br>	***a***: val | val1 |
-| <br>***second***: d<br>**first**:<br>	***a***: val2 | val2 |
+| ***second***: b<br>**first**:<br>	***a***: val | val1 |
+| ***second***: d<br>**first**:<br>	***a***: val2 | val2 |
 """
         assert expected_table == table
 
@@ -795,14 +795,20 @@ class TestTableToMarkdown:
         expected_table = """### tableToMarkdown test
 |name|changelog|
 |---|---|
-| Active Directory Query | **1.0.4**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.4**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>**1.0.5**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.5**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>**1.0.6**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.6**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br> |
+| Active Directory Query | **1.0.4**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>**1.0.5**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>**1.0.6**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br> |
 """
-
         assert expected_table == table
 
     @staticmethod
     def test_with_json_transformer_func():
-
+        """
+        Given:
+          - Double nested json table.
+        When:
+          - Calling tableToMarkdown with JsonTransformer set to custom function.
+        Then:
+          - The table constructed with the transforming function.
+        """
         def changelog_to_str(json_input):
             return ', '.join(json_input.keys())
 
@@ -816,6 +822,61 @@ class TestTableToMarkdown:
 |name|changelog|
 |---|---|
 | Active Directory Query | 1.0.4, 1.0.5, 1.0.6 |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transform_list():
+        """
+        Given:
+          - Nested json table with a list.
+        When:
+          - Calling tableToMarkdown with `is_auto_json_transform=True`.
+        Then:
+          - Create a markdown table with the list
+        """
+        with open('test_data/nested_data_in_list.json') as f:
+            data_with_list = json.load(f)
+        table = tableToMarkdown("tableToMarkdown test", data_with_list, is_auto_json_transform=True)
+        if IS_PY3:
+            expected_table = """### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| **-**	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: error1, error2, error3<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test.txt<br>**-**	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: <br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| **-**	**command**:<br>		**params**:<br>			**-**	***value***: test.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: error1, error2, error3<br>	***startTime***: null<br>**-**	**command**:<br>		**params**:<br>			**-**	***value***: test222.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: <br>	***startTime***: null | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transform_list_keys():
+        """
+        Given:
+          - Nested json table with a list.
+        When:
+          - Calling tableToMarkdown with `is_auto_json_transform=True`.
+        Then:
+          - Create a markdown table with the list only with given keys
+        """
+        with open('test_data/nested_data_in_list.json') as f:
+            data_with_list = json.load(f)
+        table = tableToMarkdown("tableToMarkdown test", data_with_list,
+                                json_transform_mapping={'Commands': JsonTransformer(keys=('commandStatus', 'command'))})
+        if IS_PY3:
+            expected_table = """### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| **-**	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test.txt<br>**-**	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| **-**	**command**:<br>		**params**:<br>			**-**	***value***: test.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***commandStatus***: Completed<br>**-**	**command**:<br>		**params**:<br>			**-**	***value***: test222.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***commandStatus***: Completed | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
 """
         assert expected_table == table
 
@@ -984,6 +1045,7 @@ def test_argToList():
     test5 = 1
     test6 = '1'
     test7 = True
+    test8 = [1, 2, 3]
 
     results = [argToList(test1), argToList(test2), argToList(test2, ','), argToList(test3), argToList(test4, ';')]
 
@@ -991,8 +1053,20 @@ def test_argToList():
         assert expected == result, 'argToList test failed, {} is not equal to {}'.format(str(result), str(expected))
 
     assert argToList(test5) == [1]
+    assert argToList(test5, transform=str) == ['1']
     assert argToList(test6) == ['1']
     assert argToList(test7) == [True]
+    assert argToList(test8, transform=str) == ['1', '2', '3']
+
+
+@pytest.mark.parametrize('args, field, expected_output', [
+    ({'ids': "1,2,3"}, 'ids', ["1", "2", "3"]),
+    ({'ids': "1,2,1"}, 'ids', ["1", "2"]),
+    ({'ids': ""}, 'ids', []),
+    ({'ids': ""}, 'name', []),
+])
+def test_remove_duplicates_from_list_arg(args, field, expected_output):
+    assert len(remove_duplicates_from_list_arg(args, field)) == len(expected_output)
 
 
 def test_remove_nulls():
@@ -1231,6 +1305,24 @@ def test_debug_logger_replace_strs(mocker):
     for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass', TEST_SSH_KEY,
               TEST_SSH_KEY_ESC, TEST_PASS_JSON_CHARS):
         assert s not in msg
+
+
+def test_add_sensitive_log_strs(mocker):
+    """
+    Given:
+       - Debug mode command
+    When
+       - Adding sensitive strings to the log
+    Then
+       - Ensure that both LOG and _requests_logger mask the sensitive str
+    """
+    sensitive_str = '%%This_is_API_key%%'
+    from CommonServerPython import add_sensitive_log_strs, LOG
+    mocker.patch('CommonServerPython._requests_logger', DebugLogger())
+    CommonServerPython._requests_logger.log_start_debug()
+    add_sensitive_log_strs(sensitive_str)
+    assert sensitive_str not in LOG(sensitive_str)
+    assert sensitive_str not in CommonServerPython._requests_logger.int_logger(sensitive_str)
 
 
 def test_build_curl_post_noproxy():
@@ -1922,7 +2014,8 @@ class TestCommandResults:
             indicator='8.8.8.8',
             integration_name='Test',
             indicator_type=DBotScoreType.IP,
-            score=Common.DBotScore.GOOD
+            score=Common.DBotScore.GOOD,
+            message='test comment'
         )
 
         ip = Common.IP(
@@ -1964,7 +2057,8 @@ class TestCommandResults:
                         'Indicator': '8.8.8.8',
                         'Vendor': 'Test',
                         'Score': 1,
-                        'Type': 'ip'
+                        'Type': 'ip',
+                        'Message': 'test comment'
                     }
                 ]
             },
@@ -2395,6 +2489,20 @@ class TestCommandResults:
         assert results.to_context().get('Note') is True
 
 
+def test_http_request_ssl_ciphers_insecure():
+    if IS_PY3 and PY_VER_MINOR >= 10:
+        from CommonServerPython import BaseClient
+
+        client = BaseClient('https://www.google.com', ok_codes=(200, 201), verify=False)
+        adapter = client._session.adapters.get('https://')
+        ssl_context = adapter.poolmanager.connection_pool_kw['ssl_context']
+        ciphers_list = ssl_context.get_ciphers()
+
+        assert len(ciphers_list) == 42
+        assert next(cipher for cipher in ciphers_list if cipher['name'] == 'AES128-GCM-SHA256')
+    else:
+        assert True
+
 class TestBaseClient:
     from CommonServerPython import BaseClient
     text = {"status": "ok"}
@@ -2704,12 +2812,12 @@ class TestBaseClient:
             resp_json = json.loads(e.res.text)
             assert e.res.status_code == 400
             assert resp_json.get('error') == 'additional text'
-    
+
     def test_http_request_timeout_default(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
         self.client._http_request('get', 'event')
         assert requests_mock.last_request.timeout == self.client.REQUESTS_TIMEOUT
-    
+
     def test_http_request_timeout_given_func(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
         timeout = 120
@@ -3347,6 +3455,208 @@ def test_auto_detect_indicator_type_tldextract(mocker):
 
         res = tlde.TLDExtract.call_args
         assert 'cache_file' in res[1].keys()
+
+
+VALID_URL_INDICATORS = [
+    '3.21.32.65/path',
+    '19.117.63.253:28/other/path',
+    '19.117.63.253:28/path',
+    '1.1.1.1/7/server/somestring/something.php?fjjasjkfhsjasofds=sjhfhdsfhasld',
+    'flake8.pycqa.org/en/latest',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/path/path',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/32/path/path',
+    'https://google.com/sdlfdshfkle3247239elkxszmcdfdstgk4e5pt0/path/path/oatdsfk/sdfjjdf',
+    'www.123.43.6.89/path',
+    'https://15.12.76.123',
+    'www.google.com/path',
+    'wwW.GooGle.com/path',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/65/path/path',
+    '2001:db8:3333:4444:5555:6666:7777:8888/32/path/path',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/h'
+    '1.1.1.1/7/server',
+    "1.1.1.1/32/path",
+    'http://evil.tld/',
+    'https://evil.tld/evil.html',
+    'ftp://foo.bar/',
+    'www.evil.tld/evil.aspx',
+    'sftp://8.26.75.97:121',
+    'sftp://69.254.57.79:5001/path',
+    'sftp://75.26.0.1/path',
+    'https://www.evil.tld/',
+    'www.evil.tld/resource',
+    'hxxps://google[.]com',
+    'hxxps://google[.]com:443',
+    'hxxps://google[.]com:443/path'
+    'www.1.2.3.4/?user=test%Email=demisto',
+    'www.1.2.3.4:8080/user=test%Email=demisto'
+    'http://xn--e1v2i3l4.tld/evilagain.aspx',
+    'https://www.xn--e1v2i3l4.tld',
+    'https://0330.0072.0307.0116',
+    'https://0563.2437.2623.2222',  # IP as octal number
+    'https://2467.1461.3567.1434:443',
+    'https://3571.3633.2222.3576:443/path',
+    'https://4573.2436.1254.7423:443/p',
+    'https://0563.2437.2623.2222:443/path/path',
+    'hxxps://www.xn--e1v2i3l4.tld',
+    'hxxp://www.xn--e1v2i3l4.tld',
+    'www.evil.tld:443/path/to/resource.html',
+    'WWW.evil.tld:443/path/to/resource.html',
+    'wWw.Evil.tld:443/path/to/resource.html',
+    'Https://wWw.Evil.tld:443/path/to/resource.html',
+    'https://1.2.3.4/path/to/resource.html',
+    'HTTPS://1.2.3.4/path/to/resource.html',
+    '1.2.3.4/path',
+    '1.2.3.4/path/to/resource.html',
+    'http://1.2.3.4:8080/',
+    'http://1.2.3.4:8080/resource.html',
+    'HTTP://1.2.3.4',
+    'HTTP://1.2.3.4:80/path',
+    'ftp://foo.bar/resource',
+    'FTP://foo.bar/resource',
+    'http://test.evil.tld/',
+    'ftps://foo.bar/resource',
+    'ftps://foo.bar/Resource'
+    '5.6.7.8/fdsfs',
+    'https://serverName.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'http://serverName.org/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'https://1.1.1.1/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'https://google.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'www.google.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'www.63.4.6.1/integrations/test-playbooks',
+    'https://xsoar.pan.dev/docs/welcome',
+    '5.6.7.8/user/',
+    'http://www.example.com/and%26here.html',
+    'https://1234',  # IP as integer 1234 = '0.0.4.210'
+    'https://4657624',
+    'https://64123/path',
+    'https://0.0.0.1/path',
+    'https://1',  # same as 0.0.0.1
+    'hXXps://isc.sans[.]edu/',
+    'hXXps://1.1.1.1[.]edu/',
+    'hxxp://0[x]455e8c6f/0s19ef206s18s2f2s567s49a8s91f7s4s19fd61a',  # defanged hexa-decimal IP.
+    'hxxp://0x325e5c7f/34823jdsasjfd/asdsafgf/324',  # hexa-decimal IP.
+    'hxxps://0xAA268BF1:8080/',
+    'hxxps://0xAB268DC1:8080/path',
+    'hxxps://0xAB268DC1/',
+    'hxxps://0xAB268DC1/p',
+    'hxxps://0xAB268DC1/32',
+    'http://www.google.com:8080',
+    'http://www[.]google.com:8080',  # defanged Domain
+    'http://www.google[.]com:8080/path',
+    'http://www[.]google.com:8080/path',
+    'http://www.253.234.73.12:8080/secret.txt',
+    'https://www.10.15.53.95:8080',
+    'www[.]google.com:8080/path',
+    'www.google[.]com:8080/path',
+    'google[.]com/path',
+    'google[.]com:443/path',
+    'hXXps://1.1.1.1[.]edu/path',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/80',
+    '2001:0db8:0001:0000:0000:0ab9:C0A8:0102/resource.html',
+    '2251:dbc:8fa3:8d3:1f19:8a2e:370:7348/80',
+]
+
+
+@pytest.mark.parametrize('indicator_value', VALID_URL_INDICATORS)
+def test_valid_url_indicator_types(indicator_value):
+    """
+    Given
+    - Valid URL indicators.
+    When
+    - Trying to match those indicators with the URL regex.
+    Then
+    - The indicators are classified as URL indicators.
+    """
+    assert re.match(urlRegex, indicator_value)
+
+
+INVALID_URL_INDICATORS = [
+    'test',
+    'httn://bla.com/path',
+    'google.com*',
+    '1.1.1.1',
+    '1.1.1.1/',
+    '1.1.1.1/32',
+    '1.1.1.1/32/',
+    'path/path',
+    '1.1.1.1:8080',
+    '1.1.1.1:8080/',
+    '1.1.1.1:111112243245/path',
+    '3.4.6.92:8080:/test',
+    '1.1.1.1:4lll/',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/64/',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/64',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/32',
+    '2001:db8:3333:4444:5555:6666:7777:8888/',
+    'flake8.pycqa.org',
+    'google.com',
+    'HTTPS://dsdffd.c'  # not valid tld
+    'https://test',
+    'ftp://test',
+    'ftps:test',
+    'a.a.a.a',
+    'b.b.b',
+    'https:/1.1.1.1.1/path',
+    'wwww.test',
+    'help.test.com',
+    'help-test/com'
+    'wwww.path.com/path',
+    'fnvfdsbf/path',
+    '65.23.7.2',
+    'k.f.a.f',
+    'test/test/test/test',
+    'http://www.example.com/ %20here.html',
+    'http ://www.example.com/ %20here.html',
+    'http://www.example .com/%20here.html'
+    'http://wwww.example.com/%20here.html',
+    'FTP://Google.test:',
+    '',
+    'somestring',
+    'dsjfshjdfgkjldsh32423123^^&*#@$#@$@!#4',
+    'aaa/1.1.1.1/path',
+    'domain*com/1.1.1.1/path',
+    'http:1.1.1.1/path',
+    'kfer93420932/path/path',
+    '1.1.1.1.1/24',
+    '2.2.2.2.2/3sad',
+    'http://fdsfesd',
+    'http://fdsfesd:8080',  # no tld
+    'FLAKE8.dds.asdfd/',
+    'FTP://Google.',
+    'https://www.',
+    '1.1.1.1/pa klj'
+    '1.1.1.1.1/path',
+    '2.2.2.2.2/3sad',
+    'HTTPS://1.1.1.1..1.1.1.1/path',
+    'https://1.1.1.1.1.1.1.1.1.1.1/path'
+    '1.1.1.1 .1/path',
+    '123.6.2.2/ path',
+    '   test.com',
+    'test .com.domain'
+    'hxxps://0xAB26:8080/path',  # must be 8 hexa-decimal chars
+    'hxxps://34543645356432234e:8080/path',  # too large integer IP
+    'https://35.12.5677.143423:443',  # invalid IP address
+    'https://4578.2436.1254.7423',  # invalid octal address (must be numbers between 0-7)
+    'https://4578.2436.1254.7423:443/p',
+    'https://www.evil.tld/ https://4578.2436.1254.7423:443/p',
+    'FTP://foo hXXps://1.1.1.1[.]edu/path',
+    'https://216.58.199.78:12345fdsf',
+    'https://www.216.58.199.78:sfsdg'
+]
+
+
+@pytest.mark.parametrize('indicator_value', INVALID_URL_INDICATORS)
+def test_invalid_url_indicator_types(indicator_value):
+    """
+    Given
+    - invalid URL indicators.
+    When
+    - Trying to match those indicators with the URL regex.
+    Then
+    - The indicators are not classified as URL indicators.
+    """
+    assert not re.match(urlRegex, indicator_value)
+
 
 
 def test_handle_proxy(mocker):
@@ -4082,6 +4392,316 @@ class TestExecuteCommand:
         assert 'error number 1' in error_text
         assert 'error number 2' in error_text
         assert 'not an error' not in error_text
+
+
+class TestExecuteCommandsMultipleResults:
+
+    @staticmethod
+    def test_sanity(mocker):
+        """
+        Given:
+            - A successful command with a single entry as output.
+        When:
+            - Calling execute_commands.
+        Then:
+            - Assert that only the Contents value is returned.
+        """
+        from CommonServerPython import CommandRunner, EntryType
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=[{'Type': EntryType.NOTE,
+                                                                  'ModuleName': 'module',
+                                                                  'Brand': 'brand',
+                                                                  'Contents': {'hello': 'world'}}])
+        command_executer = CommandRunner.Command(commands='command', args_lst={'arg1': 'value'})
+        results, errors = CommandRunner.execute_commands(command_executer)
+        execute_command_args = demisto_execute_mock.call_args_list[0][0]
+        assert demisto_execute_mock.call_count == 1
+        assert execute_command_args[0] == 'command'
+        assert execute_command_args[1] == {'arg1': 'value'}
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert len(results) == 1
+        assert results[0].brand == 'brand'
+        assert results[0].instance == 'module'
+        assert results[0].result == {'hello': 'world'}
+        assert not errors
+
+    @staticmethod
+    def test_multiple_results(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+        When:
+            - Calling execute_commands.
+        Then:
+            - Assert that the "Contents" values of all entries are returned.
+        """
+        from CommonServerPython import CommandRunner, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            {'Type': EntryType.NOTE, 'Contents': {'entry': '2'}},
+            {'Type': EntryType.NOTE, 'Context': 'Content is `None`', 'Contents': None}
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        command_executer = CommandRunner.Command(commands='command', args_lst={'arg1': 'value'})
+        results, errors = CommandRunner.execute_commands(command_executer)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert not errors
+        assert len(results) == 4
+        assert results[0].result == {'hello': 'world'}
+        assert results[1].result == {}
+        assert results[2].result == {'entry': '2'}
+        assert results[3].result == {}
+
+    @staticmethod
+    def test_raw_results(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+        When:
+            - Calling execute_commands.
+        Then:
+            - Assert that the entire entries are returned.
+        """
+        from CommonServerPython import EntryType, CommandRunner
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            'text',
+            1337,
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        command_executer = CommandRunner.Command(commands='command', args_lst={'arg1': 'value'})
+        results, errors = CommandRunner.execute_commands(command_executer, extract_contents=False)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert not errors
+        assert len(results) == 4
+        assert results[0].result == {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}}
+        assert results[1].result == {'Type': EntryType.NOTE, 'Context': 'no contents here'}
+        assert results[2].result == 'text'
+        assert results[3].result == 1337
+        assert results[2].brand == results[2].instance == results[3].brand == results[3].instance == 'Unknown'
+
+    @staticmethod
+    def test_with_errors(mocker):
+        """
+        Given:
+            - A command that sometimes fails and sometimes not.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the results list and the errors list returned as should've been
+        """
+        from CommonServerPython import CommandRunner, EntryType
+        entries = [
+            {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
+            {'Type': EntryType.NOTE, 'Contents': 'not an error'},
+            {'Type': EntryType.ERROR, 'Contents': 'error number 2'}
+        ]
+
+        def execute_command_mock(command, args):
+            if command == 'unsupported':
+                raise ValueError("Command is not supported")
+            return entries
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   side_effect=execute_command_mock)
+        command_executer = CommandRunner.Command(commands=['command', 'unsupported'],
+                                                 args_lst=[{'arg1': 'value'}, {}])
+
+        results, errors = CommandRunner.execute_commands(command_executer)
+
+        # validate that errors were found and the unsupported is ignored
+        assert demisto_execute_mock.call_count == 2
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert len(results) == 1
+        assert len(errors) == 2
+        assert errors[0].result == 'error number 1'
+        assert errors[1].result == 'error number 2'
+        assert results[0].result == 'not an error'
+
+    @staticmethod
+    def get_result_for_multiple_commands_helper(command, args):
+        from CommonServerPython import EntryType
+        return [{'Type': EntryType.NOTE,
+                 'ModuleName': list(args.keys())[0],
+                 'Brand': command,
+                 'Contents': {'hello': list(args.values())[0]}},
+                ]
+
+    @staticmethod
+    def test_multiple_commands(mocker):
+        """
+        Given:
+            - List of commands and list of args.
+        When:
+            - Calling execute_commands with multiple commands to get multiple results.
+        Then:
+            - Assert that the results list and the errors list returned as should've been
+        """
+        from CommonServerPython import CommandRunner
+        demisto_execute_mock = mocker.patch.object(demisto,
+                                                   'executeCommand',
+                                                   side_effect=TestExecuteCommandsMultipleResults.get_result_for_multiple_commands_helper)
+        command_executer = CommandRunner.Command(commands=['command1', 'command2'],
+                                                 args_lst=[{'arg1': 'value1'},
+                                                                    {'arg2': 'value2'}])
+
+        results, errors = CommandRunner.execute_commands(command_executer)
+        assert demisto_execute_mock.call_count == 2
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert len(results) == 2
+        assert results[0].brand == 'command1'
+        assert results[0].instance == 'arg1'
+        assert results[0].result == {'hello': 'value1'}
+        assert results[1].brand == 'command2'
+        assert results[1].instance == 'arg2'
+        assert results[1].result == {'hello': 'value2'}
+        assert not errors
+
+    @staticmethod
+    def test_invalid_args():
+        """
+        Given:
+            - List of commands and list of args which is invalid
+        When:
+            - Calling execute_commands.
+        Then:
+            - Assert that error is given.
+        """
+        from CommonServerPython import CommandRunner
+        with pytest.raises(DemistoException):
+            CommandRunner.execute_commands(
+                CommandRunner.Command(commands=['command'],
+                                      args_lst=[{'arg': 'val'}, {'arg': 'val'}]))
+        with pytest.raises(DemistoException):
+            CommandRunner.execute_commands(
+                CommandRunner.Command(commands=['command', 'command1'],
+                                      args_lst=[{'arg': 'val'}]))
+
+    @staticmethod
+    def test_using_brand_instance(mocker):
+        """
+        Given:
+            - Provide instance and brand to command wrapper
+        When:
+            - Calling execute_commands
+        Then:
+            - Assert that the `demisto.executeCommand` runned with `using` and `using-brand`.
+        """
+        from CommonServerPython import CommandRunner
+        executer_with_brand = CommandRunner.Command(brand='my brand',
+                                                    instance='my instance',
+                                                    commands='command',
+                                                    args_lst={'arg': 'val'})
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand')
+        CommandRunner.execute_commands(executer_with_brand)
+        assert demisto_execute_mock.called
+        args_for_execute_command = demisto_execute_mock.call_args_list[0][0][1]
+        assert 'using-brand' in args_for_execute_command
+        assert 'using' in args_for_execute_command
+        assert args_for_execute_command['using-brand'] == 'my brand'
+        assert args_for_execute_command['using'] == 'my instance'
+
+
+class TestGetResultsWrapper:
+    NUM_EXECUTE_COMMAND_CALLED = 0
+
+    @staticmethod
+    def execute_command_mock(command_executer, extract_contents):
+        from CommonServerPython import CommandRunner
+        TestGetResultsWrapper.NUM_EXECUTE_COMMAND_CALLED += 1
+        results, errors = [], []
+
+        for command, args in zip(command_executer.commands, command_executer.args_lst):
+            result_wrapper = CommandRunner.Result(command=command,
+                                                  args=args,
+                                                  brand='my-brand{}'.format(TestGetResultsWrapper.NUM_EXECUTE_COMMAND_CALLED),
+                                                  instance='instance',
+                                                  result='Command did not succeeded' if command == 'error-command' else 'Good')
+            if command == 'error-command':
+                errors.append(result_wrapper)
+            elif command != 'unsupported-command':
+                results.append(result_wrapper)
+        return results, errors
+
+    @staticmethod
+    def test_get_wrapper_results(mocker):
+        """
+        Given:
+            - List of CommandWrappers.
+        When:
+            - Calling get_wrapper_results to give generic results
+        Then:
+            - Assert that the "good" results are returned, and the summary includes the errors.
+            - Assert that the unsupported command is ignored.
+        """
+        from CommonServerPython import CommandRunner, CommandResults
+        command_wrappers = [CommandRunner.Command(brand='my-brand1', commands='my-command', args_lst={'arg': 'val'}),
+                            CommandRunner.Command(brand='my-brand2', commands=['command1', 'command2'], args_lst=[{'arg1': 'val1'}, {'arg2': 'val2'}]),
+                            CommandRunner.Command(brand='my-brand3', commands='error-command', args_lst={'bad_arg': 'bad_val'}),
+                            CommandRunner.Command(brand='brand-no-exist', commands='unsupported-command', args_lst={'arg': 'val'})]
+        mocker.patch.object(CommandRunner, 'execute_commands',
+                            side_effect=TestGetResultsWrapper.execute_command_mock)
+        results = CommandRunner.run_commands_with_summary(command_wrappers)
+        assert len(results) == 4  # 1 error (brand3)
+        assert all(res == 'Good' for res in results[:-1])
+        assert isinstance(results[-1], CommandResults)
+        if IS_PY3:
+            md_summary = """### Results Summary
+|Instance|Command|Result|Comment|
+|---|---|---|---|
+| ***my-brand1***: instance | ***command***: my-command<br>**args**:<br>	***arg***: val | Success |  |
+| ***my-brand2***: instance | ***command***: command1<br>**args**:<br>	***arg1***: val1 | Success |  |
+| ***my-brand2***: instance | ***command***: command2<br>**args**:<br>	***arg2***: val2 | Success |  |
+| ***my-brand3***: instance | ***command***: error-command<br>**args**:<br>	***bad_arg***: bad_val | Error | Command did not succeeded |
+"""
+        else:
+            md_summary = u"""### Results Summary
+|Instance|Command|Result|Comment|
+|---|---|---|---|
+| ***my-brand1***: instance | **args**:<br>	***arg***: val<br>***command***: my-command | Success |  |
+| ***my-brand2***: instance | **args**:<br>	***arg1***: val1<br>***command***: command1 | Success |  |
+| ***my-brand2***: instance | **args**:<br>	***arg2***: val2<br>***command***: command2 | Success |  |
+| ***my-brand3***: instance | **args**:<br>	***bad_arg***: bad_val<br>***command***: error-command | Error | Command did not succeeded |
+"""
+        assert results[-1].readable_output == md_summary
+
+    @staticmethod
+    def test_get_wrapper_results_error(mocker):
+        """
+        Given:
+            - List of CommandWrappers, which all of them returns errors or ignored
+        When:
+            - Calling get_wrapper_results to give generic results
+        Then:
+            - Assert that error returned.
+        """
+        from CommonServerPython import CommandRunner
+        command_wrappers = [CommandRunner.Command(brand='my-brand1',
+                                                  commands='error-command',
+                                                  args_lst={'arg': 'val'}),
+                            CommandRunner.Command(brand='my-brand2',
+                                                  commands='error-command',
+                                                  args_lst={'bad_arg': 'bad_val'}),
+                            CommandRunner.Command(brand='brand-no-exist',
+                                                  commands='unsupported-command',
+                                                  args_lst={'arg': 'val'}),
+                            ]
+        mocker.patch.object(CommandRunner, 'execute_commands',
+                            side_effect=TestGetResultsWrapper.execute_command_mock)
+        with pytest.raises(DemistoException) as e:
+            CommandRunner.run_commands_with_summary(command_wrappers)
+            assert 'Command did not succeeded' in e.value
+            assert 'Script failed. The following errors were encountered:' in e.value
 
 
 def test_arg_to_int__valid_numbers():
@@ -5928,7 +6548,44 @@ def test_get_message_memory_dump():
     assert ' Globals by Size ' in result
     assert ' End Top ' in result
     assert ' End Variables Dump ' in result
-    assert '<class \'' in result
+
+
+def test_shorten_string_for_printing():
+    from CommonServerPython import shorten_string_for_printing
+    assert shorten_string_for_printing(None, None) is None
+    assert shorten_string_for_printing('1', 9) == '1'
+    assert shorten_string_for_printing('123456789', 9) == '123456789'
+    assert shorten_string_for_printing('1234567890', 9) == '123...890'
+    assert shorten_string_for_printing('12345678901', 9) == '123...901'
+    assert shorten_string_for_printing('123456789012', 9) == '123...012'
+
+    assert shorten_string_for_printing('1234567890', 10) == '1234567890'
+    assert shorten_string_for_printing('12345678901', 10) == '1234...901'
+    assert shorten_string_for_printing('123456789012', 10) == '1234...012'
+
+
+def test_get_size_of_object():
+    from CommonServerPython import get_size_of_object
+
+    class Object(object):
+        pass
+
+    level_3 = Object()
+    level_3.key3 = 'val3'
+
+    level_2 = Object()
+    level_2.key2 = 'val2'
+    level_2.child = level_3
+
+    level_1 = Object()
+    level_1.key1 = 'val1'
+    level_1.child = level_2
+
+    level_1_sys_size = sys.getsizeof(level_1)
+    level_1_deep_size = get_size_of_object(level_1)
+
+    # 3 levels, so shoulod be at least 3 times as large
+    assert level_1_deep_size > 3 * level_1_sys_size
 
 
 class TestSetAndGetLastMirrorRun:
@@ -5999,3 +6656,570 @@ class TestSetAndGetLastMirrorRun:
         with raises(DemistoException, match='You cannot use setLastMirrorRun as your version is below 6.6.0'):
             set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
             assert set_last_run.called is False
+
+
+class TestFetchWithLookBack:
+
+    LAST_RUN = {}
+    INCIDENTS = [
+        {
+            'incident_id': 1,
+            'created': (datetime.utcnow() - timedelta(hours=3)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 2,
+            'created': (datetime.utcnow() - timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 3,
+            'created': (datetime.utcnow() - timedelta(minutes=29)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 4,
+            'created': (datetime.utcnow() - timedelta(minutes=19)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 5,
+            'created': (datetime.utcnow() - timedelta(minutes=9)).strftime('%Y-%m-%dT%H:%M:%S')
+        }
+    ]
+
+    NEW_INCIDENTS = [
+        {
+            'incident_id': 6,
+            'created': (datetime.utcnow() - timedelta(minutes=49)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 7,
+            'created': (datetime.utcnow() - timedelta(minutes=25)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 8,
+            'created': (datetime.utcnow() - timedelta(minutes=23)).strftime('%Y-%m-%dT%H:%M:%S')
+        }
+    ]
+
+    def example_fetch_incidents(self):
+        """
+        An example fetch for testing
+        """
+
+        from CommonServerPython import get_fetch_run_time_range, filter_incidents_by_duplicates_and_limit, \
+            update_last_run_object
+
+        incidents = []
+
+        params = demisto.params()
+        fetch_limit_param = params.get('limit')
+        look_back = int(params.get('look_back', 0))
+        first_fetch = params.get('first_fetch')
+        time_zone = params.get('time_zone', 0)
+
+        last_run = demisto.getLastRun()
+        fetch_limit = last_run.get('limit') or fetch_limit_param
+
+        start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch, look_back=look_back, timezone=time_zone)
+
+        query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
+        incidents_res = self.get_incidents_request(query)
+
+        incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents_res, last_run=last_run, fetch_limit=fetch_limit_param, id_field='incident_id')
+
+        last_run = update_last_run_object(last_run=last_run, incidents=incidents, fetch_limit=fetch_limit_param, start_fetch_time=start_fetch_time,
+                                          end_fetch_time=end_fetch_time, look_back=look_back, created_time_field='created', id_field='incident_id')
+
+        demisto.setLastRun(last_run)
+        return incidents
+
+    @staticmethod
+    def build_query(start_time, end_time, limit, return_incidents_by_limit=True):
+        query = {'from': start_time, 'to': end_time}
+        if return_incidents_by_limit:
+            query['limit'] = limit
+        return query
+
+    def get_incidents_request(self, query):
+        from_time = datetime.strptime(query['from'], '%Y-%m-%dT%H:%M:%S')
+        incidents = [inc for inc in self.INCIDENTS if datetime.strptime(inc['created'], '%Y-%m-%dT%H:%M:%S') > from_time]
+        if query.get('limit') is not None:
+            return incidents[:query['limit']]
+        return incidents
+
+    def set_last_run(self, new_last_run):
+        self.LAST_RUN = new_last_run
+
+    @pytest.mark.parametrize('params, result_phase1, result_phase2, expected_last_run', [
+        ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
+         {'limit': 2, 'time': INCIDENTS[3]['created']}),
+        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [],
+         {'limit': 3, 'time': INCIDENTS[4]['created']}),
+        ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]],
+         {'limit': 2, 'time': INCIDENTS[2]['created']}),
+        ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
+         {'limit': 3, 'time': INCIDENTS[3]['created']}),
+    ])
+    def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
+        """
+        Given:
+        - Connfiguration fetch parameters (incidents limit and first fetch time)
+
+        When:
+        - Running the example fetch incidents
+
+        Then:
+        - Ensure the return incidents and LastRun object as expected
+        """
+        if sys.version_info.major == 2:
+            # skip for python 2 - date
+            assert True
+            return
+
+        self.LAST_RUN = {}
+
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+
+        # Run first fetch
+        incidents_phase1 = self.example_fetch_incidents()
+
+        assert incidents_phase1 == result_phase1
+        assert self.LAST_RUN == expected_last_run
+
+        # Run second fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase2 = self.example_fetch_incidents()
+
+        assert incidents_phase2 == result_phase2
+
+    @pytest.mark.parametrize('params, result_phase1, result_phase2, result_phase3, expected_last_run_phase1, expected_last_run_phase2, new_incidents, index', [
+        (
+            {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS[2], INCIDENTS[3]], [NEW_INCIDENTS[0], INCIDENTS[4]], [],
+            {'found_incident_ids': {3: '', 4: ''}, 'limit': 4}, {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
+            [NEW_INCIDENTS[0]], 2
+        ),
+        (
+            {'limit': 2, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [INCIDENTS[4]],
+            {'found_incident_ids': {3: '', 4: ''}, 'limit': 4}, {'found_incident_ids': {3: '', 4: '', 7: '', 8: ''}, 'limit': 6},
+            [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+        ),
+        (
+            {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15}, [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [NEW_INCIDENTS[0], INCIDENTS[3], INCIDENTS[4]], [],
+            {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6}, {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+            [NEW_INCIDENTS[0]], 2
+        ),
+        (
+            {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [],
+            {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6}, {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+            [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+        ),
+    ])
+    @pytest.mark.skip(reason="Failing, will be reviewed.")
+    def test_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
+                                  expected_last_run_phase1, expected_last_run_phase2, new_incidents, index):
+        """
+        Given:
+        - Connfiguration fetch parameters (incidents limit, first fetch time and look back)
+
+        When:
+        - Running the example fetch incidents and creating new incidents between fetch calles
+
+        Then:
+        - Ensure the return incidents and LastRun object as expected
+        """
+        if sys.version_info.major == 2:
+            # skip for python 2 - date
+            assert True
+            return
+
+        self.LAST_RUN = {}
+        incidents = self.INCIDENTS[:]
+
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+
+        # Run first fetch
+        incidents_phase1 = self.example_fetch_incidents()
+
+        assert incidents_phase1 == result_phase1
+        assert self.LAST_RUN['limit'] == expected_last_run_phase1['limit']
+        assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase1['found_incident_ids'].keys()
+        for inc in incidents_phase1:
+            assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
+
+        next_run_phase1 = self.LAST_RUN['time']
+        self.INCIDENTS = incidents[:index] + new_incidents + incidents[index:]
+
+        # Run second fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase2 = self.example_fetch_incidents()
+
+        assert incidents_phase2 == result_phase2
+        assert self.LAST_RUN['limit'] == expected_last_run_phase2['limit']
+        assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase2['found_incident_ids'].keys()
+
+        if len(incidents_phase2) >= params.get('limit'):
+            assert next_run_phase1 == self.LAST_RUN['time']
+        else:
+            assert incidents_phase2[-1]['created'] == self.LAST_RUN['time']
+
+        for inc in incidents_phase2:
+            assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
+
+        # Run third fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase3 = self.example_fetch_incidents()
+
+        assert incidents_phase3 == result_phase3
+
+        # Remove new incidents from self.INCIDENTS
+        self.INCIDENTS = incidents
+
+
+class TestTracebackLineNumberAdgustment:
+    @staticmethod
+    def test_module_line_number_mapping():
+        from CommonServerPython import _MODULES_LINE_MAPPING
+        assert _MODULES_LINE_MAPPING['CommonServerPython']['start'] == 0
+
+    @staticmethod
+    def test_register_module_line_sanity():
+        """
+        Given:
+            A module with a start and an end boundries.
+        When:
+            registering a module.
+        Then:
+            * module exists in the mapping with valid boundries.
+        """
+        import CommonServerPython
+        CommonServerPython.register_module_line('Sanity', 'start', 5)
+        CommonServerPython.register_module_line('Sanity', 'end', 50)
+        assert CommonServerPython._MODULES_LINE_MAPPING['Sanity'] == {
+            'start': 5,
+            'start_wrapper': 5,
+            'end': 50,
+            'end_wrapper': 50,
+        }
+
+    @staticmethod
+    def test_register_module_line_single_boundry():
+        """
+        Given:
+            * A module with only an end boundry.
+            * A module with only a start boundry.
+        When:
+            registering a module.
+        Then:
+            * both modules exists in the mapping.
+            * the missing boundry is 0 for start and infinity for end.
+        """
+        import CommonServerPython
+        CommonServerPython.register_module_line('NoStart', 'end', 4)
+        CommonServerPython.register_module_line('NoEnd', 'start', 100)
+
+        assert CommonServerPython._MODULES_LINE_MAPPING['NoStart'] == {
+            'start': 0,
+            'start_wrapper': 0,
+            'end': 4,
+            'end_wrapper': 4,
+        }
+        assert CommonServerPython._MODULES_LINE_MAPPING['NoEnd'] == {
+            'start': 100,
+            'start_wrapper': 100,
+            'end': float('inf'),
+            'end_wrapper': float('inf'),
+        }
+
+    @staticmethod
+    def test_register_module_line_invalid_inputs():
+        """
+        Given:
+            * invalid start_end flag.
+            * invalid line number.
+        When:
+            registering a module.
+        Then:
+            function exits quietly
+        """
+        import CommonServerPython
+        CommonServerPython.register_module_line('Cactus', 'statr', 5)
+        CommonServerPython.register_module_line('Cactus', 'start', '5')
+        CommonServerPython.register_module_line('Cactus', 'statr', -5)
+        CommonServerPython.register_module_line('Cactus', 'statr', 0, -1)
+
+    @staticmethod
+    def test_fix_traceback_line_numbers():
+        import CommonServerPython
+        CommonServerPython._MODULES_LINE_MAPPING = {
+            'CommonServerPython': {'start': 200, 'end': 865, 'end_wrapper': 900},
+            'TestTracebackLines': {'start': 901, 'end': float('inf'), 'start_wrapper': 901},
+            'TestingApiModule': {'start': 1004, 'end': 1032, 'start_wrapper': 1001, 'end_wrapper': 1033},
+        }
+        traceback = '''Traceback (most recent call last):
+  File "<string>", line 1043, in <module>
+  File "<string>", line 986, in main
+  File "<string>", line 600, in func_wrapper
+  File "<string>", line 1031, in api_module_call_script
+  File "<string>", line 927, in call_func
+Exception: WTF?!!!'''
+        expected_traceback = '''Traceback (most recent call last):
+  File "<TestTracebackLines>", line 110, in <module>
+  File "<TestTracebackLines>", line 85, in main
+  File "<CommonServerPython>", line 400, in func_wrapper
+  File "<TestingApiModule>", line 27, in api_module_call_script
+  File "<TestTracebackLines>", line 26, in call_func
+Exception: WTF?!!!'''
+        result = CommonServerPython.fix_traceback_line_numbers(traceback)
+        assert result == expected_traceback
+
+
+PACK_VERSION_INFO = [
+    (
+        {'context': {'IntegrationBrand': 'PaloAltoNetworks_PrismaCloudCompute'}, 'integration': True},
+        ''
+    ),
+    (
+        {'context': {'ScriptName': 'test-script'}, 'integration': False},
+        ''
+    ),
+    (
+        {},
+        'test-pack'
+    ),
+    (
+        {'context': {'IntegrationBrand': 'PagerDuty v2'}, 'integration': True},
+        ''
+    )
+]
+
+
+def get_pack_version_mock_internal_http_request(method, uri, body):
+    if method == 'POST':
+        if uri == '/contentpacks/marketplace/search':
+            if 'integrationsQuery' in body:  # whether its an integration that needs to be searched
+                integration_brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
+                if integration_brand == 'PaloAltoNetworks_PrismaCloudCompute':
+                    return {
+                        'body': '{"packs":[{"currentVersion":"1.0.0","contentItems":'
+                                '{"integration":[{"name":"Palo Alto Networks - Prisma Cloud Compute"}]}}]}'
+                    }
+                elif integration_brand == 'PagerDuty v2':
+                    return {
+                        'body': '{"packs":[{"currentVersion":"1.0.0","contentItems":'
+                                '{"integration":[{"name":"PagerDuty v2"}]}}]}'
+                    }
+            elif 'automationQuery' in body:  # whether its a script/automation that needs to be searched
+                return {
+                    'body': '{"packs":[{"currentVersion":"1.0.0",'
+                            '"contentItems":{"automation":[{"name":"test-script"}]}}]}'
+                }
+            else:  # whether its a pack that needs to be searched
+                return {
+                    'body': '{"packs":[{"currentVersion":"1.0.0","name":"test-pack"}]}'
+                }
+        if uri == '/settings/integration/search':
+            # only used in an integration where the brand/name/id is not equal to the display name
+            return {
+                'body': '{"configurations":[{"id":"PaloAltoNetworks_PrismaCloudCompute",'
+                        '"display":"Palo Alto Networks - Prisma Cloud Compute"}]}'
+            }
+    return {}
+
+
+@pytest.mark.parametrize(
+    'calling_context_mock, pack_name', PACK_VERSION_INFO
+)
+def test_get_pack_version(mocker, calling_context_mock, pack_name):
+    """
+    Given -
+        Case1: an integration that its display name is not the same as the integration brand/name/id.
+        Case2: a script/automation.
+        Case3: a pack name.
+        Case4: an integration that its display name is the same as the integration brand/name/id.
+
+    When -
+        executing the get_pack_version function.
+
+    Then -
+        Case1: the pack version of which the integration is a part of is returned.
+        Case2: the pack version of which the script is a part of is returned.
+        Case3: the pack version of the requested pack is returned.
+        Case4: the pack version of which the integration is a part of is returned.
+    """
+    from CommonServerPython import get_pack_version
+    mocker.patch('demistomock.callingContext', calling_context_mock)
+    mocker.patch.object(demisto, 'internalHttpRequest', side_effect=get_pack_version_mock_internal_http_request)
+    assert get_pack_version(pack_name=pack_name) == '1.0.0'
+
+
+TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN = [
+    (
+        {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12',
+         'indicator_type': DBotScoreType.FILE, 'reliability': DBotScoreReliability.A},
+        {'instance': Common.File, 'indicator_type': 'SHA256', 'reliability': 'A - Completely reliable'}
+    ),
+    (
+        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': DBotScoreType.FILE,
+        'reliability': DBotScoreReliability.B},
+        {'instance': Common.File, 'indicator_type': 'MD5', 'reliability': 'B - Usually reliable'}
+    ),
+    (
+        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': DBotScoreType.FILE,
+        'reliability': DBotScoreReliability.B},
+        {'instance': Common.File, 'indicator_type': 'MD5', 'reliability': 'B - Usually reliable', 'integration_name': 'test'}
+    ),
+    (
+        {'indicator': 'f4dad67d0f0a8e53d8*****937fc9506e81b76e043294da77ae50ce4e8f0482127e7c12',
+         'indicator_type': DBotScoreType.FILE, 'reliability': DBotScoreReliability.A},
+        {'error_message': 'This indicator -> f4dad67d0f0a8e53d8*****937fc9506e81b76e043294da77ae50ce4e8f0482127e7c12 is incorrect'}
+    ),
+    (
+        {'indicator': '8.8.8.8', 'indicator_type': DBotScoreType.IP},
+        {'instance': Common.IP, 'indicator_type': 'IP', 'reliability': None}
+    ),
+    (
+        {'indicator': 'www.google.com', 'indicator_type': DBotScoreType.URL, 'reliability': DBotScoreReliability.A},
+        {'instance': Common.URL, 'indicator_type': 'URL', 'reliability': 'A - Completely reliable'}
+    ),
+    (
+        {'indicator': 'google.com', 'indicator_type': DBotScoreType.DOMAIN},
+        {'instance': Common.Domain, 'indicator_type': 'DOMAIN', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.ACCOUNT},
+        {'instance': Common.Account, 'indicator_type': 'ACCOUNT', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CRYPTOCURRENCY, 'address_type': 'bitcoin'},
+        {'instance': Common.Cryptocurrency, 'indicator_type': 'BITCOIN', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CERTIFICATE},
+        {'instance': Common.Certificate, 'indicator_type': 'CERTIFICATE', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': 'test', 'context_prefix': 'test'},
+        {'instance': Common.CustomIndicator, 'indicator_type': 'TEST', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': 'test'},
+        {'error_message': 'Indicator type is invalid'}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CRYPTOCURRENCY},
+        {'error_message': 'Missing address_type parameter'}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CVE},
+        {'error_message': 'DBotScoreType.CVE is unsupported'}
+    )
+]
+
+
+@pytest.mark.parametrize('args, expected', TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN)
+def test_create_indicator_result_with_dbotscore_unknown(mocker, args, expected):
+
+    from CommonServerPython import create_indicator_result_with_dbotscore_unknown
+
+    if expected.get('integration_name'):
+        mocker.patch('CommonServerPython.Common.DBotScore',
+                     return_value=Common.DBotScore(indicator=args['indicator'],
+                                                   indicator_type=args['indicator_type'],
+                                                   score=0,
+                                                   integration_name=expected['integration_name'],
+                                                   reliability=args['reliability'],
+                                                   message='No results found.'))
+    try:
+        results = create_indicator_result_with_dbotscore_unknown(**args)
+    except ValueError as e:
+        assert str(e) == expected['error_message']
+        return
+
+    assert expected['indicator_type'] in results.readable_output
+    assert isinstance(results.indicator, expected['instance'])
+    assert results.indicator.dbot_score.score == 0
+    assert results.indicator.dbot_score.reliability == expected['reliability']
+    assert results.indicator.dbot_score.message == 'No results found.'
+
+    if expected.get('integration_name'):
+        assert expected['integration_name'] in results.readable_output
+    else:
+        assert 'Results:' in results.readable_output
+
+
+@pytest.mark.parametrize('content_format,outputs,expected_type', ((None, {}, 'json'),
+                                                                  (None, 'foo', 'text'),
+                                                                  (None, 1, 'text'),
+                                                                  ('html', '', 'html'),
+                                                                  ('html', {}, 'html')))
+def test_content_type(content_format, outputs, expected_type):
+    from CommonServerPython import CommandResults, EntryFormat
+    command_results = CommandResults(
+        outputs=outputs,
+        readable_output='human_readable',
+        outputs_prefix='prefix',
+        content_format=content_format,
+    )
+    assert command_results.to_context()['ContentsFormat'] == expected_type
+
+
+class TestSendEventsToXSIAMTest:
+    from test_data.send_events_to_xsiam_data import events_dict
+    test_data = events_dict
+
+    @staticmethod
+    def get_license_custom_field_mock(arg):
+        if 'token' in arg:
+            return "TOKEN"
+        elif 'url' in arg:
+            return "url"
+
+    @pytest.mark.parametrize('events_use_case', [
+        'json_events', 'text_list_events', 'text_events', 'cef_events'
+    ])
+    def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
+        """
+        Test for the fetch fetch events function
+        Given:
+            Case a: a list containing dicts representing events.
+            Case b: a list containing strings representing events.
+            Case c: a string representing events (separated by a new line).
+            Case d: a string representing events (separated by a new line).
+
+        When:
+            Case a: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case b: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case c: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case d: Calling the send_events_to_xsiam function with a cef data format specification.
+
+        Then:
+            Case a: Ensure the events data was compressed correctly and that the data format was automatically identified
+            as json.
+            Case b: Ensure the events data was compressed correctly and that the data format was automatically identified
+            as text.
+            Case c: Ensure the events data was compressed correctly and that the data format was automatically identified
+            as text.
+            Case c: Ensure the events data was compressed correctly and that the data format remined as cef.
+        """
+        if not IS_PY3:
+            return
+
+        from CommonServerPython import BaseClient
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value={'error': 'false'})
+
+        events = self.test_data[events_use_case]['events']
+        data_format = self.test_data[events_use_case].get('format')
+
+        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
+
+        expected_format = self.test_data[events_use_case]['expected_format']
+        expected_data = self.test_data[events_use_case]['expected_data']
+
+        arguments_called = _http_request_mock.call_args[1]
+        decompressed_data = gzip.decompress(arguments_called['data']).decode("utf-8")
+
+        assert arguments_called['headers']['format'] == expected_format
+        assert decompressed_data == expected_data

@@ -5,7 +5,7 @@ ansible==2.8.6
 ansible-runner==1.4.2
 rsa==3.4.2
 paramiko==2.6.0
-pyminizip===0.2.4
+pyminizip===0.2.6
 google-cloud-storage==1.29.0
 google-cloud-bigquery==1.26.1
 prettytable==0.7.2

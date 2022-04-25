@@ -39,7 +39,8 @@ class Client(BaseClient):
         params = {
             'first_seen_gte': first_seen,
             'last_seen_lte': last_seen,
-            'unsampled': 'true'
+            'unsampled': 'true',
+            'expand': 'attributed_companies'
         }
 
         if severity_gte:

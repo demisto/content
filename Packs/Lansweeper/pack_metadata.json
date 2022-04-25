@@ -14,5 +14,9 @@
     ],
     "useCases": [],
     "keywords": ["ITAM","Asset"],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

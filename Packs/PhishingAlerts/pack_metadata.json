@@ -15,5 +15,9 @@
         "Email"],
     "itemPrefix": ["Email"],
     "useCases": ["Phishing"],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

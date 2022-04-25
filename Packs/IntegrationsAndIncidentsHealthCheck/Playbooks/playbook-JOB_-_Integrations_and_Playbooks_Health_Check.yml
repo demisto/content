@@ -993,3 +993,5 @@ outputs: []
 tests:
 - No tests
 fromversion: 6.0.0
+marketplaces:
+  - xsoar

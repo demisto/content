@@ -1,0 +1,110 @@
+commonfields:
+  id: Guidance Encase Endpoint
+  version: -1
+name: Guidance Encase Endpoint
+display: Guidance Encase Endpoint
+category: Endpoint
+description: Use the Enterprise Service Bus (ESB) to request scans of specified endpoints.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Port
+  name: port
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: encase-copyjob
+    arguments:
+    - name: existing-job-name
+      required: true
+      description: The job to copy from
+    - name: investigation-name
+      required: true
+      description: The investigation the job reside in
+    - name: case
+      required: true
+      description: The case of the investigation
+    - name: safe-name
+      required: true
+      description: Name of the safe
+    - name: custodian-name
+      required: true
+      description: Name of the custodian
+    - name: machine-ips
+      required: true
+      description: Range of machine IPs (can also be just one)
+    - name: event-name
+      description: Shows up in the job-name
+    - name: event-id
+      description: Shows up in the job-name
+    description: This command runs the Encase Endpoint copy job
+  - name: encase-snapshot
+    arguments:
+    - name: job-name
+      required: true
+      description: The job name to create
+    - name: investigation-name
+      required: true
+      description: The investigation the job reside in
+    - name: case
+      required: true
+      description: The case of the investigation
+    - name: safe-name
+      required: true
+      description: Name of the safe
+    - name: custodian-name
+      required: true
+      description: Name of the custodian
+    - name: machine-ips
+      required: true
+      description: Range of machine IPs (can also be just one)
+    description: This command runs the Encase Endpoint snapshot
+  - name: encase-verifyhash
+    arguments:
+    - name: investigation-name
+      required: true
+      description: The investigation the job reside in
+    - name: case
+      required: true
+      description: The case of the investigation
+    - name: safe-name
+      required: true
+      description: Name of the safe
+    - name: custodian-name
+      required: true
+      description: Name of the custodian
+    - name: machine-ips
+      required: true
+      description: Range of machine IPs (can also be just one)
+    - name: source-name
+      description: Gives the job a category, and identifies what appliance generated
+        the alert
+    - name: file-name
+      required: true
+      description: Name of the file to check hash for
+    - name: file-size
+      description: Input logical bytes size of target file to verify
+    - name: content-hash
+      description: Input an MD5 to collect file by hash signature
+    description: This command finds if a given hash is active on an endpoint
+hidden: false
+tests:
+- No tests
+fromversion: 5.0.0

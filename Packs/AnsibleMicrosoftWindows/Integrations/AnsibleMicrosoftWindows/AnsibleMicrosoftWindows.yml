@@ -3299,7 +3299,7 @@ script:
         `creates_path` MUST be set and is a file. You can use this in conjunction
         with `product_id` and other `creates_*`.'
       name: creates_version
-    - defaultValue: '[0, 3010]'
+    - defaultValue: '0'
       description: 'One or more return codes from the package installation that indicates
         success. Before Ansible 2.4 this was just 0 but since Ansible 2.4 this is
         both `0` and `3010`. A return code of `3010` usually means that a reboot is

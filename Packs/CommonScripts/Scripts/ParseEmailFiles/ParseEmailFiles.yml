@@ -19,6 +19,14 @@ args:
   name: forced_encoding
   description: Use only the force encoding when parsing the message, e.g 'iso-2022-jp'.
     Relevant to msg files only.
+- auto: PREDEFINED
+  defaultValue: "All files"
+  description: In case of nested email files (for instance, an EML file inside an EML file), determines which of the email files to return as an output.
+  name: nesting_level_to_return
+  predefined:
+  - "All files"
+  - "Outer file"
+  - "Inner file"
 - required: false
   name: default_encoding
   description: Use only the default encoding when parsing the message with the detected
@@ -125,4 +133,4 @@ type: python
 fromversion: 5.0.0
 tests:
 - ParseEmailFiles-test
-dockerimage: demisto/python:2.7.18.24398
+dockerimage: demisto/python:2.7.18.27799

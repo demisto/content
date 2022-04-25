@@ -1,0 +1,19 @@
+<response status="success">
+    <result>
+        <job>
+            <tenq>2022/03/09 01:39:17</tenq>
+            <tdeq>01:39:17</tdeq>
+            <id>385</id>
+            <user></user>
+            <type>RefreshLic</type>
+            <status>FIN</status>
+            <queued>NO</queued>
+            <stoppable>no</stoppable>
+            <result>OK</result>
+            <tfin>01:39:18</tfin>
+            <description></description>
+            <positionInQ>0</positionInQ>
+            <progress>100</progress>
+        </job>
+    </result>
+</response>

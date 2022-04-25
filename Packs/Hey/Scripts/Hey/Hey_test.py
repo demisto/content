@@ -78,7 +78,7 @@ def test_construct_hey_query():
     headers = 'a=1,b=2'
     res = hey.construct_hey_query(url, headers=headers)
     assert res[0] == {}
-    assert res[1] == f'hey -H "a: 1" -H "b: 2" {url}'
+    assert res[1] == f'hey -H a:1 -H b:2 {url}'
 
     body = '{}'
     res = hey.construct_hey_query(url, body=body)
@@ -123,5 +123,5 @@ def test_construct_hey_query():
         'd': body,
         'x': proxy
     }
-    assert res[1] == 'hey --disable-compression -h2 -disable-redirects -H "a: 1" -H "b: 2"-t 2 -n 2 -c 2 -m POST -z' \
+    assert res[1] == 'hey --disable-compression -h2 -disable-redirects -H a:1 -H b:2 -t 2 -n 2 -c 2 -m POST -z' \
                      ' 2s -d {} -x a:1 http://mock.com'

@@ -10,7 +10,7 @@ import demisto_client
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import run_threads_list
 from google.cloud.storage import Bucket
-from distutils.version import LooseVersion
+from packaging.version import Version
 from typing import List
 
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, load_json
@@ -231,7 +231,7 @@ def install_nightly_packs(client: demisto_client,
     while not all_packs_install_successfully:
         try:
             packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
-            logging.debug(f'Installing the following packs in server {host}:\n{packs_to_install_str}')
+            logging.info(f'Installing the following packs in server {host}:\n{packs_to_install_str}')
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
                                                                                 method='POST',
@@ -344,8 +344,9 @@ def install_packs(client: demisto_client,
                                                                             body=request_data,
                                                                             accept='application/json',
                                                                             _request_timeout=request_timeout)
-
-        if 200 <= status_code < 300:
+        if status_code == 204 and not response_data:
+            pass
+        elif 200 <= status_code < 300:
             packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for
                           pack in
                           ast.literal_eval(response_data)]
@@ -429,10 +430,17 @@ def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> s
     # Adding the '/' in the end of the prefix to search for the exact pack id
     pack_versions_paths = [f.name for f in production_bucket.list_blobs(prefix=f'{pack_bucket_path}/') if
                            f.name.endswith('.zip')]
-    pack_versions = [LooseVersion(PACK_PATH_VERSION_REGEX.findall(path)[0]) for path in pack_versions_paths]
+
+    pack_versions = []
+    for path in pack_versions_paths:
+        versions = PACK_PATH_VERSION_REGEX.findall(path)
+        if not versions:
+            continue
+        pack_versions.append(Version(versions[0]))
+
     logging.debug(f'Found the following zips for {pack_id} pack: {pack_versions}')
     if pack_versions:
-        pack_latest_version = max(pack_versions).vstring
+        pack_latest_version = str(max(pack_versions))
         return pack_latest_version
     else:
         logging.error(f'Could not find any versions for pack {pack_id} in bucket path {pack_bucket_path}')
@@ -515,7 +523,7 @@ def install_all_content_packs_from_build_bucket(client: demisto_client, host: st
             hidden = pack_metadata.get(Metadata.HIDDEN, False)
             # Check if the server version is greater than the minimum server version required for this pack or if the
             # pack is hidden (deprecated):
-            if ('Master' in server_version or LooseVersion(server_version) >= LooseVersion(server_min_version)) and \
+            if ('Master' in server_version or Version(server_version) >= Version(server_min_version)) and \
                     not hidden:
                 logging.debug(f"Appending pack id {pack_id}")
                 all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
@@ -539,6 +547,7 @@ def upload_zipped_packs(client: demisto_client,
     header_params = {
         'Content-Type': 'multipart/form-data'
     }
+    auth_settings = ['api_key', 'csrf_token', 'x-xdr-auth-id']
     file_path = os.path.abspath(pack_path)
     files = {'file': file_path}
 
@@ -548,6 +557,7 @@ def upload_zipped_packs(client: demisto_client,
     try:
         response_data, status_code, _ = client.api_client.call_api(resource_path='/contentpacks/installed/upload',
                                                                    method='POST',
+                                                                   auth_settings=auth_settings,
                                                                    header_params=header_params, files=files)
 
         if 200 <= status_code < 300:
@@ -584,18 +594,19 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
 
 
 def search_and_install_packs_and_their_dependencies(pack_ids: list,
-                                                    client: demisto_client):
+                                                    client: demisto_client, hostname: str = ''):
     """ Searches for the packs from the specified list, searches their dependencies, and then
     installs them.
     Args:
         pack_ids (list): A list of the pack ids to search and install.
         client (demisto_client): The client to connect to.
+        hostname (str): Hostname of instance. Using for logs.
 
     Returns (list, bool):
         A list of the installed packs' ids, or an empty list if is_nightly == True.
         A flag that indicates if the operation succeeded or not.
     """
-    host = client.api_client.configuration.host
+    host = hostname if hostname else client.api_client.configuration.host
 
     logging.info(f'Starting to search and install packs in server: {host}')
 

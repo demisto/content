@@ -88,7 +88,6 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL,
 }
 
-
 STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {
     "ipv4-addr": FeedIndicatorType.CIDR,
     "ipv6-addr": FeedIndicatorType.IPv6CIDR,
@@ -227,6 +226,8 @@ class Taxii2FeedClient:
         if not self.server:
             self.init_server()
         try:
+            # disable logging as we might receive client error and try 2.1
+            logging.disable(logging.ERROR)
             # try TAXII 2.0
             self.api_root = self.server.api_roots[0]  # type: ignore[union-attr, attr-defined]
             # override _conn - api_root isn't initialized with the right _conn
@@ -240,6 +241,9 @@ class Taxii2FeedClient:
             self.api_root = self.server.api_roots[0]  # type: ignore[union-attr, attr-defined]
             # override _conn - api_root isn't initialized with the right _conn
             self.api_root._conn = self._conn  # type: ignore[attr-defined]
+        finally:
+            # enable logging
+            logging.disable(logging.NOTSET)
 
     def init_collections(self):
         """
@@ -344,6 +348,8 @@ class Taxii2FeedClient:
         return ioc_type
 
     def update_last_modified_indicator_date(self, indicator_modified_str: str):
+        if not indicator_modified_str:
+            return
         if self.last_fetched_indicator__modified is None:
             self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
         else:
@@ -800,6 +806,9 @@ class Taxii2FeedClient:
                 # now we have a list of objects, go over each obj, save id with obj, parse the obj
                 if obj_type != "relationship":
                     for obj in stix_objects:
+                        # we currently don't support extension object
+                        if obj.get('type') == 'extension-definition':
+                            continue
                         self.id_to_object[obj.get('id')] = obj
                         result = parse_objects_func[obj_type](obj)
                         if not result:
@@ -822,6 +831,9 @@ class Taxii2FeedClient:
             stix_objects = envelope.get("objects", [])
             if obj_type != "relationship":
                 for obj in stix_objects:
+                    # we currently don't support extension object
+                    if obj.get('type') == 'extension-definition':
+                        continue
                     self.id_to_object[obj.get('id')] = obj
                     result = parse_objects_func[obj_type](obj)
                     if not result:

@@ -84,6 +84,49 @@ ATTACK_PATTERN_DATA = [
      "x_mitre_version": "1.0"}
 ]
 
+INVALID_ATTACK_PATTERN_STRUCTURE = [
+{"created": "2018-08-03T19:54:02.821Z", "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+     "description": "Windows Management",
+     "external_references": [
+         {
+             "description": "Ballenthin",
+             "source_name": "FireEye WMI 2015",
+             "url": "example.com"
+         },
+         {
+             "external_id": "T1047", "source_name": "mitre-attack",
+             "url": "https://attack.mitre.org/techniques/T1047"
+         },
+         {
+             "description": "Microsoft. (n.d.). Windows Management Instrumentation. Retrieved April 27, 2016.",
+             "source_name": "MSDN WMI",
+             "url": "https://msdn.microsoft.com/en-us/library/aa394582.aspx"
+         },
+         {
+             "description": "Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.",
+             "source_name": "TechNet RPC",
+             "url": "https://technet.microsoft.com/en-us/library/cc787851.aspx"
+         },
+         {
+             "description": "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
+             "source_name": "Wikipedia SMB",
+             "url": "https://en.wikipedia.org/wiki/Server_Message_Block"
+         }
+     ],
+     "id": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+     "kill_chain_phases": [{"kill_chain_name": "lockheed", "phase_name": "installation"},
+                           {"kill_chain_name": "mitre-attack", "phase_name": "execution"}],
+     "modified": "2020-05-12T13:02:30.000000Z", "name": "T1047 Windows Management Instrumentation",
+     "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"], "type": "attack-pattern",
+     "x_mitre_data_sources": ["Authentication logs", "Netflow/Enclave netflow", "Process command-line parameters",
+                              "Process monitoring"], "x_mitre_detection": [
+        "Monitor network traffic"],
+     "x_mitre_permissions_required": ["Administrator", "User"], "x_mitre_platforms": ["Windows"],
+     "x_mitre_remote_support": "true", "x_mitre_system_requirements": ["WMI service"],
+     "x_mitre_version": "1.0"}
+]
+
+
 SUB_TECHNIQUE_DATA = [
     {
         "type": "attack-pattern",
@@ -329,6 +372,7 @@ INDICATORS_RESULT = {'fields': {'firstseenbysource': '2019-07-30T09:29:07.724Z',
                                             "'c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839']",
                                  'type': 'indicator',
                                  'valid_from': '2019-07-30T09:29:07.724Z'},
+                     'score': 3,
                      'type': 'File',
                      'value': 'c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839'}
 

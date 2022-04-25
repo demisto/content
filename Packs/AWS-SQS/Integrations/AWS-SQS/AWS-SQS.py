@@ -147,33 +147,37 @@ def parse_incident_from_finding(message):
     return incident
 
 
-def fetch_incidents(aws_client, aws_queue_url):
+def fetch_incidents(aws_client, aws_queue_url, max_fetch):
     try:
         client = aws_client.aws_session(service='sqs')
-        messages = client.receive_message(
-            QueueUrl=aws_queue_url,
-            MaxNumberOfMessages=10,
-            VisibilityTimeout=5,
-            WaitTimeSeconds=5,
-        )
-
         receipt_handles = []  # type: list
         incidents = []  # type: list
+        max_number_of_messages = min(max_fetch, 10)
+        while len(incidents) < max_fetch:
+            messages = client.receive_message(
+                QueueUrl=aws_queue_url,
+                MaxNumberOfMessages=max_number_of_messages,
+                VisibilityTimeout=5,
+                WaitTimeSeconds=5,
+            )
 
-        if "Messages" not in messages.keys():
-            if demisto.command() == 'fetch-incidents':
-                demisto.incidents([])
-            return messages, incidents, receipt_handles
+            if "Messages" not in messages.keys():
+                if len(incidents) == 0:
+                    if demisto.command() == 'fetch-incidents':
+                        demisto.incidents([])
+                    return messages, incidents, receipt_handles
+                else:
+                    break
 
-        for message in messages["Messages"]:
-            receipt_handles.append(message['ReceiptHandle'])
-            incidents.append(parse_incident_from_finding(message))
+            for message in messages["Messages"]:
+                receipt_handles.append(message['ReceiptHandle'])
+                incidents.append(parse_incident_from_finding(message))
+                if len(incidents) == max_fetch:
+                    break
 
         demisto.incidents(incidents)
-        if receipt_handles is not None:
-            # Archive findings
-            for receipt_handle in receipt_handles:
-                client.delete_message(QueueUrl=aws_queue_url, ReceiptHandle=receipt_handle)
+        for receipt_handle in receipt_handles:
+            client.delete_message(QueueUrl=aws_queue_url, ReceiptHandle=receipt_handle)
 
     except Exception as e:
         return raise_error(e)
@@ -203,6 +207,7 @@ def main():
     timeout = params.get('timeout')
     retries = params.get('retries') or 5
     aws_queue_url = params.get('queueUrl')
+    max_fetch = min(params.get('max_fetch', 10), 100)
 
     commands = {
         'aws-sqs-get-queue-url': get_queue_url,
@@ -225,7 +230,7 @@ def main():
         if command == 'test-module':
             return_results(test_function(aws_client))
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents(aws_client, aws_queue_url)
+            fetch_incidents(aws_client, aws_queue_url, max_fetch)
             sys.exit(0)
         elif command in commands:
             client = aws_client.aws_session(

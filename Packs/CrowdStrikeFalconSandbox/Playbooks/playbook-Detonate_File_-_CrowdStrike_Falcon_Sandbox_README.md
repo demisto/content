@@ -1,6 +1,4 @@
-Detonates one or more files using the CrowdStrike Falcon Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data. 
-
-The detonation supports the following file types - PE32, EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM.
+(Deprecated). Use the command cs-falcon-sandbox-submit-file with polling=true instead.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -16,7 +14,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Commands
 * crowdstrike-submit-sample
-* crowdstrike-scan
 
 ## Playbook Inputs
 ---
