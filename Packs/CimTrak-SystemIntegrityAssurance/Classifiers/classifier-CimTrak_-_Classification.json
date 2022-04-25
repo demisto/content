@@ -1,0 +1,44 @@
+{
+    "defaultIncidentType": "CimTrak Incident",
+    "description": "",
+    "feed": false,
+    "id": "10f2457f-3089-4b27-8929-f9fce45b3ee7",
+    "keyTypeMap": {},
+    "name": "CimTrak - Classification",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [
+                [
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "szmessageid"
+                            }
+                        },
+                        "operator": "startWith",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "S_LOGMSG"
+                            }
+                        }
+                    }
+                ]
+            ],
+            "root": "szmessageid",
+            "transformers": []
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
