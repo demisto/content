@@ -1,0 +1,18 @@
+{
+  "roles": [
+    {
+      "name": "roles/accessapproval.approver",
+      "title": "Access Approval Approver",
+      "description": "Ability to view or act on access approval requests and view configuration",
+      "stage": "BETA",
+      "etag": "AA=="
+    },
+    {
+      "name": "roles/accessapproval.configEditor",
+      "title": "Access Approval Config Editor",
+      "description": "Ability update the Access Approval configuration",
+      "stage": "BETA",
+      "etag": "AA=="
+    }
+  ]
+}
