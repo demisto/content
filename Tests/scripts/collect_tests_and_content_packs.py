@@ -1517,7 +1517,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
         elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
             last_commit = get_last_commit_from_index(service_account)
             second_last_commit = branch_name if branch_name != 'master' else 'origin/master'
-            files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
+            files_string = tools.run_command(f'git diff --name-status {second_last_commit}..{last_commit}')
             logging.debug(f'Current commit: {second_last_commit}, Last upload commit: {last_commit}')
         elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
