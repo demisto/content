@@ -92,7 +92,7 @@ create-instances:
     - section_end "Collect Tests and Content Packs"
 
     - section_start "Calculate Packs Dependencies" --collapsed
-    - python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    - demisto-sdk find-dependencies -idp ./Tests/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
     - section_end "Calculate Packs Dependencies"
 
     - section_start "Prepare Content Packs for Testing"
