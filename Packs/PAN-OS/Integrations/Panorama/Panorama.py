@@ -6233,7 +6233,7 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
         'xpath': f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{DEVICE_GROUP}']"
                  f"/profiles/spyware/entry[@name='{anti_spy_ware_name}']",
         'key': API_KEY,
-        'element': '<botnet-domains>'
+        'element': f'<botnet-domains>'
                    f'<lists>'
                    f'<entry name="{edl}"><packet-capture>{packet_capture}</packet-capture>'
                    f'<action><{action}/></action></entry>'
