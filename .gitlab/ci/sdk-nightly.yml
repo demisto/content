@@ -79,7 +79,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
     - section_end "Collect Test List and Content Packs"
     - section_start "Calculate Packs Dependencies" --collapsed
-    - python3 ./Tests/Marketplace/packs_dependencies.py -i $ARTIFACTS_FOLDER/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    - demisto-sdk find-dependencies -idp $ARTIFACTS_FOLDER/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
     - section_end "Calculate Packs Dependencies"
 
 
