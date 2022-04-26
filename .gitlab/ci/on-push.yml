@@ -36,7 +36,8 @@ run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
   rules:
-    - if: '$BUCKET_UPLOAD != "true"'
+    - if: '$BUCKET_UPLOAD == "true"'
+      when: never
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
 
 
