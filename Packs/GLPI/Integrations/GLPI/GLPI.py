@@ -481,12 +481,20 @@ def get_itilcategory_name(client, args):
 
 
 def get_user_id_command(client, args):
-    user_name = args.get('name')
-    user_id = None
-    user_id = client.get_user_id(user_name)
-    if user_id is None:
-        return_error('User does not exist')
-    return user_id
+    user_id = get_user_id_helper(client, args)
+    if user_id:
+        res_format = {
+            'id': user_id,
+            'username': args.get('name')
+        }
+        result = CommandResults(outputs_prefix='GLPI.User',
+                                outputs_key_field=['id', 'username'],
+                                outputs=res_format,
+                                raw_response=res_format,
+                                readable_output=tableToMarkdown(name='GLPI username', t=res_format, headers=['id', 'username']))
+        return result
+    else:
+        return_error('Username does not exist')
 
 
 def get_user_name_command(client, args):
@@ -988,6 +996,7 @@ def main():
         'glpi-enable-user': enable_user_command,
         'glpi-disable-user': disable_user_command,
         'glpi-get-username': get_user_name_command,
+        'glpi-get-userid': get_user_id_command,
         'get-remote-data': get_remote_data_command
     }
 

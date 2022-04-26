@@ -1,0 +1,22 @@
+args:
+- description: GLPI Username
+  name: value
+  required: true
+comment: Convert GLPI Username into GLPI ID
+commonfields:
+  id: GLPIGetUserID
+  version: -1
+dockerimage: demisto/python3:3.10.4.28442
+enabled: true
+name: GLPIGetUserID
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

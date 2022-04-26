@@ -189,6 +189,20 @@ script:
         - contextPath: GLPI.User.username
           description: Username
       description: Get username by user ID
+    - name: glpi-get-userid
+      arguments:
+        - name: name
+          required: true
+          description: Username
+      outputs:
+        - contextPath: GLPI.User
+          description: GLPI User details
+          type: Unknown
+        - contextPath: GLPI.User.id
+          description: User id
+        - contextPath: GLPI.User.username
+          description: Username
+      description: Get GLPI User ID by Username
     - name: glpi-delete-ticket
       arguments:
         - name: ticket_id
