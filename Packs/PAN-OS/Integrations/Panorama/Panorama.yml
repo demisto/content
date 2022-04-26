@@ -6925,6 +6925,7 @@ script:
         secret: false
       - description: Target number of the firewall. Use only on a Panorama instance.
         name: target
+        required: false
     deprecated: false
     description: Gets all ARP tables from all firewalls in the topology.
     name: pan-os-platform-get-arp-tables
@@ -6974,6 +6975,7 @@ script:
         secret: false
       - description: Target number of the firewall. Use only on a Panorama instance.
         name: target
+        required: false
     deprecated: false
     description: Pulls all route summary information from the topology.
     name: pan-os-platform-get-route-summary
@@ -6999,6 +7001,7 @@ script:
         secret: false
       - description: Target number of the firewall. Use only on a Panorama instance.
         name: target
+        required: false
     deprecated: false
     description: Pulls all route summary information from the topology.
     name: pan-os-platform-get-routes
@@ -7048,6 +7051,7 @@ script:
         secret: false
       - description: Target number of the firewall. Use only on a Panorama instance.
         name: target
+        required: false
     deprecated: false
     description: Gets information from all PAN-OS systems in the topology.
     name: pan-os-platform-get-system-info
@@ -7206,6 +7210,7 @@ script:
         secret: false
       - description: Target number of the firewall. Use only on a Panorama instance.
         name: target
+        required: false
     deprecated: false
     description: Gets global counter information from all the PAN-OS firewalls in the topology.
     name: pan-os-platform-get-global-counters
@@ -7261,6 +7266,7 @@ script:
         secret: false
       - description: Target number of the firewall. Use only on a Panorama instance.
         name: target
+        required: false
     deprecated: false
     description: Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
     name: pan-os-platform-get-bgp-peers
@@ -7325,6 +7331,7 @@ script:
         secret: false
       - description: Target number of the firewall. Use only on a Panorama instance.
         name: target
+        required: false
     deprecated: false
     description: Check the devices for software that is available to be installed.
     name: pan-os-platform-get-available-software
@@ -7368,6 +7375,7 @@ script:
         secret: false
       - description: Target number of the firewall. Use only on a Panorama instance.
         name: target
+        required: false
     deprecated: false
     description: Get the HA state and associated details from the given device and any other details.
     name: pan-os-platform-get-ha-state
@@ -7411,6 +7419,7 @@ script:
       secret: false
     - description: Target number of the firewall. Use only on a Panorama instance.
       name: target
+      required: false
     deprecated: false
     description: Get all the jobs from the devices in the environment, or a single job when the ID is specified.
     name: pan-os-platform-get-jobs
