@@ -57,6 +57,7 @@ SECURITY_RULE_ARGS = {
     'action': 'Action',
     'service': 'Service',
     'disable': 'Disabled',
+    'disabled': 'Disabled',
     'application': 'Application',
     'source_user': 'SourceUser',
     'disable_server_response_inspection': 'DisableServerResponseInspection',
@@ -261,7 +262,7 @@ def add_argument_open(arg: Optional[str], field_name: str, member: bool) -> str:
 
 
 def add_argument_yes_no(arg: Optional[str], field_name: str, option: bool = False) -> str:
-    if arg and arg == 'No':
+    if arg and arg.lower() == 'no':
         result = '<' + field_name + '>' + 'no' + '</' + field_name + '>'
     else:
         result = '<' + field_name + '>' + ('yes' if arg else 'no') + '</' + field_name + '>'
@@ -3268,7 +3269,7 @@ def panorama_list_pcaps_command(args: dict):
         raise Exception('Request to get list of Pcaps Failed.\nStatus code: ' + str(
             json_result['response']['@code']) + '\nWith message: ' + str(json_result['response']['msg']['line']))
 
-    dir_listing = json_result['result']['dir-listing']
+    dir_listing = (json_result.get('result') or {}).get('dir-listing') or {}
     if 'file' not in dir_listing:
         return_results(f'PAN-OS has no Pcaps of type: {pcap_type}.')
     else:
@@ -3319,6 +3320,10 @@ def panorama_get_pcap_command(args: dict):
     password = args.get('password')
     pcap_id = args.get('pcapID')
     search_time = args.get('searchTime')
+    pcap_name = args.get('from')
+
+    if pcap_type == 'filter-pcap' and not pcap_name:
+        raise Exception('cannot download filter-pcap without the from argument')
 
     if pcap_type == 'dlp-pcap' and not password:
         raise Exception('Can not download dlp-pcap without the password argument.')
@@ -3327,7 +3332,6 @@ def panorama_get_pcap_command(args: dict):
     if pcap_type == 'threat-pcap' and (not pcap_id or not search_time):
         raise Exception('Can not download threat-pcap without the pcapID and the searchTime arguments.')
 
-    pcap_name = args.get('from')
     local_name = args.get('localName')
     serial_no = args.get('serialNo')
     session_id = args.get('sessionID')
@@ -3368,6 +3372,12 @@ def panorama_get_pcap_command(args: dict):
 
     # due to pcap file size limitation in the product. For more details, please see the documentation.
     if result.headers['Content-Type'] != 'application/octet-stream':
+        json_result = json.loads(xml2json(result.text)).get('response', {})
+        if (json_result.get('@status') or '') == 'error':
+            errors = '\n'.join(
+                [f'{error_key}: {error_val}' for error_key, error_val in (json_result.get('msg') or {}).items()]
+            )
+            raise Exception(errors)
         raise Exception(
             'PCAP download failed. Most likely cause is the file size limitation.\n'
             'For information on how to download manually, see the documentation for this integration.')
@@ -8322,9 +8332,9 @@ class ShowJobsAllResultData(ResultData):
     user: str
     tenq: str
     stoppable: str
-    description: str
     positionInQ: int
     progress: int
+    description: str = ""
 
     _output_prefix = OUTPUT_PREFIX + "JobStatus"
     _title = "PAN-OS Job Status"
@@ -9006,9 +9016,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_counter_global(
-            topology: Topology, device_filter_str: Optional[str] = None
-    ) -> ShowCounterGlobalCommmandResult:
+    def get_counter_global(topology: Topology, device_filter_str: Optional[str] = None) -> ShowCounterGlobalCommmandResult:
         """
         Gets the global counter details
         :param topology: `Topology` instance.
@@ -9244,6 +9252,79 @@ def get_template_stacks(
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
     return PanoramaCommand.get_template_stacks(topology, device_filter_string)
+
+
+def get_global_counters(topology: Topology, device_filter_string: Optional[str] = None) -> ShowCounterGlobalCommmandResult:
+    """
+    Gets global counter information from all the PAN-OS firewalls in the topology
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    """
+    return FirewallCommand.get_counter_global(topology, device_filter_string)
+
+
+def get_bgp_peers(topology: Topology, device_filter_string: Optional[str] = None) -> ShowRoutingProtocolBGPCommandResult:
+    """
+    Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    """
+    return FirewallCommand.get_bgp_peers(topology, device_filter_string)
+
+
+def get_available_software(topology: Topology, device_filter_string: Optional[str] = None) -> SoftwareVersionCommandResult:
+    """
+    Check the devices for software that is available to be installed.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    """
+    return UniversalCommand.get_available_software(topology, device_filter_string)
+
+
+def get_ha_state(topology: Topology, device_filter_string: Optional[str] = None) -> List[ShowHAState]:
+    """
+    Get the HA state and associated details from the given device and any other details.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    """
+    return FirewallCommand.get_ha_status(topology, device_filter_string)
+
+
+def get_jobs(topology: Topology, device_filter_string: Optional[str] = None, status: Optional[str] = None,
+             job_type: Optional[str] = None, id: Optional[str] = None) -> List[ShowJobsAllResultData]:
+    """
+    Get all the jobs from the devices in the environment, or a single job when ID is specified.
+
+    Jobs are sorted by the most recent queued and are returned in a way that's consumable by Generic Polling.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param status: Filter returned jobs by status
+    :param job_type: Filter returned jobs by type
+    :param id: Filter by ID
+    """
+    _id = arg_to_number(id)
+
+    return UniversalCommand.show_jobs(
+        topology,
+        device_filter_string,
+        job_type=job_type,
+        status=status,
+        id=_id
+    )
+
+
+def download_software(topology: Topology, version: str,
+                      device_filter_string: Optional[str] = None, sync: bool = False) -> DownloadSoftwareCommandResult:
+    """
+    Download The provided software version onto the device.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only install to sepecific devices or serial numbers
+    :param version: software version to upgrade to, ex. 9.1.2
+    :param sync: If provided, runs the download synchronously - make sure 'execution-timeout' is increased.
+    """
+    _sync = argToBoolean(sync)
+       
+    return UniversalCommand.download_software(topology, version, device_filter_str=device_filter_string, sync=_sync)
 
 
 def get_topology() -> Topology:
@@ -9699,7 +9780,7 @@ def main():
 
         elif command == 'panorama-install-file-content-update' or command == 'pan-os-install-file-content-update':
             panorama_install_file_content_update_command(args)
-        elif demisto.command() == 'pan-os-platform-get-arp-tables':
+        elif command == 'pan-os-platform-get-arp-tables':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -9707,7 +9788,7 @@ def main():
                     empty_result_message="No ARP entries."
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-route-summary':
+        elif command == 'pan-os-platform-get-route-summary':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -9715,7 +9796,7 @@ def main():
                     empty_result_message="Empty route summary result."
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-routes':
+        elif command == 'pan-os-platform-get-routes':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -9723,10 +9804,10 @@ def main():
                     empty_result_message="Empty route summary result."
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-system-info':
+        elif command == 'pan-os-platform-get-system-info':
             topology = get_topology()
             return_results(dataclasses_to_command_results(get_system_info(topology, **demisto.args())))
-        elif demisto.command() == 'pan-os-platform-get-device-groups':
+        elif command == 'pan-os-platform-get-device-groups':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
@@ -9734,12 +9815,60 @@ def main():
                     empty_result_message="No device groups found."
                 )
             )
-        elif demisto.command() == 'pan-os-platform-get-template-stacks':
+        elif command == 'pan-os-platform-get-template-stacks':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
                     get_template_stacks(topology, **demisto.args()),
                     empty_result_message="No template stacks found."
+                )
+            )
+        elif command == 'pan-os-platform-get-global-counters':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_global_counters(topology, **demisto.args()),
+                    empty_result_message="No Global Counters Found"
+                )
+            )
+        elif command == 'pan-os-platform-get-bgp-peers':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_bgp_peers(topology, **demisto.args()),
+                    empty_result_message="No BGP Peers found."
+                )
+            )
+        elif command == 'pan-os-platform-get-available-software':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_available_software(topology, **demisto.args()),
+                    empty_result_message="No Available software images found"
+                )
+            )
+        elif command == 'pan-os-platform-get-ha-state':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_ha_state(topology, **demisto.args()),
+                    empty_result_message="No HA information available"
+                )
+            )
+        elif command == 'pan-os-platform-get-jobs':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_jobs(topology, **demisto.args()),
+                    empty_result_message="No jobs returned"
+                )
+            )
+        elif command == 'pan-os-platform-download-software':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    download_software(topology, **demisto.args()),
+                    empty_result_message="Software download not started"
                 )
             )
         else:

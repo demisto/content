@@ -5382,9 +5382,32 @@ script:
       name: timeout
       required: false
       secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
     outputs:
-    - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result
-      description: The query results.
+    - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections
+      description: The query results for network_connections query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.smb_connections
+      description: The query results for smb_connections query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.credential_dumping
+      description: The query results for credential_dumping query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection
+      description: The query results for management_connection query_purpose.
       type: String
   - name: microsoft-atp-advanced-hunting-persistence-evidence
     description: Detects evidence of persistence. By selecting a “query_purpose”
@@ -5479,6 +5502,20 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
+    - default: false
       description: Process command line that initiated the registry entry.
         Can only be used with "registry_entry" query_purpose.
       isArray: false
@@ -5486,8 +5523,38 @@ script:
       required: false
       secret: false
     outputs:
-    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
-      description: The query results.
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
+      description: The query results for scheduled_job query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry
+      description: The query results for registry_entry query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes
+      description: The query results for startup_folder_changes query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_service_created
+      description: The query results for new_service_created query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.service_updated
+      description: The query results for service_updated query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.file_replaced
+      description: The query results for file_replaced query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_user
+      description: The query results for new_user query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_group
+      description: The query results for new_group query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.group_user_change
+      description: The query results for group_user_change query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change
+      description: The query results for local_firewall_change query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change
+      description: The query results for host_file_change query_purpose.
       type: String
   - name: microsoft-atp-advanced-hunting-file-origin
     description: Indicates how the file got on the machine. Possible details are
@@ -5552,6 +5619,20 @@ script:
         response before a timeout occurs.
       isArray: false
       name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
       required: false
       secret: false
     outputs:
@@ -5641,9 +5722,38 @@ script:
       name: timeout
       required: false
       secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
     outputs:
-    - contextPath: MicrosoftATP.HuntProcessDetails.Result
-      description: The query results.
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.parent_process
+      description: The query results for parent_process query_purposeThe query results.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.grandparent_process
+      description: The query results for grandparent_process query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.process_details
+      description: The query results for process_details query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.beaconing_evidence
+      description: The query results for beaconing_evidence query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.powershell_execution_unsigned_files
+      description: The query results for powershell_execution_unsigned_files query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
+      description: The query results for process_excecution_powershell query_purpose.
       type: String
   - name: microsoft-atp-advanced-hunting-network-connections
     description: Detects network connections. By selecting a “query_purpose”
@@ -5724,9 +5834,29 @@ script:
       name: timeout
       required: false
       secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
+      required: false
+      secret: false
     outputs:
-    - contextPath: MicrosoftATP.HuntNetworkConnections.Result
-      description: The query results.
+    - contextPath: MicrosoftATP.HuntNetworkConnections.Result.external_addresses
+      description: The query results for external_addresses query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntNetworkConnections.Result.dns_query
+      description: The query results for dns_query query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntNetworkConnections.Result.encoded_commands
+      description: The query results for encoded_commands query_purpose.
       type: String
   - name: microsoft-atp-advanced-hunting-privilege-escalation
     description: Detects evidence of privilege escalation.
@@ -5767,6 +5897,20 @@ script:
         response before a timeout occurs.
       isArray: false
       name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
       required: false
       secret: false
     outputs:
@@ -5812,6 +5956,20 @@ script:
         response before a timeout occurs.
       isArray: false
       name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "1"
+      description: The page number from which to start a search. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "false"
+      description: Show the query as part of the entry result.
+      isArray: false
+      name: show_query
       required: false
       secret: false
     outputs:
@@ -5910,9 +6068,38 @@ script:
         name: timeout
         required: false
         secret: false
+      - default: false
+        defaultValue: "1"
+        description: The page number from which to start a search. Default is 1.
+        isArray: false
+        name: page
+        required: false
+        secret: false
+      - default: false
+        defaultValue: "false"
+        description: Show the query as part of the entry result.
+        isArray: false
+        name: show_query
+        required: false
+        secret: false
     outputs:
-      - contextPath: MicrosoftATP.HuntCoverUp.Result
-        description: The query results.
+      - contextPath: MicrosoftATP.HuntCoverUp.Result.file_deleted
+        description: The query results for file_deleted query_purpose.
+        type: String
+      - contextPath: MicrosoftATP.HuntCoverUp.Result.event_log_cleared
+        description: The query results for event_log_cleared query_purpose.
+        type: String
+      - contextPath: MicrosoftATP.HuntCoverUp.Result.compromised_information
+        description: The query results for compromised_information query_purpose.
+        type: String
+      - contextPath: MicrosoftATP.HuntCoverUp.Result.connected_devices
+        description: The query results for connected_devices query_purpose.
+        type: String
+      - contextPath: MicrosoftATP.HuntCoverUp.Result.action_types
+        description: The query results for action_types query_purpose.
+        type: String
+      - contextPath: MicrosoftATP.HuntCoverUp.Result.common_files
+        description: The query results for common_files query_purpose.
         type: String
   dockerimage: demisto/crypto:1.0.0.27590
   feed: false

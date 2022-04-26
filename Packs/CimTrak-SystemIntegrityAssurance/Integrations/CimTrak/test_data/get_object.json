@@ -1,0 +1,92 @@
+{
+    "name": "get_object",
+    "execute": "response_raw = CimTrak.get_object_command(client,{'objectId': 2})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getObject",
+            "reply": {
+                "results": [
+                    {
+                        "agentIsFilesystem": true,
+                        "cancel": false,
+                        "connected": false,
+                        "logsByDays": true,
+                        "requireNotes": false,
+                        "inService": "",
+                        "children": 0,
+                        "events": 30,
+                        "intrusions": 250,
+                        "intrusionSize": 500,
+                        "objectId": 2,
+                        "objectStatus": 2,
+                        "objectSubType": 3,
+                        "objectType": 3,
+                        "parentId": 1,
+                        "revisions": 250,
+                        "templateId": 0,
+                        "securityAdd": true,
+                        "securityEdit": true,
+                        "securityLock": true,
+                        "securityReport": true,
+                        "securityUnlock": true,
+                        "securityView": true,
+                        "warnMinutes": 0,
+                        "contact": "",
+                        "createDate": "2021-12-13 14:49:50",
+                        "description": "",
+                        "location": "",
+                        "name": "test2restore",
+                        "objectPath": "DSK050->local->test2restore",
+                        "url": "",
+                        "agentObjectId": 1
+                    }
+                ],
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": []
+            }
+        }
+    ],
+    "response": {
+        "results": [
+            {
+                "agentIsFilesystem": true,
+                "cancel": false,
+                "connected": false,
+                "logsByDays": true,
+                "requireNotes": false,
+                "inService": "",
+                "children": 0,
+                "events": 30,
+                "intrusions": 250,
+                "intrusionSize": 500,
+                "objectId": 2,
+                "objectStatus": 2,
+                "objectSubType": 3,
+                "objectType": 3,
+                "parentId": 1,
+                "revisions": 250,
+                "templateId": 0,
+                "securityAdd": true,
+                "securityEdit": true,
+                "securityLock": true,
+                "securityReport": true,
+                "securityUnlock": true,
+                "securityView": true,
+                "warnMinutes": 0,
+                "contact": "",
+                "createDate": "2021-12-13 14:49:50",
+                "description": "",
+                "location": "",
+                "name": "test2restore",
+                "objectPath": "DSK050->local->test2restore",
+                "url": "",
+                "agentObjectId": 1
+            }
+        ],
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": ""
+    }
+}

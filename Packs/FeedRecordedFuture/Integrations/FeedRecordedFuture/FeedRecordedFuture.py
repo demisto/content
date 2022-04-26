@@ -499,8 +499,7 @@ def main():
     client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], params.get('api_token'), params.get('services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
-                    params.get('risk_score_threshold'), argToList(params.get('feedTags'), params.get('tlp_color'))
-                    )
+                    params.get('risk_score_threshold'), argToList(params.get('feedTags')), params.get('tlp_color'))
     command = demisto.command()
     demisto.info('Command being called is {}'.format(command))
     # Switch case

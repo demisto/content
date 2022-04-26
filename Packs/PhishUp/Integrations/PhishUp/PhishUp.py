@@ -50,6 +50,8 @@ def investigate_url_command(client: Client, args, apikey):
     for url in urls:
         phishup_result = client.investigate_url_http_request(apikey, url)
 
+        demisto.debug(f'This is the result: {phishup_result}')
+
         score = 0
         if phishup_result["Status"]["Result"] == "Success":
             if phishup_result["Result"]["PhishUpStatus"] == "Phish":

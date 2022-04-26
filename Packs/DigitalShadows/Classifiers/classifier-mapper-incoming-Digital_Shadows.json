@@ -1,0 +1,54 @@
+{
+    "description": "Incoming mapper for Digital Shadows Incidents",
+    "feed": false,
+    "id": "Digital Shadows Incident Mapper",
+    "mapping": {
+        "Digital Shadows Client Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "DS Impact": {
+                    "simple": "impactDescription"
+                },
+                "DS Mitigation": {
+                    "simple": "mitigation"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Description": {
+                    "simple": "summary"
+                },
+                "Detection URL": {
+                    "simple": "entitySummary.source"
+                },
+                "Source Category": {
+                    "simple": "type"
+                },
+                "Sub Category": {
+                    "simple": "subType"
+                },
+                "Tags": {
+                    "simple": "tags.name"
+                },
+                "Ticket Number": {
+                    "simple": "id"
+                },
+                "details": {
+                    "simple": "description"
+                },
+                "occurred": {
+                    "simple": "occurred"
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "Digital Shadows Incident Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
