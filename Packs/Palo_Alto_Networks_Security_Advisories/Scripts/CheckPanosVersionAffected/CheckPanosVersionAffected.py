@@ -88,6 +88,11 @@ def compare_version_with_advisories(panos_version: str, advisories_list: List[Ad
 
 
 def main():
+    """
+    Main function
+    Reads advisories from the pan-advisories-get-advisories command and compares them with the provided PAN-OS version to check
+    for a match - if so, returns the matching advisories.
+    """
     advisories_list: list = demisto.args().get("advisories")
 
     advisories_objects: List[Advisory] = [Advisory(**advisory_dict) for advisory_dict in advisories_list]

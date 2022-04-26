@@ -1,4 +1,4 @@
-Checks if the given PAN-OS version number is affected by the given list of vulnerabilties from the pan-advisories-get-advisories command.
+Checks if the given PAN-OS version number is affected by the given list of vulnerabilities from the pan-advisories-get-advisories command.
 
 ## Script Data
 ---
