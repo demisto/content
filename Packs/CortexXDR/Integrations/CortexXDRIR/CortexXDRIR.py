@@ -2372,7 +2372,7 @@ def get_audit_management_logs_command(client, args):
         required=True
     )
     limit = arg_to_int(
-        arg=args.get('limit', 50),
+        arg=args.get('limit', 20),
         arg_name='Failed to parse "limit". Must be a number.',
         required=True
     )
@@ -3633,7 +3633,7 @@ def get_alerts_by_filter_command(client: Client, args: Dict) -> CommandResults:
             'ORDER': sort_order
         }]
     offset = args.pop('offset', 0)
-    limit = args.pop('limit', 10)
+    limit = args.pop('limit', 50)
     filter_data['paging'] = {
         'from': offset,
         'to': limit
