@@ -174,7 +174,7 @@ function alert_to_entry(title, alert) {
         Comments : alert.description.comments.comments,
     };
     var links = []
-    if (alert.description.reference.additionInfo !== undefined) {
+    if (alert.description.reference.additionInfo !== undefined && alert.description.reference.additionInfo !== null) {
         log("The alert.description.reference.additionInfo is defined: " + alert.description.reference.additionInfo)
         links = alert.description.reference.additionInfo.split('<BR>');
     }
