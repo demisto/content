@@ -1,8 +1,7 @@
 import argparse
 import sys
 
-from demisto_sdk.commands.common.tools import get_json
-
+from demisto_sdk.commands.common.tools import get_json, str2bool
 from Tests.configure_and_test_integration_instances import MARKET_PLACE_CONFIGURATION, \
     XSOARBuild, XSOARServer, XSIAMBuild, get_json_file, XSIAMServer, Build
 from Tests.Marketplace.search_and_install_packs import install_all_content_packs_from_build_bucket, \
@@ -28,6 +27,8 @@ def options_handler():
     parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
     parser.add_argument('--xsiam_servers_path', help='Path to the secret xsiam server metadata file.')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.')
+    parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
+                        type=str2bool, default=False, required=True)
     options = parser.parse_args()
     # disable-secrets-detection-end
 
@@ -60,7 +61,7 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids_to_instal
     return installed_content_packs_successfully
 
 
-def xsoar_configure_and_install_prev_flow(options, branch_name: str, build_number: str):
+def xsoar_configure_and_install_all_packs(options, branch_name: str, build_number: str):
     """
     Args:
         options: script arguments.
@@ -166,6 +167,8 @@ def main():
 
     if options.ami_env in ["XSIAM Master"]:
         xsiam_configure_and_install_flow(options, branch_name, build_number)
+    elif options.override_all_packs:
+        xsoar_configure_and_install_all_packs(options, branch_name, build_number)
     else:
         xsoar_configure_and_install_flow(options, branch_name, build_number)
 
