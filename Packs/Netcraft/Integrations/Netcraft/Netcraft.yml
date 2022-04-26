@@ -31,7 +31,7 @@ script:
   type: python
   dockerimage: demisto/python3:3.10.1.26972
   commands:
-  - name: netcraft-report-attack
+  - name: netcraft-report-attackyo
     arguments:
     - name: attack
       required: true
