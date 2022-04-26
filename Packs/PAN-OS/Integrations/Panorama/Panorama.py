@@ -8915,7 +8915,7 @@ class HygieneLookups:
         if not minimum_alert_severities:
             minimum_alert_severities = BestPractices.VULNERABILITY_ALERT_THRESHOLD
 
-        conforming_profiles: Union[list[VulnerabilityProfile], list[AntiSpywareProfile]] = []
+        conforming_profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]] = []
         issues = []
 
         check_register = HygieneCheckRegister.get_hygiene_check_register([
@@ -8957,7 +8957,7 @@ class PanoramaCommand:
     @staticmethod
     def get_device_groups(
             topology: Topology,
-            device_filter_str: str = None,
+            device_filter_str: Optional[str] = None,
     ) -> List[DeviceGroupInformation]:
         """
         Get all the device groups from Panorama and their associated devices.
@@ -8982,7 +8982,7 @@ class PanoramaCommand:
     @staticmethod
     def get_template_stacks(
             topology: Topology,
-            device_filter_str: str = None,
+            device_filter_str: Optional[str] = None,
     ) -> List[TemplateStackInformation]:
         """
         Get all the template-stacks from Panorama and their associated devices.
@@ -9121,7 +9121,7 @@ class UniversalCommand:
     @staticmethod
     def get_system_info(
             topology: Topology,
-            device_filter_str: str = None,
+            device_filter_str: Optional[str] = None,
             target: Optional[str] = None
     ) -> ShowSystemInfoCommandResult:
         """
