@@ -64,16 +64,17 @@ class MsGraphClient:
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 redirect_uri, auth_code, certificate_thumbprint: Optional[str] = None,
+                 redirect_uri, auth_code, handle_error, certificate_thumbprint: Optional[str] = None,
                  private_key: Optional[str] = None,
                  ):
-        grant_type = AUTHORIZATION_CODE if self_deployed else CLIENT_CREDENTIALS
+        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
         resource = None if self_deployed else ''
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
                                          redirect_uri=redirect_uri, auth_code=auth_code, grant_type=grant_type,
                                          resource=resource, certificate_thumbprint=certificate_thumbprint,
                                          private_key=private_key)
+        self.handle_error = handle_error
 
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
@@ -208,6 +209,22 @@ class MsGraphClient:
         )
 
 
+def suppress_errors_with_404_code(func):
+    def wrapper(client: MsGraphClient, args: Dict):
+        try:
+            return func(client, args)
+        except NotFoundError as e:
+            if client.handle_error:
+                if (user := args.get("user", '___')) in str(e):
+                    human_readable = f'#### User -> {user} does not exist'
+                    return human_readable, None, None
+                elif (manager := args.get('manager', '___')) in str(e):
+                    human_readable = f'#### Manager -> {manager} does not exist'
+                    return human_readable, None, None
+            raise
+    return wrapper
+
+
 def test_function(client, _):
     """
        Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -221,13 +238,12 @@ def test_function(client, _):
             # for self deployed app
             raise Exception("When using a self-deployed configuration, "
                             "Please enable the integration and run the !msgraph-user-test command in order to test it")
-        if not demisto.params().get('auth_code') or not demisto.params().get('redirect_uri'):
-            raise Exception("You must enter an authorization code in a self-deployed configuration.")
 
     client.ms_client.http_request(method='GET', url_suffix='users/')
     return response, None, None
 
 
+@suppress_errors_with_404_code
 def disable_user_account_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.disable_user_account_session(user)
@@ -235,6 +251,7 @@ def disable_user_account_command(client: MsGraphClient, args: Dict):
     return human_readable, None, None
 
 
+@suppress_errors_with_404_code
 def unblock_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.unblock_user(user)
@@ -243,6 +260,7 @@ def unblock_user_command(client: MsGraphClient, args: Dict):
     return human_readable, None, None
 
 
+@suppress_errors_with_404_code
 def delete_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.delete_user(user)
@@ -282,6 +300,7 @@ def create_user_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, user_data
 
 
+@suppress_errors_with_404_code
 def update_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     updated_fields = args.get('updated_fields')
@@ -290,6 +309,7 @@ def update_user_command(client: MsGraphClient, args: Dict):
     return get_user_command(client, args)
 
 
+@suppress_errors_with_404_code
 def change_password_user_command(client: MsGraphClient, args: Dict):
     user = str(args.get('user'))
     password = str(args.get('password'))
@@ -356,6 +376,7 @@ def list_users_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, users_data
 
 
+@suppress_errors_with_404_code
 def get_direct_reports_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
 
@@ -373,6 +394,7 @@ def get_direct_reports_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, raw_reports
 
 
+@suppress_errors_with_404_code
 def get_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     manager_data = client.get_manager(user)
@@ -387,6 +409,7 @@ def get_manager_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, manager_data
 
 
+@suppress_errors_with_404_code
 def assign_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     manager = args.get('manager')
@@ -396,6 +419,7 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
     return human_readable, None, None
 
 
+@suppress_errors_with_404_code
 def revoke_user_session_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.revoke_user_session(user)
@@ -414,11 +438,15 @@ def main():
     redirect_uri = params.get('redirect_uri', '')
     auth_code = params.get('auth_code', '')
     proxy = params.get('proxy', False)
+    handle_error = argToBoolean(params.get('handle_error', 'true'))
     certificate_thumbprint = params.get('certificate_thumbprint')
     private_key = params.get('private_key')
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    if self_deployed and ((auth_code and not redirect_uri) or (not auth_code and redirect_uri)):
+        raise DemistoException('Please provide both Application redirect URI and Authorization code '
+                               'for Authorization Code flow, or None for the Client Credentials flow')
     elif not enc_key and not (certificate_thumbprint and private_key):
         raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
@@ -447,7 +475,8 @@ def main():
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
                                               self_deployed=self_deployed, redirect_uri=redirect_uri,
-                                              auth_code=auth_code, certificate_thumbprint=certificate_thumbprint,
+                                              auth_code=auth_code, handle_error=handle_error,
+                                              certificate_thumbprint=certificate_thumbprint,
                                               private_key=private_key)
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
         return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)

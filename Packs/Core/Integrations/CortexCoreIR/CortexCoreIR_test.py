@@ -1057,7 +1057,7 @@ def test_retrieve_file_details_command(requests_mock):
     }
 
     requests_mock.post(f'{Core_URL}/public_api/v1/actions/file_retrieval_details/', json=data)
-    requests_mock.get(f'{Core_URL}', json=data1)
+    requests_mock.get(f'{Core_URL}/public_api/v1/download/file_hash', json=data1)
     client = Client(
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
@@ -2540,3 +2540,18 @@ def test_get_dynamic_analysis(requests_mock):
     response = get_dynamic_analysis_command(client, args)
     dynamic_analysis = response.outputs[0]
     assert dynamic_analysis.get('causalityId') == 'AAA'
+
+
+def test_parse_get_script_execution_results():
+    from CortexCoreIR import parse_get_script_execution_results
+    results = [{'endpoint_name': 'endpoint_name', 'endpoint_ip_address': ['1.1.1.1'], 'endpoint_status': 'endpoint_status',
+                'domain': 'env', 'endpoint_id': 'endpoint_id', 'execution_status': 'COMPLETED_SUCCESSFULLY',
+                'standard_output': 'Running command "command_executed"', 'retrieved_files': 0, 'failed_files': 0,
+                'retention_date': None, 'command_executed': ['command_output']}]
+    res = parse_get_script_execution_results(results)
+    expected_res = [{'endpoint_name': 'endpoint_name', 'endpoint_ip_address': ['1.1.1.1'], 'endpoint_status': 'endpoint_status',
+                     'domain': 'env', 'endpoint_id': 'endpoint_id', 'execution_status': 'COMPLETED_SUCCESSFULLY',
+                     'standard_output': 'Running command "command_executed"', 'retrieved_files': 0, 'failed_files': 0,
+                     'retention_date': None, 'command_executed': ['command_output'], 'command': 'command_executed',
+                     'command_output': ['command_output']}]
+    assert res == expected_res
