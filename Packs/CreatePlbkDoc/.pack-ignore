@@ -2,7 +2,7 @@
 ignore=RM106
 
 [file:pack_metadata.json]
-ignore=PA129
+ignore=PA129, PA126
 
 [file:CreatePlbkDoc.yml]
 ignore=DO106
