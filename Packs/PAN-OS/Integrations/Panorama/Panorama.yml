@@ -7483,6 +7483,9 @@ script:
         name: sync
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
+        required: false
     deprecated: false
     description: Download the provided software version onto the device.
     name: pan-os-platform-download-software
@@ -7676,6 +7679,9 @@ script:
         name: sync
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
+        required: false
     deprecated: false
     description: Install the given software version onto the device. Download the
       software first with panorama-download-panos-version.
