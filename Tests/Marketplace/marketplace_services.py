@@ -794,7 +794,7 @@ class Pack(object):
             bool: whether the operation succeeded.
         """
         task_status = False
-
+        error = ''
         try:
             if signature_string:
                 with open("keyfile", "wb") as keyfile:
@@ -805,6 +805,7 @@ class Pack(object):
 
                 if err:
                     logging.error(f"Failed to sign pack for {self._pack_name} - {str(err)}")
+                    error = err
                     return
 
                 logging.info(f"Signed {self._pack_name} pack successfully")
@@ -813,7 +814,9 @@ class Pack(object):
             task_status = True
         except Exception:
             logging.exception(f"Failed to sign pack for {self._pack_name}")
+            error = err
         finally:
+            self.error = error
             return task_status
 
     @staticmethod
@@ -1450,9 +1453,11 @@ class Pack(object):
                         release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
                     if self._current_version != latest_release_notes:
-                        logging.error(f"Version mismatch detected between the pack's current version in "
-                                      f"pack_metadata.json: {self._current_version} and latest release notes "
-                                      f"version: {latest_release_notes}.")
+                        error = f"Version mismatch detected between the pack's current version in " \
+                                f"pack_metadata.json: {self._current_version} and latest release notes " \
+                                f"version: {latest_release_notes}."
+                        logging.error(error)
+                        self.error = error
                         task_status = False
                         return task_status, not_updated_build
                     else:
@@ -1535,8 +1540,9 @@ class Pack(object):
             task_status = True
             logging.success(f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}")
         except Exception as e:
-            logging.error(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
-                          f"Additional info: {e}")
+            error = f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n Additional info: {e}"
+            logging.error(error)
+            self.error = error
         finally:
             return task_status, not_updated_build
 
