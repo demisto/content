@@ -326,10 +326,8 @@ def install_packs(client: demisto_client,
                                                                                       'ignoreWarnings': True},
                                                                                 accept='application/json',
                                                                                 _request_timeout=request_timeout)
-            if status_code == 204 and not response_data:
-                pass
 
-            if status_code in range(200, 300):
+            if status_code in range(200, 300) and status_code != 204:
                 packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
                               ast.literal_eval(response_data)]
                 logging.success(f'Packs were successfully installed on server {host}')
