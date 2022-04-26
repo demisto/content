@@ -4490,7 +4490,7 @@
                 "virus_total_v3",
                 "ewso365_sec_eng_team"
             ],
-            "external_playbook_config": 
+            "external_playbook_config":
             {
                 "playbookID": "Phishing - Generic v3",
                 "input_parameters":
@@ -5512,6 +5512,7 @@
         "ElasticsearchFeed",
         "Fastly Feed",
         "Feodo Tracker IP Blocklist Feed",
+        "HelloWorld",
         "JSON Feed",
         "Lastline v2",
         "LogRhythmRest",
