@@ -179,10 +179,13 @@ ALERT_EVENT_AZURE_FIELDS = {
 SEARCH_FIELD = 'search_field'
 SEARCH_TYPE = 'search_type'
 SEARCH_VALUE = 'search_value'
+ARRAY = 'array'
+TIMEFRAME = 'timeframe'
 ALERT_FILTER_SEARCH_FIELDS_AND_VALUES = {
     'alert_id': {
         SEARCH_FIELD: 'internal_id',
         SEARCH_TYPE: 'EQ',
+        'type': ARRAY,
     },
     'severity': {
         SEARCH_FIELD: 'severity',
@@ -191,7 +194,7 @@ ALERT_FILTER_SEARCH_FIELDS_AND_VALUES = {
             'low': 'SEV_020_LOW',
             'medium': 'SEV_030_MEDIUM',
             'high': 'SEV_040_HIGH'
-        }
+        },
     },
     'Identity_type': {
         SEARCH_FIELD: 'Identity_type',
@@ -200,104 +203,125 @@ ALERT_FILTER_SEARCH_FIELDS_AND_VALUES = {
     'agent_id': {
         SEARCH_FIELD: 'agent_id',
         SEARCH_TYPE: 'EQ',
+        'type': ARRAY,
     },
     'action_external_hostname': {
         SEARCH_FIELD: 'action_external_hostname',
         SEARCH_TYPE: 'CONTAINS',
+        'type': ARRAY,
     },
     'rule_id': {
         SEARCH_FIELD: 'matching_service_rule_id',
         SEARCH_TYPE: 'EQ',
+        'type': ARRAY,
     },
     'rule_name': {
         SEARCH_FIELD: 'fw_rule',
         SEARCH_TYPE: 'EQ',
+        'type': ARRAY,
     },
     'alert_name': {
         SEARCH_FIELD: 'alert_name',
         SEARCH_TYPE: 'CONTAINS',
+        'type': ARRAY,
     },
     'alert_source': {
         SEARCH_FIELD: 'alert_source',
         SEARCH_TYPE: 'CONTAINS',
+        'type': ARRAY,
     },
     'timeframe': {
         SEARCH_FIELD: 'source_insert_ts',
         SEARCH_TYPE: 'RELATIVE_TIMESTAMP',
-    },
-    'custom_timeframe': {
-        SEARCH_FIELD: 'source_insert_ts',
-        SEARCH_TYPE: 'RANGE',
+        'type': TIMEFRAME,
     },
     'user_name': {
         SEARCH_FIELD: 'actor_effective_username',
         SEARCH_TYPE: 'CONTAINS',
+        'type': ARRAY,
     },
     'actor_process_image_name': {
         SEARCH_FIELD: 'actor_process_image_name',
         SEARCH_TYPE: 'CONTAINS',
+        'type': ARRAY,
     },
     'causality_actor_process_image_command_line': {
         SEARCH_FIELD: 'causality_actor_process_command_line',
         SEARCH_TYPE: 'EQ',
+        'type': ARRAY,
     },
     'actor_process_image_command_line': {
         SEARCH_FIELD: 'actor_process_command_line',
         SEARCH_TYPE: 'EQ',
+        'type': ARRAY,
     },
     'action_process_image_command_line': {
         SEARCH_FIELD: 'action_process_image_command_line',
         SEARCH_TYPE: 'EQ',
+        'type': ARRAY,
     },
     'actor_process_image_sha256': {
         SEARCH_FIELD: 'actor_process_image_sha256',
         SEARCH_TYPE: 'EQ',
+        'type': ARRAY,
     },
     'causality_actor_process_image_sha256': {
         SEARCH_FIELD: 'causality_actor_process_image_sha256',
         SEARCH_TYPE: 'EQ',
+        'type': ARRAY,
     },
     'action_process_image_sha256': {
         SEARCH_FIELD: 'action_process_image_sha256',
         SEARCH_TYPE: 'EQ',
+        'type': ARRAY,
     },
     'action_file_image_sha256': {
         SEARCH_FIELD: 'action_file_sha256',
         SEARCH_TYPE: 'EQ',
+        'type': ARRAY,
     },
     'action_registry_name': {
         SEARCH_FIELD: 'action_registry_key_name',
         SEARCH_TYPE: 'EQ',
+        'type': ARRAY,
     },
     'action_registry_key_data': {
         SEARCH_FIELD: 'action_registry_data',
         SEARCH_TYPE: 'CONTAINS',
+        'type': ARRAY,
     },
     'host_ip': {
         SEARCH_FIELD: 'agent_ip_addresses',
         SEARCH_TYPE: 'IPLIST_MATCH',
+        'type': ARRAY,
     },
     'action_local_ip': {
         SEARCH_FIELD: 'action_local_ip',
         SEARCH_TYPE: 'IP_MATCH',
+        'type': ARRAY,
     },
     'action_remote_ip': {
         SEARCH_FIELD: 'action_remote_ip',
         SEARCH_TYPE: 'IP_MATCH',
+        'type': ARRAY,
     },
     'action_local_port': {
         SEARCH_FIELD: 'action_local_port',
         SEARCH_TYPE: 'EQ',
+        'type': ARRAY,
     },
     'action_remote_port': {
         SEARCH_FIELD: 'action_remote_port',
         SEARCH_TYPE: 'EQ',
+        'type': ARRAY,
     },
     'dst_action_external_hostname': {
         SEARCH_FIELD: 'dst_action_external_hostname',
         SEARCH_TYPE: 'CONTAINS',
+        'type': ARRAY,
     },
 }
+
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -1555,14 +1579,12 @@ class Client(BaseClient):
         )
         return res.get('reply', {})
 
-    def get_alerts_by_filter_data(self, alert_id_list):
+    def get_alerts_by_filter_data(self, request_data: dict):
         res = self._http_request(
             method='POST',
             url_suffix='/alerts/get_alerts_by_filter_data/',
             json_data={
-                'request_data': {
-                    'alert_id_list': alert_id_list,
-                }
+                'request_data': request_data
             },
         )
         return res.get('reply', {})
@@ -2350,7 +2372,7 @@ def get_audit_management_logs_command(client, args):
         required=True
     )
     limit = arg_to_int(
-        arg=args.get('limit', 20),
+        arg=args.get('limit', 50),
         arg_name='Failed to parse "limit". Must be a number.',
         required=True
     )
@@ -3600,6 +3622,92 @@ def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
+def get_alerts_by_filter_command(client: Client, args: Dict) -> CommandResults:
+    request_data = {'filter_data': {}}
+    filter_data = request_data['filter_data']
+    sort_field = args.pop('sort_field')
+    if sort_field:
+        sort_order = args.pop('sort_order', 'DESC')
+        filter_data['sort'] = [{
+            'FIELD': sort_field,
+            'ORDER': sort_order
+        }]
+    offset = args.pop('offset', 0)
+    limit = args.pop('limit', 10)
+    filter_data['paging'] = {
+        'from': offset,
+        'to': limit
+    }
+    if not args:
+        raise DemistoException('Please provide at least one argument')
+
+    custom_filter = args.pop('custom_filter')
+
+    if custom_filter:
+        if args:
+            raise DemistoException('Please provide either "custom_filter" argument or other filter arguments but not both.')
+        filter_data['filter'] = args['custom_filter']
+
+    # if custom filter was not given, we should create the filter from the given arguments.
+    else:
+        and_list = []
+
+        for arg_name, arg_value in args.items():
+            if arg_name not in ALERT_FILTER_SEARCH_FIELDS_AND_VALUES:
+                raise ValueError
+
+            arg_props = ALERT_FILTER_SEARCH_FIELDS_AND_VALUES[arg_name]
+            if arg_props.get('type') == ARRAY:
+                or_list = []
+                arg_list = argToList(arg_value)
+                for arg_item in arg_list:
+                    or_list.append({
+                        'SEARCH_FIELD': arg_props[SEARCH_FIELD],
+                        'SEARCH_TYPE': arg_props[SEARCH_TYPE],
+                        'SEARCH_VALUE': arg_item
+                    })
+                and_list.append({'OR': or_list})
+            elif arg_props.get('type') == TIMEFRAME:
+                and_list.append({
+                    'SEARCH_FIELD': arg_props[SEARCH_FIELD],
+                    'SEARCH_TYPE': arg_props[SEARCH_TYPE],
+                    'SEARCH_VALUE': arg_to_timestamp(arg_value, arg_name)
+                })
+            else:
+
+                and_list.append({
+                    'SEARCH_FIELD': arg_props[SEARCH_FIELD],
+                    'SEARCH_TYPE': arg_props[SEARCH_TYPE],
+                    'SEARCH_VALUE': arg_props[SEARCH_VALUE][arg_value] if SEARCH_VALUE in arg_props else arg_value
+                })
+
+            filter_data['filter'] = {'AND': and_list}
+
+    raw_response = client.get_alerts_by_filter_data(request_data)
+
+    context = [alert.get('alert_fields') for alert in raw_response.get('alerts', [])]
+
+    human_readable = [{
+        'Alert ID': alert.get('internal_id'),
+        'Detection Timestamp': timestamp_to_datestring(alert.get('source_insert_ts')),
+        'Name': alert.get('alert_name'),
+        'Severity': alert.get('severity'),
+        'Category': alert.get('alert_category'),
+        'Action': alert.get('alert_action_status'),
+        'Description': alert.get('alert_description'),
+        'Host IP': alert.get('agent_ip_addresses'),
+        'Host Name': alert.get('agent_hostname'),
+    } for alert in context]
+
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.Alert',
+        outputs_key_field='internal_id',
+        outputs=context,
+        readable_output=tableToMarkdown('Alerts', human_readable),
+        raw_response=raw_response,
+    )
+
+
 def run_script_execute_commands_command(client: Client, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
@@ -3885,6 +3993,9 @@ def main():
 
         elif command == 'xdr-get-cloud-original-alerts':
             return_results(get_original_alerts_command(client, args))
+
+        elif command == 'xdr-get-alerts':
+            return_results(get_alerts_by_filter_command(client, args))
 
         elif command == 'xdr-run-script-execute-commands':
             return_results(run_script_execute_commands_command(client, args))
