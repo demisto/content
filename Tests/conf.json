@@ -2900,11 +2900,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Kaspersky Security Center",
-            "playbookID": "Kaspersky Security Center - Test",
-            "fromversion": "5.5.0"
-        },
-        {
             "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
             "integrations": "VirusTotal",
@@ -5098,6 +5093,11 @@
             "fromversion": "6.1.0"
         },
         {
+            "integrations": "FortiSIEMV2",
+            "playbookID": "playbook-FortiSIEMV2_Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "HttpV2-test",
             "fromversion": "6.5.0",
             "scripts": [
@@ -5244,11 +5244,13 @@
         "Recorded Future Test": "Issue 26741",
         "Git_Integration-Test": "Issue 37800",
         "RecordedFutureFeed - Test": "Issue 43923",
-        "RedLockTest": "Issue 24600"
+        "RedLockTest": "Issue 24600",
+        "SymantecEndpointProtection_Test": "Issue 30157"
     },
     "skipped_integrations": {
 
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "FortiSIEMV2": "No instance",
         "Vertica": "No insance issue 45719",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
