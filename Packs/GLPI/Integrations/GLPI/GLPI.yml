@@ -54,7 +54,7 @@ configuration:
   - name: longRunning
     display: Long running instance
     required: false
-    defaultvalue: "true"
+    defaultvalue: "false"
     type: 8
     additionalinfo: null
   - name: mirror_limit
@@ -688,8 +688,7 @@ script:
       deprecated: false
       arguments: []
       outputs: []
-  dockerimage: demisto/glpi:1.0.0.28510
-  # dockerimage: demisto/glpi:fixed
+  dockerimage: demisto/glpi:1.0.0.28962
   isfetch: true
   runonce: false
   longRunning: true

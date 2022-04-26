@@ -1,0 +1,721 @@
+{
+    "description": "Maps incoming GLPI incidents fields.",
+    "feed": false,
+    "id": "GLPI - Incoming Mapper",
+    "mapping": {
+        "GLPI Ticket": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "GLPI Assigned to": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assigned_users",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Assigned to group": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assigned_groups",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Category": {
+                    "simple": "itilcategories_id"
+                },
+                "GLPI Closing date": {
+                    "simple": "closedate"
+                },
+                "GLPI Description": {
+                    "simple": "content"
+                },
+                "GLPI Impact": {
+                    "complex": {
+                        "filters": [],
+                        "root": "impact",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1 - Very low"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "2 - Low"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3 - Medium"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "4 - High"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "4"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "5 - Very high"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "5"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Internal time to own": {
+                    "simple": "internal_time_to_own"
+                },
+                "GLPI Internal time to resolve": {
+                    "simple": "internal_time_to_resolve"
+                },
+                "GLPI Opening date": {
+                    "simple": "date"
+                },
+                "GLPI Priority": {
+                    "complex": {
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1 - Very low"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "2 - Low"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3 - Medium"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "4 - High"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "4"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "5 - Very high"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "5"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "6 - Major"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "6"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Request source": {
+                    "complex": {
+                        "filters": [],
+                        "root": "requesttypes_id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Helpdesk"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "E-Mail"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Phone"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Direct"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "4"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Written"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "5"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Other"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "6"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Requester": {
+                    "complex": {
+                        "filters": [],
+                        "root": "requester_users",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Requester group": {
+                    "complex": {
+                        "filters": [],
+                        "root": "requester_groups",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Solved date": {
+                    "simple": "solvedate"
+                },
+                "GLPI Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1 - New"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "2 - Processing (assigned)"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3 - Processing (planned)"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "4 - Pending"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "4"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "5 - Solved"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "5"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "6 - Closed"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "6"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Ticket ID": {
+                    "simple": "id"
+                },
+                "GLPI Time to own": {
+                    "simple": "time_to_own"
+                },
+                "GLPI Time to resolve": {
+                    "simple": "time_to_resolve"
+                },
+                "GLPI Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "type",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1 - Incident"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "2 - Request"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Urgency": {
+                    "complex": {
+                        "filters": [],
+                        "root": "urgency",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1 - Very low"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "2 - Low"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3 - Medium"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "4 - High"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "4"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "5 - Very high"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "5"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Watcher": {
+                    "complex": {
+                        "filters": [],
+                        "root": "watcher_users",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Watcher group": {
+                    "complex": {
+                        "filters": [],
+                        "root": "watcher_groups",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "Ticket Closed Date": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closedate",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "Ticket Opened Date": {
+                    "complex": {
+                        "filters": [],
+                        "root": "date",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "name": {
+                    "simple": "name"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "content",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "name": {
+                    "simple": "name"
+                }
+            }
+        }
+    },
+    "name": "GLPI - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

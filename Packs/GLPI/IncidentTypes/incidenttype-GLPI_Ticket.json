@@ -13,7 +13,7 @@
     "hours": 0,
     "hoursR": 0,
     "id": "GLPI Ticket",
-    "layout": "440a091b-8f42-4393-8467-d80d3968e578",
+    "layout": "GLPI Ticket",
     "locked": false,
     "name": "GLPI Ticket",
     "onChangeRepAlg": 1,

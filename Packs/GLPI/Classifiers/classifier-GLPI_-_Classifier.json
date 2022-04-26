@@ -1,5 +1,5 @@
 {
-    "description": "",
+    "description": "Classifies GLPI incidents.",
     "feed": false,
     "id": "959face3-9d84-4034-83f5-8edf90baaa01",
     "keyTypeMap": {

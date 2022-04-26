@@ -829,7 +829,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def get_remote_data_command(client, args, params: Dict):
+def get_remote_data_command(client, args, params={}):
     """
     get-remote-data command: Returns an updated incident and entries
     Args:
@@ -845,6 +845,7 @@ def get_remote_data_command(client, args, params: Dict):
     ticket_id = parsed_args.remote_incident_id
     demisto.debug(f'Getting update for remote {ticket_id}')
     last_update = args.get('lastUpdate')
+    demisto.debug('last_update: ' + str(last_update))
     formated_date = last_update.replace('T', ' ').split('.')[0]
     try:
         new_incident_data = client.get_ticket(ticket_id)

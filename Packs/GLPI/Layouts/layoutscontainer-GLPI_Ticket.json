@@ -576,7 +576,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "GLPI Ticket Status",
-                        "query": "0669abd5-2f62-4263-8e22-2241c7dcbc27",
+                        "query": "GLPIIncidentStatus",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
