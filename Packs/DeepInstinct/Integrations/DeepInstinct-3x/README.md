@@ -137,10 +137,11 @@ get specific device by ID
 ```
 
 ##### Human Readable Output
-### Device
->|agent_version|brain_version|connectivity_status|deployment_status|distinguished_name|domain|group_id|group_name|hostname|id|ip_address|last_contact|last_registration|license_status|log_status|logged_in_users|mac_address|msp_id|msp_name|os|osv|policy_id|policy_name|scanned_files|tag|tenant_id|tenant_name|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->3.3.1.15 | 126w | ONLINE | REGISTERED | 2022-01-09T07:05:18.406894Z | CN=TEST-DC,OU=Computers,OU=acme,DC=acme,DC=local | acme.local | 13 | Windows Servers | TEST-DC | 12 | 10.10.10.10 | 2022-01-14T01:33:01.512439Z | 2020-03-20T21:48:14.771125Z | ACTIVATED | NA |  | 00:50:56:bd:47:ef | 2 | Server Lab | WINDOWS_SERVER | Windows Server 2016 Datacenter | 13 | Windows Servers | 2065772 |  | 4 | Server Lab
+>### Device Information
+>Provides detailed information for the selected device
+>|agent_version|brain_version|connectivity_status|deployment_status|distinguished_name|domain|group_id|group_name|hostname|id|ip_address|last_contact|last_registration|license_status|log_status|logged_in_uders|mac_address|msp_id|msp_name|os|osv|policy_id|policy_name|scanned_files|tag|tenant_id|tenant_name|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>3.3.1.15 | 126w | ONLINE | REGISTERED | 2022-01-09T07:05:18.406894Z | CN=TEST-DC,OU=Computers,OU=acme,DC=acme,DC=local | acme.local | 13 | Windows Servers | TEST-DC | 12 | 10.10.10.10 | 2022-01-14T01:33:01.512439Z | 2020-03-20T21:48:14.771125Z | ACTIVATED | NA |  | 00:50:56:bd:47:ef | 2 | Server Lab | WINDOWS_SERVER | Windows Server 2016 Datacenter | 13 | Windows Servers | 2065772 |  | 4 | Server Lab |
 
 
 ### 2. deepinstinct-get-events
@@ -278,19 +279,19 @@ Get all events. Max events in response can be 50, use first_event_id parameter t
 ```
 
 ##### Human Readable Output
-### Events
-|action|certificate_thumbprint|certificate_vendor_name|close_timestamp|close_trigger|comment|deep_classification|device_id|file_archive_hash|file_hash|file_size|file_status|file_type|id|insertion_timestamp|last_action|mitre_classifications|msp_id|msp_name|path|recorded_device_info|reoccurrence_count|sandbox_status|status|tenant_id|tenant_name|threat_severity|timestamp|trigger|type|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| PREVENTED |  |  | 2020-04-22T10:27:45.391625Z | CLOSED_BY_ADMIN |  |  | 1 | d1838b541ff7ffe6489d120d89dfa855665fd2c708491f336c7267069387053f | d1838b541ff7ffe6489d120d89dfa855665fd2c708491f336c7267069387053f | 18127052 | NOT_UPLOADED | ZIP | 1 | 2020-04-09T14:49:41.170331Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file1.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:39.408405_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | CLOSED | 1 | Tenant 1 | NONE | 2020-04-09T14:49:41.154850Z | BRAIN | STATIC_ANALYSIS |
-| PREVENTED |  |  |  |  |  |  | 2 | edf34902ff17838b4bc709ff15b5265dd49f652ee75a1adf69df9ae5bc52f960 | edf34902ff17838b4bc709ff15b5265dd49f652ee75a1adf69df9ae5bc52f960 | 15090736 | NOT_UPLOADED | ZIP | 2 | 2020-04-09T14:49:41.810047Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file1.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:41.170765_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | OPEN | 1 | Tenant 1 | NONE | 2020-04-09T14:49:41.805228Z | BRAIN | STATIC_ANALYSIS |
-| PREVENTED |  |  |  |  |  |  | 3 | 5b40c30d3a3b5c532bb9d338defc0eee6161ace8baf9fabe3c0cb1e73eeb8571 | 5b40c30d3a3b5c532bb9d338defc0eee6161ace8baf9fabe3c0cb1e73eeb8571 | 6100823 | NOT_UPLOADED | ZIP | 3 | 2020-04-09T14:49:42.406046Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file2.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:41.826874_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | OPEN | 1 | Tenant 1 | NONE | 2020-04-09T14:49:42.400310Z | BRAIN | STATIC_ANALYSIS |
-| PREVENTED |  |  |  |  |  |  | 4 | 727c2de729aa5fc471628a7bcfdf80353286a8a3981b9f0ffb58826e11518e3a | 727c2de729aa5fc471628a7bcfdf80353286a8a3981b9f0ffb58826e11518e3a | 1274571 | NOT_UPLOADED | ZIP | 4 | 2020-04-09T14:49:43.096316Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file3.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:42.419868_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | OPEN | 1 | Tenant 1 | NONE | 2020-04-09T14:49:43.091237Z | BRAIN | STATIC_ANALYSIS |
-| PREVENTED |  |  |  |  |  |  | 5 | 59c6185cc5fb87f8be1cbfc0903d1486c892bd2f84c1fab685eecd1517d041cf | 59c6185cc5fb87f8be1cbfc0903d1486c892bd2f84c1fab685eecd1517d041cf | 5797166 | NOT_UPLOADED | ZIP | 5 | 2020-04-09T14:49:43.829681Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file4.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:43.110126_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | OPEN | 1 | Tenant 1 | NONE | 2020-04-09T14:49:43.821976Z | BRAIN | STATIC_ANALYSIS |
-| PREVENTED |  |  |  |  |  |  | 6 | 8e83ec9a47265ed552f5369d25ae8f82074be91162c77d55dea5895637770e42 | 8e83ec9a47265ed552f5369d25ae8f82074be91162c77d55dea5895637770e42 | 20730162 | NOT_UPLOADED | ZIP | 6 | 2020-04-09T14:49:44.453057Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file5.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:43.843723_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | OPEN | 1 | Tenant 1 | NONE | 2020-04-09T14:49:44.446870Z | BRAIN | STATIC_ANALYSIS |
-| PREVENTED |  |  | 2020-04-20T11:45:00.987088Z | CLOSED_BY_ADMIN |  |  | 7 | 5fd4efe63a89a08e860a4a53c1efd7773d7ffc07a279be04bab5860492ce4dd4 | 5fd4efe63a89a08e860a4a53c1efd7773d7ffc07a279be04bab5860492ce4dd4 | 9009328 | NOT_UPLOADED | ZIP | 7 | 2020-04-09T14:49:45.101055Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file6.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:44.464658_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | CLOSED | 1 | Tenant 1 | NONE | 2020-04-09T14:49:45.096553Z | BRAIN | STATIC_ANALYSIS |
-| PREVENTED |  |  | 2020-04-12T10:12:45.428138Z | CLOSED_BY_ADMIN |  |  | 8 | 56bb8166c11e63dbbc42b18ad61c27d0df2346e72deb6235ba166f97169aad2d | 56bb8166c11e63dbbc42b18ad61c27d0df2346e72deb6235ba166f97169aad2d | 6975122 | NOT_UPLOADED | ZIP | 8 | 2020-04-09T14:49:45.889202Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file7.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:45.116724_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | CLOSED | 1 | Tenant 1 | NONE | 2020-04-09T14:49:45.884910Z | BRAIN | STATIC_ANALYSIS |
-| DETECTED |  |  | 2020-04-12T10:12:45.428138Z | CLOSED_BY_ADMIN |  |  | 9 | fbf76ae6c929d5b094e376e93ef7486f0527a4060c09f0dd1ebaf073b21dd81d | fbf76ae6c929d5b094e376e93ef7486f0527a4060c09f0dd1ebaf073b21dd81d | 11929486 | NOT_UPLOADED | ZIP | 9 | 2020-04-09T14:49:46.515957Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file8.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:45.906650_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | CLOSED | 1 | Tenant 1 | NONE | 2020-04-09T14:49:46.510849Z | BRAIN | STATIC_ANALYSIS |
-| DETECTED |  |  | 2020-04-12T09:41:19.991511Z | CLOSED_BY_ADMIN |  |  | 10 | 0a733f0b309cc330641a1205b928ae80cfd1f129d8c5df2e03f5cde13215b4b2 | 0a733f0b309cc330641a1205b928ae80cfd1f129d8c5df2e03f5cde13215b4b2 | 18723521 | NOT_UPLOADED | ZIP | 10 | 2020-04-09T14:49:47.192314Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file9.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:46.533149_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | CLOSED | 1 | Tenant 1 | NONE | 2020-04-09T14:49:47.187327Z | BRAIN | STATIC_ANALYSIS |
+>### Events
+>|action|certificate_thumbprint|certificate_vendor_name|close_timestamp|close_trigger|comment|deep_classification|device_id|file_archive_hash|file_hash|file_size|file_status|file_type|id|insertion_timestamp|last_action|mitre_classifications|msp_id|msp_name|path|recorded_device_info|reoccurrence_count|sandbox_status|status|tenant_id|tenant_name|threat_severity|timestamp|trigger|type|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| PREVENTED |  |  | 2020-04-22T10:27:45.391625Z | CLOSED_BY_ADMIN |  |  | 1 | d1838b541ff7ffe6489d120d89dfa855665fd2c708491f336c7267069387053f | d1838b541ff7ffe6489d120d89dfa855665fd2c708491f336c7267069387053f | 18127052 | NOT_UPLOADED | ZIP | 1 | 2020-04-09T14:49:41.170331Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file1.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:39.408405_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | CLOSED | 1 | Tenant 1 | NONE | 2020-04-09T14:49:41.154850Z | BRAIN | STATIC_ANALYSIS |
+>| PREVENTED |  |  |  |  |  |  | 2 | edf34902ff17838b4bc709ff15b5265dd49f652ee75a1adf69df9ae5bc52f960 | edf34902ff17838b4bc709ff15b5265dd49f652ee75a1adf69df9ae5bc52f960 | 15090736 | NOT_UPLOADED | ZIP | 2 | 2020-04-09T14:49:41.810047Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file1.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:41.170765_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | OPEN | 1 | Tenant 1 | NONE | 2020-04-09T14:49:41.805228Z | BRAIN | STATIC_ANALYSIS |
+>| PREVENTED |  |  |  |  |  |  | 3 | 5b40c30d3a3b5c532bb9d338defc0eee6161ace8baf9fabe3c0cb1e73eeb8571 | 5b40c30d3a3b5c532bb9d338defc0eee6161ace8baf9fabe3c0cb1e73eeb8571 | 6100823 | NOT_UPLOADED | ZIP | 3 | 2020-04-09T14:49:42.406046Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file2.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:41.826874_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | OPEN | 1 | Tenant 1 | NONE | 2020-04-09T14:49:42.400310Z | BRAIN | STATIC_ANALYSIS |
+>| PREVENTED |  |  |  |  |  |  | 4 | 727c2de729aa5fc471628a7bcfdf80353286a8a3981b9f0ffb58826e11518e3a | 727c2de729aa5fc471628a7bcfdf80353286a8a3981b9f0ffb58826e11518e3a | 1274571 | NOT_UPLOADED | ZIP | 4 | 2020-04-09T14:49:43.096316Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file3.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:42.419868_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | OPEN | 1 | Tenant 1 | NONE | 2020-04-09T14:49:43.091237Z | BRAIN | STATIC_ANALYSIS |
+>| PREVENTED |  |  |  |  |  |  | 5 | 59c6185cc5fb87f8be1cbfc0903d1486c892bd2f84c1fab685eecd1517d041cf | 59c6185cc5fb87f8be1cbfc0903d1486c892bd2f84c1fab685eecd1517d041cf | 5797166 | NOT_UPLOADED | ZIP | 5 | 2020-04-09T14:49:43.829681Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file4.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:43.110126_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | OPEN | 1 | Tenant 1 | NONE | 2020-04-09T14:49:43.821976Z | BRAIN | STATIC_ANALYSIS |
+>| PREVENTED |  |  |  |  |  |  | 6 | 8e83ec9a47265ed552f5369d25ae8f82074be91162c77d55dea5895637770e42 | 8e83ec9a47265ed552f5369d25ae8f82074be91162c77d55dea5895637770e42 | 20730162 | NOT_UPLOADED | ZIP | 6 | 2020-04-09T14:49:44.453057Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file5.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:43.843723_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | OPEN | 1 | Tenant 1 | NONE | 2020-04-09T14:49:44.446870Z | BRAIN | STATIC_ANALYSIS |
+>| PREVENTED |  |  | 2020-04-20T11:45:00.987088Z | CLOSED_BY_ADMIN |  |  | 7 | 5fd4efe63a89a08e860a4a53c1efd7773d7ffc07a279be04bab5860492ce4dd4 | 5fd4efe63a89a08e860a4a53c1efd7773d7ffc07a279be04bab5860492ce4dd4 | 9009328 | NOT_UPLOADED | ZIP | 7 | 2020-04-09T14:49:45.101055Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file6.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:44.464658_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | CLOSED | 1 | Tenant 1 | NONE | 2020-04-09T14:49:45.096553Z | BRAIN | STATIC_ANALYSIS |
+>| PREVENTED |  |  | 2020-04-12T10:12:45.428138Z | CLOSED_BY_ADMIN |  |  | 8 | 56bb8166c11e63dbbc42b18ad61c27d0df2346e72deb6235ba166f97169aad2d | 56bb8166c11e63dbbc42b18ad61c27d0df2346e72deb6235ba166f97169aad2d | 6975122 | NOT_UPLOADED | ZIP | 8 | 2020-04-09T14:49:45.889202Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file7.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:45.116724_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | CLOSED | 1 | Tenant 1 | NONE | 2020-04-09T14:49:45.884910Z | BRAIN | STATIC_ANALYSIS |
+>| DETECTED |  |  | 2020-04-12T10:12:45.428138Z | CLOSED_BY_ADMIN |  |  | 9 | fbf76ae6c929d5b094e376e93ef7486f0527a4060c09f0dd1ebaf073b21dd81d | fbf76ae6c929d5b094e376e93ef7486f0527a4060c09f0dd1ebaf073b21dd81d | 11929486 | NOT_UPLOADED | ZIP | 9 | 2020-04-09T14:49:46.515957Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file8.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:45.906650_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | CLOSED | 1 | Tenant 1 | NONE | 2020-04-09T14:49:46.510849Z | BRAIN | STATIC_ANALYSIS |
+>| DETECTED |  |  | 2020-04-12T09:41:19.991511Z | CLOSED_BY_ADMIN |  |  | 10 | 0a733f0b309cc330641a1205b928ae80cfd1f129d8c5df2e03f5cde13215b4b2 | 0a733f0b309cc330641a1205b928ae80cfd1f129d8c5df2e03f5cde13215b4b2 | 18723521 | NOT_UPLOADED | ZIP | 10 | 2020-04-09T14:49:47.192314Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file9.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:46.533149_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | CLOSED | 1 | Tenant 1 | NONE | 2020-04-09T14:49:47.187327Z | BRAIN | STATIC_ANALYSIS |
 
 
 ### 3. deepinstinct-get-suspicious-events
@@ -401,11 +402,11 @@ Get suspicious events. Max events in response can be 50, use first_event_id para
 ```
 
 ##### Human Readable Output
-### Events
-|action|device_id|id|insertion_timestamp|mitre_classifications|msp_id|msp_name|path|recorded_device_info|remediation|rule_trigger|source|status|tenant_id|tenant_name|timestamp|trigger|type|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|DETECTED|"123"|"12345"|"2022-03-20T13:09:45.026686Z"|"{'mitre_id': 'TA0003.T1574.011','tactic_id': 'TA0003', 'tactic_name': 'Persistence', 'technique_id': ', T1574', 'technique_name': 'Hijack Execution Flow', 'sub_technique_id': 'T1574.011','sub_technique_name': 'Services Registry Permissions Weakness'}"|"2"|"ACME"|"Existing service was modified to run another binary file."|"os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: LAPTOP-X13 tag: "" group_name: ACME Labs policy_name: Admin Devices tenant_name: Tenant"|""|"REGISTRY"|"{'type': 'REGISTRY_DATA'| 'value': '""C:\Program Files (x86)\Widgets\Application\Client.1150.46\ElevateService.exe""'}|{'type': 'REGISTRY_PATH'| 'value': '\REGISTRY\MACHINE\SYSTEM\ControlSet001\Services\GoodApplication\ImagePath'}|{'type': 'PROCESS_PATH'| 'value': 'C:\Windows\System32\services.exe'}| {'type': 'PARENT_PROCESS_PATH'| 'value': 'C:\Windows\System32\wininit.exe'}"|"OPEN"|"3"|"Tenant"|"2022-03-20T13:09:44.988791Z"|"SUSPICIOUS_ACTIVITY"|"SUSPICIOUS_ACTIVITY"|
-|PREVENTED|"227"|"1985"|"2022-03-22T00:25:28.725997Z"|"{'mitre_id': 'TA0002.T1059.001', 'tactic_id': 'TA0002', 'tactic_name': 'Execution', 'technique_id': ', T1059', 'technique_name': 'Command and Scripting Interpreter', 'sub_technique_id': ', T1059.001', 'sub_technique_name': 'PowerShell'}"|"2"|"ACME"|"C:\WINDOWS\TEMP\SDIAG_257bd48a-e8a3-47d6-839c-31c3b92adec1\Wckd_Utility.ps1"|"os: WINDOWS mac_address: 00:00:00:00:00:00:00 hostname: DESKTOP-123XYZ tag: "" group_name: Windows Desktop policy_name: Windows Desktops tenant_name: Tenant"|""|""|""|"OPEN"|"35"|"Tenant"|"2022-03-22T00:25:28.694909Z"|"POWERSHELL_EXECUTION"|"SUSPICIOUS_POWERSHELL_COMMAND_EXECUTION"|
+>### Suspicious Events
+>|action|device_id|id|insertion_timestamp|mitre_classifications|msp_id|msp_name|path|recorded_device_info|remediation|rule_trigger|source|status|tenant_id|tenant_name|timestamp|trigger|type|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|DETECTED|"123"|"12345"|"2022-03-20T13:09:45.026686Z"|"{'mitre_id': 'TA0003.T1574.011','tactic_id': 'TA0003', 'tactic_name': 'Persistence', 'technique_id': ', T1574', 'technique_name': 'Hijack Execution Flow', 'sub_technique_id': 'T1574.011','sub_technique_name': 'Services Registry Permissions Weakness'}"|"2"|"ACME"|"Existing service was modified to run another binary file."|"os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: LAPTOP-X13 tag: "" group_name: ACME Labs policy_name: Admin Devices tenant_name: Tenant"|""|"REGISTRY"|"{'type': 'REGISTRY_DATA'| 'value': '""C:\Program Files (x86)\Widgets\Application\Client.1150.46\ElevateService.exe""'}|{'type': 'REGISTRY_PATH'| 'value': '\REGISTRY\MACHINE\SYSTEM\ControlSet001\Services\GoodApplication\ImagePath'}|{'type': 'PROCESS_PATH'| 'value': 'C:\Windows\System32\services.exe'}| {'type': 'PARENT_PROCESS_PATH'| 'value': 'C:\Windows\System32\wininit.exe'}"|"OPEN"|"3"|"Tenant"|"2022-03-20T13:09:44.988791Z"|"SUSPICIOUS_ACTIVITY"|"SUSPICIOUS_ACTIVITY"|
+>|PREVENTED|"227"|"1985"|"2022-03-22T00:25:28.725997Z"|"{'mitre_id': 'TA0002.T1059.001', 'tactic_id': 'TA0002', 'tactic_name': 'Execution', 'technique_id': ', T1059', 'technique_name': 'Command and Scripting Interpreter', 'sub_technique_id': ', T1059.001', 'sub_technique_name': 'PowerShell'}"|"2"|"ACME"|"C:\WINDOWS\TEMP\SDIAG_257bd48a-e8a3-47d6-839c-31c3b92adec1\Wckd_Utility.ps1"|"os: WINDOWS mac_address: 00:00:00:00:00:00:00 hostname: DESKTOP-123XYZ tag: "" group_name: Windows Desktop policy_name: Windows Desktops tenant_name: Tenant"|""|""|""|"OPEN"|"35"|"Tenant"|"2022-03-22T00:25:28.694909Z"|"POWERSHELL_EXECUTION"|"SUSPICIOUS_POWERSHELL_COMMAND_EXECUTION"|
 
 
 ### 4. deepinstinct-get-all-groups
@@ -502,16 +503,17 @@ get all groups
 ```
 
 ##### Human Readable Output
-### Groups
-|id|is_default_group|msp_id|name|os|policy_id|
-|---|---|---|---|---|---|---|
-| 6 | true | 1 | MSP 1 | Android Default Group | ANDROID | 6 |
-| 7 | true | 1 | MSP 1 | iOS Default Group | IOS | 7 |
-| 8 | true | 1 | MSP 1 | Windows Default Group | WINDOWS | 8 |
-| 9 | true | 1 | MSP 1 | macOS Default Group | MAC | 9 |
-| 10 | true | 1 | MSP 1 | Chrome OS Default Group | CHROME | 10 |
-| 11 | false | 1 | MSP 1 | Laptops only | WINDOWS | 11 |
-| 12 | true | 1 | MASP 1| Linux Default Group | LINUX | 399 |
+>### Groups
+>Provides summary information about all groups
+>|id|is_default_group|msp_id|name|os|policy_id|
+>|---|---|---|---|---|---|
+>| 6 | true | 1 | MSP 1 | Android Default Group | ANDROID | 6 |
+>| 7 | true | 1 | MSP 1 | iOS Default Group | IOS | 7 |
+>| 8 | true | 1 | MSP 1 | Windows Default Group | WINDOWS | 8 |
+>| 9 | true | 1 | MSP 1 | macOS Default Group | MAC | 9 |
+>| 10 | true | 1 | MSP 1 | Chrome OS Default Group | CHROME | 10 |
+>| 11 | false | 1 | MSP 1 | Laptops only | WINDOWS | 11 |
+>| 12 | true | 1 | MASP 1| Linux Default Group | LINUX | 399 |
 
 
 ### 5. deepinstinct-get-all-policies
@@ -598,15 +600,16 @@ get all policies
 ```
 
 ##### Human Readable Output
-### Policies
-|id|is_default_policy|msp_id|msp_name|name|os|
-|---|---|---|---|---|---|
-| 2 | true | 1 | MSP 1 | iOS Default Policy | IOS |
-| 3 | true | 1 | MSP 1 | Windows Default Policy | WINDOWS |
-| 4 | true | 1 | MSP 1 | macOS Default Policy | MAC |
-| 5 | true | 1 | MSP 1 | Chrome OS Default Policy | CHROME |
-| 6 | false | 1 | MSP 1 | testPolicy | WINDOWS |
-| 1 | true | 1 | MSP 1 | Android Default Policy | ANDROID |
+>### Policies
+> Provides summary information for all policies
+>|id|is_default_policy|msp_id|msp_name|name|os|
+>|---|---|---|---|---|---|
+>| 2 | true | 1 | MSP 1 | iOS Default Policy | IOS |
+>| 3 | true | 1 | MSP 1 | Windows Default Policy | WINDOWS |
+> 4 | true | 1 | MSP 1 | macOS Default Policy | MAC |
+>| 5 | true | 1 | MSP 1 | Chrome OS Default Policy | CHROME |
+>| 6 | false | 1 | MSP 1 | testPolicy | WINDOWS |
+>| 1 | true | 1 | MSP 1 | Android Default Policy | ANDROID |
 
 
 ### 6. deepinstinct-add-hash-to-deny-list
