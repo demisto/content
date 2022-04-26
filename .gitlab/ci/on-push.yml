@@ -286,6 +286,10 @@ slack-notify-nightly-build:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
 
+    - section_start "Are there tests to run?"
+    -
+    - section_end "Are there tests to run?"
+
     - section_start "Lock XSIAM Machine"
     - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - echo "Authenticating GCP"
