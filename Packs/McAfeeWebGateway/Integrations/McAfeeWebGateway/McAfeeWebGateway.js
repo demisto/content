@@ -143,7 +143,7 @@ function get_lists() {
 
     var lists = JSON.parse(x2j(res));
     list_names = [];
-    
+
     for (var i in lists.feed.entry) {
             list_names.push({
                 Index : i,
@@ -158,7 +158,7 @@ function get_lists() {
         data : [
             {to : 'Index', from : 'Index'},
             {to : 'Name', from : 'Name'},
-            {to : 'McAfeeId', from: 'McAfeeId' }
+            {to : 'McAfeeID', from: 'McAfeeID'}
         ],
     });
 }
