@@ -225,110 +225,110 @@
                         ]
                     }
                 },
-				"requesttypes_id": {
-					"complex": {
-						"filters": [],
-						"root": "glpirequestsource",
-						"transformers": [
-							{
-								"args": {
-									"limit": {},
-									"replaceWith": {
-										"value": {
-											"simple": "1"
-										}
-									},
-									"toReplace": {
-										"value": {
-											"simple": "Helpdesk"
-										}
-									}
-								},
-								"operator": "replace"
-							},
-							{
-								"args": {
-									"limit": {},
-									"replaceWith": {
-										"value": {
-											"simple": "2"
-										}
-									},
-									"toReplace": {
-										"value": {
-											"simple": "E-Mail"
-										}
-									}
-								},
-								"operator": "replace"
-							},
-							{
-								"args": {
-									"limit": {},
-									"replaceWith": {
-										"value": {
-											"simple": "3"
-										}
-									},
-									"toReplace": {
-										"value": {
-											"simple": "Phone"
-										}
-									}
-								},
-								"operator": "replace"
-							},
-							{
-								"args": {
-									"limit": {},
-									"replaceWith": {
-										"value": {
-											"simple": "4"
-										}
-									},
-									"toReplace": {
-										"value": {
-											"simple": "Direct"
-										}
-									}
-								},
-								"operator": "replace"
-							},
-							{
-								"args": {
-									"limit": {},
-									"replaceWith": {
-										"value": {
-											"simple": "5"
-										}
-									},
-									"toReplace": {
-										"value": {
-											"simple": "Written"
-										}
-									}
-								},
-								"operator": "replace"
-							},
-							{
-								"args": {
-									"limit": {},
-									"replaceWith": {
-										"value": {
-											"simple": "6"
-										}
-									},
-									"toReplace": {
-										"value": {
-											"simple": "Other"
-										}
-									}
-								},
-								"operator": "replace"
-							}
-						]
-					}
-				},
+                "requesttypes_id": {
+                    "complex": {
+                        "filters": [],
+                        "root": "glpirequestsource",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "Helpdesk"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "E-Mail"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "Phone"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "4"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "Direct"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "5"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "Written"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "6"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "Other"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
                 "status": {
                     "complex": {
                         "filters": [],
