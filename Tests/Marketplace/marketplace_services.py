@@ -617,6 +617,7 @@ class Pack(object):
             Metadata.ID: self._pack_name,
             Metadata.DESCRIPTION: self._description or self._pack_name,
             Metadata.CREATED: self._create_date,
+            Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS, ''),
             Metadata.UPDATED: self._update_date,
             Metadata.LEGACY: self._legacy,
             Metadata.SUPPORT: self._support_type,
@@ -638,8 +639,7 @@ class Pack(object):
             Metadata.INTEGRATIONS: self._related_integration_images,
             Metadata.USE_CASES: self._use_cases,
             Metadata.KEY_WORDS: self._keywords,
-            Metadata.DEPENDENCIES: self._parsed_dependencies,
-            Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS, '')
+            Metadata.DEPENDENCIES: self._parsed_dependencies
         }
 
         if self._is_private_pack:
