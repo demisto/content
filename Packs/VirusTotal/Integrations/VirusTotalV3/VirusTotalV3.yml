@@ -1368,7 +1368,7 @@ script:
         type: String
     description: Retrieves resolutions of the given IP.
   - name: vt-file-sigma-analysis
-    description: Results of the last Sigma analysis in markdown format.
+    description: Result of the last Sigma analysis in markdown format.
     arguments:
     - name: file
       default: true
@@ -1384,7 +1384,7 @@ script:
       - 'true'
       - 'false'
   runonce: false
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.28442
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test
