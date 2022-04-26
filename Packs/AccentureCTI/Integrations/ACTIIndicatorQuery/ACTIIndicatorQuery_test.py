@@ -661,9 +661,9 @@ def test_addBaseUrlToPartialPaths():
 
 
 def test_convert_inline_image_to_encoded():
-    md_text = "China has.\n\n ![Arctic Map](https://intelgraph.idefense.com/rest/files/download/0f/6c/6f/"\
+    md_text = "China has.\n\n ![Arctic Map](https://test.com/rest/files/download/0f/6c/6f/"\
         "91de9ef8d8d38345dc270f8915d9faa496a00b5babe2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg)"
-    url = "https://intelgraph.idefense.com/rest/files/download/0f/6c/6f/91de9ef8d8d38345dc270f8915d9faa496a00b5ba"\
+    url = "https://test.com/rest/files/download/0f/6c/6f/91de9ef8d8d38345dc270f8915d9faa496a00b5ba"\
         "be2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg"
     status_code = 200
     expected_res = "China has.\n\n ![Arctic Map](data:image/jpg;base64,eyJjb250ZW50IjogIkNoaW"\
