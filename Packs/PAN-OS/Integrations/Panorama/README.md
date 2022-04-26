@@ -6074,6 +6074,7 @@ Install the given software version onto the device. Download the software first 
 | version | Software version to upgrade to, for example: 9.1.2. | Required | 
 | device_filter_string | SString by which to filter to only install to specific devices or  serial numbers. | Optional | 
 | sync | If provided, runs the download synchronously. Make sure 'execution-timeout' is increased. | Optional | 
+| target | Single serial number to target with this command | Optional | 
 
 
 #### Context Output
