@@ -4,7 +4,7 @@ commonfields:
 name: Netcraft
 display: Netcraft
 category: Network Security
-description: An integration for Netcraft, allowing you to open and handle takedown requests.
+description: An integration for Netcraft, allowing you to open and handle takedown requests.test
 configuration:
 - display: Credentials
   name: credentials
