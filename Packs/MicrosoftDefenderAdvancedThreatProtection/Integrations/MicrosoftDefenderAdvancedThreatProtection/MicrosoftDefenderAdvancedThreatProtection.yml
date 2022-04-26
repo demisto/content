@@ -6101,7 +6101,7 @@ script:
       - contextPath: MicrosoftATP.HuntCoverUp.Result.common_files
         description: The query results for common_files query_purpose.
         type: String
-  dockerimage: demisto/crypto:1.0.0.27590
+  dockerimage: demisto/crypto:1.0.0.28507
   feed: false
   isfetch: true
   longRunning: false
