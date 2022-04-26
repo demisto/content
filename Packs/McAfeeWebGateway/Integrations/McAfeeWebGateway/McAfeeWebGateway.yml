@@ -40,7 +40,7 @@ script:
     outputs:
     - contextPath: MWG.Lists.Name
       description: List Name
-    - contextPath: MWG.Lists.McAfeeId
+    - contextPath: MWG.Lists.McAfeeID
       description: McAfee internal List ID.
     - contextPath: MWG.Lists.Index
       description: List Index
