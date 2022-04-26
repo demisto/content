@@ -253,7 +253,7 @@ script:
     deprecated: false
     description: Get a single report with Tenable.sc scan results
     execution: false
-    name: tenable-sc-get-scan-report
+    name: aviya
     outputs:
     - contextPath: TenableSC.ScanResults.ID
       description: Scan results ID
