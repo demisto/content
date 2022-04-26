@@ -9,3 +9,5 @@ ignore=RM104
 
 [known_words]
 tenable-sc-get-scan-report
+tenable
+sc
