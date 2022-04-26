@@ -1,6 +1,6 @@
-id: NetcraftTest test
+id: Netcraft test
 version: -1
-name: NetcraftTest test
+name: Netcraft test
 starttaskid: "0"
 tasks:
   "0":
@@ -117,7 +117,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: NetcraftTest.Takedown.ID
+              simple: Netcraft.Takedown.ID
             iscontext: true
           right:
             value:
@@ -221,7 +221,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: NetcraftTest.Takedown.Note.NoteID
+              simple: Netcraft.Takedown.Note.NoteID
             iscontext: true
           right:
             value:

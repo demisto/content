@@ -294,7 +294,7 @@ script:
       description: The hostname on which the command was executed.
       type: string
     - contextPath: Netmiko.Output
-      description: The results of the command
+      description: The results of the command.
       type: string
   dockerimage: demisto/netmiko:1.0.0.15047
   runonce: false
