@@ -1,0 +1,6 @@
+[RULE: extract_fields]
+alter client_ip = json_extract_scalar(client, "$.ipAddress"),
+      os = json_extract_scalar(client, "$.userAgent.os");
+
+[INGEST:vendor="Okta", product="Sso", target_dataset="okta_sso_raw"]
+call extract_fields;

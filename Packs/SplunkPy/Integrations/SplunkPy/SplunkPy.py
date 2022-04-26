@@ -1109,7 +1109,7 @@ def submit_notable(service, notable, num_enrichment_events):
 
     Args:
         service (splunklib.client.Service): Splunk service object
-        notable (Notable): The notable.
+        notable (N§otable): The notable.
         num_enrichment_events (int): The maximal number of events to return per enrichment type.
 
     Returns:

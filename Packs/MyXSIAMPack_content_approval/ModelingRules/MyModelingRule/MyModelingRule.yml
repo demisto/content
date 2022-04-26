@@ -1,0 +1,5 @@
+name: Okta Mapping Rule
+id: _okta_mapping_to_dataset
+fromversion: 3.3.0
+tags: a
+rules: ''
