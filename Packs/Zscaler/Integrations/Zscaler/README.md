@@ -1,5 +1,10 @@
-Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, and manually log in, log out, and activate changes in a Zscaler session.
-This integration was integrated and tested with version xx of Zscaler
+Use the Zscaler Internet Access integration to block manage domains using allow lists and block lists.
+
+For the integration to work properly, the Zscaler user must have admin permissions.
+
+Category ID is the same as the category name, except all letters are capitalized and each word is separated with an underscore instead of spaces. For example, if the category name is Other Education, then the Category ID is OTHER_EDUCATION.
+
+A custom category ID has the format `CUSTOM_01`, which is not indicative of the category. Use the `zscaler-get-categories` command to get a custom category and its configured name.
 
 ## Configure Zscaler Internet Access on Cortex XSOAR
 
@@ -40,6 +45,15 @@ Adds the specified URLs to the block list.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!zscaler-blacklist-url url=phishing.com,malware.net```
+
+#### Human Readable Output
+Added the following URLs to the block list successfully:
+phishing.com
+malware.net
+
 ### url
 ***
 Looks up the classification for the each of the specified URLs.
@@ -71,6 +85,37 @@ Looks up the classification for the each of the specified URLs.
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | DBotScore.Score | number | The actual score. | 
 
+
+#### Command Example
+```!url url=facebook.com```
+
+#### Context Example
+```json
+{
+    "DBotScore": [
+        {
+            "Indicator": "facebook.com",
+            "Score": 1,
+            "Type": "url",
+            "Vendor": "Zscaler"
+        }
+    ],
+    "URL": {
+        "Address": "facebook.com",
+        "Data": "facebook.com",
+        "urlClassifications": "SOCIAL_NETWORKING"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Zscaler URL Lookup
+>|url|urlClassifications|
+>|---|---|
+>| facebook.com | SOCIAL_NETWORKING |
+
+
 ### ip
 ***
 Looks up the classification for each of the specified IP addresses.
@@ -100,6 +145,38 @@ Looks up the classification for each of the specified IP addresses.
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | DBotScore.Score | number | The actual score. | 
 
+
+
+
+#### Command Example
+```!ip ip=8.8.8.8```
+
+#### Context Example
+```json
+{
+    "DBotScore": [
+        {
+            "Indicator": "8.8.8.8",
+            "Score": 1,
+            "Type": "ip",
+            "Vendor": "Zscaler"
+        }
+    ],
+    "IP": {
+        "Address": "8.8.8.8",
+        "ipClassifications": "WEB_SEARCH"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Zscaler IP Lookup
+>|ip|ipClassifications|
+>|---|---|
+>| 8.8.8.8 | WEB_SEARCH |
+
+
 ### zscaler-undo-blacklist-url
 ***
 Removes the specified URLs from the block list.
@@ -118,6 +195,8 @@ Removes the specified URLs from the block list.
 #### Context Output
 
 There is no context output for this command.
+
+
 ### zscaler-whitelist-url
 ***
 Adds the specified URLs to the allow list.
@@ -136,6 +215,16 @@ Adds the specified URLs to the allow list.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!zscaler-whitelist-url url=phising.com,malware.net```
+
+#### Human Readable Output
+Added the following URLs to the allow list successfully:
+phishing.com
+malware.net
+
+
 ### zscaler-undo-whitelist-url
 ***
 Removes the specified URLs from the allow list.
@@ -154,6 +243,16 @@ Removes the specified URLs from the allow list.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!zscaler-undo-whitelist-url url=phising.com,malware.net```
+
+#### Human Readable Output
+Removed the following URLs from the allow list successfully:
+phishing.com
+malware.net
+
+
 ### zscaler-undo-whitelist-ip
 ***
 Removes the specified IP addresses from the allow list.
@@ -172,6 +271,16 @@ Removes the specified IP addresses from the allow list.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!zscaler-undo-whitelist-ip ip=2.2.2.2,3.3.3.3```
+
+#### Human Readable Output
+Removed the following IP addresses from the allow list successfully:
+2.2.2.2
+3.3.3.3
+
+
 ### zscaler-whitelist-ip
 ***
 Adds the specified IP address to the allow list.
@@ -190,9 +299,18 @@ Adds the specified IP address to the allow list.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!zscaler-whitelist-ip ip=2.2.2.2,3.3.3.3```
+
+#### Human Readable Output
+Added the following IP addresses to the allow list successfully:
+2.2.2.2
+3.3.3.3
+
 ### zscaler-undo-blacklist-ip
 ***
-Removes the specified IP addresses from the allow list.
+Removes the specified IP addresses from the block list.
 
 
 #### Base Command
@@ -208,9 +326,20 @@ Removes the specified IP addresses from the allow list.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!zscaler-undo-blacklist-ip ip=2.2.2.2,3.3.3.3```
+
+
+#### Human Readable Output
+Removed the following IP addresses from the block list successfully:
+2.2.2.2
+3.3.3.3
+
+
 ### zscaler-blacklist-ip
 ***
-Adds the specified IP addresses to the allow list.
+Adds the specified IP addresses to the block list.
 
 
 #### Base Command
@@ -220,12 +349,23 @@ Adds the specified IP addresses to the allow list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of IP addresses to add to the allow list. For example, 8.8.8.8,1.2.3.4. | Required | 
+| ip | A comma-separated list of IP addresses to add to the block list. For example, 8.8.8.8,1.2.3.4. | Required | 
 
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!zscaler-blacklist-ip ip=2.2.2.2,3.3.3.3```
+
+
+#### Human Readable Output
+Added the following IP addresses to the block list successfully:
+2.2.2.2
+3.3.3.3
+
+
 ### zscaler-category-add-url
 ***
 Adds URLs to the specified category.
@@ -250,6 +390,35 @@ Adds URLs to the specified category.
 | Zscaler.Category.Description | string | The description of the category. | 
 | Zscaler.Category.ID | string | The ID of the category. | 
 | Zscaler.Category.URL | string | The URL of the category. | 
+
+
+#### Command Example
+```!zscaler-category-add-url category-id=MUSIC url=demisto.com,apple.com```
+
+#### Context example
+```json
+{
+    "Zscaler": {
+      "Category": {
+        "CustomCategory": false,
+        "Description": "MUSIC_DESC",
+        "ID": "MUSIC",
+        "URL": [
+            "demisto.com",
+            "apple.com"
+        ]
+      }
+    }
+}
+```
+
+
+#### Human Readable Output
+Added the following URL addresses to category MUSIC:
+
+*   demisto.com
+*   apple.com
+
 
 ### zscaler-category-add-ip
 ***
@@ -276,6 +445,33 @@ Adds IP address to the specified category.
 | Zscaler.Category.ID | string | The ID of the category. | 
 | Zscaler.Category.URL | string | The URL of the category | 
 
+
+`!zscaler-category-add-ip category-id=REFERENCE_SITES ip=1.2.3.4,8.8.8.8`
+
+#### Context Example
+```json
+{
+    "Zscaler": {
+      "Category": {
+        "CustomCategory": false,
+        "Description": "REFERENCE_SITES_DESC",
+        "ID": "REFERENCE_SITES",
+        "URL": [
+            "1.2.3.4",
+            "8.8.8.8"
+        ]
+      }
+    }
+}
+```
+
+#### Human Readable Output
+
+Added the following IP addresses to category REFERENCE_SITES:
+
+*   1.2.3.4
+*   8.8.8.8
+
 ### zscaler-category-remove-url
 ***
 Removes URLs from the specified category.
@@ -301,6 +497,31 @@ Removes URLs from the specified category.
 | Zscaler.Category.ID | string | The ID of the category. | 
 | Zscaler.Category.URL | string | The URL of the category. | 
 
+#### Command Example
+`!zscaler-category-remove-url category-id=MUSIC url=apple.com`
+
+#### Context Example
+```json
+{
+    "Zscaler": {
+      "Category": {
+        "CustomCategory": false,
+        "Description": "MUSIC_DESC",
+        "ID": "MUSIC",
+        "URL": [
+            "demisto.com"
+        ]
+      }
+    }
+}
+```
+
+##### Human Readable Output
+
+Removed the following URL addresses to category MUSIC:
+
+*   apple.com
+
 ### zscaler-category-remove-ip
 ***
 Removes IP address from the specified category.
@@ -325,6 +546,32 @@ Removes IP address from the specified category.
 | Zscaler.Category.Description | string | The description of the category. | 
 | Zscaler.Category.ID | string | The ID of the category. | 
 | Zscaler.Category.URL | string | The URL of the category. | 
+
+
+#### Command Example
+`!zscaler-category-remove-ip category-id=REFERENCE_SITES ip=1.2.3.4`
+
+##### Context Example
+```json
+{
+    "Zscaler": {
+      "Category": {
+        "CustomCategory": false,
+        "Description": "REFERENCE_SITES_DESC",
+        "ID": "REFERENCE_SITES",
+        "URL": [
+            "8.8.8.8"
+        ]
+      }
+    }
+}
+```
+
+##### Human Readable Output
+
+Removed the following IP addresses to category REFERENCE\_SITES:
+
+*   1.2.3.4
 
 ### zscaler-get-categories
 ***
@@ -353,6 +600,41 @@ Retrieves a list of all categories.
 | Zscaler.Category.Description | string | The description of the category. | 
 | Zscaler.Category.Name | string | The name of the category. | 
 
+
+#### Command Example
+```!zscaler-get-categories```
+
+#### Context Example
+```json
+{  
+   "Zscaler":{  
+      "Category":{  
+         "ID":"INTERNET_SERVICES",
+         "Description":"INTERNET_SERVICES_DESC",
+         "URL":[  
+            "google.com",
+            "facebook.com"
+         ],
+         "CustomCategory":"false"
+      },
+      "ID":"CUSTOM_01",
+      "Name":"CustomCategory",
+      "URL":[  
+         "demisto.com",
+         "apple.com"
+      ],
+      "CustomCategory":"true"
+   }
+}
+```
+
+#### Human Readable Output
+|CustomCategory|Description|ID|Name|URL|
+|--- |--- |--- |--- |--- |
+|false|INTERNET_SERVICES_DESC|INTERNET_SERVICES||google.com,facebook.com|
+|true||CUSTOM_01|CustomCategory|demisto.com,apple.com|
+
+
 ### zscaler-get-blacklist
 ***
 Retrieves the Zscaler default block list.
@@ -375,6 +657,28 @@ Retrieves the Zscaler default block list.
 | --- | --- | --- |
 | Zscaler.Blacklist | string | The Zscaler block list. | 
 
+
+#### Command Example
+```!zscaler-get-blacklist```
+
+#### Context Example
+```json
+{
+    "Zscaler": {
+        "Blacklist": [
+            "malicious.com,
+            "bad.net"
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+Zscaler block list
+
+*   malicious.com
+*   bad.net
+
 ### zscaler-get-whitelist
 ***
 Retrieves the Zscaler default allow list.
@@ -385,15 +689,36 @@ Retrieves the Zscaler default allow list.
 `zscaler-get-whitelist`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Zscaler.Whitelist | string | The Zscaler allow list. | 
+
+
+#### Command Example
+````!zscaler-get-whitelist````
+
+#### Context Example
+```json
+{
+    "Zscaler": {
+        "Whitelist": [
+            "demisto.com,
+            "apple.com"
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+Zscaler whitelist
+
+*   demisto.com
+*   apple.net
+
 
 ### zscaler-sandbox-report
 ***
@@ -408,7 +733,7 @@ Retrieves a full or summary report of the file that was analyzed by Sandbox. The
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | md5 | The MD5 hash of a file. | Required | 
-| details | The type of report. Possible values are 'full' or 'summary'. Default is 'full'. Possible values are: full, summary. Default is full. | Optional | 
+| details | The type of report. Possible values are 'full' or 'summary'. Default is 'full'. | Optional | 
 
 
 #### Context Output
@@ -425,6 +750,43 @@ Retrieves a full or summary report of the file that was analyzed by Sandbox. The
 | DBotScore.Vendor | string | The vendor that calculated the DBot score. | 
 | DBotScore.Score | number | The actual DBot score. | 
 
+
+#### Command Example
+`!zscaler-sandbox-report md5=3FD0EA0AE759D58274310C022FB0CBBA details=summary`
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Vendor": "Zscaler", 
+        "Indicator": "3FD0EA0AE759D58274310C022FB0CBBA", 
+        "Score": 3, 
+        "Type": "file"
+    }, 
+    "File": {
+        "Zscaler": {
+            "FileType": null, 
+            "DetectedMalware": ""
+        }, 
+        "Malicious": {
+            "Vendor": "Zscaler", 
+            "Description": "Classified as Malicious, with threat score: 100"
+        }, 
+        "MD5": "3FD0EA0AE759D58274310C022FB0CBBA"
+    }
+}
+```
+#### Human Readable Output
+##### Full Sandbox Report
+|Category|Indicator|Vendor|Score|Zscaler Score|Type|
+|--- |--- |--- |--- |--- |--- |
+|MALWARE_BOTNET|3FD0EA0AE759D58274310C022FB0CBBA|Zscaler|3|100|file|
+
+#### Additional Information
+[![image](https://user-images.githubusercontent.com/44546251/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)](https://user-images.githubusercontent.com/44546251/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)
+
+[![image](https://user-images.githubusercontent.com/44546251/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)](https://user-images.githubusercontent.com/44546251/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)
+
 ### zscaler-login
 ***
 Manually create a Zscaler login session. This command will also try to log out of the previous session.
@@ -435,13 +797,20 @@ Manually create a Zscaler login session. This command will also try to log out o
 `zscaler-login`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!zscaler-login```
+
+
+#### Human Readable Output
+
+>Zscaler session created successfully.
+
 ### zscaler-logout
 ***
 Logs out of the current Zscaler session.
@@ -452,13 +821,20 @@ Logs out of the current Zscaler session.
 `zscaler-logout`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!zscaler-logout```
+
+
+#### Human Readable Output
+
+>API session logged out of Zscaler successfully.
+
 ### zscaler-activate-changes
 ***
 Activates the changes executed by other Zscaler commands in this session.
@@ -469,13 +845,19 @@ Activates the changes executed by other Zscaler commands in this session.
 `zscaler-activate-changes`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!zscaler-activate-changes```
+
+#### Human Readable Output
+
+>Changes have been activated successfully.
+
 ### zscaler-url-quota
 ***
 Gets information on the number of unique URLs that are currently provisioned for your organization as well as how many URLs you can add before reaching that number.
