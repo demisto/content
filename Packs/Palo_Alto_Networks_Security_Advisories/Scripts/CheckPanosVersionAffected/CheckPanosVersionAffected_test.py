@@ -5,9 +5,6 @@ import pytest
 import demistomock as demisto
 
 
-# TEST_ADVISORIES_JSON = os.path.sep.join(["..", "Palo_Alto_Networks_Security_Advisories", "test_data", "advisories.json"])
-
-
 @pytest.fixture()
 def advisories_list():
     from CheckPanosVersionAffected import Advisory
@@ -62,6 +59,9 @@ def advisories_list():
 
 
 def test_compare_version_with_advisories(advisories_list):
+    """
+    Given a list of advisories as dataclasses, tests the comparison function
+    """
     from CheckPanosVersionAffected import compare_version_with_advisories
     # Match single item
     match = compare_version_with_advisories(panos_version="9.0.5", advisories_list=advisories_list)
