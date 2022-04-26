@@ -2900,11 +2900,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Kaspersky Security Center",
-            "playbookID": "Kaspersky Security Center - Test",
-            "fromversion": "5.5.0"
-        },
-        {
             "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
             "integrations": "VirusTotal",
@@ -4495,7 +4490,7 @@
                 "virus_total_v3",
                 "ewso365_sec_eng_team"
             ],
-            "external_playbook_config": 
+            "external_playbook_config":
             {
                 "playbookID": "Phishing - Generic v3",
                 "input_parameters":
@@ -5049,6 +5044,9 @@
             "playbookID": "FormatURL-Test"
         },
         {
+            "playbookID": "IPToHost - Test"
+        },
+        {
             "playbookID": "Grafana-Test",
             "fromversion": "6.0.0",
             "integrations": [
@@ -5096,6 +5094,11 @@
         {
             "playbookID": "TAXII2 Performance Test - Concurrency",
             "fromversion": "6.1.0"
+        },
+        {
+            "integrations": "FortiSIEMV2",
+            "playbookID": "playbook-FortiSIEMV2_Test",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "HttpV2-test",
@@ -5250,6 +5253,7 @@
     "skipped_integrations": {
 
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "FortiSIEMV2": "No instance",
         "Vertica": "No insance issue 45719",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
@@ -5508,6 +5512,7 @@
         "ElasticsearchFeed",
         "Fastly Feed",
         "Feodo Tracker IP Blocklist Feed",
+        "HelloWorld",
         "JSON Feed",
         "Lastline v2",
         "LogRhythmRest",
