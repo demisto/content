@@ -37,8 +37,6 @@ function sendRequest(method, url_suffix, headers, body, params) {
         throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
     }
 
-    log('Response Status code: ' + res.StatusCode + '.\n Response Body: ' + JSON.stringify(res) + '.')
-
     return JSON.parse(res.Body);
 }
 
@@ -134,7 +132,7 @@ function alerts_to_entry(title, alerts) {
 
 function alert_to_entry(title, alert) {
     log("title is: " + title)
-    log("Alert is: " + alert)
+    log("Alert is: " + JSON.stringify(alert))
     /// single alert object has different structure than the alerts of alerts_to_entry.
     var context = {
         ID : alert.summary.event.alertId,
