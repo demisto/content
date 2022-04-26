@@ -629,7 +629,7 @@ class Client(BaseClient):
         index = 0
         with open(file_path, 'rb') as file_object:
             for chunk in self.read_in_chunks(file_object, part_size):
-                content_sha1 = sha1()
+                content_sha1 = sha1()   # nosec
                 content_sha1.update(chunk)
                 part_content_sha1 = content_sha1.digest()
                 offset = index + len(chunk)
@@ -666,7 +666,7 @@ class Client(BaseClient):
         :return: dict containing the results of the upload session.
         """
         with open(file_path, 'rb') as file_obj:
-            final_sha = sha1()
+            final_sha = sha1()  # nosec
             final_sha.update(file_obj.read())
             whole_file_sha_digest = final_sha.digest()
             final_headers = {
