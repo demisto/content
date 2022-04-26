@@ -6216,6 +6216,13 @@ def get_anti_spyware_best_practice_command():
 
 
 def apply_dns_signature_policy_command(args: dict) -> CommandResults:
+    """
+        Args:
+            - the args passed by the user
+
+        Returns:
+            - A CommandResult object
+    """
     anti_spy_ware_name = args.get('anti_spyware_profile_name')
     edl = args.get('dns_signature_source')
     action = args.get('action')
@@ -6239,6 +6246,10 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
         params=params,
     )
     res_status = result.get('response', {}).get('@status')
+    if res_status == 'error':
+        err_msg = result.get('response', {}).get('msg', {}).get('line')
+        raise DemistoException(f'Error: {err_msg}')
+
     return CommandResults(
         readable_output=f'**{res_status}**',
         raw_response=result,
