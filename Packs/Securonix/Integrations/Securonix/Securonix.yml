@@ -62,11 +62,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
 description: Use the Securonix integration to manage incidents and watchlists.
 display: Securonix
 name: Securonix

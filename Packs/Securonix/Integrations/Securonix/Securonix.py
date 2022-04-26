@@ -5,8 +5,6 @@ import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('Securonix', 'start', __line__())
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -195,7 +193,7 @@ class Client(BaseClient):
         headers = {
             'username': self._username,
             'password': self._password,
-            'validity': "1"
+            'validity': "1",
         }
         token = self.http_request('GET', '/token/generate', headers=headers, response_type='text')
         return token
@@ -1276,5 +1274,3 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
-
-register_module_line('Securonix', 'end', __line__())
