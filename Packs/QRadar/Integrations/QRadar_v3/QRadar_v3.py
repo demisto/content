@@ -3282,6 +3282,15 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     raw_context, context_version = get_integration_context_with_version()
     context_data = extract_context_data(raw_context.copy())
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
+    print_mirror_events_stats(context_data, f"Starting Get Remote Data For "
+                                            f"Offense {str(offense.get('id'))}")
+
+    # versions below 6.1 compatibility
+    last_update = get_time_parameter(args.get('lastUpdate'))
+    if last_update and last_update > offense_last_update and str(offense.get("id")) not in processed_offenses:
+        demisto.debug('Nothing new in the ticket')
+        return GetRemoteDataResponse({'id': offense_id, 'mirroring_events_message': 'Nothing new in the ticket.'}, [])
+
     demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
     entries = []
     if offense.get('status') == 'CLOSED' and argToBoolean(params.get('close_incident', False)):
