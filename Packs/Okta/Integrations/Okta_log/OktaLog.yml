@@ -1,0 +1,68 @@
+commonfields:
+  id: Okta XSIAM Logs
+  version: -1
+name: Okta XSIAM Logs
+display: Okta XSIAM Logs
+category: Analytics & SIEM
+description: Okta logs integration for XSIAM.
+configuration:
+- display: Server URL
+  name: url
+  type: 0
+  required: true
+- display: HTTP Method
+  name: method
+  type: 15
+  required: true
+  defaultvalue: GET
+  options:
+  - GET
+  - POST
+  - DELETE
+  - PUT
+  - PATCH
+  - HEAD
+- display: Headers
+  name: headers
+  defaultvalue: '{"Accept": "application/json","Content-Type": "application/json"}'
+  type: 0
+  required: true
+- display: Encrypted headers
+  name: encrypted_headers
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Use Secured Connection
+  name: verify
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Api request limit
+  name: limit
+  type: 0
+  defaultvalue: 1000
+  required: false
+- display: XSIAM request limit
+  name: request_size
+  type: 0
+  defaultvalue: 1000
+  required: true
+- display: First fetch time interval(In days)
+  name: after
+  type: 0
+  defaultvalue: 7
+  required: true
+script:
+  script: ""
+  type: python
+  commands:
+  - name: okta-fetch-logs
+  dockerimage: demisto/fastapi:1.0.0.28061
+  runonce: false
+  subtype: python3
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

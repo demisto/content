@@ -76,7 +76,7 @@ class GetEvents:
         events: list = response.json()
         if last_object_ids:
             events = GetEvents.remove_duplicates(events, last_object_ids)
-        if not events:
+        if len(events) == 0:
             return []
         while True:
             yield events
@@ -109,10 +109,12 @@ class GetEvents:
         """
 
         ids = []
+        # gets the last event time
         last_time = events[-1].get('published')
         for event in events:
             if event.get('published') == last_time:
                 ids.append(event.get('uuid'))
+        last_time = datetime. strptime(str(last_time).lower().replace('z', ''), '%Y-%m-%dt%H:%M:%S.%f')
         return {'after': last_time.isoformat(), 'ids': ids}
 
     @staticmethod
@@ -134,16 +136,11 @@ class GetEvents:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     # Args is always stronger. Get last run even stronger
-    demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
-    request_size = demisto_params.get('request_size')
-    if not request_size:
-        # If not exist set default
-        request_size = 1000
-    else:
-        request_size = int(request_size)
+    demisto_params = demisto.params() #| demisto.args() | demisto.getLastRun()
+    request_size = demisto_params.get('request_size', '1000')
+    request_size = int(request_size)
     if 'after' in demisto_params:
         after = int(demisto_params['after'])
-
     headers = json.loads(demisto_params['headers'])
     encrypted_headers = json.loads(demisto_params['encrypted_headers'])
     demisto_params['headers'] = dict(encrypted_headers.items() | headers.items())
@@ -157,7 +154,6 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
     else:
         last_run = last_run['after']
     demisto_params['params'] = ReqParams(**demisto_params, since=last_run)
-    # demisto_params['params'].set_since_value('last_run')
 
     request = Request(**demisto_params)
 
@@ -174,7 +170,9 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
         events = get_events.aggregated_results(request_size, last_object_ids=last_object_ids)
         if events:
             demisto.setIntegrationContext(GetEvents.get_last_run(events))
-
+            print('Sending logs to xsiam')
+            send_events_to_xsiam(events, 'Okta', 'Okta')
+            print('Sent logs to xsiam')
         command_results = CommandResults(
             readable_output=tableToMarkdown('Okta Logs', events, headerTransform=pascalToSpace),
             outputs_prefix='Okta.Logs',
