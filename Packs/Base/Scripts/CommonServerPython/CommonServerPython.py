@@ -3024,7 +3024,6 @@ class Common(object):
             self.geo_longitude = geo_longitude
             self.internal = internal
             self.stix_id = stix_id
-            self.tags = tags
             self.traffic_light_protocol = traffic_light_protocol
             self.whois_records = whois_records
 
@@ -3639,7 +3638,7 @@ class Common(object):
             self.dbot_score = dbot_score
 
         def to_context(self):
-            file_context = {"Hashes": []}  # type: dict
+            file_context = {'Hashes': []}  # type: dict
 
             if self.name:
                 file_context['Name'] = self.name
@@ -3733,8 +3732,8 @@ class Common(object):
 
             if self.imphash:
                 file_context['Imphash'] = self.imphash
-                file_context['Hashes'].append({'type': 'SSDEEP',
-                                               'value': self.ssdeep})
+                file_context['Hashes'].append({'type': 'Imphash',
+                                               'value': self.imphash})
 
             if self.quarantined:
                 file_context['Quarantined'] = self.quarantined
