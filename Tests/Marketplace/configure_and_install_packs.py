@@ -34,10 +34,11 @@ def options_handler():
     return options
 
 
-def install_packs(servers, pack_ids_to_install_path):
+def install_packs_from_content_packs_to_install_path(servers, pack_ids_to_install_path, hostname=''):
     """
     Install pack_ids from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
     Args:
+        hostname:
         pack_ids_to_install_path: "$ARTIFACTS_FOLDER/content_packs_to_install.txt" path
         servers: XSIAM or XSOAR Servers to install packs on it.
 
@@ -48,7 +49,7 @@ def install_packs(servers, pack_ids_to_install_path):
     installed_content_packs_successfully = True
     for server in servers:
         try:
-            hostname = server.name
+            logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
             _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname)
             if not flag:
                 raise Exception('Failed to search and install packs.')
@@ -59,7 +60,7 @@ def install_packs(servers, pack_ids_to_install_path):
     return installed_content_packs_successfully
 
 
-def xsoar_configure_and_install_flow(options, branch_name: str, build_number: str):
+def xsoar_configure_and_install_prev_flow(options, branch_name: str, build_number: str):
     """
     Args:
         options: script arguments.
@@ -99,6 +100,39 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
             sys.exit(1)
 
 
+def xsoar_configure_and_install_flow(options, branch_name: str, build_number: str):
+    """
+    Args:
+        options: script arguments.
+        branch_name(str): name of the current branch.
+        build_number(str): number of the current build flow
+    """
+    # Get the host by the ami env
+    server_to_port_mapping, server_version = XSOARBuild.get_servers(ami_env=options.ami_env)
+
+    logging.info('Retrieving the credentials for Cortex XSOAR server')
+    secret_conf_file = get_json(file_path=options.secret)
+    username: str = secret_conf_file.get('username')
+    password: str = secret_conf_file.get('userPassword')
+
+    servers = []
+    # Configure the Servers
+    for server_url, port in server_to_port_mapping.items():
+        server = XSOARServer(internal_ip=server_url, port=port, user_name=username, password=password)
+        logging.info(f'Adding Marketplace configuration to {server_url}')
+        error_msg: str = 'Failed to set marketplace configuration.'
+        server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
+        XSOARBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
+        servers.append(server)
+
+    success_flag = install_packs_from_content_packs_to_install_path(servers, options.pack_ids_to_install)
+    if success_flag:
+        logging.success(f'Finished installing all content packs in {[server.internal_ip for server in servers]}')
+    else:
+        logging.error('Failed to install all packs.')
+        sys.exit(1)
+
+
 def xsiam_configure_and_install_flow(options, branch_name: str, build_number: str):
     """
     Args:
@@ -116,8 +150,7 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
     XSIAMBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
 
     # Acquire the server's host and install new uploaded content packs
-    logging.info(f'Starting to install all content packs in {xsiam_machine}')
-    success_flag = install_packs([server], options.pack_ids_to_install)
+    success_flag = install_packs_from_content_packs_to_install_path([server], options.pack_ids_to_install, server.name)
     if success_flag:
         logging.success(f'Finished installing all content packs in {xsiam_machine}')
     else:
