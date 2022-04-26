@@ -132,3 +132,8 @@ There are no outputs for this script.
 ## Human Readable Output
 
 >Key Data(val.ID == obj.ID) set
+
+
+<h2>Known Limitations</h2>
+<ol>
+<li>The script doesn't support adding values to the context.</li>
