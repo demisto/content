@@ -12,3 +12,18 @@ ignore=CJ105
 
 [known_words]
 XSIAM
+
+[file:Trigger_-_Impossible_Traveler.json]
+ignore=BA102
+
+[file:Trigger_-_WildFire_and_Wildfire_Post_detection.json]
+ignore=BA102
+
+[file:Trigger_-_NGFW_Scan.json]
+ignore=BA102
+
+[file:Trigger_-_T1036_-_Masquerading.json]
+ignore=BA102
+
+[file:Trigger_-_T1059_-_Command_and_Scripting_Interpreter.json]
+ignore=BA102
