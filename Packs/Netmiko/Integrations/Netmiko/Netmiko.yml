@@ -19,7 +19,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-description: Multi-vendor library to simplify SSH connections to network devices.
+description: Multi-vendor library to simplify SSH connections to network devices.testing
   Utilises the Python library Netmiko for connections. Supports SSH Key authentication
   and username / password.
 display: Netmiko
@@ -294,7 +294,7 @@ script:
       description: The hostname on which the command was executed.
       type: string
     - contextPath: Netmiko.Output
-      description: The results of the command.
+      description: The results of the command.test
       type: string
   dockerimage: demisto/netmiko:1.0.0.15047
   runonce: false
