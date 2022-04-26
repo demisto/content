@@ -173,12 +173,10 @@ configuration:
   defaultvalue: "* carbonblack children,* carbonblack parents,* compressed parents,contacted domains,contacted ips,contacted urls,dropped files,* email attachments,* email parents,* embedded domains,* embedded ips,* embedded urls,execution parents,* itw domains,* itw ips,* overlay children,* overlay parents,* pcap children,* pcap parents,pe resource children,pe resource parents,* similar files"
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ''
   type: 8
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ''
   type: 8
   required: false
 script:
