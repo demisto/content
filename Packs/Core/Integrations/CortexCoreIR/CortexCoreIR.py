@@ -9,7 +9,6 @@ from CommonServerPython import *  # noqa: F401
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-# test
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
