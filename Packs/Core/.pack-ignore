@@ -19,7 +19,7 @@ ignore=BA102
 [file:Trigger_-_WildFire_and_Wildfire_Post_detection.json]
 ignore=BA102
 
-[file:Trigger_-_NGFW_Scan.json]
+[file:73545719a1bdeba6ba91f6a16044c021.json]
 ignore=BA102
 
 [file:Trigger_-_T1036_-_Masquerading.json]
