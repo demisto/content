@@ -520,154 +520,6 @@ def update_incident_command(client, args):
     return f'Incident {incident_id} has been updated', None, None
 
 
-def arg_to_int(arg, arg_name: str, required: bool = False):
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
-    if isinstance(arg, str):
-        if arg.isdigit():
-            return int(arg)
-        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
-    if isinstance(arg, int):
-        return arg
-    return ValueError(f'Invalid number: "{arg_name}"')
-
-
-def get_endpoints_command(client, args):
-    page_number = arg_to_int(
-        arg=args.get('page'),
-        arg_name='Failed to parse "page". Must be a number.',
-        required=True
-    )
-
-    limit = arg_to_int(
-        arg=args.get('limit'),
-        arg_name='Failed to parse "limit". Must be a number.',
-        required=True
-    )
-
-    if list(args.keys()) == ['limit', 'page', 'sort_order']:
-        endpoints = client.get_endpoints(page_number=page_number, limit=limit, no_filter=True)
-    else:
-        endpoint_id_list = argToList(args.get('endpoint_id_list'))
-        dist_name = argToList(args.get('dist_name'))
-        ip_list = argToList(args.get('ip_list'))
-        group_name = argToList(args.get('group_name'))
-        platform = argToList(args.get('platform'))
-        alias_name = argToList(args.get('alias_name'))
-        isolate = args.get('isolate')
-        hostname = argToList(args.get('hostname'))
-
-        first_seen_gte = arg_to_timestamp(
-            arg=args.get('first_seen_gte'),
-            arg_name='first_seen_gte'
-        )
-
-        first_seen_lte = arg_to_timestamp(
-            arg=args.get('first_seen_lte'),
-            arg_name='first_seen_lte'
-        )
-
-        last_seen_gte = arg_to_timestamp(
-            arg=args.get('last_seen_gte'),
-            arg_name='last_seen_gte'
-        )
-
-        last_seen_lte = arg_to_timestamp(
-            arg=args.get('last_seen_lte'),
-            arg_name='last_seen_lte'
-        )
-
-        sort_by_first_seen = args.get('sort_by_first_seen')
-        sort_by_last_seen = args.get('sort_by_last_seen')
-
-        endpoints = client.get_endpoints(
-            endpoint_id_list=endpoint_id_list,
-            dist_name=dist_name,
-            ip_list=ip_list,
-            group_name=group_name,
-            platform=platform,
-            alias_name=alias_name,
-            isolate=isolate,
-            hostname=hostname,
-            page_number=page_number,
-            limit=limit,
-            first_seen_gte=first_seen_gte,
-            first_seen_lte=first_seen_lte,
-            last_seen_gte=last_seen_gte,
-            last_seen_lte=last_seen_lte,
-            sort_by_first_seen=sort_by_first_seen,
-            sort_by_last_seen=sort_by_last_seen
-        )
-
-    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False)
-    endpoint_context_list = []
-    for endpoint in standard_endpoints:
-        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
-        endpoint_context_list.append(endpoint_context)
-
-    context = {
-        f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
-        Common.Endpoint.CONTEXT_PATH: endpoint_context_list
-    }
-    account_context = create_account_context(endpoints)
-    if account_context:
-        context[Common.Account.CONTEXT_PATH] = account_context
-    return (
-        tableToMarkdown('Endpoints', endpoints),
-        context,
-        endpoints
-    )
-
-
-def convert_os_to_standard(endpoint_os):
-    os_type = ''
-    endpoint_os = endpoint_os.lower()
-    if 'windows' in endpoint_os:
-        os_type = "Windows"
-    elif 'linux' in endpoint_os:
-        os_type = "Linux"
-    elif 'macos' in endpoint_os:
-        os_type = "Macos"
-    elif 'android' in endpoint_os:
-        os_type = "Android"
-    return os_type
-
-
-def get_endpoint_properties(single_endpoint):
-    status = 'Online' if single_endpoint.get('endpoint_status', '').lower() == 'connected' else 'Offline'
-    is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
-    hostname = single_endpoint['host_name'] if single_endpoint.get('host_name') else single_endpoint.get(
-        'endpoint_name')
-    ip = single_endpoint.get('ip')
-    return status, is_isolated, hostname, ip
-
-
-def generate_endpoint_by_contex_standard(endpoints, ip_as_string):
-    standard_endpoints = []
-    for single_endpoint in endpoints:
-        status, is_isolated, hostname, ip = get_endpoint_properties(single_endpoint)
-        # in the `xdr-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
-        # in the `endpoint` command we use the standard
-        if ip_as_string and isinstance(ip, list):
-            ip = ip[0]
-        os_type = convert_os_to_standard(single_endpoint.get('os_type', ''))
-        endpoint = Common.Endpoint(
-            id=single_endpoint.get('endpoint_id'),
-            hostname=hostname,
-            ip_address=ip,
-            os=os_type,
-            status=status,
-            is_isolated=is_isolated,
-            mac_address=single_endpoint.get('mac_address'),
-            domain=single_endpoint.get('domain'),
-            vendor=INTEGRATION_NAME)
-
-        standard_endpoints.append(endpoint)
-    return standard_endpoints
-
-
 def endpoint_command(client, args):
     endpoint_id_list = argToList(args.get('id'))
     endpoint_ip_list = argToList(args.get('ip'))
@@ -690,7 +542,7 @@ def endpoint_command(client, args):
     if endpoints:
         endpoints = list({v['endpoint_id']: v for v in endpoints}.values())
 
-    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, True)
+    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, True, INTEGRATION_NAME)
     command_results = []
     if standard_endpoints:
         for endpoint in standard_endpoints:
@@ -799,127 +651,6 @@ def insert_cef_alerts_command(client, args):
         None,
         None
     )
-
-
-def isolate_endpoint_command(client, args):
-    endpoint_id = args.get('endpoint_id')
-    disconnected_should_return_error = not argToBoolean(args.get('suppress_disconnected_endpoint_error', False))
-    incident_id = arg_to_number(args.get('incident_id'))
-    endpoint = client.get_endpoints(endpoint_id_list=[endpoint_id])
-    if len(endpoint) == 0:
-        raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
-
-    endpoint = endpoint[0]
-    endpoint_status = endpoint.get('endpoint_status')
-    is_isolated = endpoint.get('is_isolated')
-    if is_isolated == 'AGENT_ISOLATED':
-        return (
-            f'Endpoint {endpoint_id} already isolated.',
-            None,
-            None
-        )
-    if is_isolated == 'AGENT_PENDING_ISOLATION':
-        return (
-            f'Endpoint {endpoint_id} pending isolation.',
-            None,
-            None
-        )
-    if endpoint_status == 'UNINSTALLED':
-        raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be isolated.')
-    if endpoint_status == 'DISCONNECTED':
-        if disconnected_should_return_error:
-            raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.')
-        else:
-            return (
-                f'Warning: isolation action is pending for the following disconnected endpoint: {endpoint_id}.',
-                {f'{INTEGRATION_CONTEXT_BRAND}.Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
-                None)
-    if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
-        raise ValueError(
-            f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
-        )
-
-    result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
-
-    return CommandResults(
-        readable_output=f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n'
-                        f'To check the endpoint isolation status please run: !xdr-get-endpoints endpoint_id_list={endpoint_id}'
-                        f' and look at the [is_isolated] field.',
-        outputs={f'{INTEGRATION_CONTEXT_BRAND}.Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
-        raw_response=result
-    )
-
-
-def unisolate_endpoint_command(client, args):
-    endpoint_id = args.get('endpoint_id')
-    incident_id = arg_to_number(args.get('incident_id'))
-
-    disconnected_should_return_error = not argToBoolean(args.get('suppress_disconnected_endpoint_error', False))
-    endpoint = client.get_endpoints(endpoint_id_list=[endpoint_id])
-    if len(endpoint) == 0:
-        raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
-
-    endpoint = endpoint[0]
-    endpoint_status = endpoint.get('endpoint_status')
-    is_isolated = endpoint.get('is_isolated')
-    if is_isolated == 'AGENT_UNISOLATED':
-        return (
-            f'Endpoint {endpoint_id} already unisolated.',
-            None,
-            None
-        )
-    if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
-        return (
-            f'Endpoint {endpoint_id} pending isolation cancellation.',
-            None,
-            None
-        )
-    if endpoint_status == 'UNINSTALLED':
-        raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be un-isolated.')
-    if endpoint_status == 'DISCONNECTED':
-        if disconnected_should_return_error:
-            raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.')
-        else:
-            return (
-                f'Warning: un-isolation action is pending for the following disconnected endpoint: {endpoint_id}.',
-                {
-                    f'{INTEGRATION_CONTEXT_BRAND}.UnIsolation.endpoint_id(val.endpoint_id == obj.endpoint_id)'
-                    f'': endpoint_id}, None)
-    if is_isolated == 'AGENT_PENDING_ISOLATION':
-        raise ValueError(
-            f'Error: Endpoint {endpoint_id} is pending isolation and therefore can not be un-isolated.'
-        )
-
-    result = client.unisolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
-
-    return CommandResults(
-        readable_output=f'The un-isolation request has been submitted successfully on Endpoint {endpoint_id}.\n'
-                        f'To check the endpoint isolation status please run: !xdr-get-endpoints endpoint_id_list={endpoint_id}'
-                        f' and look at the [is_isolated] field.',
-        outputs={f'{INTEGRATION_CONTEXT_BRAND}.UnIsolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
-        raw_response=result
-    )
-
-
-def arg_to_timestamp(arg, arg_name: str, required: bool = False):
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
-
-    if isinstance(arg, str) and arg.isdigit():
-        # timestamp that str - we just convert it to int
-        return int(arg)
-    if isinstance(arg, str):
-        # if the arg is string of date format 2019-10-23T00:00:00 or "3 days", etc
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
-        if date is None:
-            # if d is None it means dateparser failed to parse it
-            raise ValueError(f'Invalid date: {arg_name}')
-
-        return int(date.timestamp() * 1000)
-    if isinstance(arg, (int, float)):
-        return arg
 
 
 def get_audit_management_logs_command(client, args):
@@ -1251,56 +982,6 @@ def get_quarantine_status_command(client, args):
         {
             f'{INTEGRATION_CONTEXT_BRAND}.quarantineFiles.status(val.fileHash === obj.fileHash &&'
             f'val.endpointId === obj.endpointId && val.filePath === obj.filePath)': output
-        },
-        reply
-    )
-
-
-def endpoint_scan_command(client, args):
-    endpoint_id_list = argToList(args.get('endpoint_id_list'))
-    dist_name = argToList(args.get('dist_name'))
-    gte_first_seen = args.get('gte_first_seen')
-    gte_last_seen = args.get('gte_last_seen')
-    lte_first_seen = args.get('lte_first_seen')
-    lte_last_seen = args.get('lte_last_seen')
-    ip_list = argToList(args.get('ip_list'))
-    group_name = argToList(args.get('group_name'))
-    platform = argToList(args.get('platform'))
-    alias = argToList(args.get('alias'))
-    isolate = args.get('isolate')
-    hostname = argToList(args.get('hostname'))
-    incident_id = arg_to_number(args.get('incident_id'))
-
-    validate_args_scan_commands(args)
-
-    reply = client.endpoint_scan(
-        url_suffix='/endpoints/scan/',
-        endpoint_id_list=argToList(endpoint_id_list),
-        dist_name=dist_name,
-        gte_first_seen=gte_first_seen,
-        gte_last_seen=gte_last_seen,
-        lte_first_seen=lte_first_seen,
-        lte_last_seen=lte_last_seen,
-        ip_list=ip_list,
-        group_name=group_name,
-        platform=platform,
-        alias=alias,
-        isolate=isolate,
-        hostname=hostname,
-        incident_id=incident_id
-    )
-
-    action_id = reply.get("action_id")
-
-    context = {
-        "actionId": action_id,
-        "aborted": False
-    }
-
-    return (
-        tableToMarkdown('Endpoint scan', {'Action Id': action_id}, ['Action Id']),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan(val.actionId == obj.actionId)': context
         },
         reply
     )
@@ -1839,33 +1520,6 @@ def get_endpoint_device_control_violations_command(client: Client, args: Dict[st
     )
 
 
-def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
-    endpoint_id_list: list = argToList(args.get('endpoint_ids'))
-    windows: list = argToList(args.get('windows_file_paths'))
-    linux: list = argToList(args.get('linux_file_paths'))
-    macos: list = argToList(args.get('mac_file_paths'))
-    file_path_list: list = argToList(args.get('generic_file_path'))
-    incident_id: Optional[int] = arg_to_number(args.get('incident_id'))
-
-    reply = client.retrieve_file(
-        endpoint_id_list=endpoint_id_list,
-        windows=windows,
-        linux=linux,
-        macos=macos,
-        file_path_list=file_path_list,
-        incident_id=incident_id
-    )
-
-    result = {'action_id': reply.get('action_id')}
-    return (
-        tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.RetrievedFiles(val.action_id == obj.action_id)': result
-        },
-        reply
-    )
-
-
 def retrieve_file_details_command(client: Client, args):
     action_id_list = argToList(args.get('action_id', ''))
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
@@ -1982,30 +1636,6 @@ def get_script_code_command(client: Client, args: Dict[str, str]) -> Tuple[str, 
     )
 
 
-def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
-    action_id_list = argToList(args.get('action_id', ''))
-    action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
-
-    result = []
-    for action_id in action_id_list:
-        data = client.action_status_get(action_id)
-
-        for endpoint_id, status in data.items():
-            result.append({
-                'action_id': action_id,
-                'endpoint_id': endpoint_id,
-                'status': status
-            })
-
-    return (
-        tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.GetActionStatus(val.action_id == obj.action_id)': result
-        },
-        result
-    )
-
-
 def run_script_command(client: Client, args: Dict) -> CommandResults:
     script_uid = args.get('script_uid')
     endpoint_ids = argToList(args.get('endpoint_ids'))
@@ -2022,21 +1652,6 @@ def run_script_command(client: Client, args: Dict) -> CommandResults:
     reply = response.get('reply')
     return CommandResults(
         readable_output=tableToMarkdown('Run Script', reply),
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
-        outputs_key_field='action_id',
-        outputs=reply,
-        raw_response=response,
-    )
-
-
-def run_snippet_code_script_command(client: Client, args: Dict) -> CommandResults:
-    snippet_code = args.get('snippet_code')
-    endpoint_ids = argToList(args.get('endpoint_ids'))
-    incident_id = arg_to_number(args.get('incident_id'))
-    response = client.run_snippet_code_script(snippet_code=snippet_code, endpoint_ids=endpoint_ids, incident_id=incident_id)
-    reply = response.get('reply')
-    return CommandResults(
-        readable_output=tableToMarkdown('Run Snippet Code Script', reply),
         outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
         outputs_key_field='action_id',
         outputs=reply,
@@ -2344,6 +1959,8 @@ def main():
     )
 
     args = demisto.args()
+    args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
+    args["integration_name"] = INTEGRATION_NAME
 
     try:
         if command == 'test-module':
@@ -2367,7 +1984,7 @@ def main():
             return_outputs(*update_incident_command(client, args))
 
         elif command == 'xdr-get-endpoints':
-            return_outputs(*get_endpoints_command(client, args))
+            return_results(get_endpoints_command(client, args))
 
         elif command == 'xdr-insert-parsed-alert':
             return_outputs(*insert_parsed_alert_command(client, args))
@@ -2378,8 +1995,46 @@ def main():
         elif command == 'xdr-isolate-endpoint':
             return_results(isolate_endpoint_command(client, args))
 
+        elif command == 'xdr-endpoint-isolate':
+            polling_args = {
+                **args,
+                "endpoint_id_list": args.get('endpoint_id')
+            }
+            return_results(run_polling_command(client=client,
+                                               args=polling_args,
+                                               cmd="xdr-endpoint-isolate",
+                                               command_function=isolate_endpoint_command,
+                                               command_decision_field="action_id",
+                                               results_function=get_endpoints_command,
+                                               polling_field="is_isolated",
+                                               polling_value=["AGENT_ISOLATED"],
+                                               stop_polling=True))
+
         elif command == 'xdr-unisolate-endpoint':
             return_results(unisolate_endpoint_command(client, args))
+
+        elif command == 'xdr-endpoint-unisolate':
+            polling_args = {
+                **args,
+                "endpoint_id_list": args.get('endpoint_id')
+            }
+            return_results(run_polling_command(client=client,
+                                               args=polling_args,
+                                               cmd="xdr-endpoint-unisolate",
+                                               command_function=unisolate_endpoint_command,
+                                               command_decision_field="action_id",
+                                               results_function=get_endpoints_command,
+                                               polling_field="is_isolated",
+                                               polling_value=["AGENT_UNISOLATED",
+                                                              "CANCELLED",
+                                                              "ֿPENDING_ABORT",
+                                                              "ABORTED",
+                                                              "EXPIRED",
+                                                              "COMPLETED_PARTIAL",
+                                                              "COMPLETED_SUCCESSFULLY",
+                                                              "FAILED",
+                                                              "TIMEOUT"],
+                                               stop_polling=True))
 
         elif command == 'xdr-get-distribution-url':
             return_outputs(*get_distribution_url_command(client, args))
@@ -2415,7 +2070,19 @@ def main():
             return_outputs(*restore_file_command(client, args))
 
         elif command == 'xdr-endpoint-scan':
-            return_outputs(*endpoint_scan_command(client, args))
+            return_results(endpoint_scan_command(client, args))
+
+        elif command == 'xdr-endpoint-scan-execute':
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="xdr-endpoint-scan-execute",
+                                               command_function=endpoint_scan_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'xdr-endpoint-scan-abort':
             return_outputs(*endpoint_scan_abort_command(client, args))
@@ -2439,7 +2106,19 @@ def main():
             return_outputs(*get_endpoint_device_control_violations_command(client, args))
 
         elif command == 'xdr-retrieve-files':
-            return_outputs(*retrieve_files_command(client, args))
+            return_results(retrieve_files_command(client, args))
+
+        elif command == 'xdr-file-retrieve':
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="xdr-file-retrieve",
+                                               command_function=retrieve_files_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'xdr-retrieve-file-details':
             return_entry, file_results = retrieve_file_details_command(client, args)
@@ -2457,7 +2136,7 @@ def main():
             return_outputs(*get_script_code_command(client, args))
 
         elif command == 'xdr-action-status-get':
-            return_outputs(*action_status_get_command(client, args))
+            return_results(action_status_get_command(client, args))
 
         elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, demisto.args()))
@@ -2467,6 +2146,18 @@ def main():
 
         elif command == 'xdr-run-snippet-code-script':
             return_results(run_snippet_code_script_command(client, args))
+
+        elif command == 'xdr-snippet-code-script-execute':
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="xdr-snippet-code-script-execute",
+                                               command_function=run_snippet_code_script_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'xdr-get-script-execution-status':
             return_results(get_script_execution_status_command(client, args))

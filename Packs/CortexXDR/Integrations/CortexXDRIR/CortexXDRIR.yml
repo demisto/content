@@ -715,33 +715,53 @@ script:
     execution: false
     name: xdr-insert-cef-alerts
   - arguments:
-      - default: false
-        description: Allows to link the response action to the incident that triggered it.
-        isArray: false
-        name: incident_id
-        required: false
-        secret: false
-      - default: false
-        description: The endpoint ID (string) to isolate. You can retrieve the string from the xdr-get-endpoints command.
-        isArray: false
-        name: endpoint_id
-        required: true
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        defaultValue: 'false'
-        description: Whether to suppress an error when trying to isolate a disconnected endpoint. When sets to false, an error will be returned.
-        isArray: false
-        name: suppress_disconnected_endpoint_error
-        predefined:
-          - 'true'
-          - 'false'
-        required: false
-        secret: false
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: The endpoint ID (string) to isolate. You can retrieve the string from the xdr-get-endpoints command.
+      isArray: false
+      name: endpoint_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to suppress an error when trying to isolate a disconnected endpoint. When sets to false, an error will be returned.
+      isArray: false
+      name: suppress_disconnected_endpoint_error
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
     deprecated: false
     description: Isolates the specified endpoint.
     execution: true
     name: xdr-endpoint-isolate
+    polling: true
     outputs:
       - contextPath: PaloAltoNetworksXDR.Isolation.endpoint_id
         description: The endpoint ID.
@@ -779,33 +799,53 @@ script:
       description: The endpoint ID.
       type: String
   - arguments:
-      - default: false
-        description: Allows to link the response action to the incident that triggered it.
-        isArray: false
-        name: incident_id
-        required: false
-        secret: false
-      - default: false
-        description: The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints command.
-        isArray: false
-        name: endpoint_id
-        required: true
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        defaultValue: 'false'
-        description: Whether to suppress an error when trying to unisolate a disconnected endpoint. When sets to false, an error will be returned.
-        isArray: false
-        name: suppress_disconnected_endpoint_error
-        predefined:
-          - 'true'
-          - 'false'
-        required: false
-        secret: false
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints command.
+      isArray: false
+      name: endpoint_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to suppress an error when trying to unisolate a disconnected endpoint. When sets to false, an error will be returned.
+      isArray: false
+      name: suppress_disconnected_endpoint_error
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
     deprecated: false
     description: Reverses the isolation of an endpoint.
     execution: true
     name: xdr-endpoint-unisolate
+    polling: true
     outputs:
       - contextPath: PaloAltoNetworksXDR.UnIsolation.endpoint_id
         description: Isolates the specified endpoint.
@@ -1566,6 +1606,29 @@ script:
       description: The domain of the endpoint.
       type: String
   - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: String that represents a list of hashed files you want to block list. Must be a valid SHA256 hash.
+        isArray: true
+        name: hash_list
+        required: true
+        secret: false
+      - default: false
+        description: String that represents additional information regarding the action.
+        isArray: false
+        name: comment
+        required: false
+        secret: false
+    deprecated: false
+    description: Block lists requested files which have not already been block listed or added to allow list.
+    execution: false
+    name: xdr-blocklist-files
+  - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
       isArray: false
@@ -1584,10 +1647,33 @@ script:
       name: comment
       required: false
       secret: false
-    deprecated: false
-    description: Block lists requested files which have not already been block listed or added to allow list.
+    deprecated: true
+    description: Deprecated, use `xdr-blocklist-files` instead.
     execution: false
     name: xdr-blacklist-files
+  - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash.
+        isArray: true
+        name: hash_list
+        required: true
+        secret: false
+      - default: false
+        description: String that represents additional information regarding the action.
+        isArray: false
+        name: comment
+        required: false
+        secret: false
+    deprecated: false
+    description: Adds requested files to allow list if they are not already on block list or allow list.
+    execution: false
+    name: xdr-allowlist-files
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -1607,8 +1693,8 @@ script:
       name: comment
       required: false
       secret: false
-    deprecated: false
-    description: Adds requested files to allow list if they are not already on block list or allow list.
+    deprecated: true
+    description: Deprecated, use `xdr-allowlist-files` instead.
     execution: false
     name: xdr-whitelist-files
   - arguments:
@@ -1739,109 +1825,129 @@ script:
     execution: false
     name: xdr-restore-file
   - arguments:
-      - default: false
-        description: Allows to link the response action to the incident that triggered it.
-        isArray: false
-        name: incident_id
-        required: false
-        secret: false
-      - default: false
-        description: List of endpoint IDs.
-        isArray: true
-        name: endpoint_id_list
-        required: false
-        secret: false
-      - default: false
-        description: Name of the distribution list.
-        isArray: true
-        name: dist_name
-        required: false
-        secret: false
-      - default: false
-        description: Epoch timestamp in milliseconds.
-        isArray: false
-        name: gte_first_seen
-        required: false
-        secret: false
-      - default: false
-        description: Epoch timestamp in milliseconds.
-        isArray: false
-        name: gte_last_seen
-        required: false
-        secret: false
-      - default: false
-        description: Epoch timestamp in milliseconds.
-        isArray: false
-        name: lte_first_seen
-        required: false
-        secret: false
-      - default: false
-        description: Epoch timestamp in milliseconds.
-        isArray: false
-        name: lte_last_seen
-        required: false
-        secret: false
-      - default: false
-        description: List of IP addresses.
-        isArray: true
-        name: ip_list
-        required: false
-        secret: false
-      - default: false
-        description: Name of the endpoint group.
-        isArray: true
-        name: group_name
-        required: false
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        description: Type of operating system.
-        isArray: true
-        name: platform
-        predefined:
-          - windows
-          - linux
-          - macos
-          - android
-        required: false
-        secret: false
-      - default: false
-        description: Endpoint alias name.
-        isArray: true
-        name: alias
-        required: false
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        description: Whether an endpoint has been isolated. Can be "isolated" or "unisolated".
-        isArray: false
-        name: isolate
-        predefined:
-          - isolated
-          - unisolated
-        required: false
-        secret: false
-      - default: false
-        description: Name of the host.
-        isArray: true
-        name: hostname
-        required: false
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        defaultValue: 'false'
-        description: Whether to scan all of the endpoints or not. Default is false. Scanning all of the endpoints may cause performance issues and latency.
-        isArray: false
-        name: all
-        predefined:
-          - 'true'
-          - 'false'
-        required: false
-        secret: false
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: List of endpoint IDs.
+      isArray: true
+      name: endpoint_id_list
+      required: false
+      secret: false
+    - default: false
+      description: Name of the distribution list.
+      isArray: true
+      name: dist_name
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: gte_first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: gte_last_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: lte_first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: lte_last_seen
+      required: false
+      secret: false
+    - default: false
+      description: List of IP addresses.
+      isArray: true
+      name: ip_list
+      required: false
+      secret: false
+    - default: false
+      description: Name of the endpoint group.
+      isArray: true
+      name: group_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of operating system.
+      isArray: true
+      name: platform
+      predefined:
+        - windows
+        - linux
+        - macos
+        - android
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint alias name.
+      isArray: true
+      name: alias
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether an endpoint has been isolated. Can be "isolated" or "unisolated".
+      isArray: false
+      name: isolate
+      predefined:
+        - isolated
+        - unisolated
+      required: false
+      secret: false
+    - default: false
+      description: Name of the host.
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to scan all of the endpoints or not. Default is false. Scanning all of the endpoints may cause performance issues and latency.
+      isArray: false
+      name: all
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: For polling use.
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
     deprecated: false
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan-execute
+    polling: true
     outputs:
       - contextPath: PaloAltoNetworksXDR.endpointScan.actionId
         description: The action ID of the scan request.
@@ -2381,46 +2487,66 @@ script:
       description: Endpoint ID of the violation.
       type: string
   - arguments:
-      - default: false
-        description: Allows to link the response action to the incident that triggered it.
-        isArray: false
-        name: incident_id
-        required: false
-        secret: false
-      - default: false
-        description: Comma-separated list of endpoint IDs.
-        isArray: true
-        name: endpoint_ids
-        required: true
-        secret: false
-      - default: false
-        description: A comma-separated list of file paths on the Windows platform.
-        isArray: true
-        name: windows_file_paths
-        required: false
-        secret: false
-      - default: false
-        description: A comma-separated list of file paths on the Linux platform.
-        isArray: true
-        name: linux_file_paths
-        required: false
-        secret: false
-      - default: false
-        description: A comma-separated list of file paths on the Mac platform.
-        isArray: true
-        name: mac_file_paths
-        required: false
-        secret: false
-      - default: false
-        description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.
-        isArray: true
-        name: generic_file_path
-        required: false
-        secret: false
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs.
+      isArray: true
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of file paths on the Windows platform.
+      isArray: true
+      name: windows_file_paths
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of file paths on the Linux platform.
+      isArray: true
+      name: linux_file_paths
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of file paths on the Mac platform.
+      isArray: true
+      name: mac_file_paths
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.
+      isArray: true
+      name: generic_file_path
+      required: false
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
     deprecated: false
     description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
     execution: false
     name: xdr-file-retrieve
+    polling: true
     outputs:
       - contextPath: PaloAltoNetworksXDR.RetrievedFiles.action_id
         description: ID of the action to retrieve files from selected endpoints.
@@ -2655,28 +2781,48 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
-      - default: false
-        description: Allows to link the response action to the incident that triggered it.
-        isArray: false
-        name: incident_id
-        required: false
-        secret: false
-      - default: false
-        description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
-        isArray: false
-        name: endpoint_ids
-        required: true
-        secret: false
-      - default: false
-        description: Section of a script you want to initiate on an endpoint (e.g., print("7")).
-        isArray: false
-        name: snippet_code
-        required: true
-        secret: false
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
+      isArray: false
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Section of a script you want to initiate on an endpoint (e.g., print("7")).
+      isArray: false
+      name: snippet_code
+      required: true
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
     deprecated: false
     description: Initiates a new endpoint script execution action using the provided snippet code.
     execution: false
     name: xdr-snippet-code-script-execute
+    polling: true
     outputs:
       - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
         description: ID of the action initiated.

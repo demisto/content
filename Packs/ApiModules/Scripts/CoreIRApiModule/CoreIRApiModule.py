@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
+from typing import Tuple, Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -1471,3 +1472,503 @@ class CoreClient(BaseClient):
         )
         reply = res.get("reply")
         return reply[:limit]
+
+
+def run_polling_command(client: CoreClient,
+                        args: dict,
+                        cmd: str,
+                        command_function: Callable,
+                        command_decision_field: str,
+                        results_function: Callable,
+                        polling_field: str,
+                        polling_value: List,
+                        stop_polling: bool = False) -> CommandResults:
+    """
+    args: demito args
+    cmd: the command to schedule by after the current command
+    command_function: the function which is runs the actual command
+    command_decision_field: the field in the response based on it what the command status and if the command occurred
+    results_function: the function which we are polling on and retrieves the status of the command_function
+    polling_field: the field which from the result of the results_function which we are interested in its value
+    polling_value: list of values of the polling_field we want to check
+    stop_polling: yes - polling_value is stopping, not - polling_value not stopping
+    """
+
+    ScheduledCommand.raise_error_if_not_supported()
+    interval_in_secs = int(args.get('interval_in_seconds', 60))
+    timeout_in_seconds = int(args.get('timeout_in_seconds', 600))
+    if command_decision_field not in args:
+        # create new command run
+        command_results = command_function(client, args)
+        if isinstance(command_results, CommandResults):
+            outputs = [command_results.raw_response] if command_results.raw_response else []
+        else:
+            outputs = [c.raw_response for c in command_results]
+        command_decision_values = [o.get(command_decision_field) for o in outputs] if outputs else []  # type: ignore
+        if outputs and command_decision_values:
+            polling_args = {
+                command_decision_field: command_decision_values,
+                'interval_in_seconds': interval_in_secs,
+                **args
+            }
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_secs,
+                args=polling_args,
+                timeout_in_seconds=timeout_in_seconds)
+            if isinstance(command_results, list):
+                command_results = command_results[0]
+            command_results.scheduled_command = scheduled_command
+            return command_results
+        else:
+            if command_results.readable_output:
+                demisto.error(f"{command_results.readable_output}")
+            else:
+                demisto.error(f"Command {command_function} didn't succeeded, returned {outputs}")
+            return command_results
+    # get polling result
+    command_results = results_function(client, args)
+    outputs_result_func = command_results.raw_response
+    result = outputs_result_func.get(polling_field) if isinstance(outputs_result_func, dict) else\
+        outputs_result_func[0].get(polling_field)
+    cond = result not in polling_value if stop_polling else result in polling_value
+    if cond:
+        # schedule next poll
+        polling_args = {
+            'interval_in_seconds': interval_in_secs,
+            **args
+        }
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,
+            args=polling_args,
+            timeout_in_seconds=timeout_in_seconds)
+
+        # result with scheduled_command only - no update to the war room
+        command_results = CommandResults(scheduled_command=scheduled_command)
+    return command_results
+
+
+def arg_to_int(arg, arg_name: str, required: bool = False):
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return None
+    if isinstance(arg, str):
+        if arg.isdigit():
+            return int(arg)
+        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
+    if isinstance(arg, int):
+        return arg
+    return ValueError(f'Invalid number: "{arg_name}"')
+
+
+def validate_args_scan_commands(args):
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name = argToList(args.get('dist_name'))
+    gte_first_seen = args.get('gte_first_seen')
+    gte_last_seen = args.get('gte_last_seen')
+    lte_first_seen = args.get('lte_first_seen')
+    lte_last_seen = args.get('lte_last_seen')
+    ip_list = argToList(args.get('ip_list'))
+    group_name = argToList(args.get('group_name'))
+    platform = argToList(args.get('platform'))
+    alias = argToList(args.get('alias'))
+    hostname = argToList(args.get('hostname'))
+    all_ = argToBoolean(args.get('all', 'false'))
+
+    # to prevent the case where an empty filtered command will trigger by default a scan on all the endpoints.
+    err_msg = 'To scan/abort scan all the endpoints run this command with the \'all\' argument as True ' \
+              'and without any other filters. This may cause performance issues.\n' \
+              'To scan/abort scan some of the endpoints, please use the filter arguments.'
+    if all_:
+        if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
+                or ip_list or group_name or platform or alias or hostname:
+            raise Exception(err_msg)
+    else:
+        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
+                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+                and not alias and not hostname:
+            raise Exception(err_msg)
+
+
+def endpoint_scan_command(client: CoreClient, args) -> CommandResults:
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name = argToList(args.get('dist_name'))
+    gte_first_seen = args.get('gte_first_seen')
+    gte_last_seen = args.get('gte_last_seen')
+    lte_first_seen = args.get('lte_first_seen')
+    lte_last_seen = args.get('lte_last_seen')
+    ip_list = argToList(args.get('ip_list'))
+    group_name = argToList(args.get('group_name'))
+    platform = argToList(args.get('platform'))
+    alias = argToList(args.get('alias'))
+    isolate = args.get('isolate')
+    hostname = argToList(args.get('hostname'))
+    incident_id = arg_to_number(args.get('incident_id'))
+
+    validate_args_scan_commands(args)
+
+    reply = client.endpoint_scan(
+        url_suffix='/endpoints/scan/',
+        endpoint_id_list=argToList(endpoint_id_list),
+        dist_name=dist_name,
+        gte_first_seen=gte_first_seen,
+        gte_last_seen=gte_last_seen,
+        lte_first_seen=lte_first_seen,
+        lte_last_seen=lte_last_seen,
+        ip_list=ip_list,
+        group_name=group_name,
+        platform=platform,
+        alias=alias,
+        isolate=isolate,
+        hostname=hostname,
+        incident_id=incident_id
+    )
+
+    action_id = reply.get("action_id")
+
+    context = {
+        "actionId": action_id,
+        "aborted": False
+    }
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Endpoint scan', {'Action Id': action_id}, ['Action Id']),
+        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.endpointScan(val.actionId == obj.actionId)': context},
+        raw_response=reply
+    )
+
+
+def action_status_get_command(client: CoreClient, args) -> CommandResults:
+    action_id_list = argToList(args.get('action_id', ''))
+    action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
+
+    result = []
+    for action_id in action_id_list:
+        data = client.action_status_get(action_id)
+
+        for endpoint_id, status in data.items():
+            result.append({
+                'action_id': action_id,
+                'endpoint_id': endpoint_id,
+                'status': status
+            })
+
+    return CommandResults(
+        readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
+        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.GetActionStatus(val.action_id == obj.action_id)'
+                 : result},
+        raw_response=result
+    )
+
+
+def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
+    endpoint_id = args.get('endpoint_id')
+    disconnected_should_return_error = not argToBoolean(args.get('suppress_disconnected_endpoint_error', False))
+    incident_id = arg_to_number(args.get('incident_id'))
+    endpoint = client.get_endpoints(endpoint_id_list=[endpoint_id])
+    if len(endpoint) == 0:
+        raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
+
+    endpoint = endpoint[0]
+    endpoint_status = endpoint.get('endpoint_status')
+    is_isolated = endpoint.get('is_isolated')
+    if is_isolated == 'AGENT_ISOLATED':
+        return CommandResults(
+            readable_output=f'Endpoint {endpoint_id} already isolated.'
+        )
+    if is_isolated == 'AGENT_PENDING_ISOLATION':
+        return CommandResults(
+            readable_output=f'Endpoint {endpoint_id} pending isolation.'
+        )
+    if endpoint_status == 'UNINSTALLED':
+        raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be isolated.')
+    if endpoint_status == 'DISCONNECTED':
+        if disconnected_should_return_error:
+            raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.')
+        else:
+            return CommandResults(
+                readable_output=f'Warning: isolation action is pending for the following disconnected endpoint: {endpoint_id}.',
+                outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                         f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id}
+            )
+    if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
+        raise ValueError(
+            f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
+        )
+    result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
+
+    return CommandResults(
+        readable_output=f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
+        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                 f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
+        raw_response=result
+    )
+
+
+def arg_to_timestamp(arg, arg_name: str, required: bool = False):
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return None
+
+    if isinstance(arg, str) and arg.isdigit():
+        # timestamp that str - we just convert it to int
+        return int(arg)
+    if isinstance(arg, str):
+        # if the arg is string of date format 2019-10-23T00:00:00 or "3 days", etc
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            raise ValueError(f'Invalid date: {arg_name}')
+
+        return int(date.timestamp() * 1000)
+    if isinstance(arg, (int, float)):
+        return arg
+
+
+def create_account_context(endpoints):
+    account_context = []
+    for endpoint in endpoints:
+        domain = endpoint.get('domain')
+        if domain:
+            users = endpoint.get('users', [])  # in case the value of 'users' is None
+            if users and isinstance(users, list):
+                for user in users:
+                    account_context.append({
+                        'Username': user,
+                        'Domain': domain,
+                    })
+
+    return account_context
+
+
+def get_endpoint_properties(single_endpoint):
+    status = 'Online' if single_endpoint.get('endpoint_status', '').lower() == 'connected' else 'Offline'
+    is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
+    hostname = single_endpoint['host_name'] if single_endpoint.get('host_name') else single_endpoint.get(
+        'endpoint_name')
+    ip = single_endpoint.get('ip')
+    return status, is_isolated, hostname, ip
+
+
+def convert_os_to_standard(endpoint_os):
+    os_type = ''
+    endpoint_os = endpoint_os.lower()
+    if 'windows' in endpoint_os:
+        os_type = "Windows"
+    elif 'linux' in endpoint_os:
+        os_type = "Linux"
+    elif 'macos' in endpoint_os:
+        os_type = "Macos"
+    elif 'android' in endpoint_os:
+        os_type = "Android"
+    return os_type
+
+
+def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_name="CoreApiModule"):
+    standard_endpoints = []
+    for single_endpoint in endpoints:
+        status, is_isolated, hostname, ip = get_endpoint_properties(single_endpoint)
+        # in the `-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
+        # in the `endpoint` command we use the standard
+        if ip_as_string and isinstance(ip, list):
+            ip = ip[0]
+        os_type = convert_os_to_standard(single_endpoint.get('os_type', ''))
+        endpoint = Common.Endpoint(
+            id=single_endpoint.get('endpoint_id'),
+            hostname=hostname,
+            ip_address=ip,
+            os=os_type,
+            status=status,
+            is_isolated=is_isolated,
+            mac_address=single_endpoint.get('mac_address'),
+            domain=single_endpoint.get('domain'),
+            vendor=integration_name)
+
+        standard_endpoints.append(endpoint)
+    return standard_endpoints
+
+
+def get_endpoints_command(client, args):
+    page_number = arg_to_int(
+        arg=args.get('page', '0'),
+        arg_name='Failed to parse "page". Must be a number.',
+        required=True
+    )
+
+    limit = arg_to_int(
+        arg=args.get('limit', '30'),
+        arg_name='Failed to parse "limit". Must be a number.',
+        required=True
+    )
+
+    if list(args.keys()) == ['limit', 'page', 'sort_order']:
+        endpoints = client.get_endpoints(page_number=page_number, limit=limit, no_filter=True)
+    else:
+        endpoint_id_list = argToList(args.get('endpoint_id_list'))
+        dist_name = argToList(args.get('dist_name'))
+        ip_list = argToList(args.get('ip_list'))
+        group_name = argToList(args.get('group_name'))
+        platform = argToList(args.get('platform'))
+        alias_name = argToList(args.get('alias_name'))
+        isolate = args.get('isolate')
+        hostname = argToList(args.get('hostname'))
+        status = args.get('status')
+
+        first_seen_gte = arg_to_timestamp(
+            arg=args.get('first_seen_gte'),
+            arg_name='first_seen_gte'
+        )
+
+        first_seen_lte = arg_to_timestamp(
+            arg=args.get('first_seen_lte'),
+            arg_name='first_seen_lte'
+        )
+
+        last_seen_gte = arg_to_timestamp(
+            arg=args.get('last_seen_gte'),
+            arg_name='last_seen_gte'
+        )
+
+        last_seen_lte = arg_to_timestamp(
+            arg=args.get('last_seen_lte'),
+            arg_name='last_seen_lte'
+        )
+
+        sort_by_first_seen = args.get('sort_by_first_seen')
+        sort_by_last_seen = args.get('sort_by_last_seen')
+
+        endpoints = client.get_endpoints(
+            endpoint_id_list=endpoint_id_list,
+            dist_name=dist_name,
+            ip_list=ip_list,
+            group_name=group_name,
+            platform=platform,
+            alias_name=alias_name,
+            isolate=isolate,
+            hostname=hostname,
+            page_number=page_number,
+            limit=limit,
+            first_seen_gte=first_seen_gte,
+            first_seen_lte=first_seen_lte,
+            last_seen_gte=last_seen_gte,
+            last_seen_lte=last_seen_lte,
+            sort_by_first_seen=sort_by_first_seen,
+            sort_by_last_seen=sort_by_last_seen,
+            status=status
+        )
+
+    integration_name = args.get("integration_name", "CoreApiModule")
+    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
+    endpoint_context_list = []
+    for endpoint in standard_endpoints:
+        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+        endpoint_context_list.append(endpoint_context)
+
+    context = {
+        f'{args.get("integration_context_brand", "CoreApiModule")}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
+        Common.Endpoint.CONTEXT_PATH: endpoint_context_list
+    }
+    account_context = create_account_context(endpoints)
+    if account_context:
+        context[Common.Account.CONTEXT_PATH] = account_context
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Endpoints', endpoints),
+        outputs=context,
+        raw_response=endpoints
+    )
+
+
+def unisolate_endpoint_command(client, args):
+    endpoint_id = args.get('endpoint_id')
+    incident_id = arg_to_number(args.get('incident_id'))
+
+    disconnected_should_return_error = not argToBoolean(args.get('suppress_disconnected_endpoint_error', False))
+    endpoint = client.get_endpoints(endpoint_id_list=[endpoint_id])
+    if len(endpoint) == 0:
+        raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
+
+    endpoint = endpoint[0]
+    endpoint_status = endpoint.get('endpoint_status')
+    is_isolated = endpoint.get('is_isolated')
+    if is_isolated == 'AGENT_UNISOLATED':
+        return CommandResults(
+            readable_output=f'Endpoint {endpoint_id} already unisolated.'
+        )
+    if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
+        return CommandResults(
+            readable_output=f'Endpoint {endpoint_id} pending isolation cancellation.'
+        )
+    if endpoint_status == 'UNINSTALLED':
+        raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be un-isolated.')
+    if endpoint_status == 'DISCONNECTED':
+        if disconnected_should_return_error:
+            raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.')
+        else:
+            return CommandResults(
+                readable_output=f'Warning: un-isolation action is pending for the following disconnected '
+                                f'endpoint: {endpoint_id}.',
+                outputs={
+                    f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                    f'UnIsolation.endpoint_id(val.endpoint_id == obj.endpoint_id)'
+                    f'': endpoint_id}
+            )
+    if is_isolated == 'AGENT_PENDING_ISOLATION':
+        raise ValueError(
+            f'Error: Endpoint {endpoint_id} is pending isolation and therefore can not be un-isolated.'
+        )
+    result = client.unisolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
+
+    return CommandResults(
+        readable_output=f'The un-isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
+        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                 f'UnIsolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
+        raw_response=result
+    )
+
+
+def retrieve_files_command(client: Client, args: Dict[str, str]) -> CommandResults:
+    endpoint_id_list: list = argToList(args.get('endpoint_ids'))
+    windows: list = argToList(args.get('windows_file_paths'))
+    linux: list = argToList(args.get('linux_file_paths'))
+    macos: list = argToList(args.get('mac_file_paths'))
+    file_path_list: list = argToList(args.get('generic_file_path'))
+    incident_id: Optional[int] = arg_to_number(args.get('incident_id'))
+
+    reply = client.retrieve_file(
+        endpoint_id_list=endpoint_id_list,
+        windows=windows,
+        linux=linux,
+        macos=macos,
+        file_path_list=file_path_list,
+        incident_id=incident_id
+    )
+
+    result = {'action_id': reply.get('action_id')}
+
+    return CommandResults(
+        readable_output=tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header),
+        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}'
+                 f'.RetrievedFiles(val.action_id == obj.action_id)': result},
+        raw_response=reply
+    )
+
+
+def run_snippet_code_script_command(client: CoreClient, args: Dict) -> CommandResults:
+    snippet_code = args.get('snippet_code')
+    endpoint_ids = argToList(args.get('endpoint_ids'))
+    incident_id = arg_to_number(args.get('incident_id'))
+    response = client.run_snippet_code_script(snippet_code=snippet_code, endpoint_ids=endpoint_ids, incident_id=incident_id)
+    reply = response.get('reply')
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Snippet Code Script', reply),
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=reply,
+    )
+
+
