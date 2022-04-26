@@ -25,7 +25,7 @@ configuration:
   required: false
   type: 8
 description: "AbsoluteTest is an adaptive endpoint security solution that delivers device security, data security, and asset management of endpoints."
-display: AbsoluteTest
+display: AbsoluteTest-lala
 name: AbsoluteTest
 script:
   commands:
@@ -60,8 +60,8 @@ script:
     - contextPath: AbsoluteTest.CustomDeviceField.CDFValues.CategoryCode
       description: 'The type of custom device field. Possible values are: PREDEFINED, ESNCOLUMN, UDF.'
       type: String
-    - contextPath: AbsoluteTest.CustomDeviceField.CDFValues.FieldValue
-      description: The current value of the custom device field.
+    - contextPath: AbsoluteTest.CustomDeviceField.CDFValues.FieldValuelala
+      description: The current value of the custom device field lalal.
       type: String
     - contextPath: AbsoluteTest.CustomDeviceField.CDFValues.Type
       description: 'The data type of the field value. Possible values are: Text, Date, Dropdown.'
