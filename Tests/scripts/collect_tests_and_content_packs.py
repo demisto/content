@@ -1518,6 +1518,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
             last_commit = get_last_commit_from_index(service_account)
             logging.debug(f'Last upload commit : {last_commit}')
             second_last_commit = tools.run_command("git log -n 1 --pretty='%H'")
+            second_last_commit = second_last_commit.replace("'", "")
             logging.debug(f'commit string: {second_last_commit}')
             files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
             logging.debug(f'Files string got here: {second_last_commit=} {last_commit=} {files_string=}')
