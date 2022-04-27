@@ -234,15 +234,17 @@ In the example below, we have written *A comment from Cortex XSOAR to ServiceNow
 
 
 ### Configure Incident Mirroring When the Trigger Incident is **Not** ServiceNow  
-When the trigger incident is not ServiceNow, you need to map the appropriate fields from the **ServiceNow Create Ticket and Mirror** incident type to the relevant trigger incident type (for example, Phishing Custom).
+
+You can set up any source integration to create a ServiceNow ticket based on a fetched incident and mirror the ticket in Cortex XSOAR. To do this you need to:    
+- Configure the ServiceNow v2 integration to map the appropriate fields from the **ServiceNow Create Ticket and Mirror** incident type to the relevant trigger incident type (for example, Phishing Custom).
+- Set up the source integration to create a ServiceNow ticket and start mirroring.
 
 #### STEP 1 - Configure the ServiceNow v2 Integration Instance for Mirroring.
-1. Navigate to Classification and Mapping and create a copy of the **ServiceNow - Incoming Mapper** and the **ServiceNow - Outgoing Mapper**. 
-Your copied mappers will be called **ServiceNow - Incoming Mapper_copy** and **ServiceNow - Outgoing Mapper_copy**, you can rename them. The copied mappers appear in the drop down for the **Mapper (incoming)** and **Mapper (outgoing)** integration instance settings fields.
-2. Navigate to **Integrations** and search for **ServiceNow v2**.
-3. Click **Add instance**.
-4. Under **Name**, make sure the instance name matches the value in the **dbotMirrorInstance** field in the incoming mapper.
-To change the value in the mapper, you must first duplicate the mapper and edit the field in the copy of the mapper.
+1. Navigate to **Classification and Mapping**. For **Incidents**, search for **ServiceNow - Incoming Mapper** and **ServiceNow - Outgoing Mapper**.
+2. For each mapper, click **Duplicate**.  
+   Your copied mappers will be called **ServiceNow - Incoming Mapper_copy** and **ServiceNow - Outgoing Mapper_copy**, you can rename them. The copied mappers appear in the drop down for the **Mapper (incoming)** and **Mapper (outgoing)** integration instance settings fields.
+3. Navigate to **Integrations** and search for **ServiceNow v2**.
+4. Click **Add instance**.
 5. Select **Do not Fetch**.
 6. Under **Classifier**, select ServiceNow Classifier.  
     **Note:**  
@@ -259,7 +261,7 @@ To change the value in the mapper, you must first duplicate the mapper and edit 
     - **In** - Mirrors changes on the ServiceNow ticket in to the Cortex XSOAR ticket.
     - **Out** - Mirrors changes on the Cortex XSOAR ticket to the ServiceNow ticket.
     - **Both** - Mirrors changes both in and out on both tickets.
-13. Set the Timestamp field to query as part of the mirroring flow. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
+13. Set the **Timestamp field to query as part of the mirroring flow**. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
 14. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, and **File Entry Tag** values.  
 These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR, which defines how Cortex XSOAR handles comments when you tag them in the War Room.  
 **Note:**  
@@ -277,10 +279,9 @@ These tags work only for mirroring comments from Cortex XSOAR to ServiceNow.
 **Note:**
 Any modifications require that the mappers be cloned before any changes can be applied.
 
-1. Navigate to **Classification and Mapping** and for **Incidents** search for the **ServiceNow - Incoming Mapper**.
-2. Select it and click **Duplicate**.
-3. Under the **Incident Type** dropdown, select ServiceNow Create Ticket and Mirror.
-4. Verify the mapper has these fields mapped. They will pull the values configured on the integration instance settings at the time of ingestion.
+1. Navigate to **Classification and Mapping** and for **Incidents** search for the **ServiceNow - Incoming Mapper_copy** (or whatever you renamed it).
+2. Under the **Incident Type** dropdown, select the relevant triggering incident type, for example Phishing.
+3. Verify the mapper has these fields mapped. They will pull the values configured on the integration instance settings at the time of ingestion.
   
      ![image](https://raw.githubusercontent.com/demisto/content-docs/ad6522b9c6822f5c4f9798c8aaa1a63c353ddbe3/docs/doc_imgs/snowv2-incoming-mapper.png) 
 
@@ -292,28 +293,41 @@ Any modifications require that the mappers be cloned before any changes can be a
       - To mirror files, use the **ForServiceNow** tag. 
       - To mirror general notes, use the **comments** tag.
       - To mirror private notes that can be read only by users with the necessary permissions, use the **work_notes** tag.
-    - Configure any custom fields you want mapped to Cortex XSOAR. Custom fields start with “u_” and are available for ServiceNow v2 version 2.2.10 and later. These must be added to the integration instance **Custom Fields to Mirror** setting.
+    - Configure any custom fields you want mapped to Cortex XSOAR. Custom fields start with “u_” and are available for ServiceNow v2 version 2.2.10 and later. These must be added to the integration instance **Custom Fields to Mirror** setting.  
+4. Save your changes.
 
-#### STEP 3 - Modify the Outgoing Mapper  
+#### STEP 3 - Modify the Outgoing Mapper for Custom Fields  
 **Note:**  
 Any modifications require that the mappers be cloned before any changes can be applied.
-1. Navigate to **Classification and Mapping**, and for **Incidents** search for the **ServiceNow - Outgoing Mapper.**
-2. Select it and click **Duplicate**.  
-  The left side of the screen shows the ServiceNow fields to which to map and the right side of the
-screen shows the Cortex XSOAR fields by which you are mapping.
-3. Under the **Incident Type** dropdown, select **ServiceNow Ticket**.
-4. Under **Schema Type**, select **incident**. The Schema Type represents the ServiceNow entity that
+1. Navigate to **Classification and Mapping**, and for **Incidents** search for the **ServiceNow - Outgoing Mapper_copy** (or whatever you renamed it).
+2. Under the **Incident Type** dropdown, select **ServiceNow Ticket**.
+3. Under **Schema Type**, select **incident**. The Schema Type represents the ServiceNow entity that
 you are mapping to. In our example it is an incident, but it can also be any other kind of ticket that
 ServiceNow supports.
-5. On the right side of the screen, under **Incident**, select the incident based on which you want to
-match.
-6. Change the mapping according to your needs, including any fields you want mapped outward to ServiceNow and any custom fields. Make sure the custom fields you want mirrored are added to the integration instance settings.
-7. Save your changes.
+4. On the right side of the screen, under **Incident**, select the incident based on which you want to
+match.  
+   The left side of the screen shows the ServiceNow fields to which to map and the right side of the screen shows the Cortex XSOAR fields by which you are mapping.
+5. Change the mapping according to your needs, including any fields you want mapped outward to ServiceNow and any custom fields. Make sure the custom fields you want mirrored are added to the integration instance settings.
+6. Save your changes.
 
 ![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/outgoing-mapper.png)
 
-#### STEP 4 - Create an Incident in ServiceNow  
-For purposes of this use case, it can be a simple incident. The new ticket will be ingested in Cortex XSOAR in approximately one minute.
+#### STEP 4 - Set up Your Source Integration  
+Set up your source integration so that after fetching a trigger incident a ServiceNow ticket is created and mirroring starts.  
+1. Fetch an incident with your chosen integration. For example, for Phishing using any email integration (Gmail, MSGraph, O365).
+2. Classify and map the incident fields.
+3. Create a task in the playbook that creates a ServiceNow ticket followed by a set incident task that starts the mirroring capability.  
+
+Example:
+The following shows the Create New Record playbook task, which creates a ServiceNow ticket.  
+
+![image](https://raw.githubusercontent.com/demisto/content-docs/20d4fb13f3d1c822f3f3be479cc281c45dbc5667/docs/doc_imgs/integrations/snowv2-create-new-record.png)
+
+The Create New Record task is followed by the Set Mirroring Fields task, which starts the mirroring capability.  
+
+![image](https://raw.githubusercontent.com/demisto/content-docs/996d0dbad4430d325e030d7a75251d8d38ca7778/docs/doc_imgs/integrations/snowv2-set-mirroring-fields.png)
+
+The new ServiceNow ticket will be ingested in Cortex XSOAR in approximately one minute.
 
 #### STEP 5 - Add a Note to the Incident in Cortex XSOAR  
 In the example below, we have written *A comment from Cortex XSOAR to ServiceNow*.
@@ -326,7 +340,6 @@ In the example below, we have written *A comment from Cortex XSOAR to ServiceNow
   You can make additional changes like closing the incident or changing severity and those will be reflected in both systems.
 
 ![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png)
-
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
