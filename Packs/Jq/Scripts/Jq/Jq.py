@@ -10,10 +10,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def jq_wrap(json_str, query):
-    if type(json_str) == str:
-        j = json.loads(json_str)
-    else:
-        j = json_str
+    j = json.loads(json_str)
 
     res = pyjq.all(query, j)
     try:
