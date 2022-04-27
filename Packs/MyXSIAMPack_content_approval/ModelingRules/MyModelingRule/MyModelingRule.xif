@@ -1,6 +1,3 @@
-[RULE: map_netork]
+[MODEL: model = Network, dataset = okta_sso_raw]
 alter XDM.Network.Source.ipv4 = client_ip,
       XDM.Network.Source.host.os = os;
-
-[MODEL: model = Network, dataset = okta_sso_raw]
-call map_network;
