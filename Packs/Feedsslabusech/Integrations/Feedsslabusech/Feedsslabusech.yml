@@ -77,7 +77,6 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-  defaultvalue: ""
 - additionalinfo: Time in seconds before http requests timeout.
   defaultvalue: '20'
   display: Request Timeout
