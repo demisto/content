@@ -18,13 +18,24 @@ def main():
     ip_addresses = argToList(demisto.args()['left'])
     cidr_range_list = argToList(demisto.args()['right'])
 
-    for ip in ip_addresses:
-        for cidr in cidr_range_list:
-            if ipaddress.ip_address(ip) in ipaddress.ip_network(cidr):
-                demisto.results(True)
-                return
+    try:
 
-        demisto.results(False)
+        for ip in ip_addresses:
+            not_in_range = True
+
+            for cidr in cidr_range_list:
+
+                if ipaddress.ip_address(ip) in ipaddress.ip_network(cidr):
+                    demisto.results(True)
+                    not_in_range = False
+                    break
+
+            if not_in_range:
+                demisto.results(False)
+
+    except Exception as e:
+
+        return_error(f'Failed to execute IsCIDRInRange. Error: {str(e)}')
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":

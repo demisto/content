@@ -35,7 +35,7 @@ def main():
             demisto.results(is_lower)
 
     except Exception as e:
-        return_error(f'Failed to execute FormatURL. Error: {str(e)}')
+        return_error(f'Failed to execute CIDRBiggerThanPrefix. Error: {str(e)}')
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
