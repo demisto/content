@@ -287,7 +287,12 @@ slack-notify-nightly-build:
     - !reference [.download-demisto-conf]
 
     - section_start "Are there tests to run?"
-    -
+    - |
+      if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
+        # The files are empty.
+        echo "Not running XSIAM instance flow, no tests to run were found."
+        exit $EXIT_CODE
+      fi
     - section_end "Are there tests to run?"
 
     - section_start "Lock XSIAM Machine"
@@ -322,10 +327,13 @@ slack-notify-nightly-build:
     - section_end "Run Tests"
     - exit $EXIT_CODE
   after_script:
-    - echo "Job finished, removing lock file"
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_JOB_ID"
-    - echo "Finished removing lock file"
+    - |
+      if ! [ -z "$XSIAM_CHOSEN_MACHINE_ID" ] then
+        echo "Job finished, removing lock file"
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+        gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_JOB_ID"
+        echo "Finished removing lock file"
+      fi
 
 
 xsiam_server_master:
