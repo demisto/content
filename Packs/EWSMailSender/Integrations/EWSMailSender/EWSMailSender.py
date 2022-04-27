@@ -196,6 +196,7 @@ def collect_manual_attachments(manualAttachObj):
 
 
 def get_none_empty_addresses(addresses_str):
+    demisto.debug(addresses_str)
     return list(filter(None, addresses_str.split(",")))
 
 
