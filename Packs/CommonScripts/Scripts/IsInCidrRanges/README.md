@@ -1,4 +1,5 @@
-Determines whether an IPv4 address is contained in one or more comma-delimited CIDR ranges.
+Determines whether an IPv4 address is in part of at least one of the comma-delimited CIDR ranges given. Multiple IPv4
+addresses can be passed as comma-delimited list to be checked.
 
 ## Script Data
 
