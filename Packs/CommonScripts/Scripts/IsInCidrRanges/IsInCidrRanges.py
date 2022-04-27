@@ -21,17 +21,9 @@ def main():
     try:
 
         for ip in ip_addresses:
-            not_in_range = True
+            in_range = any(ipaddress.ip_address(ip) in ipaddress.ip_network(cidr) for cidr in cidr_range_list)
 
-            for cidr in cidr_range_list:
-
-                if ipaddress.ip_address(ip) in ipaddress.ip_network(cidr):
-                    demisto.results(True)
-                    not_in_range = False
-                    break
-
-            if not_in_range:
-                demisto.results(False)
+            demisto.results(in_range)
 
     except Exception as e:
 
