@@ -1,0 +1,16 @@
+!cloudflare-waf-firewall-rule-create action="allow" filter_expression="(ip.src eq 181.18.9.11)"
+!cloudflare-waf-firewall-rule-update id="45fe5e52c3fd439f8b261f6e8bf2896a" action="block" filter_id="c8bf98553afd4522bde108f600d8a794"
+!cloudflare-waf-firewall-rule-delete id="45fe5e52c3fd439f8b261f6e8bf2896a"
+!cloudflare-waf-firewall-rule-list
+!cloudflare-waf-zone-list
+!cloudflare-waf-filter-create expression="(ip.src eq 181.18.9.11)"
+!cloudflare-waf-filter-update id="c8bf98553afd4522bde108f600d8a794" expression="(ip.src eq 181.18.9.11)"
+!cloudflare-waf-filter-delete filter_id="c8bf98553afd4522bde108f600d8a794"
+!cloudflare-waf-filter-list
+!cloudflare-waf-ip-list-create name="list_name"
+!cloudflare-waf-ip-list-delete id="dd7e3f1f5edf4591acb22f20da320b8f"	
+!cloudflare-waf-ip-lists-list
+!cloudflare-waf-ip-list-item-create list_id="dd7e3f1f5edf4591acb22f20da320b8f" items="199.9.9.9,188.8.8.8"
+!cloudflare-waf-ip-list-item-update list_id="dd7e3f1f5edf4591acb22f20da320b8f" items="199.9.9.9,188.8.8.8"
+!cloudflare-waf-ip-list-item-delete list_id="dd7e3f1f5edf4591acb22f20da320b8f" items_id="0605fb9430d542a48a8ab7627058271a"
+!cloudflare-waf-ip-list-item-list

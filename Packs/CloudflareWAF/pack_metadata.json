@@ -1,0 +1,15 @@
+{
+    "name": "Cloudflare WAF",
+    "description": "Use Cloudflare WAF to manage firewall rules, filters, and IP-lists.",
+    "support": "xsoar",
+    "currentVersion": "4",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

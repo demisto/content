@@ -1,0 +1,12 @@
+{
+    "result": [
+        {
+            "id": "a9006dcdb500408fa99816c4e0472867",
+            "paused": false,
+            "expression": "(ip.src eq 131.55.4.6)"
+        }
+    ],
+    "success": true,
+    "errors": [],
+    "messages": []
+}
