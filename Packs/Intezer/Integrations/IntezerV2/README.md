@@ -244,26 +244,31 @@ Check the analysis status and get analysis result, support file and endpoint ana
 `intezer-get-analysis-result`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| analysis_id | The analysis ID we want to get results for. | Optional | 
-| analysis_type | The type of the analysis. Possible values are: File, Endpoint. Default is File. | Optional | 
-| indicator_name | indicator to classify. | Optional | 
+| **Argument Name** | **Description**                                                                      | **Required** |
+| --- |--------------------------------------------------------------------------------------| --- |
+| analysis_id | The analysis ID we want to get results for.                                          | Optional | 
+| analysis_type | The type of the analysis. Possible values are: File, Endpoint, Url. Default is File. | Optional | 
+| indicator_name | indicator to classify.                                                               | Optional | 
 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| File.SHA256 | string | Hash SHA256 | 
+| **Path**             | **Type** | **Description** |
+|----------------------| --- | --- |
+| DBotScore.Indicator  | string | The indicator we tested | 
+| DBotScore.Type       | string | The type of the indicator | 
+| DBotScore.Vendor     | string | Vendor used to calculate the score | 
+| DBotScore.Score      | number | The actual score |
+| File.SHA256          | string | Hash SHA256 | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision | 
-| DBotScore.Indicator | string | The indicator we tested | 
-| DBotScore.Type | string | The type of the indicator | 
-| DBotScore.Vendor | string | Vendor used to calculate the score | 
-| DBotScore.Score | number | The actual score | 
-| File.Metadata | Unknown | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metedata will be retuned only for supported files. | 
-| Endpoint.Metadata | Unknown | Metadata returned from Intezer analysis \(endpoint analysis id, endpoint analysis url, families,  verdict, host_name\) | 
-| File.ExistsInIntezer | Boolean | Does the file exists on intezer genome database | 
+| File.Metadata        | Unknown | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metedata will be retuned only for supported files. | 
+| File.ExistsInIntezer | Boolean | Does the file exists on intezer genome database |
+| Url.URL              | string | The submitted Url | 
+| Url.Malicious.Vendor | string | For malicious Url, the vendor that made the decision | 
+| Url.Metadata        | Unknown | Metadata returned from Intezer analysis | 
+| Url.ExistsInIntezer | Boolean | Does the url exists on intezer |
+| Endpoint.Metadata    | Unknown | Metadata returned from Intezer analysis \(endpoint analysis id, endpoint analysis url, families,  verdict, host_name\) | 
+
 
 
 #### Command Example
