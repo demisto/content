@@ -1,0 +1,17 @@
+{
+  "data": [
+    {
+      "alias": "some_alias_0",
+      "type": "service_type_0"
+    },
+    {
+      "alias": "some_alias_1",
+      "type": "service_type_1"
+    },
+    {
+      "alias" : "some_alias_2",
+      "type" : "service_type_2"
+    }
+  ],
+  "success": true
+}
