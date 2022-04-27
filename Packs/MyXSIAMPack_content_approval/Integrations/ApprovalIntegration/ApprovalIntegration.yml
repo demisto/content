@@ -29,7 +29,7 @@ configuration:
   type: 19
   required: false
 script:
-  script: ''
+  script: 'a'
   type: python
   dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
