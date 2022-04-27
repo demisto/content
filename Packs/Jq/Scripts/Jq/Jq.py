@@ -13,11 +13,9 @@ def jq_wrap(json_str, query):
     j = json.loads(json_str)
 
     res = pyjq.all(query, j)
-    try:
-        demisto.executeCommand('Set', {'key': 'jq.result', 'value': res})
-    except:
-        pass  # ignore issue when can't set context - script executed as transform script
-    return_results(res)
+    cmd_res = demisto.executeCommand('Set', {'key': 'jq.result', 'value': res})
+    if not is_error(cmd_res):
+        return_results(res)
 
 
 def main():
