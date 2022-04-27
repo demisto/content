@@ -493,7 +493,10 @@ def list_tests_by_assessment_command():
         'page_size': page_size,
         'page': page
     }
-    raw_res = list_tests_by_assessment(params)
+    # raw_res = list_tests_by_assessment(params)
+
+    raw_res = json.loads('{"count":4,"next":null,"previous":null,"results":[{"created":"2022-04-11T08:38:19.523034Z","cron_expression":null,"description":null,"id":"c8bf16dc-5bf4-495d-b919-9076b47c3624","insights":{"asset":[],"count":0,"errors":[],"scenario":[],"test":[]},"modified":"2022-04-11T08:40:11.946205Z","name":"Disable Defender","order":4,"project":"593a687d-f737-4985-a4ae-2126684824eb","runnable":true,"scheduled_count":0,"using_default_assets":true,"using_default_schedule":true},{"created":"2022-04-11T08:37:48.351356Z","cron_expression":null,"description":null,"id":"1413efed-2e38-4fa2-823b-6527e4bbd79f","insights":{"asset":[],"count":0,"errors":[],"scenario":[],"test":[]},"modified":"2022-04-11T08:38:11.392311Z","name":"Sample analysis evaluation","order":3,"project":"593a687d-f737-4985-a4ae-2126684824eb","runnable":true,"scheduled_count":0,"using_default_assets":true,"using_default_schedule":true},{"created":"2022-04-11T08:37:48.875786Z","cron_expression":null,"description":null,"id":"c1b41f5c-c1c2-4a4c-83bc-910daaa27385","insights":{"asset":[],"count":0,"errors":[],"scenario":[],"test":[]},"modified":"2022-04-11T08:38:11.378630Z","name":"Behavioral detection evaluation","order":2,"project":"593a687d-f737-4985-a4ae-2126684824eb","runnable":true,"scheduled_count":0,"using_default_assets":true,"using_default_schedule":true},{"created":"2022-04-11T08:37:49.525028Z","cron_expression":null,"description":null,"id":"b8790b1d-7302-4e9b-8667-e32f53f4223a","insights":{"asset":[],"count":0,"errors":[],"scenario":[],"test":[]},"modified":"2022-04-11T08:38:11.363822Z","name":"Behavioral prevention evaluation","order":1,"project":"593a687d-f737-4985-a4ae-2126684824eb","runnable":true,"scheduled_count":0,"using_default_assets":true,"using_default_schedule":true}]}')
+
     test_cnt = raw_res.get('count')
     if test_cnt == 0:
         return_outputs('No results were found', {})
