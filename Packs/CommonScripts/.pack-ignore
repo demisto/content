@@ -71,3 +71,6 @@ ignore=SC106
 UnzipFile
 ZipStrings
 ExtractInbetween
+TLDs
+ParseEmailFiles
+ParseEmailFilesV2
