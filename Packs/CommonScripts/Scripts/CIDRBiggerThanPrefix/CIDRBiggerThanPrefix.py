@@ -16,9 +16,7 @@ def cidr_network_addresses_lower_from_const(ip_cidr: str, max_prefix: int) -> bo
     """
 
     ip_cidr_obj = ipaddress.ip_network(address=ip_cidr, strict=False)
-    if ip_cidr_obj.prefixlen < max_prefix:
-        return True
-    return False
+    return ip_cidr_obj.prefixlen < max_prefix
 
 
 def main():
