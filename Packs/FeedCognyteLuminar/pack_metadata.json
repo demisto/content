@@ -1,6 +1,6 @@
 {
     "name": "Luminar IOCs & leaked credentials",
-    "description": "This connecter allows integration of intelligence-based IOC data and customer-related leaked records identified by Luminar",
+    "description": "This connector allows integration of intelligence-based IOC data and customer-related leaked records identified by Luminar",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Cognyte",
