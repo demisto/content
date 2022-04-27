@@ -98,7 +98,14 @@ Converts the body of an email to an image file or a PDF file.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | File entry ID. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE" | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. | 
 
 #### Command Example
 ```!rasterize-email htmlBody="<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"></head><body><br>---------- TEST FILE ----------<br></body></html>"```
@@ -142,7 +149,14 @@ Converts an image file to a PDF file.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | File entry ID. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE" | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. |
 
 #### Command Example
 ```!rasterize-image EntryID=889@6e069bc4-2a1e-43ea-8ed3-ea558e377751```
@@ -186,7 +200,14 @@ Converts a PDF file to an image file.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | File entry ID. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE" | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. |
 
 #### Command Example
 ```!rasterize-pdf EntryID=897@6e069bc4-2a1e-43ea-8ed3-ea558e377751```
@@ -230,7 +251,14 @@ Converts an html file to a PDF or PNG file.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | File entry ID. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE" | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. |
 
 #### Command Example
 ```!rasterize-html EntryID=889@6e069bc4-2a1e-43ea-8ed3-ea558e4586751```

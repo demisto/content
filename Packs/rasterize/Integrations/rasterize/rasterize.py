@@ -9,9 +9,9 @@ from selenium.common.exceptions import NoSuchElementException, InvalidArgumentEx
 from PyPDF2 import PdfFileReader
 from pdf2image import convert_from_path
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image  # , ImageDraw
 import tempfile
-from io import BytesIO
+# from io import BytesIO
 import base64
 import time
 import subprocess
@@ -239,7 +239,9 @@ def get_image(driver, width: int, height: int, include_url: bool):
     #     # driver.set_window_size(size['width'], size['height'])
     #     # image = temp.tobytes("hex", "rgb")
     # else:
-        # Set windows size
+
+    # Set windows size
+
     driver.set_window_size(width, height)
 
     image = driver.get_screenshot_as_png()
