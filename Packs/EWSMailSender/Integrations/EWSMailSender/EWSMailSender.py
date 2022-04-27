@@ -195,13 +195,17 @@ def collect_manual_attachments(manualAttachObj):
     return attachments
 
 
+def get_none_empty_addresses(addresses_str):
+    return list(filter(None, addresses_str.split(",")))
+
+
 def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", from_mailbox=None, manualAttachObj=None,
                raw_message=None, from_address=None):
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
-    bcc = bcc.split(",") if bcc else None
-    cc = cc.split(",") if cc else None
-    to = to.split(",") if to else None
+    bcc = get_none_empty_addresses(bcc) if bcc else None
+    cc = get_none_empty_addresses(cc) if cc else None
+    to = get_none_empty_addresses(to) if to else None
     manualAttachObj = manualAttachObj if manualAttachObj is not None else []
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
