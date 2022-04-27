@@ -1,0 +1,21 @@
+args:
+- description: The TIR ID
+  name: tir_id
+  required: true
+commonfields:
+  id: 49799aa2-4ca3-4cf2-87d5-41956e567e8b
+  version: -1
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: GetTIRDataForShare
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- threatIntelReport-action-button
+type: python

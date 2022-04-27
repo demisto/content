@@ -1,0 +1,16 @@
+{
+    "color": "#FD5BDE",
+    "definitionId": "ThreatIntelReport",
+    "detached": false,
+    "disabled": false,
+    "fromServerVersion": "",
+    "id": "ThreatIntelReport_MISP",
+    "itemVersion": "",
+    "layout": "6c0bcb9a-ce52-4ded-89fb-7835184252ec",
+    "locked": false,
+    "name": "MISP",
+    "packID": "",
+    "system": false,
+    "toServerVersion": "",
+    "version": -1
+}

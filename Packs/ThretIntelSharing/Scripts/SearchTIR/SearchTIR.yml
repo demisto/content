@@ -1,0 +1,19 @@
+args:
+- description: The TIR ID
+  name: id
+commonfields:
+  id: 6bf18cc0-d3d7-4c1a-8dc5-b564fade30e0
+  version: -1
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: SearchTIR
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python

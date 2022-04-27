@@ -1,0 +1,20 @@
+args:
+- description: string represents the tir data
+  name: tir_data
+  required: true
+commonfields:
+  id: 2a8aa805-7177-4582-87fb-b30cb789d818
+  version: -1
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: CreateTIRFromPubSub
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python

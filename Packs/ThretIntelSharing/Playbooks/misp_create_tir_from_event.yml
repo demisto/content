@@ -1,0 +1,189 @@
+id: 8e05d411-11ef-4e68-832c-17e1f44ce99c
+inputs:
+- description: The MISP event id to create TIR from.
+  key: event_id
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "527"
+name: misp_create_tir_from_event
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c8c005a1-2e34-4b15-8eb5-00da6c21fe42
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: c8c005a1-2e34-4b15-8eb5-00da6c21fe42
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      event_id:
+        simple: ${inputs.event_id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Create a TIR fron a MISP event
+      id: f5c2bb96-34ef-4199-85ae-d50a709b2703
+      iscommand: true
+      name: Create TIR data from MISP event
+      script: '|||misp-create-tir-from-event'
+      type: regular
+      version: -1
+    taskid: f5c2bb96-34ef-4199-85ae-d50a709b2703
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      tir_data:
+        complex:
+          accessor: TIR}
+          root: ${MISP
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1e1f7baf-f040-4b37-8eb8-e2ac32838d99
+      iscommand: false
+      name: Create TIR
+      script: 2a8aa805-7177-4582-87fb-b30cb789d818
+      type: regular
+      version: -1
+    taskid: 1e1f7baf-f040-4b37-8eb8-e2ac32838d99
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ab4a2f8a-e05f-449a-8d60-18d3df3ca1e1
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: ab4a2f8a-e05f-449a-8d60-18d3df3ca1e1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      id: 1bcaf8df-2d44-44fe-81a6-45bd79479dbf
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 1bcaf8df-2d44-44fe-81a6-45bd79479dbf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
