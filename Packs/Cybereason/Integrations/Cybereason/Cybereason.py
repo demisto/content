@@ -8,11 +8,6 @@ import json
 from datetime import datetime, timedelta
 import time
 import re
-import sys
-
-# Define utf8 as default encoding
-reload(sys)
-sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
 
 if not demisto.getParam('proxy'):
     del os.environ['HTTP_PROXY']
@@ -157,8 +152,8 @@ def update_output(output, simple_values, element_values, info_dict):
             output[info['header']] = dict_safe_get(element_values, [info.get('field'), 'elementValues', 0, 'name'])
 
         elif info_type == 'time':
-            time_stamp_str = dict_safe_get(simple_values, [info.get('field'), 'values', 0], default_return_value=u'',
-                                           return_type=unicode)
+            time_stamp_str = dict_safe_get(simple_values, [info.get('field'), 'values', 0], default_return_value='',
+                                           return_type=str)
             output[info['header']] = translate_timestamp(time_stamp_str) if time_stamp_str else ''
 
     return output
@@ -178,7 +173,7 @@ def get_pylum_id(machine):
     json_body = build_query(query_fields, path)
     response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
     data = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
-    pylum_id = dict_safe_get(data.values(), [0, 'simpleValues', 'pylumId', 'values', 0])
+    pylum_id = dict_safe_get(list(data.values()), [0, 'simpleValues', 'pylumId', 'values', 0])
     if not pylum_id:
         raise ValueError('Could not find machine')
 
@@ -200,7 +195,7 @@ def get_machine_guid(machine_name):
     response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
     data = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
 
-    return dict_safe_get(data.keys(), [0])
+    return dict_safe_get(list(data.keys()), [0])
 
 
 ''' FUNCTIONS '''
@@ -214,9 +209,9 @@ def is_probe_connected_command(is_remediation_commmand=False):
 
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
 
-    for value in elements.values():
+    for value in list(elements.values()):
         machine_name = dict_safe_get(value, ['simpleValues', 'elementDisplayName', 'values', 0],
-                                     default_return_value=u'', return_type=unicode)
+                                     default_return_value='', return_type=str)
         if machine_name.upper() == machine.upper():
             is_connected = True
             break
@@ -274,7 +269,7 @@ def query_processes_command():
                                privileges_escalation, maclicious_psexec)
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
     outputs = []
-    for item in elements.values():
+    for item in list(elements.values()):
         if not isinstance(item, dict):
             raise ValueError("Cybereason raw response is not valid, item in elements is not a dict")
 
@@ -292,7 +287,7 @@ def query_processes_command():
     context = []
     for output in outputs:
         # Remove whitespaces from dictionary keys
-        context.append({key.translate(None, ' '): value for key, value in output.iteritems()})
+        context.append({key.translate({32: None}): value for key, value in output.items()})
 
     ec = {
         'Process': context
@@ -381,7 +376,7 @@ def query_connections_command():
         elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
         outputs = []
 
-        for item in elements.values():
+        for item in list(elements.values()):
             simple_values = dict_safe_get(item, ['simpleValues'], default_return_value={}, return_type=dict)
             element_values = dict_safe_get(item, ['elementValues'], default_return_value={}, return_type=dict)
 
@@ -391,7 +386,7 @@ def query_connections_command():
         context = []
         for output in outputs:
             # Remove whitespaces from dictionary keys
-            context.append({key.translate(None, ' '): value for key, value in output.iteritems()})
+            context.append({key.translate({32: None}): value for key, value in output.items()})
 
         ec = {
             'Connection': context
@@ -480,20 +475,20 @@ def query_malops_command():
         if not data or not malops_map:
             continue
 
-        for guid, malop in malops_map.iteritems():
+        for guid, malop in malops_map.items():
             simple_values = dict_safe_get(malop, ['simpleValues'], {}, dict)
             management_status = dict_safe_get(simple_values, ['managementStatus', 'values', 0],
-                                              default_return_value=u'',
-                                              return_type=unicode)
+                                              default_return_value='',
+                                              return_type=str)
 
-            if management_status.upper() == u'CLOSED':
+            if management_status.upper() == 'CLOSED':
                 continue
 
             creation_time = translate_timestamp(dict_safe_get(simple_values, ['creationTime', 'values', 0]))
             malop_last_update_time = translate_timestamp(
                 dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0]))
             raw_decision_failure = dict_safe_get(simple_values, ['decisionFeature', 'values', 0],
-                                                 default_return_value=u'', return_type=unicode)
+                                                 default_return_value='', return_type=str)
             decision_failure = raw_decision_failure.replace('Process.', '')
             raw_suspects = dict_safe_get(malop, ['elementValues', 'suspects'], default_return_value={},
                                          return_type=dict)
@@ -654,7 +649,7 @@ def malop_processes_command():
     malop_guids = demisto.getArg('malopGuids')
     machine_name = demisto.getArg('machineName')
 
-    if isinstance(malop_guids, unicode):
+    if isinstance(malop_guids, str):
         malop_guids = malop_guids.split(',')
     elif not isinstance(malop_guids, list):
         raise Exception('malopGuids must be array of strings')
@@ -665,7 +660,7 @@ def malop_processes_command():
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
     outputs = []
 
-    for item in elements.values():
+    for item in list(elements.values()):
         simple_values = dict_safe_get(item, ['simpleValues'], default_return_value={}, return_type=dict)
         element_values = dict_safe_get(item, ['elementValues'], default_return_value={}, return_type=dict)
 
@@ -693,7 +688,7 @@ def malop_processes_command():
     context = []
     for output in outputs:
         # Remove whitespaces from dictionary keys
-        context.append({key.translate(None, ' '): value for key, value in output.iteritems()})
+        context.append({key.translate({32: None}): value for key, value in output.items()})
 
     ec = {
         'Process': context
@@ -1085,10 +1080,10 @@ def query_file_command():
             file_outputs = []
             endpoint_outputs = []
             files = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
-            for fname, fstat in files.iteritems():
+            for fname, fstat in files.items():
                 raw_machine_details = dict_safe_get(get_file_machine_details(fname), ['data', 'resultIdToElementDataMap'],
                                                     default_return_value={}, return_type=dict)
-                machine_details = dict_safe_get(raw_machine_details, dict_safe_get(raw_machine_details.keys(), [0]),
+                machine_details = dict_safe_get(raw_machine_details, dict_safe_get(list(raw_machine_details.keys()), [0]),
                                                 default_return_value={}, return_type=dict)
                 simple_values = dict_safe_get(fstat, ['simpleValues'], default_return_value={}, return_type=dict)
                 file_name = dict_safe_get(simple_values, ['elementDisplayName', 'values', 0])
@@ -1106,14 +1101,14 @@ def query_file_command():
                 raw_suspicions = dict_safe_get(machine_details, ['suspicions'], default_return_value={}, return_type=dict)
 
                 suspicions = {}
-                for key, value in raw_suspicions.iteritems():
+                for key, value in raw_suspicions.items():
                     suspicions[key] = timestamp_to_datestring(value)
 
                 evidences = []
-                for key in machine_element_values.keys():
+                for key in list(machine_element_values.keys()):
                     if 'evidence' in key.lower():
                         evidences.append(key)
-                for key in machine_simple_values.keys():
+                for key in list(machine_simple_values.keys()):
                     if 'evidence' in key.lower():
                         evidences.append(key)
 
@@ -1239,7 +1234,7 @@ def query_domain_command():
             cybereason_outputs = []
             domain_outputs = []
             domains = dict_safe_get(data, ['resultIdToElementDataMap'], default_return_value={}, return_type=dict)
-            for domain in domains.values():
+            for domain in list(domains.values()):
                 if not isinstance(domain, dict):
                     raise ValueError("Cybereason raw response is not valid, domain in domains.values() is not dict")
 
@@ -1319,7 +1314,7 @@ def query_user_command():
             cybereason_outputs = []
             users = dict_safe_get(data, ['resultIdToElementDataMap'], default_return_value={}, return_type=dict)
 
-            for user in users.values():
+            for user in list(users.values()):
                 simple_values = dict_safe_get(user, ['simpleValues'], default_return_value={}, return_type=dict)
                 element_values = dict_safe_get(user, ['elementValues'], default_return_value={}, return_type=dict)
 
@@ -1499,7 +1494,7 @@ def fetch_incidents():
         malops = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={},
                                return_type=dict)
 
-        for malop in malops.values():
+        for malop in list(malops.values()):
             simple_values = dict_safe_get(malop, ['simpleValues'], default_return_value={}, return_type=dict)
             simple_values.pop('iconBase64', None)
             simple_values.pop('malopActivityTypes', None)
@@ -1641,7 +1636,7 @@ def fetch_imagefile_guids(processes):
     img_file_guids = dict()
     result = response['data']['resultIdToElementDataMap']
     try:
-        for process, details in result.items():
+        for process, details in list(result.items()):
             image_files= ('' if details['elementValues']['imageFile']['elementValues'] is None else details['elementValues']['imageFile']['elementValues'])           
             for image_file in image_files:
                 img_file_guids[image_file['name']] = image_file['guid']
@@ -1654,7 +1649,7 @@ def start_fetchfile_command():
     malop_id = demisto.getArg('malopGUID')
     user_name = demisto.getArg('userName')
     response = get_file_guids(malop_id)
-    for filename, file_guid in response.items():
+    for filename, file_guid in list(response.items()):
         resp = start_fetchfile(file_guid, user_name)
         try:
             if resp['status'] == "SUCCESS":
@@ -1709,14 +1704,14 @@ def get_batch_id(suspect_files_guids, timeout_seconds, interval_seconds):
     while passed_seconds > 0:
         result = progress_response
         for file_status in result['data']:
-            if file_status['fileName'] in suspect_files_guids.keys() and file_status['succeeded'] == True:
+            if file_status['fileName'] in list(suspect_files_guids.keys()) and file_status['succeeded'] == True:
                 batch_id = file_status['batchId']
                 file_name = file_status['fileName']
                 new_malop_comments.append({ "isSuccess": True, "message": batch_id, "name": file_name})
                 del suspect_files_guids[file_status['fileName']]
         time.sleep(interval_seconds) # Sleep for 10 seconds before next call
         passed_seconds = passed_seconds - interval_seconds
-    for suspect_file in suspect_files_guids.keys():
+    for suspect_file in list(suspect_files_guids.keys()):
         malop_comment = "Could not download the file {} from source machine, even after waiting for {} seconds.".format(suspect_file, timeout_seconds)
         new_malop_comments.append({ "isSuccess": False, "message": malop_comment})
     return new_malop_comments
@@ -1916,3 +1911,4 @@ def main():
 
 if __name__ in ('__builtin__', 'builtins'):
     main()
+
