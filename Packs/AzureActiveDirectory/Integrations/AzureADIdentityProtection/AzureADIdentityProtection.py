@@ -14,6 +14,7 @@ OUTPUTS_PREFIX = "AADIdentityProtection"
 BASE_URL = 'https://graph.microsoft.com/beta'
 REQUIRED_PERMISSIONS = (
     'offline_access',  # allows device-flow login
+    'https://graph.microsoft.com/.default',
     'IdentityRiskEvent.Read.All',
     'IdentityRiskyUser.ReadWrite.All'
 )
@@ -73,22 +74,28 @@ def parse_list(raw_response: dict, human_readable_title: str, context_path: str)
 
 
 class AADClient(MicrosoftClient):
-    def __init__(self, app_id: str, subscription_id: str, verify: bool, proxy: bool, azure_ad_endpoint: str):
+    def __init__(self, app_id: str, subscription_id: str, verify: bool, proxy: bool, azure_ad_endpoint: str,
+                 tenant_id: str = None, enc_key: str = None, client_credentials: bool = False):
         if '@' in app_id:  # for use in test-playbook
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
+        self.client_credentials = client_credentials
         super().__init__(azure_ad_endpoint=azure_ad_endpoint,
                          self_deployed=True,
-                         auth_id=app_id,
-                         grant_type=DEVICE_CODE,
+                         auth_id=app_id,  # client id
+                         grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
                          base_url=BASE_URL,
-                         token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+                         token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token'  # type: ignore
+                         if not client_credentials else None,
                          verify=verify,
                          proxy=proxy,
-                         scope=' '.join(REQUIRED_PERMISSIONS))
+                         scope=' '.join(REQUIRED_PERMISSIONS),
+                         tenant_id=tenant_id,  # type: ignore
+                         enc_key=enc_key  # client secret
+                         )
 
         self.subscription_id = subscription_id
 
@@ -387,7 +394,10 @@ def main() -> None:
             subscription_id=params.get('subscription_id', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
-            azure_ad_endpoint=params.get('azure_ad_endpoint', 'https://login.microsoftonline.com')
+            azure_ad_endpoint=params.get('azure_ad_endpoint', 'https://login.microsoftonline.com'),
+            tenant_id=params.get("tenant_id"),
+            client_credentials=params.get("client_credentials", False),
+            enc_key=(params.get('credentials') or {}).get('password')
         )
 
         # auth commands

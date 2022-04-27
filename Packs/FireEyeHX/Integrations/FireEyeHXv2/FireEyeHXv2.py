@@ -2712,6 +2712,7 @@ def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[Comm
             ))
 
     if 'stopSearch' in args:
+        message = ''
         try:
             if args.get('stopSearch') == 'stop':
                 message = 'Failed to stop search'
