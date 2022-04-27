@@ -898,4 +898,4 @@ tests:
 - Retrieve File from Endpoint - Generic V2 Test
 - Isolate and unisolate endpoint - test
 - Block IP - Generic V3_Test
-fromversion: 6.0.0
+fromversion: 6.2.0
