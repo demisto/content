@@ -19,13 +19,18 @@ def main():
     internal_domains = argToList(demisto.args()['right'])
     domains = argToList(demisto.args()['left'])
 
-    no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=None)
+    try:
 
-    for domain in domains:
-        ext = no_fetch_extract(domain)
-        top_domain_found = any(ext.registered_domain == internal_domain.replace('*.', '') for internal_domain in internal_domains)
+        no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=None)
 
-        demisto.results(top_domain_found)
+        for domain in domains:
+            ext = no_fetch_extract(domain)
+            top_domain_found = any(ext.registered_domain == internal_domain.replace('*.', '') for internal_domain in internal_domains)
+
+            demisto.results(top_domain_found)
+
+    except Exception as e:
+        return_error(f'Failed to execute CheckIfSubdomain. Error: {str(e)}')
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
