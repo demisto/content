@@ -920,6 +920,7 @@ Search for records inside the given application
 | --- | --- | --- |
 | applicationId | The ID of the application in which to search for records. | Required | 
 | fieldToSearchOn | The name of the field on which to search. Leave empty to search on all fields. | Optional | 
+| fieldToSearchById | The name of the primary Id field on which to search. Used instead of the fieldToSearchOn argument for searching by the application primary field. | Optional | 
 | searchValue | Search value. Leave empty to search for all. | Optional | 
 | maxResults | Maximum number of results to return from the search (default is 10). | Optional | 
 | fieldsToDisplay | Fields to present in the search results in array format. For example, "Title,Incident Summary". | Optional | 

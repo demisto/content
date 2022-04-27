@@ -3,3 +3,6 @@ ignore=PB115
 
 [file:PingCastle.yml]
 ignore=IN145
+
+[file:PingCastle_image.png]
+ignore=IM111

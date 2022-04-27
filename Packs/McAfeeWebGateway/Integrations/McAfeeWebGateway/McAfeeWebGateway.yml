@@ -1,0 +1,123 @@
+commonfields:
+  id: McAfee Web Gateway
+  version: -1
+name: McAfee Web Gateway
+display: McAfee Web Gateway
+category: IT Services
+description: Block list/Allow list handling
+configuration:
+- display: Server URL (e.g. https://192.168.100.55)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Server Port
+  name: port
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: mwg-get-available-lists
+    arguments: []
+    outputs:
+    - contextPath: MWG.Lists.ID
+      description: List ID
+    - contextPath: MWG.Lists.Index
+      description: List Index
+    description: Get all available lists
+  - name: mwg-get-list
+    arguments:
+    - name: list_id
+      required: true
+      default: true
+      description: List ID
+    outputs:
+    - contextPath: MWG.ListEntries.ListID
+      description: List ID of entry's list
+    - contextPath: MWG.ListEntries.Name
+      description: Entry name
+    - contextPath: MWG.ListEntries.Description
+      description: Entry Description
+    - contextPath: MWG.ListEntries.Position
+      description: Entry position in list
+    - contextPath: MWG.Lists.ID
+      description: List ID
+    - contextPath: MWG.Lists.Name
+      description: List Name
+    - contextPath: MWG.Lists.Type
+      description: List Type
+    - contextPath: MWG.Lists.Description
+      description: List Description
+    description: Retrieve a specific list
+  - name: mwg-get-list-entry
+    arguments:
+    - name: list_id
+      required: true
+      description: List ID
+    - name: entry_pos
+      required: true
+      description: Entry Position in table
+    outputs:
+    - contextPath: MWG.ListEntries.ListID
+      description: List ID of entry's list
+    - contextPath: MWG.ListEntries.Name
+      description: Entry name
+    - contextPath: MWG.ListEntries.Description
+      description: Entry Description
+    - contextPath: MWG.List.Entries.Position
+      description: Entry position in list
+    description: Retrieve a specific entry from a list
+  - name: mwg-insert-entry
+    arguments:
+    - name: list_id
+      required: true
+      description: List ID
+    - name: name
+      required: true
+      description: Entry Name
+    - name: entry_pos
+      required: true
+      description: Entry Position in table
+    - name: description
+      description: Entry description
+    outputs:
+    - contextPath: MWG.ListEntries.ListID
+      description: List ID of entry's list
+    - contextPath: MWG.ListEntries.Name
+      description: Entry name
+    - contextPath: MWG.ListEntries.Description
+      description: Entry Description
+    - contextPath: MWG.List.Entries.Position
+      description: Entry position in list
+    description: Insert a new entry to a list
+  - name: mwg-delete-entry
+    arguments:
+    - name: list_id
+      required: true
+      description: List ID
+    - name: entry_pos
+      required: true
+      description: Entry Position in table
+    description: Delete an entry from a list
+  runonce: false
+tests:
+- McAfeeWebGatewayTest
+fromversion: 5.0.0

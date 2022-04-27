@@ -17,7 +17,6 @@ The collections are defined by a JSON object in the following format:
 }
 ```
 You can add a collection description as is done in `collection1_name`, or enter only a collection query, as in `collection2_name`.
-a
 
 ## How to Access the TAXII2 Server
 

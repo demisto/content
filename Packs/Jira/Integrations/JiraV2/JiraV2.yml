@@ -145,6 +145,12 @@ script:
       name: headers
       required: false
       secret: false
+    - default: false
+      description: Specify the result fields.
+      isArray: false
+      name: extraFields
+      required: false
+      secret: false
     deprecated: false
     description: Queries Jira issues.
     execution: false

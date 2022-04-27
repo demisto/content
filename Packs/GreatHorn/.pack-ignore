@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:GreatHorn.yml]
 ignore=IN145
+
+[file:GreatHorn_image.png]
+ignore=IM111

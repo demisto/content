@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:AzureLogAnalytics.yml]
 ignore=IN145
+
+[file:AzureLogAnalytics_image.png]
+ignore=IM111

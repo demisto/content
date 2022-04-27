@@ -36,6 +36,7 @@ ERROR_CODES_DICT = {
     409: 'Request could not be processed because of possible edit conflict occurred. Another admin might be saving a '
          'configuration change at the same time. In this scenario, the client is expected to retry after a short '
          'time period.',
+    406: 'Not Acceptable',
     415: 'Unsupported media type.',
     429: 'Exceeded the rate limit or quota.',
     500: 'Unexpected error',
@@ -98,7 +99,10 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
                 raise Exception('Bad request, This could be due to reaching your organizations quota.'
                                 ' For more info about your quota usage, run the command zscaler-url-quota.')
             else:
-                raise Exception('Your request failed with the following error: ' + ERROR_CODES_DICT[res.status_code])
+                if res.status_code in ERROR_CODES_DICT:
+                    raise Exception('Your request failed with the following error: {}'.format(ERROR_CODES_DICT[res.status_code]))
+                else:
+                    raise Exception('Your request failed with the following error: {}'.format(res.status_code))
     except Exception as e:
         LOG('Zscaler request failed with url={url}\tdata={data}'.format(url=url, data=data))
         LOG(e)

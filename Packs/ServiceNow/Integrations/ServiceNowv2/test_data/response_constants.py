@@ -89,6 +89,9 @@ RESPONSE_TICKET_MIRROR = {'result': [{
     }]
 }
 
+USER_RESPONSE = {
+    'result': {'first_name': 'Oscar', 'email': 'oscar@example.com'}}
+
 
 RESPONSE_CLOSING_TICKET_MIRROR = {'result': [{
     'parent': '', 'made_sla': 'false', 'caused_by': '', 'watch_list': '', 'upon_reject': '',
@@ -3196,4 +3199,9 @@ OAUTH_PARAMS = {
     'client_id': 'client_id',
     'client_secret': 'client_secret',
     'use_oauth': True
+}
+
+RESPONSE_GENERIC_TICKET = {
+    'sys_created_by': 'svc.SecOps_SplunkPhantom',
+    'sys_class_name': 'sn_si_incident'
 }

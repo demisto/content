@@ -24,6 +24,7 @@ def client(requests_mock):
         tenant_id='tenant_id',
         verify=False,
         proxy=False,
+
     )
 
 
@@ -48,6 +49,29 @@ def test_generic_command_positive_value_key(requests_mock, client):
     }
     res = generic_command(client, args)
     assert res.outputs == applications_res.get('value')
+
+
+def test_generic_command_with_boolean_value(requests_mock, client):
+    """
+    Given:
+        - API resource /users/testUser/revokeSignInSessions
+    When:
+        - Running the generic command
+    Then:
+        - Ensure Human readable returns
+    """
+    # Example response returned from the API for this resource
+    res = {"@odata.context": "https://graph.microsoft.com/v1.0/$metadata#Edm.Boolean", "value": True}
+    requests_mock.get(
+        'https://graph.microsoft.com/v1.0/users/testUser/revokeSignInSessions',
+        json=res,
+    )
+    args = {
+        'resource': '/users/testUser/revokeSignInSessions',
+
+    }
+    res = generic_command(client, args)
+    assert res.readable_output == 'The API query ran successfully and returned no content.'
 
 
 def test_generic_command_positive_other_key(requests_mock, client):

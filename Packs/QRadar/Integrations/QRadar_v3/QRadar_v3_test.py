@@ -763,7 +763,8 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
      - Ensure dict containing the enrichment is as expected.
     """
     mocker.patch.object(client, mock_func_name, return_value=mock_response)
-    assert (enrich_func(**args)) == expected
+    res = enrich_func(**args)
+    assert res == expected
 
 
 @pytest.mark.parametrize('command_func, command_name',
@@ -877,43 +878,6 @@ def test_get_modified_remote_data_command(mocker):
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
     result = get_modified_remote_data_command(client, dict(), command_test_data['get_modified_remote_data']['args'])
     assert expected.modified_incident_ids == result.modified_incident_ids
-
-
-@pytest.mark.parametrize('params, args, expected',
-                         [
-                             (dict(), {'lastUpdate': 1613399051537,
-                                       'id': command_test_data['get_remote_data']['response']['id']},
-                              GetRemoteDataResponse(
-                                  {'id': command_test_data['get_remote_data']['response']['id'],
-                                   'mirroring_events_message': 'Nothing new in the ticket.'},
-                                  [])),
-                             (dict(), {'lastUpdate': 1613399051535,
-                                       'id': command_test_data['get_remote_data']['response']['id']},
-                              GetRemoteDataResponse(
-                                  sanitize_outputs(command_test_data['get_remote_data']['enrich_offenses_result'])[0],
-                                  []))
-                         ])
-def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemoteDataResponse):
-    """
-    Given:
-     - QRadar client.
-     - Demisto arguments.
-
-    When:
-     - Command 'get-get-remote-data' is being called.
-
-    Then:
-     - Ensure that command outputs the IDs of the offenses to update.
-    """
-    set_to_integration_context_with_retries(dict())
-    enriched_response = command_test_data['get_remote_data']['enrich_offenses_result']
-    mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_remote_data']['response'])
-    mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=enriched_response)
-    result = get_remote_data_command(client, params, args)
-    if expected.mirrored_object.get('last_mirror_in_time'):
-        expected.mirrored_object['last_mirror_in_time'] = result.mirrored_object['last_mirror_in_time']
-    assert result.mirrored_object == expected.mirrored_object
-    assert result.entries == expected.entries
 
 
 @pytest.mark.parametrize('params, offense, enriched_offense, note_response, expected',
@@ -1722,6 +1686,7 @@ def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
     """
     mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
     mocker.patch.object(QRadar_v3, 'set_integration_context')
+    mocker.patch.object(QRadar_v3.demisto, 'error')
 
     change_ctx_to_be_compatible_with_retry()
 

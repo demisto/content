@@ -1,0 +1,32 @@
+commonfields:
+  id: AnalyzeOSX
+  version: -1
+name: AnalyzeOSX
+script: ''
+type: javascript
+tags:
+- osx
+comment: "Get file and url reputation for osxcollector result.\n will use VirusTotal\
+  \ for Url checks, and IBM XForce for MD5 checks.\n maxchecks : for \n system  :\
+  \ system name to run agent on.\n section : the type check that OSXCollector should\
+  \ run."
+system: true
+args:
+- name: section
+  default: true
+  description: Ask OSXCollector for a specific section
+- name: timeout
+  description: Timeout to be passed to OSXCollector script
+- name: maxchecks
+  description: Maximum amount of files/urls to verify
+- name: system
+  description: OSX System to be used
+scripttarget: 0
+dependson:
+  must:
+  - file
+  - url
+timeout: 0s
+tests:
+- No test - need to revisit
+fromversion: 5.0.0

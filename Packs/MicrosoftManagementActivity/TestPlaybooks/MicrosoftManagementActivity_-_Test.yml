@@ -2,22 +2,22 @@ id: MicrosoftManagementActivity - Test
 version: -1
 name: MicrosoftManagementActivity - Test
 fromversion: 5.0.0
-vcShouldKeepItemLegacyProdMachine: false
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 000ca1ff-ee0c-4d1f-8ab1-8ac542fc4804
+    taskid: ce10040f-e17d-4c98-8782-61a603f27bee
     type: start
     task:
-      id: 000ca1ff-ee0c-4d1f-8ab1-8ac542fc4804
+      id: ce10040f-e17d-4c98-8782-61a603f27bee
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "3"
     separatecontext: false
     view: |-
       {
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 62dc6f5c-7ecf-4f6b-876a-37271503044d
+    taskid: 070c02a8-cdc3-43dc-8a15-f1f96ff9d8ca
     type: regular
     task:
-      id: 62dc6f5c-7ecf-4f6b-876a-37271503044d
+      id: 070c02a8-cdc3-43dc-8a15-f1f96ff9d8ca
       version: -1
       name: ms-management-activity-list-content
       description: Returns all content of a specific content type.
@@ -59,38 +59,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1055
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 4307ddcb-f846-4480-811d-b6d59acdeb04
-    type: regular
-    task:
-      id: 4307ddcb-f846-4480-811d-b6d59acdeb04
-      version: -1
-      name: ms-management-activity-list-subscriptions
-      description: List the content types you are currently subscribed to
-      script: Microsoft Management Activity API (O365 Azure Events)|||ms-management-activity-list-subscriptions
-      type: regular
-      iscommand: true
-      brand: Microsoft Management Activity API (O365 Azure Events)
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 160
+          "y": 1030
         }
       }
     note: false
@@ -102,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 3c958be7-f62c-4c28-8aee-cd91e91786b3
+    taskid: 38ca5f90-2696-44b7-8c62-ceac53699ab0
     type: regular
     task:
-      id: 3c958be7-f62c-4c28-8aee-cd91e91786b3
+      id: 38ca5f90-2696-44b7-8c62-ceac53699ab0
       version: -1
       name: ms-management-activity-start-subscription
       description: Starts a subscription to a given content type
@@ -136,10 +105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: e3b270e9-b058-4885-8c86-8d5ff16a946d
+    taskid: 3b0946e8-fee1-4d41-80ae-fc15134c23b5
     type: regular
     task:
-      id: e3b270e9-b058-4885-8c86-8d5ff16a946d
+      id: 3b0946e8-fee1-4d41-80ae-fc15134c23b5
       version: -1
       name: ms-management-activity-stop-subscription
       description: Stops a subscription to a given content type
@@ -170,10 +139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 782cd768-1cb4-4282-833c-4697b9d567c4
+    taskid: 0e0640fa-cb16-41e0-8900-23b2849350c1
     type: regular
     task:
-      id: 782cd768-1cb4-4282-833c-4697b9d567c4
+      id: 0e0640fa-cb16-41e0-8900-23b2849350c1
       version: -1
       name: ms-management-activity-list-subscriptions
       description: List the content types you are currently subscribed to
@@ -199,49 +168,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 2d6fee94-9545-441f-8d1b-00836006e43c
-    type: condition
-    task:
-      id: 2d6fee94-9545-441f-8d1b-00836006e43c
-      version: -1
-      name: validate 0 lists are subscribed to
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEmpty
-          left:
-            value:
-              simple: MicrosoftManagement.Subscription
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 782d4091-8c89-4685-84dd-83dd8914a284
+    taskid: 3f48ce1a-8f6c-406a-8d06-4cb419547ed3
     type: condition
     task:
-      id: 782d4091-8c89-4685-84dd-83dd8914a284
+      id: 3f48ce1a-8f6c-406a-8d06-4cb419547ed3
       version: -1
       name: validate there's one list subscripted to
       type: condition
@@ -257,7 +189,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: MicrosoftManagement.Subscription
+              complex:
+                root: MicrosoftManagement
+                accessor: Subscription
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: Audit.AzureActiveDirectory
+                    field:
+                      value:
+                        simple: ContentType
+                    getField:
+                      value:
+                        simple: ContentType
+                    stringify: {}
             iscontext: true
     view: |-
       {
@@ -275,10 +222,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: f0930215-5fc6-4aa9-8d0a-20ed790151fe
+    taskid: 78e90452-e93d-419e-898c-cfa0871fc5ac
     type: regular
     task:
-      id: f0930215-5fc6-4aa9-8d0a-20ed790151fe
+      id: 78e90452-e93d-419e-898c-cfa0871fc5ac
       version: -1
       name: ms-management-activity-list-subscriptions
       description: List the content types you are currently subscribed to
@@ -306,10 +253,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: ba1ac61b-2973-40d2-865f-ca5393cf053a
+    taskid: dbc0cc62-e08e-4802-8e91-8b6a2ad1bfec
     type: condition
     task:
-      id: ba1ac61b-2973-40d2-865f-ca5393cf053a
+      id: dbc0cc62-e08e-4802-8e91-8b6a2ad1bfec
       version: -1
       name: validate unsubscription
       type: condition
@@ -322,10 +269,25 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isFalse
+      - - operator: isEmpty
           left:
             value:
-              simple: MicrosoftManagement.Subscription.[1].Enabled
+              complex:
+                root: MicrosoftManagement
+                accessor: Subscription
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: Audit.AzureActiveDirectory
+                    field:
+                      value:
+                        simple: ContentType
+                    getField:
+                      value:
+                        simple: ContentType
+                    stringify: {}
             iscontext: true
     view: |-
       {
@@ -343,15 +305,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 1c7d14f8-1dcd-4ca6-8265-d22870667ea2
+    taskid: 424f6531-43cd-40a8-8d9a-800974b82f8c
     type: title
     task:
-      id: 1c7d14f8-1dcd-4ca6-8265-d22870667ea2
+      id: 424f6531-43cd-40a8-8d9a-800974b82f8c
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -381,3 +344,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''

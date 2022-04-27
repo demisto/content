@@ -1,0 +1,24 @@
+args:
+- default: true
+  description: 'The IPv4 to vriefy.'
+  isArray: true
+  name: input
+  required: false
+  secret: false
+comment: 'Verify that the address is a valid IPv4 address.'
+commonfields:
+  id: VerifyIPv4Indicator
+  version: -1
+enabled: true
+name: VerifyIPv4Indicator
+script: '-'
+system: false
+tags:
+- indicator-format
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.1.26972
+fromversion: 5.5.0
+tests:
+- No test

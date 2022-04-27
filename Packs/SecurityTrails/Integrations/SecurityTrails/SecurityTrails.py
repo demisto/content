@@ -978,6 +978,7 @@ def query_sql_command(client, args):
     }
     res = client.sql(sql=query, timeout=timeout)
     total = res.get('total', {}).get('value')
+    pages = 0
     if total:
         pages = total // 100
     output = {

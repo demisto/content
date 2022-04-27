@@ -1,0 +1,185 @@
+{
+  "Type": 1,
+  "ContentsFormat": "json",
+  "Contents": {
+    "data": {
+      "total": 2,
+      "query": {},
+      "sort": {
+        "active_since": -1
+      },
+      "offset": 0,
+      "limit": 50,
+      "entries": [
+        {
+          "uri_name": "18b18f24-6b42-497c-b574-dc07edb5a38f",
+          "_id": "18b18f24-6b42-497c-b574-dc07edb5a38f",
+          "name": "SUSPICIOUS VBSCRIPT (METHODOLOGY)",
+          "_revision": "20200602065842477247102716",
+          "display_name": "SUSPICIOUS VBSCRIPT (METHODOLOGY)",
+          "description": "This IOC identifies the use of explicit script engine declarations for cscript or wscript without their normally associated file extensions. This is associated to MITRE ATT&CK (r) Tactic: Defense Evasion, Execution and Technique: T1064\t",
+          "category": {
+            "_id": 7,
+            "uri_name": "mandiant_unrestricted",
+            "url": "/hx/api/v3/indicator_categories/mandiant_unrestricted",
+            "name": "Mandiant Unrestricted Intel",
+            "share_mode": "unrestricted"
+          },
+          "created_by": "General_Windows_unrestricted_2020.05.270833",
+          "create_actor": {
+            "_id": 3,
+            "username": "mandiant"
+          },
+          "update_actor": {
+            "_id": 3,
+            "username": "mandiant"
+          },
+          "create_text": "General_Windows_unrestricted_2020.05.270833",
+          "signature": null,
+          "active_since": "2020-06-02T06:56:13.324Z",
+          "meta": null,
+          "url": "/hx/api/v3/indicators/mandiant_unrestricted/18b18f24_6b42_497c_b574_dc07edb5a38f",
+          "stats": {
+            "source_alerts": 0,
+            "active_conditions": 8,
+            "alerted_agents": 0
+          },
+          "platforms": [
+            "win",
+            "osx",
+            "linux"
+          ]
+        },
+        {
+          "uri_name": "2e0f439b-c20c-475f-8017-9e43d3ec0f3c",
+          "_id": "2e0f439b-c20c-475f-8017-9e43d3ec0f3c",
+          "name": "SUSPICIOUS SCRIPT CREATION (METHODOLOGY)",
+          "_revision": "20200602065842525475102728",
+          "display_name": "SUSPICIOUS SCRIPT CREATION (METHODOLOGY)",
+          "description": "This IOC is designed to identify the creation and execution of scripts with random names.  This technique has been observed to drop payloads in phishing emails. This is associated to MITRE ATT&CK (r) Tactic: Defense Evasion, Execution and Technique: T1064\t",
+          "category": {
+            "_id": 7,
+            "uri_name": "mandiant_unrestricted",
+            "url": "/hx/api/v3/indicator_categories/mandiant_unrestricted",
+            "name": "Mandiant Unrestricted Intel",
+            "share_mode": "unrestricted"
+          },
+          "created_by": "General_Windows_unrestricted_2020.05.270833",
+          "create_actor": {
+            "_id": 3,
+            "username": "mandiant"
+          },
+          "update_actor": {
+            "_id": 3,
+            "username": "mandiant"
+          },
+          "create_text": "General_Windows_unrestricted_2020.05.270833",
+          "signature": null,
+          "active_since": "2020-06-02T06:56:13.324Z",
+          "meta": null,
+          "url": "/hx/api/v3/indicators/mandiant_unrestricted/2e0f439b_c20c_475f_8017_9e43d3ec0f3c",
+          "stats": {
+            "source_alerts": 0,
+            "active_conditions": 3,
+            "alerted_agents": 0
+          },
+          "platforms": [
+            "win",
+            "osx",
+            "linux"
+          ]
+        }
+      ]
+    },
+    "message": "OK",
+    "details": [],
+    "route": "/hx/api/v3/indicators"
+  },
+  "HumanReadable": "### 2 Indicator categories found\n|Name|Policy ID|\n|---|---|\n| SUSPICIOUS VBSCRIPT (METHODOLOGY) | 18b18f24-6b42-497c-b574-dc07edb5a38f |\n| SUSPICIOUS SCRIPT CREATION (METHODOLOGY) | 2e0f439b-c20c-475f-8017-9e43d3ec0f3c |\n",
+  "EntryContext": {
+    "FireEyeHX.IndicatorCategory": [
+      {
+        "uri_name": "18b18f24-6b42-497c-b574-dc07edb5a38f",
+        "_id": "18b18f24-6b42-497c-b574-dc07edb5a38f",
+        "name": "SUSPICIOUS VBSCRIPT (METHODOLOGY)",
+        "_revision": "20200602065842477247102716",
+        "display_name": "SUSPICIOUS VBSCRIPT (METHODOLOGY)",
+        "description": "This IOC identifies the use of explicit script engine declarations for cscript or wscript without their normally associated file extensions. This is associated to MITRE ATT&CK (r) Tactic: Defense Evasion, Execution and Technique: T1064\t",
+        "category": {
+          "_id": 7,
+          "uri_name": "mandiant_unrestricted",
+          "url": "/hx/api/v3/indicator_categories/mandiant_unrestricted",
+          "name": "Mandiant Unrestricted Intel",
+          "share_mode": "unrestricted"
+        },
+        "created_by": "General_Windows_unrestricted_2020.05.270833",
+        "create_actor": {
+          "_id": 3,
+          "username": "mandiant"
+        },
+        "update_actor": {
+          "_id": 3,
+          "username": "mandiant"
+        },
+        "create_text": "General_Windows_unrestricted_2020.05.270833",
+        "signature": null,
+        "active_since": "2020-06-02T06:56:13.324Z",
+        "meta": null,
+        "url": "/hx/api/v3/indicators/mandiant_unrestricted/18b18f24_6b42_497c_b574_dc07edb5a38f",
+        "stats": {
+          "source_alerts": 0,
+          "active_conditions": 8,
+          "alerted_agents": 0
+        },
+        "platforms": [
+          "win",
+          "osx",
+          "linux"
+        ]
+      },
+      {
+        "uri_name": "2e0f439b-c20c-475f-8017-9e43d3ec0f3c",
+        "_id": "2e0f439b-c20c-475f-8017-9e43d3ec0f3c",
+        "name": "SUSPICIOUS SCRIPT CREATION (METHODOLOGY)",
+        "_revision": "20200602065842525475102728",
+        "display_name": "SUSPICIOUS SCRIPT CREATION (METHODOLOGY)",
+        "description": "This IOC is designed to identify the creation and execution of scripts with random names.  This technique has been observed to drop payloads in phishing emails. This is associated to MITRE ATT&CK (r) Tactic: Defense Evasion, Execution and Technique: T1064\t",
+        "category": {
+          "_id": 7,
+          "uri_name": "mandiant_unrestricted",
+          "url": "/hx/api/v3/indicator_categories/mandiant_unrestricted",
+          "name": "Mandiant Unrestricted Intel",
+          "share_mode": "unrestricted"
+        },
+        "created_by": "General_Windows_unrestricted_2020.05.270833",
+        "create_actor": {
+          "_id": 3,
+          "username": "mandiant"
+        },
+        "update_actor": {
+          "_id": 3,
+          "username": "mandiant"
+        },
+        "create_text": "General_Windows_unrestricted_2020.05.270833",
+        "signature": null,
+        "active_since": "2020-06-02T06:56:13.324Z",
+        "meta": null,
+        "url": "/hx/api/v3/indicators/mandiant_unrestricted/2e0f439b_c20c_475f_8017_9e43d3ec0f3c",
+        "stats": {
+          "source_alerts": 0,
+          "active_conditions": 3,
+          "alerted_agents": 0
+        },
+        "platforms": [
+          "win",
+          "osx",
+          "linux"
+        ]
+      }
+    ]
+  },
+  "IndicatorTimeline": [],
+  "IgnoreAutoExtract": false,
+  "Note": false,
+  "Relationships": []
+}

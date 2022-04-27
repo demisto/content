@@ -48,6 +48,12 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- defaultvalue: 1
+  display: Days to look back when fetching
+  additionalinfo: When fetching incident from specific queue, search also back for incident created before the last run time but moved to the queue after the last fetch.
+  name: look_back
+  required: false
+  type: 0
 description: Service management suite that comprises ticketing, workflow automation, and notification.
 fromversion: 5.0.0
 display: OTRS
@@ -516,7 +522,7 @@ script:
     - contextPath: OTRS.Ticket.Article.Body
       description: Ticket article body
       type: string
-  dockerimage: demisto/pyotrs:1.0.0.25615
+  dockerimage: demisto/pyotrs:1.0.0.28032
   feed: false
   isfetch: true
   longRunning: false

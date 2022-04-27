@@ -21,13 +21,20 @@
     "associatedTypes": [
         "IAM - App Add",
         "IAM - App Remove",
-        "IAM - Group Membership Update"
+        "IAM - Group Membership Update",
+        "Symantec DLP Endpoint Incident"
     ],
+    "systemAssociatedTypes": [
+    "Symantec DLP Endpoint Incident"
+  ],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.0.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

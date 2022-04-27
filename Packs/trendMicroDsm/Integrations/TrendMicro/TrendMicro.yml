@@ -1,0 +1,163 @@
+commonfields:
+  id: Trend Micro
+  version: -1
+name: Trend Micro
+system: true
+display: Trend Micro
+category: Endpoint
+description: Uses Trend Micro Deep Security
+configuration:
+- display: Credentials
+  name: credentials
+  type: 9
+  required: true
+- display: Server URL and port (e.g. https://192.168.0.1:4119)
+  name: server
+  type: 0
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: trendmicro-host-retrieve-all
+    arguments: []
+    description: Get all hosts info
+  - name: trendmicro-system-event-retrieve
+    arguments:
+    - name: rangeFrom
+      description: Time interval start
+    - name: rangeTo
+      description: Time interval end
+    - name: specificTime
+      description: Specific time
+    - name: timeFilterType
+      auto: PREDEFINED
+      predefined:
+      - LAST_HOUR
+      - LAST_24_HOURS
+      - LAST_7_DAYS
+      - CUSTOM_RANGE
+      - SPECIFIC_TIME
+      description: Define time filter mode. mandatory if filtering by time.
+    - name: hostGroupID
+      description: Filter by host group ID
+    - name: hostID
+      description: Filter by host ID
+    - name: securityProfileID
+      description: Filter by host security profile ID
+    - name: hostFilterType
+      auto: PREDEFINED
+      predefined:
+      - ALL_HOSTS
+      - HOSTS_IN_GROUP
+      - HOSTS_USING_SECURITY_PROFILE
+      - HOSTS_IN_GROUP_AND_ALL_SUBGROUPS
+      - SPECIFIC_HOST
+      - MY_HOSTS
+      description: Define host filter mode. mandatory if filtering by host/s.
+    - name: eventID
+      description: filter by event ID
+    - name: eventFilterOperator
+      auto: PREDEFINED
+      predefined:
+      - GREATER_THAN
+      - LESS_THAN
+      - EQUAL
+      description: event ID operator
+    - name: includeNonHostEvents
+      description: Include non-host hevents in filter
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+    description: Get system events
+  - name: trendmicro-host-antimalware-scan
+    arguments:
+    - name: hostIDs
+      required: true
+      description: list of host ids to scan, separated by commas
+    description: scan computers by host ID list
+    execution: true
+  - name: trendmicro-alert-status
+    arguments:
+    - name: count
+      required: true
+      description: Number of alerts to fetch
+    description: Get last alerts
+  - name: trendmicro-security-profile-retrieve-all
+    arguments: []
+    description: Get all security profiles
+  - name: trendmicro-security-profile-assign-to-host
+    arguments:
+    - name: securityProfileID
+      required: true
+      description: security profile ID that will be assigned to the hosts
+    - name: hostIDs
+      required: true
+      description: list of host IDs, separated by commas
+    execution: true
+    description: Assign security profile to host
+  - name: trendmicro-anti-malware-event-retrieve
+    arguments:
+    - name: rangeFrom
+      description: Time interval start
+    - name: rangeTo
+      description: Time interval end
+    - name: specificTime
+      description: Specific Time
+    - name: timeFilterType
+      auto: PREDEFINED
+      predefined:
+      - LAST_HOUR
+      - LAST_24_HOURS
+      - LAST_7_DAYS
+      - CUSTOM_RANGE
+      - SPECIFIC_TIME
+      description: Define time filter mode. mandatory if filtering by time.
+    - name: hostGroupID
+      description: Filter by host group ID
+    - name: hostID
+      description: Filter by host ID
+    - name: securityProfileID
+      description: Filter by host security profile ID
+    - name: hostFilterType
+      auto: PREDEFINED
+      predefined:
+      - ALL_HOSTS
+      - HOSTS_IN_GROUP
+      - HOSTS_USING_SECURITY_PROFILE
+      - HOSTS_IN_GROUP_AND_ALL_SUBGROUPS
+      - SPECIFIC_HOST
+      - MY_HOSTS
+      description: Define host filter mode. mandatory if filtering by host/s.
+    - name: eventID
+      description: filter by event ID
+    - name: eventFilterOperator
+      auto: PREDEFINED
+      predefined:
+      - GREATER_THAN
+      - LESS_THAN
+      - EQUAL
+      description: event ID operator
+    description: Get anti malware events
+  isfetch: true
+tests:
+- No test
+fromversion: 5.0.0

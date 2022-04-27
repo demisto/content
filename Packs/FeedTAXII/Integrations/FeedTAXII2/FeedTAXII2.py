@@ -88,11 +88,11 @@ def fetch_indicators_command(
             )
             fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
+            last_run_ctx[collection.id] = client.last_fetched_indicator__modified
             if limit >= 0:
                 limit -= len(fetched_iocs)
                 if limit <= 0:
                     break
-            last_run_ctx[collection.id] = client.last_fetched_indicator__modified
     else:
         # fetch from a single collection
         added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)

@@ -19,19 +19,29 @@
 /Utils/trigger_test_upload_flow.sh @Noy-Maimon
 /Utils/trigger_upload_packs_to_production.sh @Noy-Maimon
 
+# PANW Products
+/Packs/PaloAltoNetworksIoT/Integrations/* @bakatzir
+/Packs/PaloAltoNetworksIoT3rdParty/Integrations/* @bakatzir
+/Packs/Palo_Alto_Networks_Enterprise_DLP/* @DeanArbel
+/Packs/PAN-OS/Integrations/* @GuyAfik
+/Packs/PrismaAccess/Integrations/* @bakatzir
+/Packs/PrismaCloudCompute/Integrations/* @GuyAfik
+/Packs/PrismaCloud/Integrations/* @bakatzir
+/Packs/PrismaSaasSecurity/Integrations/* @yaakovpraisler
+
 # Important Integrations
 /Packs/Jira/Integrations/JiraV2/* @demisto/content-leaders
 /Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders
 /Packs/EWS/Integrations/EWSv2/* @demisto/content-leaders
 /Packs/ArcSightESM/Integrations/ArcSightESMv2/* @demisto/content-leaders
-/Packs/QRadar/Integrations/QRadar_v2/* @demisto/content-leaders
-/Packs/QRadar/Integrations/QRadar_v3/* @tomneeman151293
+/Packs/QRadar/Integrations/QRadar_v3/* @tkatzir
 /Packs/Slack/Integrations/Slack/* @demisto/content-leaders
 /Packs/SplunkPy/Integrations/SplunkPy/* @demisto/content-leaders
 /Packs/Active_Directory_Query/Integrations/Active_Directory_Query/* @demisto/content-leaders
 /Packs/VirusTotal/Integrations/integration-VirusTotal_5.5.yml @demisto/content-leaders
 /Packs/VirusTotal/* @jochman
 /Packs/ContentManagement/* @ChanochShayner
+/Packs/MISP/* @abaumgarten
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS
@@ -39,7 +49,12 @@
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
 
 # Build related
-.circleci/config.yml @avidan-H @DinaMeylakh
-.gitlab/ci/* @avidan-H @DinaMeylakh
-.gitlab/* @avidan-H @DinaMeylakh
-.gitlab-ci.yml @avidan-H @DinaMeylakh
+.circleci/config.yml @esharf
+.gitlab/ci/* @esharf
+.gitlab/* @esharf
+.gitlab-ci.yml @esharf
+
+# SDK Related
+.gitlab/ci/sdk-nightly.yml @dorschw
+Utils/trigger_nightly_sdk_build.sh @dorschw
+

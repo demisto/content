@@ -50,6 +50,9 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 - ***qradar-searches-list***
 - ***qradar-geolocations-for-ip***
 - ***qradar-log-sources-list***
+- ***qradar-upload-indicators***
+- ***get-modified-remote-data***
+
 ### Command name changes
 | QRadar v2 command | QRadar V3 command | Notes
 | --- | --- | --- |
@@ -72,6 +75,8 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 | qradar-delete-reference-set-value |  qradar-reference-set-value-delete | | 
 | qradar-get-domains | qradar-domains-list |  | 
 | qradar-domains-list | qradar-get-domain-by-id | Specify the *domain_id* argument in the command. |  |
+
+
 ## Mirroring
 This integration supports in mirroring from QRadar offenses to XSOAR.
 * When a field of an offense is updated in QRadar services, it is mirrored in XSOAR.
@@ -83,6 +88,9 @@ This integration supports in mirroring from QRadar offenses to XSOAR.
 * The integration will always mirror the events that occurred first in each offense.
 
 For further information about mirroring configurations, see [here](https://xsoar.pan.dev/docs/integrations/mirroring_integration).
+### Use API token instead of Username and Password
+- In the **Username / API Key** field, type **_api_token_key**.  
+- In the **Password** field, type your API token.
 ## Choose your API version
 1. Visit the [QRadar API versions page](https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_getting_started.html) for a full list of available API versions according to the QRadar version.
 2. Choose one of the API versions listed under **Supported REST API versions** column in the line corresponding to your QRadar version.

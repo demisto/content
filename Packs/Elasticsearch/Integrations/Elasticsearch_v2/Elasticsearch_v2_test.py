@@ -30,7 +30,7 @@ ES_V6_RESPONSE = {
                 '_id': '123',
                 '_score': 1.3862944,
                 '_source': {
-                    'Date': '2019-08-29T14:45:00Z'
+                    'Date': '2019-08-29T14:45:00.123Z'
                 }
             }, {
                 '_index': 'users',
@@ -38,7 +38,7 @@ ES_V6_RESPONSE = {
                 '_id': '456',
                 '_score': 0.9517491,
                 '_source': {
-                    'Date': '2019-08-29T14:46:00Z'
+                    'Date': '2019-08-29T14:46:00.123456Z'
                 }
             }
         ]
@@ -75,7 +75,7 @@ ES_V7_RESPONSE = {
                 '_id': '456',
                 '_score': 0.6814878,
                 '_source': {
-                    'Date': '2019-08-27T18:01:00Z'
+                    'Date': '2019-08-27T18:01:25.343212Z'
                 }
             }
         ]
@@ -108,7 +108,7 @@ MOCK_ES7_SEARCH_CONTEXT = str({
             '_type': 'doc',
             '_id': '456',
             '_score': 0.6814878,
-            '_source': {'Date': '2019-08-27T18:01:00Z'}
+            '_source': {'Date': '2019-08-27T18:01:25.343212Z'}
         }
     ]
 })
@@ -126,7 +126,7 @@ MOCK_ES7_HIT_CONTEXT = str([
         '_id': '456',
         '_type': 'doc',
         '_score': 0.6814878,
-        'Date': '2019-08-27T18:01:00Z'
+        'Date': '2019-08-27T18:01:25.343212Z'
     }
 ])
 
@@ -148,14 +148,14 @@ MOCK_ES6_SEARCH_CONTEXT = str({
             '_type': '_doc',
             '_id': '123',
             '_score': 1.3862944,
-            '_source': {'Date': '2019-08-29T14:45:00Z'}
+            '_source': {'Date': '2019-08-29T14:45:00.123Z'}
         },
         {
             '_index': 'users',
             '_type': '_doc',
             '_id': '456',
             '_score': 0.9517491,
-            '_source': {'Date': '2019-08-29T14:46:00Z'}
+            '_source': {'Date': '2019-08-29T14:46:00.123456Z'}
         }
     ]
 })
@@ -166,14 +166,14 @@ MOCK_ES6_HIT_CONTEXT = str([
         '_id': '123',
         '_type': '_doc',
         '_score': 1.3862944,
-        'Date': '2019-08-29T14:45:00Z'
+        'Date': '2019-08-29T14:45:00.123Z'
     },
     {
         '_index': 'users',
         '_id': '456',
         '_type': '_doc',
         '_score': 0.9517491,
-        'Date': '2019-08-29T14:46:00Z'
+        'Date': '2019-08-29T14:46:00.123456Z'
     }
 ])
 
@@ -187,12 +187,42 @@ MOCK_ES7_INCIDENTS = str([
                    '"_score": 0.6814878, '
                    '"_source": {"Date": "2019-08-27T18:00:00Z"}'
                    '}',
+        'occurred': '2019-08-27T18:00:00Z',
         'labels': [
             {
                 'type': 'Date',
                 'value': '2019-08-27T18:00:00Z'
             }
-        ],
+        ]
+    }, {
+        'name': 'Elasticsearch: Index: customer, ID: 456',
+        'rawJSON': '{'
+                   '"_index": "customer", '
+                   '"_type": "doc", '
+                   '"_id": "456", '
+                   '"_score": 0.6814878, '
+                   '"_source": {"Date": "2019-08-27T18:01:25.343212Z"}'
+                   '}',
+        'occurred': '2019-08-27T18:01:25Z',
+        'labels': [
+            {
+                'type': 'Date',
+                'value': '2019-08-27T18:01:25.343212Z'
+            }
+        ]
+    }
+])
+
+MOCK_ES7_INCIDENTS_WITHOUT_LABELS = str([
+    {
+        'name': 'Elasticsearch: Index: customer, ID: 123',
+        'rawJSON': '{'
+                   '"_index": "customer", '
+                   '"_type": "doc", '
+                   '"_id": "123", '
+                   '"_score": 0.6814878, '
+                   '"_source": {"Date": "2019-08-27T18:00:00Z"}'
+                   '}',
         'occurred': '2019-08-27T18:00:00Z'
     }, {
         'name': 'Elasticsearch: Index: customer, ID: 456',
@@ -201,15 +231,9 @@ MOCK_ES7_INCIDENTS = str([
                    '"_type": "doc", '
                    '"_id": "456", '
                    '"_score": 0.6814878, '
-                   '"_source": {"Date": "2019-08-27T18:01:00Z"}'
+                   '"_source": {"Date": "2019-08-27T18:01:25.343212Z"}'
                    '}',
-        'labels': [
-            {
-                'type': 'Date',
-                'value': '2019-08-27T18:01:00Z'
-            }
-        ],
-        'occurred': '2019-08-27T18:01:00Z'
+        'occurred': '2019-08-27T18:01:25Z'
     }
 ])
 
@@ -221,16 +245,16 @@ MOCK_ES6_INCIDETNS = str([
                    '"_type": "_doc", '
                    '"_id": "123", '
                    '"_score": 1.3862944, '
-                   '"_source": {"Date": "2019-08-29T14:45:00Z"}'
+                   '"_source": {"Date": "2019-08-29T14:45:00.123Z"}'
                    '}',
+        'occurred': '2019-08-29T14:45:00Z',
         'labels':
             [
                 {
                     'type': 'Date',
-                    'value': '2019-08-29T14:45:00Z'
+                    'value': '2019-08-29T14:45:00.123Z'
                 }
-            ],
-        'occurred': '2019-08-29T14:45:00Z'
+            ]
     }, {
         'name': 'Elasticsearch: Index: users, ID: 456',
         'rawJSON': '{'
@@ -238,16 +262,40 @@ MOCK_ES6_INCIDETNS = str([
                    '"_type": "_doc", '
                    '"_id": "456", '
                    '"_score": 0.9517491, '
-                   '"_source": {"Date": "2019-08-29T14:46:00Z"}'
+                   '"_source": {"Date": "2019-08-29T14:46:00.123456Z"}'
                    '}',
+        'occurred': '2019-08-29T14:46:00Z',
         'labels':
             [
                 {
                     'type': 'Date',
-                    'value': '2019-08-29T14:46:00Z'
+                    'value': '2019-08-29T14:46:00.123456Z'
                 }
-            ],
-        'occurred': '2019-08-29T14:46:00Z'
+            ]
+    }
+])
+
+MOCK_ES6_INCIDETNS_WITHOUT_LABELS = str([
+    {
+        'name': 'Elasticsearch: Index: users, ID: 123',
+        'rawJSON': '{'
+                   '"_index": "users", '
+                   '"_type": "_doc", '
+                   '"_id": "123", '
+                   '"_score": 1.3862944, '
+                   '"_source": {"Date": "2019-08-29T14:45:00.123Z"}'
+                   '}',
+        'occurred': '2019-08-29T14:45:00Z',
+    }, {
+        'name': 'Elasticsearch: Index: users, ID: 456',
+        'rawJSON': '{'
+                   '"_index": "users", '
+                   '"_type": "_doc", '
+                   '"_id": "456", '
+                   '"_score": 0.9517491, '
+                   '"_source": {"Date": "2019-08-29T14:46:00.123456Z"}'
+                   '}',
+        'occurred': '2019-08-29T14:46:00Z',
     }
 ])
 
@@ -298,13 +346,13 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
                    '"_score": 0.6814878, '
                    '"_source": {"Date": "1572502634"}'
                    '}',
+        'occurred': '2019-10-31T06:17:14Z',
         'labels': [
             {
                 'type': 'Date',
                 'value': '1572502634'
             }
-        ],
-        'occurred': '2019-10-31T06:17:14Z'
+        ]
     }, {
         'name': 'Elasticsearch: Index: customer, ID: 456',
         'rawJSON': '{'
@@ -314,13 +362,37 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
                    '"_score": 0.6814878, '
                    '"_source": {"Date": "1572502640"}'
                    '}',
+        'occurred': '2019-10-31T06:17:20Z',
         'labels': [
             {
                 'type': 'Date',
                 'value': '1572502640'
             }
-        ],
-        'occurred': '2019-10-31T06:17:20Z'
+        ]
+    }
+])
+
+MOCK_ES7_INCIDENTS_FROM_TIMESTAMP_WITHOUT_LABELS = str([
+    {
+        'name': 'Elasticsearch: Index: customer, ID: 123',
+        'rawJSON': '{'
+                   '"_index": "customer", '
+                   '"_type": "doc", '
+                   '"_id": "123", '
+                   '"_score": 0.6814878, '
+                   '"_source": {"Date": "1572502634"}'
+                   '}',
+        'occurred': '2019-10-31T06:17:14Z',
+    }, {
+        'name': 'Elasticsearch: Index: customer, ID: 456',
+        'rawJSON': '{'
+                   '"_index": "customer", '
+                   '"_type": "doc", '
+                   '"_id": "456", '
+                   '"_score": 0.6814878, '
+                   '"_source": {"Date": "1572502640"}'
+                   '}',
+        'occurred': '2019-10-31T06:17:20Z',
     }
 ])
 
@@ -502,6 +574,18 @@ MOCK_PARAMS = [
         'fetch_index': 'customer',
         'fetch_time_field': 'Date',
         'time_method': 'Simple-Date',
+        'map_labels': True,
+        'credentials': {
+            'identifier': 'mock',
+            'password': 'demisto',
+        }
+    },
+    {
+        'client_type': 'Elasticsearch',
+        'fetch_index': 'customer',
+        'fetch_time_field': 'Date',
+        'time_method': 'Simple-Date',
+        'map_labels': False,
         'credentials': {
             'identifier': 'mock',
             'password': 'demisto',
@@ -512,6 +596,7 @@ MOCK_PARAMS = [
         'fetch_index': 'customer',
         'fetch_time_field': 'Date',
         'time_method': 'Simple-Date',
+        'map_labels': True,
         'credentials': {
             'identifier': 'mock',
             'password': 'demisto',
@@ -568,8 +653,12 @@ def test_incident_creation_e6(params, mocker):
     last_fetch = parse('2019-08-29T14:44:00Z')
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
 
-    assert str(last_fetch2) == '2019-08-29T14:46:00Z'
-    assert str(incidents) == MOCK_ES6_INCIDETNS
+    # last fetch should not truncate the milliseconds
+    assert str(last_fetch2) == '2019-08-29T14:46:00.123456+00:00'
+    if params.get('map_labels'):
+        assert str(incidents) == MOCK_ES6_INCIDETNS
+    else:
+        assert str(incidents) == MOCK_ES6_INCIDETNS_WITHOUT_LABELS
 
 
 @pytest.mark.parametrize('params', MOCK_PARAMS)
@@ -580,8 +669,12 @@ def test_incident_creation_e7(params, mocker):
     last_fetch = parse('2019-08-27T17:59:00')
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
 
-    assert str(last_fetch2) == '2019-08-27T18:01:00Z'
-    assert str(incidents) == MOCK_ES7_INCIDENTS
+    # last fetch should not truncate the milliseconds
+    assert str(last_fetch2) == '2019-08-27T18:01:25.343212+00:00'
+    if params.get('map_labels'):
+        assert str(incidents) == MOCK_ES7_INCIDENTS
+    else:
+        assert str(incidents) == MOCK_ES7_INCIDENTS_WITHOUT_LABELS
 
 
 @pytest.mark.parametrize('params', MOCK_PARAMS)
@@ -613,7 +706,10 @@ def test_incident_creation_with_timestamp_e7(params, mocker):
     lastfetch = int(datetime.strptime('2019-08-27T17:59:00Z', '%Y-%m-%dT%H:%M:%SZ').timestamp())
     incidents, last_fetch2 = results_to_incidents_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
     assert last_fetch2 == 1572502640
-    assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP
+    if params.get('map_labels'):
+        assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP
+    else:
+        assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP_WITHOUT_LABELS
 
 
 @pytest.mark.parametrize('params', MOCK_PARAMS)

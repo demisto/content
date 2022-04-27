@@ -1,5 +1,3 @@
-import copy
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -14,6 +12,7 @@ import urllib.parse
 from dateutil.parser import parse
 from typing import Any, Tuple, List
 from lxml import etree
+import copy
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -336,6 +335,17 @@ def update_content_from_xml(file_path: str, intrinsic_id: str) -> str:
             xml_root.attrib['id'] = intrinsic_id
             return etree.tostring(xml_root, encoding='unicode', pretty_print=True)
     return ''
+
+
+def get_quick_scan_item(quick_scan):
+    return {
+        'IntelDocId': quick_scan.get('intelDocId'),
+        'ComputerGroupId': quick_scan.get('computerGroupId'),
+        'ID': quick_scan.get('id'),
+        'AlertCount': quick_scan.get('alertCount'),
+        'CreatedAt': quick_scan.get('createdAt'),
+        'UserId': quick_scan.get('userId'),
+        'QuestionId': quick_scan.get('questionId')}
 
 
 ''' ALERTS DOCS HELPER FUNCTIONS '''
@@ -789,6 +799,40 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     return human_readable, outputs, raw_response
 
 
+def delete_intel_doc(client, data_args):
+    params = {
+        'id': data_args.get('intel_doc_id')
+    }
+    raw_response = client.do_request('DELETE', '/plugin/products/detect3/api/v1/intels/', params=params)
+
+    return 'Intel Doc deleted', {}, raw_response
+
+
+def start_quick_scan(client, data_args):
+    # get computer group ID from computer group name
+    computer_group_name = data_args.get('computer_group_name')
+    raw_response = client.do_request('GET', f"/api/v2/groups/by-name/{computer_group_name}")
+    raw_response_data = raw_response.get('data')
+    if not raw_response_data:
+        msg = f'No group exists with name {computer_group_name} or' \
+              f' your account does not have sufficient permissions to access the groups'
+        raise DemistoException(msg)
+
+    data = {
+        'intelDocId': int(data_args.get('intel_doc_id')),
+        'computerGroupId': int(raw_response_data.get('id'))
+    }
+    raw_response = client.do_request('POST', '/plugin/products/detect3/api/v1/quick-scans/', data=data)
+    quick_scan = get_quick_scan_item(raw_response)
+
+    context = createContext(quick_scan, removeNull=True)
+    outputs = {'Tanium.QuickScan(val.ID && val.ID === obj.ID)': context}
+
+    human_readable = tableToMarkdown('Quick Scan started', quick_scan, headerTransform=pascalToSpace, removeNull=True)
+
+    return human_readable, outputs, raw_response
+
+
 def deploy_intel(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
     """ Deploys intel using the service account context.
 
@@ -1079,7 +1123,7 @@ def get_connections(client, command_args) -> Tuple[str, dict, Union[list, dict]]
     platforms = argToList(arg=command_args.get('platform'))
 
     raw_response = client.do_request(method='GET', url_suffix='/plugin/products/threat-response/api/v1/conns')
-
+    assert offset is not None
     from_idx = min(offset, len(raw_response))
     to_idx = min(offset + limit, len(raw_response))  # type: ignore
 
@@ -1241,7 +1285,7 @@ def get_labels(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     limit = arg_to_number(data_args.get('limit'))
     offset = arg_to_number(data_args.get('offset'))
     raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/labels/')
-
+    assert offset is not None
     from_idx = min(offset, len(raw_response))
     to_idx = min(offset + limit, len(raw_response))  # type: ignore
 
@@ -1717,7 +1761,7 @@ def list_evidence(client, commands_args) -> Tuple[str, dict, Union[list, dict]]:
     raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/evidence', params=params)
 
     filter_arguments = [(hostnames, 'hostname')]
-
+    assert offset is not None
     from_idx = min(offset, len(raw_response))
     to_idx = min(offset + limit, len(raw_response))  # type: ignore
 
@@ -1921,7 +1965,7 @@ def get_system_status(client, command_args) -> Tuple[str, dict, Union[list, dict
     raw_response = client.do_request('GET', '/api/v2/system_status')
     data = raw_response.get('data', [{}])
     active_computers = []
-
+    assert offset is not None
     from_idx = min(offset, len(data))
     to_idx = min(offset + limit, len(data))  # type: ignore
 
@@ -1981,8 +2025,10 @@ def main():
         'tanium-tr-intel-docs-remove-label': remove_intel_docs_label,
         'tanium-tr-intel-doc-create': create_intel_doc,
         'tanium-tr-intel-doc-update': update_intel_doc,
+        'tanium-tr-intel-doc-delete': delete_intel_doc,
         'tanium-tr-intel-deploy': deploy_intel,
         'tanium-tr-intel-deploy-status': get_deploy_status,
+        'tanium-tr-start-quick-scan': start_quick_scan,
 
         'tanium-tr-list-alerts': get_alerts,
         'tanium-tr-get-alert-by-id': get_alert,

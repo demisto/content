@@ -94,7 +94,7 @@ class TestHttpRequest:
         assert e.value.message == f'Could not parse json out of {text}'
         assert e.value.res.status_code == 200
         assert isinstance(e.value.exception, json.JSONDecodeError)
-        assert e.value.exception.args == ('Expecting value: line 1 column 1 (char 0)',)
+        assert e.value.exception.args == ('Expecting value', 'not a json')
 
 
 class TestGetRequestsKwargs:
@@ -274,13 +274,9 @@ class TestCreateFile:
         all_iocs['iocs'].append(defective_indicator)
         all_iocs['total'] += 1
         mocker.patch.object(demisto, 'searchIndicators', return_value=all_iocs)
-        warnings = mocker.patch.object(demisto, 'debug')
         create_file_sync(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
         assert data == expected_data, f'create_file_sync with all iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
-        error_msg = warnings.call_args.args[0]
-        assert error_msg.startswith("unexpected IOC format in key: '"), f"create_file_sync empty message\n\tstarts: {error_msg}\n\tinstead: unexpected IOC format in key: '"    # noqa: E501
-        assert error_msg.endswith(f"', {str(defective_indicator)}"), f"create_file_sync empty message\n\tends: {error_msg}\n\tinstead: ', {str(defective_indicator)}"     # noqa: E501
 
     def test_create_file_iocs_to_keep_without_iocs(self, mocker):
         """

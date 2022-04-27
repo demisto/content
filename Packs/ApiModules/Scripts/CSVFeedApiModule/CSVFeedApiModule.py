@@ -184,7 +184,7 @@ class Client(BaseClient):
             try:
                 r.raise_for_status()
             except Exception:
-                return_error('Exception in request: {} {}'.format(r.status_code, r.content))
+                return_error(f'Exception in request: {r.status_code} {r.content.decode("utf-8")}')
                 raise
 
             response = self.get_feed_content_divided_to_lines(url, r)
@@ -295,6 +295,7 @@ def date_format_parsing(date_string):
     :return: ISO-8601 date string
     """
     formatted_date = dateparser.parse(date_string, settings={'TIMEZONE': 'UTC'})
+    assert formatted_date is not None, f"failed parsing {date_string}"
     return formatted_date.strftime(DATE_FORMAT)
 
 
@@ -409,7 +410,7 @@ def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None)
     return hr, {}, indicators_list
 
 
-def feed_main(feed_name, params=None, prefix=''):
+def feed_main(feed_name, params=None, prefix=''):   # pragma: no cover
     if not params:
         params = {k: v for k, v in demisto.params().items() if v is not None}
     handle_proxy()
@@ -436,13 +437,19 @@ def feed_main(feed_name, params=None, prefix=''):
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
             if is_demisto_version_ge('6.5.0'):
-                # we submit the indicators in batches
-                for b in batch(indicators, batch_size=2000):
-                    demisto.createIndicators(b, noUpdate=no_update)  # type: ignore
+                if not indicators:
+                    demisto.createIndicators(indicators, noUpdate=no_update)  # type: ignore
+                else:
+                    # we submit the indicators in batches
+                    for b in batch(indicators, batch_size=2000):
+                        demisto.createIndicators(b, noUpdate=no_update)  # type: ignore
             else:
                 # call createIndicators without noUpdate arg
-                for b in batch(indicators, batch_size=2000):
-                    demisto.createIndicators(b)  # type: ignore
+                if not indicators:
+                    demisto.createIndicators(indicators)  # type: ignore
+                else:
+                    for b in batch(indicators, batch_size=2000):  # type: ignore
+                        demisto.createIndicators(b)
 
         else:
             args = demisto.args()

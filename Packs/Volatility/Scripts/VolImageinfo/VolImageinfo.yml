@@ -1,0 +1,26 @@
+commonfields:
+  id: VolImageinfo
+  version: -1
+name: VolImageinfo
+script: ''
+type: javascript
+tags:
+- memory
+- forensics
+- volatility
+- server
+comment: Volatility script for command imageinfo
+system: true
+args:
+- name: memdump
+  required: true
+  description: Path to memory dump file on the system being used
+- name: system
+  required: true
+  description: System with Volatility installed to be used for the analysis
+- name: profile
+  description: Volatility profile to use
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0

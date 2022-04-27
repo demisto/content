@@ -49,6 +49,15 @@ NOT_FORMAT_TO_FORMAT = [  # Start of http:/ replacements.
     # End of Sanity test, no replacement should be done.
 ]
 
+BRACKETS_URL_TO_FORMAT = [
+    ('https://test1.test-api.com/test1/test2/s.testing]', 'https://test1.test-api.com/test1/test2/s.testing'),
+    ('https://test1.test-api.com/test1/test2/s]testing]', 'https://test1.test-api.com/test1/test2/s]testing'),
+    ('https://test1.test-api.com/test1/test2/s]testing', 'https://test1.test-api.com/test1/test2/s]testing'),
+    ('https://test1.test-api.com]', 'https://test1.test-api.com'),
+    ('https://test1.test-api.com[', 'https://test1.test-api.com'),
+    ('https://test1.test-api.com', 'https://test1.test-api.com'),
+]
+
 ATP_REDIRECTS = [('https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Foffice.memoriesflower.com'
                   '%2FPermission%2Foffice.php&data=01%7C01%7Cdavid.levin%40mheducation.com'
                   '%7C0ac9a3770fe64fbb21fb08d50764c401%7Cf919b1efc0c347358fca0928ec39d8d5%7C0&sdata=PEoDOerQnha'
@@ -110,6 +119,19 @@ REDIRECT_TEST_CASES = PROOF_POINT_REDIRECTS + REDIRECT_NON_ATP_PROOF_POINT
 
 FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + REDIRECT_TEST_CASES + FORMAT_URL_ADDITIONAL_TEST_CASES
 
+SINGLE_LETTER_TLD = [
+    ('www.test.com', False),
+    ('a./b', True),
+    ('goog./', True),
+    ('goog.l/', True),
+    ('goog.l', True),
+    ('google.#/', False),
+    ('ww.goo./com/', True),
+    ('google.com/./', False),
+    ('hello////,,,,dfdsf', False),
+    ('hello./.com/', True),
+]
+
 
 class TestFormatURL:
     @pytest.mark.parametrize('non_formatted_url, expected', NOT_FORMAT_TO_FORMAT)
@@ -126,6 +148,21 @@ class TestFormatURL:
         """
         from FormatURL import replace_protocol
         assert replace_protocol(non_formatted_url) == expected
+
+    @pytest.mark.parametrize('non_formatted_url, expected', BRACKETS_URL_TO_FORMAT)
+    def test_remove_brackets_from_end_of_url(self, non_formatted_url: str, expected: str):
+        """
+        Given:
+        - non_formatted_url: A URL.
+
+        When:
+        - calling remove_brackets_from_end_of_url
+
+        Then:
+        - Ensure url was formatted properly.
+        """
+        from FormatURL import remove_brackets_from_end_of_url
+        assert remove_brackets_from_end_of_url(non_formatted_url) == expected
 
     @pytest.mark.parametrize('url_, expected', FORMAT_URL_TEST_DATA)
     def test_format_url(self, url_: str, expected: Union[List[str], str]):
@@ -198,7 +235,17 @@ class TestFormatURL:
          '%2FPermission%2Foffice.php&data=01%7C01%7Cdavid.levin%40mheducation.com'
          '%7C0ac9a3770fe64fbb21fb08d50764c401%7Cf919b1efc0c347358fca0928ec39d8d5%7C0&sdata=PEoDOerQnha'
          '%2FACafNx8JAep8O9MdllcKCsHET2Ye%2B4%3D&reserved=0', 'url',
-         'https://office.memoriesflower.com/Permission/office.php')
+         'https://office.memoriesflower.com/Permission/office.php'),
+        ('https://protect2.fireeye.com/v1/url?k=d7c23005-88590c48-d7c31221-0cc47aa886f2-ae4b7c793165343e'
+         '&amp;q=1'
+         '&amp;e=c6beb47c-b5f9-4870-ab14-f6de1a85f4f2'
+         '&amp;u=https%3A%2F%2Fexample.com%2Fls%2Fclick', 'amp;u',
+         'https://example.com/ls/click'),
+        ('https://protect2.fireeye.com/v1/url?k=00bf92e9-5f24adeb-00beb0cd-0cc47aa88f82-a1f32e4f84d91cbe'
+         '&q=1'
+         '&e=221919da-9d68-429a-a70e-9d8d836ca107'
+         '&u=https%3A%2F%2Fwww.facebook.com%2FNamshiOfficial', 'u',
+         'https://www.facebook.com/NamshiOfficial')
     ])
     def test_get_redirect_url_from_query(self, non_formatted_url: str, redirect_param_name: str, expected: str):
         """
@@ -216,6 +263,7 @@ class TestFormatURL:
                                            redirect_param_name) == expected
 
     #  Invalid cases
+
     @pytest.mark.parametrize('url_', [
         'https://urldefense.com/v3/__https://google.com:443/search?66ujQIQ$',
         'https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$'
@@ -294,3 +342,18 @@ class TestFormatURL:
         main()
         result_ = mock_results.call_args.args[0]
         assert result_['Contents'] == [TEST_URL_HTTP]
+
+    @pytest.mark.parametrize('non_formatted_url, expected', SINGLE_LETTER_TLD)
+    def test_remove_single_letter_tld_url(self, non_formatted_url: str, expected: bool):
+        """
+        Given:
+            - a url
+
+        When:
+            - Formatting URLs
+
+        Then:
+            - Ensure URLs with a {0,1} letter TLD return true.
+        """
+        from FormatURL import remove_single_letter_tld_url
+        assert remove_single_letter_tld_url(non_formatted_url) == expected

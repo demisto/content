@@ -1,0 +1,26 @@
+[
+  {
+    "Asset": {
+      "ID": "DE9qZUZkOequ21mzpmTK69",
+      "Name": "notcorebusiness.notld",
+      "Type": "DOMAIN"
+    },
+    "Attributes": {},
+    "Score": { "CVSS": 5.8, "TRS": 671 },
+    "ID": "nDoKTtbR6tanVtgmtP5BQo",
+    "Status": { "Ignored": true, "State": "OPEN", "SubState": "POTENTIAL" },
+    "VulnType": { "ID": "123", "Name": "Lorem ipsum" }
+  },
+  {
+    "Asset": {
+      "ID": "zjLoHvffL9c3i2hyVCF3h2",
+      "Name": "192.168.13.37",
+      "Type": "IPV4"
+    },
+    "Attributes": { "cve_id": "CVE-2014-0160" },
+    "Score": { "CVSS": 10, "TRS": 980 },
+    "ID": "RE5isckTYGbU9LVCc76NTV",
+    "Status": { "Ignored": false, "State": "CLOSED", "SubState": "FP" },
+    "VulnType": { "ID": "456", "Name": "Dolor amet" }
+  }
+]

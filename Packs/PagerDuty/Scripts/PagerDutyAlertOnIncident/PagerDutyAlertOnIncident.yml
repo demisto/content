@@ -1,0 +1,24 @@
+commonfields:
+  id: PagerDutyAlertOnIncident
+  version: -1
+name: PagerDutyAlertOnIncident
+script: ''
+type: javascript
+tags:
+- pagerduty
+- communication
+comment: Send incident details to pagerduty (useful to include in playbooks)
+enabled: true
+args:
+- name: author
+  required: true
+  description: The email address of the user alerting about the incident
+scripttarget: 0
+dependson:
+  must:
+  - PagerDuty-submit-event
+runonce: false
+timeout: 0s
+tests:
+- PagerDuty Test
+fromversion: 5.0.0

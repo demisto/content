@@ -2402,7 +2402,7 @@ def test_no_duplicate_rule_id_on_detection_to_pull_exception(mock_error, mock_bu
                                                 'detection': [{'ruleVersion': '34', 'ruleName': 'SampleRule'}]}],
                                               {'rule_id': '456',
                                                'next_page_token': 'foorbar'},
-                                              z, '', {})
+                                              z, '', {}, "CREATED_TIME")
 
     assert z == ['123', '456']
 
@@ -2478,7 +2478,7 @@ def test_detection_to_pull_is_empty_when_2nd_rule_returns_data_with_no_next_toke
                                           [],
                                           {'rule_id': '123',
                                            'next_page_token': 'foorbar'},
-                                          z, '', {})
+                                          z, '', {}, "CREATED_TIME")
 
     assert len(x) == 4
     assert y == {}
@@ -2505,7 +2505,7 @@ def test_when_detection_to_pull_is_not_empty_and_return_empty_result(mock_valida
                                           [],
                                           {'rule_id': 'rule_1',
                                            'next_page_token': 'foorbar'},
-                                          z, '', {})
+                                          z, '', {}, "CREATED_TIME")
 
     assert z == []
     assert y == {}
@@ -2549,7 +2549,7 @@ def test_429_or_500_error_with_max_attempts_60(mock_error, client):
             [],
             detection_to_pull,
             pending_rule_or_version_id,
-            '', simple_backoff_rules)
+            '', simple_backoff_rules, "CREATED_TIME")
 
     assert client.http_client.request.call_count == 93
 
@@ -2591,7 +2591,7 @@ def test_400_and_404_error(mock_error, client):
             [],
             detection_to_pull,
             pending_rule_or_version_id,
-            '', simple_backoff_rules)
+            '', simple_backoff_rules, "CREATED_TIME")
 
 
 def validate_detections_case_4_iteration_1_and_2(incidents):

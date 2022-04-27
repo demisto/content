@@ -1,0 +1,1785 @@
+{
+    "iocs": [
+        {
+            "CustomFields": {
+                "detectionengines": 70,
+                "md5": "09EA1C657418F566C6CDC6A9A8958F39",
+                "positivedetections": 60,
+                "sha1": "72C4310FAF7758C5CE582D652F322BB5179CC5D0",
+                "sha256": "c7169af41589322432b6da2bedf11933126e21857c7dd1bdb80ae4234a489bd8"
+            },
+            "account": "",
+            "aggregatedReliability": "",
+            "calculatedTime": "2020-01-26T14:00:02.486585824Z",
+            "comment": "",
+            "comments": [
+                {
+                    "category": "",
+                    "content": "Created",
+                    "created": "2020-01-26T00:05:47.620736782Z",
+                    "entryId": "",
+                    "id": "6e29ff1a-6308-4607-85da-a9278a381e8a",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutofocusFeed.AutofocusFeed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-01-26T01:04:27.714414213Z",
+                    "entryId": "",
+                    "id": "77a5dc35-4b3e-48d5-8649-f78475b4dac1",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from incident #0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                    "created": "2020-01-26T14:04:27.011058875Z",
+                    "entryId": "",
+                    "id": "3743d719-85d0-4c31-84cb-bc304f88e3b8",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-01-26T14:04:27.011077841Z",
+                    "entryId": "",
+                    "id": "08f3acae-5641-4ac2-8c55-d4ad6b66e187",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Sighted",
+                    "created": "2020-01-26T14:55:30.997164272Z",
+                    "entryId": "",
+                    "id": "a22c167a-355a-4262-8915-8b1a1dfd8f75",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from incident #0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                    "created": "2020-01-26T14:55:31.413540017Z",
+                    "entryId": "",
+                    "id": "77f6923e-7739-4d2e-89ef-8d2d4069c99e",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-01-26T14:55:31.413551953Z",
+                    "entryId": "",
+                    "id": "6017f4da-75a6-45a0-86c3-acc3106982d6",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Expiration status changed from Expired to Active",
+                    "created": "2020-01-26T14:55:31.413564315Z",
+                    "entryId": "",
+                    "id": "014ad0d0-260d-4a9d-8857-d4d51fd1c2b9",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from incident #0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                    "created": "2020-01-26T14:56:32.023162212Z",
+                    "entryId": "",
+                    "id": "f50c4c88-f5f4-4b18-8b95-348363233c81",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from feed",
+                    "created": "2020-01-26T14:58:54.758826649Z",
+                    "entryId": "",
+                    "id": "36a9bd62-f31f-44be-8606-743cbbca6e12",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from incident #0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                    "created": "2020-01-26T15:04:30.488031564Z",
+                    "entryId": "",
+                    "id": "cb987ed0-8848-4919-8495-aa76c50e4ce3",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "deletedFeedFetchTime": "0001-01-01T00:00:00Z",
+            "expiration": "0001-01-01T00:00:00Z",
+            "expirationSource": {
+                "brand": "AutoFocus Feed",
+                "expirationInterval": 0,
+                "expirationPolicy": "never",
+                "instance": "AutoFocus Feed_instance_1",
+                "moduleId": "",
+                "setTime": "2020-01-26T14:55:30.997158868Z",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "expired",
+            "firstSeen": "2020-01-26T14:00:02.486586033Z",
+            "firstSeenEntryID": "API",
+            "id": "91e7607bc60a0f193f1ee5f4855ae7e8",
+            "indicator_type": "File",
+            "insightCache": {
+                "id": "c7169af41589322432b6da2bedf11933126e21857c7dd1bdb80ae4234a489bd8",
+                "modified": "2020-01-26T14:00:01.615516138Z",
+                "scores": {
+                    "VirusTotal": {
+                        "content": "## VirusTotal Hash Reputation for: c7169af41589322432b6da2bedf11933126e21857c7dd1bdb80ae4234a489bd8\nScan date: **2020-01-25 22:16:23**\nPositives / Total: **60/70**\nVT Link: [c7169af41589322432b6da2bedf11933126e21857c7dd1bdb80ae4234a489bd8](https://www.virustotal.com/file/c7169af41589322432b6da2bedf11933126e21857c7dd1bdb80ae4234a489bd8/analysis/1579990583/)\nMD5 / SHA1 / SHA256: **09ea1c657418f566c6cdc6a9a8958f39 / 72c4310faf7758c5ce582d652f322bb5179cc5d0 / c7169af41589322432b6da2bedf11933126e21857c7dd1bdb80ae4234a489bd8**\n\n",
+                        "contentFormat": "markdown",
+                        "context": {
+                            "DBotScore(val.Indicator \u0026\u0026 val.Indicator === obj.Indicator \u0026\u0026 val.Vendor === obj.Vendor \u0026\u0026 val.Type === obj.Type)": [
+                                {
+                                    "Indicator": "c7169af41589322432b6da2bedf11933126e21857c7dd1bdb80ae4234a489bd8",
+                                    "Score": 3,
+                                    "Type": "hash",
+                                    "Vendor": "VirusTotal"
+                                }
+                            ],
+                            "File(val.MD5 \u0026\u0026 val.MD5 === obj.MD5 || val.SHA1 \u0026\u0026 val.SHA1 === obj.SHA1 || val.SHA256 \u0026\u0026 val.SHA256 === obj.SHA256)": [
+                                {
+                                    "DetectionEngines": 70,
+                                    "MD5": "09ea1c657418f566c6cdc6a9a8958f39",
+                                    "Malicious": {
+                                        "Detections": 60,
+                                        "TotalEngines": 70,
+                                        "Vendor": "VirusTotal"
+                                    },
+                                    "PositiveDetections": 60,
+                                    "SHA1": "72c4310faf7758c5ce582d652f322bb5179cc5d0",
+                                    "SHA256": "c7169af41589322432b6da2bedf11933126e21857c7dd1bdb80ae4234a489bd8",
+                                    "VirusTotal": {
+                                        "ScanID": "c8169af41589322432b6da2bedf11933126e21857c7dd1bdb80ae4234a489bd5-1579990583",
+                                        "vtLink": "https://www.virustotal.com/file/c7169af41589322432b6da2bedf11933126e21857c7dd1bdb80ae4234a489bd8/analysis/1579990583/"
+                                    },
+                                    "properties_to_append": [
+                                        "Malicious"
+                                    ]
+                                }
+                            ]
+                        },
+                        "isTypedIndicator": false,
+                        "reliability": "",
+                        "score": 3,
+                        "scoreChangeTimestamp": "2020-01-26T14:00:01.615464635Z",
+                        "timestamp": "2020-01-26T14:00:01.615464635Z",
+                        "type": "hash"
+                    }
+                },
+                "sortValues": null,
+                "version": 1
+            },
+            "investigationIDs": [
+                "0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                "0d3c1a22-751f-40fd-84d1-ac949a6d7344"
+            ],
+            "isShared": false,
+            "lastReputationRun": "2020-01-26T14:00:01.617594572Z",
+            "lastSeen": "2020-01-26T14:00:02.486585824Z",
+            "lastSeenEntryID": "20@0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+            "manualExpirationTime": "0001-01-01T00:00:00Z",
+            "manualScore": false,
+            "manualSetTime": "0001-01-01T00:00:00Z",
+            "manuallyEditedFields": null,
+            "modified": "2020-01-26T15:04:30.556891272Z",
+            "modifiedTime": "2020-01-26T14:55:27Z",
+            "moduleToFeedMap": {
+                "AutoFocus Feed.AutoFocus Feed_instance_1": {
+                    "ExpirationSource": {
+                        "brand": "AutoFocus Feed",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "AutoFocus Feed_instance_1",
+                        "moduleId": "",
+                        "setTime": "2020-01-26T14:55:30.997158868Z",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierVersion": 0,
+                    "expirationInterval": 0,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2020-01-26T14:55:27Z",
+                    "fields": null,
+                    "isEnrichment": false,
+                    "mapperVersion": 0,
+                    "modifiedTime": "2020-01-26T14:55:27Z",
+                    "moduleId": "",
+                    "rawJSON": null,
+                    "reliability": "F - Reliability cannot be judged",
+                    "score": 0,
+                    "sourceBrand": "AutoFocus Feed",
+                    "sourceInstance": "AutoFocus Feed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "File",
+                    "value": "c7169af41589322432b6da2bedf11933126e21857c7dd1bdb80ae4234a489bd8"
+                },
+                "AutofocusFeed.AutofocusFeed_instance_1": {
+                    "ExpirationSource": {
+                        "brand": "AutofocusFeed",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "AutofocusFeed_instance_1",
+                        "moduleId": "",
+                        "setTime": "2020-01-26T00:05:47.57348257Z",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierVersion": 0,
+                    "expirationInterval": 0,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2020-01-26T00:05:43Z",
+                    "fields": null,
+                    "isEnrichment": false,
+                    "mapperVersion": 0,
+                    "modifiedTime": "2020-01-26T00:05:43Z",
+                    "moduleId": "",
+                    "rawJSON": null,
+                    "reliability": "F - Reliability cannot be judged",
+                    "score": 3,
+                    "sourceBrand": "AutofocusFeed",
+                    "sourceInstance": "AutofocusFeed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "File",
+                    "value": "c7169af41589322432b6da2bedf11933126e21857c7dd1bdb80ae4234a489bd8"
+                },
+                "VirusTotal.VirusTotal": {
+                    "ExpirationSource": null,
+                    "bypassExclusionList": false,
+                    "classifierVersion": 0,
+                    "expirationInterval": 0,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2020-01-26T14:00:01.615464635Z",
+                    "fields": null,
+                    "isEnrichment": true,
+                    "mapperVersion": 0,
+                    "modifiedTime": "0001-01-01T00:00:00Z",
+                    "moduleId": "",
+                    "rawJSON": null,
+                    "reliability": "A+ - 3rd party enrichment",
+                    "score": 3,
+                    "sourceBrand": "VirusTotal",
+                    "sourceInstance": "VirusTotal",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "hash",
+                    "value": "c7169af41589322432b6da2bedf11933126e21857c7dd1bdb80ae4234a489bd8"
+                }
+            },
+            "primaryTerm": 1,
+            "relatedIncCount": 2,
+            "score": 0,
+            "sequenceNumber": 4666,
+            "sortValues": null,
+            "sourceBrands": [
+                "VirusTotal",
+                "AutoFocus Feed"
+            ],
+            "sourceInstances": [
+                "VirusTotal",
+                "AutoFocus Feed_instance_1"
+            ],
+            "timestamp": "2020-01-26T14:00:02.487540989Z",
+            "value": "c7169af41589322432b6da2bedf11933126e21857c7dd1bdb80ae4234a489bd8",
+            "version": 1
+        },
+        {
+            "CustomFields": {
+                "detectionengines": 72,
+                "md5": "049E3DB1BBC5717F130A23835AC7A9F2",
+                "positivedetections": 52,
+                "sha1": "C2F5F283F012C969AEBF9AD604AFC4C98DF59A50",
+                "sha256": "ca89474e0fb48e61e3a10f4a67ad21ba1cf0d81bfab03195ae974886acd91780"
+            },
+            "account": "",
+            "aggregatedReliability": "",
+            "calculatedTime": "2020-01-26T13:59:43.960545829Z",
+            "comment": "",
+            "comments": [
+                {
+                    "category": "",
+                    "content": "Created",
+                    "created": "2020-01-26T00:05:47.620324614Z",
+                    "entryId": "",
+                    "id": "c04390e5-652f-461b-8f5a-a8617bd0cf47",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutofocusFeed.AutofocusFeed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-01-26T01:04:27.710687455Z",
+                    "entryId": "",
+                    "id": "a16b6b6d-c02b-4aa4-8906-b68773ab7de0",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from incident #0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                    "created": "2020-01-26T14:04:27.010902867Z",
+                    "entryId": "",
+                    "id": "42e7f10b-310c-49e6-8de1-f810a86ed2ec",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-01-26T14:04:27.010917061Z",
+                    "entryId": "",
+                    "id": "4b23f4ba-f91f-478f-86f6-8ac44bf71de2",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Sighted",
+                    "created": "2020-01-26T14:55:30.997300508Z",
+                    "entryId": "",
+                    "id": "a9aeee0a-0eb2-418e-851a-eff99c8eea7f",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from incident #0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                    "created": "2020-01-26T14:55:31.413742354Z",
+                    "entryId": "",
+                    "id": "d74de4ec-b7cc-4d96-8fb9-676937af2eeb",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-01-26T14:55:31.413754656Z",
+                    "entryId": "",
+                    "id": "d3a24be7-0194-43cb-8a98-576c7ae87a96",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Expiration status changed from Expired to Active",
+                    "created": "2020-01-26T14:55:31.413769217Z",
+                    "entryId": "",
+                    "id": "4cca9eb1-12de-486e-8850-09fc227b4719",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from incident #0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                    "created": "2020-01-26T14:56:32.030458174Z",
+                    "entryId": "",
+                    "id": "4364844f-38b9-42a3-85be-38602fe96a97",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from feed",
+                    "created": "2020-01-26T14:58:54.758826649Z",
+                    "entryId": "",
+                    "id": "4bfd1018-ff7b-4779-8a90-d2a24017dae6",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from incident #0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                    "created": "2020-01-26T15:04:34.689362814Z",
+                    "entryId": "",
+                    "id": "866471ac-5d16-4dcf-8911-a55904449e4e",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "deletedFeedFetchTime": "0001-01-01T00:00:00Z",
+            "expiration": "0001-01-01T00:00:00Z",
+            "expirationSource": {
+                "brand": "AutoFocus Feed",
+                "expirationInterval": 0,
+                "expirationPolicy": "never",
+                "instance": "AutoFocus Feed_instance_1",
+                "moduleId": "",
+                "setTime": "2020-01-26T14:55:30.997296398Z",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "expired",
+            "firstSeen": "2020-01-26T13:59:43.960545957Z",
+            "firstSeenEntryID": "API",
+            "id": "26c0c08683afccdc035032585aaaff89",
+            "indicator_type": "File",
+            "insightCache": {
+                "id": "ca89474e0fb48e61e3a10f4a67ad21ba1cf0d81bfab03195ae974886acd91780",
+                "modified": "2020-01-26T13:59:27.663539237Z",
+                "scores": {
+                    "VirusTotal": {
+                        "content": "## VirusTotal Hash Reputation for: ca89474e0fb48e61e3a10f4a67ad21ba1cf0d81bfab03195ae974886acd91780\nScan date: **2020-01-25 22:10:47**\nPositives / Total: **52/72**\nVT Link: [ca89474e0fb48e61e3a10f4a67ad21ba1cf0d81bfab03195ae974886acd91780](https://www.virustotal.com/file/ca89474e0fb48e61e3a10f4a67ad21ba1cf0d81bfab03195ae974886acd91780/analysis/1579990247/)\nMD5 / SHA1 / SHA256: **049e3db1bbc5717f130a23835ac7a9f2 / c2f5f283f012c969aebf9ad604afc4c98df59a50 / ca89474e0fb48e61e3a10f4a67ad21ba1cf0d81bfab03195ae974886acd91780**\n\n",
+                        "contentFormat": "markdown",
+                        "context": {
+                            "DBotScore(val.Indicator \u0026\u0026 val.Indicator === obj.Indicator \u0026\u0026 val.Vendor === obj.Vendor \u0026\u0026 val.Type === obj.Type)": [
+                                {
+                                    "Indicator": "ca89474e0fb48e61e3a10f4a67ad21ba1cf0d81bfab03195ae974886acd91780",
+                                    "Score": 3,
+                                    "Type": "hash",
+                                    "Vendor": "VirusTotal"
+                                }
+                            ],
+                            "File(val.MD5 \u0026\u0026 val.MD5 === obj.MD5 || val.SHA1 \u0026\u0026 val.SHA1 === obj.SHA1 || val.SHA256 \u0026\u0026 val.SHA256 === obj.SHA256)": [
+                                {
+                                    "DetectionEngines": 72,
+                                    "MD5": "049e3db1bbc5717f130a23835ac7a9f2",
+                                    "Malicious": {
+                                        "Detections": 52,
+                                        "TotalEngines": 72,
+                                        "Vendor": "VirusTotal"
+                                    },
+                                    "PositiveDetections": 52,
+                                    "SHA1": "c2f5f283f012c969aebf9ad604afc4c98df59a50",
+                                    "SHA256": "ca89474e0fb48e61e3a10f4a67ad21ba1cf0d81bfab03195ae974886acd91780",
+                                    "VirusTotal": {
+                                        "ScanID": "ca89474e0fb48e61e3a10f4a67ad21ba1cf0d81bfab03195ae974886acd91780-1579990247",
+                                        "vtLink": "https://www.virustotal.com/file/ca89474e0fb48e61e3a10f4a67ad21ba1cf0d81bfab03195ae974886acd91780/analysis/1579990247/"
+                                    },
+                                    "properties_to_append": [
+                                        "Malicious"
+                                    ]
+                                }
+                            ]
+                        },
+                        "isTypedIndicator": false,
+                        "reliability": "",
+                        "score": 3,
+                        "scoreChangeTimestamp": "2020-01-26T13:59:27.663494823Z",
+                        "timestamp": "2020-01-26T13:59:27.663494823Z",
+                        "type": "hash"
+                    }
+                },
+                "sortValues": null,
+                "version": 1
+            },
+            "investigationIDs": [
+                "0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                "0d3c1a22-751f-40fd-84d1-ac949a6d7344"
+            ],
+            "isShared": false,
+            "lastReputationRun": "2020-01-26T13:59:27.665668275Z",
+            "lastSeen": "2020-01-26T13:59:43.960545829Z",
+            "lastSeenEntryID": "18@0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+            "manualExpirationTime": "0001-01-01T00:00:00Z",
+            "manualScore": false,
+            "manualSetTime": "0001-01-01T00:00:00Z",
+            "manuallyEditedFields": null,
+            "modified": "2020-01-26T15:04:34.734560247Z",
+            "modifiedTime": "2020-01-26T14:55:27Z",
+            "moduleToFeedMap": {
+                "AutoFocus Feed.AutoFocus Feed_instance_1": {
+                    "ExpirationSource": {
+                        "brand": "AutoFocus Feed",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "AutoFocus Feed_instance_1",
+                        "moduleId": "",
+                        "setTime": "2020-01-26T14:55:30.997296398Z",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierVersion": 0,
+                    "expirationInterval": 0,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2020-01-26T14:55:27Z",
+                    "fields": null,
+                    "isEnrichment": false,
+                    "mapperVersion": 0,
+                    "modifiedTime": "2020-01-26T14:55:27Z",
+                    "moduleId": "",
+                    "rawJSON": null,
+                    "reliability": "F - Reliability cannot be judged",
+                    "score": 0,
+                    "sourceBrand": "AutoFocus Feed",
+                    "sourceInstance": "AutoFocus Feed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "File",
+                    "value": "ca89474e0fb48e61e3a10f4a67ad21ba1cf0d81bfab03195ae974886acd91780"
+                },
+                "AutofocusFeed.AutofocusFeed_instance_1": {
+                    "ExpirationSource": {
+                        "brand": "AutofocusFeed",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "AutofocusFeed_instance_1",
+                        "moduleId": "",
+                        "setTime": "2020-01-26T00:05:47.573407537Z",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierVersion": 0,
+                    "expirationInterval": 0,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2020-01-26T00:05:43Z",
+                    "fields": null,
+                    "isEnrichment": false,
+                    "mapperVersion": 0,
+                    "modifiedTime": "2020-01-26T00:05:43Z",
+                    "moduleId": "",
+                    "rawJSON": null,
+                    "reliability": "F - Reliability cannot be judged",
+                    "score": 3,
+                    "sourceBrand": "AutofocusFeed",
+                    "sourceInstance": "AutofocusFeed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "File",
+                    "value": "ca89474e0fb48e61e3a10f4a67ad21ba1cf0d81bfab03195ae974886acd91780"
+                },
+                "VirusTotal.VirusTotal": {
+                    "ExpirationSource": null,
+                    "bypassExclusionList": false,
+                    "classifierVersion": 0,
+                    "expirationInterval": 0,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2020-01-26T13:59:27.663494823Z",
+                    "fields": null,
+                    "isEnrichment": true,
+                    "mapperVersion": 0,
+                    "modifiedTime": "0001-01-01T00:00:00Z",
+                    "moduleId": "",
+                    "rawJSON": null,
+                    "reliability": "A+ - 3rd party enrichment",
+                    "score": 3,
+                    "sourceBrand": "VirusTotal",
+                    "sourceInstance": "VirusTotal",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "hash",
+                    "value": "ca89474e0fb48e61e3a10f4a67ad21ba1cf0d81bfab03195ae974886acd91780"
+                }
+            },
+            "primaryTerm": 1,
+            "relatedIncCount": 2,
+            "score": 0,
+            "sequenceNumber": 5036,
+            "sortValues": null,
+            "sourceBrands": [
+                "VirusTotal",
+                "AutoFocus Feed"
+            ],
+            "sourceInstances": [
+                "VirusTotal",
+                "AutoFocus Feed_instance_1"
+            ],
+            "timestamp": "2020-01-26T13:59:43.960988409Z",
+            "value": "ca89474e0fb48e61e3a10f4a67ad21ba1cf0d81bfab03195ae974886acd91780",
+            "version": 1
+        },
+        {
+            "CustomFields": {
+                "detectionengines": 71,
+                "md5": "EC92A32AB8EDABDB8410C6780CCCB911",
+                "positivedetections": 55,
+                "sha1": "588D9A5A21C17841785C1C408A8B66F7C31CE99D",
+                "sha256": "a58a929c634ca48f5cb6ed1e22a21b113d06fe03ce7ff6420a9a3843651a89f8"
+            },
+            "account": "",
+            "aggregatedReliability": "",
+            "calculatedTime": "2020-01-26T14:00:02.48657488Z",
+            "comment": "",
+            "comments": [
+                {
+                    "category": "",
+                    "content": "Created",
+                    "created": "2020-01-26T00:05:47.627163929Z",
+                    "entryId": "",
+                    "id": "5a813ca5-d269-4f48-8fcd-7e5fd3751add",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutofocusFeed.AutofocusFeed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-01-26T01:04:27.727879119Z",
+                    "entryId": "",
+                    "id": "b4a6cec1-2da6-4934-81fc-5d8ae58aceff",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from incident #0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                    "created": "2020-01-26T14:04:27.011126012Z",
+                    "entryId": "",
+                    "id": "182a2085-25bd-40a2-819c-93ea3e98f8a2",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-01-26T14:04:27.011138897Z",
+                    "entryId": "",
+                    "id": "86fff9a4-b142-4fa1-82ed-4e118fa35be9",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Sighted",
+                    "created": "2020-01-26T14:55:30.997232418Z",
+                    "entryId": "",
+                    "id": "46384ed1-5c5a-4ac2-8b23-cefc5e2aaba3",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from incident #0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                    "created": "2020-01-26T14:55:31.413636075Z",
+                    "entryId": "",
+                    "id": "d72554ea-f821-492e-8fda-16f16de1a14e",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-01-26T14:55:31.413647505Z",
+                    "entryId": "",
+                    "id": "7481b3c5-4985-4998-824f-941720443325",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Expiration status changed from Expired to Active",
+                    "created": "2020-01-26T14:55:31.413660252Z",
+                    "entryId": "",
+                    "id": "85474882-75c6-40f9-83a0-f5d42de90799",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from incident #0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                    "created": "2020-01-26T14:56:32.02880393Z",
+                    "entryId": "",
+                    "id": "5050f996-ebbc-40ce-88ec-70250c28c57d",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from feed",
+                    "created": "2020-01-26T14:58:54.758826649Z",
+                    "entryId": "",
+                    "id": "36223075-652c-4b7d-81a2-a24af10fde04",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "AutoFocus Feed.AutoFocus Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from incident #0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                    "created": "2020-01-26T16:04:27.159839639Z",
+                    "entryId": "",
+                    "id": "704d14c8-e0f8-4ed8-8796-038a631b67c6",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-01-26T16:04:27.159854963Z",
+                    "entryId": "",
+                    "id": "b4e493d9-bcfc-4b3e-8315-6cd76ba5203d",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "deletedFeedFetchTime": "0001-01-01T00:00:00Z",
+            "expiration": "0001-01-01T00:00:00Z",
+            "expirationSource": {
+                "brand": "AutoFocus Feed",
+                "expirationInterval": 0,
+                "expirationPolicy": "never",
+                "instance": "AutoFocus Feed_instance_1",
+                "moduleId": "",
+                "setTime": "2020-01-26T14:55:30.997227867Z",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "expired",
+            "firstSeen": "2020-01-26T14:00:02.486575039Z",
+            "firstSeenEntryID": "API",
+            "id": "9a11779f06fa9a2b08ad5c73b9524f6b",
+            "indicator_type": "File",
+            "insightCache": {
+                "id": "a58a929c634ca48f5cb6ed1e22a21b113d06fe03ce7ff6420a9a3843651a89f8",
+                "modified": "2020-01-26T14:00:00.361023534Z",
+                "scores": {
+                    "VirusTotal": {
+                        "content": "## VirusTotal Hash Reputation for: a58a929c634ca48f5cb6ed1e22a21b113d06fe03ce7ff6420a9a3843651a89f8\nScan date: **2020-01-25 22:16:15**\nPositives / Total: **55/71**\nVT Link: [a58a929c634ca48f5cb6ed1e22a21b113d06fe03ce7ff6420a9a3843651a89f8](https://www.virustotal.com/file/a58a929c634ca48f5cb6ed1e22a21b113d06fe03ce7ff6420a9a3843651a89f8/analysis/1579990575/)\nMD5 / SHA1 / SHA256: **ec92a32ab8edabdb8410c6780cccb911 / 588d9a5a21c17841785c1c408a8b66f7c31ce99d / a58a929c634ca48f5cb6ed1e22a21b113d06fe03ce7ff6420a9a3843651a89f8**\n\n",
+                        "contentFormat": "markdown",
+                        "context": {
+                            "DBotScore(val.Indicator \u0026\u0026 val.Indicator === obj.Indicator \u0026\u0026 val.Vendor === obj.Vendor \u0026\u0026 val.Type === obj.Type)": [
+                                {
+                                    "Indicator": "a58a929c634ca48f5cb6ed1e22a21b113d06fe03ce7ff6420a9a3843651a89f8",
+                                    "Score": 3,
+                                    "Type": "hash",
+                                    "Vendor": "VirusTotal"
+                                }
+                            ],
+                            "File(val.MD5 \u0026\u0026 val.MD5 === obj.MD5 || val.SHA1 \u0026\u0026 val.SHA1 === obj.SHA1 || val.SHA256 \u0026\u0026 val.SHA256 === obj.SHA256)": [
+                                {
+                                    "DetectionEngines": 71,
+                                    "MD5": "ec92a32ab8edabdb8410c6780cccb911",
+                                    "Malicious": {
+                                        "Detections": 55,
+                                        "TotalEngines": 71,
+                                        "Vendor": "VirusTotal"
+                                    },
+                                    "PositiveDetections": 55,
+                                    "SHA1": "588d9a5a21c17841785c1c408a8b66f7c31ce99d",
+                                    "SHA256": "a58a929c634ca48f5cb6ed1e22a21b113d06fe03ce7ff6420a9a3843651a89f8",
+                                    "VirusTotal": {
+                                        "ScanID": "a58a929c634ca48f5cb6ed1e22a21b113d06fe03ce7ff6420a9a3843651a89f8-1579990575",
+                                        "vtLink": "https://www.virustotal.com/file/a58a929c634ca48f5cb6ed1e22a21b113d06fe03ce7ff6420a9a3843651a89f8/analysis/1579990575/"
+                                    },
+                                    "properties_to_append": [
+                                        "Malicious"
+                                    ]
+                                }
+                            ]
+                        },
+                        "isTypedIndicator": false,
+                        "reliability": "",
+                        "score": 3,
+                        "scoreChangeTimestamp": "2020-01-26T14:00:00.360979416Z",
+                        "timestamp": "2020-01-26T14:00:00.360979416Z",
+                        "type": "hash"
+                    }
+                },
+                "sortValues": null,
+                "version": 1
+            },
+            "investigationIDs": [
+                "0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+                "0d3c1a22-751f-40fd-84d1-ac949a6d7344"
+            ],
+            "isShared": false,
+            "lastReputationRun": "2020-01-26T14:00:00.362991911Z",
+            "lastSeen": "2020-01-26T14:00:02.48657488Z",
+            "lastSeenEntryID": "20@0d3c1a22-751f-40fd-84d1-ac949a6d7344",
+            "manualExpirationTime": "0001-01-01T00:00:00Z",
+            "manualScore": false,
+            "manualSetTime": "0001-01-01T00:00:00Z",
+            "manuallyEditedFields": null,
+            "modified": "2020-01-26T16:04:27.164661331Z",
+            "modifiedTime": "2020-01-26T14:55:27Z",
+            "moduleToFeedMap": {
+                "AutoFocus Feed.AutoFocus Feed_instance_1": {
+                    "ExpirationSource": {
+                        "brand": "AutoFocus Feed",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "AutoFocus Feed_instance_1",
+                        "moduleId": "",
+                        "setTime": "2020-01-26T14:55:30.997227867Z",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierVersion": 0,
+                    "expirationInterval": 0,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2020-01-26T14:55:27Z",
+                    "fields": null,
+                    "isEnrichment": false,
+                    "mapperVersion": 0,
+                    "modifiedTime": "2020-01-26T14:55:27Z",
+                    "moduleId": "",
+                    "rawJSON": null,
+                    "reliability": "F - Reliability cannot be judged",
+                    "score": 0,
+                    "sourceBrand": "AutoFocus Feed",
+                    "sourceInstance": "AutoFocus Feed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "File",
+                    "value": "a58a929c634ca48f5cb6ed1e22a21b113d06fe03ce7ff6420a9a3843651a89f8"
+                },
+                "AutofocusFeed.AutofocusFeed_instance_1": {
+                    "ExpirationSource": {
+                        "brand": "AutofocusFeed",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "AutofocusFeed_instance_1",
+                        "moduleId": "",
+                        "setTime": "2020-01-26T00:05:47.575380494Z",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierVersion": 0,
+                    "expirationInterval": 0,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2020-01-26T00:05:43Z",
+                    "fields": null,
+                    "isEnrichment": false,
+                    "mapperVersion": 0,
+                    "modifiedTime": "2020-01-26T00:05:43Z",
+                    "moduleId": "",
+                    "rawJSON": null,
+                    "reliability": "F - Reliability cannot be judged",
+                    "score": 3,
+                    "sourceBrand": "AutofocusFeed",
+                    "sourceInstance": "AutofocusFeed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "File",
+                    "value": "a58a929c634ca48f5cb6ed1e22a21b113d06fe03ce7ff6420a9a3843651a89f8"
+                },
+                "VirusTotal.VirusTotal": {
+                    "ExpirationSource": null,
+                    "bypassExclusionList": false,
+                    "classifierVersion": 0,
+                    "expirationInterval": 0,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2020-01-26T14:00:00.360979416Z",
+                    "fields": null,
+                    "isEnrichment": true,
+                    "mapperVersion": 0,
+                    "modifiedTime": "0001-01-01T00:00:00Z",
+                    "moduleId": "",
+                    "rawJSON": null,
+                    "reliability": "A+ - 3rd party enrichment",
+                    "score": 3,
+                    "sourceBrand": "VirusTotal",
+                    "sourceInstance": "VirusTotal",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "hash",
+                    "value": "a58a929c634ca48f5cb6ed1e22a21b113d06fe03ce7ff6420a9a3843651a89f8"
+                }
+            },
+            "primaryTerm": 1,
+            "relatedIncCount": 2,
+            "score": 0,
+            "sequenceNumber": 5345,
+            "sortValues": null,
+            "sourceBrands": [
+                "VirusTotal",
+                "AutoFocus Feed"
+            ],
+            "sourceInstances": [
+                "VirusTotal",
+                "AutoFocus Feed_instance_1"
+            ],
+            "timestamp": "2020-01-26T14:00:02.488463912Z",
+            "value": "a58a929c634ca48f5cb6ed1e22a21b113d06fe03ce7ff6420a9a3843651a89f8",
+            "version": 1
+        },
+        {
+            "CustomFields": {
+                "md5": "CEB9079AA2414B2AA816779CE5A34AC2"
+            },
+            "account": "",
+            "aggregatedReliability": "",
+            "calculatedTime": "2020-03-04T19:01:04.177500909Z",
+            "comment": "",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Created",
+                    "created": "2020-02-23T21:00:47.138886063Z",
+                    "entryId": "3@72552",
+                    "id": "744d837f-ed92-407a-8096-019656ca2387",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@72552",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-02-23T21:05:39.331934047Z",
+                    "entryId": "",
+                    "id": "bf3b9955-c9b9-449f-80c1-3996a7f97a2d",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-02-24T08:04:47.728600526Z",
+                    "entryId": "",
+                    "id": "ebfa6d0d-7b42-49f2-8a2d-38629a4152a1",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-02-24T15:04:47.423576621Z",
+                    "entryId": "",
+                    "id": "f4308983-65cc-4e40-82a8-8c16f9cf4292",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-02-24T23:04:47.877823524Z",
+                    "entryId": "",
+                    "id": "7a414278-17d4-45ea-8fcb-ab9f1328f1df",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-02-27T23:00:57.172873612Z",
+                    "entryId": "3@76258",
+                    "id": "efc8cf2a-e92b-45ad-8cd0-6f307d4687a2",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@76258",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-02-28T08:02:42.024850009Z",
+                    "entryId": "3@76854",
+                    "id": "7ba8b187-8597-4183-821e-1ed2a010d55c",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@76854",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-02-28T11:00:51.717772126Z",
+                    "entryId": "3@76998",
+                    "id": "9ce63c78-b744-4086-84bf-e4f5cfa03aaf",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@76998",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-02-28T19:00:55.898533416Z",
+                    "entryId": "3@77126",
+                    "id": "2bc2a8f7-3c97-45a7-88f2-9a4f4b06438b",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@77126",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-02-28T23:01:01.340337752Z",
+                    "entryId": "3@77183",
+                    "id": "5d264c00-4095-447d-8842-a3e7900408c3",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@77183",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-02-29T03:00:57.67730626Z",
+                    "entryId": "3@77234",
+                    "id": "b49804fe-47aa-43f4-8a0a-b77722baa033",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@77234",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-03-02T18:00:56.693166228Z",
+                    "entryId": "3@79895",
+                    "id": "7efd4144-15b4-4699-8273-0579fae946dc",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@79895",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-03-04T19:01:03.771245335Z",
+                    "entryId": "8@81897",
+                    "id": "68e9a3f7-704e-4074-8a3d-9e428c75b506",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "8@81897",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "deletedFeedFetchTime": "0001-01-01T00:00:00Z",
+            "expiration": "0001-01-01T00:00:00Z",
+            "expirationSource": {
+                "brand": "VirusTotal",
+                "expirationInterval": 0,
+                "expirationPolicy": "never",
+                "instance": "VirusTotal",
+                "moduleId": "VirusTotal",
+                "setTime": "2020-03-04T19:01:03.771221279Z",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "2020-02-23T21:00:47.138861282Z",
+            "id": "32aaad327e4171cb4fe832d8c1cf2ff1",
+            "indicator_type": "File",
+            "insightCache": {
+                "id": "ceb9079aa2414b2aa816779ce5a34ac2",
+                "modified": "2020-03-02T18:01:12.877334511Z",
+                "scores": {
+                    "VirusTotal": {
+                        "content": "VirusTotal does not have details about ceb9079aa2414b2aa816779ce5a34ac2\nThe requested resource is not among the finished, queued or pending scans",
+                        "contentFormat": "markdown",
+                        "context": {
+                            "DBotScore(val.Indicator \u0026\u0026 val.Indicator === obj.Indicator \u0026\u0026 val.Vendor === obj.Vendor \u0026\u0026 val.Type === obj.Type)": {
+                                "Indicator": "ceb9079aa2414b2aa816779ce5a34ac2",
+                                "Score": 0,
+                                "Type": "hash",
+                                "Vendor": "VirusTotal"
+                            }
+                        },
+                        "isTypedIndicator": false,
+                        "reliability": "",
+                        "score": 0,
+                        "scoreChangeTimestamp": "2020-02-23T21:00:34.635339774Z",
+                        "timestamp": "2020-03-02T18:01:12.877322609Z",
+                        "type": "hash"
+                    },
+                    "illuminate": {
+                        "content": "### illuminate File Information\n**No entries.**\n",
+                        "contentFormat": "markdown",
+                        "context": {
+                            "DBotScore": {
+                                "Indicator": "ceb9079aa2414b2aa816779ce5a34ac2",
+                                "Score": 3,
+                                "Type": "file",
+                                "Vendor": "illuminate"
+                            },
+                            "File(val.MD5 \u0026\u0026 val.MD5 === obj.MD5)": {
+                                "MD5": "ceb9079aa2414b2aa816779ce5a34ac2",
+                                "Malicious": {
+                                    "Description": "illuminate has determined that this indicator is malicious via internal analysis.",
+                                    "Vendor": "illuminate"
+                                }
+                            },
+                            "Illuminate.File(val.ID \u0026\u0026 val.ID === obj.ID)": {
+                                "Active": null,
+                                "ActivityDates": [],
+                                "Actors": {},
+                                "ConfidenceLevel": null,
+                                "EvidenceCount": null,
+                                "FirstHit": null,
+                                "HitCount": null,
+                                "ID": null,
+                                "IlluminateLink": null,
+                                "Indicator": null,
+                                "LastHit": null,
+                                "Malwares": {},
+                                "ReportedDates": []
+                            }
+                        },
+                        "isTypedIndicator": false,
+                        "reliability": "",
+                        "score": 3,
+                        "scoreChangeTimestamp": "2020-02-27T06:00:43.450544679Z",
+                        "timestamp": "2020-02-28T23:01:10.297640483Z",
+                        "type": "file"
+                    }
+                },
+                "sortValues": null,
+                "version": 60
+            },
+            "investigationIDs": null,
+            "isShared": false,
+            "lastReputationRun": "2020-03-04T19:00:39.773484832Z",
+            "lastSeen": "2020-03-04T19:01:04.177500909Z",
+            "manualExpirationTime": "0001-01-01T00:00:00Z",
+            "manualScore": false,
+            "manualSetTime": "0001-01-01T00:00:00Z",
+            "manuallyEditedFields": null,
+            "modified": "2020-03-05T01:33:00.834112731Z",
+            "modifiedTime": "2020-03-02T18:01:12.877322609Z",
+            "moduleToFeedMap": {
+                "VirusTotal": {
+                    "ExpirationSource": {
+                        "brand": "VirusTotal",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "VirusTotal",
+                        "moduleId": "VirusTotal",
+                        "setTime": "2020-03-04T19:01:03.771221279Z",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierVersion": 0,
+                    "expirationInterval": 0,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2020-03-02T18:01:12.877322609Z",
+                    "fields": null,
+                    "isEnrichment": true,
+                    "mapperVersion": 0,
+                    "modifiedTime": "0001-01-01T00:00:00Z",
+                    "moduleId": "VirusTotal",
+                    "rawJSON": null,
+                    "reliability": "A+ - 3rd party enrichment",
+                    "score": 0,
+                    "sourceBrand": "VirusTotal",
+                    "sourceInstance": "VirusTotal",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "File",
+                    "value": "ceb9079aa2414b2aa816779ce5a34ac2"
+                },
+                "illuminate": {
+                    "ExpirationSource": {
+                        "brand": "illuminate",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "illuminate",
+                        "moduleId": "illuminate",
+                        "setTime": "2020-03-04T19:01:03.771191368Z",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierVersion": 0,
+                    "expirationInterval": 0,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2020-02-28T23:01:10.297640483Z",
+                    "fields": {
+                        "md5": "CEB9079AA2414B2AA816779CE5A34AC2"
+                    },
+                    "isEnrichment": true,
+                    "mapperVersion": 0,
+                    "modifiedTime": "0001-01-01T00:00:00Z",
+                    "moduleId": "illuminate",
+                    "rawJSON": null,
+                    "reliability": "A+ - 3rd party enrichment",
+                    "score": 3,
+                    "sourceBrand": "illuminate",
+                    "sourceInstance": "illuminate",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "File",
+                    "value": "ceb9079aa2414b2aa816779ce5a34ac2"
+                }
+            },
+            "primaryTerm": 1,
+            "relatedIncCount": 0,
+            "score": 0,
+            "sequenceNumber": 571839,
+            "sortValues": null,
+            "sourceBrands": [
+                "illuminate",
+                "VirusTotal"
+            ],
+            "sourceInstances": [
+                "illuminate",
+                "VirusTotal"
+            ],
+            "timestamp": "2020-03-04T19:01:04.183593529Z",
+            "value": "ceb9079aa2414b2aa816779ce5a34ac2",
+            "version": 1
+        },
+        {
+            "CustomFields": {
+                "md5": "a3b4674185fc42dbb082bc7be31f4fe8"
+            },
+            "account": "",
+            "aggregatedReliability": "",
+            "calculatedTime": "2020-03-04T06:01:07.420903805Z",
+            "comment": "",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Created",
+                    "created": "2020-02-24T09:03:22.942364861Z",
+                    "entryId": "3@73199",
+                    "id": "e6b566ca-01bc-4d99-88ca-5f83f4d552d2",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@73199",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-02-24T09:04:47.973861607Z",
+                    "entryId": "",
+                    "id": "9e97962d-2953-46dd-8a4f-1876e4dfe51d",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-02-24T12:04:47.822435322Z",
+                    "entryId": "",
+                    "id": "8c73adf0-0dc8-43b4-8f51-26920c05c14f",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-02-24T19:04:47.515614089Z",
+                    "entryId": "",
+                    "id": "be66dce1-4b72-4a6e-85d5-c265e4788556",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-02-27T14:00:56.969104176Z",
+                    "entryId": "3@76108",
+                    "id": "2b535882-88f9-4238-82b0-9976f68edffc",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@76108",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-02-27T21:00:52.49865667Z",
+                    "entryId": "3@76222",
+                    "id": "51bb4a8a-55e1-4f81-84f8-a77d17112bf5",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@76222",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-02-28T22:00:54.353669488Z",
+                    "entryId": "3@77166",
+                    "id": "cd925709-fc02-454b-8112-7f041d7f5c3e",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@77166",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-03-01T10:01:22.81104867Z",
+                    "entryId": "3@78827",
+                    "id": "b01347da-76f4-4086-8e13-13082dc5c3aa",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@78827",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-03-02T11:01:21.923611271Z",
+                    "entryId": "3@79765",
+                    "id": "601807c4-d0f9-412d-81d8-abbc92c3a005",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@79765",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-03-02T12:01:10.423265287Z",
+                    "entryId": "3@79784",
+                    "id": "e39efd2e-c68f-4618-8ef9-30a5191cd4b0",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@79784",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-03-03T08:02:41.238213222Z",
+                    "entryId": "3@80609",
+                    "id": "66265940-a326-466c-8836-6b94a99bb3c9",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@80609",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-03-03T12:01:15.589233008Z",
+                    "entryId": "3@80767",
+                    "id": "8f1fcd1b-5de2-4274-85ac-8c6bc0fb547c",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@80767",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-03-03T16:01:05.018889942Z",
+                    "entryId": "8@80840",
+                    "id": "d9ade2c7-858b-4136-8f12-4f364c1664f3",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "8@80840",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-03-03T23:01:08.678933832Z",
+                    "entryId": "3@80975",
+                    "id": "132d83ab-9455-49aa-8479-58cc9650d779",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "3@80975",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-03-03T23:01:16.542806333Z",
+                    "entryId": "8@80975",
+                    "id": "a814e4c4-57bc-4d2e-8640-14829da475aa",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "8@80975",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-03-04T03:01:32.513954602Z",
+                    "entryId": "8@81019",
+                    "id": "282be7d1-8189-4f93-848a-f241fce4f236",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "8@81019",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Reputation changed from Bad to None",
+                    "created": "2020-03-04T06:01:07.41478882Z",
+                    "entryId": "8@81065",
+                    "id": "3dc357f2-c1f5-4e09-8eaf-f9f7d550293a",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "8@81065",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "deletedFeedFetchTime": "0001-01-01T00:00:00Z",
+            "expiration": "0001-01-01T00:00:00Z",
+            "expirationSource": {
+                "brand": "VirusTotal",
+                "expirationInterval": 0,
+                "expirationPolicy": "never",
+                "instance": "VirusTotal",
+                "moduleId": "VirusTotal",
+                "setTime": "2020-03-04T06:01:07.41473864Z",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "2020-02-24T09:03:22.942339227Z",
+            "id": "d2e4cf7751722795c136c011a71c91fe",
+            "indicator_type": "File",
+            "insightCache": {
+                "id": "a3b4674185fc42dbb082bc7be31f4fe8",
+                "modified": "2020-03-03T12:01:10.054980056Z",
+                "scores": {
+                    "VirusTotal": {
+                        "content": "VirusTotal does not have details about a3b4674185fc42dbb082bc7be31f4fe8\nThe requested resource is not among the finished, queued or pending scans",
+                        "contentFormat": "markdown",
+                        "context": {
+                            "DBotScore(val.Indicator \u0026\u0026 val.Indicator === obj.Indicator \u0026\u0026 val.Vendor === obj.Vendor \u0026\u0026 val.Type === obj.Type)": {
+                                "Indicator": "a3b4674185fc42dbb082bc7be31f4fe8",
+                                "Score": 0,
+                                "Type": "hash",
+                                "Vendor": "VirusTotal"
+                            }
+                        },
+                        "isTypedIndicator": false,
+                        "reliability": "",
+                        "score": 0,
+                        "scoreChangeTimestamp": "2020-02-24T09:00:30.105291803Z",
+                        "timestamp": "2020-03-03T12:01:10.054961652Z",
+                        "type": "hash"
+                    },
+                    "illuminate": {
+                        "content": "### illuminate File Information\n**No entries.**\n",
+                        "contentFormat": "markdown",
+                        "context": {
+                            "DBotScore": {
+                                "Indicator": "a3b4674185fc42dbb082bc7be31f4fe8",
+                                "Score": 3,
+                                "Type": "file",
+                                "Vendor": "illuminate"
+                            },
+                            "File(val.MD5 \u0026\u0026 val.MD5 === obj.MD5)": {
+                                "MD5": "a3b4674185fc42dbb082bc7be31f4fe8",
+                                "Malicious": {
+                                    "Description": "illuminate has determined that this indicator is malicious via internal analysis.",
+                                    "Vendor": "illuminate"
+                                }
+                            },
+                            "Illuminate.File(val.ID \u0026\u0026 val.ID === obj.ID)": {
+                                "Active": null,
+                                "ActivityDates": [],
+                                "Actors": {},
+                                "ConfidenceLevel": null,
+                                "EvidenceCount": null,
+                                "FirstHit": null,
+                                "HitCount": null,
+                                "ID": null,
+                                "IlluminateLink": null,
+                                "Indicator": null,
+                                "LastHit": null,
+                                "Malwares": {},
+                                "ReportedDates": []
+                            }
+                        },
+                        "isTypedIndicator": false,
+                        "reliability": "",
+                        "score": 3,
+                        "scoreChangeTimestamp": "2020-02-27T08:00:20.743275548Z",
+                        "timestamp": "2020-02-28T22:01:04.0490995Z",
+                        "type": "file"
+                    }
+                },
+                "sortValues": null,
+                "version": 49
+            },
+            "investigationIDs": null,
+            "isShared": false,
+            "lastReputationRun": "2020-03-04T06:00:40.084050712Z",
+            "lastSeen": "2020-03-04T06:01:07.420903805Z",
+            "manualExpirationTime": "0001-01-01T00:00:00Z",
+            "manualScore": false,
+            "manualSetTime": "0001-01-01T00:00:00Z",
+            "manuallyEditedFields": null,
+            "modified": "2020-03-05T01:33:00.817329044Z",
+            "modifiedTime": "2020-03-03T12:01:10.054961652Z",
+            "moduleToFeedMap": {
+                "VirusTotal": {
+                    "ExpirationSource": {
+                        "brand": "VirusTotal",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "VirusTotal",
+                        "moduleId": "VirusTotal",
+                        "setTime": "2020-03-04T06:01:07.41473864Z",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierVersion": 0,
+                    "expirationInterval": 0,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2020-03-03T12:01:10.054961652Z",
+                    "fields": null,
+                    "isEnrichment": true,
+                    "mapperVersion": 0,
+                    "modifiedTime": "0001-01-01T00:00:00Z",
+                    "moduleId": "VirusTotal",
+                    "rawJSON": null,
+                    "reliability": "A+ - 3rd party enrichment",
+                    "score": 0,
+                    "sourceBrand": "VirusTotal",
+                    "sourceInstance": "VirusTotal",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "File",
+                    "value": "a3b4674185fc42dbb082bc7be31f4fe8"
+                },
+                "illuminate": {
+                    "ExpirationSource": {
+                        "brand": "illuminate",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "illuminate",
+                        "moduleId": "illuminate",
+                        "setTime": "2020-03-04T06:01:07.414761955Z",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierVersion": 0,
+                    "expirationInterval": 0,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2020-02-28T22:01:04.0490995Z",
+                    "fields": {
+                        "md5": "a3b4674185fc42dbb082bc7be31f4fe8"
+                    },
+                    "isEnrichment": true,
+                    "mapperVersion": 0,
+                    "modifiedTime": "0001-01-01T00:00:00Z",
+                    "moduleId": "illuminate",
+                    "rawJSON": null,
+                    "reliability": "A+ - 3rd party enrichment",
+                    "score": 3,
+                    "sourceBrand": "illuminate",
+                    "sourceInstance": "illuminate",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "File",
+                    "value": "a3b4674185fc42dbb082bc7be31f4fe8"
+                }
+            },
+            "primaryTerm": 1,
+            "relatedIncCount": 0,
+            "score": 0,
+            "sequenceNumber": 571749,
+            "sortValues": null,
+            "sourceBrands": [
+                "VirusTotal",
+                "illuminate"
+            ],
+            "sourceInstances": [
+                "VirusTotal",
+                "illuminate"
+            ],
+            "timestamp": "2020-03-04T06:01:07.464476198Z",
+            "value": "a3b4674185fc42dbb082bc7be31f4fe8",
+            "version": 1
+        }
+    ],
+    "total": 5
+}

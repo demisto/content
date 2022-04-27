@@ -1,0 +1,867 @@
+id: GoogleSheets-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: GoogleSheets-Test
+description: Test play book for all the GoogleSheets commands - Notice the last task
+  is from Google Drive integration to delete the created file
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e001b15f-a10c-43ff-84fa-6932a7688416
+    type: start
+    task:
+      id: e001b15f-a10c-43ff-84fa-6932a7688416
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9d046c2c-7fdc-4563-8644-4bbe3675f041
+    type: regular
+    task:
+      id: 9d046c2c-7fdc-4563-8644-4bbe3675f041
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 74602c4d-d37b-4ed2-8c39-1e1f9873031f
+    type: regular
+    task:
+      id: 74602c4d-d37b-4ed2-8c39-1e1f9873031f
+      version: -1
+      name: google-sheets-spreadsheet-create
+      description: Create a new Spreadsheet
+      script: GoogleSheets|||google-sheets-spreadsheet-create
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      cell_format_type:
+        simple: TEXT
+      sheet_title:
+        simple: Sheet1
+      sheet_type:
+        simple: GRID
+      title:
+        simple: PlayBook-Spreadsheet
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 79081de2-5d53-4b04-872b-c724091b14d0
+    type: regular
+    task:
+      id: 79081de2-5d53-4b04-872b-c724091b14d0
+      version: -1
+      name: google-sheets-spreadsheet-get
+      description: Returns the spreadsheet at the given ID
+      script: GoogleSheets|||google-sheets-spreadsheet-get
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      include_grid_data:
+        simple: "true"
+      spreadsheet_id:
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7c5cc4bd-ab53-4fbb-852c-98d9c9f4d157
+    type: regular
+    task:
+      id: 7c5cc4bd-ab53-4fbb-852c-98d9c9f4d157
+      version: -1
+      name: google-sheets-sheet-create
+      description: Adds a new sheet. When a sheet is added at a given index, all subsequent
+        sheets' indexes are incremented
+      script: GoogleSheets|||google-sheets-sheet-create
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      echo_spreadsheet:
+        simple: "false"
+      sheet_id:
+        simple: "5"
+      sheet_index:
+        simple: "1"
+      sheet_title:
+        simple: Sheet2
+      spreadsheet_id:
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 3fdc0cf8-f294-4cbc-846a-92fdf7ec1a32
+    type: regular
+    task:
+      id: 3fdc0cf8-f294-4cbc-846a-92fdf7ec1a32
+      version: -1
+      name: google-sheets-value-update
+      description: Sets values in a range of a spreadsheet. The caller must specify
+        the spreadsheet ID, range, and a valueInputOption.
+      script: GoogleSheets|||google-sheets-value-update
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      input_option:
+        simple: RAW
+      major_dimension:
+        simple: ROWS
+      range:
+        simple: Sheet1!A1:D8
+      spreadsheet_id:
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
+      values:
+        simple: '[1,2,3],[4,5,6]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 8fd984be-19ad-4427-82e1-0065a226ae44
+    type: regular
+    task:
+      id: 8fd984be-19ad-4427-82e1-0065a226ae44
+      version: -1
+      name: google-sheets-sheet-copy-to
+      description: Copies a single sheet from a spreadsheet to another spreadsheet
+      script: GoogleSheets|||google-sheets-sheet-copy-to
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      destination_spreadsheet_id:
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
+      source_sheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet.sheets
+          accessor: sheetId
+          transformers:
+          - operator: FirstArrayElement
+      source_spreadsheet_id:
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 53381f19-fe30-4ef3-841a-8fe1ed0201ff
+    type: regular
+    task:
+      id: 53381f19-fe30-4ef3-841a-8fe1ed0201ff
+      version: -1
+      name: google-sheets-spreadsheet-get
+      description: Returns the spreadsheet at the given ID
+      script: GoogleSheets|||google-sheets-spreadsheet-get
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      include_grid_data:
+        simple: "true"
+      spreadsheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet
+          accessor: spreadsheetId
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7c9d947c-bcef-414b-8a04-14bb5d6b1c34
+    type: regular
+    task:
+      id: 7c9d947c-bcef-414b-8a04-14bb5d6b1c34
+      version: -1
+      name: google-sheets-sheet-duplicate
+      description: Duplicates the contents of a sheet
+      script: GoogleSheets|||google-sheets-sheet-duplicate
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      new_sheet_index:
+        simple: "0"
+      new_sheet_name:
+        simple: duplicatedSheet
+      source_sheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet.sheets
+          accessor: sheetId
+          transformers:
+          - operator: FirstArrayElement
+      spreadsheet_id:
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 2f392a79-10ce-4663-87b0-56929fd73f98
+    type: regular
+    task:
+      id: 2f392a79-10ce-4663-87b0-56929fd73f98
+      version: -1
+      name: google-sheets-sheet-delete
+      description: Delete a sheet from a spreadsheet by id
+      script: GoogleSheets|||google-sheets-sheet-delete
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      echo_spreadsheet:
+        simple: "false"
+      sheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet.sheets
+          accessor: sheetId
+          transformers:
+          - operator: FirstArrayElement
+      spreadsheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet
+          accessor: spreadsheetId
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 28376dc0-82ac-427a-84c6-340723a99f43
+    type: regular
+    task:
+      id: 28376dc0-82ac-427a-84c6-340723a99f43
+      version: -1
+      name: google-sheets-value-append
+      description: Appends values to a spreadsheet. The input range is used to search
+        for existing data and find a "table" within that range. Values will be appended
+        to the next row of the table, starting with the first column of the table.
+        See the guide and sample code for specific details of how tables are detected
+        and data is appended.  The caller must specify the spreadsheet ID, range,
+        and a valueInputOption. The valueInputOption only controls how the input data
+        will be added to the sheet (column-wise or row-wise), it does not influence
+        what cell the data starts being written to.
+      script: GoogleSheets|||google-sheets-value-append
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      input_option:
+        simple: RAW
+      insert_option:
+        simple: INSERT_ROWS
+      major_dimension:
+        simple: ROWS
+      range:
+        simple: Sheet1!A1:D8
+      spreadsheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet
+          accessor: spreadsheetId
+          transformers:
+          - operator: FirstArrayElement
+      values:
+        simple: '[7,7,7],[7,7,7]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 98befb3f-26a7-40a0-8572-e737ee820c2d
+    type: regular
+    task:
+      id: 98befb3f-26a7-40a0-8572-e737ee820c2d
+      version: -1
+      name: google-sheets-find-replace
+      description: Finds and replaces data in cells over a range, sheet, or all sheets.
+      script: GoogleSheets|||google-sheets-find-replace
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all_sheets:
+        simple: "True"
+      find:
+        simple: "7"
+      match_case:
+        simple: "False"
+      match_entire_cell:
+        simple: "False"
+      replacement:
+        simple: '@@'
+      spreadsheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet
+          accessor: spreadsheetId
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 75e2cc2d-a4cf-434c-812c-916c092fc6ca
+    type: regular
+    task:
+      id: 75e2cc2d-a4cf-434c-812c-916c092fc6ca
+      version: -1
+      name: google-sheets-range-delete
+      description: Deletes a range of cells, shifting other cells into the deleted
+        area.
+      script: GoogleSheets|||google-sheets-range-delete
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      end_column_index:
+        simple: "3"
+      end_row_index:
+        simple: "3"
+      sheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet.sheets
+          accessor: sheetId
+          transformers:
+          - operator: FirstArrayElement
+      shift_dimension:
+        simple: ROWS
+      spreadsheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet
+          accessor: spreadsheetId
+          transformers:
+          - operator: FirstArrayElement
+      start_column_index:
+        simple: "0"
+      start_row_index:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: a8722fd9-2fd2-46bb-8202-1a95f89cf248
+    type: regular
+    task:
+      id: a8722fd9-2fd2-46bb-8202-1a95f89cf248
+      version: -1
+      name: google-sheets-sheet-clear
+      description: Clears values from a spreadsheet. The caller must specify the spreadsheet
+        ID and range. Only values are cleared -- all other properties of the cell
+        (such as formatting, data validation, etc..) are kept.
+      script: GoogleSheets|||google-sheets-sheet-clear
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      range:
+        simple: Sheet1!A1:D8
+      spreadsheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet
+          accessor: spreadsheetId
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4af63623-2df9-4b2e-897a-68d2e9590ab2
+    type: regular
+    task:
+      id: 4af63623-2df9-4b2e-897a-68d2e9590ab2
+      version: -1
+      name: google-sheets-data-paste
+      description: Inserts data into the spreadsheet starting at the specified coordinate.
+      script: GoogleSheets|||google-sheets-data-paste
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      column_index:
+        simple: "10"
+      data:
+        simple: 1,2,3,4,5,6
+      data_kind:
+        simple: delimiter
+      paste_type:
+        simple: NORMAL
+      row_index:
+        simple: "10"
+      sheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet.sheets
+          accessor: sheetId
+          transformers:
+          - operator: FirstArrayElement
+      spreadsheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet
+          accessor: spreadsheetId
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: b81a8acf-35dc-45f3-8dca-874645f9fa78
+    type: regular
+    task:
+      id: b81a8acf-35dc-45f3-8dca-874645f9fa78
+      version: -1
+      name: google-sheets-dimension-delete
+      description: Deletes the dimensions from the sheet. notice the indexing starts
+        from 0
+      script: GoogleSheets|||google-sheets-dimension-delete
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      dimension_type:
+        simple: ROWS
+      dimention_type:
+        simple: ROWS
+      end_index:
+        simple: "2"
+      sheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet.sheets
+          accessor: sheetId
+          transformers:
+          - operator: FirstArrayElement
+      spreadsheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet
+          accessor: spreadsheetId
+          transformers:
+          - operator: FirstArrayElement
+      start_index:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 4b28146b-2532-4a39-816f-1e517feb8bed
+    type: regular
+    task:
+      id: 4b28146b-2532-4a39-816f-1e517feb8bed
+      version: -1
+      name: google-sheets-spreadsheet-get
+      description: Returns the spreadsheet at the given ID
+      script: GoogleSheets|||google-sheets-spreadsheet-get
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      spreadsheet_id:
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: b4168938-ee66-48e4-85cd-4a6963f9134a
+    type: regular
+    task:
+      id: b4168938-ee66-48e4-85cd-4a6963f9134a
+      version: -1
+      name: google-sheets-spreadsheet-update
+      description: Applies one or more updates to the spreadsheet.  Each request is
+        validated before being applied. If any request is not valid then the entire
+        request will fail and nothing will be applied.
+      script: GoogleSheets|||google-sheets-spreadsheet-update
+      type: regular
+      iscommand: true
+      brand: GoogleSheets
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      requests:
+        simple: |-
+          {
+            "requests": [
+              {
+                "copyPaste": {
+                  "source": {
+                    "sheetId": 5,
+                    "startColumnIndex": 0,
+                    "endColumnIndex": 3,
+                    "startRowIndex": 0,
+                    "endRowIndex": 3
+                  },
+                  "destination": {
+                    "sheetId": 5,
+                    "startColumnIndex": 5,
+                    "startRowIndex": 5,
+                    "endColumnIndex": 8,
+                    "endRowIndex": 8
+                  },
+                  "pasteOrientation": "TRANSPOSE"
+                }
+              }
+            ]
+          }
+      spreadsheet_id:
+        complex:
+          root: GoogleSheets.Spreadsheet
+          accessor: spreadsheetId
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 8549acd2-f0a7-42a4-8526-af57fd18f2ee
+    type: regular
+    task:
+      id: 8549acd2-f0a7-42a4-8526-af57fd18f2ee
+      version: -1
+      name: google-drive-file-delete
+      description: Permanently deletes a file owned by the user without moving it
+        to the trash. If the file belongs to a shared drive the user must be an organizer
+        on the parent. If the target is a folder, all descendants owned by the user
+        are also deleted.
+      script: GoogleDrive|||google-drive-file-delete
+      type: regular
+      iscommand: true
+      brand: GoogleDrive
+    scriptarguments:
+      file_id:
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4705,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.1.0
+

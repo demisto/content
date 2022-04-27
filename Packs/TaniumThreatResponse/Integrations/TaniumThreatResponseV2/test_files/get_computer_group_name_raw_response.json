@@ -1,0 +1,24 @@
+{
+    "data": {
+        "id": 1,
+        "name": "All Computers",
+        "track_computer_id_flag": 0,
+        "type": 0,
+        "text": " All Computers",
+        "sub_groups": [
+            {
+                "id": 0
+            }
+        ],
+        "and_flag": true,
+        "not_flag": false,
+        "management_rights_flag": true,
+        "filter_flag": true,
+        "filters": [],
+        "deleted_flag": false,
+        "content_set": {
+            "id": 1,
+            "name": "Reserved"
+        }
+    }
+}

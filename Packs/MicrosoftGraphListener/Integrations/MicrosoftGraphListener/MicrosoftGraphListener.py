@@ -132,6 +132,7 @@ def prepare_args(command, args):
             'to_recipients': argToList(args.get('to')),
             'cc_recipients': argToList(args.get('cc')),
             'bcc_recipients': argToList(args.get('bcc')),
+            'replyTo': argToList(args.get('replyTo')),
             'subject': args.get('subject', ''),
             'body': email_body,
             'body_type': args.get('body_type', 'html'),
@@ -148,7 +149,10 @@ def prepare_args(command, args):
         return {
             'to_recipients': argToList(args.get('to')),
             'message_id': args.get('message_id', ''),
-            'comment': args.get('comment')
+            'comment': args.get('comment'),
+            'attach_ids': argToList(args.get('attach_ids')),
+            'attach_names': argToList(args.get('attach_names')),
+            'attach_cids': argToList((args.get('attach_cids')))
         }
 
     return args
@@ -205,12 +209,16 @@ class MsGraphClient:
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
                  ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit,
-                 auth_code, redirect_uri):
+                 auth_code, redirect_uri,
+                 certificate_thumbprint: Optional[str] = None,
+                 private_key: Optional[str] = None,
+                 ):
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token,
                                          auth_code=auth_code, redirect_uri=redirect_uri,
-                                         grant_type=AUTHORIZATION_CODE)
+                                         grant_type=AUTHORIZATION_CODE, certificate_thumbprint=certificate_thumbprint,
+                                         private_key=private_key)
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
@@ -584,7 +592,7 @@ class MsGraphClient:
 
     @staticmethod
     def _build_message(to_recipients, cc_recipients, bcc_recipients, subject, body, body_type, flag, importance,
-                       internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments):
+                       internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments, replyTo):
         """
         Builds valid message dict.
         For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
@@ -593,6 +601,7 @@ class MsGraphClient:
             'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
             'ccRecipients': MsGraphClient._build_recipient_input(cc_recipients),
             'bccRecipients': MsGraphClient._build_recipient_input(bcc_recipients),
+            'replyTo': MsGraphClient._build_recipient_input(replyTo),
             'subject': subject,
             'body': MsGraphClient._build_body_input(body=body, body_type=body_type),
             'bodyPreview': body[:255],
@@ -608,7 +617,7 @@ class MsGraphClient:
         return message
 
     @staticmethod
-    def _build_reply(to_recipients, comment):
+    def _build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids):
         """
         Builds the reply message that includes recipients to reply and reply message.
 
@@ -618,12 +627,22 @@ class MsGraphClient:
         :type comment: ``str``
         :param comment: The message to reply.
 
+        :type attach_ids: ``list``
+        :param attach_ids: List of uploaded to War Room regular attachments to send
+
+        :type attach_names: ``list``
+        :param attach_names: List of regular attachments names to send
+
+        :type attach_cids: ``list``
+        :param attach_cids: List of uploaded to War Room inline attachments to send
+
         :return: Returns legal reply message.
         :rtype: ``dict``
         """
         return {
             'message': {
-                'toRecipients': MsGraphClient._build_recipient_input(to_recipients)
+                'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
+                'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
             },
             'comment': comment
         }
@@ -771,7 +790,8 @@ class MsGraphClient:
         """
         Sends email from user's mailbox, the sent message will appear in Sent Items folder
         """
-        suffix_endpoint = f'/users/{self._mailbox_to_fetch}/sendMail'
+        from_address = kwargs.get('from', self._mailbox_to_fetch)
+        suffix_endpoint = f'/users/{from_address}/sendMail'
         message_content = MsGraphClient._build_message(**kwargs)
         self.ms_client.http_request('POST', suffix_endpoint, json_data={'message': message_content},
                                     resp_type="text")
@@ -783,7 +803,7 @@ class MsGraphClient:
 
         return human_readable, ec
 
-    def reply_to(self, to_recipients, comment, message_id):
+    def reply_to(self, to_recipients, comment, message_id, attach_ids, attach_names, attach_cids):
         """
         Sends reply message to recipients.
 
@@ -796,11 +816,20 @@ class MsGraphClient:
         :type message_id: ``str``
         :param message_id: The message id to reply.
 
+        :type attach_ids: ``list``
+        :param attach_ids: List of uploaded to War Room regular attachments to send
+
+        :type attach_names: ``list``
+        :param attach_names: List of regular attachments names to send
+
+        :type attach_cids: ``list``
+        :param attach_cids: List of uploaded to War Room inline attachments to send
+
         :return: String representation of markdown message regarding successful message submission.
         rtype: ``str``
         """
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/reply'
-        reply = MsGraphClient._build_reply(to_recipients, comment)
+        reply = MsGraphClient._build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids)
         self.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
 
         return f'### Replied to: {", ".join(to_recipients)} with comment: {comment}'
@@ -890,7 +919,15 @@ def main():
     refresh_token = params.get('refresh_token', '')
     auth_and_token_url = params.get('auth_id', '')
     enc_key = params.get('enc_key', '')
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
     app_name = 'ms-graph-mail-listener'
+
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     # params related to mailbox to fetch incidents
     mailbox_to_fetch = params.get('mailbox_to_fetch', '')
@@ -908,8 +945,8 @@ def main():
 
     client = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
                            ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
-                           emails_fetch_limit, auth_code=params.get('auth_code', ''),
-                           redirect_uri=params.get('redirect_uri', ''))
+                           emails_fetch_limit, auth_code=params.get('auth_code', ''), private_key=private_key,
+                           redirect_uri=params.get('redirect_uri', ''), certificate_thumbprint=certificate_thumbprint)
     try:
         command = demisto.command()
         args = prepare_args(command, demisto.args())

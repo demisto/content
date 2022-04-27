@@ -1,0 +1,489 @@
+commonfields:
+  id: VirusTotal
+  version: -1
+name: VirusTotal
+display: VirusTotal
+fromversion: 5.5.0
+category: Data Enrichment & Threat Intelligence
+description: VirusTotal has been updated to VirusTotal (API v3). Please use the updated
+  version instead. Analyze suspicious hashes, URLs, domains and IP addresses.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: Server
+  defaultvalue: https://www.virustotal.com/vtapi/v2/
+  type: 0
+  required: true
+- display: API Key
+  name: APIKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: File Threshold. Minimum number of positive results from VT scanners to
+    consider the file malicious.
+  name: fileThreshold
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: IP Threshold. Minimum number of positive results from VT scanners to consider
+    the IP malicious.
+  name: ipThreshold
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: URL Threshold. Minimum number of positive results from VT scanners to consider
+    the URL malicious.
+  name: urlThreshold
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: Domain Threshold. Minimum number of positive results from VT scanners to
+    consider the domain malicious.
+  name: domainThreshold
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: Preferred Vendors List. CSV list of vendors which are considered more trustworthy.
+  name: preferredVendors
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: 'Preferred Vendor Threshold. The minimum number of highly trusted vendors
+    required to consider a domain, IP address, URL, or file as malicious. '
+  name: preferredVendorsThreshold
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Determines whether to return all results, which can number in the thousands.
+    If “true”, returns all results and overrides the _fullResponse_, _long_ arguments
+    (if set to “false”) in a command. If “false”, the _fullResponse_, _long_ arguments
+    in the command determines how results are returned.
+  name: fullResponseGlobal
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: A CSV list of hashes of the file to query. Supports MD5, SHA1,
+        and SHA256.
+      isArray: false
+    - name: long
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to return full response for scans. Default is "false".
+      defaultValue: "false"
+    - name: threshold
+      description: If the number of positives is higher than the threshold, the file
+        will be considered malicious. If the threshold is not specified, the default
+        file threshold, as configured in the instance settings, will be used.
+    - name: wait
+      description: Time (in seconds) to wait between tries if the API rate limit is
+        reached. Default is "60".
+      defaultValue: "60"
+    - name: retries
+      description: Number of retries for the API rate limit. Default is "0".
+      defaultValue: "0"
+    outputs:
+    - contextPath: File.MD5
+      description: Bad MD5 hash.
+    - contextPath: File.SHA1
+      description: Bad SHA1 hash.
+    - contextPath: File.SHA256
+      description: Bad SHA256 hash.
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+    - contextPath: File.Malicious.Detections
+      description: For malicious files, the total number of detections.
+    - contextPath: File.Malicious.TotalEngines
+      description: For malicious files, the total number of engines that checked the
+        file hash.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: File.VirusTotal.Scans.Source
+      description: Vendor used to scan the hash.
+    - contextPath: File.VirusTotal.Scans.Detected
+      description: Scan detection for this hash (True or False).
+    - contextPath: File.VirusTotal.Scans.Result
+      description: Scan result for this hash, for example, signature.
+    - contextPath: File.VirusTotal.ScanID
+      description: Scan ID for this hash.
+      type: string
+    - contextPath: File.PositiveDetections
+      description: Number of engines that positively detected the indicator as malicious.
+      type: number
+    - contextPath: File.DetectionEngines
+      description: Total number of engines that checked the indicator.
+      type: number
+    - contextPath: File.VirusTotal.vtLink
+      description: Virus Total permanent link.
+      type: string
+    description: Checks the file reputation of the specified hash.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to check.
+      isArray: true
+    - name: long
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to return full response for detected URLs. Default is "false".
+      defaultValue: "false"
+    - name: threshold
+      description: If the number of positives is higher than the threshold, the IP
+        address will be considered malicious. If the threshold is not specified, the
+        default IP threshold, as configured in the instance settings, will be used.
+    - name: sampleSize
+      description: The number of samples from each type (resolutions, detections,
+        etc.) to display for long format. Default is "10".
+      defaultValue: "10"
+    - name: wait
+      description: Time (in seconds) to wait between tries if the API rate limit is
+        reached. Default is "60".
+      defaultValue: "60"
+    - name: retries
+      description: Number of retries for API rate limit. Default is "0".
+      defaultValue: "0"
+    - name: fullResponse
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to return all results, which can be thousands. Default
+        is "false". We recommend that you don't return full results in playbooks.
+      defaultValue: "false"
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP address.
+    - contextPath: IP.ASN
+      description: Bad IP ASN.
+    - contextPath: IP.Geo.Country
+      description: Bad IP country.
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision.
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason that the vendor made the decision.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: IP.VirusTotal.DownloadedHashes
+      description: Latest files that were detected by at least one antivirus solution,
+        and were downloaded by VirusTotal from the IP address.
+    - contextPath: IP.VirusTotal.UnAVDetectedDownloadedHashes
+      description: Latest files that were not detected by any antivirus solution,
+        and were downloaded by VirusTotal from the specified IP address.
+    - contextPath: IP.VirusTotal.DetectedURLs
+      description: Latest URLs hosted in this IP address that were detected by at
+        least one URL scanner.
+    - contextPath: IP.VirusTotal.CommunicatingHashes
+      description: Latest detected files that communicate with this IP address.
+    - contextPath: IP.VirusTotal.UnAVDetectedCommunicatingHashes
+      description: Latest undetected files that communicate with this IP address.
+    - contextPath: IP.VirusTotal.Resolutions.hostname
+      description: Domains that resolved to the specified IP address.
+    - contextPath: IP.VirusTotal.ReferrerHashes
+      description: Latest detected files that embed this IP address in their strings.
+    - contextPath: IP.VirusTotal.UnAVDetectedReferrerHashes
+      description: Latest undetected files that embed this IP address in their strings.
+    - contextPath: IP.VirusTotal.Resolutions.last_resolved
+      description: Last resolution times of the domains that resolved to the specified
+        IP address.
+    description: Checks the reputation of an IP address.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: A comma-seperated list of URLs to check. This command will not
+        work properly on URLs containing commas.
+      isArray: true
+    - name: sampleSize
+      description: The number of samples from each type (resolutions, detections,
+        etc.) to display for long format.
+      defaultValue: "10"
+    - name: long
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to return the full response for the detected URLs.
+      defaultValue: "false"
+    - name: threshold
+      description: If the number of positives is higher than the threshold, the URL
+        will be considered malicious. If the threshold is not specified, the default
+        URL threshold, as configured in the instance settings, will be used.
+    - name: submitWait
+      description: Time (in seconds) to wait if the URL does not exist and is submitted
+        for scanning. Default is "0".
+      defaultValue: "0"
+    - name: wait
+      description: Time (in seconds) to wait between tries if the API rate limit is
+        reached. Default is "60".
+      defaultValue: "60"
+    - name: retries
+      description: Number of retries for API rate limit. Default is "0".
+      defaultValue: "0"
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found.
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: URL.VirusTotal.Scans.Source
+      description: Vendor that scanned this URL.
+    - contextPath: URL.VirusTotal.Scans.Detected
+      description: Scan detection for this URL (True or False).
+    - contextPath: URL.VirusTotal.Scans.Result
+      description: Scan result for this URL, for example, signature.
+    - contextPath: URL.DetectionEngines
+      description: Total number of engines that checked the indicator.
+      type: number
+    - contextPath: URL.PositiveDetections
+      description: Number of engines that positively detected the indicator as malicious.
+      type: number
+    - contextPath: url.VirusTotal.ScanID
+      description: Scan ID for this URL.
+      type: string
+    - contextPath: File.VirusTotal.vtLink
+      description: Virus Total permanent link.
+      type: string
+    description: Checks the reputation of a URL.
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Domain name to check.
+      isArray: true
+    - name: long
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to return the full response for detected URLs. Default
+        is "false".
+      defaultValue: "false"
+    - name: sampleSize
+      description: The number of samples from each type (resolutions, detections,
+        etc.) to display for long format.
+      defaultValue: "10"
+    - name: threshold
+      description: If the number of positives is higher than the threshold, the domain
+        will be considered malicious. If the threshold is not specified, the default
+        domain threshold, as configured in the instance settings, will be used.
+    - name: wait
+      description: Time (in seconds) to wait between tries if the API rate limit is
+        reached. Default is "60".
+      defaultValue: "60"
+    - name: retries
+      description: Number of retries for API rate limit. Default is "0".
+      defaultValue: "0"
+    - name: fullResponse
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to return all results, which can be thousands. Default
+        is "false". We recommend that you don't return full results in playbooks.
+      defaultValue: "false"
+    outputs:
+    - contextPath: Domain.Name
+      description: Bad domain found.
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason that the vendor made the decision.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Domain.VirusTotal.DownloadedHashes
+      description: Hashes of files that were downloaded from this domain.
+    - contextPath: Domain.VirusTotal.CommunicatingHashes
+      description: Hashes of files that communicated with this domain in a sandbox.
+    - contextPath: Domain.VirusTotal.Resolutions.ip_address
+      description: IP addresses that resolved to this domain.
+    - contextPath: Domain.VirusTotal.Whois
+      description: Whois report.
+    - contextPath: Domain.VirusTotal.Subdomains
+      description: Subdomains.
+    - contextPath: Domain.VirusTotal.UnAVDetectedDownloadedHashes
+      description: Latest files that were not detected by any antivirus solution,
+        and were downloaded by VirusTotal from the specified IP address.
+    - contextPath: Domain.VirusTotal.DetectedURLs
+      description: Latest URLs hosted in this domain address that were detected by
+        at least one URL scanner.
+    - contextPath: Domain.VirusTotal.ReferrerHashes
+      description: Latest detected files that embed this domain address in their strings.
+    - contextPath: Domain.VirusTotal.UnAVDetectedReferrerHashes
+      description: Latest undetected files that embed this domain address in their
+        strings.
+    - contextPath: Domain.VirusTotal.UnAVDetectedCommunicatingHashes
+      description: Latest undetected files that communicated with this domain in a
+        sandbox.
+    - contextPath: Domain.VirusTotal.Resolutions.last_resolved
+      description: Last resolution times of the IP addresses that resolve to this
+        domain.
+    description: Checks the reputation of a domain.
+  - name: file-scan
+    arguments:
+    - name: entryID
+      required: true
+      default: true
+      description: The file entry ID to submit.
+    - name: uploadURL
+      description: Private API extension. Special upload URL for files larger than
+        32 MB.
+    outputs:
+    - contextPath: vtScanID
+      description: Scan IDs of the submitted files.
+    - contextPath: vtLink
+      description: Virus Total permanent link.
+      type: string
+    description: Submits a file for scanning.
+  - name: file-rescan
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: Hash of the file to re-scan. Supports MD5, SHA1, and SHA256.
+    outputs:
+    - contextPath: vtScanID
+      description: Scan IDs of the submitted files.
+    - contextPath: vtLink
+      description: Virus Total permanent link.
+      type: string
+    description: Re-scans an already submitted file. This avoids having to upload
+      the file again.
+  - name: url-scan
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The URL to scan.
+    outputs:
+    - contextPath: vtScanID
+      description: Scan IDs of the submitted URLs.
+    - contextPath: vtLink
+      description: Virus Total permanent link.
+      type: string
+    description: Scans a specified URL.
+  - name: vt-comments-add
+    arguments:
+    - name: resource
+      required: true
+      default: true
+      description: The file hash (MD5, SHA1, or SHA256) or URL on which you're commenting.
+    - name: comment
+      required: true
+      description: 'The actual review, which you can tag by using the "#" twitter-like
+        syntax, for example, #disinfection #zbot, and reference users using the "@"
+        syntax, for example, @VirusTotalTeam).'
+    description: Adds comments to files and URLs.
+  - name: vt-file-scan-upload-url
+    arguments: []
+    outputs:
+    - contextPath: vtUploadURL
+      description: The special upload URL for large files.
+    description: Private API. Get a special URL for files larger than 32 MB.
+  - name: vt-comments-get
+    arguments:
+    - name: resource
+      required: true
+      default: true
+      description: The file hash (MD5, SHA1, orSHA256) or URL from which you're retrieving
+        comments.
+    - name: before
+      description: Datetime token in the format YYYYMMDDHHMISS. You can use this for
+        paging.
+    description: Private API. Retrieves comments for a given resource.
+  runonce: false
+tests:
+- virusTotal-test-playbook
