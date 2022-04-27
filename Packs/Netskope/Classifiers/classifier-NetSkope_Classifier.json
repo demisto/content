@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "ddcc0418-5c3b-4282-8b17-2145ea7f0b77",
+    "id": "Netskope Classifier",
     "keyTypeMap": {
         "Compromised Credential": "Netskope Compromised Credentials",
         "DLP": "Netskope DLP",
@@ -17,7 +17,7 @@
         "network": "Netskope Event",
         "page": "Netskope Event",
         "policy": "Netskope Alert",
-        "quarantine": "Netskope Qurantine",
+        "quarantine": "Netskope Quarantine",
         "uba": "Netskope Behavior Analytics",
         "watchlist": "Netskope Alert"
     },

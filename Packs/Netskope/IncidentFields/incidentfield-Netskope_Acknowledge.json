@@ -24,7 +24,7 @@
         "Netskope Legal Hold",
         "Netskope Malicious Sites",
         "Netskope Malware",
-        "Netskope Qurantine"
+        "Netskope Quarantine"
     ],
     "associatedToAll": false,
     "unmapped": false,

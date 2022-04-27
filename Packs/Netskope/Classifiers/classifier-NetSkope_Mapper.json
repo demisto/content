@@ -22,7 +22,7 @@
                     "complex": null,
                     "simple": "policy"
                 },
-                "Netskope Event Type": {
+                "Event Type": {
                     "complex": null,
                     "simple": "event_type"
                 },
@@ -199,7 +199,7 @@
                 }
             }
         },
-        "Netskope Qurantine": {
+        "Netskope Quarantine": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "File MD5": {
