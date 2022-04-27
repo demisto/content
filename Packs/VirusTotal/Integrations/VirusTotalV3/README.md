@@ -2022,7 +2022,7 @@ Retrieves result of the last Sigma analysis.
 
 #### Base Command
 
-`vt-analysis-get`
+`vt-file-sigma-analysis`
 
 #### Input
 
@@ -2048,7 +2048,7 @@ Retrieves result of the last Sigma analysis.
 | VirusTotal.SigmaAnalysis.data.attributes.stats.severity_stats.high | Number | Number of matched rules having a "high" severity. |
 | VirusTotal.SigmaAnalysis.data.attributes.stats.severity_stats.low | Number | Number of matched rules having a "low" severity. |
 | VirusTotal.SigmaAnalysis.data.attributes.stats.severity_stats.medium | Number | Number of matched rules having a "medium" severity. |
-| VirusTotal.SigmaAnalysis.data.attributes.stats.source_severity_stats | unknown | same as severity_stats but grouping stats by ruleset. Keys are ruleset names as string and values are stats in a dictionary. |
+| VirusTotal.SigmaAnalysis.data.attributes.stats.source_severity_stats | unknown | Same as severity_stats but grouping stats by ruleset. Keys are ruleset names as string and values are stats in a dictionary. |
 | VirusTotal.SigmaAnalysis.data.id | String | ID of the analysis. |
 
 #### Command Example
