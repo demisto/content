@@ -5791,7 +5791,31 @@ Download the provided software version onto the device.
 >| 11111111111111 | true |
 >| 192.168.1.145 | true |
 
+### pan-os-apply-dns-signature-policy
+***
+Allows assigning of EDL to the Anti-Spyware profile under "DNS Signature Policies".
 
+
+#### Base Command
+
+`pan-os-apply-dns-signature-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| anti_spyware_profile_name | The name of the anti spyware profile. If the profile exists, the command will operate on it, otherwise, if a new name is given, a new Anti-Spyware profile will be created. | Required | 
+| dns_signature_source | The EDL name to link to the profile. | Required | 
+| action | Action on the DNS queries. Possible values are: alert, allow, block, sinkhole. | Required | 
+| packet_capture | Allows capturing packets on match. Select "single-packet" to capture the first packet of the session or "extended-capture" to set between 1-50 packets. Packet capture can be very CPU intensive and can degrade firewall performance. Only use this feature when necessary and make sure you turn it off after you have collected the required packets. Possible values are: disable, single-packet, extended-capture. Default is disable. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+**success**
 ### pan-os-platform-reboot
 ***
 Reboot the given device by hostid. Warning: This command has no confirmation and the device
