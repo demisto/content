@@ -1733,6 +1733,18 @@ class TestFirewallCommand:
                 # Attribute may be int 0
                 assert value is not None
 
+    @patch("Panorama.run_op_command")
+    def test_update_ha_state(self, patched_run_op_command, mock_topology):
+        """
+        Test the HA Update command returns the correct data
+        """
+        from Panorama import FirewallCommand
+
+        result_dataclass = FirewallCommand.change_status(mock_topology, MOCK_FIREWALL_1_SERIAL, "operational")
+        # Check all attributes of summary data have values
+        for value in result_dataclass.__dict__.values():
+            assert value
+
 
 @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
                          [pytest.param({'anti_spyware_profile_name': 'fake_profile_name',
@@ -1779,18 +1791,6 @@ def test_panorama_apply_dns_command(mocker, args, expected_request_params, reque
     called_request_params = request_mock.call_args.kwargs['params']  # The body part of the request
     assert called_request_params == expected_request_params
     assert command_result.readable_output == expected_demisto_result
-
-    @patch("Panorama.run_op_command")
-    def test_update_ha_state(self, patched_run_op_command, mock_topology):
-        """
-        Test the HA Update command returns the correct data
-        """
-        from Panorama import FirewallCommand
-
-        result_dataclass = FirewallCommand.change_status(mock_topology, MOCK_FIREWALL_1_SERIAL, "operational")
-        # Check all attributes of summary data have values
-        for value in result_dataclass.__dict__.values():
-            assert value
 
 
 class TestHygieneFunctions:
