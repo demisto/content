@@ -16,7 +16,6 @@ urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 MAX_ATTEMPTS = 3
 BASE_URL = 'https://api.dlp.paloaltonetworks.com/v1/'
-STAGING_BASE_URL = 'https://aa420c196330b4eb2bbf89ece2d68461-852397286.us-west-2.elb.amazonaws.com/v1/'
 REPORT_URL = 'public/report/{}'
 INCIDENTS_URL = 'public/incident-notifications'
 REFRESH_TOKEN_URL = 'public/oauth/refreshToken'
@@ -54,6 +53,7 @@ class Client(BaseClient):
         params = {
             "refresh_token": self.refresh_token
         }
+        print_debug_msg(f'Calling endpoint {self._base_url}{REFRESH_TOKEN_URL}')
         r = self._http_request(
             method='POST',
             headers=headers,
@@ -86,6 +86,7 @@ class Client(BaseClient):
             url_suffix: URL suffix for dlp api call
         """
         count = 0
+        print_debug_msg(f'Calling GET method on {self._base_url}{url_suffix}')
         while count < MAX_ATTEMPTS:
             res = self._http_request(
                 method='GET',
@@ -404,9 +405,8 @@ def is_reset_triggered():
     return False
 
 
-def get_base_url(params: dict):
-    url = STAGING_BASE_URL if params.get('env') == 'staging' else BASE_URL
-    return url
+def get_base_url():
+    return BASE_URL
 
 
 def long_running_execution_command(params: Dict):
@@ -419,7 +419,7 @@ def long_running_execution_command(params: Dict):
     """
     regions = demisto.get(params, 'dlp_regions', '')
     refresh_token = params.get('refresh_token')
-    url = get_base_url(params)
+    url = get_base_url()
     while True:
         try:
             integration_context = demisto.getIntegrationContext()
@@ -518,7 +518,7 @@ def main():
         params = demisto.params()
         access_token = params.get('access_token')
         refresh_token = params.get('refresh_token')
-        url = get_base_url(params)
+        url = get_base_url()
         client = Client(url, refresh_token, access_token, params.get('insecure'), params.get('proxy'))
         args = demisto.args()
         if demisto.command() == 'pan-dlp-get-report':

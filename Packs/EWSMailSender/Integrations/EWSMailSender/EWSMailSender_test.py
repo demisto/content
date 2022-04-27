@@ -6,7 +6,7 @@ import EWSMailSender
 from exchangelib.errors import UnauthorizedError
 
 
-class MockAccount():
+class MockAccount:
     def __init__(self, error):
         self.error = error
 
@@ -20,7 +20,7 @@ class MockAccount():
 
 def test_prepare():
     res = EWSMailSender.prepare()
-    assert res.protocol.server == 'outlook.office365.com'
+    assert res.server == 'outlook.office365.com'
 
 
 def test_start_logging():
