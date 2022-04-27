@@ -55,10 +55,10 @@ def test_fetch_incidents_few_incidents(mocker):
         from JiraSIEM import main
         main()
 
-    assert last_run.return_value.get('from') == calculate_next_run(incidents.call_args[0][0][0].get('occurred')[:-1])
-    assert not last_run.return_value.get('next_time')
-    assert last_run.return_value.get('offset') == 0
-    assert len(incidents.call_args[0][0]) == 3
+        assert last_run.return_value.get('from') == calculate_next_run(incidents.call_args[0][0][0].get('occurred')[:-1])
+        assert not last_run.return_value.get('next_time')
+        assert last_run.return_value.get('offset') == 0
+        assert len(incidents.call_args[0][0]) == 3
 
 
 @freeze_time('2022-04-14T00:00:00Z')
@@ -84,9 +84,9 @@ def test_fetch_events_no_incidents(mocker):
         from JiraSIEM import main
         main()
 
-    assert not last_run.return_value.get('from')
-    assert last_run.return_value.get('offset') == 0
-    assert not incidents.call_args
+        assert not last_run.return_value.get('from')
+        assert last_run.return_value.get('offset') == 0
+        assert not incidents.call_args
 
 
 @freeze_time('2022-04-14T00:00:00Z')
@@ -116,7 +116,7 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
         from JiraSIEM import main
         main()
 
-    assert not last_run.return_value.get('from')
-    assert last_run.return_value.get('next_time') == '2022-04-12T18:45:42.968'
-    assert last_run.return_value.get('offset') == 1
-    assert len(incidents.call_args[0][0]) == 1
+        assert not last_run.return_value.get('from')
+        assert last_run.return_value.get('next_time') == '2022-04-12T18:45:42.968'
+        assert last_run.return_value.get('offset') == 1
+        assert len(incidents.call_args[0][0]) == 1
