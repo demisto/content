@@ -1606,28 +1606,46 @@ script:
       description: The domain of the endpoint.
       type: String
   - arguments:
-      - default: false
-        description: Allows to link the response action to the incident that triggered it.
-        isArray: false
-        name: incident_id
-        required: false
-        secret: false
-      - default: false
-        description: String that represents a list of hashed files you want to block list. Must be a valid SHA256 hash.
-        isArray: true
-        name: hash_list
-        required: true
-        secret: false
-      - default: false
-        description: String that represents additional information regarding the action.
-        isArray: false
-        name: comment
-        required: false
-        secret: false
+    - default: false
+      description: Links the response action to the triggered incident.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: String that represents a list of hashed files you want to block list. Must be a valid SHA256 hash.
+      isArray: true
+      name: hash_list
+      required: true
+      secret: false
+    - default: false
+      description: String that represents additional information regarding the action.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Choose either regular response or detailed response. Default value = false, regular response.
+      isArray: false
+      name: detailed_response
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
-    description: Block lists requested files which have not already been block listed or added to allow list.
+    description: Block lists requested files which have not already been block listed or added to allow lists.
     execution: false
     name: xdr-blocklist-files
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.blocklist.added_hashes
+      description: Added fileHash to blocklist
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.blocklist.excluded_hashes
+      description: Added fileHash to blocklist
+      type: Number
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -1652,28 +1670,46 @@ script:
     execution: false
     name: xdr-blacklist-files
   - arguments:
-      - default: false
-        description: Allows to link the response action to the incident that triggered it.
-        isArray: false
-        name: incident_id
-        required: false
-        secret: false
-      - default: false
-        description: String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash.
-        isArray: true
-        name: hash_list
-        required: true
-        secret: false
-      - default: false
-        description: String that represents additional information regarding the action.
-        isArray: false
-        name: comment
-        required: false
-        secret: false
+    - default: false
+      description: Links the response action to the triggered incident.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: String that represents a list of hashed files you want to add to allow lists. Must be a valid SHA256 hash.
+      isArray: true
+      name: hash_list
+      required: true
+      secret: false
+    - default: false
+      description: String that represents additional information regarding the action.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Choose either regular response or detailed response. Default value = false, regular response.
+      isArray: false
+      name: detailed_response
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Adds requested files to allow list if they are not already on block list or allow list.
     execution: false
     name: xdr-allowlist-files
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.allowlist.added_hashes
+      description: Added fileHash to allowlist
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.allowlist.excluded_hashes
+      description: Added fileHash to allowlist
+      type: Number
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -1698,34 +1734,54 @@ script:
     execution: false
     name: xdr-whitelist-files
   - arguments:
-      - default: false
-        description: Allows to link the response action to the incident that triggered it.
-        isArray: false
-        name: incident_id
-        required: false
-        secret: false
-      - default: false
-        description: List of endpoint IDs.
-        isArray: true
-        name: endpoint_id_list
-        required: true
-        secret: false
-      - default: false
-        description: String that represents the path of the file you want to quarantine.
-        isArray: false
-        name: file_path
-        required: true
-        secret: false
-      - default: false
-        description: String that represents the file’s hash. Must be a valid SHA256 hash.
-        isArray: false
-        name: file_hash
-        required: true
-        secret: false
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: List of endpoint IDs.
+      isArray: true
+      name: endpoint_id_list
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the path of the file you want to quarantine.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the file’s hash. Must be a valid SHA256 hash.
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
     deprecated: false
     description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
     execution: false
     name: xdr-file-quarantine
+    polling: true
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -1779,28 +1835,48 @@ script:
     execution: false
     name: xdr-get-quarantine-status
   - arguments:
-      - default: false
-        description: Allows to link the response action to the incident that triggered it.
-        isArray: false
-        name: incident_id
-        required: false
-        secret: false
-      - default: false
-        description: String that represents the file in hash. Must be a valid SHA256 hash.
-        isArray: false
-        name: file_hash
-        required: true
-        secret: false
-      - default: false
-        description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
-        isArray: false
-        name: endpoint_id
-        required: false
-        secret: false
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: String that represents the file in hash. Must be a valid SHA256 hash.
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
+      isArray: false
+      name: endpoint_id
+      required: false
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
     deprecated: false
     description: Restores a quarantined file on requested endpoints.
     execution: false
     name: xdr-file-restore
+    polling: true
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -3008,35 +3084,55 @@ script:
       description: The extension of the file.
       type: String
   - arguments:
-      - default: false
-        description: Allows to link the response action to the incident that triggered it.
-        isArray: false
-        name: incident_id
-        required: false
-        secret: false
-      - default: false
-        description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
-        isArray: false
-        name: endpoint_ids
-        required: true
-        secret: false
-      - default: false
-        description: Comma-separated list of shell commands to execute.
-        isArray: false
-        name: commands
-        required: true
-        secret: false
-      - default: false
-        defaultValue: '600'
-        description: The timeout in seconds for this execution.
-        isArray: false
-        name: timeout
-        required: false
-        secret: false
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
+      isArray: false
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Comma-separated list of shell commands to execute.
+      isArray: false
+      name: commands
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '600'
+      description: The timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
     deprecated: false
     description: Initiate a new endpoint script execution of shell commands.
     execution: false
-    name: xdr-snippet-code-script-execute
+    name: xdr-script-commands-execute
+    polling: true
     outputs:
       - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
         description: ID of the action initiated.
@@ -3071,7 +3167,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Initiate a new endpoint script execution of shell commands. This command will be deprecated soon, use `xdr-snippet-code-script-execute` instead.
+    description: Initiate a new endpoint script execution of shell commands. This command will be deprecated soon, use `xdr-script-commands-execute` instead.
     execution: false
     name: xdr-run-script-execute-commands
     outputs:
@@ -3082,35 +3178,55 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
-      - default: false
-        description: Allows to link the response action to the incident that triggered it.
-        isArray: false
-        name: incident_id
-        required: false
-        secret: false
-      - default: false
-        description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
-        isArray: true
-        name: endpoint_ids
-        required: true
-        secret: false
-      - default: false
-        description: Paths of the files to delete, in a comma-separated list. Paths of the files to check for existence. All of the given file paths will run on all of the endpoints.
-        isArray: true
-        name: file_path
-        required: true
-        secret: false
-      - default: false
-        defaultValue: '600'
-        description: The timeout in seconds for this execution.
-        isArray: false
-        name: timeout
-        required: false
-        secret: false
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
+      isArray: true
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Paths of the files to delete, in a comma-separated list. Paths of the files to check for existence. All of the given file paths will run on all of the endpoints.
+      isArray: true
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '600'
+      description: The timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
     deprecated: false
     description: Initiates a new endpoint script execution to delete the specified file.
     execution: false
     name: xdr-file-delete-script-execute
+    polling: true
     outputs:
       - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
         description: ID of the action initiated.
@@ -3156,35 +3272,55 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
-      - default: false
-        description: Allows to link the response action to the incident that triggered it.
-        isArray: false
-        name: incident_id
-        required: false
-        secret: false
-      - default: false
-        description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
-        isArray: true
-        name: endpoint_ids
-        required: true
-        secret: false
-      - default: false
-        description: Paths of the files to check for existence, in a comma-separated list. All of the given file paths will run on all of the endpoints.
-        isArray: true
-        name: file_path
-        required: true
-        secret: false
-      - default: false
-        defaultValue: '600'
-        description: The timeout in seconds for this execution.
-        isArray: false
-        name: timeout
-        required: false
-        secret: false
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
+      isArray: true
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Paths of the files to check for existence, in a comma-separated list. All of the given file paths will run on all of the endpoints.
+      isArray: true
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '600'
+      description: The timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
     deprecated: false
     description: Initiates a new endpoint script execution to check if file exists.
     execution: false
     name: xdr-file-exist-script-execute
+    polling: true
     outputs:
       - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
         description: ID of the action initiated.
@@ -3230,35 +3366,55 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
-      - default: false
-        description: Allows to link the response action to the incident that triggered it.
-        isArray: false
-        name: incident_id
-        required: false
-        secret: false
-      - default: false
-        description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
-        isArray: true
-        name: endpoint_ids
-        required: true
-        secret: false
-      - default: false
-        description: Names of processes to kill. Will kill all of the given processes on all of the endpoints.
-        isArray: true
-        name: process_name
-        required: true
-        secret: false
-      - default: false
-        defaultValue: '600'
-        description: The timeout in seconds for this execution.
-        isArray: false
-        name: timeout
-        required: false
-        secret: false
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
+      isArray: true
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Names of processes to kill. Will kill all of the given processes on all of the endpoints.
+      isArray: true
+      name: process_name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '600'
+      description: The timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
     deprecated: false
     description: Initiates a new endpoint script execution kill process.
     execution: false
     name: xdr-kill-process-script-execute
+    polling: true
     outputs:
       - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
         description: ID of the action initiated.
