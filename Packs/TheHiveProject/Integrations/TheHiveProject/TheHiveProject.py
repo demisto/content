@@ -539,7 +539,7 @@ def fix_element(args: dict):
         'owner': str
     }
     for k, v in args.items():
-        args[k] = types_dict.get(k, str)(v)
+        args[k] = types_dict.get(k, str)(v)  # type: ignore
         if k == 'tasks':
             args[k] = [fix_element(task) for task in args[k]]
 
