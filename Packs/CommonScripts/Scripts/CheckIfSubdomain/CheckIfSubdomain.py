@@ -22,17 +22,10 @@ def main():
     no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=None)
 
     for domain in domains:
-        no_top_domain_found = True  # Flag to state if a top domain is found
+        ext = no_fetch_extract(domain)
+        top_domain_found = any(ext.registered_domain == internal_domain.replace('*.', '') for internal_domain in internal_domains)
 
-        for internal_domain in internal_domains:
-            ext = no_fetch_extract(domain)
-            if ext.registered_domain == internal_domain.replace('*.', ''):
-                demisto.results(True)
-                no_top_domain_found = False
-                break  # Top domain found in assets, no need to keep checking
-
-        if no_top_domain_found:
-            demisto.results(False)
+        demisto.results(top_domain_found)
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
