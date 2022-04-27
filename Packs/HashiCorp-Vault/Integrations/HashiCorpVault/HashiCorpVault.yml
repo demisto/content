@@ -1,8 +1,8 @@
 commonfields:
-  id: HashiCorp Vault -moshe
+  id: HashiCorp Vault
   version: -1
-name: HashiCorp Vault -moshe
-display: HashiCorp Vault -moshe
+name: HashiCorp Vault
+display: HashiCorp Vault
 category: Authentication
 description: Manage Secrets and Protect Sensitive Data through HashiCorp Vault
 configuration:
