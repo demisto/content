@@ -2680,7 +2680,7 @@ script:
   longRunningPort: false
   isFetchSamples: true
   ismappable: true
-fromversion: 6.2.0
+fromversion: 5.5.0
 defaultmapperin: QRadar - Generic Incoming Mapper
 defaultclassifier: QRadar
 tests:
