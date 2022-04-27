@@ -516,8 +516,36 @@ def update_case_command(client: Client, args: dict):
     )
 
 
+def fix_element(args: dict):
+    """
+    Fix args to fit API types requirements.
+
+    Args:
+        args (dict): args to fix
+    """
+    types_dict = {
+        'title': str,
+        'description': str,
+        'tlp': arg_to_number,
+        'pap': arg_to_number,
+        'severity': arg_to_number,
+        'flag': argToBoolean,
+        'tags': argToList,
+        'startDate': dateparser.parse,
+        'metrics': argToList,
+        'customFields': str,
+        'tasks': argToList,
+        'template': str,
+        'owner': str
+    }
+    for k, v in args.items():
+        args[k] = types_dict.get(k, str)(v)
+        if k == 'tasks':
+            args[k] = [fix_element(task) for task in args[k]]
+
+
 def create_case_command(client: Client, args: dict):
-    args['tags'] = argToList(args.get('tags', []))
+    fix_element(args)
     case = client.create_case(args)
     if type(case) == tuple:
         raise DemistoException(f'Error creating case ({case[0]}) - {case[1]}')
