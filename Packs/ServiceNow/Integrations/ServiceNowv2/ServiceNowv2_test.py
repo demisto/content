@@ -1,6 +1,8 @@
 import pytest
 import json
 import io
+from CommonServerPython import timedelta
+from datetime import datetime
 import ServiceNowv2
 from CommonServerPython import DemistoException
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
@@ -23,7 +25,8 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, RESPONSE_MIRROR_FILE_ENTRY, \
     RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, \
     MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
-    RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME, USER_RESPONSE, RESPONSE_GENERIC_TICKET
+    RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME, USER_RESPONSE, \
+    RESPONSE_GENERIC_TICKET
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_CREATE_TICKET_WITH_OUT_JSON, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, \
@@ -340,6 +343,100 @@ def test_fetch_incidents_with_incident_name(mocker):
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     incidents = fetch_incidents(client)
     assert incidents[0].get('name') == 'ServiceNow Incident Unable to access Oregon mail server. Is it down?'
+
+
+class TestFetchIncidentsWithLookBack:
+    LAST_RUN = {}
+
+    API_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+    TICKETS = {
+            'result': [
+                {
+                    'opened_at': (datetime.utcnow() - timedelta(minutes=10)).strftime(API_TIME_FORMAT),
+                    'severity': '2',
+                    'number': '2',
+                },
+                {
+                    'opened_at': (datetime.utcnow() - timedelta(minutes=5)).strftime(API_TIME_FORMAT),
+                    'severity': '1',
+                    'number': '4'
+                },
+                {
+                    'opened_at': (datetime.utcnow() - timedelta(minutes=2)).strftime(API_TIME_FORMAT),
+                    'severity': '2',
+                    'number': '5'
+                }
+            ]
+        }
+
+    NEW_MATCHING_TICKETS = [
+        {
+            'opened_at': (datetime.utcnow() - timedelta(minutes=8)).strftime(API_TIME_FORMAT),
+            'severity': '1',
+            'number': '3',
+        },
+        {
+            'opened_at': (datetime.utcnow() - timedelta(minutes=11)).strftime(API_TIME_FORMAT),
+            'severity': '1',
+            'number': '1',
+        },
+    ]
+
+    def set_last_run(self, new_last_run):
+        self.LAST_RUN = new_last_run
+
+    def test_fetch_incidents_with_look_back(self, mocker):
+        """
+        Given
+        - fetch incidents parameters including look back according to their opened time.
+        -
+
+        When
+        - trying to fetch incidents for 3 rounds.
+
+        Then
+        - first fetch - should fetch incidents 2, 4, 5.
+        - second fetch - should fetch incident 3.
+        - third fetch - should fetch incident 1.
+        - make sure that incidents who were already fetched would not be fetched again.
+        """
+        mocker.patch.object(demisto, 'params', return_value={'look_back': '15'})
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+
+        client = Client(
+            server_url='', sc_server_url='', cr_server_url='', username='', password='', verify=False,
+            fetch_time='12 hours', sysparm_query='stateNOT IN6,7^assignment_group=123', sysparm_limit=10,
+            timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number'
+        )
+        mocker.patch.object(client, 'send_request', return_value=self.TICKETS)
+
+        # first fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 3
+        for expected_incident_id, ticket in zip(['2', '4', '5'], tickets):
+            assert ticket.get('name') == f'ServiceNow Incident {expected_incident_id}'
+
+        # second fetch preparation
+        self.TICKETS.get('result').append(self.NEW_MATCHING_TICKETS[0])
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(client, 'send_request', return_value=self.TICKETS)
+
+        # second fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 1
+        assert tickets[0].get('name') == 'ServiceNow Incident 3'
+
+        # third fetch preparation
+        self.TICKETS.get('result').append(self.NEW_MATCHING_TICKETS[1])
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(client, 'send_request', return_value=self.TICKETS)
+
+        # third fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 1
+        assert tickets[0].get('name') == 'ServiceNow Incident 1'
 
 
 def test_incident_name_is_initialized(mocker, requests_mock):

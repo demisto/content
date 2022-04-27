@@ -1992,93 +1992,128 @@ def document_route_to_table(client: Client, args: dict) -> Tuple[Any, Dict[Any, 
     return human_readable, entry_context, result, True
 
 
+def get_ticket_file_attachments(client: Client, ticket: dict) -> list:
+    """
+    Extract file attachment from a service now ticket.
+    """
+    file_names = []
+    if client.get_attachments:
+        file_entries = client.get_ticket_attachment_entries(ticket.get('sys_id', ''))
+        if isinstance(file_entries, list):
+            for file_result in file_entries:
+                if file_result['Type'] == entryTypes['error']:
+                    raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
+                file_names.append({
+                    'path': file_result.get('FileID', ''),
+                    'name': file_result.get('File', '')
+                })
+    return file_names
+
+
+def get_mirroring():
+    """
+    Get tickets mirroring.
+    """
+    return {
+        'mirror_direction': MIRROR_DIRECTION.get(demisto.params().get('mirror_direction')),
+        'mirror_tags':  [
+            demisto.params().get('comment_tag'),
+            demisto.params().get('file_tag'),
+            demisto.params().get('work_notes_tag')
+        ],
+        'mirror_instance': demisto.integrationInstance()
+    }
+
+
 def fetch_incidents(client: Client) -> list:
     query_params = {}
     incidents = []
 
     last_run = demisto.getLastRun()
-    if 'time' not in last_run:
-        snow_time, _ = parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
-    else:
-        snow_time = last_run['time']
+    look_back = arg_to_number(demisto.params().get('look_back') or '0')
+
+    start_snow_time, end_snow_time = get_fetch_run_time_range(
+        last_run=last_run, first_fetch=client.fetch_time, look_back=look_back, date_format='%Y-%m-%d %H:%M:%S'
+    )
+
+    fetch_limit = last_run.get('limit') or client.sys_param_limit
 
     query = ''
     if client.sys_param_query:
         query += f'{client.sys_param_query}^'
-    query += f'ORDERBY{client.timestamp_field}^{client.timestamp_field}>{snow_time}'
+    query += f'ORDERBY{client.timestamp_field}^{client.timestamp_field}>{start_snow_time}'
 
     if query:
         query_params['sysparm_query'] = query
-    query_params['sysparm_limit'] = str(client.sys_param_limit)
+    query_params['sysparm_limit'] = fetch_limit
 
     demisto.info(f'Fetching ServiceNow incidents. with the query params: {str(query_params)}')
-    res = client.send_request(f'table/{client.ticket_type}', 'GET', params=query_params)
+    tickets_response = client.send_request(f'table/{client.ticket_type}', 'GET', params=query_params).get('result', [])
 
     count = 0
-    parsed_snow_time = datetime.strptime(snow_time, '%Y-%m-%d %H:%M:%S')
+    end_snow_time_as_date = datetime.strptime(end_snow_time, '%Y-%m-%d %H:%M:%S')
 
     severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
 
-    for result in res.get('result', []):
-        labels = []
+    for ticket in tickets_response:
+        ticket.update(get_mirroring())
 
-        result['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction'))
-        result['mirror_tags'] = [
-            demisto.params().get('comment_tag'),
-            demisto.params().get('file_tag'),
-            demisto.params().get('work_notes_tag')
-        ]
-        result['mirror_instance'] = demisto.integrationInstance()
-
-        if client.timestamp_field not in result:
+        if client.timestamp_field not in ticket:
             raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket")
 
-        if count > client.sys_param_limit:
+        if count > fetch_limit:
             break
 
         try:
-            if datetime.strptime(result[client.timestamp_field], '%Y-%m-%d %H:%M:%S') < parsed_snow_time:
+            if datetime.strptime(ticket[client.timestamp_field], '%Y-%m-%d %H:%M:%S') > end_snow_time_as_date:
                 continue
         except Exception:
             pass
 
-        labels = [
-            {'type': k, 'value': v if isinstance(v, str) else json.dumps(v)}
-            for k, v in result.items()
-        ]
-
-        severity = severity_map.get(result.get('severity', ''), 0)
-
         try:
-            parse_dict_ticket_fields(client, result)
+            parse_dict_ticket_fields(client, ticket)
         except Exception:
             pass
 
-        file_names = []
-        if client.get_attachments:
-            file_entries = client.get_ticket_attachment_entries(result.get('sys_id', ''))
-            if isinstance(file_entries, list):
-                for file_result in file_entries:
-                    if file_result['Type'] == entryTypes['error']:
-                        raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
-                    file_names.append({
-                        'path': file_result.get('FileID', ''),
-                        'name': file_result.get('File', '')
-                    })
-
         incidents.append({
-            'name': f"ServiceNow Incident {result.get(client.incident_name)}",
-            'labels': labels,
-            'details': json.dumps(result),
-            'severity': severity,
-            'attachment': file_names,
-            'rawJSON': json.dumps(result)
+            'name': f"ServiceNow Incident {ticket.get(client.incident_name)}",
+            'labels': [
+                {'type': _type, 'value': value if isinstance(value, str) else json.dumps(value)}
+                for _type, value in ticket.items()
+            ],
+            'details': json.dumps(ticket),
+            'severity': severity_map.get(ticket.get('severity', ''), 0),
+            'attachment': get_ticket_file_attachments(client=client, ticket=ticket),
+            'occurred': timestamp_to_datestring(ticket.get('opened_at'), date_format='%Y-%m-%d %H:%M:%S'),
+            'rawJSON': json.dumps(ticket)
         })
+        # 2020-10-28T20:43:34.381Z
+        # 'occurred': hit_date.isoformat() + 'Z'
 
         count += 1
-        snow_time = result.get(client.timestamp_field)
 
-    demisto.setLastRun({'time': snow_time})
+    incidents = filter_incidents_by_duplicates_and_limit(
+        incidents_res=incidents, last_run=last_run, fetch_limit=fetch_limit, id_field='name'
+    )
+
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=incidents,
+        fetch_limit=fetch_limit,
+        start_fetch_time=start_snow_time,
+        end_fetch_time=end_snow_time,
+        look_back=look_back,
+        created_time_field='opened_at',
+        id_field='name',
+        date_format='%Y-%m-%d %H:%M:%S'
+    )
+
+    demisto.info(f'------updated last run {last_run}------')
+
+    for ticket in incidents:
+        ticket.pop('opened_at')
+
+    demisto.setLastRun(last_run)
     return incidents
 
 
