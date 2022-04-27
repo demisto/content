@@ -51,7 +51,7 @@ DEFAULT_CHROME_OPTIONS = [
 
 USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
 PAGES_LIMITATION = 20
-MAXPAGES_LIMIT = 100
+MAXPAGES_LIMIT = 250
 
 
 def return_err_or_warn(msg):
@@ -218,31 +218,31 @@ def get_image(driver, width: int, height: int, include_url: bool):
     :return: .png file of the loaded path
     """
     demisto.debug('Capturing screenshot')
-    demisto.log(f"include url: {demisto.args().get('include_url')}")
-    include_url=False
-    if include_url:
-        demisto.log("in  include url")
-        # Get window size
-        size = driver.get_window_size()
-        # obtain browser height and width
-        w = driver.execute_script('return document.documentElement.scrollWidth')
-        h = driver.execute_script('return document.documentElement.scrollHeight')
-        demisto.log(f"after getting: h:{h}, w:{w}")
-        driver.set_window_size(w, h + 200)
-        image = driver.get_screenshot_as_png()
-        demisto.log(f"returned result: {image}")
-        # temp = Image.open(io.BytesIO(image))
-        # I1 = ImageDraw.Draw(temp)
-        #
-        # I1.text((28, h + 36), "testingggg", fill=(255, 0, 0))
-        # demisto.log("after getting screenshot")
-        # driver.set_window_size(size['width'], size['height'])
-        # image = temp.tobytes("hex", "rgb")
-    else:
+    # demisto.log(f"include url: {demisto.args().get('include_url')}")
+    # include_url = False
+    # if include_url:
+    #     demisto.log("in  include url")
+    #     # Get window size
+    #     size = driver.get_window_size()
+    #     # obtain browser height and width
+    #     w = driver.execute_script('return document.documentElement.scrollWidth')
+    #     h = driver.execute_script('return document.documentElement.scrollHeight')
+    #     demisto.log(f"after getting: h:{h}, w:{w}")
+    #     driver.set_window_size(w, h + 200)
+    #     image = driver.get_screenshot_as_png()
+    #     demisto.log(f"returned result: {image}")
+    #     # temp = Image.open(io.BytesIO(image))
+    #     # I1 = ImageDraw.Draw(temp)
+    #     #
+    #     # I1.text((28, h + 36), "testingggg", fill=(255, 0, 0))
+    #     # demisto.log("after getting screenshot")
+    #     # driver.set_window_size(size['width'], size['height'])
+    #     # image = temp.tobytes("hex", "rgb")
+    # else:
         # Set windows size
-        driver.set_window_size(width, height)
+    driver.set_window_size(width, height)
 
-        image = driver.get_screenshot_as_png()
+    image = driver.get_screenshot_as_png()
 
     driver.quit()
 
@@ -277,7 +277,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bo
     """
     Converts a PDF file into a jpeg image
     :param path: file's path
-    :param max_pages: max pages to render
+    :param max_pages: max pages to render,
     :param password: PDF password
     :param horizontal: if True, will combine the pages horizontally
     :return: A list of stream of combined images
@@ -285,6 +285,9 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bo
     demisto.debug(f'Loading file at Path: {path}')
     input_pdf = PdfFileReader(open(path, "rb"), strict=False)
     pages = min(input_pdf.numPages, MAXPAGES_LIMIT) if max_pages == "*" else min(int(max_pages), input_pdf.numPages)
+    if input_pdf.numPages > MAXPAGES_LIMIT:
+        demisto.log(f'The file contains {input_pdf.numPages} pages,'
+                    f' {MAXPAGES_LIMIT} will be rendered as it is the limit before getting a timeout')
     demisto.log(f'pages is {pages}')
     with tempfile.TemporaryDirectory() as output_folder:
         demisto.debug('Converting PDF')
