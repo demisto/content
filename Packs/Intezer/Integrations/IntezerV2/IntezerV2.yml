@@ -158,6 +158,18 @@ script:
         - contextPath: File.SHA256
           description: Hash SHA256
           type: string
+        - contextPath: Url.URL
+          description: The submitted Url
+          type: string
+        - contextPath: Url.Malicious.Vendor
+          description: For malicious Url, the vendor that made the decision
+          type: string
+        - contextPath: Url.Metadata
+          description: Metadata returned from Intezer analysis.
+          type: Unknown
+        - contextPath: Url.ExistsInIntezer
+          description: Does the url exists on intezer
+          type: Boolean
         - contextPath: File.Malicious.Vendor
           description: For malicious files, the vendor that made the decision
           type: string
