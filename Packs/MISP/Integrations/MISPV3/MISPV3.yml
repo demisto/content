@@ -2833,7 +2833,7 @@ script:
     deprecated: false
     description: Delete an attribute according to the given attribute ID.
     execution: false
-    name: aviya
+    name: aviya-get-list
   - arguments:
     - default: false
       description: Event ID to be published.
