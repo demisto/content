@@ -9837,6 +9837,7 @@ class YMLMetadataCollector:
 
         return command_wrapper
 
+
 def send_events_to_xsiam(events, vendor, product, data_format=None):
     """
     Send the fetched events into the XDR data-collector private api.
