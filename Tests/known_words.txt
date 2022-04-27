@@ -164,6 +164,8 @@ C
 integrationReliability
 Mapper
 Mappers
+EDL
+
 html
 maxPages
 pdf

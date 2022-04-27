@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Rasterize test
+  id: Rasterize
   version: -1
 configuration:
 - defaultvalue: 'false'
@@ -27,8 +27,8 @@ configuration:
   required: false
   type: 8
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
-display: Rasterize test
-name: Rasterize test
+display: Rasterize
+name: Rasterize
 script:
   commands:
   - arguments:
@@ -125,6 +125,12 @@ script:
       isArray: false
       name: htmlBody
       required: true
+      secret: false
+    - default: false
+      description: Maximum time to wait for a page to load (in seconds).
+      isArray: false
+      name: max_page_load_time
+      required: false
       secret: false
     - default: false
       defaultValue: 1500px
@@ -364,7 +370,7 @@ script:
       - contextPath: InfoFile.Type
         description: The type of the image/pdf file
         type: string
-  dockerimage: demisto/chromium:1.0.0.28379
+  dockerimage: demisto/chromium:1.0.0.28942
   feed: false
   isfetch: false
   longRunning: false
