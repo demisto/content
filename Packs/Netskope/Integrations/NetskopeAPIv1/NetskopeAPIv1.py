@@ -556,7 +556,8 @@ def list_quarantined_files_command(client: Client, args: Dict[str, str]) -> Comm
                                       headers=[
                                           'quarantine_profile_id', 'quarantine_profile_name',
                                           'file_id', 'original_file_name', 'policy'
-                                      ])
+                                      ],
+                                      headerTransform=string_to_table_header)
 
     return CommandResults(outputs_prefix='Netskope.Quarantine',
                           outputs_key_field='file_id',
@@ -725,7 +726,8 @@ def list_host_associated_user_command(client: Client, args: Dict[str, str]) -> C
     readable_output = tableToMarkdown(readable_header,
                                       outputs,
                                       removeNull=True,
-                                      headers=['user_id', 'username', 'user_source'])
+                                      headers=['user_id', 'username', 'user_source'],
+                                      headerTransform=string_to_table_header)
 
     return CommandResults(outputs_prefix='Netskope.User',
                           outputs_key_field='user_id',
@@ -763,7 +765,8 @@ def list_user_associated_host_command(client: Client, args: Dict[str, str]) -> C
     readable_output = tableToMarkdown(readable_header,
                                       outputs,
                                       removeNull=True,
-                                      headers=['hostname', 'os_version', 'agent_status'])
+                                      headers=['hostname', 'os_version', 'agent_status'],
+                                      headerTransform=string_to_table_header)
 
     return CommandResults(outputs_prefix='Netskope.Host',
                           outputs_key_field='nsdeviceuid',
