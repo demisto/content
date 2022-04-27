@@ -5114,6 +5114,11 @@
             ],
             "playbookID": "GoogleSheets-Test",
             "fromversion": "6.1.0"
+        },
+        {
+            "integrations": "CloudflareWAF",
+            "playbookID": "TestCloudflareWAFPlaybook",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
