@@ -1072,10 +1072,17 @@ def main():
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs, previous_commit_hash)
+    logging.info("*********************************************\n\n\n\n\n")
+    logging.info(f"pack_names: {pack_names}\n\n\n\n\n")
+
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+    logging.info(f"packs_list: {packs_list}\n\n\n\n\n")
+
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
+    logging.info(f"diff_files_list: {diff_files_list}\n\n\n\n\n")
+    logging.info("**********************************************\n\n\n\n\n")
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
