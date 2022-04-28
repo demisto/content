@@ -33,7 +33,7 @@ configuration:
   type: 14
 - display: Use a self-deployed Azure application
   name: self_deployed
-  required: false
+  required: 'false'
   type: 8
 - display: Application redirect URI (for Authorization Code flow mode)
   name: redirect_uri
@@ -57,7 +57,7 @@ configuration:
 - display: Suppress Errors for Non Found Users
   name: handle_error
   required: false
-  defaultvalue: true
+  defaultvalue: 'true'
   type: 8
 description: Unified gateway to security insights - all from a unified Microsoft Graph
   User API.
