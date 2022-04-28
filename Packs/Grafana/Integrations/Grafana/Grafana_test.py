@@ -258,13 +258,16 @@ with open("TestData/concatenate_url_values.json") as concatenate_url_values_file
 url_with_nothing_at_the_end = ('https://base_url',
                                concatenate_url_values_data['url_with_nothing_at_the_end'][0],
                                concatenate_url_values_data['url_with_nothing_at_the_end'][1])
+same_for_my_test = ('https://base_url',
+                    concatenate_url_values_data['url_with_nothing_at_the_end2'][0],
+                    concatenate_url_values_data['url_with_nothing_at_the_end'][1])
 url_with_end_character = ('https://00.000.000.000:0000/',
                           concatenate_url_values_data['url_with_end_character'][0],
                           concatenate_url_values_data['url_with_end_character'][1])
 no_url_field_at_given_list = ('https://base_url',
                               concatenate_url_values_data['no_url_field_at_given_list'][0],
                               concatenate_url_values_data['no_url_field_at_given_list'][1])
-CONCATENATE_URL_VALUES = [url_with_nothing_at_the_end, url_with_end_character, no_url_field_at_given_list]
+CONCATENATE_URL_VALUES = [url_with_nothing_at_the_end, url_with_end_character, no_url_field_at_given_list, same_for_my_test]
 
 
 @pytest.mark.parametrize('base_url, dict_input, expected_result', CONCATENATE_URL_VALUES)
