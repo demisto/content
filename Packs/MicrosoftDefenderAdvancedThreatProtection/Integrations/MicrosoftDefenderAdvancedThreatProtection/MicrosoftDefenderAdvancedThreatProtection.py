@@ -1911,7 +1911,10 @@ class MsClient:
             dict. User entities
         """
         cmd_url = f"/machines/{machine_id}/logonusers"
-        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+        try:
+            response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+        except Exception as e:
+            raise Exception(f"Machine {machine_id} was not found")
         return response
 
     def get_machine_alerts(self, machine_id):
@@ -1925,7 +1928,10 @@ class MsClient:
             dict. Alert entities
         """
         cmd_url = f"/machines/{machine_id}/alerts"
-        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+        try:
+            response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+        except Exception as e:
+            raise Exception(f"Machine {machine_id} not found")
         return response
 
 
