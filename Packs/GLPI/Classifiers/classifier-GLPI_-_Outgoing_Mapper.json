@@ -6,20 +6,14 @@
         "GLPI Ticket": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "content": {
-                    "simple": "glpidescription"
-                },
-                "itilcategories_id": {
-                    "simple": "glpicategory"
-                },
                 "closedate": {
                     "simple": "glpiclosingdate"
                 },
+                "content": {
+                    "simple": "glpidescription"
+                },
                 "date": {
                     "simple": "glpiopeningdate"
-                },
-                "solvedate": {
-                    "simple": "glpisolveddate"
                 },
                 "id": {
                     "simple": "glpiticketid"
@@ -117,6 +111,9 @@
                 },
                 "internal_time_to_resolve": {
                     "simple": "glpiinternaltimetoresolve"
+                },
+                "itilcategories_id": {
+                    "simple": "glpicategory"
                 },
                 "name": {
                     "simple": "name"
@@ -328,6 +325,9 @@
                             }
                         ]
                     }
+                },
+                "solvedate": {
+                    "simple": "glpisolveddate"
                 },
                 "status": {
                     "complex": {

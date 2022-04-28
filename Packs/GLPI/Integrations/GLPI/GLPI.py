@@ -32,8 +32,7 @@ WARN_DEL_DOC = (
     "this document will be purged.")
 
 """Warning when an invalid document could not be purged."""
-WARN_DEL_ERR = (
-    "The created document could not be purged, you may need to cealn it manually: {:s}")
+WARN_DEL_ERR = ("The created document could not be purged, you may need to clean it manually: {:s}")
 
 
 GLPI_ARGS = ['id', 'entities_id', 'name', 'date', 'closedate', 'solvedate', 'date_mod', 'users_id_lastupdater', 'status',
@@ -163,9 +162,6 @@ class Client(BaseClient):
         )
         self.glpi = myglpi(params['base_url'], params['app_token'], params['auth_token'])
 
-    # def disconnect(self):
-    #     self.glpi.kill()
-
     def test(self):
         res = self.glpi.get_full_session()
         return res
@@ -284,7 +280,7 @@ class Client(BaseClient):
         return res
 
 
-def test_module(client):
+def test_module(params):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -295,11 +291,17 @@ def test_module(client):
         'ok' if test passed, anything else will fail the test.
     """
 
-    result = client.test()
-    if 'valid_id' in result:
-        return 'ok'
-    else:
-        return 'Test failed'
+    try:
+        client = Client(params)
+        result = client.test()
+        if 'valid_id' in result:
+            return 'ok'
+        return 'Test Failed!'
+    except Exception as e:
+        if 'ERROR_WRONG_APP_TOKEN_PARAMETER' in str(e):
+            return 'Test Failed! Authentication Error: ' + str(e)
+        else:
+            return 'Test Failed! Make sure the URL is correctly set. Error: ' + str(e)
 
 
 def get_profile_id_helper(client, args):
@@ -311,7 +313,7 @@ def get_profile_id_helper(client, args):
             if profile['name'] == profile_name:
                 profile_id = profile['id']
         if profile_id is None:
-            return_error('Profile does not exist')
+            raise DemistoException('Profile does not exist')
     return profile_id
 
 
@@ -320,7 +322,7 @@ def get_user_id_helper(client, args):
     user_id = None
     user_id = client.get_user_id(user_name)
     if user_id is None:
-        return_error('User does not exist')
+        raise DemistoException('User does not exist')
     return user_id
 
 
@@ -360,7 +362,6 @@ def get_ticket_docs_helper(client, ticket_id):
     if docs:
         for doc in docs:
             doc_name = client.get_item('Document', doc['documents_id']).get('filename')
-            demisto.debug('fetch document : ' + str(doc['documents_id']))
             file = client.download_document(doc['documents_id'], filename=doc_name)
             filepath, filename = os.path.split(file)
             f = open(file, 'rb')
@@ -426,13 +427,11 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
 
 
 def upload_files(client, entries, ticket_id=None, filename=None, doc_name=None):
-    demisto.debug(f'upload {entries}')
     entry_ids = argToList(entries)
     if filename:
         entry_names = argToList(filename)
         files = {entry_ids[i]: entry_names[i] for i in range(len(entry_names))}
     for entry in entry_ids:
-        demisto.debug(f'upload entry {entry}')
         path_res = demisto.getFilePath(entry)
         full_file_name = path_res.get('name')
         file_name, file_extension = os.path.splitext(full_file_name)
@@ -443,9 +442,7 @@ def upload_files(client, entries, ticket_id=None, filename=None, doc_name=None):
             if not file_extension:
                 file_extension = ''
             up = client.upload_document(full_file_name, path_res.get('path'), fhandler, doc_name)
-            demisto.debug('uploaded document id : ' + str(up['id']))
         if ticket_id:
-            demisto.debug('link document id ' + str(up['id']) + ' to ticket id ' + str(ticket_id))
             client.link_document_to_ticket(up['id'], ticket_id)
     return up
 
@@ -468,7 +465,7 @@ def get_profile_id_command(client, args):
             if profile['name'] == profile_name:
                 profile_id = profile['id']
         if profile_id is None:
-            return_error('Profile does not exist')
+            raise DemistoException('Profile does not exist')
     return profile_id
 
 
@@ -494,7 +491,7 @@ def get_user_id_command(client, args):
                                 readable_output=tableToMarkdown(name='GLPI username', t=res_format, headers=['id', 'username']))
         return result
     else:
-        return_error('Username does not exist')
+        raise DemistoException('Username does not exist')
 
 
 def get_user_name_command(client, args):
@@ -513,7 +510,7 @@ def get_user_name_command(client, args):
                                 readable_output=tableToMarkdown(name='GLPI username', t=res_format, headers=['id', 'username']))
         return result
     else:
-        return_error('User ID does not exist')
+        raise DemistoException('User ID does not exist')
 
 
 def create_user_command(client, args):
@@ -612,7 +609,6 @@ def get_ticket_docs_command(client, ticket_id):
     if docs:
         for doc in docs:
             doc_name = client.get_item('Document', doc['documents_id']).get('filename')
-            demisto.debug('fetch document : ' + str(doc['documents_id']))
             file = client.download_document(doc['documents_id'], filename=doc_name)
             filepath, filename = os.path.split(file)
             f = open(file, 'rb')
@@ -624,28 +620,26 @@ def get_ticket_docs_command(client, ticket_id):
 def add_comment_command(client, args):
     ticket_id = args.get('ticket_id')
     text = args.get('comment')
-    demisto.debug('Adding comment to ticket' + str(ticket_id))
     res = client.add_comment(ticket_id, text)
     if res:
         if "id" in res[0]:
             result = output_format(res, 'Comment', 'Comment successfully added to ticket ID : ' + str(ticket_id))
             return result
     else:
-        return_error("Error add comment")
+        raise DemistoException('Error add comment')
 
 
 def add_link_command(client, args):
     ticket_id_1 = args.get('ticket_ID_1')
     ticket_id_2 = args.get('ticket_ID_2')
     link = TICKET_LINK.get(args.get('link'))
-    demisto.debug('Adding link to ticket ' + str(ticket_id_1))
     res = client.add_link(ticket_id_1, ticket_id_2, link)
     if res:
         if "id" in res[0]:
             result = output_format(res, 'Link', 'Link successfully added to ticket ID : ' + str(ticket_id_1))
             return result
     else:
-        return_error("Error add link")
+        raise DemistoException('Error add link')
 
 
 def create_ticket_command(client, args):
@@ -803,7 +797,6 @@ def fetch_incidents(client, last_run, first_fetch_time):
             demisto.params().get('file_tag'),
             demisto.params().get('work_notes_tag')
         ]
-        demisto.debug('incident occured : ' + str(incident_created_time.strftime(DATE_FORMAT)))  # type: ignore[union-attr]
         incident = {
             'name': ticket['name'],
             'occurred': incident_created_time.strftime(DATE_FORMAT),  # type: ignore[union-attr]
@@ -851,14 +844,11 @@ def get_remote_data_command(client, args, params={}):
     parsed_args = GetRemoteDataArgs(args)
     # ticket_id = args.get('id', '')
     ticket_id = parsed_args.remote_incident_id
-    demisto.debug(f'Getting update for remote {ticket_id}')
     last_update = args.get('lastUpdate')
-    demisto.debug('last_update: ' + str(last_update))
     formated_date = last_update.replace('T', ' ').split('.')[0]
     try:
         new_incident_data = client.get_ticket(ticket_id)
         entries = []
-        demisto.debug('fetch files')
         ticket_docs = client.get_ticket_docs(ticket_id)
         if ticket_docs:
             for ticket_doc in ticket_docs:
@@ -866,7 +856,6 @@ def get_remote_data_command(client, args, params={}):
                     document = client.get_item('Document', ticket_doc.get('documents_id'))
                     if '_mirrored_from_xsoar' not in document.get('filename'):
                         file = client.download_document(ticket_doc.get('documents_id'), filename=document.get('filename'))
-                        demisto.debug('file fetched')
                         filepath, filename = os.path.split(file)
                         f = open(file, 'rb')
                         data = f.read()
@@ -884,10 +873,9 @@ def get_remote_data_command(client, args, params={}):
                         'Note': True,
                         'EntryContext': comments_context
                     })
-        demisto.debug(f'Pull result is {new_incident_data}')
         return GetRemoteDataResponse(new_incident_data, entries)
     except Exception as e:
-        return_error('Error : ' + str(e))
+        raise DemistoException('Error : ' + str(e))
 
 
 def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:
@@ -933,20 +921,14 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                       f'not new nor changed.')
     # Close incident if relevant
     if updated_incident and parsed_args.inc_status == IncidentStatus.DONE:
-        demisto.debug(f'Closing remote incident {ticket_id}')
         client.close_ticket(ticket_id)
 
     entries = parsed_args.entries
 
     if entries:
-        demisto.debug(f'New entries {entries}')
-
         for entry in entries:
-            demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
-            # Mirroring files as entries
             if entry.get('type') == 3:
                 path_res = demisto.getFilePath(entry.get('id'))
-                demisto.debug('path res' + str(path_res))
                 full_file_name = path_res.get('name')
                 file_name, file_extension = os.path.splitext(full_file_name)
                 if not file_extension:
@@ -978,7 +960,7 @@ def get_modified_remote_data_command(client, args, mirror_limit):
 
 def main():
     """
-        PARSE AND VALIDATE INTEGRATION PARAMS
+        parse and validate integration params
     """
     command_list: Dict[str, Any] = {
         'glpi-create-ticket': create_ticket_command,
@@ -1012,11 +994,12 @@ def main():
 
     cmd = demisto.command()
 
+    if cmd == "test-module":
+        return_results(test_module(params))
+
     try:
         client = Client(params)
-        if cmd == "test-module":
-            return_results(test_module(client))
-        elif cmd == 'get-mapping-fields':
+        if cmd == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
         elif cmd == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, demisto.args(), params['mirror_limit']))
@@ -1033,7 +1016,7 @@ def main():
         elif cmd in command_list.keys():
             return_results(command_list[cmd](client, demisto.args()))
         else:
-            return_error('Command "%s" not implemented' % cmd)
+            raise DemistoException('Command "%s" not implemented' % cmd)
 
     # Log exceptions
     except Exception as e:

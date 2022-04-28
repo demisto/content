@@ -7,7 +7,7 @@ from GLPI import Client, upload_file_command, get_user_name_command, create_user
     delete_user_command, enable_user_command, disable_user_command, add_link_command, add_comment_command, \
     create_ticket_command, update_ticket_command, delete_ticket_command, get_ticket_command, get_item_command, \
     search_command, fetch_incidents, get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
-    get_modified_remote_data_command
+    get_modified_remote_data_command, get_user_id_command
 from test_data.glpi_fetch_incidents import FETCHINCIDENTS_SEARCHTICKET, FETCHINCIDENTS_TICKET, FETCHINCIDENTS_TICKETUSER, \
     FETCHINCIDENTS_TICKETDOC, FETCHINCIDENTS_TICKETDOCFILE
 
@@ -64,6 +64,17 @@ def test_glpi_get_username(requests_mock):
     assert response.outputs == {'id': 2, 'username': 'glpi'}
 
 
+def test_glpi_get_userid(requests_mock):
+    command_mock_args = {'name': 'glpi'}
+    requests_mock.get("mock://myglpi.mydomain.tld/apirest.php/initSession", json=TESTDATA_INITSESSION)
+    mock_response_user = {"data": [{'1': 'glpi', '2': 2}]}
+    requests_mock.get("mock://myglpi.mydomain.tld/apirest.php/search/user", json=mock_response_user)
+    client = Client(PARAMETERS)
+    response = get_user_id_command(client, command_mock_args)
+    assert response.outputs_prefix == 'GLPI.User'
+    assert response.outputs == {'id': 2, 'username': 'glpi'}
+
+
 def test_glpi_create_user(requests_mock):
     command_mock_args = {'name': 'MyUser', 'firstname': 'MyFirstName', 'lastname': 'MyLastName',
                          'email': 'myuser@company.com', 'password': 'azerty1'}
@@ -96,6 +107,7 @@ def test_glpi_delete_user(requests_mock):
     client = Client(PARAMETERS)
     response = delete_user_command(client, command_mock_args)
     assert response == 'User MyUser successfully deleted'
+    assert type(response) is not object
 
 
 def test_glpi_enable_user(requests_mock):
@@ -108,6 +120,7 @@ def test_glpi_enable_user(requests_mock):
     client = Client(PARAMETERS)
     response = enable_user_command(client, command_mock_args)
     assert response == 'User MyUser successfully enabled'
+    assert type(response) is not object
 
 
 def test_glpi_disable_user(requests_mock):
@@ -120,6 +133,7 @@ def test_glpi_disable_user(requests_mock):
     client = Client(PARAMETERS)
     response = disable_user_command(client, command_mock_args)
     assert response == 'User MyUser successfully disabled'
+    assert type(response) is not object
 
 
 def test_glpi_add_comment(requests_mock):
@@ -175,6 +189,7 @@ def test_glpi_delete_ticket(requests_mock):
     client = Client(PARAMETERS)
     response = delete_ticket_command(client, command_mock_args)
     assert response == 'Ticket ID 290 successfully deleted'
+    assert type(response) is not object
 
 
 def test_glpi_get_ticket(requests_mock):
