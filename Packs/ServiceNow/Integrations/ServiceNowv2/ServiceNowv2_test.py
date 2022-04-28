@@ -352,38 +352,6 @@ class TestFetchIncidentsWithLookBack:
 
     NOW = datetime.utcnow()
     # used for fetching tickets without look back
-    TICKETS_NO_LOOK_BACK = {
-        'result': [
-            {
-                'opened_at': (NOW - timedelta(minutes=15)).strftime(API_TIME_FORMAT),
-                'severity': '2',
-                'number': '1',
-            },
-            {
-                'opened_at': (NOW - timedelta(minutes=13)).strftime(API_TIME_FORMAT),
-                'severity': '1',
-                'number': '2'
-            },
-            {
-                'opened_at': (NOW - timedelta(minutes=9)).strftime(API_TIME_FORMAT),
-                'severity': '2',
-                'number': '3'
-            }
-        ]
-    }
-
-    NEW_MATCHING_WITHOUT_LOOK_BACK_TICKETS = [
-        {
-            'opened_at': (NOW - timedelta(minutes=7)).strftime(API_TIME_FORMAT),
-            'severity': '2',
-            'number': '4',
-        },
-        {
-            'opened_at': (NOW - timedelta(minutes=3)).strftime(API_TIME_FORMAT),
-            'severity': '2',
-            'number': '5',
-        },
-    ]
 
     def set_last_run(self, new_last_run):
         self.LAST_RUN = new_last_run
@@ -497,7 +465,6 @@ class TestFetchIncidentsWithLookBack:
 
         # second fetch preparation
         start_incidents.get('result').append(phase2_incident)
-        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
 
         # second fetch
         tickets = fetch_incidents(client=client)
@@ -506,15 +473,11 @@ class TestFetchIncidentsWithLookBack:
 
         # third fetch preparation
         start_incidents.get('result').append(phase3_incident)
-        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
 
         # third fetch
         tickets = fetch_incidents(client=client)
         assert len(tickets) == 1
         assert tickets[0].get('name') == 'ServiceNow Incident 1'
-
-        # forth fetch preparation
-        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
 
         # forth fetch
         tickets = fetch_incidents(client=client)
@@ -641,7 +604,6 @@ class TestFetchIncidentsWithLookBack:
 
         # second fetch preparation
         incidents = phase2_incident
-        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         mocker.patch.object(client, 'send_request', return_value=incidents)
 
         # second fetch
@@ -651,7 +613,6 @@ class TestFetchIncidentsWithLookBack:
 
         # third fetch preparation
         incidents = phase3_incident
-        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         mocker.patch.object(client, 'send_request', return_value=incidents)
 
         # third fetch
@@ -661,11 +622,9 @@ class TestFetchIncidentsWithLookBack:
 
         # forth fetch preparation
         incidents = {'result': []}
-        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         mocker.patch.object(client, 'send_request', return_value=incidents)
 
         # forth fetch
-        mocker.patch.object(client, 'send_request', return_value=incidents)
         tickets = fetch_incidents(client=client)
         assert len(tickets) == 0
 
