@@ -9,12 +9,6 @@
                 "content": {
                     "simple": "glpidescription"
                 },
-                "date": {
-                    "simple": "glpiopeningdate"
-                },
-                "id": {
-                    "simple": "glpiticketid"
-                },
                 "impact": {
                     "complex": {
                         "filters": [],
@@ -102,9 +96,6 @@
                             }
                         ]
                     }
-                },
-                "itilcategories_id": {
-                    "simple": "glpicategory"
                 },
                 "name": {
                     "simple": "name"
