@@ -1,28 +1,24 @@
 import os
-from functools import lru_cache
-
 import sys
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import field
+from distutils.version import Version
 from enum import Enum
-from itertools import islice
+from itertools import chain, islice
 from pathlib import Path
 from typing import Any, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.common.git_util import GitUtil
-from demisto_sdk.commands.common.tools import JSON_Handler, get_file
-
+from demisto_sdk.commands.common.tools import get_file
 from git import Repo
 from packaging import version
 
 from Tests.scripts.utils import logging_wrapper as logging
 
+git_util = GitUtil()
+
 MASTER = 'master'
-
-git = GitUtil()
-json = JSON_Handler()
-
 CONTENT_PATH = Path(__file__).absolute().parent.parent
 
 ARTIFACTS_PATH = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
@@ -30,10 +26,14 @@ ARTIFACTS_ID_SET_PATH = ARTIFACTS_PATH / 'id_set.json'
 ARTIFACTS_CONF_PATH = ARTIFACTS_PATH / 'conf.json'
 
 
+class CollectionReason(Enum):
+    MARKETPLACE_VERSION_BY_VALUE = 'value of the test `marketplace` field'
+    MARKETPLACE_VERSION_SECTION = 'listed under conf.json marketplace-specific section'
+
+
 class DictBased:
-    def __init__(self, path: Path):
-        self.path = path
-        self.content = get_file(path, path.suffix[1:])
+    def __init__(self, dict_: dict):
+        self.content = dict_
 
     def get(self, key: str, default: Any = None, warn_if_missing: bool = True):
         if key not in self.content and warn_if_missing:
@@ -41,23 +41,45 @@ class DictBased:
         return self.content.get(key, default)
 
     def __getitem__(self, key):
-        return self.content(key)
+        return self.content[key]
+
+
+class DictFileBased(DictBased):
+    def __init__(self, path: Path):
+        self.path = path
+        super().__init__(get_file(path, path.suffix[1:]))
+
+
+@dataclass
+class VersionRange:
+    min_version: Version
+    max_version: Version
+
+    def __contains__(self, item):
+        return self.min_version <= item <= self.max_version
+
+    def __ge__(self, other):
+        return self.min_version >= other
+
+    def __le__(self, other):
+        return self.max_version <= other
+
+    def __repr__(self):
+        return f'{self.min_version} -> {self.max_version}'
 
 
 class Machine(Enum):
-    V6_2 = version.Version('6.2')
-    V6_5 = version.Version('6.5')
-    V6_6 = version.Version('6.6')
+    V6_2 = Version('6.2')
+    V6_5 = Version('6.5')
+    V6_6 = Version('6.6')
     MASTER = 'master'
     NIGHTLY = 'nightly'
 
     @staticmethod
-    def get_relevant_versions(
-            min_version: version.Version, max_version: version.Version, run_nightly: bool, run_master: bool
-    ) -> tuple['Machine']:
+    def get_suitable_machines(version_range: VersionRange, run_nightly: bool, run_master: bool) -> tuple['Machine']:
         result = [
             machine for machine in Machine
-            if isinstance(machine.value, version.Version) and min_version <= machine.value <= max_version
+            if isinstance(machine.value, Version) and machine.value in version_range
         ]
         if run_nightly:
             result.append(Machine.NIGHTLY)
@@ -67,11 +89,13 @@ class Machine(Enum):
         return tuple(result)
 
 
-class TestConf(DictBased):
+class TestConf(DictFileBased):
     __test__ = False  # prevents pytest from running it
 
-    def __init__(self, path: Path = ARTIFACTS_CONF_PATH):
-        super().__init__(path)
+    def __init__(self):
+        super().__init__(ARTIFACTS_CONF_PATH)
+        self.tests = tuple(TestConfItem(value) for value in self['scripts'])  # todo is used?
+        self.tests_to_integrations = {test['playbookID']: to_tuple(test['integrations']) for test in self.tests}
 
     def get_skipped_integrations(self):
         return tuple(self.get('skipped_integrations', {}).keys())
@@ -89,49 +113,156 @@ class TestConf(DictBased):
         return self.get('test_marketplacev2')  # todo what's the type here? Add default.
 
 
-class IdSet(DictBased):
-    def __init__(self, path: Path = ARTIFACTS_ID_SET_PATH):
-        super().__init__(path)
-        self.integration_id_to_path = self._integration_to_path()
+class IdSetItem(DictBased):
+    def __init__(self, id_: str, dict_: dict):
+        super().__init__(dict_)
+        self.id_ = id_
+        self.name = self.content['name']
+        self.file_path = self.content['file_path']
+        self.pack = self.content['pack']
 
     @property
-    @lru_cache
-    def test_playbooks(self):
-        return self.get('TestPlaybooks', ())
+    def marketplaces(self):
+        if values := self.content.get('marketplaces'):
+            return tuple(MarketplaceVersions(v) for v in values)
 
     @property
-    @lru_cache
+    def from_version(self):
+        if value := self.content.get('fromversion'):
+            return Version(value)
+
+    @property
+    def to_version(self):
+        if value := self.content.get('toversion'):
+            return Version(value)
+
+    @property
     def integrations(self):
-        return self.get('integrations', ())
-
-    def get_test_playbook(self, id_: str):
-        for test_playbook in self.test_playbooks:
-            if id_ in test_playbook:
-                return test_playbook[id_]
-
-    def get_integration_path(self, id_: str):
-        try:
-            return self.integration_id_to_path[id_]
-        except IndexError:
-            logging.critical(f'Could not find integration "{id_}" in the id_set')  # todo handle
-
-    def _integration_to_path(self):  # todo is necessary?
-        result = {}
-        for integration in self.integrations:  # ['name': {'name':.., 'file_path':...},...]
-            for value in integration.values():
-                result[value['name']] = value['file_path']
-        return result
+        return to_tuple(self.content.get('integrations'))
 
 
-@dataclass
 class CollectedTests:
-    tests: set[str]
-    packs: set[str]
+    tests: set[str] = field(default_factory=set)
+    packs: set[str] = field(default_factory=set)
     machines: Optional[tuple[Machine]] = None
 
     @property
     def not_empty(self):
         return any((self.tests, self.packs))
+
+    def __or__(self, other: 'CollectedTests') -> 'CollectedTests':
+        self.tests.update(other.tests)
+        self.packs.update(other.packs)
+        if self.machines is not None or other.machines is not None:
+            self.machines = (self.machines or set()) | (other.machines or set())
+
+        return self
+
+    @staticmethod
+    def union(collected_tests: tuple['CollectedTests']):
+        result = CollectedTests()
+        for other in collected_tests:
+            result |= other
+        return result
+
+    def add(
+            self, test_name: Optional[str],
+            pack_id: Optional[str],
+            reason: CollectionReason,
+            reason_description: str = '',
+            add_pack: bool = True,
+            add_test: bool = True,
+    ):
+        logging.info(f'collected {pack_id=} {test_name=}, {reason.value=} {reason_description}')
+        if add_test:
+            if not test_name:
+                raise ValueError('cannot add a test without its name')
+            self.tests.add(test_name)
+
+        if add_pack:
+            if not pack_id:
+                raise ValueError('cannot add pack without its id')
+            self.packs.add(pack_id)
+
+    def add_iterable(
+            self,
+            tests: Optional[tuple[str]],
+            pack_ids: Optional[tuple[str]],
+            reason: CollectionReason,
+            reason_description: str = '',
+            add_pack: bool = True,
+            add_test: bool = True,
+    ):
+        if tests and pack_ids:
+            if len(tests) != len(pack_ids):
+                raise ValueError(f'if both have values, {len(tests)=} must be equal to {len(pack_ids)=}')
+        elif tests:
+            pack_ids = (None,) * len(pack_ids)
+        elif pack_ids:
+            tests = (None,) * len(pack_ids)
+
+        for i in range(len(tests)):
+            self.add(tests[i], pack_ids[i], reason, reason_description, add_pack, add_test)
+
+
+class IdSet(DictFileBased):
+    def __init__(self, version_range: VersionRange, marketplace: MarketplaceVersions):
+        super().__init__(ARTIFACTS_ID_SET_PATH)
+        self.version_range = version_range
+        self.marketplace = marketplace
+
+        self.scripts = self._parse_items(self['scripts'])
+        self.integrations = self._parse_items(self['integrations'])
+        self.test_playbooks = self._parse_items(self['TestPlaybooks'])
+
+        self.id_to_item = {}
+
+        for content_item in chain(self.scripts, self.integrations, self.test_playbooks):
+            if content_item.id_ in self.id_to_item:
+                raise ValueError(f'{content_item.id_=} already in collected-item id-to-item dict')
+            self.id_to_item[content_item.id_] = content_item
+
+    def get_test_playbooks_by_marketplace_section(self):
+        """  returns test playbooks by the section under which they're saved in conf.json, regardless of their value """
+        match self.marketplace:
+            case MarketplaceVersions.XSOAR:
+                tests = self['tests']
+            case MarketplaceVersions.MarketplaceV2:
+                tests = self['test_marketplacev2']
+            case _:
+                raise NotImplementedError(f'Unexpected Marketplace value {self.marketplace.value}')
+
+        collected = CollectedTests()
+        collected.add_iterable(tests, None, CollectionReason.MARKETPLACE_VERSION_SECTION, self.marketplace.value)
+        return collected
+
+    def _parse_items(self, dictionaries: list[dict]) -> tuple[IdSetItem]:
+        result = []
+        for dict_ in dictionaries:
+            for id_, values in dict_.items():
+                for value in values:  # may be multiple, for different server versions
+                    item = IdSetItem(id_, value)
+
+                    if \
+                            (item.from_version and item.from_version > self.version_range) or (
+                                    item.from_version and item.from_version < self.version_range):
+                        logging.debug(f'skipping {item.id_=} as {item.from_version} not in {self.version_range}')
+                        continue
+
+                    if id_ in self.id_to_item:
+                        raise ValueError(f'{id_=} already in self.id_to_item')
+
+                    result.append(item)
+                    self.id_to_item[id_] = item
+        return tuple(result)
+
+
+def to_tuple(value: Optional[str | list]) -> tuple:
+    if not value:
+        return ()
+    if isinstance(value, str):
+        return value,
+    return tuple(value)
 
 
 class EmptyMachineListException(Exception):
@@ -142,41 +273,56 @@ class InvalidVersionException(Exception):
     pass
 
 
+class TestConfItem:
+    def __init__(self, value: dict):
+        self.content = value
+
+    @property
+    def integrations(self):
+        return to_tuple(self.content['integrations'])
+
+    @property
+    def playbook_id(self) -> tuple[str]:
+        return to_tuple(self.content['playbookID'])
+
+    @property
+    def from_version(self) -> Optional[Version]:
+        if value := self.content.get('fromversion'):
+            return Version(value)
+
+    @property
+    def to_version(self) -> Optional[Version]:
+        if value := self.content.get('toversion'):
+            return Version(value)
+
+    @property
+    def is_mockable(self):
+        return self.content.get('is_mockable')
+
+
 class TestCollector(ABC):
-    def __init__(self, marketplace: MarketplaceVersions):
-        self.tests = set()
-        self.packs = set()
-        self.min_version = version.Infinity
-        self.max_version = version.NegativeInfinity
-        self.marketplace = marketplace
+    def __init__(self, version_range: VersionRange, marketplace: MarketplaceVersions):
+        self.marketplace = marketplace  # todo is this used anywhere but in passing to id_set?
+        self.version_range = version_range
+
+        self.id_set = IdSet(self.version_range, marketplace)
+        self.conf = TestConf()
+
         # todo FAILED_
 
     @abstractmethod
     def _collect(self) -> CollectedTests:
         """
-        Collects all relevant tests.
+        Collects all relevant tests into self.collected.
         Every inheriting class implements its own methodology here.
         :return: A CollectedTests object with only the packs to install and tests to run, with machines=None.
         """
         pass
 
-    def _collect_item(self, content_id: str, pack_id: str, add_pack: bool, add_test: bool):
-        if add_test:
-            self.tests.add(content_id)
-        if add_pack:
-            self.packs.add(pack_id)
-
     def collect(self, run_nightly: bool, run_master: bool):
         collected = self._collect()
-        default_versions = self.max_version == version.NegativeInfinity or self.min_version == version.Infinity
-        if collected.not_empty and default_versions:
-            # todo reconsider
-            # todo change condition
-            raise InvalidVersionException()
 
-        collected.machines = Machine.get_relevant_versions(
-            self.min_version,
-            self.max_version,
+        collected.machines = Machine.get_suitable_machines(
             run_nightly,
             run_master,
         )
@@ -209,7 +355,7 @@ def get_changed_files(branch_name: str):
 
 class BranchTestCollector(TestCollector):
     def __init__(self, branch_name: str, marketplace: MarketplaceVersions):
-        super().__init__(marketplace)
+        super().__init__(marketplace, self.min_version, self.max_version)
         self.branch_name = branch_name
 
     def _collect(self) -> CollectedTests:
@@ -220,7 +366,22 @@ class BranchTestCollector(TestCollector):
 
 class NightlyTestCollector(TestCollector):
     def _collect(self) -> CollectedTests:
-        pass
+        by_marketplace_value = self.tests_matching_marketplace_value()
+        by_marketplace_section = self.id_set.get_test_playbooks_by_marketplace_section()  # todo does this belong here or in id_set?
+
+        return by_marketplace_value | by_marketplace_section
+
+    def tests_matching_marketplace_value(self) -> CollectedTests:
+        marketplace_string = self.marketplace.value  # todo is necessary?
+        logging.info(f'collecting test playbooks by their marketplace field, searching for {marketplace_string}')
+        collected = CollectedTests()
+
+        for playbook in self.id_set.test_playbooks:
+            if marketplace_string in playbook.marketplaces:
+                collected.add(playbook.name, playbook.pack,
+                              CollectionReason.MARKETPLACE_VERSION_BY_VALUE, marketplace_string)
+
+        return collected
 
 
 class UploadCollector(TestCollector):
@@ -235,7 +396,7 @@ class NoTestsException(Exception):
         self.id_ = content_id  # todo use or remove
 
 
-class ContentItem(DictBased):
+class ContentItem(DictFileBased):
     def __init__(self, path: Path):
         super().__init__(path)
 
@@ -259,5 +420,7 @@ class ContentItem(DictBased):
 
 if __name__ == '__main__':
     sys.path.append(str(CONTENT_PATH))
-    id_set = IdSet()
+    version_range = VersionRange(Machine.V6_2.value,
+                                 Machine.V6_6.value)
+    collector = NightlyTestCollector(marketplace=MarketplaceVersions.XSOAR, version_range=version_range)
     conf = TestConf()
