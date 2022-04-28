@@ -2524,7 +2524,7 @@ def test_filter_general_fields_no_event(mocker):
         'raw_abioc': {
         }
     }
-    err = mocker.patch('CortexXDRIR.return_warning')
+    err = mocker.patch('CoreIRApiModule.return_warning')
     filter_general_fields(alert)
     assert err.call_args[0][0] == "No XDR cloud analytics event."
 
