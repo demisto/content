@@ -89,10 +89,6 @@
                     "complex": null,
                     "simple": "dst_port"
                 },
-                "Link": {
-                    "complex": null,
-                    "simple": "link"
-                },
                 "Source IP": {
                     "complex": null,
                     "simple": "src_ip"
