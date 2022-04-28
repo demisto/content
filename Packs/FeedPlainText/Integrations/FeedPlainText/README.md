@@ -93,3 +93,24 @@ Now we have successfully configured an instance for the DShield Black List feed,
 
 By clicking `Mapping` in the integration instance, we can map the fields we previously configured to actual indicator fields.
 We can use `Set up a new classification rule` to use actual data from the feed.
+
+
+### plaintext-get-indicators
+***
+Gets indicators from the feed.
+
+
+#### Base Command
+
+`plaintext-get-indicators`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of results to return to the output. The default value is 50. Default is 50. | Optional | 
+| indicator_type | The indicator type. If the configuration parameter 'Auto detect indicator type' is marked true for the integration instance, then this value will be ignored. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
