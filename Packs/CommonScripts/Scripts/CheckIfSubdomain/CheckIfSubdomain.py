@@ -25,7 +25,8 @@ def main():
 
         for domain in domains:
             ext = no_fetch_extract(domain)
-            top_domain_found = any(ext.registered_domain == internal_domain.replace('*.', '') for internal_domain in internal_domains)
+            top_domain_found = any(ext.registered_domain == internal_domain.replace('*.', '')
+                                   for internal_domain in internal_domains)
 
             demisto.results(top_domain_found)
 

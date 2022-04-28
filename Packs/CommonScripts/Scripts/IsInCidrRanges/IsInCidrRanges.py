@@ -9,7 +9,7 @@ def validate_cidr(cidr: str):
     Validates CIDR format.
     """
     try:
-        cidr = ipaddress.ip_network(cidr)
+        ipaddress.ip_network(cidr)
 
     except ValueError as e:
         demisto.debug(f'Skipping "{cidr}": {e}')
