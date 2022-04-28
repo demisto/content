@@ -2822,14 +2822,14 @@ def prettify_rules(rules: Union[List[dict], dict], target: Optional[str] = None)
     return pretty_rules_arr
 
 
-def target_filter(rule: dict, target: str):
+def target_filter(rule: dict, target: str) -> bool:
     """
     Args:
         rule (dict): A rule from the panorama instance.
         target (str): A serial number to filter the rule on
 
     Returns:
-        if the rule contains the target return True else False.
+        True if the rule contains the firewall serial number (target), False if not.
     """
     firewalls_the_rule_applies_to = rule.get('target', {}).get('devices', {}).get('entry')
     if not isinstance(firewalls_the_rule_applies_to, list):
@@ -4494,8 +4494,7 @@ def panorama_check_logs_status_command(args: dict):
     """
     Check query logs status
     """
-    job_id = args.get('job_id')
-    job_ids = argToList(job_id)
+    job_ids = argToList(args.get('job_id'))
     target = args.get('target')
     for job_id in job_ids:
         result = panorama_get_traffic_logs(job_id, target)
@@ -5476,7 +5475,7 @@ def panorama_check_latest_panos_software_command(target: Optional[str] = None):
     versions = to_context.get('sw-updates', {}).get('versions').get('entry', [])
     if len(versions) > 5:
         versions = versions[:5]
-    human_readable = tableToMarkdown('5 latest pan-os software releases', versions, ['version', 'filename', 'size', 'released-on', 'downloaded' , 'current' , 'latest', 'uploaded'] )
+    human_readable = tableToMarkdown('5 latest pan-os software releases', versions, ['version', 'filename', 'size', 'released-on', 'downloaded' , 'current' , 'latest', 'uploaded'], removeNull=True)
     return CommandResults(readable_output=human_readable,
                                   outputs=to_context,
                                   raw_response=result,
