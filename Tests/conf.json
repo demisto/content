@@ -4408,6 +4408,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
+            "memory_threshold": 80,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -4490,7 +4491,7 @@
                 "virus_total_v3",
                 "ewso365_sec_eng_team"
             ],
-            "external_playbook_config": 
+            "external_playbook_config":
             {
                 "playbookID": "Phishing - Generic v3",
                 "input_parameters":
@@ -4816,7 +4817,8 @@
         {
             "integrations": "Cortex XDR - XQL Query Engine",
             "playbookID": "Cortex XDR - XQL Query - Test",
-            "fromversion": "6.2.0"
+            "fromversion": "6.2.0",
+            "memory_threshold": 90
         },
         {
             "playbookID": "ListUsedDockerImages - Test",
@@ -5042,6 +5044,9 @@
         },
         {
             "playbookID": "FormatURL-Test"
+        },
+        {
+            "playbookID": "IPToHost - Test"
         },
         {
             "playbookID": "Grafana-Test",
@@ -5509,6 +5514,7 @@
         "ElasticsearchFeed",
         "Fastly Feed",
         "Feodo Tracker IP Blocklist Feed",
+        "HelloWorld",
         "JSON Feed",
         "Lastline v2",
         "LogRhythmRest",
