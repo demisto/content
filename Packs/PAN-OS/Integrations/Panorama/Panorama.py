@@ -564,7 +564,7 @@ def panorama_commit(args):
         'cmd': f'<commit>{command}</commit>',
         'key': API_KEY
     }
-    if target := args.get('target', None):
+    if target := args.get('target'):
         params['target'] = target
     if is_partial:
         params['action'] = 'partial'
