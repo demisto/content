@@ -109,7 +109,7 @@ Use the following arguments in the URL to change the request:
 | ca                | Only with `proxysg` format. The categories which are exported. Indicators not falling into these categories are classified as the default category.                 | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&ca=category1,category2`           |
 | tx                | Whether to output `CSV` format as textual web pages.                                                                                                                | `https://{server_host}/instance/execute/{instance_name}?v=CSV&tx`                                   |
 | mc                | Configure max CIDR size.                                                                                                                                            | `https://{server_host}/instance/execute/{instance_name}?mc=10`                                      |
-| nt                 | Configure if rxclude top level domainGlobs.                                                                                                                         | `https://{server_host}/instance/execute/{instance_name}?nt=true`                                    |
+| nt                 | Configure if to exclude top level domainGlobs.                                                                                                                         | `https://{server_host}/instance/execute/{instance_name}?nt=true`                                    |
 
 
 ## Commands
