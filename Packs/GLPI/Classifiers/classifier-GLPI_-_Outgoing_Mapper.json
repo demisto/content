@@ -1,0 +1,10 @@
+{
+    "description": "Maps outgoing GLPI incidents fields.",
+    "feed": false,
+    "id": "GLPI - Outgoing Mapper",
+    "mapping": {},
+    "name": "GLPI - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}
