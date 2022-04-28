@@ -8,7 +8,7 @@ args:
 comment: "Run JQ Query. \n\nCheck these links:\n- https://stedolan.github.io/jq/manual/#Invokingjq\n\
   - https://jqplay.org/"
 commonfields:
-  id: d69ea43f-ce77-4a54-89a9-66dd8bbc0a5b
+  id: jq
   version: -1
 contentitemexportablefields:
   contentitemfields:
