@@ -21,5 +21,24 @@
     ],
     "githubUser": [
         "SecInfra"
+    ],
+    "dependencies": {
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
+    },
+    "displayedImages": [
+        "CoreAlertFields",
+        "CommonTypes",
+        "CommonScripts"
     ]
 }
