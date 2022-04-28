@@ -8,6 +8,7 @@ CIDR_RANGES = [
     ('2002::1234:abcd:ffff:c0a8:101/127', '64', 1, [False]),
     ('2002::1234:abcd:ffff:c0a8:101/127', '168', 1, [True]),
     ('192.168.0.0/24,2002::1234:abcd:ffff:c0a8:101/127', '64', 2, [True, False]),
+    ('300.168.0.0/24', '64', 1, [False]),  # invalid CIDR range
 ]
 
 

@@ -7,6 +7,8 @@ CIDR_RANGES = [
     ('"issubdomain.good.com, anothersubdomain.good.com, notasubdomain.bad.com"', 'good.com', 3, [True, True, False]),
     ('subdomain.good.com,notsubdomain.bad.com', '*.good.com', 2, [True, False]),
     ('subdomain.good.com,notsubdomain.bad.com,subdomain.stillgood.com', '*.good.com,stillgood.com', 3, [True, False, True]),
+    ('subdomain', 'good.com', 1, [False]),  # invalid internal domain
+    ('subdomain.good.com', 'com', 1, [False]),  # invalid domain
 ]
 
 
