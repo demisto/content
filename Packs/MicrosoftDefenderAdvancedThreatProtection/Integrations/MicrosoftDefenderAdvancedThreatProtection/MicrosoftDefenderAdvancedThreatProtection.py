@@ -1913,7 +1913,7 @@ class MsClient:
         cmd_url = f"/machines/{machine_id}/logonusers"
         try:
             response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
-        except Exception as e:
+        except Exception:
             raise Exception(f"Machine {machine_id} was not found")
         return response
 
@@ -1930,7 +1930,7 @@ class MsClient:
         cmd_url = f"/machines/{machine_id}/alerts"
         try:
             response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
-        except Exception as e:
+        except Exception:
             raise Exception(f"Machine {machine_id} not found")
         return response
 
