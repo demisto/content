@@ -286,7 +286,16 @@ slack-notify-nightly-build:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
 
-    - section_start "Lock XSIAM Machine"
+    - section_start "Are there tests to run?" --collapsed
+    - |
+      if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
+        # The files are empty.
+        echo "Not running XSIAM instance flow, no tests to run were found."
+        exit $EXIT_CODE
+      fi
+    - section_end "Are there tests to run?"
+
+    - section_start "Lock XSIAM Machine" --collapsed
     - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
@@ -296,7 +305,7 @@ slack-notify-nightly-build:
     - echo "XSIAM chosen_machine_id is $XSIAM_CHOSEN_MACHINE_ID"
     - section_end "Lock XSIAM Machine"
 
-    - section_start "Clean XSIAM Machine"
+    - section_start "Clean XSIAM Machine" --collapsed
     - ./Tests/scripts/uninstall_packs_and_reset_bucket_xsiam.sh
     - section_end "Clean XSIAM Machine"
 
@@ -316,12 +325,18 @@ slack-notify-nightly-build:
         cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
       fi
     - section_end "Run Tests"
+
+    - section_start "After script" --collapsed
+    - |
+      if ! [ -z "$XSIAM_CHOSEN_MACHINE_ID" ]
+      then
+        echo "Job finished, removing lock file"
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+        gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_JOB_ID"
+        echo "Finished removing lock file"
+      fi
+    - section_end "After script"
     - exit $EXIT_CODE
-  after_script:
-    - echo "Job finished, removing lock file"
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_JOB_ID"
-    - echo "Finished removing lock file"
 
 
 xsiam_server_master:
