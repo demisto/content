@@ -288,10 +288,7 @@ ignore=IF100
 [file:incidentfield-Use_Case_Description.json]
 ignore=IF100
 
-<<<<<<< HEAD
 [file:incidentfield-Alert_Confidence.json]
 ignore=IF100
-=======
 [known_words]
 SysAid
->>>>>>> 975c32ceb4012258c92056880d3940337066d2f6
