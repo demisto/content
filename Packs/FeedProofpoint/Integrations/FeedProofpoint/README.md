@@ -1,5 +1,4 @@
 Detailed feed of domains and ips classified in different categories. You need a valid authorization code from Proofpoint ET to access this feed
-This integration was integrated and tested with version xx of ProofpointFeed
 
 ## Configure Proofpoint Feed on Cortex XSOAR
 
