@@ -283,7 +283,7 @@ def test_fetch_incidents(mocker):
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
     mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
-                    'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
+                    'verify', '2 days', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     incidents = fetch_incidents(client)
@@ -308,7 +308,7 @@ def test_fetch_incidents_with_attachments(mocker):
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2016-10-10 15:19:57", 'never mind'))
     mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
-                    'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
+                    'verify', '2 days', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident', get_attachments=True,
                     incident_name='number')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH_ATTACHMENTS_TICKET)
@@ -337,7 +337,7 @@ def test_fetch_incidents_with_incident_name(mocker):
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
     mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
-                    'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
+                    'verify', '2 days', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
@@ -351,7 +351,6 @@ class TestFetchIncidentsWithLookBack:
     API_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
     NOW = datetime.utcnow()
-
     # used for fetching tickets without look back
     TICKETS_NO_LOOK_BACK = {
         'result': [
