@@ -27,7 +27,7 @@ description: |-
   When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan playbook, is executed.
   This phase will execute the following containment actions:
 
-  * Auto endpoint isolation
+  * Automatically isolation involved endpoint
   * Manual block indicators
   * Manual file quarantine
   * Manual disable user
