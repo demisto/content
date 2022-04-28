@@ -15,8 +15,16 @@ def cidr_network_addresses_lower_from_const(ip_cidr: str, max_prefix: int) -> bo
         bool: True if given CIDR has more hosts (lower prefix number) than max prefix.
     """
 
-    ip_cidr_obj = ipaddress.ip_network(address=ip_cidr, strict=False)
-    return ip_cidr_obj.prefixlen < max_prefix
+    try:
+        ip_cidr_obj = ipaddress.ip_network(address=ip_cidr, strict=False)
+
+    except ValueError as e:
+        # If one of the inputs is not a valid CIDR it will be logged and return False
+        demisto.debug(f'Skipping "{ip_cidr}": {e}')
+        return False
+
+    else:
+        return ip_cidr_obj.prefixlen < max_prefix
 
 
 def main():
