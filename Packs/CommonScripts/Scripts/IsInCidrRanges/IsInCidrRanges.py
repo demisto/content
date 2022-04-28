@@ -4,6 +4,20 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+def validate_cidr(cidr: str):
+    """
+    Validates CIDR format.
+    """
+    try:
+        cidr = ipaddress.ip_network(cidr)
+
+    except ValueError as e:
+        demisto.debug(f'Skipping "{cidr}": {e}')
+        return False
+
+    return True
+
+
 def main():
     """ Check if given IP (or IPs) address is part of a given CIDR (or a list of CIDRs).
 
@@ -21,8 +35,16 @@ def main():
     try:
 
         for ip in ip_addresses:
-            in_range = any(ipaddress.ip_address(ip) in ipaddress.ip_network(cidr) for cidr in cidr_range_list)
 
+            try:
+                ip = ipaddress.ip_address(ip)
+
+            except ValueError as e:
+                demisto.debug(f'Skipping "{ip}": {e}')
+                demisto.results(False)
+                continue
+
+            in_range = any(ip in ipaddress.ip_network(cidr) for cidr in cidr_range_list if validate_cidr(cidr))
             demisto.results(in_range)
 
     except Exception as e:
