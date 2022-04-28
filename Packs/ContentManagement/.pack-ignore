@@ -25,3 +25,6 @@ ignore=BA116
 
 [file:incidentfield-CustomPacksInstalled.json]
 ignore=BA116
+
+[file:README.md]
+ignore=RM108

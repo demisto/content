@@ -8,9 +8,11 @@ description: |
 
   Later, it was discovered that these are two separate vulnerabilities, one in Spring Core and the other in Spring Cloud Function:
 
-  **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell.**
+  **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell**
 
-  **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL".**
+  **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL"**
+
+  **CVE-2022-22947 - RCE in "Spring Cloud Gateway"**
 
   **Spring Core vulnerability requirements:**
 
@@ -31,6 +33,7 @@ description: |
       * Panorama
       * Prisma Cloud Compute
       * XDR XQL queries - set the playbook input **RunXQLHuntingQueries** to 'True' if you would like the XQL to be executed via the playbook.
+      * XDR Alerts - Search for new incidents including one or more of Spring RCEs dedicated Cortex XDR signatures
   * Remediation
   * Mitigations
 
@@ -65,7 +68,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": -880
+          "y": -1050
         }
       }
     note: false
@@ -95,7 +98,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": -740
+          "y": -910
         }
       }
     note: false
@@ -138,7 +141,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": -610
+          "y": -780
         }
       }
     note: false
@@ -168,7 +171,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": -740
+          "y": -910
         }
       }
     note: false
@@ -218,7 +221,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": -610
+          "y": -780
         }
       }
     note: false
@@ -310,7 +313,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": -155
+          "y": -325
         }
       }
     note: false
@@ -340,7 +343,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": -280
+          "y": -450
         }
       }
     note: false
@@ -367,13 +370,13 @@ tasks:
       - "36"
       - "31"
       - "37"
-      - "38"
+      - "43"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 110,
-          "y": 0
+          "y": -170
         }
       }
     note: false
@@ -404,6 +407,7 @@ tasks:
         simple: threat
       query:
         simple: (threatid eq 92389) or (threatid eq 92393) or (threatid eq 92394)
+          or (threatid eq 83239)
     separatecontext: true
     loop:
       iscommand: false
@@ -413,8 +417,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -110,
-          "y": 320
+          "x": 110,
+          "y": 150
         }
       }
     note: false
@@ -940,7 +944,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": -450
+          "y": -620
         }
       }
     note: false
@@ -979,8 +983,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 330,
-          "y": 320
+          "x": 550,
+          "y": 150
         }
       }
     note: false
@@ -1010,7 +1014,7 @@ tasks:
       {
         "position": {
           "x": 570,
-          "y": -740
+          "y": -910
         }
       }
     note: false
@@ -1050,7 +1054,7 @@ tasks:
       {
         "position": {
           "x": 570,
-          "y": -610
+          "y": -780
         }
       }
     note: false
@@ -1181,8 +1185,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 180
+          "x": 1010,
+          "y": 10
         }
       }
     note: false
@@ -1209,6 +1213,7 @@ tasks:
       - "20"
       "yes":
       - "33"
+      - "51"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1237,8 +1242,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 320
+          "x": 1010,
+          "y": 150
         }
       }
     note: false
@@ -1255,7 +1260,7 @@ tasks:
     task:
       id: e1b1bbb6-17e7-4cb5-8206-e70fbb85ece3
       version: -1
-      name: Search for possible vulnerable servers using Prisma Cloud
+      name: Search for possible vulnerable servers
       description: Runs an RQL query on the Prisma Cloud.
       script: '|||redlock-get-rql-response'
       type: regular
@@ -1268,13 +1273,13 @@ tasks:
       limit:
         simple: "10"
       rql:
-        simple: config from cloud.resource where finding.type = 'Host Vulnerability' AND protection.finding.name IN ('CVE-2022-22963​', 'CVE-2022-22965')
+        simple: config from cloud.resource where finding.type = 'Host Vulnerability' AND protection.finding.name IN ('CVE-2022-22963', 'CVE-2022-22965')
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 980,
-          "y": 490
+          "x": 1200,
+          "y": 320
         }
       }
     note: false
@@ -1303,8 +1308,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
-          "y": 830
+          "x": 1630,
+          "y": 670
         }
       }
     note: false
@@ -1345,8 +1350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
-          "y": 645
+          "x": 1200,
+          "y": 495
         }
       }
     note: false
@@ -1375,8 +1380,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -110,
-          "y": 180
+          "x": 110,
+          "y": 10
         }
       }
     note: false
@@ -1405,8 +1410,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 330,
-          "y": 180
+          "x": 550,
+          "y": 10
         }
       }
     note: false
@@ -1423,7 +1428,7 @@ tasks:
     task:
       id: acbc1584-64cc-49e1-874a-2830f351a593
       version: -1
-      name: 'Cortex XDR - XQL Hunting Queries '
+      name: 'XQL Hunting Queries '
       type: title
       iscommand: false
       brand: ""
@@ -1435,8 +1440,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -590,
-          "y": 180
+          "x": -370,
+          "y": 165
         }
       }
     note: false
@@ -1480,8 +1485,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -590,
-          "y": 320
+          "x": -370,
+          "y": 290
         }
       }
     note: false
@@ -1519,8 +1524,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -590,
-          "y": 625
+          "x": -370,
+          "y": 485
         }
       }
     note: false
@@ -1566,14 +1571,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -820,
-          "y": 830
+          "x": -600,
+          "y": 660
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1598,7 +1603,28 @@ tasks:
       - "20"
     scriptarguments:
       query:
-        simple: "config case_sensitive = false |\ndataset = xdr_data \n| alter ct = current_time() \n| alter diff = timestamp_diff(ct, _time, \"DAY\")\n| filter event_type = PROCESS\nand (\nactor_process_image_name contains \"apache\" \nor actor_process_image_name contains \"java\"\n)\n//and diff < 2\n| dedup action_process_image_command_line, agent_hostname, actor_process_image_name \n| fields action_process_image_name ,action_process_image_command_line, agent_hostname, actor_process_image_name\n\n\n| join conflict_strategy = left type = left \n    (\n        dataset = xdr_data\n           | filter event_type = PROCESS                      \n            and (\nactor_process_image_name contains \"apache\" \nor actor_process_image_name contains \"java\"\n)            \n            | comp count(action_process_image_name) as Action_Proc_Days_count by actor_process_image_name   \n    )  as Three_Months_Action_Process (Three_Months_Action_Process.actor_process_image_name = actor_process_image_name)\n\n| join conflict_strategy = left type = left \n    (\n        dataset = xdr_data\n           | filter event_type = PROCESS        \n            and (\nactor_process_image_name contains \"apache\" \nor actor_process_image_name contains \"java\"\n)        \n            | comp count(action_process_image_command_line) as Commandline_Days_count by  actor_process_image_name, action_process_image_command_line \n    )  as Three_Months_CommandLine (Three_Months_CommandLine.action_process_image_command_line = action_process_image_command_line )\n\n| dedup agent_hostname ,actor_process_image_name , action_process_image_name\n| sort asc Commandline_Days_count , asc Action_Proc_Days_count \n| filter Commandline_Days_count < 5 and Action_Proc_Days_count < 5"
+        simple: "config case_sensitive = false |\ndataset = xdr_data \n| alter ct\
+          \ = current_time() \n| alter diff = timestamp_diff(ct, _time, \"DAY\")\n\
+          | filter event_type = PROCESS\nand (\nactor_process_image_name contains\
+          \ \"apache\" \nor actor_process_image_name contains \"java\"\n)\n//and diff\
+          \ < 2\n| dedup action_process_image_command_line, agent_hostname, actor_process_image_name\
+          \ \n| fields action_process_image_name ,action_process_image_command_line,\
+          \ agent_hostname, actor_process_image_name\n\n\n| join conflict_strategy\
+          \ = left type = left \n    (\n        dataset = xdr_data\n           | filter\
+          \ event_type = PROCESS                      \n            and (\nactor_process_image_name\
+          \ contains \"apache\" \nor actor_process_image_name contains \"java\"\n\
+          )            \n            | comp count(action_process_image_name) as Action_Proc_Days_count\
+          \ by actor_process_image_name   \n    )  as Three_Months_Action_Process\
+          \ (Three_Months_Action_Process.actor_process_image_name = actor_process_image_name)\n\
+          \n| join conflict_strategy = left type = left \n    (\n        dataset =\
+          \ xdr_data\n           | filter event_type = PROCESS        \n         \
+          \   and (\nactor_process_image_name contains \"apache\" \nor actor_process_image_name\
+          \ contains \"java\"\n)        \n            | comp count(action_process_image_command_line)\
+          \ as Commandline_Days_count by  actor_process_image_name, action_process_image_command_line\
+          \ \n    )  as Three_Months_CommandLine (Three_Months_CommandLine.action_process_image_command_line\
+          \ = action_process_image_command_line )\n\n| dedup agent_hostname ,actor_process_image_name\
+          \ , action_process_image_name\n| sort asc Commandline_Days_count , asc Action_Proc_Days_count\
+          \ \n| filter Commandline_Days_count < 5 and Action_Proc_Days_count < 5"
       query_name:
         simple: Spring4shell_POC_Usage
       time_frame:
@@ -1608,8 +1634,39 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -360,
-          "y": 830
+          "x": -140,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 1c8ed2eb-774a-4626-8905-997b83d98458
+    type: title
+    task:
+      id: 1c8ed2eb-774a-4626-8905-997b83d98458
+      version: -1
+      name: Cortex XDR
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -730,
+          "y": 10
         }
       }
     note: false
@@ -1619,6 +1676,245 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: aab0a164-a376-462f-8d21-a508aeadb3c2
+    type: title
+    task:
+      id: aab0a164-a376-462f-8d21-a508aeadb3c2
+      version: -1
+      name: XDR Alerts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1090,
+          "y": 165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 981cbeac-3edd-4f21-8c36-661a1fa48411
+    type: condition
+    task:
+      id: 981cbeac-3edd-4f21-8c36-661a1fa48411
+      version: -1
+      name: Is Cortex XDR Investigation & Response enabled?
+      description: Checks if Cortex XDR Investigation & Response instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - IR
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -1090,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: a66c88c5-b048-4089-8302-4f8f83acb406
+    type: regular
+    task:
+      id: a66c88c5-b048-4089-8302-4f8f83acb406
+      version: -1
+      name: Search XDR incidents for Spring RCEs activity
+      description: |-
+        Searches Demisto incidents.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      query:
+        simple: xdralerts.name:"Process execution with a suspicious command line indicative
+          of the Spring4Shell exploit" or xdralerts.name:"Suspicious HTTP Request
+          to a vulnerable Java class"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1240,
+          "y": 485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 94a7cb3c-104d-4f23-8569-3c8d1258e805
+    type: condition
+    task:
+      id: 94a7cb3c-104d-4f23-8569-3c8d1258e805
+      version: -1
+      name: Check if related incidents were found
+      description: Checks for results from the XDR alerts query.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: foundIncidents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1240,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: aba33faa-644e-4aaa-8dc0-89ec0ac142b9
+    type: regular
+    task:
+      id: aba33faa-644e-4aaa-8dc0-89ec0ac142b9
+      version: -1
+      name: Manual review affected endpoints
+      description: Manual review the affected endpoints found using the SearchIncidentsV2
+        command.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1430,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 1e87e36b-6876-473c-8288-48373310dbb5
+    type: regular
+    task:
+      id: 1e87e36b-6876-473c-8288-48373310dbb5
+      version: -1
+      name: Search for internet exposed vulnerable hosts that are receiving traffic
+      description: Runs an RQL query on the Prisma Cloud.
+      script: '|||redlock-get-rql-response'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      limit:
+        simple: "10"
+      rql:
+        simple: network from vpc.flow_record where bytes > 0 AND destination.resource
+          IN ( resource where finding.type IN ( 'Host Vulnerability' ) AND finding.source
+          IN ( 'Prisma Cloud' ) AND finding.name IN ('CVE-2022-22963', 'CVE-2022-22965')
+          ) AND source.publicnetwork IN ('Internet IPs', 'Suspicious IPs')
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1628,25 +1924,29 @@ view: |-
       "21_23_yes": 0.37,
       "32_20_#default#": 0.27,
       "32_33_yes": 0.44,
+      "32_51_yes": 0.71,
       "35_20_#default#": 0.4,
       "35_34_yes": 0.48,
       "39_20_#default#": 0.38,
       "39_40_yes": 0.53,
-      "40_20_no": 0.1
+      "40_20_no": 0.1,
+      "46_20_#default#": 0.11,
+      "46_47_yes": 0.48,
+      "48_49_yes": 0.42
     },
     "paper": {
       "dimensions": {
-        "height": 3405,
-        "width": 2360,
-        "x": -820,
-        "y": -880
+        "height": 3575,
+        "width": 3440,
+        "x": -1430,
+        "y": -1050
       }
     }
   }
 inputs:
 - key: RelatedCVEs
   value:
-    simple: CVE-2022-22963,CVE-2022-22965
+    simple: CVE-2022-22963,CVE-2022-22965,cve-2022-22947
   required: false
   description: The vulnerability assigned CVE.
   playbookInputQuery:
@@ -1659,9 +1959,11 @@ inputs:
 
       Later, it was discovered that these are two separate vulnerabilities, one in Spring Core and the other in Spring Cloud Function:
 
-      **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell.**
+      **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell**
 
-      **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL".**
+      **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL"**
+
+      **CVE-2022-22947 - RCE in "Spring Cloud Gateway"**
 
       **Spring Core vulnerability requirements:**
 
@@ -1682,6 +1984,7 @@ inputs:
           * Panorama
           * Prisma Cloud Compute
           * XDR XQL queries - set the playbook input **RunXQLHuntingQueries** to 'True' if you would like the XQL to be executed via the playbook.
+          * XDR Alerts - Search for new incidents including one or more of Spring RCEs dedicated Cortex XDR signatures
       * Remediation
       * Mitigations
 
