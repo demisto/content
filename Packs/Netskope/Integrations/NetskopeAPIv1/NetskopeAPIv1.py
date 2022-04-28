@@ -790,7 +790,8 @@ def test_module(client: Client, max_fetch: int, first_fetch: str, fetch_events: 
 
 
 def fetch_multiple_type_events(client: Client, max_fetch: int, start_time: int,
-                               event_types: List[str]) -> List[Dict[str, Any]]:
+                               event_types: List[str],
+                               query: Optional[str]) -> List[Dict[str, Any]]:
     """
     Fetches events from multiple types.
     The function makes an API call for each type, since the API requires
@@ -801,6 +802,7 @@ def fetch_multiple_type_events(client: Client, max_fetch: int, start_time: int,
         max_fetch (int): The maximum amount of events to fetch for each type.
         start_time (int): The time to fetch the events from.
         event_types (List[str]): The event types to fetch as incidents.
+        query (Optional[str]): Query for filtering the events.
 
     Returns:
         List[Dict[str, Any]]: The fetched events.
@@ -815,7 +817,8 @@ def fetch_multiple_type_events(client: Client, max_fetch: int, start_time: int,
                                                 end_time=date_to_seconds_timestamp(datetime.now()),
                                                 limit=max_fetch,
                                                 unsorted=False,
-                                                event_type=event_type)['data']
+                                                event_type=event_type,
+                                                query=query)['data']
         for event in new_events:
             event['event_id'] = event['_id']
             event['incident_type'] = event_type
@@ -826,7 +829,8 @@ def fetch_multiple_type_events(client: Client, max_fetch: int, start_time: int,
 
 
 def fetch_incidents(client: Client, max_fetch: int, first_fetch: str, fetch_events: bool,
-                    max_events_fetch: int, event_types: List[str]) -> None:
+                    max_events_fetch: int, event_types: List[str], alerts_query: Optional[str],
+                    events_query: Optional[str]) -> None:
     """
     Fetches alerts and events as incidents.
 
@@ -836,6 +840,8 @@ def fetch_incidents(client: Client, max_fetch: int, first_fetch: str, fetch_even
         first_fetch (str): The timestamp to fetch the incidents from.
         max_events_fetch (int): Maximum number of events to fetch.
         event_types (List[str]): The type of events to fetch.
+        alerts_query (Optional[str]): Query for filtering the fetched alerts.
+        events_query (Optional[str]): Query for filtering the fetched events.
     """
 
     validate_fetch_params(max_fetch, max_events_fetch, fetch_events, first_fetch, event_types)
@@ -847,6 +853,7 @@ def fetch_incidents(client: Client, max_fetch: int, first_fetch: str, fetch_even
     alerts = client.list_alerts_request(start_time=last_alert_time,
                                         end_time=date_to_seconds_timestamp(datetime.now()),
                                         limit=max_fetch,
+                                        query=alerts_query,
                                         unsorted=False)['data']
 
     last_event_time = last_run.get('last_event_time') or first_fetch
@@ -854,7 +861,8 @@ def fetch_incidents(client: Client, max_fetch: int, first_fetch: str, fetch_even
         events = fetch_multiple_type_events(client,
                                             max_fetch=max_events_fetch,
                                             start_time=last_event_time,
-                                            event_types=event_types)
+                                            event_types=event_types,
+                                            query=events_query)
     else:
         events = []
 
@@ -930,7 +938,9 @@ def main():
                             first_fetch=first_fetch,
                             fetch_events=fetch_events,
                             max_events_fetch=max_events_fetch,
-                            event_types=event_types)
+                            event_types=event_types,
+                            alerts_query=demisto.params().get('alert_query'),
+                            events_query=demisto.params().get('events_query'))
         elif command in commands:
             return_results(commands[command](client, demisto.args()))
         else:

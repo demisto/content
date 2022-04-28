@@ -26,6 +26,13 @@ configuration:
     name: first_fetch
     required: false
     type: 0
+  - display: Alerts Query
+    hidden: false
+    name: alerts_query
+    required: false
+    additionalinfo: Free text query to filter the fetched alerts.
+      For more information, please visit Netskope documentation (https://docs.netskope.com/en/get-alerts-data.html).
+    type: 0
   - defaultvalue: false
     display: Fetch Events
     additionalinfo: Fetch events as incidents, in addition to the alerts.
@@ -52,6 +59,14 @@ configuration:
     name: max_events_fetch
     defaultvalue: 50
     required: false
+    type: 0
+  - display: Events Query
+    hidden: false
+    name: events_query
+    required: false
+    additionalinfo:
+      Free text query to filter the fetched events (if configured).
+      For more information, please visit Netskope documentation (https://docs.netskope.com/en/get-events-data.html).
     type: 0
   - display: Incident type
     name: incidentType
