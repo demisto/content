@@ -43,7 +43,9 @@
     "Qradar Generic",
     "FW change management",
     "CrowdStrike Falcon Detection",
-    "CrowdStrike Falcon Incident"
+    "CrowdStrike Falcon Incident",
+    "Malware",
+    "Microsoft Defender For Endpoint"
   ],
   "threshold": 72,
   "toServerVersion": "",
