@@ -5694,6 +5694,27 @@ Detect if there was any evidence of MSDE agent/sensor manipulation.
 | --- | --- | --- |
 | MicrosoftATP.HuntTampering.Result | String | The query results. |
 
+### microsoft-atp-live-response-cancel-action
+***
+Cancels an action with an unfinished status.
+
+
+#### Base Command
+
+`microsoft-atp-live-response-cancel-action`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_action_id | Action ID to retrieve status and data for. | Required | 
+| comment | A comment to associate with the action. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
 ### microsoft-atp-get-machine-users
 ---
 Retrieves a collection of logged on users on a specific device.
@@ -5820,25 +5841,3 @@ Alert.ReadWrite.All
 >|ID|Title|Description|IncidentID|Severity|Status|Classification|Category|ThreatFamilyName|MachineID|
 >|---|---|---|---|---|---|---|---|---|---|
 >| da637472900382838869_1364969609 | Low-reputation arbitrary code executed by signed executable | Binaries signed by Microsoft can be used to run low-reputation arbitrary code. This technique hides the execution of malicious code within a trusted process. As a result, the trusted process might exhibit suspicious behaviors, such as opening a listening port or connecting to a command-and-control (C&C) server. | 1126093 | Low | New |  | Execution |  | 111e6dd8c833c8a052ea231ec1b19adaf497b625 |
-### microsoft-atp-live-response-cancel-action
-***
-Cancels an action with an unfinished status.
-
-
-#### Base Command
-
-`microsoft-atp-live-response-cancel-action`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| machine_action_id | Action ID to retrieve status and data for. | Required | 
-| comment | A comment to associate with the action. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command example
-```!microsoft-atp-live-response-cancel-action machine_action_id=11a86b87-12b8-423b-9e8d-9775ab2da78f comment="testing"```
