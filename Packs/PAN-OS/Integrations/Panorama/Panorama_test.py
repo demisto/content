@@ -1620,6 +1620,53 @@ class TestFirewallCommand:
                 assert value is not None
 
 
+@pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
+                         [pytest.param({'anti_spyware_profile_name': 'fake_profile_name',
+                                        'dns_signature_source': 'edl_name', 'action': 'allow'},
+                                       {
+                                           'action': 'set',
+                                           'type': 'config',
+                                           'xpath': "/config/devices/entry[@name='localhost.localdomain']"
+                                                    "/device-group/entry[@name='fakeDeviceGroup']"
+                                                    "/profiles/spyware/entry[@name='fake_profile_name']",
+                                           'key': 'fakeAPIKEY!',
+                                           'element': '<botnet-domains>'
+                                                      '<lists>'
+                                                      '<entry name="edl_name"><packet-capture>disable</packet-capture>'
+                                                      '<action><allow/></action></entry>'
+                                                      '</lists>'
+                                                      '</botnet-domains>'},
+                                       MockedResponse(text='<response status="success" code="20"><msg>'
+                                                           'command succeeded</msg></response>', status_code=200,
+                                                      reason=''),
+                                       '**success**',
+                                       ),
+                          ])
+def test_panorama_apply_dns_command(mocker, args, expected_request_params, request_result, expected_demisto_result):
+    """
+    Given:
+        - command args
+        - request result
+    When:
+        - Running panorama-apply-dns
+    Then:
+        - Assert the request url is as expected
+        - Assert Command results contains the relevant result information
+    """
+    import Panorama
+    import requests
+    from Panorama import apply_dns_signature_policy_command
+
+    Panorama.API_KEY = 'fakeAPIKEY!'
+    Panorama.DEVICE_GROUP = 'fakeDeviceGroup'
+    request_mock = mocker.patch.object(requests, 'request', return_value=request_result)
+    command_result: CommandResults = apply_dns_signature_policy_command(args)
+
+    called_request_params = request_mock.call_args.kwargs['params']  # The body part of the request
+    assert called_request_params == expected_request_params
+    assert command_result.readable_output == expected_demisto_result
+
+
 @pytest.mark.parametrize('expected_request_params, target',
                          [pytest.param(
                              {
