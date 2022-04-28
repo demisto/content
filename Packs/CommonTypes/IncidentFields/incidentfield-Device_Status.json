@@ -1,34 +1,4 @@
 {
-<<<<<<< HEAD
-    "associatedToAll": true,
-    "caseInsensitive": true,
-    "cliName": "devicestatus",
-    "closeForm": false,
-    "content": true,
-    "editForm": true,
-    "group": 0,
-    "hidden": false,
-    "id": "incident_devicestatus",
-    "isReadOnly": false,
-    "locked": false,
-    "name": "Device Status",
-    "neverSetAsRequired": false,
-    "openEnded": true,
-    "ownerOnly": false,
-    "propagationLabels": [
-        "all"
-    ],
-    "required": false,
-    "sla": 0,
-    "system": false,
-    "threshold": 72,
-    "type": "multiSelect",
-    "unmapped": false,
-    "unsearchable": true,
-    "useAsKpi": false,
-    "version": -1,
-    "fromVersion": "6.2.0"
-=======
   "id": "incident_devicestatus",
   "version": -1,
   "modified": "2022-03-06T12:05:36.659788849Z",
@@ -58,5 +28,4 @@
   "sla": 0,
   "threshold": 72,
   "fromVersion": "6.0.0"
->>>>>>> 975c32ceb4012258c92056880d3940337066d2f6
 }
