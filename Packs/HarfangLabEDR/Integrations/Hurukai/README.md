@@ -74,7 +74,7 @@ The following commands are implemented in the connector:
 
 The connector also allows to fetch security events from a HarfangLab EDR manager. It uses the following parameters:
 
-  * **API URL**: HarfangLab EDR manager's URL (such as _https://hurukai:8443/_)
+  * **API URL**: HarfangLab EDR manager's URL
   * **API key**: API key to authenticate to the manager
   * **alert_type**: list of coma-separated alert types to fetch (such as _sigma, yara, hlai, vt, ransom, etc._)
   * **min_severity**: minimum severity of alerts to fetch (_Low, Medium, High, Critical_)
