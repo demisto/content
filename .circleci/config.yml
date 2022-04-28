@@ -175,6 +175,7 @@ references:
   remote_docker: &remote_docker
     setup_remote_docker:
       version: 20.10.6
+      docker_layer_caching: true
 
   persist_to_workspace: &persist_to_workspace
     persist_to_workspace:
@@ -224,7 +225,7 @@ references:
         echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         mkdir ./unit-tests
-        demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
+        demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
 
   generate_coverage_reports: &generate_coverage_reports
     run:
