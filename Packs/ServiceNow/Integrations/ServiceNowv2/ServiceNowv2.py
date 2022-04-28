@@ -2020,7 +2020,7 @@ def get_mirroring():
 
     return {
         'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
-        'mirror_tags':  [
+        'mirror_tags': [
             params.get('comment_tag'),
             params.get('file_tag'),
             params.get('work_notes_tag')
@@ -2054,7 +2054,7 @@ def fetch_incidents(client: Client) -> list:
 
     if query:
         query_params['sysparm_query'] = query
-    query_params['sysparm_limit'] = fetch_limit
+    query_params['sysparm_limit'] = fetch_limit  # type: ignore[assignment]
 
     demisto.info(f'Fetching ServiceNow incidents. with the query params: {str(query_params)}')
     tickets_response = client.send_request(f'table/{client.ticket_type}', 'GET', params=query_params).get('result', [])
