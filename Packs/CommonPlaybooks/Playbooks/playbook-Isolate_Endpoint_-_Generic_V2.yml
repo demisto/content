@@ -331,7 +331,7 @@ tasks:
       Hostname:
         simple: ${inputs.Endpoint_hostname}
     separatecontext: true
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ''
       id: d438379a-5602-49f9-8d6d-404f9dbe3919
