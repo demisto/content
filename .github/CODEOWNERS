@@ -53,6 +53,7 @@
 .gitlab/ci/* @esharf
 .gitlab/* @esharf
 .gitlab-ci.yml @esharf
+/Tests/scripts/wait_in_line_for_xsiam_env.sh @daryakoval
 
 # SDK Related
 .gitlab/ci/sdk-nightly.yml @dorschw
