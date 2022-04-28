@@ -258,6 +258,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Absolute",
+            "playbookID": "Absolute_TestPlaybook",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "ServiceDeskPlus",
             "playbookID": "Service Desk Plus Test",
             "instance_names": "sdp_instance_1",
@@ -509,6 +514,11 @@
             "integrations": "Symantec Data Loss Prevention",
             "playbookID": "Symantec Data Loss Prevention - Test",
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "Symantec Data Loss Prevention v2",
+            "playbookID": "Symantec Data Loss Prevention v2 - Test",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "Lockpath KeyLight v2",
@@ -2890,11 +2900,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Kaspersky Security Center",
-            "playbookID": "Kaspersky Security Center - Test",
-            "fromversion": "5.5.0"
-        },
-        {
             "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
             "integrations": "VirusTotal",
@@ -4403,6 +4408,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
+            "memory_threshold": 80,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -4485,7 +4491,7 @@
                 "virus_total_v3",
                 "ewso365_sec_eng_team"
             ],
-            "external_playbook_config": 
+            "external_playbook_config":
             {
                 "playbookID": "Phishing - Generic v3",
                 "input_parameters":
@@ -4811,7 +4817,8 @@
         {
             "integrations": "Cortex XDR - XQL Query Engine",
             "playbookID": "Cortex XDR - XQL Query - Test",
-            "fromversion": "6.2.0"
+            "fromversion": "6.2.0",
+            "memory_threshold": 90
         },
         {
             "playbookID": "ListUsedDockerImages - Test",
@@ -5039,6 +5046,9 @@
             "playbookID": "FormatURL-Test"
         },
         {
+            "playbookID": "IPToHost - Test"
+        },
+        {
             "playbookID": "Grafana-Test",
             "fromversion": "6.0.0",
             "integrations": [
@@ -5064,6 +5074,9 @@
             ]
         },
         {
+            "playbookID": "DBotUpdateLogoURLPhishing_test"
+        },
+        {
             "playbookID": "TAXII2 Server Performance Test",
             "instance_names": "taxii2server",
             "integrations": [
@@ -5083,6 +5096,11 @@
         {
             "playbookID": "TAXII2 Performance Test - Concurrency",
             "fromversion": "6.1.0"
+        },
+        {
+            "integrations": "FortiSIEMV2",
+            "playbookID": "playbook-FortiSIEMV2_Test",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "HttpV2-test",
@@ -5231,11 +5249,13 @@
         "Recorded Future Test": "Issue 26741",
         "Git_Integration-Test": "Issue 37800",
         "RecordedFutureFeed - Test": "Issue 43923",
-        "RedLockTest": "Issue 24600"
+        "RedLockTest": "Issue 24600",
+        "SymantecEndpointProtection_Test": "Issue 30157"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "FortiSIEMV2": "No instance",
         "Vertica": "No insance issue 45719",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
@@ -5328,16 +5348,16 @@
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "AzureKeyVault": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        
+
         "_comment4": "~~~ OTHER ~~~",
         "Anomali ThreatStream v2": "Will be deprecated soon.",
         "Anomali ThreatStream": "Will be deprecated soon.",
@@ -5494,6 +5514,7 @@
         "ElasticsearchFeed",
         "Fastly Feed",
         "Feodo Tracker IP Blocklist Feed",
+        "HelloWorld",
         "JSON Feed",
         "Lastline v2",
         "LogRhythmRest",
@@ -5526,7 +5547,7 @@
         "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {

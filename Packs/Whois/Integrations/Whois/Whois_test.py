@@ -36,6 +36,7 @@ def assert_results_ok():
 def test_test_command(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch("Whois.get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
     Whois.main()
     assert_results_ok()
 
@@ -215,6 +216,7 @@ def test_get_whois_ip_proxy_param(mocker):
     """
     from Whois import get_whois_ip
     mocker.patch.object(demisto, 'params', return_value={"proxy": True})
+    mocker.patch("ipwhois.IPWhois.lookup_rdap", return_value={"raw": None})
     result = get_whois_ip('1.1.1.1')
     assert result
 

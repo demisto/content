@@ -101,6 +101,8 @@ TAXII
 Syslog
 DomainTools
 replyTo
+indicator
+DBotScore
 HX
 hostSetName
 fieldSearchName
@@ -114,10 +116,10 @@ MSDE
 CrowdStrike
 FAQ
 hashes
-URLs
 FTPs
 afterwards
 http
+HTML
 runtime
 dns
 Ubuntu
@@ -155,4 +157,11 @@ GetCampaignIncidentsInfo
 IsIncidentPartOfCampaign
 unsearchable
 ChronicleAsset
+Reforamtted
+ipstack
 SNDBOX
+C
+integrationReliability
+Mapper
+Mappers
+EDL
