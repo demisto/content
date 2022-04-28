@@ -273,6 +273,29 @@ def decrypt_pdf_file(file_path, user_password, path_to_decrypted_file):
     pdf_file.save(path_to_decrypted_file)
 
 
+def extract_url_from_annot_object(annot_object):
+    """
+    Extracts the URLs from the Annot object (under key: '/A').
+
+    Args:
+        annot_object (PyPDF2.generic.DictionaryObject): An object contains annotations of a PDF.
+
+    Returns:
+         (PyPDF2.generic.TextStringObject): The extracted url.
+
+    """
+
+    # Extracts the URLs from the Annot object (under key: '/A'):
+    if a := annot_object.get('/A'):
+        if isinstance(a, PyPDF2.generic.IndirectObject):
+            a = a.getObject()
+
+        if url := a.get('/URI'):
+            if isinstance(url, PyPDF2.generic.IndirectObject):
+                url = url.getObject()
+    return url
+
+
 def get_urls_and_emails_from_pdf_annots(file_path):
     """
     Extracts the URLs and Emails from the pdf's Annots (Annotations and Commenting) using PyPDF2 package.
@@ -308,25 +331,22 @@ def get_urls_and_emails_from_pdf_annots(file_path):
                     if isinstance(annot_object, PyPDF2.generic.IndirectObject):
                         annot_object = annot_object.getObject()
 
-                    # Extracts the URLs from the Annot object (under key: '/A'):
-                    if a := annot_object.get('/A'):
-                        if isinstance(a, PyPDF2.generic.IndirectObject):
-                            a = a.getObject()
+                    url = extract_url_from_annot_object(annot_object)
 
-                        if url := a.get('/URI'):
-                            if isinstance(url, PyPDF2.generic.IndirectObject):
-                                url = url.getObject()
-                            matched_url = re.findall(URL_EXTRACTION_REGEX, url)
-                            if len(matched_url) != 0:
-                                urls_set.add(matched_url[0])
-                            matched_email = re.findall(EMAIL_REGXEX, url)
-                            if len(matched_email) != 0:
-                                emails_set.add(matched_email[0])
+                    # Separates URLs and Emails:
+                    matched_url = re.findall(URL_EXTRACTION_REGEX, url)
+                    if len(matched_url) != 0:
+                        urls_set.add(matched_url[0])
+                    matched_email = re.findall(EMAIL_REGXEX, url)
+                    if len(matched_email) != 0:
+                        emails_set.add(matched_email[0])
 
+    # Logging:
     if len(urls_set) == 0:
         demisto.debug('No URLs were extracted from the PDF.')
     if len(emails_set) == 0:
         demisto.debug('No Emails were extracted from the PDF.')
+
     return urls_set, emails_set
 
 
