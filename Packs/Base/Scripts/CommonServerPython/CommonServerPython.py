@@ -4534,7 +4534,7 @@ class Common(object):
             if self.blocked:
                 account_context['Blocked'] = self.blocked
 
-            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'Id']
+            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'Id', 'create_context_table']
             details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
 
             for detail in details:
@@ -4557,6 +4557,9 @@ class Common(object):
                 relationships_context = [relationship.to_context() for relationship in self.relationships if
                                          relationship.to_context()]
                 account_context['Relationships'] = relationships_context
+
+            if self.community_notes:
+                account_context['CommunityNotes'] = self.create_context_table(self.community_notes)
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
@@ -4639,7 +4642,7 @@ class Common(object):
 
         def __init__(self, stix_id, kill_chain_phases=None, first_seen_by_source=None, description=None,
                      operating_system_refs=None, publications=None, mitre_id=None, tags=None,
-                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None,):
+                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None):
 
             self.community_notes = community_notes
             self.description = description
