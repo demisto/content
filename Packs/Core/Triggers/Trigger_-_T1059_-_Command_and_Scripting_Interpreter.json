@@ -3,7 +3,7 @@
   "playbook_id": "T1059 - Command and Scripting Interpreter",
   "suggestion_reason": "Recommended for Alerts with evidence of MITRE technique “Command and Scripting Interpreter”",
   "description": "This trigger is responsible for handling T1059 - Command and Scripting Interpreter alerts",
-  "trigger_name": "Command and Scripting Interpreter",
+  "trigger_name": "T1059 - Command and Scripting Interpreter",
   "alerts_filter": {
     "filter": {
       "OR": [
