@@ -3593,7 +3593,7 @@ script:
       secret: false
     - default: false
       auto: PREDEFINED
-      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256", "FileMd5", "IpAddress", "DomainName", "Url" and "CertificateThumbprint".'
+      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256", "FileMd5", "IpAddress", "DomainName", and "Url".'
       isArray: false
       name: indicator_type
       required: true
@@ -3604,7 +3604,6 @@ script:
       - IpAddress
       - DomainName
       - Url
-      - CertificateThumbprint
     - default: false
       auto: PREDEFINED
       description: 'The action taken if the indicator is discovered in the organization. Possible values: "Alert", "AlertAndBlock", and "Allowed".'
@@ -3771,7 +3770,7 @@ script:
       secret: false
     - default: false
       auto: PREDEFINED
-      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256", "FileMd5", "IpAddress", "DomainName", "Url" and "CertificateThumbprint".'
+      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256", "FileMd5", "IpAddress", "DomainName", and "Url".'
       isArray: false
       name: indicator_type
       required: true
@@ -3782,7 +3781,6 @@ script:
       - IpAddress
       - DomainName
       - Url
-      - CertificateThumbprint
     - default: false
       auto: PREDEFINED
       description: 'The action taken if the indicator is discovered in the organization. Possible values: "Alert", "AlertAndBlock", and "Allowed".'
