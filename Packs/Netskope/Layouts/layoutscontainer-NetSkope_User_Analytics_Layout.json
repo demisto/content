@@ -432,6 +432,6 @@
     "name": "Netskope -  User Analytics Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
+    "fromVersion": "6.2.0",
     "description": ""
 }
