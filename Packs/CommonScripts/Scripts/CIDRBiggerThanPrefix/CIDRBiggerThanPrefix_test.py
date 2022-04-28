@@ -3,18 +3,17 @@ import pytest
 import demistomock as demisto
 
 CIDR_RANGES = [
-    ('172.16.0.1', '10.0.0.0/8,192.168.0.0/16', 1, [False]),
-    ('172.40.5.10', '172.16.0.0/12', 1, [False]),
-    ('10.5.5.5', '10.0.0.0/8,192.168.0.0/16', 1, [True]),
-    ('172.16.0.1,10.5.5.5', '10.0.0.0/8,192.168.0.0/16', 2, [False, True]),
-    ('172.16.0.1,10.5.5.5', '10.0.0.0/8', 2, [False, True]),
-    ('192.168.1.1,192.168.1.2,10.10.1.1', '192.168.0.0/16,192.168.1.3/32', 3, [True, True, False]),
+    ('192.168.0.0/24', '18', 1, [False]),
+    ('192.168.0.0/24', '32', 1, [True]),
+    ('2002::1234:abcd:ffff:c0a8:101/127', '64', 1, [False]),
+    ('2002::1234:abcd:ffff:c0a8:101/127', '168', 1, [True]),
+    ('192.168.0.0/24,2002::1234:abcd:ffff:c0a8:101/127', '64', 2, [True, False]),
 ]
 
 
 @pytest.mark.parametrize('left,right,call_count,result', CIDR_RANGES)
 def test_main(mocker, left, right, call_count, result):
-    from IsInCidrRanges import main
+    from CIDRBiggerThanPrefix import main
 
     mocker.patch.object(demisto, 'args', return_value={
         'left': left,

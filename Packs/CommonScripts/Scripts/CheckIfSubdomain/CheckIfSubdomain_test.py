@@ -3,18 +3,16 @@ import pytest
 import demistomock as demisto
 
 CIDR_RANGES = [
-    ('172.16.0.1', '10.0.0.0/8,192.168.0.0/16', 1, [False]),
-    ('172.40.5.10', '172.16.0.0/12', 1, [False]),
-    ('10.5.5.5', '10.0.0.0/8,192.168.0.0/16', 1, [True]),
-    ('172.16.0.1,10.5.5.5', '10.0.0.0/8,192.168.0.0/16', 2, [False, True]),
-    ('172.16.0.1,10.5.5.5', '10.0.0.0/8', 2, [False, True]),
-    ('192.168.1.1,192.168.1.2,10.10.1.1', '192.168.0.0/16,192.168.1.3/32', 3, [True, True, False]),
+    ('issubdomain.good.com,anothersubdomain.good.com,notasubdomain.bad.com', 'good.com', 3, [True, True, False]),
+    ('"issubdomain.good.com, anothersubdomain.good.com, notasubdomain.bad.com"', 'good.com', 3, [True, True, False]),
+    ('subdomain.good.com,notsubdomain.bad.com', '*.good.com', 2, [True, False]),
+    ('subdomain.good.com,notsubdomain.bad.com,subdomain.stillgood.com', '*.good.com,stillgood.com', 3, [True, False, True]),
 ]
 
 
 @pytest.mark.parametrize('left,right,call_count,result', CIDR_RANGES)
 def test_main(mocker, left, right, call_count, result):
-    from IsInCidrRanges import main
+    from CheckIfSubdomain import main
 
     mocker.patch.object(demisto, 'args', return_value={
         'left': left,

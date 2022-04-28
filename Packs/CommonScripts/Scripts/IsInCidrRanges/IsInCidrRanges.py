@@ -23,7 +23,7 @@ def main():
         for ip in ip_addresses:
             in_range = any(ipaddress.ip_address(ip) in ipaddress.ip_network(cidr) for cidr in cidr_range_list)
 
-            demisto.results({'Contents': in_range, 'HumanReadable': f'{ip} - {in_range}'})
+            demisto.results(in_range)
 
     except Exception as e:
         return_error(f'Failed to execute IsCIDRInRange. Error: {str(e)}')
