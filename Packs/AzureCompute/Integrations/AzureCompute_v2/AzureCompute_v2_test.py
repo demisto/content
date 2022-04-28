@@ -70,6 +70,15 @@ VM_LIST_EC = {'Azure.Compute(val.Name && val.Name === obj.Name)': [
     {'Name': 'vm2_name', 'ID': 'vm2_id', 'Size': 32, 'OS': 'Linux', 'Location': 'westeurope',
      'ProvisioningState': 'Succeeded', 'ResourceGroup': 'resource_group'}]}
 
+INTERFACE_EC = {'Azure.NetworkInterfaces(val.ID && val.ID === obj.id)': [
+    {'Name': 'testnic', 'ID': 'nic_id', 'MACAddress': '00-22-48-1C-73-AF', 'NetworkSecurityGroup': 'security_group_id',
+     'IsPrimaryInterface': "true", 'Location': 'eastus', 'AttachedVirtualMachine': 'vm_id',
+     'ResourceGroup': 'resource_group', 'NICType': 'Standard', 'DNSSuffix': '', 'IPConfigurations': {
+        "provisioningState": "Succeeded",
+        "privateIPAddress": "10.0.0.4",
+    }}]}
+
+
 client = MsGraphClient(
     base_url="url", tenant_id="tenant", auth_id="auth_id", enc_key="enc_key", app_name="APP_NAME", verify="verify",
     proxy="proxy", self_deployed="self_deployed", ok_codes=(1, 2), server="server", subscription_id="subscription_id",
@@ -93,9 +102,6 @@ def test_assign_image_attributes(image, expected):
     assert expected == assign_image_attributes(image)
 
 
-''' TESTS FUNCTIONS '''
-
-
 @pytest.mark.parametrize(
     'args, expected_parameters', [
         (CREATE_VM_PARAMS_ARGS, Expected_VM_PARAMS)
@@ -110,3 +116,10 @@ def test_list_vms_command(mocker):
     mocker.patch.object(client, 'list_vms', return_value=vms_data)
     _, ec, _ = list_vms_command(client, {'resource_group': 'resource_group'})
     assert VM_LIST_EC == ec
+
+
+def test_get_network_interface_command(mocker):
+    interface_data = load_test_data('./test_data/get_network_interface_command.json')
+    mocker.patch.object(client, 'get_network_interface', return_value=interface_data)
+    _, ec, _ = list_vms_command(client, {'resource_group': 'resource_group', 'nic_name': 'nic_name'})
+    assert INTERFACE_EC == ec
