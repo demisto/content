@@ -661,11 +661,11 @@ class TestFetchIncidentsWithLookBack:
         assert tickets[0].get('name') == 'ServiceNow Incident 5'
 
         # forth fetch preparation
+        incidents = {'result': []}
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
-        mocker.patch.object(client, 'send_request', return_value=[])
+        mocker.patch.object(client, 'send_request', return_value=incidents)
 
         # forth fetch
-        incidents = {'result': []}
         mocker.patch.object(client, 'send_request', return_value=incidents)
         tickets = fetch_incidents(client=client)
         assert len(tickets) == 0
