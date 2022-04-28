@@ -2,7 +2,16 @@
     "description": "Maps outgoing GLPI incidents fields.",
     "feed": false,
     "id": "GLPI - Outgoing Mapper",
-    "mapping": {},
+    "mapping": {
+        "GLPI Ticket": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "content": {
+                    "simple": "glpidescription"
+                }
+            }
+        }
+    },
     "name": "GLPI - Outgoing Mapper",
     "type": "mapping-outgoing",
     "version": -1,
