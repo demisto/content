@@ -1,0 +1,35 @@
+{
+  "data": {
+    "browseSnapshotFileConnection": {
+      "edges": [
+        {
+          "node": {
+            "absolutePath": "/C:",
+            "displayPath": "C:",
+            "path": "C:",
+            "filename": "C:",
+            "fileMode": "DIRECTORY",
+            "size": 20455678807,
+            "lastModified": "2020-10-05T18:56:18.000Z"
+          }
+        },
+        {
+          "node": {
+            "absolutePath": "/disk_0_part_1",
+            "displayPath": "disk_0_part_1",
+            "path": "",
+            "filename": "disk_0_part_1",
+            "fileMode": "DIRECTORY",
+            "size": 346055933,
+            "lastModified": "2018-06-14T00:47:18.000Z"
+          }
+        }
+      ],
+      "pageInfo": {
+        "endCursor": "Y3Vyc29yOmludDox",
+        "hasNextPage": true,
+        "hasPreviousPage": false
+      }
+    }
+  }
+}

@@ -8,7 +8,7 @@ from unittest.mock import patch, MagicMock
 from panos.device import Vsys
 from panos.panorama import Panorama, DeviceGroup, Template
 from panos.firewall import Firewall
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, CommandResults
 
 integration_params = {
     'port': '443',
@@ -719,6 +719,80 @@ def test_prettify_rule():
     assert prettify_rule == expected_prettify_rule
 
 
+class TestPcap:
+
+    @staticmethod
+    def test_list_pcaps_flow_with_no_existing_pcaps(mocker):
+        """
+        Given -
+            a response which indicates there are no pcap files on the firewall.
+
+        When -
+            listing all the available pcap files.
+
+        Then -
+            make sure that a message which indicates there are no Pcaps is printed out.
+        """
+        from Panorama import panorama_list_pcaps_command
+        no_pcaps_response = MockedResponse(
+            text='<?xml version="1.0"?>\n<response status="success">\n  '
+                 '<result>\n    <dir-listing/>\n  </result>\n</response>\n',
+            status_code=200,
+        )
+
+        mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
+        results_mocker = mocker.patch.object(demisto, "results")
+        panorama_list_pcaps_command({'pcapType': 'filter-pcap'})
+        assert results_mocker.called
+        assert results_mocker.call_args.args[0] == 'PAN-OS has no Pcaps of type: filter-pcap.'
+
+    @staticmethod
+    def test_get_specific_pcap_flow_which_does_not_exist(mocker):
+        """
+        Given -
+           a response which indicates there are no pcap files on the firewall.
+
+        When -
+           trying to download a pcap file.
+
+        Then -
+           make sure that the error message from the api is actually returned.
+        """
+        from Panorama import panorama_get_pcap_command
+        no_pcaps_response = MockedResponse(
+            text='<?xml version="1.0"?>\n<response status="error">\n  <msg>\n    '
+                 '<line>test.pcap not present</line>\n  </msg>\n</response>\n',
+            status_code=200,
+            headers={'Content-Type': 'application/xml'}
+        )
+        mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
+        with pytest.raises(Exception, match='line: test.pcap not present'):
+            panorama_get_pcap_command({'pcapType': 'filter-pcap', 'from': 'test'})
+
+    @staticmethod
+    def test_get_filter_pcap_without_from_argument(mocker):
+        """
+        Given -
+           a filter-pcap type without 'from' argument
+
+        When -
+           trying to download a filter pcap file.
+
+        Then -
+           make sure that the error message which states that the 'from' argument should be returned is presented.
+        """
+        from Panorama import panorama_get_pcap_command
+        no_pcaps_response = MockedResponse(
+            text='<?xml version="1.0"?>\n<response status="error">\n  <msg>\n    '
+                 '<line>test.pcap not present</line>\n  </msg>\n</response>\n',
+            status_code=200,
+            headers={'Content-Type': 'application/xml'}
+        )
+        mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
+        with pytest.raises(Exception, match='cannot download filter-pcap without the from argument'):
+            panorama_get_pcap_command({'pcapType': 'filter-pcap'})
+
+
 class TestPanoramaEditRuleCommand:
     EDIT_SUCCESS_RESPONSE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
 
@@ -782,12 +856,64 @@ class TestPanoramaEditRuleCommand:
         with pytest.raises(DemistoException):
             Panorama.panorama_edit_rule_command(args)
 
+    @staticmethod
+    def test_edit_rule_to_disabled_flow(mocker):
+        """
+        Given -
+            arguments to change a pre-rule to 'disabled'
+
+        When -
+            running panorama_edit_rule_command function.
+
+        Then -
+            make sure the entire command flow succeeds.
+        """
+        from Panorama import panorama_edit_rule_command
+        args = {
+            "rulename": "test",
+            "element_to_change": "disabled",
+            "element_value": "yes",
+            "behaviour": "replace",
+            "pre_post": "pre-rulebase"
+        }
+        mocker.patch("Panorama.http_request", return_value=TestPanoramaEditRuleCommand.EDIT_SUCCESS_RESPONSE)
+        results_mocker = mocker.patch.object(demisto, "results")
+        panorama_edit_rule_command(args)
+        assert results_mocker.called
+
+    @staticmethod
+    def test_edit_rule_to_disabled_with_no_element_value(mocker):
+        """
+        Given -
+            arguments to change a pre-rule to 'disabled' when the element value should be set to 'no'
+
+        When -
+            running panorama_edit_rule_command function.
+
+        Then -
+            make sure that the `params['element']` contains the 'no' element value.
+        """
+        from Panorama import panorama_edit_rule_command
+        args = {
+            "rulename": "test",
+            "element_to_change": "disabled",
+            "element_value": "no",
+            "behaviour": "replace",
+            "pre_post": "pre-rulebase"
+        }
+        http_req_mocker = mocker.patch(
+            "Panorama.http_request", return_value=TestPanoramaEditRuleCommand.EDIT_SUCCESS_RESPONSE
+        )
+        panorama_edit_rule_command(args)
+        assert http_req_mocker.call_args.kwargs.get('body').get('element') == '<disabled>no</disabled>'
+
 
 class MockedResponse:
-    def __init__(self, text, status_code, reason):
+    def __init__(self, text, status_code, reason='', headers=None):
         self.status_code = status_code
         self.text = text
         self.reason = reason
+        self.headers = headers
 
 
 @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
@@ -1492,3 +1618,50 @@ class TestFirewallCommand:
             for value in result_dataclass.__dict__.values():
                 # Attribute may be int 0
                 assert value is not None
+
+
+@pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
+                         [pytest.param({'anti_spyware_profile_name': 'fake_profile_name',
+                                        'dns_signature_source': 'edl_name', 'action': 'allow'},
+                                       {
+                                           'action': 'set',
+                                           'type': 'config',
+                                           'xpath': "/config/devices/entry[@name='localhost.localdomain']"
+                                                    "/device-group/entry[@name='fakeDeviceGroup']"
+                                                    "/profiles/spyware/entry[@name='fake_profile_name']",
+                                           'key': 'fakeAPIKEY!',
+                                           'element': '<botnet-domains>'
+                                                      '<lists>'
+                                                      '<entry name="edl_name"><packet-capture>disable</packet-capture>'
+                                                      '<action><allow/></action></entry>'
+                                                      '</lists>'
+                                                      '</botnet-domains>'},
+                                       MockedResponse(text='<response status="success" code="20"><msg>'
+                                                           'command succeeded</msg></response>', status_code=200,
+                                                      reason=''),
+                                       '**success**',
+                                       ),
+                          ])
+def test_panorama_apply_dns_command(mocker, args, expected_request_params, request_result, expected_demisto_result):
+    """
+    Given:
+        - command args
+        - request result
+    When:
+        - Running panorama-apply-dns
+    Then:
+        - Assert the request url is as expected
+        - Assert Command results contains the relevant result information
+    """
+    import Panorama
+    import requests
+    from Panorama import apply_dns_signature_policy_command
+
+    Panorama.API_KEY = 'fakeAPIKEY!'
+    Panorama.DEVICE_GROUP = 'fakeDeviceGroup'
+    request_mock = mocker.patch.object(requests, 'request', return_value=request_result)
+    command_result: CommandResults = apply_dns_signature_policy_command(args)
+
+    called_request_params = request_mock.call_args.kwargs['params']  # The body part of the request
+    assert called_request_params == expected_request_params
+    assert command_result.readable_output == expected_demisto_result
