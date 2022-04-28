@@ -1,4 +1,5 @@
 {
+    "defaultIncidentType": "GLPI Ticket",
     "description": "Maps outgoing GLPI incidents fields.",
     "feed": false,
     "id": "GLPI - Outgoing Mapper",
@@ -6,9 +7,39 @@
         "GLPI Ticket": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "closedate": {
+                    "simple": "glpiclosingdate"
+                },
                 "content": {
                     "simple": "glpidescription"
-                }
+                },
+                "date": {
+                    "simple": "glpiopeningdate"
+                },
+                "id": {
+                    "simple": "glpiticketid"
+                },
+                "internal_time_to_own": {
+                    "simple": "glpiinternaltimetoown"
+                },
+                "internal_time_to_resolve": {
+                    "simple": "glpiinternaltimetoresolve"
+                },
+                "itilcategories_id": {
+                    "simple": "glpicategory"
+                },
+                "name": {
+                    "simple": "name"
+                },
+                "solvedate": {
+                    "simple": "glpisolveddate"
+                },
+                "time_to_own": {
+                    "simple": "glpitimetoown"
+                },
+                "time_to_resolve": {
+                    "simple": "glpitimetoresolve"
+                }            
             }
         }
     },

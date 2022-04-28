@@ -1,4 +1,5 @@
 {
+    "defaultIncidentType": "GLPI Ticket",
     "description": "Maps incoming GLPI incidents fields.",
     "feed": false,
     "id": "GLPI - Incoming Mapper",
