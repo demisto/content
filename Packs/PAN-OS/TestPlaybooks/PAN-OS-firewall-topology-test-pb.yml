@@ -1,24 +1,31 @@
-id: PAN-OS-firewall-topology-test-pb
-version: -1
-name: PAN-OS-firewall-topology-test-pb
 description: Test playbook for firewall toplogy commands
-starttaskid: "0"
+id: PAN-OS-firewall-topology-test-pb
+inputs: []
+name: PAN-OS-firewall-topology-test-pb
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 3eb5b545-431a-4cd3-8ae7-27f0a4999591
-    type: start
-    task:
-      id: 3eb5b545-431a-4cd3-8ae7-27f0a4999591
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: afac1961-f5c8-4dea-84cb-450c246df3f6
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: afac1961-f5c8-4dea-84cb-450c246df3f6
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -26,30 +33,30 @@ tasks:
           "y": 50
         }
       }
-    note: false
-    timertriggers: []
+  '1':
+    id: '1'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 11d84abb-0dac-4ca9-880b-da5f71de0d4c
-    type: regular
-    task:
-      id: 11d84abb-0dac-4ca9-880b-da5f71de0d4c
-      version: -1
-      name: pan-os-platform-get-system-info
-      description: Gets information from all PAN-OS systems in the topology.
-      script: '|||pan-os-platform-get-system-info'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Gets information from all PAN-OS systems in the topology.
+      id: b04f40e7-196f-47bd-81d2-a7a87cc053ad
+      iscommand: true
+      name: pan-os-platform-get-system-info
+      script: '|||pan-os-platform-get-system-info'
+      type: regular
+      version: -1
+    taskid: b04f40e7-196f-47bd-81d2-a7a87cc053ad
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -57,38 +64,38 @@ tasks:
           "y": 350
         }
       }
-    note: false
-    timertriggers: []
+  '2':
+    id: '2'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 1fd77016-94c4-430d-8a36-85cc95028007
-    type: regular
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 1fd77016-94c4-430d-8a36-85cc95028007
-      version: -1
-      name: Delete Context
+      brand: ''
       description: |-
         Delete field from context.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: DeleteContext
-      type: regular
+      id: 6e8df631-c496-4b79-8b43-5f1c5ded2ac8
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 6e8df631-c496-4b79-8b43-5f1c5ded2ac8
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -96,56 +103,56 @@ tasks:
           "y": 180
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: f07d83c9-8c26-421c-835c-f8dedc58b09e
-    type: condition
-    task:
-      id: f07d83c9-8c26-421c-835c-f8dedc58b09e
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: PANOS.ShowSystemInfo.Summary.hostid
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowSystemInfo.Summary.ip_address
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowSystemInfo.Result.netmask
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowSystemInfo.Summary.uptime
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowSystemInfo.Summary.hostname
-            iscontext: true
+          operator: isNotEmpty
+      label: yes
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 3226d4b1-a862-431b-86f0-79c856636810
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 3226d4b1-a862-431b-86f0-79c856636810
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -153,30 +160,30 @@ tasks:
           "y": 530
         }
       }
-    note: false
-    timertriggers: []
+  '4':
+    id: '4'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 74f4a897-aa2a-4da2-8e50-f6413ceaf25f
-    type: regular
-    task:
-      id: 74f4a897-aa2a-4da2-8e50-f6413ceaf25f
-      version: -1
-      name: pan-os-platform-get-arp-tables
-      description: Gets all ARP tables from all firewalls in the topology.
-      script: '|||pan-os-platform-get-arp-tables'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Gets all ARP tables from all firewalls in the topology.
+      id: c2873abb-e549-4e3d-8fe7-bb5ccf232fa0
+      iscommand: true
+      name: pan-os-platform-get-arp-tables
+      script: '|||pan-os-platform-get-arp-tables'
+      type: regular
+      version: -1
+    taskid: c2873abb-e549-4e3d-8fe7-bb5ccf232fa0
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -184,56 +191,56 @@ tasks:
           "y": 710
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: 7b4d99c1-5f16-4811-8180-53e9b46cc51e
-    type: condition
-    task:
-      id: 7b4d99c1-5f16-4811-8180-53e9b46cc51e
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    separatecontext: false
+  '5':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: PANOS.ShowArp.Summary.hostid
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowArp.Summary.max
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowArp.Summary.total
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowArp.Summary.timeout
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowArp.Summary.dp
-            iscontext: true
+          operator: isNotEmpty
+      label: yes
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '10'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 52903193-7ba3-4af9-8ea8-2c6707e0398a
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 52903193-7ba3-4af9-8ea8-2c6707e0398a
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -241,30 +248,30 @@ tasks:
           "y": 890
         }
       }
-    note: false
-    timertriggers: []
+  '10':
+    id: '10'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: a9656b6c-ce94-47c0-8ce9-24ecb10baeed
-    type: regular
-    task:
-      id: a9656b6c-ce94-47c0-8ce9-24ecb10baeed
-      version: -1
-      name: pan-os-platform-get-routes
-      description: Pulls all route summary information from the topology.
-      script: '|||pan-os-platform-get-routes'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Pulls all route summary information from the topology.
+      id: 5a1c88ee-0037-4e02-8b59-2a2ec769206c
+      iscommand: true
+      name: pan-os-platform-get-routes
+      script: '|||pan-os-platform-get-routes'
+      type: regular
+      version: -1
+    taskid: 5a1c88ee-0037-4e02-8b59-2a2ec769206c
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -272,61 +279,61 @@ tasks:
           "y": 1080
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: fa3bfe4b-754f-4645-8f6c-5461f748a8ce
-    type: condition
-    task:
-      id: fa3bfe4b-754f-4645-8f6c-5461f748a8ce
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "12"
-    separatecontext: false
+  '11':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: PANOS.ShowRoute.Summary.hostid
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowRoute.Summary.route_count
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowRoute.Summary.interface
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowRoute.Result.flags
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowRoute.Result.destination
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowRoute.Result.route_table
-            iscontext: true
+          operator: isNotEmpty
+      label: yes
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '12'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: a4827fdb-5faf-4be2-88bd-beea304b64e1
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: a4827fdb-5faf-4be2-88bd-beea304b64e1
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -334,30 +341,30 @@ tasks:
           "y": 1260
         }
       }
-    note: false
-    timertriggers: []
+  '12':
+    id: '12'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 722cbfd0-9c51-464c-8912-1a347b393adc
-    type: regular
-    task:
-      id: 722cbfd0-9c51-464c-8912-1a347b393adc
-      version: -1
-      name: pan-os-platform-get-route-summary
-      description: Pulls all route summary information from the topology.
-      script: '|||pan-os-platform-get-route-summary'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Pulls all route summary information from the topology.
+      id: bb3a43d2-b2e7-4ebf-87e4-b59f7b115692
+      iscommand: true
+      name: pan-os-platform-get-route-summary
+      script: '|||pan-os-platform-get-route-summary'
+      type: regular
+      version: -1
+    taskid: bb3a43d2-b2e7-4ebf-87e4-b59f7b115692
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -365,51 +372,51 @@ tasks:
           "y": 1450
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 35b0d37a-e0f3-4076-8f53-fec1ab0d615f
-    type: condition
-    task:
-      id: 35b0d37a-e0f3-4076-8f53-fec1ab0d615f
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "15"
-    separatecontext: false
+  '13':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: PANOS.ShowRouteSummary.Summary.hostid
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowRouteSummary.Summary.total
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowRouteSummary.Summary.limit
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowRouteSummary.Summary.active
-            iscontext: true
+          operator: isNotEmpty
+      label: yes
+    id: '13'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '15'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 668c129a-9fa3-436c-800d-a29555dd66a3
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 668c129a-9fa3-436c-800d-a29555dd66a3
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -417,58 +424,56 @@ tasks:
           "y": 1630
         }
       }
-    note: false
-    timertriggers: []
+  '14':
+    id: '14'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: 211045b6-c02c-405d-87d4-4785ecf56fef
-    type: title
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 211045b6-c02c-405d-87d4-4785ecf56fef
-      version: -1
+      brand: ''
+      id: 228c80ef-71f3-4688-8d82-0e5dd3e8dbd5
+      iscommand: false
       name: Test Done
       type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
+      version: -1
+    taskid: 228c80ef-71f3-4688-8d82-0e5dd3e8dbd5
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
           "x": 460,
-          "y": 5700
+          "y": 4570
         }
       }
-    note: false
-    timertriggers: []
+  '15':
+    id: '15'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: 0fef86b3-b4a2-4596-8766-8e24cf62f793
-    type: regular
-    task:
-      id: 0fef86b3-b4a2-4596-8766-8e24cf62f793
-      version: -1
-      name: pan-os-platform-get-global-counters
-      description: Gets global counter information from all the PAN-OS firewalls in
-        the topology
-      script: '|||pan-os-platform-get-global-counters'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Gets global counter information from all the PAN-OS firewalls in the topology
+      id: c3c0b76c-1c71-4338-882d-ec7c8a150767
+      iscommand: true
+      name: pan-os-platform-get-global-counters
+      script: '|||pan-os-platform-get-global-counters'
+      type: regular
+      version: -1
+    taskid: c3c0b76c-1c71-4338-882d-ec7c8a150767
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -476,101 +481,101 @@ tasks:
           "y": 1820
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: e77e2c51-c8b4-4b27-8bcf-809d761cbd06
-    type: condition
-    task:
-      id: e77e2c51-c8b4-4b27-8bcf-809d761cbd06
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "17"
-    separatecontext: false
+  '16':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: PANOS.ShowCounters.Summary.hostid
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowCounters.Summary.name
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowCounters.Summary.value
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowCounters.Summary.rate
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowCounters.Summary.desc
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowCounters.Result.hostid
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowCounters.Result.category
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowCounters.Result.name
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowCounters.Result.value
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowCounters.Result.rate
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowCounters.Result.aspect
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowCounters.Result.desc
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowCounters.Result.id
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ShowCounters.Result.severity
-            iscontext: true
+          operator: isNotEmpty
+      label: yes
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '19'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 1ae005a6-7f59-46f1-84a1-fd3b33b209f5
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 1ae005a6-7f59-46f1-84a1-fd3b33b209f5
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -578,31 +583,30 @@ tasks:
           "y": 2020
         }
       }
-    note: false
-    timertriggers: []
+  '19':
+    id: '19'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: 143da872-7905-4bc8-8cc7-175af4e6a824
-    type: regular
-    task:
-      id: 143da872-7905-4bc8-8cc7-175af4e6a824
-      version: -1
-      name: pan-os-platform-get-bgp-peers
-      description: Retrieves all BGP peer information from the PAN-OS firewalls in
-        the topology.
-      script: '|||pan-os-platform-get-bgp-peers'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "18"
+      - '20'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check the devices for software that is available to be installed.
+      id: 29c9e524-afcf-4ddc-84b2-f86046eedae8
+      iscommand: true
+      name: pan-os-platform-get-available-software
+      script: '|||pan-os-platform-get-available-software'
+      type: regular
+      version: -1
+    taskid: 29c9e524-afcf-4ddc-84b2-f86046eedae8
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -610,229 +614,164 @@ tasks:
           "y": 2220
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 3f3641b8-aaf8-4b24-8200-bd91146e944a
-    type: condition
-    task:
-      id: 3f3641b8-aaf8-4b24-8200-bd91146e944a
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "19"
-    separatecontext: false
+  '20':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Summary.hostid
+    - condition:
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Summary.peer
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Summary.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Summary.incoming_accepted
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Result.hostid
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Result.peer
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Result.vr
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Result.remote_as
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Result.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Result.peer_address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Result.local_address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Result.incoming_total
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Result.incoming_accepted
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Result.incoming_rejected
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Result.policy_rejected
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Result.outgoing_total
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ShowBGPPeers.Result.outgoing_advertised
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 2420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: b2fe146f-b9df-44d0-825c-176a4f716a9a
-    type: regular
-    task:
-      id: b2fe146f-b9df-44d0-825c-176a4f716a9a
-      version: -1
-      name: pan-os-platform-get-available-software
-      description: Check the devices for software that is available to be installed.
-      script: '|||pan-os-platform-get-available-software'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 2620
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: ebf85a90-10e2-4d54-80ac-471fa982046b
-    type: condition
-    task:
-      id: ebf85a90-10e2-4d54-80ac-471fa982046b
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "21"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.SoftwareVersions.Summary.hostid
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.SoftwareVersions.Summary.version
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.SoftwareVersions.Summary.filename
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.SoftwareVersions.Summary.size
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.SoftwareVersions.Summary.size_kb
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.SoftwareVersions.Summary.release_notes
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: PANOS.SoftwareVersions.Summary.downloaded
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: PANOS.SoftwareVersions.Summary.current
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: PANOS.SoftwareVersions.Summary.latest
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: PANOS.SoftwareVersions.Summary.uploaded
+          operator: isExists
+      label: yes
+    id: '20'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '21'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c25321e5-a7b6-433c-8cd7-fca4c5d5b7fe
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: c25321e5-a7b6-433c-8cd7-fca4c5d5b7fe
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2430
+        }
+      }
+  '21':
+    id: '21'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Get the HA state and assocaited details from the given device and any other details.
+      id: f5729f5f-6156-45ff-82ef-22cdbf21be20
+      iscommand: true
+      name: pan-os-platform-get-ha-state
+      script: '|||pan-os-platform-get-ha-state'
+      type: regular
+      version: -1
+    taskid: f5729f5f-6156-45ff-82ef-22cdbf21be20
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2630
+        }
+      }
+  '22':
+    conditions:
+    - condition:
+      - - left:
             iscontext: true
+            value:
+              simple: PANOS.HAState.hostid
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.HAState.active
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.HAState.status
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.HAState.peer
+          operator: isExists
+      label: yes
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '23'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 1c4b3e26-8308-4672-8a5a-bf493f25cbec
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 1c4b3e26-8308-4672-8a5a-bf493f25cbec
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -840,31 +779,30 @@ tasks:
           "y": 2820
         }
       }
-    note: false
-    timertriggers: []
+  '23':
+    id: '23'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 81aa1113-7d10-4c10-8e3b-c2357116fc3a
-    type: regular
-    task:
-      id: 81aa1113-7d10-4c10-8e3b-c2357116fc3a
-      version: -1
-      name: pan-os-platform-get-ha-state
-      description: Get the HA state and assocaited details from the given device and
-        any other details.
-      script: '|||pan-os-platform-get-ha-state'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "22"
+      - '24'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Get all the jobs from the devices in the environment, or a single job when ID is specified.
+      id: 866c157c-332c-413b-807f-b50532df6a42
+      iscommand: true
+      name: pan-os-platform-get-jobs
+      script: '|||pan-os-platform-get-jobs'
+      type: regular
+      version: -1
+    taskid: 866c157c-332c-413b-807f-b50532df6a42
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -872,280 +810,291 @@ tasks:
           "y": 3020
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: 6968c620-a4af-4682-8582-011fd9ec22ec
-    type: condition
-    task:
-      id: 6968c620-a4af-4682-8582-011fd9ec22ec
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "23"
-    separatecontext: false
+  '24':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.HAState.hostid
+    - condition:
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: PANOS.HAState.active
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.HAState.status
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: PANOS.HAState.peer
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: bbecc2f5-73a1-477a-8c8d-7dd14417bbd3
-    type: regular
-    task:
-      id: bbecc2f5-73a1-477a-8c8d-7dd14417bbd3
-      version: -1
-      name: pan-os-platform-get-jobs
-      description: Get all the jobs from the devices in the environment, or a single
-        job when ID is specified.
-      script: '|||pan-os-platform-get-jobs'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
-    taskid: 88a71cf1-ff27-449a-864a-bab37dcdcecf
-    type: condition
-    task:
-      id: 88a71cf1-ff27-449a-864a-bab37dcdcecf
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "25"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.JobStatus.hostid
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.JobStatus.id
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.JobStatus.type
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.JobStatus.tfin
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.JobStatus.status
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.JobStatus.result
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.JobStatus.tenq
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.JobStatus.stoppable
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.JobStatus.positionInQ
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.JobStatus.progress
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3620
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isNotEmpty
+      label: yes
+    id: '24'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: 0434dfbe-34bf-47db-8d30-86b5d5466bdf
-    type: regular
-    task:
-      id: 0434dfbe-34bf-47db-8d30-86b5d5466bdf
-      version: -1
-      name: pan-os-platform-download-software
-      description: Download The provided software version onto the device.
-      script: '|||pan-os-platform-download-software'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      version:
-        simple: 9.1.0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3820
-        }
-      }
+      yes:
+      - '27'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: e96be117-d772-4727-892c-5c06600b91a3
-    type: condition
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: e96be117-d772-4727-892c-5c06600b91a3
-      version: -1
+      brand: ''
+      id: aaf09ca8-b9dd-4d58-85d7-c707700f84cd
+      iscommand: false
       name: Verify Outputs
       type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "27"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.DownloadStatus.Summary.hostid
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.DownloadStatus.Summary.started
-            iscontext: true
+      version: -1
+    taskid: aaf09ca8-b9dd-4d58-85d7-c707700f84cd
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
           "x": 460,
-          "y": 4020
+          "y": 3210
         }
       }
-    note: false
-    timertriggers: []
+  '27':
+    id: '27'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: 213c1856-e764-4419-8581-3e1a092b2b37
-    type: regular
-    task:
-      id: 213c1856-e764-4419-8581-3e1a092b2b37
-      version: -1
-      name: pan-os-platform-get-system-status
-      description: Checks the status of the given device, checking whether it's up
-        or down and the operational mode normal
-      script: '|||pan-os-platform-get-system-status'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
+    note: false
+    quietmode: 0
     scriptarguments:
       hostid:
         complex:
-          root: PANOS.ShowSystemInfo.Summary
           accessor: hostid
+          root: PANOS.ShowSystemInfo.Summary
           transformers:
           - operator: FirstArrayElement
+      target:
+        simple: ${PANOS.ShowSystemInfo.Summary.hostid}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks the status of the given device, checking whether it's up or down and the operational mode normal
+      id: db90d0f8-8b18-4ea0-8913-da27542c3039
+      iscommand: true
+      name: pan-os-platform-get-system-status
+      script: '|||pan-os-platform-get-system-status'
+      type: regular
+      version: -1
+    taskid: db90d0f8-8b18-4ea0-8913-da27542c3039
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3410
+        }
+      }
+  '28':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.SystemStatus.hostid
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.SystemStatus.up
+          operator: isNotEmpty
+      label: yes
+    id: '28'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '29'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 093b9df4-270a-4ad0-899d-3ecec79b06c4
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 093b9df4-270a-4ad0-899d-3ecec79b06c4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3590
+        }
+      }
+  '29':
+    id: '29'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '30'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 4fccab2f-dea9-4e1e-84ae-55859aae083d
+      iscommand: true
+      name: pan-os-hygiene-check-log-forwarding
+      script: '|||pan-os-hygiene-check-log-forwarding'
+      type: regular
+      version: -1
+    taskid: 4fccab2f-dea9-4e1e-84ae-55859aae083d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3780
+        }
+      }
+  '30':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.description
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.issue_code
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.result
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.issue_count
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.hostid
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.issue_code
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.description
+          operator: isNotEmpty
+      label: yes
+    id: '30'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '31'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c49110b3-c376-4c55-8188-cf767b121435
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: c49110b3-c376-4c55-8188-cf767b121435
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3990
+        }
+      }
+  '31':
+    id: '31'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '32'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks the configured Vulnerability profiles to ensure at least one meets best practices.
+      id: db6f1725-9a3d-40b1-843f-998aa43eee2a
+      iscommand: true
+      name: pan-os-hygiene-check-vulnerability-profiles
+      script: '|||pan-os-hygiene-check-vulnerability-profiles'
+      type: regular
+      version: -1
+    taskid: db6f1725-9a3d-40b1-843f-998aa43eee2a
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1153,360 +1102,69 @@ tasks:
           "y": 4180
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: c3d271c7-b2af-456f-8836-9e2291433722
-    type: condition
-    task:
-      id: c3d271c7-b2af-456f-8836-9e2291433722
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "29"
-    separatecontext: false
+  '32':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.SystemStatus.hostid
+    - condition:
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.SystemStatus.up
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 4360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: 654ecc41-59fd-40a3-8c30-372df91eaa27
-    type: regular
-    task:
-      id: 654ecc41-59fd-40a3-8c30-372df91eaa27
-      version: -1
-      name: pan-os-hygiene-check-log-forwarding
-      script: '|||pan-os-hygiene-check-log-forwarding'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 4540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: e9f8991b-68dd-4258-8da4-ba9869cbd1bb
-    type: condition
-    task:
-      id: e9f8991b-68dd-4258-8da4-ba9869cbd1bb
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "31"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ConfigurationHygiene.Summary.description
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ConfigurationHygiene.Summary.issue_code
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ConfigurationHygiene.Summary.result
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PANOS.ConfigurationHygiene.Summary.issue_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ConfigurationHygiene.Result.hostid
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ConfigurationHygiene.Result.container_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ConfigurationHygiene.Result.issue_code
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ConfigurationHygiene.Result.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ConfigurationHygiene.Result.name
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 4740
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isNotEmpty
+      label: yes
+    id: '32'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: 51f9bc53-c2c0-4148-8c30-1c4f93b6d127
-    type: regular
-    task:
-      id: 51f9bc53-c2c0-4148-8c30-1c4f93b6d127
-      version: -1
-      name: pan-os-hygiene-check-vulnerability-profiles
-      description: Checks the configured Vulnerability profiles to ensure at least
-        one meets best practices.
-      script: '|||pan-os-hygiene-check-vulnerability-profiles'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
-      '#none#':
-      - "32"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 4940
-        }
-      }
+      yes:
+      - '14'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: 13e8fd33-391a-44c8-8f5a-37ce1550a8be
-    type: condition
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 13e8fd33-391a-44c8-8f5a-37ce1550a8be
-      version: -1
+      brand: ''
+      id: e76293fe-5086-4f92-8fe4-2dbe5c6f8e4a
+      iscommand: false
       name: Verify Outputs
       type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "33"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ConfigurationHygiene.Summary.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ConfigurationHygiene.Summary.issue_code
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ConfigurationHygiene.Summary.result
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ConfigurationHygiene.Summary.issue_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ConfigurationHygiene.Result.hostid
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ConfigurationHygiene.Result.container_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ConfigurationHygiene.Result.issue_code
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ConfigurationHygiene.Result.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.ConfigurationHygiene.Result.name
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 5140
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 81664f41-3d1e-44e9-8783-3e6673969541
-    type: regular
-    task:
-      id: 81664f41-3d1e-44e9-8783-3e6673969541
       version: -1
-      name: pan-os-platform-install-software
-      description: Install the given software version onto the device. Download the
-        software first with
-      script: '|||pan-os-platform-install-software'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      version:
-        simple: 9.1.0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 5340
-        }
-      }
-    note: false
+    taskid: e76293fe-5086-4f92-8fe4-2dbe5c6f8e4a
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: 6dbbb867-7463-4a92-891c-b7938bb47b5a
     type: condition
-    task:
-      id: 6dbbb867-7463-4a92-891c-b7938bb47b5a
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "14"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.InstallStatus.Summary.hostid
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PANOS.InstallStatus.Summary.started
-            iscontext: true
     view: |-
       {
         "position": {
           "x": 460,
-          "y": 5520
+          "y": 4370
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5715,
+        "height": 4585,
         "width": 390,
         "x": 450,
         "y": 50
       }
     }
   }
-inputs: []
-outputs: []
-fromversion: 6.5.0
+fromversion: 5.0.0
