@@ -151,7 +151,7 @@ configuration:
   required: false
   type: 19
 - defaultvalue: 0
-  display: lookback
+  display: lookback (minutes)
   name: look_back
   required: false
   type: 0

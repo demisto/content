@@ -350,67 +350,145 @@ class TestFetchIncidentsWithLookBack:
 
     API_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
-    TICKETS = {
-            'result': [
-                {
-                    'opened_at': (datetime.utcnow() - timedelta(minutes=10)).strftime(API_TIME_FORMAT),
-                    'severity': '2',
-                    'number': '2',
-                },
-                {
-                    'opened_at': (datetime.utcnow() - timedelta(minutes=5)).strftime(API_TIME_FORMAT),
-                    'severity': '1',
-                    'number': '4'
-                },
-                {
-                    'opened_at': (datetime.utcnow() - timedelta(minutes=2)).strftime(API_TIME_FORMAT),
-                    'severity': '2',
-                    'number': '5'
-                }
-            ]
-        }
+    NOW = datetime.utcnow()
 
-    NEW_MATCHING_TICKETS = [
+    # used for fetching tickets without look back
+    TICKETS_NO_LOOK_BACK = {
+        'result': [
+            {
+                'opened_at': (NOW - timedelta(minutes=15)).strftime(API_TIME_FORMAT),
+                'severity': '2',
+                'number': '1',
+            },
+            {
+                'opened_at': (NOW - timedelta(minutes=13)).strftime(API_TIME_FORMAT),
+                'severity': '1',
+                'number': '2'
+            },
+            {
+                'opened_at': (NOW - timedelta(minutes=9)).strftime(API_TIME_FORMAT),
+                'severity': '2',
+                'number': '3'
+            }
+        ]
+    }
+
+    NEW_MATCHING_WITHOUT_LOOK_BACK_TICKETS = [
         {
-            'opened_at': (datetime.utcnow() - timedelta(minutes=8)).strftime(API_TIME_FORMAT),
-            'severity': '1',
-            'number': '3',
+            'opened_at': (NOW - timedelta(minutes=7)).strftime(API_TIME_FORMAT),
+            'severity': '2',
+            'number': '4',
         },
         {
-            'opened_at': (datetime.utcnow() - timedelta(minutes=11)).strftime(API_TIME_FORMAT),
-            'severity': '1',
-            'number': '1',
+            'opened_at': (NOW - timedelta(minutes=3)).strftime(API_TIME_FORMAT),
+            'severity': '2',
+            'number': '5',
         },
     ]
 
     def set_last_run(self, new_last_run):
         self.LAST_RUN = new_last_run
 
-    def test_fetch_incidents_with_look_back(self, mocker):
+    @pytest.mark.parametrize(
+        'start_incidents, phase2_incident, phase3_incident, look_back',
+        [
+            (
+                {
+                    'result': [
+                        {
+                            'opened_at': (NOW - timedelta(minutes=10)).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '2',
+                        },
+                        {
+                            'opened_at': (NOW - timedelta(minutes=5)).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '4'
+                        },
+                        {
+                            'opened_at': (NOW - timedelta(minutes=2)).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '5'
+                        }
+                    ]
+                },
+                {
+                    'opened_at': (NOW - timedelta(minutes=8)).strftime(API_TIME_FORMAT),
+                    'severity': '1',
+                    'number': '3',
+                },
+                {
+                    'opened_at': (NOW - timedelta(minutes=11)).strftime(API_TIME_FORMAT),
+                    'severity': '1',
+                    'number': '1',
+                },
+                15
+            ),
+            (
+                {
+                    'result': [
+                        {
+                            'opened_at': (NOW - timedelta(minutes=40)).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '2',
+                        },
+                        {
+                            'opened_at': (NOW - timedelta(minutes=26)).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '4'
+                        },
+                        {
+                            'opened_at': (NOW - timedelta(minutes=20)).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '5'
+                        }
+                    ]
+                },
+                {
+                    'opened_at': (NOW - timedelta(minutes=28)).strftime(API_TIME_FORMAT),
+                    'severity': '1',
+                    'number': '3',
+                },
+                {
+                    'opened_at': (NOW - timedelta(minutes=50)).strftime(API_TIME_FORMAT),
+                    'severity': '1',
+                    'number': '1',
+                },
+                60
+            )
+        ]
+    )
+    def test_fetch_incidents_with_look_back_greater_than_zero(
+        self, mocker, start_incidents, phase2_incident, phase3_incident, look_back
+    ):
         """
         Given
         - fetch incidents parameters including look back according to their opened time.
-        -
 
         When
         - trying to fetch incidents for 3 rounds.
 
         Then
-        - first fetch - should fetch incidents 2, 4, 5.
-        - second fetch - should fetch incident 3.
-        - third fetch - should fetch incident 1.
+        - first fetch - should fetch incidents 2, 4, 5 (because only them match the query)
+        - second fetch - should fetch incident 3 (because now incident 2, 4, 5, 3 matches the query too)
+        - third fetch - should fetch incident 1 (because now incident 2, 4, 5, 3, 1 matches the query too)
+        - forth fetch - should fetch nothing as there are not new incidents who match the query
         - make sure that incidents who were already fetched would not be fetched again.
         """
-        mocker.patch.object(demisto, 'params', return_value={'look_back': '15'})
-        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
-        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
-
         client = Client(
             server_url='', sc_server_url='', cr_server_url='', username='', password='', verify=False,
             fetch_time='12 hours', sysparm_query='stateNOT IN6,7^assignment_group=123', sysparm_limit=10,
-            timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number'
+            timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number',
+            look_back=look_back
         )
-        mocker.patch.object(client, 'send_request', return_value=self.TICKETS)
+
+        # reset last run
+        self.LAST_RUN = {}
+
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+
+        mocker.patch.object(client, 'send_request', return_value=start_incidents)
 
         # first fetch
         tickets = fetch_incidents(client=client)
@@ -419,9 +497,8 @@ class TestFetchIncidentsWithLookBack:
             assert ticket.get('name') == f'ServiceNow Incident {expected_incident_id}'
 
         # second fetch preparation
-        self.TICKETS.get('result').append(self.NEW_MATCHING_TICKETS[0])
+        start_incidents.get('result').append(phase2_incident)
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
-        mocker.patch.object(client, 'send_request', return_value=self.TICKETS)
 
         # second fetch
         tickets = fetch_incidents(client=client)
@@ -429,14 +506,169 @@ class TestFetchIncidentsWithLookBack:
         assert tickets[0].get('name') == 'ServiceNow Incident 3'
 
         # third fetch preparation
-        self.TICKETS.get('result').append(self.NEW_MATCHING_TICKETS[1])
+        start_incidents.get('result').append(phase3_incident)
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
-        mocker.patch.object(client, 'send_request', return_value=self.TICKETS)
 
         # third fetch
         tickets = fetch_incidents(client=client)
         assert len(tickets) == 1
         assert tickets[0].get('name') == 'ServiceNow Incident 1'
+
+        # forth fetch preparation
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+
+        # forth fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 0
+
+    @pytest.mark.parametrize(
+        'incidents, phase2_incident, phase3_incident',
+        [
+            (
+                {
+                    'result': [
+                        {
+                            'opened_at': (NOW - timedelta(minutes=10)).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '1',
+                        },
+                        {
+                            'opened_at': (NOW - timedelta(minutes=8)).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '2'
+                        },
+                        {
+                            'opened_at': (NOW - timedelta(minutes=7)).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '3'
+                        }
+                    ]
+                },
+                {
+                    'result': [
+                        {
+                            'opened_at': (NOW - timedelta(minutes=5)).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '4',
+                        }
+                    ]
+                },
+                {
+                    'result': [
+                        {
+                            'opened_at': (NOW - timedelta(minutes=4)).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '5',
+                        }
+                    ]
+                },
+            ),
+            (
+                {
+                    'result': [
+                        {
+                            'opened_at': (NOW - timedelta(minutes=51)).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '1',
+                        },
+                        {
+                            'opened_at': (NOW - timedelta(minutes=50)).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '2'
+                        },
+                        {
+                            'opened_at': (NOW - timedelta(minutes=39)).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '3'
+                        }
+                    ]
+                },
+                {
+                    'result': [
+                        {
+                            'opened_at': (NOW - timedelta(minutes=37)).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '4',
+                        }
+                    ]
+                },
+                {
+                    'result': [
+                        {
+                            'opened_at': (NOW - timedelta(minutes=34)).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '5',
+                        }
+                    ]
+                }
+            )
+        ]
+    )
+    def test_fetch_incidents_with_look_back_equals_zero(
+        self, mocker, incidents, phase2_incident, phase3_incident
+    ):
+        """
+        Given
+        - fetch incidents parameters with any look back according to their opened time (normal fetch incidents).
+
+        When
+        - trying to fetch incidents for 3 rounds.
+
+        Then
+        - first fetch - should fetch incidents 1, 2, 3 (because only them match the query)
+        - second fetch - should fetch incident 4
+        - third fetch - should fetch incident 5
+        - forth fetch - should fetch nothing as there are not new incidents who match the query
+        """
+        client = Client(
+            server_url='', sc_server_url='', cr_server_url='', username='', password='', verify=False,
+            fetch_time='12 hours', sysparm_query='stateNOT IN6,7^assignment_group=123', sysparm_limit=10,
+            timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number',
+            look_back=0
+        )
+
+        # reset last fetch and tickets
+        self.LAST_RUN = {}
+
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+        mocker.patch.object(client, 'send_request', return_value=incidents)
+
+        # first fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 3
+        for expected_incident_id, ticket in zip(['1', '2', '3'], tickets):
+            assert ticket.get('name') == f'ServiceNow Incident {expected_incident_id}'
+
+        # second fetch preparation
+        incidents = phase2_incident
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(client, 'send_request', return_value=incidents)
+
+        # second fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 1
+        assert tickets[0].get('name') == 'ServiceNow Incident 4'
+
+        # third fetch preparation
+        incidents = phase3_incident
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(client, 'send_request', return_value=incidents)
+
+        # third fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 1
+        assert tickets[0].get('name') == 'ServiceNow Incident 5'
+
+        # forth fetch preparation
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(client, 'send_request', return_value=[])
+
+        # forth fetch
+        incidents = {'result': []}
+        mocker.patch.object(client, 'send_request', return_value=incidents)
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 0
 
 
 def test_incident_name_is_initialized(mocker, requests_mock):

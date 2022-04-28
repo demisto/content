@@ -524,7 +524,7 @@ class Client(BaseClient):
     def __init__(self, server_url: str, sc_server_url: str, cr_server_url: str, username: str,
                  password: str, verify: bool, fetch_time: str, sysparm_query: str,
                  sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str, oauth_params: dict = None, version: str = None):
+                 incident_name: str, oauth_params: dict = None, version: str = None, look_back: int = 0):
         """
 
         Args:
@@ -543,6 +543,7 @@ class Client(BaseClient):
             ticket_type: default ticket type
             get_attachments: whether to get ticket attachments by default
             incident_name: the ServiceNow ticket field to be set as the incident name
+            look_back: defines how much backwards (minutes) should we go back to try to fetch incidents.
         """
         oauth_params = oauth_params if oauth_params else {}
         self._base_url = server_url
@@ -562,6 +563,7 @@ class Client(BaseClient):
         self.sys_param_query = sysparm_query
         self.sys_param_limit = sysparm_limit
         self.sys_param_offset = 0
+        self.look_back = look_back
 
         if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
             self.snow_client: ServiceNowClient = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
@@ -2014,12 +2016,14 @@ def get_mirroring():
     """
     Get tickets mirroring.
     """
+    params = demisto.params()
+
     return {
-        'mirror_direction': MIRROR_DIRECTION.get(demisto.params().get('mirror_direction')),
+        'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
         'mirror_tags':  [
-            demisto.params().get('comment_tag'),
-            demisto.params().get('file_tag'),
-            demisto.params().get('work_notes_tag')
+            params.get('comment_tag'),
+            params.get('file_tag'),
+            params.get('work_notes_tag')
         ],
         'mirror_instance': demisto.integrationInstance()
     }
@@ -2030,17 +2034,22 @@ def fetch_incidents(client: Client) -> list:
     incidents = []
 
     last_run = demisto.getLastRun()
-    look_back = arg_to_number(demisto.params().get('look_back') or '0')
+    date_format = '%Y-%m-%d %H:%M:%S'
 
-    start_snow_time, end_snow_time = get_fetch_run_time_range(
-        last_run=last_run, first_fetch=client.fetch_time, look_back=look_back, date_format='%Y-%m-%d %H:%M:%S'
+    start_snow_time, _ = get_fetch_run_time_range(
+        last_run=last_run, first_fetch=client.fetch_time, look_back=client.look_back, date_format=date_format
     )
+    snow_time_as_date = datetime.strptime(start_snow_time, date_format)
+
+    # if we didn't fetch anything, make sure the end time is the same as initial time
+    end_snow_time = start_snow_time
 
     fetch_limit = last_run.get('limit') or client.sys_param_limit
 
     query = ''
     if client.sys_param_query:
         query += f'{client.sys_param_query}^'
+    # get the tickets which occurred after the 'start_snow_time'
     query += f'ORDERBY{client.timestamp_field}^{client.timestamp_field}>{start_snow_time}'
 
     if query:
@@ -2051,7 +2060,6 @@ def fetch_incidents(client: Client) -> list:
     tickets_response = client.send_request(f'table/{client.ticket_type}', 'GET', params=query_params).get('result', [])
 
     count = 0
-    end_snow_time_as_date = datetime.strptime(end_snow_time, '%Y-%m-%d %H:%M:%S')
 
     severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
 
@@ -2065,12 +2073,8 @@ def fetch_incidents(client: Client) -> list:
             break
 
         try:
-            if datetime.strptime(ticket[client.timestamp_field], '%Y-%m-%d %H:%M:%S') > end_snow_time_as_date:
+            if datetime.strptime(ticket[client.timestamp_field], date_format) < snow_time_as_date:
                 continue
-        except Exception:
-            pass
-
-        try:
             parse_dict_ticket_fields(client, ticket)
         except Exception:
             pass
@@ -2084,14 +2088,13 @@ def fetch_incidents(client: Client) -> list:
             'details': json.dumps(ticket),
             'severity': severity_map.get(ticket.get('severity', ''), 0),
             'attachment': get_ticket_file_attachments(client=client, ticket=ticket),
-            'occurred': timestamp_to_datestring(ticket.get('opened_at'), date_format='%Y-%m-%d %H:%M:%S'),
+            'occurred': ticket.get(client.timestamp_field),
             'rawJSON': json.dumps(ticket)
         })
-        # 2020-10-28T20:43:34.381Z
-        # 'occurred': hit_date.isoformat() + 'Z'
-
         count += 1
+        end_snow_time = ticket.get(client.timestamp_field)
 
+    # remove duplicate incidents which were already fetched
     incidents = filter_incidents_by_duplicates_and_limit(
         incidents_res=incidents, last_run=last_run, fetch_limit=fetch_limit, id_field='name'
     )
@@ -2102,16 +2105,17 @@ def fetch_incidents(client: Client) -> list:
         fetch_limit=fetch_limit,
         start_fetch_time=start_snow_time,
         end_fetch_time=end_snow_time,
-        look_back=look_back,
-        created_time_field='opened_at',
+        look_back=client.look_back,
+        created_time_field='occurred',
         id_field='name',
-        date_format='%Y-%m-%d %H:%M:%S'
+        date_format=date_format
     )
 
-    demisto.info(f'------updated last run {last_run}------')
+    demisto.info(f'last run at the end of the incidents fetching {last_run}')
 
     for ticket in incidents:
-        ticket.pop('opened_at')
+        # the occurred time requires to be in ISO format.
+        ticket['occurred'] = f"{datetime.strptime(ticket.get('occurred'), date_format).isoformat()}Z"
 
     demisto.setLastRun(last_run)
     return incidents
@@ -2729,6 +2733,7 @@ def main():
     get_attachments = params.get('get_attachments', False)
     update_timestamp_field = params.get('update_timestamp_field', 'sys_updated_on') or 'sys_updated_on'
     mirror_limit = params.get('mirror_limit', '100') or '100'
+    look_back = arg_to_number(params.get('look_back')) or 0
     add_custom_fields(params)
 
     raise_exception = False
@@ -2737,7 +2742,7 @@ def main():
                         username=username, password=password, verify=verify, fetch_time=fetch_time,
                         sysparm_query=sysparm_query, sysparm_limit=sysparm_limit,
                         timestamp_field=timestamp_field, ticket_type=ticket_type, get_attachments=get_attachments,
-                        incident_name=incident_name, oauth_params=oauth_params, version=version)
+                        incident_name=incident_name, oauth_params=oauth_params, version=version, look_back=look_back)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
             'test-module': test_module,
             'servicenow-oauth-test': oauth_test_module,

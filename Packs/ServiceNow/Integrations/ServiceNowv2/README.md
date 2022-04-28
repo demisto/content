@@ -96,6 +96,7 @@ If MFA is enabled for your user, follow the next steps:
 | close_ticket | Close ServiceNow Ticket. When selected, closing the XSOAR incident is mirrored in ServiceNow. | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
+| lookback | lookback (minutes) to fetch older incidents. | False
 
 5. Click **Test** to validate the URLs, token, and connection.
 6. Click **Done.**
@@ -105,6 +106,11 @@ The integration fetches newly created tickets according to the following paramet
 which you define in the instance configuration: ticket_type, query, and limit.
 For the first fetch, the integration will fetch incidents that were created 10 minutes earlier. 
 After that, the integration will fetch incidents created after the timestamp of the last fetch.
+
+Note:
+In case the **lookback** parameter is initialized with '0' and during that time incidents were fetched, if changing 
+the look back to a number that is greater > 0, then in the initial fetching there could be incidents duplications.
+If the integration was already set with look back > 0 in the first place, then those incident duplications would not occur.
 
 ## Configure Incident Mirroring
 **This feature is compliant with XSOAR version 6.0 and above.**
