@@ -4,7 +4,7 @@
     "id": "GLPI - Outgoing Mapper",
     "mapping": {
         "GLPI Ticket": {
-            "dontMapEventToLabels": true,
+            "dontMapEventToLabels": false,
             "internalMapping": {
                 "content": {
                     "simple": "glpidescription"

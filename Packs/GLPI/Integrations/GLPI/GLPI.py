@@ -797,6 +797,7 @@ def fetch_incidents(client, last_run, first_fetch_time):
             demisto.params().get('file_tag'),
             demisto.params().get('work_notes_tag')
         ]
+        demisto.debug('incident occured : ' + str(incident_created_time.strftime(DATE_FORMAT)))  # type: ignore[union-attr]
         incident = {
             'name': ticket['name'],
             'occurred': incident_created_time.strftime(DATE_FORMAT),  # type: ignore[union-attr]
@@ -844,11 +845,14 @@ def get_remote_data_command(client, args, params={}):
     parsed_args = GetRemoteDataArgs(args)
     # ticket_id = args.get('id', '')
     ticket_id = parsed_args.remote_incident_id
+    demisto.debug(f'Getting update for remote {ticket_id}')
     last_update = args.get('lastUpdate')
+    demisto.debug('last_update: ' + str(last_update))
     formated_date = last_update.replace('T', ' ').split('.')[0]
     try:
         new_incident_data = client.get_ticket(ticket_id)
         entries = []
+        demisto.debug('fetch files')
         ticket_docs = client.get_ticket_docs(ticket_id)
         if ticket_docs:
             for ticket_doc in ticket_docs:
@@ -856,6 +860,7 @@ def get_remote_data_command(client, args, params={}):
                     document = client.get_item('Document', ticket_doc.get('documents_id'))
                     if '_mirrored_from_xsoar' not in document.get('filename'):
                         file = client.download_document(ticket_doc.get('documents_id'), filename=document.get('filename'))
+                        demisto.debug('file fetched')
                         filepath, filename = os.path.split(file)
                         f = open(file, 'rb')
                         data = f.read()
@@ -873,6 +878,7 @@ def get_remote_data_command(client, args, params={}):
                         'Note': True,
                         'EntryContext': comments_context
                     })
+        demisto.debug(f'Pull result is {new_incident_data}')
         return GetRemoteDataResponse(new_incident_data, entries)
     except Exception as e:
         raise DemistoException('Error : ' + str(e))
@@ -921,14 +927,19 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                       f'not new nor changed.')
     # Close incident if relevant
     if updated_incident and parsed_args.inc_status == IncidentStatus.DONE:
+        demisto.debug(f'Closing remote incident {ticket_id}')
         client.close_ticket(ticket_id)
 
     entries = parsed_args.entries
 
     if entries:
+        demisto.debug(f'New entries {entries}')
         for entry in entries:
+            demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
+            # Mirroring files as entries
             if entry.get('type') == 3:
                 path_res = demisto.getFilePath(entry.get('id'))
+                demisto.debug('path res' + str(path_res))
                 full_file_name = path_res.get('name')
                 file_name, file_extension = os.path.splitext(full_file_name)
                 if not file_extension:
