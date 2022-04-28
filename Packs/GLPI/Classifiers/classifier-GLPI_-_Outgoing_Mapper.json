@@ -4,11 +4,8 @@
     "id": "GLPI - Outgoing Mapper",
     "mapping": {
         "GLPI Ticket": {
-            "dontMapEventToLabels": false,
+            "dontMapEventToLabels": true,
             "internalMapping": {
-                "closedate": {
-                    "simple": "glpiclosingdate"
-                },
                 "content": {
                     "simple": "glpidescription"
                 },
@@ -106,12 +103,6 @@
                         ]
                     }
                 },
-                "internal_time_to_own": {
-                    "simple": "glpiinternaltimetoown"
-                },
-                "internal_time_to_resolve": {
-                    "simple": "glpiinternaltimetoresolve"
-                },
                 "itilcategories_id": {
                     "simple": "glpicategory"
                 },
@@ -198,22 +189,6 @@
                                     "toReplace": {
                                         "value": {
                                             "simple": "5 - Very high"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {},
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "6"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "6 - Major"
                                         }
                                     }
                                 },
@@ -326,9 +301,6 @@
                         ]
                     }
                 },
-                "solvedate": {
-                    "simple": "glpisolveddate"
-                },
                 "status": {
                     "complex": {
                         "filters": [],
@@ -432,12 +404,6 @@
                             }
                         ]
                     }
-                },
-                "time_to_own": {
-                    "simple": "glpitimetoown"
-                },
-                "time_to_resolve": {
-                    "simple": "glpitimetoresolve"
                 },
                 "type": {
                     "complex": {
