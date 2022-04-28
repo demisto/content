@@ -469,24 +469,9 @@ script:
       name: machineName
       required: false
       secret: false
-    - description: Enter the year how long you want to retrive the data
-      name: year
+    - description: Enter the Date and Time as mentioned in the format ("YYYY/MM/DD HH:MM:SS") to filter from which date and time user wants to retrive data
+      name: dateTime
       required: false
-    - description: Enter the month how long you want to retrive the data
-      name: month
-      required: false
-    - description: Enter the day how long you want to retrive the data
-      name: day
-      required: false
-    - description: Enter the hour how long you want to retrive the data
-      name: hour
-      defaultValue: "00"
-    - description: Enter ther minute how long you want to retrive the data
-      name: minute
-      defaultValue: "00"
-    - description: Enter the second how long you want to retrive the data
-      name: second
-      defaultValue: "00"
     deprecated: false
     description: Returns a list of malops
     execution: false

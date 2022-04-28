@@ -648,17 +648,13 @@ def unisolate_machine(machine):
 def malop_processes_command():
     malop_guids = demisto.getArg('malopGuids')
     machine_name = demisto.getArg('machineName')
-    years = demisto.getArg('year')
-    months = demisto.getArg('month')
-    days = demisto.getArg('day')
-    hours = demisto.getArg('hour')
-    minutes = demisto.getArg('minute')
-    seconds = demisto.getArg('second')
+    date_time = demisto.getArg('dateTime')
 
     filter_input = []
-    if years:
-        epoch_time = datetime(int(years), int(months), int(days), int(hours), int(minutes), int(seconds)).timestamp()
-        milliseconds = int(epoch_time * 1000)
+    if date_time:
+        pattern = '%Y/%m/%d %H:%M:%S'
+        epoch = int(time.mktime(time.strptime(date_time, pattern)))
+        milliseconds = int(epoch * 1000)
         filter_input = [{"facetName":"creationTime","filterType":"GreaterThan","values":[milliseconds],"isResult":True}]
 
     if isinstance(malop_guids, str):
