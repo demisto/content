@@ -469,7 +469,7 @@ script:
       name: machineName
       required: false
       secret: false
-    - description: Enter the Date and Time as mentioned in the format ("YYYY/MM/DD HH:MM:SS") to filter from which date and time user wants to retrive data
+    - description: Starting Date and Time to filter the Processes based on their creation date. The format for the input is ("YYYY/MM/DD HH:MM:SS").
       name: dateTime
       required: false
     deprecated: false
