@@ -4408,6 +4408,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
+            "memory_threshold": 80,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -4816,7 +4817,8 @@
         {
             "integrations": "Cortex XDR - XQL Query Engine",
             "playbookID": "Cortex XDR - XQL Query - Test",
-            "fromversion": "6.2.0"
+            "fromversion": "6.2.0",
+            "memory_threshold": 90
         },
         {
             "playbookID": "ListUsedDockerImages - Test",
