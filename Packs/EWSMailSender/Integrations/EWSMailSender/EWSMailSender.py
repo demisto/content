@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from cStringIO import StringIO
+from io import StringIO
 import logging
 import warnings
 import traceback
@@ -212,7 +212,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
-        'subject': subject.encode('utf-8'),
+        'subject': subject,
         'attachments': attachments_names
     }
 
@@ -287,7 +287,7 @@ def reply_email(to, inReplyTo, body="", subject="", bcc=None, cc=None, htmlBody=
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
-        'subject': subject.encode('utf-8'),
+        'subject': subject,
         'attachments': attachments_names
     }
 
@@ -411,5 +411,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
     main()
