@@ -106,3 +106,19 @@ def test_get_agents_outputs():
     expected = util_load_json('test_data/agent_outputs.json')
     agent_output = list(sentinelone_v2.get_agents_outputs(raw_agent_response))
     assert expected == agent_output
+
+
+def test_fetch_file(mocker, requests_mock, ):
+    assert 1==2
+
+def test_download_fetched_file():
+    pass
+
+def get_blocklist():
+    pass
+
+def remove_hash_from_blocklist():
+    pass
+
+def add_hash_to_blocklist():
+    pass

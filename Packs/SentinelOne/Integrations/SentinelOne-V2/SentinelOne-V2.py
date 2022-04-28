@@ -9,7 +9,7 @@ import requests
 from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
 
-register_module_line('SentinelOne V2', 'start', __line__())
+# register_module_line('SentinelOne V2', 'start', __line__())
 
 ''' IMPORTS '''
 
@@ -1439,8 +1439,8 @@ def get_blocklist(client: Client, args: dict) -> CommandResults:
     sort_by = "updatedAt"
     sort_order = "desc"
 
-    offset = int(args.get('offset', "0"))
-    limit = int(args.get('limit', "100"))
+    offset = arg_to_number(int(args.get('offset', "0")))
+    limit = arg_to_number(int(args.get('limit', "100")))
     group_ids = args.get('group_ids', None)
     site_ids = args.get('site_ids', None)
     account_ids = args.get('account_ids', None)
@@ -1672,4 +1672,4 @@ def main():
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
 
-register_module_line('SentinelOne V2', 'end', __line__())
+# register_module_line('SentinelOne V2', 'end', __line__())

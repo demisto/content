@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: SentinelOne v2
+  id: SentinelOne V2
   version: -1
 configuration:
 - display: Server URL (e.g., https://usea1.sentinelone.net)
@@ -65,7 +65,7 @@ configuration:
   hidden: true
 description: Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
 display: SentinelOne v2
-name: SentinelOne v2
+name: SentinelOne V2
 script:
   commands:
   - arguments:

@@ -243,7 +243,7 @@ tasks:
       - "1"
     scriptarguments:
       value:
-        simple: ${modules(val.brand.indexOf("SentinelOne v2")>=0)}
+        simple: ${modules(val.brand.indexOf("SentinelOne V2")>=0)}
     separatecontext: false
     view: |-
       {
