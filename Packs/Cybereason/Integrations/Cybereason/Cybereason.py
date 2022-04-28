@@ -648,6 +648,14 @@ def unisolate_machine(machine):
 def malop_processes_command():
     malop_guids = demisto.getArg('malopGuids')
     machine_name = demisto.getArg('machineName')
+    date_time = demisto.getArg('dateTime')
+
+    filter_input = []
+    if date_time:
+        pattern = '%Y/%m/%d %H:%M:%S'
+        epoch = int(time.mktime(time.strptime(date_time, pattern)))
+        milliseconds = int(epoch * 1000)
+        filter_input = [{"facetName":"creationTime","filterType":"GreaterThan","values":[milliseconds],"isResult":True}]
 
     if isinstance(malop_guids, str):
         malop_guids = malop_guids.split(',')
@@ -656,7 +664,7 @@ def malop_processes_command():
 
     machine_name_list = [machine.lower() for machine in argToList(machine_name)]
 
-    response = malop_processes(malop_guids)
+    response = malop_processes(malop_guids, filter_input)
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
     outputs = []
 
@@ -704,7 +712,7 @@ def malop_processes_command():
     })
 
 
-def malop_processes(malop_guids):
+def malop_processes(malop_guids, filter_value):
     json_body = {
         'queryPath': [
             {
@@ -718,7 +726,7 @@ def malop_processes(malop_guids):
             },
             {
                 'requestedType': 'Process',
-                'filters': [],
+                'filters': filter_value,
                 'isResult': True
             }
         ],

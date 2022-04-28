@@ -469,6 +469,9 @@ script:
       name: machineName
       required: false
       secret: false
+    - description: Starting Date and Time to filter the Processes based on their creation date. The format for the input is ("YYYY/MM/DD HH:MM:SS").
+      name: dateTime
+      required: false
     deprecated: false
     description: Returns a list of malops
     execution: false
