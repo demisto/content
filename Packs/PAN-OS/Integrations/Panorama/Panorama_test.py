@@ -57,6 +57,28 @@ def patched_requests_mocker(requests_mock):
     return requests_mock
 
 
+def test_pan_os_get_version_command(patched_requests_mocker):
+    """
+    Given
+    - mocked http url and api key
+
+    When
+    - trying to get the panorama/firewall version
+
+    Then
+    - make sure the valid readable output and context output is returned.
+    """
+    from Panorama import pan_os_get_version_command
+    import Panorama
+    Panorama.URL = 'https://1.1.1.1:443/api/'
+    Panorama.API_KEY = integration_params['key']
+    response = pan_os_get_version_command()
+    assert response.outputs == {
+        'sw-version': '9.0.6', 'multi-vsys': 'off', 'model': 'Panorama', 'serial': 'FAKESERIALNUMBER'
+    }
+    assert 'PAN-OS version information' in response.readable_output
+
+
 def test_panorama_get_os_version(patched_requests_mocker):
     from Panorama import get_pan_os_version
     import Panorama

@@ -9451,15 +9451,14 @@ def dataclasses_to_command_results(result: Any, empty_result_message: str = "No 
     return command_result
 
 
-def pan_os_get_version_command():
+def pan_os_get_version_command() -> CommandResults:
     """
     Get the pan-os basic details including its version, model and serial number.
     """
     raw_response = get_pan_os_version_raw_response()
     pan_os_version_info = raw_response.get('response', {}).get('result', {})
 
-    return_results(
-        CommandResults(
+    return CommandResults(
             outputs_prefix='Panorama.Version',
             outputs_key_field='sw-version',
             outputs=pan_os_version_info,
@@ -9470,7 +9469,6 @@ def pan_os_get_version_command():
             ),
             raw_response=raw_response,
         )
-    )
 
 
 def main():
@@ -9493,7 +9491,7 @@ def main():
             panorama_command(args)
 
         if command == 'pan-os-get-version':
-            pan_os_get_version_command()
+            return_results(pan_os_get_version_command())
 
         elif command == 'panorama-commit' or command == 'pan-os-commit':
             panorama_commit_command(args)
