@@ -2948,3 +2948,82 @@ Returns the number of the connected\disconnected endpoints.
 #### Human Readable Output
 
 >connected endpoints count: 4
+### xdr-get-cloud-original-alerts
+***
+Returns information about each alert ID.
+
+
+#### Base Command
+
+`xdr-get-cloud-original-alerts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_ids | A comma-separated list of alert IDs. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.OriginalAlert.event._time | String | The timestamp of the occurence of the event. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.vendor | String | Vendor name. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.event_timestamp | Number | Event timestamp. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.event_type | Number | Event type \(static 500\). | 
+| PaloAltoNetworksXDR.OriginalAlert.event.cloud_provider | String | The cloud provider - GCP, AZURE, or AWS. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.project | String | The project in which the event occurred. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.cloud_provider_event_id | String | The ID given to the event by the cloud provider, if the ID exists. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.cloud_correlation_id | String | The ID the cloud provider is using to aggregate events that are part of the same general event. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.operation_name_orig | String | The name of the operation that occurred, as supplied by the cloud provider. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.operation_name | String | The normalized name of the operation performed by the event. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.identity_orig | String | Contains the original identity related fields as provided by the cloud provider. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.identity_name | String | The name of the identity that initiated the action. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.identity_uuid | String | Same as identity_name but also contains the UUID of the identity if it exists. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.identity_type | String | An enum representing the type of the identity. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.identity_sub_type | String | An enum representing the sub-type of the identity, respective to its identity_type. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_name | String | The name of the identity that invoked the action as it appears in the log. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_uuid | String | The UUID of the identity that invoked the action as it appears in the log. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_type | String | An enum that represents the type of identity event that invoked the action. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_sub_type | String | An enum that represents the respective sub_type of the type of identity \(identity_type\) that has invoked the action. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.operation_status | String | Status of whether the operation has succeed or failed, if provided. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.operation_status_orig | String | The operation status code as it appears in the log, including lookup from code number to code name. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.operation_status_orig_code | String | The operation status code as it appears in the log. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.operation_status_reason_provided | String | Description of the error, if the log record indicates an error and the cloud provider supplied the reason. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.resource_type | String | The normalized type of the service that emitted the log row. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.resource_type_orig | String | The type of the service that omitted the log as provided by the cloud provider. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.resource_sub_type | String | The sub-type respective to the resource_type field, normalized across all cloud providers. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.resource_sub_type_orig | String | The sub-type of the service that emitted this log row as provided by the cloud provider. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.region | String | The cloud region of the resource that emitted the log. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.zone | String | The availability zone of the resource that emitted the log. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.referenced_resource | String | The cloud resource referenced in the audit log. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.referenced_resource_name | String | Same as referenced_resource but provides only the substring that represents the resource name instead of the full asset ID. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.referenced_resources_count | Number | The number of extracted resources referenced in this audit log. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.user_agent | String | The user agent provided in the call to the API of the cloud provider. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.caller_ip | String | The IP of the caller that performed the action in the log. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.caller_ip_geolocation | String | The geolocation associated with the caller_ip's value. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.caller_ip_asn | Number | The ASN of the caller_ip's value. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.caller_project | String | The project of the caller entity. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.raw_log | Unknown | The raw log that is being normalized. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.log_name | String | The name of the log that contains the log row. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.caller_ip_asn_org | String | The organization associated with the ASN of the caller_ip's value. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.event_base_id | String | Event base ID. | 
+| PaloAltoNetworksXDR.OriginalAlert.event.ingestion_time | String | Ingestion time. | 
+### get-modified-remote-data
+***
+Get the list of incidents that were modified since the last update. Please note that this method is here for debugging purposes. get-modified-remote-data is used as part of a Mirroring feature, which is available since version 6.1.
+
+
+#### Base Command
+
+`get-modified-remote-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lastUpdate | Date string representing the local time.The incident is only returned if it was modified after the last update time. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
