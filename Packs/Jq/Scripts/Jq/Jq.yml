@@ -5,31 +5,22 @@ args:
 - description: JQ compatible query
   name: query
   required: true
-comment: "Run JQ Query. \n\nCheck these links:\n- https://stedolan.github.io/jq/manual/#Invokingjq\n\
-  - https://jqplay.org/"
+comment: "Run JQ Query. \n\nCheck these links:\n- https://stedolan.github.io/jq/manual/#Invokingjq\n- https://jqplay.org/"
 commonfields:
   id: jq
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: Jq-json-processer
-    propagationLabels:
-    - all
-    toServerVersion: ""
+    fromServerVersion: ''
 dependson:
   must: []
 dockerimage: demisto/jq:1.0.0.24037
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: jq
 outputs:
 - contextPath: jq.result
   type: unknown
-pswd: ""
+  description: Result of jq-query
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -38,3 +29,6 @@ subtype: python3
 tags:
 - transformer
 type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
