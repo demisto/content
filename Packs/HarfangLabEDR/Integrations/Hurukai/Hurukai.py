@@ -8,6 +8,7 @@ import requests
 import time
 import traceback
 
+from typing import Any, Dict
 from datetime import datetime, timedelta, timezone
 import dateutil.parser
 
@@ -261,7 +262,7 @@ class Client(BaseClient):
         )
 
     def change_security_event_status(self, eventid, status):
-        data = {}
+        data = {} # type: Dict[str,Any]
 
         if isinstance(eventid, list):
             data['ids'] = eventid
@@ -270,11 +271,11 @@ class Client(BaseClient):
 
         if status == 'New':
             data['new_status'] = 'new'
-        if status == 'Investigating':
+        elif status == 'Investigating':
             data['new_status'] = 'investigating'
-        if status == 'False Positive':
+        elif status == 'False Positive':
             data['new_status'] = 'false_positive'
-        if status == 'Closed':
+        elif status == 'Closed':
             data['new_status'] = 'closed'
 
         return self._http_request(
@@ -286,7 +287,7 @@ class Client(BaseClient):
     def list_policies(self):
         return self._http_request(
             method='GET',
-            url_suffix=f'/api/data/endpoint/Policy/',
+            url_suffix='/api/data/endpoint/Policy/',
         )
 
     def assign_policy_to_agent(self, policyid, agentid):
@@ -380,14 +381,14 @@ def fetch_incidents(client, args):
         args['alert_time__gte'] = cursor
 
     incidents = []
-    args['offset'] = 0
+    args['offset'] = 0 # type: int
     total_number_of_alerts = 0
 
     while True:
 
         results = client._http_request(
             method='GET',
-            url_suffix=f'/api/data/alert/alert/Alert/',
+            url_suffix='/api/data/alert/alert/Alert/',
             params=args
         )
 
@@ -548,7 +549,7 @@ def job_info(client, args):
     ec = {
         'Harfanglab.Job.Info(val.ID && val.ID == obj.ID)': context,
     }
-    readable_output = tableToMarkdown(f'Jobs Info', context, headers=['ID', 'Status', 'Creation date'])
+    readable_output = tableToMarkdown('Jobs Info', context, headers=['ID', 'Status', 'Creation date'])
 
     entry = {
         'Type': entryTypes['note'],
@@ -972,7 +973,11 @@ def result_wmilist(client, args):
         })
 
     readable_output = tableToMarkdown('WMI List', output, headers=[
-                                      'filter to consumer type', 'event filter name', 'event consumer name', 'event filter', 'consumer data'])
+                                      'filter to consumer type', 
+                                      'event filter name', 
+                                      'event consumer name', 
+                                      'event filter', 
+                                      'consumer data'])
 
     ec = {
         'Harfanglab.Wmi(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -1022,7 +1027,16 @@ def result_processlist(client, args):
         })
 
     readable_output = tableToMarkdown('Process List', output, headers=[
-                                      'name', 'session', 'username', 'integrity', 'pid', 'ppid', 'cmdline', 'fullpath', 'signed', 'md5'])
+                                      'name', 
+                                      'session', 
+                                      'username', 
+                                      'integrity', 
+                                      'pid', 
+                                      'ppid', 
+                                      'cmdline', 
+                                      'fullpath', 
+                                      'signed', 
+                                      'md5'])
 
     ec = {
         'Harfanglab.Process(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -1208,9 +1222,7 @@ def job_ioc(client, args):
     # filepath_regex = args.get('filepath_regex', None)
     # registry = args.get('registry', None)
 
-    job_parameters = {
-        'values': []
-    }
+    job_parameters = { 'values': [] } # type: Dict[str,List[Dict[str,Any]]]
     good = False
 
     if filename is not None:
@@ -1359,7 +1371,8 @@ def global_result_artefact(client, args, artefact_type):
     for i in range(len(data['results'])):
         result = data['results'][i]
         if api_token is not None:
-            result['download_link'] = f'{base_url}/api/data/investigation/artefact/Artefact/{result["id"]}/download/?hl_expiring_key={api_token}'
+            result['download_link'] = f'{base_url}/api/data/investigation/artefact/Artefact/{result["id"]}/download/'
+            result['download_link'] += f'?hl_expiring_key={api_token}'
         else:
             result['download_link'] = 'N/A'
 
@@ -1485,7 +1498,7 @@ def result_artefact_downloadfile(client, args):
             'download link': link
         })
 
-    readable_output = tableToMarkdown(f'file download list', output, headers=['hostname', 'msg', 'size', 'download link'])
+    readable_output = tableToMarkdown('file download list', output, headers=['hostname', 'msg', 'size', 'download link'])
 
     ec = {
         'Harfanglab.DownloadFile(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -1529,11 +1542,13 @@ def result_artefact_ramdump(client, args):
 
     output = []
     for x in data['results']:
+        link = f'{base_url}/api/data/investigation/artefact/Artefact/{x["id"]}/download/'
+        link += f'?hl_expiring_key={api_token}'
         output.append({
             'hostname': x['agent']['hostname'],
             'msg': x['msg'],
             'size': x['size'],
-            'download link': f'{base_url}/api/data/investigation/artefact/Artefact/{x["id"]}/download/?hl_expiring_key={api_token}'
+            'download link': link
         })
 
     readable_output = tableToMarkdown('Ramdump list', output, headers=['hostname', 'msg', 'size', 'download link'])
@@ -1574,9 +1589,11 @@ def hunt_search_hash(client, args):
                 curr_running = True
             if x['telemetryProcessCount'] > 0:
                 prev_runned = True
+            currently_running = str(curr_running) + " " + str(x['processCount']) + " are running"
+            previously_executed = str(prev_runned) + " " + str(x['telemetryProcessCount']) + " were previously executed"
             prefetchs.append({
-                'process associated with hash currently running': str(curr_running) + " " + str(x['processCount']) + " are running",
-                'process associated with hash was previously runned': str(prev_runned) + " " + str(x['telemetryProcessCount']) + " were previously runned"
+                'process associated to hash currently running': currently_running,
+                'process associated to hash was previously executed': previously_executed
             })
             contextData.append({
                 'hash': x['title'],
@@ -1585,7 +1602,8 @@ def hunt_search_hash(client, args):
             })
 
         readable_output = tableToMarkdown('War room overview', prefetchs, headers=[
-                                          'process associated with hash currently running', 'process associated with hash was previously runned'])
+                                          'process associated to hash currently running', 
+                                          'process associated to hash was previously executed'])
 
         ec = {
             'Harfanglab.HuntHashSearch': {
@@ -1640,7 +1658,13 @@ def hunt_search_running_process_hash(client, args):
             })
 
         readable_output = tableToMarkdown('War room overview', prefetchs, headers=[
-                                          "Hostname", "Domain", "Username", "OS", "Binary Path", "Create timestamp", "Is maybe hollow"])
+                                          "Hostname", 
+                                          "Domain", 
+                                          "Username", 
+                                          "OS", 
+                                          "Binary Path", 
+                                          "Create timestamp", 
+                                          "Is maybe hollow"])
 
         ec = {
             'Harfanglab.HuntRunningProcessSearch': {
@@ -1712,13 +1736,11 @@ def hunt_search_runned_process_hash(client, args):
         return data
 
 
-def isolate_endpoint(client, args):
+def isolate_endpoint(client, args) -> Dict[str, Any]:
     agentid = args.get('agent_id', None)
     data = client.isolate_endpoint(agentid)
 
-    context = {}
-    context['Status'] = False
-    context['Message'] = ''
+    context = { 'Status': False, 'Message': ''} # type: Dict[str,Any]
     entryType = entryTypes['note']
 
     if agentid in data['requested']:
@@ -1739,13 +1761,11 @@ def isolate_endpoint(client, args):
     return context
 
 
-def deisolate_endpoint(client, args):
+def deisolate_endpoint(client, args) -> Dict[str,Any]:
     agentid = args.get('agent_id', None)
     data = client.deisolate_endpoint(agentid)
 
-    context = {}
-    context['Status'] = False
-    context['Message'] = ''
+    context = {'Status': False, 'Message': ''} # type: Dict[str,Any]
 
     if agentid in data['requested']:
         context['Status'] = True
@@ -2067,7 +2087,6 @@ def get_function_from_command_name(command):
 
         'harfanglab-assign-policy-to-agent': assign_policy_to_agent
 
-#        'fetch-incidents': fetch_incidents,
     }
 
     return commands.get(command)

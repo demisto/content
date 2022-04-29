@@ -75,9 +75,6 @@ display: HarfangLab EDR
 name: Hurukai
 script:
   commands:
-  - arguments: []
-    name: harfanglab-test-module
-    description: Test module to check that the HarfangLab EDR Manager is reachable
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
@@ -249,18 +246,6 @@ script:
       required: true
     description: Start a job to get the list of sessions from a host (Windows)
     name: harfanglab-job-sessionlist
-    outputs:
-    - contextPath: Harfanglab.Job.ID
-      description: id
-      type: string
-    - contextPath: action
-      description: HarfangLab job action
-  - arguments:
-    - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
-      required: true
-    description: Start a job to get the list of network connections from a host (Windows / Linux)
-    name: harfanglab-job-list
     outputs:
     - contextPath: Harfanglab.Job.ID
       description: id
