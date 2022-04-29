@@ -1521,6 +1521,11 @@ def warninglist_command(demisto_args: dict) -> CommandResults:
     response = PYMISP.values_in_warninglist(values)
     if 'errors' in response:
         raise DemistoException(f'Unable to validate against MISPwarninglist!\nError message: {response}')
+    if not response:
+        return CommandResults(
+            readable_output="No value is on a MISP warning list!",
+            raw_response=response,
+        )
     for value,lists in response.items():
         if len(lists)>0:
             res.append(
@@ -1530,24 +1535,18 @@ def warninglist_command(demisto_args: dict) -> CommandResults:
                     "Lists":",".join([x["name"] for x in lists]),
                 }
             )
-    if res!=[]:
-        human_readable = tableToMarkdown(
-            "MISP Warninglist matchings:",
-            sorted(res,key=lambda x: x["Count"],reverse=True),
-            headers=["Value","Lists","Count"],
-        )
-        return CommandResults(
-            outputs=res,
-            outputs_prefix="MISP.Warninglist",
-            outputs_key_field=["Value"],
-            readable_output=human_readable,
-            raw_response=response,
-        )
-    else:
-        return CommandResults(
-            readable_output="No value is on a MISP warning list!",
-            raw_response=response,
-        )
+    human_readable = tableToMarkdown(
+        "MISP Warninglist matchings:",
+        sorted(res,key=lambda x: x["Count"],reverse=True),
+        headers=["Value","Lists","Count"],
+    )
+    return CommandResults(
+        outputs=res,
+        outputs_prefix="MISP.Warninglist",
+        outputs_key_field=["Value"],
+        readable_output=human_readable,
+        raw_response=response,
+    )
 
 
 def main():
