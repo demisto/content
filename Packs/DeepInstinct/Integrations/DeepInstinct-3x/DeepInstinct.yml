@@ -318,7 +318,6 @@ script:
     - default: false
       description: Get all groups
       isArray: false
-      name: []
       required: false
       secret: false
     deprecated: false
@@ -347,7 +346,6 @@ script:
     - default: false
       description: Get All policies
       isArray: false
-      name: []
       required: false
       secret: false
     deprecated: false
@@ -373,7 +371,6 @@ script:
       type: string
     description: get all policies
   - arguments:
-    description: Add file hash to Deny List
     - default: false
       description: Policy ID
       isArray: false
@@ -386,16 +383,16 @@ script:
       name: file_hash
       required: true
       secret: false
-    - default: flase
+    - default: false
       decription: Optional, add comment
       isArray: false
       name: comment
       required: false
       secret: false
     deprecated: false
+    description: Add file hash to Deny List
     name: deepinstinct-add-hash-to-deny-list
   - arguments:
-    description: Add file hash to Allow List
     - default: false
       description: Policy ID
       isArray: false
@@ -408,16 +405,16 @@ script:
       name: file_hash
       required: true
       secret: false
-    - default: flase
+    - default: false
       decription: Optional, add comment
       isArray: false
       name: comment
       required: false
       secret: false
     deprecated: false
+    description: Add file hash to Allow List
     name: deepinstinct-add-hash-to-allow-list
   - arguments:
-    description: Remove hash from Deny List
     - default: false
       description: Policy ID
       isArray: false
@@ -431,9 +428,9 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Remove hash from Deny List
     name: deepinstinct-remove-hash-from-deny-list
   - arguments:
-    description: Remove hash from Allow List
     - default: false
       description: Policy ID
       isArray: false
@@ -447,9 +444,9 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Remove hash from Allow List
     name: deepinstinct-remove-hash-from-allow-list
   - arguments:
-    description: Add multiple devices to a group
     - default: false
       description: group ID
       isArray: false
@@ -463,9 +460,9 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Add multiple devices to a group
     name: deepinstinct-add-devices-to-group
   - arguments:
-    description: Remove list of devices from groups
     - default: false
       description: Group ID to remove from
       isArray: false
@@ -479,9 +476,9 @@ script:
       required: true
       secret: false
     depecrated: false
+    description: Remove list of devices from groups
     name: deepinstinct-remove-devices-from-group
   - arguments:
-    description: Delete multiple files remotely
     - default: false
       description: comma separated list of event ids
       isArray: false
@@ -489,9 +486,9 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Delete multiple files remotely
     name: deepinstinct-delete-files-remotely
   - arguments:
-    description: Terminate list of processes
     - default: false
       description: comma separated list of event ids
       isArray: false
@@ -499,9 +496,9 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Terminate list of processes
     name: deepinstinct-terminate-processes
   - arguments:
-    description: Close list of events
     - default: false
       description: comma separated list of event ids
       isArray: false
@@ -509,9 +506,9 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Close list of events
     name: deepinstinct-close-events
   - arguments:
-    description: Disable device at next check-in
     - default: no
       description: single device id
       isArray: false
@@ -519,9 +516,9 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Disable device at next check-in
     name: deepinstinct-disable-device
   - arguments:
-    description: Enable device at next check-in
     - default: no
       description: single device id
       isArray: false
@@ -529,9 +526,9 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Enable device at next check-in
     name: deepinstinct-enable-device
   - arguments:
-    description: Isolate device(s) from Network
     - default: no
       description: comma separated list of device ids
       isArray: false
@@ -539,9 +536,9 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Isolate device(s) from Network
     name: deepinstinct-isolate-from-network
   - arguments:
-    description: Release device(s) from isolation
     - default: no
       description: comma separated list of device ids
       isArray: false
@@ -549,35 +546,36 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Release device(s) from isolation
     name: deepinstinct-release-from-isolation
   - arguments:
-    description: Upload file associated with given event id at next check-in
     - default: no
       isArray: false
       name: event_id
       required: true
       secret: false
     deprecated: false
+    description: Upload file associated with given event id at next check-in
     name: deepinstinct-remote-file-upload
   - arguments:
-    description: Upload device logs from given device at next check-in
     - default: no
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
+    description: Upload device logs from given device at next check-in
     name: deepinstinct-upload-logs
   - arguments:
-    description: Remove agent from device at next check-in
     - default: no
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
+    description: Remove agent from device at next check-in
     name: deepinstinct-remove-device
-  dockerimage: demisto/python3:3.10.1.27636
+  dockerimage: demisto/python3:3.10.4.28442
   isfetch: true
   runonce: false
   script: '-'

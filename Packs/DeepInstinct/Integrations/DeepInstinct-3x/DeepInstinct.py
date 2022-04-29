@@ -320,6 +320,9 @@ def upload_logs():
 
 def main():
     # Commands
+    if demisto.command() == 'test-module':
+        test_module()
+
     if demisto.command() == 'deepinstinct-get-device':
         get_specific_device()
 
