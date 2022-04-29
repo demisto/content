@@ -1493,6 +1493,7 @@ def set_event_attributes_command(demisto_args: dict) -> CommandResults:
     """
     Set the attributes of an event according to given alert_data.
     """
+    changed = False
     event_id = demisto_args.get('event_id')
     event = PYMISP.get_event(event_id, pythonify=True)
     if 'errors' in event:
@@ -1504,18 +1505,26 @@ def set_event_attributes_command(demisto_args: dict) -> CommandResults:
     for event_attribute in event.attributes:
         if event_attribute["value"] not in [x["value"] for x in attribute_data]:
             event_attribute.delete()
+            changed = True
     for attribute in attribute_data:
         if attribute["value"] not in [x["value"] for x in event.attributes]:
             event.add_attribute(attribute["type"], attribute["value"])
-    event_update = PYMISP.update_event(event=event)
-    if 'errors' in event_update:
-        raise DemistoException(f'Event ID: {event_id} could not be updated: \nError message: {event_update}')
+            changed = True
+    if changed:
+        event_update = PYMISP.update_event(event=event)
+        if 'errors' in event_update:
+            raise DemistoException(f'Event ID: {event_id} could not be updated: \nError message: {event_update}')
+        else:
+            human_readable = f'Attributes of Event {event_id} were set to match attribute data.'
+            return CommandResults(readable_output=human_readable, raw_response=event_update)
     else:
-        human_readable = f'Attributes of Event {event_id} were set to match attribute data.'
-        return CommandResults(readable_output=human_readable, raw_response=event_update)
+        return CommandResults(readable_output="No changes to event.")
 
 
 def warninglist_command(demisto_args: dict) -> CommandResults:
+    """
+    Check values against MISP warninglists.
+    """
     res = []
     values = demisto_args["value"].split(",")
     response = PYMISP.values_in_warninglist(values)
