@@ -5797,3 +5797,49 @@ There is no context output for this command.
 #### Human Readable Output
 
 **success**
+
+### pan-os-get-version
+***
+Get the pan-os version information.
+
+
+#### Base Command
+
+`pan-os-get-version`
+#### Input
+
+There is no input for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.Version.sw-version | String | The software version of the firewall/panorama instance. | 
+| PANOS.Version.multi-vsys | String | Whether the firewall/panorama multi-vsys is on. | 
+| PANOS.Version.model | String | The firewall/panorama model. | 
+| PANOS.Version.serial | String | The firewall/panorama serial number. | 
+
+
+#### Command Example
+```!pan-os-get-version```
+
+#### Context Example
+
+```json
+{
+  "Panorama": {
+    "Version": {
+      "model": "Panorama",
+      "sw-version": "9.1.11",
+      "serial": "1234",
+      "multi-vsys": "off"
+    }
+  }
+}
+```
+
+#### Human Readable Output
+### PAN-OS version information
+|sw-version|multi-vsys|model|serial|
+|---|---|---|---|
+| 9.1.11 | off | Panorama | 1234 |

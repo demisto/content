@@ -69,6 +69,22 @@ display: Palo Alto Networks PAN-OS
 name: Panorama
 script:
   commands:
+  - name: pan-os-get-version
+    description: Get the pan-os version information.
+    arguments: []
+    outputs:
+    - contextPath: PANOS.Version.sw-version
+      description: The software version of the firewall/panorama instance.
+      type: String
+    - contextPath: PANOS.Version.multi-vsys
+      description: Whether the firewall/panorama multi-vsys is on.
+      type: String
+    - contextPath: PANOS.Version.model
+      description: The firewall/panorama model.
+      type: String
+    - contextPath: PANOS.Version.serial
+      description: The firewall/panorama serial number.
+      type: String
   - arguments:
     - auto: PREDEFINED
       description: Action to be taken, such as show, get, set, edit, delete, rename,

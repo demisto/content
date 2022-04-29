@@ -362,19 +362,25 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
     return params
 
 
-def get_pan_os_version() -> str:
-    """Retrieves pan-os version
+def get_pan_os_version_raw_response() -> dict:
+    """
+    Retrieves the pan-os version raw response
 
-       Returns:
-           String representation of the version
-       """
-    params = {
-        'type': 'version',
-        'key': API_KEY
-    }
-    result = http_request(URL, 'GET', params=params)
-    version = result['response']['result']['sw-version']
-    return version
+    Returns:
+        dict: raw response of the pan-os version.
+    """
+    return http_request(URL, 'GET', params={'type': 'version', 'key': API_KEY})
+
+
+def get_pan_os_version() -> str:
+    """
+    Retrieves pan-os version
+
+    Returns:
+       str: the pan-os version.
+   """
+    raw_response = get_pan_os_version_raw_response()
+    return raw_response.get('response', {}).get('result', {}).get('sw-version')
 
 
 def get_pan_os_major_version() -> int:
@@ -9445,6 +9451,28 @@ def dataclasses_to_command_results(result: Any, empty_result_message: str = "No 
     return command_result
 
 
+def pan_os_get_version_command():
+    """
+    Get the pan-os basic details including its version, model and serial number.
+    """
+    raw_response = get_pan_os_version_raw_response()
+    pan_os_version_info = raw_response.get('response', {}).get('result', {})
+
+    return_results(
+        CommandResults(
+            outputs_prefix='Panorama.Version',
+            outputs_key_field='sw-version',
+            outputs=pan_os_version_info,
+            readable_output=tableToMarkdown(
+                name='PAN-OS version information',
+                t=pan_os_version_info,
+                headers=['sw-version', 'multi-vsys', 'model', 'serial']
+            ),
+            raw_response=raw_response,
+        )
+    )
+
+
 def main():
     try:
         args = demisto.args()
@@ -9463,6 +9491,9 @@ def main():
 
         elif command == 'panorama' or command == 'pan-os':
             panorama_command(args)
+
+        if command == 'pan-os-get-version':
+            pan_os_get_version_command()
 
         elif command == 'panorama-commit' or command == 'pan-os-commit':
             panorama_commit_command(args)
