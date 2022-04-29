@@ -3856,3 +3856,46 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Event 20536 has been published
+
+
+### misp-set-event-attributes
+***
+Set event attributes according to the given attributes data.
+
+
+#### Base Command
+
+`misp-set-event-attributes`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | Event ID to set attributes for. | Required | 
+| attribute_data | Adjust current attributes of an event to match the given attribute data. Has to be json formated list with attributes that should be part of the event. E.g.: [{"type":"domain","value":"target.domain"},{"type":"ip-dst","value":"1.2.3.4"}]. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### misp-check-warninglist
+***
+Check a list of indicator values against the MISP warninglist.
+
+
+#### Base Command
+
+`misp-check-warninglist`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| value | Indicator values to check against the MISP warninglist. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Warninglist.Count | number | Count on how many warninglists the value was found. | 
+| MISP.Warninglist.Value | string | Value checked. | 
+| MISP.Warninglist.Lists | string | Name of warninglists where the value was found. | 
