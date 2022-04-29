@@ -70,7 +70,7 @@ tasks:
       version: -1
       name: Unregister IP from tag
       description: Unregisters IP addresses from a tag
-      script: '|||panorama-unregister-ip-tag'
+      script: '|||pan-os-unregister-ip-tag'
       type: regular
       iscommand: true
       brand: ""
@@ -102,7 +102,7 @@ tasks:
       version: -1
       name: Delete address group
       description: Deletes an address group
-      script: '|||panorama-delete-address-group'
+      script: '|||pan-os-delete-address-group'
       type: regular
       iscommand: true
       brand: ""
@@ -133,7 +133,7 @@ tasks:
       version: -1
       name: Get address group
       description: Get details for the specified address group
-      script: '|||panorama-get-address-group'
+      script: '|||pan-os-get-address-group'
       type: regular
       iscommand: true
       brand: ""
@@ -257,7 +257,7 @@ tasks:
       version: -1
       name: Get address group
       description: Get details for the specified address group
-      script: '|||panorama-get-address-group'
+      script: '|||pan-os-get-address-group'
       type: regular
       iscommand: true
       brand: ""
@@ -333,7 +333,7 @@ tasks:
       version: -1
       name: Get Rules
       description: Returns a list of predefined Security Rules.
-      script: '|||panorama-list-rules'
+      script: '|||pan-os-list-rules'
       type: regular
       iscommand: true
       brand: ""
@@ -401,7 +401,7 @@ tasks:
       version: -1
       name: Get Rules
       description: Returns a list of predefined Security Rules.
-      script: '|||panorama-list-rules'
+      script: '|||pan-os-list-rules'
       type: regular
       iscommand: true
       brand: ""
@@ -468,7 +468,7 @@ tasks:
       version: -1
       name: delete rule
       description: Deletes a policy rule
-      script: '|||panorama-delete-rule'
+      script: '|||pan-os-delete-rule'
       type: regular
       iscommand: true
       brand: ""
