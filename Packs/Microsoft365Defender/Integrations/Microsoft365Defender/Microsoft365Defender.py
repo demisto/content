@@ -140,7 +140,7 @@ class Client:
         return updated_incident
 
     @logger
-    def get_incident(self, incident_id: int) -> Dict:
+    def get_incident(self, incident_id: int, timeout:int) -> Dict:
         """
         GET request to get single incident.
         Args:
@@ -153,7 +153,7 @@ class Client:
 
         """
         incident = self.ms_client.http_request(
-            method='GET', url_suffix=f'api/incidents/{incident_id}', timeout=arg_to_number(TIMEOUT))
+            method='GET', url_suffix=f'api/incidents/{incident_id}', timeout=timeout)
         return incident
 
     @logger
@@ -412,8 +412,9 @@ def microsoft_365_defender_incident_get_command(client: Client, args: Dict) -> C
     Returns: CommandResults
     """
     incident_id = arg_to_number(args.get('id'))
+    timeout = arg_to_number(args.get('timeout', TIMEOUT))
 
-    incident = client.get_incident(incident_id=incident_id)
+    incident = client.get_incident(incident_id=incident_id, timeout=timeout)
     if incident.get('@odata.context'):
         del incident['@odata.context']
 

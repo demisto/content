@@ -288,6 +288,9 @@ script:
     - description: Incident's ID.
       name: id
       required: true
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
     description: Gets the incident with the given ID.
     name: microsoft-365-defender-incident-get
     outputs:
