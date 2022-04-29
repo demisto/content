@@ -1506,7 +1506,7 @@ def set_event_attributes_command(demisto_args: dict) -> CommandResults:
             event_attribute.delete()
     for attribute in attribute_data:
         if attribute["value"] not in [x["value"] for x in event.attributes]:
-            event.add_attribute(attribute["type"],attribute["value"])
+            event.add_attribute(attribute["type"], attribute["value"])
     event_update = PYMISP.update_event(event=event)
     if 'errors' in event_update:
         raise DemistoException(f'Event ID: {event_id} could not be updated: \nError message: {event_update}')
@@ -1526,19 +1526,19 @@ def warninglist_command(demisto_args: dict) -> CommandResults:
             readable_output="No value is on a MISP warning list!",
             raw_response=response,
         )
-    for value,lists in response.items():
-        if len(lists)>0:
+    for value, lists in response.items():
+        if len(lists) > 0:
             res.append(
                 {
-                    "Value":value,
-                    "Count":len(lists),
-                    "Lists":",".join([x["name"] for x in lists]),
+                    "Value": value,
+                    "Count": len(lists),
+                    "Lists": ",".join([x["name"] for x in lists]),
                 }
             )
     human_readable = tableToMarkdown(
         "MISP Warninglist matchings:",
-        sorted(res,key=lambda x: x["Count"],reverse=True),
-        headers=["Value","Lists","Count"],
+        sorted(res, key=lambda x: x["Count"], reverse=True),
+        headers=["Value", "Lists", "Count"],
     )
     return CommandResults(
         outputs=res,
