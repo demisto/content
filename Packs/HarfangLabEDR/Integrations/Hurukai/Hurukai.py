@@ -262,7 +262,7 @@ class Client(BaseClient):
         )
 
     def change_security_event_status(self, eventid, status):
-        data = {} # type: Dict[str,Any]
+        data = {}  # type: Dict[str,Any]
 
         if isinstance(eventid, list):
             data['ids'] = eventid
@@ -363,8 +363,9 @@ def fetch_incidents(client, args):
     args = {
         'ordering': '+alert_time',
         'level': severity,
-        'limit': MAX_NUMBER_OF_ALERTS_PER_CALL
-    }
+        'limit': MAX_NUMBER_OF_ALERTS_PER_CALL,
+        'offset': 0
+        }  # type: Dict[str,Any]
 
     if status:
         args['status'] = ','.join(status)
@@ -381,7 +382,6 @@ def fetch_incidents(client, args):
         args['alert_time__gte'] = cursor
 
     incidents = []
-    args['offset'] = 0 # type: int
     total_number_of_alerts = 0
 
     while True:
@@ -973,10 +973,10 @@ def result_wmilist(client, args):
         })
 
     readable_output = tableToMarkdown('WMI List', output, headers=[
-                                      'filter to consumer type', 
-                                      'event filter name', 
-                                      'event consumer name', 
-                                      'event filter', 
+                                      'filter to consumer type',
+                                      'event filter name',
+                                      'event consumer name',
+                                      'event filter',
                                       'consumer data'])
 
     ec = {
@@ -1027,15 +1027,15 @@ def result_processlist(client, args):
         })
 
     readable_output = tableToMarkdown('Process List', output, headers=[
-                                      'name', 
-                                      'session', 
-                                      'username', 
-                                      'integrity', 
-                                      'pid', 
-                                      'ppid', 
-                                      'cmdline', 
-                                      'fullpath', 
-                                      'signed', 
+                                      'name',
+                                      'session',
+                                      'username',
+                                      'integrity',
+                                      'pid',
+                                      'ppid',
+                                      'cmdline',
+                                      'fullpath',
+                                      'signed',
                                       'md5'])
 
     ec = {
@@ -1222,7 +1222,7 @@ def job_ioc(client, args):
     # filepath_regex = args.get('filepath_regex', None)
     # registry = args.get('registry', None)
 
-    job_parameters = { 'values': [] } # type: Dict[str,List[Dict[str,Any]]]
+    job_parameters = {'values': []}  # type: Dict[str,List[Dict[str,Any]]]
     good = False
 
     if filename is not None:
@@ -1602,7 +1602,7 @@ def hunt_search_hash(client, args):
             })
 
         readable_output = tableToMarkdown('War room overview', prefetchs, headers=[
-                                          'process associated to hash currently running', 
+                                          'process associated to hash currently running',
                                           'process associated to hash was previously executed'])
 
         ec = {
@@ -1658,12 +1658,12 @@ def hunt_search_running_process_hash(client, args):
             })
 
         readable_output = tableToMarkdown('War room overview', prefetchs, headers=[
-                                          "Hostname", 
-                                          "Domain", 
-                                          "Username", 
-                                          "OS", 
-                                          "Binary Path", 
-                                          "Create timestamp", 
+                                          "Hostname",
+                                          "Domain",
+                                          "Username",
+                                          "OS",
+                                          "Binary Path",
+                                          "Create timestamp",
                                           "Is maybe hollow"])
 
         ec = {
@@ -1740,7 +1740,7 @@ def isolate_endpoint(client, args) -> Dict[str, Any]:
     agentid = args.get('agent_id', None)
     data = client.isolate_endpoint(agentid)
 
-    context = { 'Status': False, 'Message': ''} # type: Dict[str,Any]
+    context = {'Status': False, 'Message': ''}  # type: Dict[str,Any]
     entryType = entryTypes['note']
 
     if agentid in data['requested']:
@@ -1761,11 +1761,11 @@ def isolate_endpoint(client, args) -> Dict[str, Any]:
     return context
 
 
-def deisolate_endpoint(client, args) -> Dict[str,Any]:
+def deisolate_endpoint(client, args) -> Dict[str, Any]:
     agentid = args.get('agent_id', None)
     data = client.deisolate_endpoint(agentid)
 
-    context = {'Status': False, 'Message': ''} # type: Dict[str,Any]
+    context = {'Status': False, 'Message': ''}  # type: Dict[str,Any]
 
     if agentid in data['requested']:
         context['Status'] = True
@@ -2085,8 +2085,9 @@ def get_function_from_command_name(command):
 
         'harfanglab-change-security-event-status': change_security_event_status,
 
-        'harfanglab-assign-policy-to-agent': assign_policy_to_agent
+        'harfanglab-assign-policy-to-agent': assign_policy_to_agent,
 
+        'test-module': test_module
     }
 
     return commands.get(command)

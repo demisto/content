@@ -75,6 +75,8 @@ display: HarfangLab EDR
 name: Hurukai
 script:
   commands:
+  - name: test-module
+    arguments: []
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
