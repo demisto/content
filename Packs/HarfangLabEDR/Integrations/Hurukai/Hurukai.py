@@ -365,7 +365,7 @@ def fetch_incidents(client, args):
         'level': severity,
         'limit': MAX_NUMBER_OF_ALERTS_PER_CALL,
         'offset': 0
-        }  # type: Dict[str,Any]
+    }  # type: Dict[str,Any]
 
     if status:
         args['status'] = ','.join(status)
