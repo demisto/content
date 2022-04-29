@@ -91,7 +91,7 @@ class GetEvents:
                 LOG('empty list, breaking')
                 break
 
-    def aggregated_results(self, request_size: int = 10, last_object_ids: List[str] = None) -> List[dict]:
+    def aggregated_results(self, request_size: int = 1000, last_object_ids: List[str] = None) -> List[dict]:
         """
         Function to group the events according to the user limits
         """
@@ -134,10 +134,11 @@ class GetEvents:
         return events
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+def main():
     # Args is always stronger. Get last run even stronger
-    demisto_params = demisto.params() #| demisto.args() | demisto.getLastRun()
-    request_size = demisto_params.get('request_size', '1000')
+    demisto_params = demisto.params()  # | demisto.args() | demisto.getLastRun()
+    # Limit is marked as required in the yml file, so it should always be in params.
+    request_size = demisto_params.get('request_size', demisto_params['limit'])
     request_size = int(request_size)
     if 'after' in demisto_params:
         after = int(demisto_params['after'])
@@ -145,9 +146,9 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
     encrypted_headers = json.loads(demisto_params['encrypted_headers'])
     demisto_params['headers'] = dict(encrypted_headers.items() | headers.items())
     del demisto_params['encrypted_headers']
-    last_run = demisto.getIntegrationContext()
+    last_run = demisto.getLastRun()
     last_object_ids = last_run.get('ids')
-    # If we do not have an after in the last run than we calculate after according to now - after param from integration settings
+    # If we do not have an after in the last run than we calculate after according to now - after param from integration settings.
     if 'after' not in last_run:
         delta = datetime.today() - timedelta(days=after)
         last_run = delta.isoformat()
@@ -163,16 +164,15 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
 
     command = demisto.command()
     if command == 'test-module':
-        get_events.aggregated_results(limit=1)
+        get_events.aggregated_results(request_size=1)
         demisto.results('ok')
-    else:
+    elif command == 'okta-get-events' or command == 'fetch-events':
         # Get the events from the api according to limit and request_size
         events = get_events.aggregated_results(request_size, last_object_ids=last_object_ids)
         if events:
-            demisto.setIntegrationContext(GetEvents.get_last_run(events))
-            print('Sending logs to xsiam')
-            send_events_to_xsiam(events, 'Okta', 'Okta')
-            print('Sent logs to xsiam')
+            demisto.setLastRun(GetEvents.get_last_run(events))
+            if command == 'fetch-events':
+                send_events_to_xsiam(events, 'Okta', 'Okta')
         command_results = CommandResults(
             readable_output=tableToMarkdown('Okta Logs', events, headerTransform=pascalToSpace),
             outputs_prefix='Okta.Logs',
@@ -181,3 +181,7 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
             raw_response=events,
         )
         return_results(command_results)
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
