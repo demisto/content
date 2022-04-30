@@ -134,7 +134,7 @@ class GetEvents:
 
 def main():
     # Args is always stronger. Get last run even stronger
-    demisto_params = demisto.params() #| demisto.args() | demisto.getLastRun()
+    demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
     events_to_add_per_request = demisto_params.get('events_to_add_per_request', 2000)
     try:
         events_to_add_per_request = int(events_to_add_per_request)
