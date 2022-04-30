@@ -1,12 +1,12 @@
 import os
 import sys
 from abc import ABC, abstractmethod
-from dataclasses import field
+from dataclasses import field, dataclass
 from distutils.version import Version
 from enum import Enum
 from itertools import chain, islice
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Iterable
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.common.git_util import GitUtil
@@ -50,6 +50,28 @@ class DictFileBased(DictBased):
         super().__init__(get_file(path, path.suffix[1:]))
 
 
+class ContentItem(DictFileBased):
+    def __init__(self, path: Path):
+        super().__init__(path)
+
+    @property
+    def id_(self):
+        return self['id']
+
+    @property
+    def name(self):
+        if self.content:
+            return self.content.get('name', '-')  # todo why '-'?
+        # else, returns None. todo was there justification for this (copied) behavior?
+
+    @property
+    def tests(self):
+        tests = self.get('tests', [], warn_if_missing=False)
+        if len(tests) == 1 and tests[0].lower() == 'no tests':
+            raise NoTestsException(self.id_)
+        return tests
+
+
 @dataclass
 class VersionRange:
     min_version: Version
@@ -57,12 +79,6 @@ class VersionRange:
 
     def __contains__(self, item):
         return self.min_version <= item <= self.max_version
-
-    def __ge__(self, other):
-        return self.min_version >= other
-
-    def __le__(self, other):
-        return self.max_version <= other
 
     def __repr__(self):
         return f'{self.min_version} -> {self.max_version}'
@@ -96,6 +112,14 @@ class TestConf(DictFileBased):
         super().__init__(ARTIFACTS_CONF_PATH)
         self.tests = tuple(TestConfItem(value) for value in self['scripts'])  # todo is used?
         self.tests_to_integrations = {test['playbookID']: to_tuple(test['integrations']) for test in self.tests}
+
+        # Attributes
+        self.skipped_tests: dict = self['skipped_tests']
+        self.skipped_integrations: dict[str, str] = self['skipped_integrations']
+        self.unmockable_integrations: dict[str, str] = self['unmockable_integrations']
+        self.nightly_integrations: list[str] = self['nightly_integrations']
+        self.parallel_integrations: list[str] = self['parallel_integrations']
+        self.private_tests: list[str] = self['private_tests']
 
     def get_skipped_integrations(self):
         return tuple(self.get('skipped_integrations', {}).keys())
@@ -197,6 +221,7 @@ class CollectedTests:
             if len(tests) != len(pack_ids):
                 raise ValueError(f'if both have values, {len(tests)=} must be equal to {len(pack_ids)=}')
         elif tests:
+            # so accessors get a None
             pack_ids = (None,) * len(pack_ids)
         elif pack_ids:
             tests = (None,) * len(pack_ids)
@@ -211,19 +236,30 @@ class IdSet(DictFileBased):
         self.version_range = version_range
         self.marketplace = marketplace
 
-        self.scripts = self._parse_items(self['scripts'])
-        self.integrations = self._parse_items(self['integrations'])
-        self.test_playbooks = self._parse_items(self['TestPlaybooks'])
+        # Content items mentioned in the file
+        self.id_to_script = self._parse_items(self['scripts'])
+        self.id_to_integration = self._parse_items(self['integrations'])
+        self.id_to_test_playbook = self._parse_items(self['TestPlaybooks'])
 
-        self.id_to_item = {}
+        # one place to access all IdSetItem objets
+        # todo reconsider, perhaps getter that searches in each and returns instead of another dict?
+        self.id_to_item = self.id_to_script | self.id_to_integration | self.id_to_test_playbook
 
-        for content_item in chain(self.scripts, self.integrations, self.test_playbooks):
-            if content_item.id_ in self.id_to_item:
-                raise ValueError(f'{content_item.id_=} already in collected-item id-to-item dict')
-            self.id_to_item[content_item.id_] = content_item
+    @property
+    def integrations(self) -> Iterable[IdSetItem]:
+        return self.id_to_integration.values()
+
+    @property
+    def test_playbooks(self) -> Iterable[IdSetItem]:
+        return self.id_to_test_playbook.values()
+
+    @property
+    def scripts(self) -> Iterable[IdSetItem]:
+        return self.id_to_script.values()
 
     def get_test_playbooks_by_marketplace_section(self):
         """  returns test playbooks by the section under which they're saved in conf.json, regardless of their value """
+        # todo consider changing to get_xsoar_tests, get_xsiam_tests, or to a `get_by_marketplace(marketplace)`
         match self.marketplace:
             case MarketplaceVersions.XSOAR:
                 tests = self['tests']
@@ -236,25 +272,30 @@ class IdSet(DictFileBased):
         collected.add_iterable(tests, None, CollectionReason.MARKETPLACE_VERSION_SECTION, self.marketplace.value)
         return collected
 
-    def _parse_items(self, dictionaries: list[dict]) -> tuple[IdSetItem]:
-        result = []
+    def _parse_items(self, dictionaries: list[dict[str, dict]]) -> dict[str, IdSetItem]:
+        result = {}
         for dict_ in dictionaries:
             for id_, values in dict_.items():
-                for value in values:  # may be multiple, for different server versions
+                for value in values:  # multiple values possible, for different server versions
                     item = IdSetItem(id_, value)
 
-                    if \
-                            (item.from_version and item.from_version > self.version_range) or (
-                                    item.from_version and item.from_version < self.version_range):
-                        logging.debug(f'skipping {item.id_=} as {item.from_version} not in {self.version_range}')
+                    if item.from_version and item.from_version not in self.version_range:
+                        logging.debug(f'skipping {id_=} as {item.from_version} not in {self.version_range=}')
+                        continue
+                    if item.to_version and item.to_version not in self.version_range:
+                        logging.debug(f'skipping {id_=} as {item.to_version=} not in {self.version_range=}')
                         continue
 
+                    """
+                    the next checks are applied here, after the `continue` checks (and not before) 
+                    as the preceding checks prevent false positives.
+                     """
+                    if id_ in result:
+                        raise ValueError(f'{id_=} already parsed')
                     if id_ in self.id_to_item:
                         raise ValueError(f'{id_=} already in self.id_to_item')
-
-                    result.append(item)
-                    self.id_to_item[id_] = item
-        return tuple(result)
+                    result[id_] = item
+        return result
 
 
 def to_tuple(value: Optional[str | list]) -> tuple:
@@ -273,17 +314,17 @@ class InvalidVersionException(Exception):
     pass
 
 
-class TestConfItem:
-    def __init__(self, value: dict):
-        self.content = value
+class TestConfItem(DictBased):
+    def __init__(self, dict_: dict):
+        super().__init__(dict_)
 
     @property
-    def integrations(self):
-        return to_tuple(self.content['integrations'])
+    def integrations(self) -> tuple[str]:
+        return to_tuple(self['integrations'])
 
     @property
     def playbook_id(self) -> tuple[str]:
-        return to_tuple(self.content['playbookID'])
+        return to_tuple(self['playbookID'])
 
     @property
     def from_version(self) -> Optional[Version]:
@@ -394,28 +435,6 @@ class UploadCollector(TestCollector):
 class NoTestsException(Exception):
     def __init__(self, content_id: str):
         self.id_ = content_id  # todo use or remove
-
-
-class ContentItem(DictFileBased):
-    def __init__(self, path: Path):
-        super().__init__(path)
-
-    @property
-    def id_(self):
-        return self['id']
-
-    @property
-    def name(self):
-        if self.content:
-            return self.content.get('name', '-')  # todo why '-'?
-        # else, returns None. todo was there justification for this (copied) behavior?
-
-    @property
-    def tests(self):
-        tests = self.get('tests', [], warn_if_missing=False)
-        if len(tests) == 1 and tests[0].lower() == 'no tests':
-            raise NoTestsException(self.id_)
-        return tests
 
 
 if __name__ == '__main__':
