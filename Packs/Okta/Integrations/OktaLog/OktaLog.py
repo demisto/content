@@ -21,7 +21,7 @@ class ReqParams(BaseModel):
     """
     since: str
     sortOrder: Optional[str] = 'ASCENDING'
-    limit: str = '100'
+    limit: str = '1000'
 
     def set_since_value(self, since: 'dateTime as ISO string') -> None:
         self.since = since
@@ -93,7 +93,7 @@ class GetEvents:
 
     def aggregated_results(self, last_object_ids: List[str] = None) -> List[dict]:
         """
-        Function to group the events according to the user limits
+        Function to group the events returned from the api
         """
         stored_events = []
         for events in self._iter_events(last_object_ids):
@@ -134,12 +134,12 @@ class GetEvents:
 
 def main():
     # Args is always stronger. Get last run even stronger
-    demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
-    request_size = demisto_params.get('request_size', 2000)
+    demisto_params = demisto.params() #| demisto.args() | demisto.getLastRun()
+    events_to_add_per_request = demisto_params.get('events_to_add_per_request', 2000)
     try:
-        request_size = int(request_size)
+        events_to_add_per_request = int(events_to_add_per_request)
     except ValueError:
-        request_size = 2000
+        events_to_add_per_request = 2000
     after = int(demisto_params['after'])
     headers = json.loads(demisto_params['headers'])
     encrypted_headers = json.loads(demisto_params['encrypted_headers'])
@@ -166,14 +166,13 @@ def main():
         get_events.aggregated_results()
         demisto.results('ok')
     elif command == 'okta-get-events' or command == 'fetch-events':
-        # Get the events from the api according to limit and request_size
         events = get_events.aggregated_results(last_object_ids=last_object_ids)
         if events:
             demisto.setLastRun(GetEvents.get_last_run(events))
             if command == 'fetch-events':
                 while len(events) > 0:
-                    send_events_to_xsiam(events[:request_size], 'okta', 'okta')
-                    events = events[request_size:]
+                    send_events_to_xsiam(events[:events_to_add_per_request], 'okta', 'okta')
+                    events = events[events_to_add_per_request:]
             elif command == 'okta-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('Okta Logs', events, headerTransform=pascalToSpace),

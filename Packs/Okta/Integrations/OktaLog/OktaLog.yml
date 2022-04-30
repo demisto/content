@@ -45,8 +45,8 @@ configuration:
   type: 0
   defaultvalue: 1000
   required: true
-- display: XSIAM request limit
-  name: request_size
+- display: XSIAM update limit per request
+  name: events_to_add_per_request
   type: 0
   defaultvalue: 1000
   required: false
@@ -63,7 +63,7 @@ script:
     name: test-module
   - description: Command that is activated by the engine to fetch event.
     name: fetch-events
-  - description: Manual command to fetch events.
+  - description: Manual command to fetch events and display them.
     name: okta-get-events
   dockerimage: demisto/fastapi:1.0.0.28667
   runonce: false

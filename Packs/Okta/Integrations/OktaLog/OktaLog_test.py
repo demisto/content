@@ -21,21 +21,20 @@ def test_remove_duplicates(events, ids, result):
 
 
 @pytest.mark.parametrize("events,result", [
-    ([{'published': datetime.datetime.strptime('2022-04-17T12:31:36.667', '%Y-%m-%dT%H:%M:%S.%f'),
+    ([{'published': '2022-04-17T12:31:36.667',
        'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5faaa'},
-      {'published': datetime.datetime.strptime('2022-04-17T12:32:36.667', '%Y-%m-%dT%H:%M:%S.%f'),
+      {'published': '2022-04-17T12:32:36.667',
        'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5fbbb'},
-      {'published': datetime.datetime.strptime('2022-04-17T12:33:36.667', '%Y-%m-%dT%H:%M:%S.%f'),
+      {'published': '2022-04-17T12:33:36.667',
        'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5fccc'}],
      {'after': '2022-04-17T12:33:36.667000', 'ids': ['1d0844b6-3148-11ec-9027-a5b57ec5fccc']}),
-    ([{'published': datetime.datetime.strptime('2022-04-17T12:31:36.667', '%Y-%m-%dT%H:%M:%S.%f'),
+    ([{'published': '2022-04-17T12:31:36.667',
        'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5faaa'},
-      {'published': datetime.datetime.strptime('2022-04-17T12:32:36.667', '%Y-%m-%dT%H:%M:%S.%f'),
+      {'published': '2022-04-17T12:32:36.667',
        'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5fbbb'},
-      {'published': datetime.datetime.strptime('2022-04-17T12:32:36.667', '%Y-%m-%dT%H:%M:%S.%f'),
+      {'published': '2022-04-17T12:32:36.667',
        'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5fccc'}], {'after': '2022-04-17T12:32:36.667000',
-                                                          'ids': ['1d0844b6-3148-11ec-9027-a5b57ec5fbbb',
-                                                                  '1d0844b6-3148-11ec-9027-a5b57ec5fccc']})])
+        'ids': ['1d0844b6-3148-11ec-9027-a5b57ec5fbbb', '1d0844b6-3148-11ec-9027-a5b57ec5fccc']})])
 def test_get_last_run(events, result):
     assert get_events.get_last_run(events) == result
 
