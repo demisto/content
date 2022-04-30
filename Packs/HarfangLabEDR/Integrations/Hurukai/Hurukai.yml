@@ -77,6 +77,7 @@ script:
   commands:
   - name: test-module
     arguments: []
+    description: Allows to test that the HarfangLab EDR API is reachable
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
