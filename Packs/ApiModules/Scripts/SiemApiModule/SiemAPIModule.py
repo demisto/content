@@ -52,8 +52,8 @@ class IntegrationHTTPRequest(BaseModel):
 
 
 class Credentials(BaseModel):
-    password: str
     identifier: Optional[str]
+    password: str
 
 
 def set_authorization(request: IntegrationHTTPRequest, auth_credendtials):
