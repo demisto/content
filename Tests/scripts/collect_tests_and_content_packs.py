@@ -16,8 +16,7 @@ import sys
 
 import demisto_sdk.commands.common.tools as tools
 
-from Tests.Marketplace.marketplace_constants import GCPConfig
-from Tests.Marketplace.marketplace_services import init_storage_client
+from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.utils import collect_helpers
 from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
 from Tests.scripts.utils.content_packs_util import should_test_content_pack, should_install_content_pack, \
@@ -1467,16 +1466,6 @@ def changed_files_to_string(changed_files):
     return '\n'.join(files_with_status)
 
 
-def get_last_commit_from_index(service_account):
-    storage_client = init_storage_client(service_account)
-    storage_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
-    index_storage_path = os.path.join('content/packs/', f"{GCPConfig.INDEX_NAME}.json")
-    index_blob = storage_bucket.blob(index_storage_path)
-    index_string = index_blob.download_as_string()
-    index_json = json.loads(index_string)
-    return index_json.get('commit')
-
-
 def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_version='xsoar', service_account=None):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
@@ -1515,10 +1504,10 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
             changed_files = get_list_of_files_in_the_pack(path_to_pack)
             files_string = changed_files_to_string(changed_files)
         elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
-            last_commit = get_last_commit_from_index(service_account)
-            second_last_commit = branch_name if branch_name != 'master' else 'origin/master'
-            files_string = tools.run_command(f'git diff --name-status {second_last_commit}..{last_commit}')
-            logging.debug(f'Current commit: {second_last_commit}, Last upload commit: {last_commit}')
+            last_upload_commit = get_last_commit_from_index(service_account)
+            current_commit = branch_name if branch_name != 'master' else 'origin/master'
+            files_string = tools.run_command(f'git diff --name-status {current_commit}..{last_upload_commit}')
+            logging.debug(f'Current commit: {current_commit}, Last upload commit: {last_upload_commit}')
         elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
