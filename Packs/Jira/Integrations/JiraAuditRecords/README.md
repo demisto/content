@@ -1,9 +1,9 @@
-This integration was integrated and tested with version 3 of JiraSIEM rest API
+This integration was integrated and tested with version 3 of Jira Audit Records rest API
 
-## Configure Jira SIEM on Cortex XSOAR
+## Configure Jira Audit Records on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Jira SIEM.
+2. Search for Jira Audit Records.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |

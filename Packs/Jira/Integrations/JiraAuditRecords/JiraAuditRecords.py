@@ -139,7 +139,7 @@ class GetEvents:
 
         for event in events:
             incident = {
-                'name': f"JiraSIEM - {event['summary']} - {event['id']}",
+                'name': f"Jira Audit Records - {event['summary']} - {event['id']}",
                 'occurred': event.get('created', '').removesuffix('+0000') + 'Z',
                 'rawJSON': json.dumps(event)
             }
@@ -196,22 +196,24 @@ def main():
         get_events.run(max_fetch=1)
         demisto.results('ok')
 
-    elif command == 'fetch-events':
+    elif command in ('fetch-events', 'JiraAuditRecords-get-events'):
         events = get_events.run(int(demisto_params.get('max_fetch', 100)))
 
         if events:
-            get_events.events_to_incidents(events)
             demisto.setLastRun(get_events.set_next_run(events[0]))
+            if command == 'fetch-events':
+                send_events_to_xsiam(events)
+            else:
+                get_events.events_to_incidents(events)
+                command_results = CommandResults(
+                    readable_output=tableToMarkdown('Jira Audit Records', events, removeNull=True, headerTransform=pascalToSpace),
+                    outputs_prefix='JiraAudit.Records',
+                    outputs_key_field='id',
+                    outputs=events,
+                    raw_response=events,
+                )
 
-        command_results = CommandResults(
-            readable_output=tableToMarkdown('Jira records', events, removeNull=True, headerTransform=pascalToSpace),
-            outputs_prefix='Jira.Records',
-            outputs_key_field='id',
-            outputs=events,
-            raw_response=events,
-        )
-
-        return_results(command_results)
+                return_results(command_results)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

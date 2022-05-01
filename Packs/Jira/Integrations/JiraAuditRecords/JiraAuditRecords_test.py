@@ -52,7 +52,7 @@ def test_fetch_incidents_few_incidents(mocker):
         m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json('test_data/events.json'))
         m.get(f'{URL}?{SECOND_REQUESTS_PARAMS}', json={})
 
-        from JiraSIEM import main
+        from JiraAuditRecords import main
         main()
 
         assert last_run.return_value.get('from') == calculate_next_run(incidents.call_args[0][0][0].get('occurred')[:-1])
@@ -81,7 +81,7 @@ def test_fetch_events_no_incidents(mocker):
     with requests_mock.Mocker() as m:
         m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json={})
 
-        from JiraSIEM import main
+        from JiraAuditRecords import main
         main()
 
         assert not last_run.return_value.get('from')
@@ -113,7 +113,7 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
         m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json('test_data/events.json'))
         m.get(f'{URL}?{SECOND_REQUESTS_PARAMS}', json={})
 
-        from JiraSIEM import main
+        from JiraAuditRecords import main
         main()
 
         assert not last_run.return_value.get('from')

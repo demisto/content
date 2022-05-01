@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: JiraSIEM
+  id: JiraAuditRecords
   version: -1
 configuration:
 - display: Incident type
@@ -53,8 +53,8 @@ configuration:
   type: 0
 description: '[Enter a comprehensive, yet concise, description of what the integration
   does, what use cases it is designed for, etc.]'
-display: 'Jira SIEM'
-name: JiraSIEM
+display: Jira Audit Records
+name: JiraAuditRecords
 script:
   commands:
   - deprecated: false
