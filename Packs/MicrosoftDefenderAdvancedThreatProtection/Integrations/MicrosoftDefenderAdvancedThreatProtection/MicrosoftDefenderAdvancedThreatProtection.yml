@@ -1482,6 +1482,39 @@ script:
       name: comment
       required: true
       secret: false
+    - default: false
+      description: Timeout for polling. Default is 600 seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    deprecated: false
+    description: Collect an investigation package from a machine.
+    execution: false
+    name: microsoft-atp-request-and-download-investigation-package
+    outputs:
+    - contextPath: MicrosoftATP.MachineAction.ID
+      description: The machine action ID.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Status
+      description: The current status of the command.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.MachineID
+      description: The machine ID on which the action was executed.
+      type: String
+  - arguments:
+    - default: false
+      description: The machine ID.
+      isArray: false
+      name: machine_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment to associate with the action.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
     deprecated: false
     description: Enable the execution of any application on the machine.
     execution: false

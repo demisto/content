@@ -2665,6 +2665,33 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+def request_download_investigation_package_command(client: MsClient, args: dict):
+
+    # Collect investigation package from a machine
+    machine_id = args.get('machine_id')
+    comment = args.get('comment')
+    machine_action_response = client.get_investigation_package(machine_id, comment)
+
+    # Poll
+    action_id = machine_action_response.get('id')
+    if action_id:
+        for index in range(3):
+            try:
+                response = client.get_machine_action_by_id(action_id)
+                if response:
+                    break
+            except Exception as e:
+                if 'ResourceNotFound' in str(e) and index < 3:
+                    time.sleep(1)
+                else:
+                    raise Exception(f'Machine action {action_id} was not found')
+        response = client.get_machine_action_by_id(action_id)  # TODO: what next?
+
+        # Get investigation package url
+        response = client.get_investigation_package_sas_uri(action_id)
+        uri = response.get('value')
+
+
 def get_machine_action_data(machine_action_response):
     """Get machine raw response and returns the machine action info in context and human readable format.
 
@@ -4710,6 +4737,9 @@ def main():  # pragma: no cover
 
         elif command == 'microsoft-atp-get-investigation-package-sas-uri':
             return_outputs(*get_investigation_package_sas_uri_command(client, args))
+
+        elif command == 'microsoft-atp-request-and-download-investigation-package':
+            return_outputs(*request_download_investigation_package_command(client, args))
 
         elif command == 'microsoft-atp-restrict-app-execution':
             return_outputs(*restrict_app_execution_command(client, args))
