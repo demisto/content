@@ -133,6 +133,8 @@ There are no outputs for this script.
 
 >Key Data(val.ID == obj.ID) set
 
-<h2>Known Limitations</h2>
-<ol>
-<li>The script doesn't support adding values to the context.</li>
+## Known Limitations
+The script has some limitations with appending to the context in different cases and formats:
+If *append* is set to false - the script support append in a regular format (and not dt).
+If *append* is set to true - the script doesn't automatically updates the context in a case called from another script, but only after returning its result by adding `return_results` to the command `demisto.executeCommand`.
+For example: ```return_results(demisto.executeCommand('Set', <args>))```.
