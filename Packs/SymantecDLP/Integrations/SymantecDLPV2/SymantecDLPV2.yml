@@ -88,8 +88,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The severity of the incidents.
-        and "Info".'
+      description: The severity of the incidents.
       isArray: true
       name: severity
       predefined:
@@ -101,7 +100,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The incident type. 
+      description: The incident type.
       isArray: true
       name: incident_type
       predefined:
