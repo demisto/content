@@ -1,5 +1,5 @@
 Symantec Data Loss Prevention enables you to discover, monitor and protect your sensitive corporate information.
-This integration was integrated and tested with version 15.7 RESTful API of Symantec Data Loss Prevention.
+This integration was integrated and tested with Symantec Data Loss Prevention version 15.7 RESTful API. 
 
 [Check Symantec DLP 15.7 API docs](https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/information-security/data-loss-prevention/generated-pdfs/Symantec_DLP_15.7_REST_API_Guide.pdf)
 
@@ -19,9 +19,9 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Password |  | True |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Fetch limit | Max fetch limit is 50 | False |
-    | Fetch incidents from type | If not selected, will fetch all incident types. | False |
-    | Incident Status ID | The status ID of the incidents. To get status IDs, run the \`symantec-dlp-list-incident-status\` command. | False |
-    | Incident Severity | If not selected, will fetch high and medium incidents. | False |
+    | Fetch incidents from type | If not selected, fetches all incident types. | False |
+    | Incident Status ID | The status ID of the incidents. To get the status IDs, run the \`symantec-dlp-list-incident-status\` command. | False |
+    | Incident Severity | If not selected, fetches high and medium incidents. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
@@ -30,9 +30,8 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetch Incidents
-The integration fetches incidents ordered by the creation date of the incidents.
-Notice that due to creation time differences, some incidents may not be displayed in a sorted way.
-
+The integration fetches incidents in the order they were created. 
+Note that incident IDs may not be fetched in order, due to creation time differences.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -53,8 +52,8 @@ Returns a list of incidents.
 | status_id | The status ID of the incidents. To get status IDs, run the `symantec-dlp-list-incident-status` command. | Optional | 
 | severity | The severity of the incidents. Possible values are: Info, Low, Medium, High. | Optional | 
 | incident_type | The incident type. Possible values are: Network, Discover, Endpoint. | Optional | 
-| limit | The limit for number of incidents listed per page. Defaut is 50. Default is 50. | Optional | 
-| page | The page number you would like to view. Each page contains page_size values. Must be used along with page_size.<br/>Default is 1. Default is 1. | Optional | 
+| limit | The limit for number of incidents listed per page. Default is 50. | Optional | 
+| page | The page number you would like to view. Each page contains page_size values. Must be used along with page_size.<br/>Default is 1. | Optional | 
 | page_size | The number of results per page to display. | Optional | 
 
 
@@ -425,7 +424,7 @@ Returns the history of the specified incident.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
-| limit | The limit of the incident history list per page. Default is 50. Default is 50. | Optional | 
+| limit | The limit of the incident history list per page. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -859,14 +858,14 @@ There are no input arguments for this command.
 
 ### Commands
 #### The following commands were removed in this version:
-* *symantec-dlp-incident-binaries*
-* *symantec-dlp-incident-violations*
-* *symantec-dlp-list-custom-attributes*
+- ***symantec-dlp-incident-binaries***
+- ***symantec-dlp-incident-violations***
+- ***symantec-dlp-list-custom-attributes***
 
 ### Arguments
 #### The following arguments were removed in this version:
 
-In the *symantec-dlp-update-incident* command:
+In the ***symantec-dlp-update-incident*** command:
 * *incident_id* - this argument was replaced by *incident_ids*.
 * *note_time*
 * *status*
@@ -876,43 +875,43 @@ In the *symantec-dlp-update-incident* command:
 
 #### The behavior of the following arguments was changed:
 
-In the *symantec-dlp-update-incident* command:
+In the ***symantec-dlp-update-incident*** command:
   *custom_attribute_name* and *custom_attribute_value* are now used in *custom_attributes*.
   *incident_id* argument are now called *incident_ids* and can get a list of incident IDs to update.
   
 ### Outputs
 #### The following outputs were removed in this version:
 
-In the *symantec-dlp-get-incident-details* command:
+In the ***symantec-dlp-get-incident-details*** command:
 
-*SymantecDLP.Incident.LongID*
-*SymantecDLP.Incident.StatusCode* - this output was replaced by *SymantecDLP.Incident.incidentStatusId*.
-*SymantecDLP.Incident.CreationDate* - this output was replaced by *SymantecDLP.Incident.creationDate*.
-*SymantecDLP.Incident.DetectionDate* - this output was replaced by *SymantecDLP.Incident.detectionDate*.
-*SymantecDLP.Incident.Severity* - this output was replaced by *SymantecDLP.Incident.severity*.
-*SymantecDLP.Incident.MessageSource* - this output was replaced by *SymantecDLP.Incident.messageSource*.
-*SymantecDLP.Incident.MessageSourceType* - this output was replaced by *SymantecDLP.Incident.messageType*.
-*SymantecDLP.Incident.MessageType* - this output was replaced by *SymantecDLP.Incident.messageType*.
-*SymantecDLP.Incident.MessageTypeID - this output was replaced by *SymantecDLP.Incident.messageTypeId*.*
-*SymantecDLP.Incident.Policy.Name* - this output was replaced by *SymantecDLP.Incident.policyName*.
-*SymantecDLP.Incident.Policy.Version* - this output was replaced by *SymantecDLP.Incident.policyVersion*.
-*SymantecDLP.Incident.Policy.Label*
-*SymantecDLP.Incident.Policy.ID* - this output was replaced by *SymantecDLP.Incident.policyId*.
-*SymantecDLP.Incident.BlockedStatus*
-*SymantecDLP.Incident.MatchCount* - this output was replaced by *SymantecDLP.Incident.matchCount*.
-*SymantecDLP.Incident.RuleViolationCount*
-*SymantecDLP.Incident.DetectionServer* - this output was replaced by *SymantecDLP.Incident.detectionServerName*.
-*SymantecDLP.Incident.DataOwner.Name* - this output was replaced by *SymantecDLP.Incident.dataOwnerName*.
-*SymantecDLP.Incident.DataOwner.Email* - this output was replaced by *SymantecDLP.Incident.dataOwnerEmail*.
-*SymantecDLP.Incident.EventDate*
-*SymantecDLP.Incident.ViolatedPolicyRule.Name*
-*SymantecDLP.Incident.ViolatedPolicyRule.ID*
-*SymantecDLP.Incident.OtherViolatedPolicy.Name*
-*SymantecDLP.Incident.OtherViolatedPolicy.Version*
-*SymantecDLP.Incident.OtherViolatedPolicy.Label*
-*SymantecDLP.Incident.OtherViolatedPolicy.ID*
+- *SymantecDLP.Incident.LongID*
+- *SymantecDLP.Incident.StatusCode* - this output was replaced by *SymantecDLP.Incident.incidentStatusId*.
+- *SymantecDLP.Incident.CreationDate* - this output was replaced by *SymantecDLP.Incident.creationDate*.
+- *SymantecDLP.Incident.DetectionDate* - this output was replaced by *SymantecDLP.Incident.detectionDate*.
+- *SymantecDLP.Incident.Severity* - this output was replaced by *SymantecDLP.Incident.severity*.
+- *SymantecDLP.Incident.MessageSource* - this output was replaced by *SymantecDLP.Incident.messageSource*.
+- *SymantecDLP.Incident.MessageSourceType* - this output was replaced by *SymantecDLP.Incident.messageType*.
+- *SymantecDLP.Incident.MessageType* - this output was replaced by *SymantecDLP.Incident.messageType*.
+- *SymantecDLP.Incident.MessageTypeID - this output was replaced by *SymantecDLP.Incident.messageTypeId*.*
+- *SymantecDLP.Incident.Policy.Name* - this output was replaced by *SymantecDLP.Incident.policyName*.
+- *SymantecDLP.Incident.Policy.Version* - this output was replaced by *SymantecDLP.Incident.policyVersion*.
+- *SymantecDLP.Incident.Policy.Label*
+- *SymantecDLP.Incident.Policy.ID* - this output was replaced by *SymantecDLP.Incident.policyId*.
+- *SymantecDLP.Incident.BlockedStatus*
+- *SymantecDLP.Incident.MatchCount* - this output was replaced by *SymantecDLP.Incident.matchCount*.
+- *SymantecDLP.Incident.RuleViolationCount*
+- *SymantecDLP.Incident.DetectionServer* - this output was replaced by *SymantecDLP.Incident.detectionServerName*.
+- *SymantecDLP.Incident.DataOwner.Name* - this output was replaced by *SymantecDLP.Incident.dataOwnerName*.
+- *SymantecDLP.Incident.DataOwner.Email* - this output was replaced by *SymantecDLP.Incident.dataOwnerEmail*.
+- *SymantecDLP.Incident.EventDate*
+- *SymantecDLP.Incident.ViolatedPolicyRule.Name*
+- *SymantecDLP.Incident.ViolatedPolicyRule.ID*
+- *SymantecDLP.Incident.OtherViolatedPolicy.Name*
+- *SymantecDLP.Incident.OtherViolatedPolicy.Version*
+- *SymantecDLP.Incident.OtherViolatedPolicy.Label*
+- *SymantecDLP.Incident.OtherViolatedPolicy.ID*
 
 
 ## Additional Considerations for this version
 There is an issue with DLP API where some incidents get a 401 error.
-For these incidents, the missing data is returned. From the Network incident layout, in the description field you can see information about this issue.
+For these incidents, the missing data is returned. From the Network incident layout, in the description field, you can see information about this issue.
