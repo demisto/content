@@ -165,3 +165,9 @@ integrationReliability
 Mapper
 Mappers
 EDL
+TLD
+Wildcards
+CIDRs
+CIDR
+domainglob
+subdomain
