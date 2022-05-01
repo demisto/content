@@ -217,7 +217,7 @@ Run any command supported in the API.
 | reportname | Report name. | Optional | 
 | type | Request type (e.g. export, import, log, config). | Optional | 
 | search-time | The time that the PCAP was received on the firewall. Used for threat PCAPs. | Optional | 
-| target | Target number of the firewall. Use only on a Panorama instance. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job-id | Job ID. | Optional | 
 | query | Query string. | Optional | 
 | vsys | The name of the virtual system to be configured. If no vsys is mentioned, this command will not use the vsys parameter. | Optional | 
@@ -274,13 +274,14 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 `pan-os-commit`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| description | Commit description. | Optional |
-| admin_name | To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
-| force_commit | Force Commit. | Optional |
-| exclude_device_network_configuration | Partial commit while excluding device and network configuration. | Optional | 
-| exclude_shared_objects | Partial commit while excluding shared objects.| Optional |
+| **Argument Name**                    | **Description**                                                                               | **Required** |
+|--------------------------------------|-----------------------------------------------------------------------------------------------| --- |
+| description                          | Commit description.                                                                           | Optional |
+| admin_name                           | To commit admin-level changes on a firewall, include the administrator name in the request.   | Optional |
+| force_commit                         | Force Commit.                                                                                 | Optional |
+| exclude_device_network_configuration | Partial commit while excluding device and network configuration.                              | Optional | 
+| exclude_shared_objects               | Partial commit while excluding shared objects.                                                | Optional |
+| target                               | Serial number of the firewall on which to run the command. Use only for a Panorama instance.  | Optional |
 
 #### Context Output
 
@@ -1419,8 +1420,9 @@ Gets a URL category from URL Filtering. This command is only available on Firewa
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| url | URL to check. | Optional | 
+|-------------------| --- | --- |
+| url               | URL to check. | Optional | 
+| target            | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 
 
 #### Context Output
@@ -2371,8 +2373,9 @@ Returns commit status for a configuration.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| job_id | Job ID to check. | Required | 
+|-------------------| --- | --- |
+| job_id            | Job ID to check. | Required | 
+| target            | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
 
 
 #### Context Output
@@ -2408,6 +2411,7 @@ Returns the push status for a configuration.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | job_id | Job ID to check. | Required | 
+| target            | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
 
 
 #### Context Output
@@ -2751,6 +2755,7 @@ Returns a list of predefined Security Rules.
 | pre_post | Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
 | device-group | The device group for which to return addresses (Panorama instances). | Optional | 
 | tag | Tag for which to filter the rules. | Optional | 
+| target            | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
 
 
 #### Context Output
@@ -2884,7 +2889,8 @@ Query logs in Panorama.
 | rule | Rule name, e.g "Allow all outbound". | Optional | 
 | url | URL, e.g "safebrowsing.googleapis.com". | Optional | 
 | filedigest | File hash (for WildFire logs only). | Optional | 
-| number_of_logs | Maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. | Optional | 
+| number_of_logs | Maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. | Optional |
+| target            | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
 
 
 #### Context Output
@@ -2917,8 +2923,10 @@ Checks the status of a logs query.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| --- | --- | -- |
 | job_id | Job ID of the query. | Required | 
+| job_id | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+
 
 
 #### Context Output
@@ -2949,11 +2957,11 @@ Retrieves the data of a logs query.
 `pan-os-get-logs`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| job_id | Job ID of the query. | Required | 
+| **Argument Name**   | **Description** | **Required** |
+|---------------------| --- | --- |
+| job_id              | Job ID of the query. | Required | 
 | ignore_auto_extract | Whether to auto-enrich the War Room entry. If "true", entry is not auto-enriched. If "false", entry is auto-extracted. Default is "true". | Optional | 
-
+| target              | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional|
 
 #### Context Output
 
@@ -3343,7 +3351,7 @@ Show firewall device software version.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the target device. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 
 
 #### Context Output
@@ -3395,7 +3403,7 @@ Downloads the latest content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The device to which to download the content update. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional | 
 
 
 #### Context Output
@@ -3426,10 +3434,10 @@ Checks the download status of a content update.
 `pan-os-content-update-download-status`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| target | The device to which the content update is downloading. | Optional | 
-| job_id | Job ID to check. | Required | 
+| **Argument Name** | **Description**                                                                              | **Required** |
+| --- |----------------------------------------------------------------------------------------------| --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+| job_id | Job ID to check.                                                                             | Required | 
 
 
 #### Context Output
@@ -3464,7 +3472,7 @@ Installs the latest content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The device on which to install the content update. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional | 
 
 
 #### Context Output
@@ -3498,7 +3506,7 @@ Gets the installation status of the content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The device on which to check the installation status of the content update. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job_id | Job ID of the content installation. | Required | 
 
 
@@ -3534,7 +3542,7 @@ Checks the PAN-OS software version from the repository.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device from which to get the PAN-OS software version. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 
 
 #### Context Output
@@ -3557,7 +3565,7 @@ Downloads the target PAN-OS software version to install on the target device.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device from which to download the PAN-OS software version. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | target_version | The target version number to install. | Required | 
 
 
@@ -3591,7 +3599,7 @@ Gets the download status of the target PAN-OS software.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device from which to get the download status. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job_id | Job ID to check. | Required | 
 
 
@@ -3624,10 +3632,10 @@ Installs the target PAN-OS version on the specified target device.
 `pan-os-install-panos-version`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| target | The target device on which to install the target PAN-OS software version. | Optional | 
-| target_version | Target PAN-OS version to install. | Required | 
+| **Argument Name** | **Description**                                                                              | **Required** |
+| --- |----------------------------------------------------------------------------------------------| --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+| target_version | Target PAN-OS version to install.                                                            | Required | 
 
 
 #### Context Output
@@ -3660,7 +3668,7 @@ Gets the installation status of the PAN-OS software.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device from which to get the installation status. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job_id | Job ID to check. | Required | 
 
 
@@ -3695,7 +3703,7 @@ Reboots the Firewall device.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device for which to reboot the firewall. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 
 
 #### Context Output

@@ -5479,6 +5479,7 @@ def panorama_check_latest_panos_software_command(target: Optional[str] = None):
     return CommandResults(readable_output=human_readable,
                                   outputs=to_context,
                                   raw_response=result,
+                                  outputs_prefix='Panorama.LatestVersions'
                                   )
 
 
