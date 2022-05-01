@@ -2087,6 +2087,7 @@ def get_function_from_command_name(command):
 
         'harfanglab-assign-policy-to-agent': assign_policy_to_agent,
 
+        'fetch-incidents': fetch_incidents,
         'test-module': test_module
     }
 
