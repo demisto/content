@@ -58,7 +58,7 @@ When running without --network=host the python port is not exposed to the machin
 | Show CSV formats as Text           | If selected, CSV format appears in a textual webpage instead of initiating a file download.                                                                                                                                                      | False        |
 | XSOAR Indicator Page Size          | Internal page size used when querying Cortex XSOAR for the indicators.                                                                                                                                                                               | False        |
 | Maximum CIDR network prefix bits size   | CIDRs with a lower network prefix bits number are not included. For example - if the number is 8, then 0.0.0.0/2 is excluded from the list.                                                                                                                                                                    | False         |
-| Disable insertion top level domains        | Option to remove top level domainGlobs from the list. For example - \*.com.                                                                                                                                                                                     | False         |
+| Exclude top level domainGlobs        | Option to remove top level domainGlobs from the list. For example - \*.com.                                                                                                                                                                                     | False         |
 | Advanced: NGINX Global Directives  | NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by Cortex XSOAR Support. | False        |
 | Advanced: NGINX Server Conf        | NGINX server configuration to be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by Cortex XSOAR Support.                                                                  | False        |
 | Advanced: NGINX Read Timeout       | NGNIX read timeout in seconds.                                                                                                                                                                                                                       | False        |
@@ -72,7 +72,33 @@ These parameters prevent the integration from incorrectly inserting unwanted TLD
 The default value for `Maximum CIDR network prefix bits size` is 8, which means that CIDRs with a lower network prefix bits number are not included (such as 0.0.0.0/2).
 
 
-The default value for `Exclude top level domainGlobs` is off. If enabled, the exported list does not hold indicators such as \*.com, \*.co.uk, \*.org and other top level domains.
+The default value for `Exclude top level domainGlobs` is off. If enabled, the exported list does not hold indicators such as `*.com`, `*.co.uk`, `*.org` and other top level domains.
+
+### Unique Behaviors
+
+#### domainGlob
+
+
+When parsing ***domainGlob*** indicator types, the parser creates two different inputs (usually how DNS Firewalls work). For example if the ***domainGlob*** `*.bad.com` is  parsed, it outputs two lines to the list:
+1. `*.bad.com`
+2. `bad.com`
+
+
+The DNS also blocks `bad.com` which does not happen if only `*.bad.com` is listed.
+
+#### IP Collapsing
+
+When `IP Collapsing` is enabled, duplications of IP ranges are removed. For example if there are 2 CIDRs in the list - `1.2.3.0/8` and `1.2.3.0/16` - only `1.2.3.0/8` will be included in the exported list.
+
+#### Append string to list
+
+Option to add a list of constant values to the exported list.
+Expected value is a string, supports newline characters (`\n`).
+
+#### PAN-OS: drop invalid URL entries
+
+When `PAN-OS: drop invalid URL entries` is enabled, any URL entry that is not compliant with PAN-OS URL format is dropped instead of rewritten.
+
 ### Access the Export Indicators Service by Instance Name (HTTPS)
 **Note**: By default, the route is open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to the integration.
 
@@ -85,22 +111,22 @@ To access the Export Indicators service by instance name, make sure ***Instance 
 ### URL Inline Arguments
 Use the following arguments in the URL to change the request:
 
-| **Argument Name** | **Description**                                                                                                                                                         | **Example**                                                                                         |
-|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| **Argument Name** | **Description**                                                                                                                                                     | **Example**                                                                                         |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
 | n                 | The maximum number of entries in the output. If no value is provided, uses the value specified in the List Size parameter configured in the instance configuration. | `https://{server_host}/instance/execute/{instance_name}?n=50`                                       |
-| s                 | The starting entry index from which to export the indicators.                                                                                                           | `https://{server_host}/instance/execute/{instance_name}?s=10&n=50`                                  |
-| v                 | The output format. Supports `PAN-OS (text)`, `CSV`, `JSON`, `mwg` and `proxysg` (alias: `bluecoat`).                                                                    | `https://{server_host}/instance/execute/{instance_name}?v=JSON`                                     |
-| q                 | The query used to retrieve indicators from the system.                                                                                                                  | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"`      |
-| t                 | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex.        | `https://{server_host}/instance/execute/{instance_name}?v=mwg&t=ip`                                 |
-| sp                | If set, strips ports off URLs.                                                                                                                                       | `https://{server_host}/instance/execute/{instance_name}?v=PAN-OS (text)&sp`                         |
-| pr                | If set, strips protocol off URLs.                                                                                                                                    | `https://{server_host}/instance/execute/{instance_name}?v=text&pr`                                  |
-| di                | Only with `PAN-OS (text)` format. If set, ignores URLs which are not compliant with PAN-OS URL format instead of  rewriting the URLs.                                   | `https://{server_host}/instance/execute/{instance_name}?v=PAN-OS (text)&di`                         |
-| tr                | Only with `PAN-OS (text)`Whether to collapse IPs. 0 - to not collapse, 1 - collapse to ranges or 2 - collapse to CIDRs                                                  | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"&tr=1` |
-| cd                | Only with `proxysg` format. The default category for the exported indicators.                                                                                           | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&cd=default_category`              |
-| ca                | Only with `proxysg` format. The categories which are exported. Indicators not falling into these categories are classified as the default category.               | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&ca=category1,category2`           |
-| tx                | Whether to output `CSV` format as textual web pages.                                                                                                                    | `https://{server_host}/instance/execute/{instance_name}?v=CSV&tx`                                   |
-| mc                | Configure max CIDR size.                                                                                                                                                | `https://{server_host}/instance/execute/{instance_name}?mc=10`                                      |
-| nt                 | Configure if disable insertion if top level domain.                                                                                                                     | `https://{server_host}/instance/execute/{instance_name}?nt=true`                                    |
+| s                 | The starting entry index from which to export the indicators.                                                                                                       | `https://{server_host}/instance/execute/{instance_name}?s=10&n=50`                                  |
+| v                 | The output format. Supports `PAN-OS (text)`, `CSV`, `JSON`, `mwg` and `proxysg` (alias: `bluecoat`).                                                                | `https://{server_host}/instance/execute/{instance_name}?v=JSON`                                     |
+| q                 | The query used to retrieve indicators from the system.                                                                                                              | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"`      |
+| t                 | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex.    | `https://{server_host}/instance/execute/{instance_name}?v=mwg&t=ip`                                 |
+| sp                | If set, strips ports off URLs.                                                                                                                                      | `https://{server_host}/instance/execute/{instance_name}?v=PAN-OS (text)&sp`                         |
+| pr                | If set, strips protocol off URLs.                                                                                                                                   | `https://{server_host}/instance/execute/{instance_name}?v=text&pr`                                  |
+| di                | Only with `PAN-OS (text)` format. If set, ignores URLs which are not compliant with PAN-OS URL format instead of  rewriting the URLs.                               | `https://{server_host}/instance/execute/{instance_name}?v=PAN-OS (text)&di`                         |
+| tr                | Only with `PAN-OS (text)`Whether to collapse IPs. 0 - to not collapse, 1 - collapse to ranges or 2 - collapse to CIDRs                                              | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"&tr=1` |
+| cd                | Only with `proxysg` format. The default category for the exported indicators.                                                                                       | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&cd=default_category`              |
+| ca                | Only with `proxysg` format. The categories which are exported. Indicators not falling into these categories are classified as the default category.                 | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&ca=category1,category2`           |
+| tx                | Whether to output `CSV` format as textual web pages.                                                                                                                | `https://{server_host}/instance/execute/{instance_name}?v=CSV&tx`                                   |
+| mc                | Configure max CIDR size.                                                                                                                                            | `https://{server_host}/instance/execute/{instance_name}?mc=10`                                      |
+| nt                 | Configure whether to exclude top level domainGlobs.                                                                                                                         | `https://{server_host}/instance/execute/{instance_name}?nt=true`                                    |
 
 
 ## Commands
