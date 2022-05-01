@@ -2,8 +2,8 @@ id: Mitre Attack - Extract Technique Information From ID
 version: -1
 name: Mitre Attack - Extract Technique Information From ID
 description: |-
-  The playbook accepts as an input MITRE techniques ID's
-  provides the MITRE technique name and grabs all the technique data using the MITRE integration.
+  This playbook accepts as input MITRE techniques IDs.
+  It returns the MITRE technique name and full technique data using the MITRE integration.
 starttaskid: '0'
 tasks:
   '0':
@@ -78,7 +78,7 @@ tasks:
       id: 255f9603-fbae-493b-8b36-e5bf3cd68698
       version: -1
       name: Get MITRE details
-      description: Looks up the reputation of the indicator.
+      description: Looks up the indicator reputation.
       script: '|||attack-pattern'
       type: regular
       iscommand: true
@@ -180,7 +180,7 @@ tasks:
       id: c004b40d-2957-4ead-88f0-c63a111947bc
       version: -1
       name: Is MITRE ATT&CK v2 available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -226,11 +226,11 @@ inputs:
 - key: TechniqueID
   value: {}
   required: false
-  description: "Accepts a single or array of MITRE technique ID's such as \nT1210 etc."
+  description: "Accepts a single MITRE technique ID or array of technique IDs, for example \nT1210."
   playbookInputQuery:
 outputs:
 - contextPath: AttackPattern
-  description: Array of attack patterns name and ID's.
+  description: Array of attack pattern names and IDs.
   type: string
 - contextPath: MITREATTACK
   description: Full MITRE data for the attack pattern.
