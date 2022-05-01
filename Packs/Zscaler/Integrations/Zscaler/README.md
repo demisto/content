@@ -868,9 +868,7 @@ Gets information on the number of unique URLs that are currently provisioned for
 `zscaler-url-quota`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
