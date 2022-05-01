@@ -3797,7 +3797,6 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
         })
     return CommandResults(outputs_prefix='CrowdStrike.IncidentDetection',
                           outputs=outputs,
-                          outputs_key_field='incident_id',
                           readable_output=tableToMarkdown('Detection For Incident', outputs),
                           raw_response=detection_res)
 

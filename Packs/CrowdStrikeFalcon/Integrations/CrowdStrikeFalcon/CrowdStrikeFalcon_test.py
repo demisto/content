@@ -3677,20 +3677,19 @@ DETECTION_FOR_INCIDENT_CASES = [
              'some_field': 'some_example2'}
         ],
         'CrowdStrike.IncidentDetection',
-        'incident_id',
         '### Detection For Incident\n|behavior_id|detection_ids|incident_id|\n|---|---|---|'
         '\n| example_behavior_1 | example_detection | example_incident_id |\n'
         '| example_behavior_2 | example_detection2 | example_incident_id |\n'),
-    ({'resources': []}, [], None, None, None, None, 'Could not find behaviors for incident zz')
+    ({'resources': []}, [], None, None, None, 'Could not find behaviors for incident zz')
 ]
 
 
 @pytest.mark.parametrize(
-    'detections, resources, expected_outputs, expected_raw, expected_prefix, expected_key, expected_md',
+    'detections, resources, expected_outputs, expected_raw, expected_prefix, expected_md',
     DETECTION_FOR_INCIDENT_CASES)
 def test_get_detection_for_incident_command(mocker, detections, resources, expected_outputs, expected_raw,
                                             expected_prefix,
-                                            expected_key, expected_md):
+                                            expected_md):
     """
     Given: An incident ID
     When: When running cs-falcon-get-detections-for-incident command
@@ -3708,7 +3707,6 @@ def test_get_detection_for_incident_command(mocker, detections, resources, expec
     res = get_detection_for_incident_command(incident_id='zz')
 
     assert res.outputs == expected_outputs
-    assert res.outputs_key_field == expected_key
     assert res.raw_response == expected_raw
     assert res.readable_output == expected_md
     assert res.outputs_prefix == expected_prefix
