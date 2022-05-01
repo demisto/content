@@ -721,5 +721,6 @@
  "typeId": "Agari Phishing Defense Policy Event",
  "version": -1,
  "toVersion": "5.9.9",
- "description": "Agari Phishing Defense Policy Event Layout"
+ "description": "Agari Phishing Defense Policy Event Layout",
+ "fromversion": "5.0.0"
 }

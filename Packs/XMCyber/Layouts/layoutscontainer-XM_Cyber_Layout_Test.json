@@ -592,5 +592,6 @@
 				"type": "custom"
 			}
 		]
-	}
+	},
+	"fromVersion": "6.2.0"
 }
