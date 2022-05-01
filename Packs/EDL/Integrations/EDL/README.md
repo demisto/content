@@ -74,13 +74,28 @@ The default value for `Maximum CIDR network prefix bits size` is 8, which means 
 
 The default value for `Exclude top level domainGlobs` is off. If enabled, the exported list does not hold indicators such as `*.com`, `*.co.uk`, `*.org` and other top level domains.
 
-### DomainGlobs
+### Unique Behaviors
+
+#### domainGlob
 
 When parsing domainGlob indicator types the parser will create two different inputs as that is usually how DNS Firewalls work. For example if the DomainGlob `*.bad.com` will be parsed it will output two lines to the list:
-1. *.bad.com
-2. bad.com
+1. `*.bad.com`
+2. `bad.com`
 
 This is so the DNS will also block `bad.com` which will not happen if only `*.bad.com` is listed.
+
+#### IP Collapsing
+
+When `IP Collapsing` is enabled, duplications of IP ranges are removed. For example if there are 2 CIDRs in the list - `1.2.3.0/8` and `1.2.3.0/16` - only `1.2.3.0/8` will be included in the exported list.
+
+#### Append string to list
+
+Option to add a list of constant values to the exported list.
+Expected value is a string, supports newline characters (`\n`).
+
+#### PAN-OS: drop invalid URL entries
+
+When `PAN-OS: drop invalid URL entries` is enabled, any URL entry that is not compliant with PAN-OS URL format is dropped instead of rewritten.
 
 ### Access the Export Indicators Service by Instance Name (HTTPS)
 **Note**: By default, the route is open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to the integration.
