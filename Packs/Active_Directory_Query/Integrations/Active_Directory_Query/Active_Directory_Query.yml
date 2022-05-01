@@ -252,6 +252,7 @@ script:
       description: Root. For example, DC=domain,DC=com). By default, the Base DN configured
         for the instance is used.
     - name: restore_user
+      default: false
       description: "If true the command will enable the user with his restored options"
     description: Enables a previously disabled Active Directory account.
   - name: ad-unlock-account
