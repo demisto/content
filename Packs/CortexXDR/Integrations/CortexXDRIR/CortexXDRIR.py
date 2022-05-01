@@ -1145,6 +1145,12 @@ def main():
         elif command == 'xdr-allowlist-files':
             return_results(allowlist_files_command(client, args))
 
+        elif command == 'xdr-remove-blocklist-files':
+            return_results(remove_blocklist_files_command(client, args))
+
+        elif command == 'xdr-remove-allowlist-files':
+            return_results(remove_allowlist_files_command(client, args))
+
     except Exception as err:
         demisto.error(traceback.format_exc())
         return_error(str(err))

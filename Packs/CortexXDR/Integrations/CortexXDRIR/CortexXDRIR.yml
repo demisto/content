@@ -734,8 +734,8 @@ script:
       isArray: false
       name: suppress_disconnected_endpoint_error
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -761,11 +761,11 @@ script:
     description: Isolates the specified endpoint.
     execution: true
     name: xdr-endpoint-isolate
-    polling: true
     outputs:
-      - contextPath: PaloAltoNetworksXDR.Isolation.endpoint_id
-        description: The endpoint ID.
-        type: String
+    - contextPath: PaloAltoNetworksXDR.Isolation.endpoint_id
+      description: The endpoint ID.
+      type: String
+    polling: true
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -811,19 +811,21 @@ script:
       name: endpoint_id
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: Whether to suppress an error when trying to unisolate a disconnected endpoint. When sets to false, an error will be returned.
+    - default: false
+      description: |-
+        Whether to suppress an error when trying to unisolate a disconnected endpoint. When sets to false, an error will be returned.
       isArray: false
       name: suppress_disconnected_endpoint_error
-      predefined:
-        - 'true'
-        - 'false'
       required: false
       secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
     - default: false
-      description: Interval in seconds between each poll.
+      description: |-
+        Interval in seconds between each poll.
       isArray: false
       name: interval_in_seconds
       required: false
@@ -835,7 +837,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: For polling use
+      description: |-
+        For polling use
       isArray: true
       name: action_id
       required: false
@@ -845,12 +848,20 @@ script:
     description: Reverses the isolation of an endpoint.
     execution: true
     name: xdr-endpoint-unisolate
-    polling: true
     outputs:
-      - contextPath: PaloAltoNetworksXDR.UnIsolation.endpoint_id
-        description: Isolates the specified endpoint.
-        type: String
-  - arguments:
+    - contextPath: PaloAltoNetworksXDR.UnIsolation.endpoint_id
+      description: Isolates the specified endpoint.
+      type: String
+    polling: true
+  - deprecated: false
+    description: Reverses the isolation of an endpoint. This command will be deprecated soon, use `xdr-endpoint-unisolate` instead.
+    execution: true
+    name: xdr-unisolate-endpoint
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.UnIsolation.endpoint_id
+      description: Isolates the specified endpoint.
+      type: String
+    arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
       isArray: false
@@ -874,15 +885,17 @@ script:
       - 'false'
       required: false
       secret: false
-    deprecated: false
-    description: Reverses the isolation of an endpoint. This command will be deprecated soon, use `xdr-endpoint-unisolate` instead.
-    execution: true
-    name: xdr-unisolate-endpoint
-    outputs:
-    - contextPath: PaloAltoNetworksXDR.UnIsolation.endpoint_id
-      description: Isolates the specified endpoint.
-      type: String
   - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The status of the endpoint to filter.
+      isArray: false
+      name: status
+      predefined:
+        - connected
+        - disconnected
+        - lost
+        - uninstalled
     - default: false
       description: A comma-separated list of endpoint IDs.
       isArray: true
@@ -911,18 +924,18 @@ script:
       name: group_name
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
       isArray: true
       name: platform
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - windows
       - linux
       - macos
       - android
-      required: false
-      secret: false
     - default: false
       description: |-
         A comma-separated list of alias names.
@@ -1086,6 +1099,9 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.group_name
       description: The name of the group to which the endpoint belongs.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.count
+      description: Number of endpoints returned.
       type: String
     - contextPath: Endpoint.Hostname
       description: The hostname that is mapped to this endpoint.
@@ -1267,11 +1283,13 @@ script:
       name: email
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: The audit log type.
       isArray: false
       name: type
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - LIVE_TERMINAL
       - RULES
@@ -1295,8 +1313,6 @@ script:
       - REPORTING
       - DASHBOARD
       - BROKER_VM
-      required: false
-      secret: false
     - default: false
       description: The audit log subtype.
       isArray: false
@@ -1430,11 +1446,13 @@ script:
       name: endpoint_names
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: The report type. Can be "Installation", "Policy", "Action", "Agent Service", "Agent Modules", or "Agent Status".
       isArray: true
       name: type
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - Installation
       - Policy
@@ -1442,8 +1460,6 @@ script:
       - Agent Service
       - Agent Modules
       - Agent Status
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       description: The report subtype.
@@ -1624,17 +1640,17 @@ script:
       name: comment
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
+    - default: false
       description: Choose either regular response or detailed response. Default value = false, regular response.
       isArray: false
       name: detailed_response
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     deprecated: false
     description: Block lists requested files which have not already been block listed or added to allow lists.
     execution: false
@@ -1782,7 +1798,11 @@ script:
     execution: false
     name: xdr-file-quarantine
     polling: true
-  - arguments:
+  - deprecated: false
+    description: Quarantines a file on selected endpoints. This command will be deprecated soon, use `xdr-file-quarantine` instead.
+    execution: false
+    name: xdr-quarantine-files
+    arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
       isArray: false
@@ -1807,10 +1827,6 @@ script:
       name: file_hash
       required: true
       secret: false
-    deprecated: false
-    description: Quarantines a file on selected endpoints. This command will be deprecated soon, use `xdr-file-quarantine` instead.
-    execution: false
-    name: xdr-quarantine-files
   - arguments:
     - default: false
       description: String the represents the endpoint ID.
@@ -1961,10 +1977,10 @@ script:
       isArray: true
       name: platform
       predefined:
-        - windows
-        - linux
-        - macos
-        - android
+      - windows
+      - linux
+      - macos
+      - android
       required: false
       secret: false
     - default: false
@@ -1979,8 +1995,8 @@ script:
       isArray: false
       name: isolate
       predefined:
-        - isolated
-        - unisolated
+      - isolated
+      - unisolated
       required: false
       secret: false
     - default: false
@@ -1996,8 +2012,8 @@ script:
       isArray: false
       name: all
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -2023,14 +2039,14 @@ script:
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan-execute
-    polling: true
     outputs:
-      - contextPath: PaloAltoNetworksXDR.endpointScan.actionId
-        description: The action ID of the scan request.
-        type: Number
-      - contextPath: PaloAltoNetworksXDR.endpointScan.aborted
-        description: Was the scan aborted.
-        type: Boolean
+    - contextPath: PaloAltoNetworksXDR.endpointScan.actionId
+      description: The action ID of the scan request.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.endpointScan.aborted
+      description: Was the scan aborted.
+      type: Boolean
+    polling: true
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -2197,34 +2213,34 @@ script:
       name: group_name
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: Type of operating system.
       isArray: true
       name: platform
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - windows
       - linux
       - macos
       - android
-      required: false
-      secret: false
     - default: false
       description: Endpoint alias name.
       isArray: true
       name: alias
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: Whether an endpoint has been isolated. Can be "isolated" or "unisolated".
       isArray: false
       name: isolate
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - isolated
       - unisolated
-      required: false
-      secret: false
     - default: false
       description: Name of the host.
       isArray: true
@@ -2434,18 +2450,18 @@ script:
       name: endpoint_ids
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: 'Type of violation. Possible values are: "cd-rom", "disk drive", "floppy disk", and "portable device".'
       isArray: false
       name: type
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - cd-rom
       - disk drive
       - floppy disk
       - portable device
-      required: false
-      secret: false
     - default: false
       description: 'Timestamp of the violation. Violations that are greater than or equal to this timestamp will be returned. Values can be in either ISO date format, relative time, or epoch timestamp. For example:  "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative time) 1579039377301 (epoch time).'
       isArray: false
@@ -2622,11 +2638,11 @@ script:
     description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
     execution: false
     name: xdr-file-retrieve
-    polling: true
     outputs:
-      - contextPath: PaloAltoNetworksXDR.RetrievedFiles.action_id
-        description: ID of the action to retrieve files from selected endpoints.
-        type: string
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.action_id
+      description: ID of the action to retrieve files from selected endpoints.
+      type: string
+    polling: true
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -2898,14 +2914,14 @@ script:
     description: Initiates a new endpoint script execution action using the provided snippet code.
     execution: false
     name: xdr-snippet-code-script-execute
-    polling: true
     outputs:
-      - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
-        description: ID of the action initiated.
-        type: Number
-      - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
-        description: Number of endpoints the action was initiated on.
-        type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
+    polling: true
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -2914,13 +2930,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
+      description: |-
+        Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
       isArray: false
       name: endpoint_ids
       required: true
       secret: false
     - default: false
-      description: Section of a script you want to initiate on an endpoint (e.g., print("7")).
+      description: |-
+        Section of a script you want to initiate on an endpoint (e.g., print("7")).
       isArray: false
       name: snippet_code
       required: true
@@ -3134,12 +3152,12 @@ script:
     name: xdr-script-commands-execute
     polling: true
     outputs:
-      - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
-        description: ID of the action initiated.
-        type: Number
-      - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
-        description: Number of endpoints the action was initiated on.
-        type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -3228,12 +3246,12 @@ script:
     name: xdr-file-delete-script-execute
     polling: true
     outputs:
-      - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
-        description: ID of the action initiated.
-        type: Number
-      - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
-        description: Number of endpoints the action was initiated on.
-        type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -3322,12 +3340,12 @@ script:
     name: xdr-file-exist-script-execute
     polling: true
     outputs:
-      - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
-        description: ID of the action initiated.
-        type: Number
-      - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
-        description: Number of endpoints the action was initiated on.
-        type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -3416,12 +3434,12 @@ script:
     name: xdr-kill-process-script-execute
     polling: true
     outputs:
-      - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
-        description: ID of the action initiated.
-        type: Number
-      - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
-        description: Number of endpoints the action was initiated on.
-        type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered it.
@@ -3687,6 +3705,60 @@ script:
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.ingestion_time
       description: Ingestion time.
       type: String
+  - arguments:
+    - default: false
+      description: Links the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash.
+      isArray: true
+      name: hash_list
+      required: true
+      secret: false
+    - default: false
+      description: String that represents additional information regarding the action.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Removes requested files from allow list.
+    execution: false
+    name: xdr-remove-allowlist-files
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.allowlist.removed_hashes
+      description: Removed file hash
+      type: Number
+  - arguments:
+    - default: false
+      description: Links the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash.
+      isArray: true
+      name: hash_list
+      required: true
+      secret: false
+    - default: false
+      description: String that represents additional information regarding the action.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Removes requested files from block list.
+    execution: false
+    name: xdr-remove-blocklist-files
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.blocklist.removed_hashes
+      description: Removed fileHash from blocklist
+      type: Number
   dockerimage: demisto/python3:3.10.4.28442
   feed: false
   isfetch: true

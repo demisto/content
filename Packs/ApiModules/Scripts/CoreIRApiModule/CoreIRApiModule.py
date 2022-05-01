@@ -1817,7 +1817,8 @@ def get_endpoints_command(client, args):
 
     context = {
         f'{args.get("integration_context_brand", "CoreApiModule")}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
-        Common.Endpoint.CONTEXT_PATH: endpoint_context_list
+        Common.Endpoint.CONTEXT_PATH: endpoint_context_list,
+        f'{args.get("integration_context_brand", "CoreApiModule")}.Endpoint.count': len(standard_endpoints)
     }
     account_context = create_account_context(endpoints)
     if account_context:
