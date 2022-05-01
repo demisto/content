@@ -25,37 +25,29 @@ configuration:
   name: longRunning
   type: 8
   required: false
-- display: Environment
-  name: env
-  type: 15
-  required: false
-  options:
-  - production
-  - staging
-  additionalinfo: The DLP environment to connect to. Staging environment is for testing
-    only.
 - display: DLP Regions
   name: dlp_regions
   type: 16
   required: false
-  defaultvalue: US,EU,AP
   options:
   - US
   - EU
   - AP
+  defaultvalue: US,EU,AP
 - display: Data profiles to allow exemption
   name: dlp_exemptible_list
   type: 0
   required: false
   additionalinfo: A comma-separated list of data profile names to request an exemption.
+    Use "*" to allow everything.
 - display: Slack Bot Message
   name: dlp_slack_message
-  defaultvalue: 'Hi $user🔔, \n\n*We need your feedback* \nYour upload of *$file_name*
-    on *$app_name* was blocked due to company policy. This file contains sensitive
-    information which violates *$data_profile_name* policy. \n\n $snippets\n\n'
   type: 12
   required: false
   additionalinfo: The Slack message to send to the user to ask for feedback.
+  defaultvalue: 'Hi $user🔔, \n\n*We need your feedback* \nYour upload of *$file_name*
+    on *$app_name* was blocked due to company policy. This file contains sensitive
+    information which violates *$data_profile_name* policy. \n\n $snippets\n\n'
 - display: Fetch incidents
   name: isFetch
   type: 8

@@ -42,7 +42,7 @@ RELATIONSHIP_TYPE = {
 
 
 class Client:
-    def __init__(self, api_key='', scan_visibility='public', threshold=None, use_ssl=False, reliability=DBotScoreReliability.C):
+    def __init__(self, api_key='', scan_visibility=None, threshold=None, use_ssl=False, reliability=DBotScoreReliability.C):
         self.base_url = 'https://urlscan.io/api/v1/'
         self.api_key = api_key
         self.threshold = threshold
