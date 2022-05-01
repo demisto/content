@@ -6228,7 +6228,7 @@ script:
     name: pan-os-check-latest-panos-software
     outputs:
       - contextPath: Panorama.LatestVersions
-      - description: Latest software versions.
+        description: Latest software versions.
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance. 
       name: target
