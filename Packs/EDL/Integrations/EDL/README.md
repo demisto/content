@@ -4,10 +4,10 @@ Use the Generic Export Indicators Service integration to provide an endpoint wit
 Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSOAR server. Follow these steps to migrate your EDLs.
 1. Convert existing EDL lists to indicators in Cortex XSOAR. This can be done automatically:
    1. Extract your EDL as a text file from the web server it's currently hosted on.
-   2. Upload it as a file to the Playground and use the `ExtractIndicatorsFromTextFile` automation. e.g, `!ExtractIndicatorsFromTextFile entryID=<entry_id>` 
-2. Go to the `Indicators` page and [filter](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/manage-indicators/understand-indicators/indicators-page.html) to find all of the indicators you extracted from the text file.
+   2. Upload it as a file to the Playground and use the `ExtractIndicatorsFromTextFile` automation. e.g., `!ExtractIndicatorsFromTextFile entryID=<entry_id>` 
+2. Go to the `Indicators` page and [filter](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-admin/manage-indicators/understand-indicators/indicators-page.html) to find all of the indicators you extracted from the text file.
 3. If needed, batch select the indicators and add a tag to the indicators you want to host as a specific EDL. Use this tag in the `Indicator Query` integration parameter when configuring the integration. For example, if you want to create an allowed list of indicators and a blocked list of indicators.
-4. Edit the EDL object on the PAN-OS device to pull from the `Export Indicators Service (PAN-OS EDL Service)` instance, as explained in [### Access the Export Indicators Service by Instance Name (HTTPS)](#access-the-export-indicators-service-by-instance-name-(https)). You can edit the EDL object using the [panorama-edit-edl](https://xsoar.pan.dev/docs/reference/integrations/panorama#panorama-edit-edl) command in the `Palo Alto Networks PAN-OS` integration.
+4. Edit the EDL object on the PAN-OS device to pull from the `Export Indicators Service (PAN-OS EDL Service)` instance, as explained in [Access the Export Indicators Service by Instance Name (HTTPS)](#access-the-export-indicators-service-by-instance-name-https). You can edit the EDL object using the [panorama-edit-edl](https://xsoar.pan.dev/docs/reference/integrations/panorama#panorama-edit-edl) command in the `Palo Alto Networks PAN-OS` integration.
 5. Commit and push the configuration from the Panorama device to its respective Firewalls using the [PAN-OS Commit Configuration](https://xsoar.pan.dev/docs/reference/playbooks/pan-os-commit-configuration) playbook.
 6. If you have a deployment with 100 firewalls or more, we recommend using your Panorama device and creating an EDL object there, which will be populated from the `PAN-OS EDL Service`. Then push the EDL object to the respective firewalls.
 7. Follow the instructions in the rest of this guide to make sure that the PAN-OS device is connected to the EDL service.
@@ -21,7 +21,7 @@ When running without --network=host the python port is not exposed to the machin
 1. Export a list of malicious IPs to block via a firewall.
 2. Export a list of indicators to a service such as Splunk, using a supported output format.
 3. Generate feeds to be used on PAN-OS as External Dynamic Lists.
-4. Create External Dynamic Lists (EDLs) of the IP addresses, URLs and domains used by ransomware, known APT groups, and active malware campaigns for tracking in AutoFocus.
+4. Create External Dynamic Lists (EDLs) of the IP addresses, URLs, and domains used by ransomware, known APT groups, and active malware campaigns for tracking in AutoFocus.
 5. Create External Dynamic Lists to track IPs and URLs commonly used by Microsoft Office365 or CDNs and cloud services, or used as tor exit nodes.
 
 ## Configure Generic Export Indicators Service on Cortex XSOAR
@@ -79,7 +79,7 @@ The default value for `Exclude top level domainGlobs` is off. If enabled, the ex
 To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled. 
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
+2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 3. In a web browser, go to `https://*<demisto_address>*/instance/execute/*<instance_name>*` .
 
 ### URL Inline Arguments
@@ -148,7 +148,7 @@ Memory issue can happen in CSV / JSON format over 150,000 if all fields are sele
 #### In terms of times
 * 10,000 indicators can take 10 - 20 seconds.
 * 100,000 indicators can take 1 - 3 minutes.
-* 1,000,000 indicators can takes over half an hour.
+* 1,000,000 indicators can take over half an hour.
 In 5 minutes (the default timeout of the integration) the integration can export between 200,000 to 400,000 indicators,
 depending on the load of the server, the existing indicators in the server, and the query used.
 The *NGINX Read Timeout* can be set to increase the timeout.
