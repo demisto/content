@@ -151,7 +151,9 @@ configuration:
   required: false
   type: 19
 - defaultvalue: 0
-  display: lookback (minutes)
+  display: 'Advanced: Minutes to look back when fetching'
+  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents
+    that were created before the last run time and did not match the query when they were created.
   name: look_back
   required: false
   type: 0
