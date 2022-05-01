@@ -393,7 +393,7 @@ class TestFetchIncidentsWithLookBack:
                         },
                         {
                             'opened_at': (
-                                    start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '4'
@@ -542,14 +542,14 @@ class TestFetchIncidentsWithLookBack:
                         },
                         {
                             'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP)  - timedelta(minutes=8)
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=8)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '2'
                         },
                         {
                             'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP)  - timedelta(minutes=7)
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=7)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '3'
@@ -560,7 +560,7 @@ class TestFetchIncidentsWithLookBack:
                     'result': [
                         {
                             'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP)  - timedelta(minutes=5)
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '4',
@@ -598,7 +598,7 @@ class TestFetchIncidentsWithLookBack:
                         },
                         {
                             'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP)- timedelta(hours=7, minutes=44)
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=44)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '3'
