@@ -72,3 +72,5 @@ UnzipFile
 ZipStrings
 ExtractInbetween
 TLDs
+ParseEmailFiles
+ParseEmailFilesV2
