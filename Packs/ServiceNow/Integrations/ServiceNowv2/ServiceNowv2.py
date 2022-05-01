@@ -2100,19 +2100,8 @@ def fetch_incidents(client: Client) -> list:
     incidents = filter_incidents_by_duplicates_and_limit(
         incidents_res=incidents, last_run=last_run, fetch_limit=client.sys_param_limit, id_field='name'
     )
-    # INC0019760, INC0019767, INC0019784, INC0019821, INC0019833
     incidents_names = [incident.get('name') for incident in incidents]
     demisto.info(f'----after filtering {incidents_names}----')
-
-    # it means that all the incidents that we got from the api were already fetched since they are on the cache.
-    # adding limit to the api call would prevent from the last run to get stuck on the same timestamp forever
-    # if len(incidents) == 0 and len(tickets_response) > 0 and client.look_back > 0:
-    #     demisto.info(f'entered to increase the limit')
-    #     client.sys_param_limit += len(last_run.get('found_incident_ids', 0))
-
-    # if there is not look-back anymore, make the limit the default value of the integration parameter.
-    # if client.look_back == 0:
-    #     client.sys_param_limit = default_fetch_limit
 
     last_run = update_last_run_object(
         last_run=last_run,
