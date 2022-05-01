@@ -6222,7 +6222,7 @@ script:
       description: Content installation status details.
       type: String
   - arguments:
-    - description:  pan-os-check-latest-panos-software
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     description: Checks the PAN-OS software version from the repository.
     name: pan-os-check-latest-panos-software
