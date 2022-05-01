@@ -5373,6 +5373,7 @@
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
+        "ForescoutEyeInspect": "No instance - developed by Qmasters",
         "FortiManager": "Can only be run within PANW network",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
