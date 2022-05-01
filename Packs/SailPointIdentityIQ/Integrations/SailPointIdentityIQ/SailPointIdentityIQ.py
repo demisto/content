@@ -253,7 +253,7 @@ def build_results(prefix: str, key_field: str, response=None):
         markdown += get_markdown(prefix, outputs)
 
         return CommandResults(
-            readable_output=markdown,
+            readable_output='### Sailpoint results' + markdown,
             outputs_prefix=prefix,
             outputs_key_field=key_field,
             outputs=outputs
