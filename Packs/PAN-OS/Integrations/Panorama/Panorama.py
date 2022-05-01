@@ -3429,14 +3429,15 @@ def panorama_list_applications(predefined: bool):
     )
     applications = result['response']['result']
     if predefined:
-        application_arr = applications.get('application', {}).get('entry')
+        return applications.get('application', {}).get('entry')
     else:
-        if major_version < 9:
-            application_arr = applications.get('entry')
-        else:
-            application_arr = applications.get('application')
+        if applications := applications.get('entry') or []:
+            return applications
 
-    return application_arr
+        if major_version > 9:
+            return applications.get('application') or []
+
+        return []
 
 
 def panorama_list_applications_command(predefined: Optional[str] = None):
