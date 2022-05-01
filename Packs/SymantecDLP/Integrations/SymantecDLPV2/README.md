@@ -49,13 +49,13 @@ Returns a list of incidents.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| creation_date | The earliest time from which to get incidents. Supports ISO (For example, 2021-12-28T00:00:00Z) and free text (For example, '2 days'). | Optional | 
-| status_id | The status ID of the incidents. To get status IDs, you should run the command `symantec-dlp-list-incident-status`. | Optional | 
-| severity | The severity of the incidents. Can be: "High", "Medium", "Low", and "Info". Possible values are: Info, Low, Medium, High. | Optional | 
-| incident_type | The incident type. Can be: "Network", "Endpoint" and "Discover". Possible values are: Network, Discover, Endpoint. | Optional | 
-| limit | The limit of the incidents list per page. Default is 50. | Optional | 
-| page | The page number you would like to view. Each page contains page_size values. Must be used along with page_size.<br/>Default is 1. | Optional | 
-| page_size | Number of results per page to display. | Optional | 
+| creation_date | The earliest time from which to get incidents. Supports ISO (e.g 2021-12-28T00:00:00Z) and free text (e.g. '2 days'). | Optional | 
+| status_id | The status ID of the incidents. To get status IDs, run the `symantec-dlp-list-incident-status` command. | Optional | 
+| severity | The severity of the incidents. Possible values are: Info, Low, Medium, High. | Optional | 
+| incident_type | The incident type. Possible values are: Network, Discover, Endpoint. | Optional | 
+| limit | The limit for number of incidents listed per page. Defaut is 50. Default is 50. | Optional | 
+| page | The page number you would like to view. Each page contains page_size values. Must be used along with page_size.<br/>Default is 1. Default is 1. | Optional | 
+| page_size | The number of results per page to display. | Optional | 
 
 
 #### Context Output
