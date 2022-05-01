@@ -2114,7 +2114,7 @@ def fetch_incidents(client: Client) -> list:
         id_field='name',
         date_format=date_format
     )
-    demisto.info(f'last run at the end of the incidents fetching {last_run}')
+    demisto.debug(f'last run at the end of the incidents fetching {last_run}')
 
     for ticket in incidents:
         # the occurred time requires to be in ISO format.

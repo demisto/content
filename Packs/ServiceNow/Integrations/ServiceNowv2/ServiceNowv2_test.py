@@ -1,8 +1,8 @@
 import pytest
 import json
 import io
-from CommonServerPython import timedelta
-from datetime import datetime
+from datetime import datetime, timedelta
+from freezegun import freeze_time
 import ServiceNowv2
 from CommonServerPython import DemistoException
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
@@ -267,6 +267,7 @@ def test_no_ec_commands(command, args, response, expected_hr, expected_auto_extr
     assert expected_auto_extract == result[3]  # ignore_auto_extract is in the 4th place in the result of the command
 
 
+@freeze_time('2022-05-01 12:52:29')
 def test_fetch_incidents(mocker):
     """Unit test
     Given
@@ -280,7 +281,11 @@ def test_fetch_incidents(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results.
     """
-    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
+    RESPONSE_FETCH['result'][0]['opened_at'] = (datetime.utcnow() - timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
+    RESPONSE_FETCH['result'][1]['opened_at'] = (datetime.utcnow() - timedelta(minutes=8)).strftime('%Y-%m-%d %H:%M:%S')
+    mocker.patch(
+        'CommonServerPython.get_fetch_run_time_range', return_value=('2022-05-01 01:05:07', '2022-05-01 12:08:29')
+    )
     mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', '2 days', 'sysparm_query', sysparm_limit=10,
@@ -291,6 +296,7 @@ def test_fetch_incidents(mocker):
     assert incidents[0].get('name') == 'ServiceNow Incident INC0000040'
 
 
+@freeze_time('2022-05-01 12:52:29')
 def test_fetch_incidents_with_attachments(mocker):
     """Unit test
     Given
@@ -305,7 +311,12 @@ def test_fetch_incidents_with_attachments(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results and the attachment content.
     """
-    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2016-10-10 15:19:57", 'never mind'))
+    RESPONSE_FETCH_ATTACHMENTS_TICKET['result'][0]['opened_at'] = (
+        datetime.utcnow() - timedelta(minutes=15)
+    ).strftime('%Y-%m-%d %H:%M:%S')
+    mocker.patch(
+        'CommonServerPython.get_fetch_run_time_range', return_value=('2022-05-01 01:05:07', '2022-05-01 12:08:29')
+    )
     mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', '2 days', 'sysparm_query', sysparm_limit=10,
@@ -321,6 +332,7 @@ def test_fetch_incidents_with_attachments(mocker):
     assert incidents[0].get('attachment')[0]['path'] == 'file_id'
 
 
+@freeze_time('2022-05-01 12:52:29')
 def test_fetch_incidents_with_incident_name(mocker):
     """Unit test
     Given
@@ -334,8 +346,12 @@ def test_fetch_incidents_with_incident_name(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results.
     """
-    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
+    RESPONSE_FETCH['result'][0]['opened_at'] = (datetime.utcnow() - timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
+    RESPONSE_FETCH['result'][1]['opened_at'] = (datetime.utcnow() - timedelta(minutes=8)).strftime('%Y-%m-%d %H:%M:%S')
     mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
+    mocker.patch(
+        'CommonServerPython.get_fetch_run_time_range', return_value=('2022-05-01 01:05:07', '2022-05-01 12:08:29')
+    )
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', '2 days', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident',
@@ -345,13 +361,19 @@ def test_fetch_incidents_with_incident_name(mocker):
     assert incidents[0].get('name') == 'ServiceNow Incident Unable to access Oregon mail server. Is it down?'
 
 
+def start_freeze_time(timestamp):
+    _start_freeze_time = freeze_time(timestamp)
+    _start_freeze_time.start()
+    return datetime.now()
+
+
+# @freeze_time('2022-05-01 12:52:29')
 class TestFetchIncidentsWithLookBack:
     LAST_RUN = {}
 
     API_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
-
-    NOW = datetime.utcnow()
-    # used for fetching tickets without look back
+    FREEZE_TIMESTAMP = '2022-05-01 12:52:29'
+    # NOW = datetime.now()
 
     def set_last_run(self, new_last_run):
         self.LAST_RUN = new_last_run
@@ -363,29 +385,39 @@ class TestFetchIncidentsWithLookBack:
                 {
                     'result': [
                         {
-                            'opened_at': (NOW - timedelta(minutes=10)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=10)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '2',
                         },
                         {
-                            'opened_at': (NOW - timedelta(minutes=5)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                    start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '4'
                         },
                         {
-                            'opened_at': (NOW - timedelta(minutes=2)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=2)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '5'
                         }
                     ]
                 },
                 {
-                    'opened_at': (NOW - timedelta(minutes=8)).strftime(API_TIME_FORMAT),
+                    'opened_at': (
+                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=8)
+                    ).strftime(API_TIME_FORMAT),
                     'severity': '1',
                     'number': '3',
                 },
                 {
-                    'opened_at': (NOW - timedelta(minutes=11)).strftime(API_TIME_FORMAT),
+                    'opened_at': (
+                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=11)
+                    ).strftime(API_TIME_FORMAT),
                     'severity': '1',
                     'number': '1',
                 },
@@ -395,33 +427,43 @@ class TestFetchIncidentsWithLookBack:
                 {
                     'result': [
                         {
-                            'opened_at': (NOW - timedelta(minutes=40)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=3, minutes=20)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '2',
                         },
                         {
-                            'opened_at': (NOW - timedelta(minutes=26)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=2, minutes=26)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '4'
                         },
                         {
-                            'opened_at': (NOW - timedelta(minutes=20)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=1, minutes=20)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '5'
                         }
                     ]
                 },
                 {
-                    'opened_at': (NOW - timedelta(minutes=28)).strftime(API_TIME_FORMAT),
+                    'opened_at': (
+                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=2, minutes=45)
+                    ).strftime(API_TIME_FORMAT),
                     'severity': '1',
                     'number': '3',
                 },
                 {
-                    'opened_at': (NOW - timedelta(minutes=50)).strftime(API_TIME_FORMAT),
+                    'opened_at': (
+                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=3, minutes=50)
+                    ).strftime(API_TIME_FORMAT),
                     'severity': '1',
                     'number': '1',
                 },
-                60
+                1000
             )
         ]
     )
@@ -431,6 +473,8 @@ class TestFetchIncidentsWithLookBack:
         """
         Given
         - fetch incidents parameters including look back according to their opened time.
+        - first scenario - fetching with minutes when look_back=60 minutes
+        - second scenario - fetching with hours when look_back=1000 minutes
 
         When
         - trying to fetch incidents for 3 rounds.
@@ -439,12 +483,12 @@ class TestFetchIncidentsWithLookBack:
         - first fetch - should fetch incidents 2, 4, 5 (because only them match the query)
         - second fetch - should fetch incident 3 (because now incident 2, 4, 5, 3 matches the query too)
         - third fetch - should fetch incident 1 (because now incident 2, 4, 5, 3, 1 matches the query too)
-        - forth fetch - should fetch nothing as there are not new incidents who match the query
+        - fourth fetch - should fetch nothing as there are not new incidents who match the query
         - make sure that incidents who were already fetched would not be fetched again.
         """
         client = Client(
             server_url='', sc_server_url='', cr_server_url='', username='', password='', verify=False,
-            fetch_time='12 hours', sysparm_query='stateNOT IN6,7^assignment_group=123', sysparm_limit=10,
+            fetch_time='6 hours', sysparm_query='stateNOT IN6,7^assignment_group=123', sysparm_limit=10,
             timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number',
             look_back=look_back
         )
@@ -490,17 +534,23 @@ class TestFetchIncidentsWithLookBack:
                 {
                     'result': [
                         {
-                            'opened_at': (NOW - timedelta(minutes=10)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=10)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '1',
                         },
                         {
-                            'opened_at': (NOW - timedelta(minutes=8)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP)  - timedelta(minutes=8)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '2'
                         },
                         {
-                            'opened_at': (NOW - timedelta(minutes=7)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP)  - timedelta(minutes=7)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '3'
                         }
@@ -509,7 +559,9 @@ class TestFetchIncidentsWithLookBack:
                 {
                     'result': [
                         {
-                            'opened_at': (NOW - timedelta(minutes=5)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP)  - timedelta(minutes=5)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '4',
                         }
@@ -518,7 +570,9 @@ class TestFetchIncidentsWithLookBack:
                 {
                     'result': [
                         {
-                            'opened_at': (NOW - timedelta(minutes=4)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=4)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '5',
                         }
@@ -529,17 +583,23 @@ class TestFetchIncidentsWithLookBack:
                 {
                     'result': [
                         {
-                            'opened_at': (NOW - timedelta(minutes=51)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=8, minutes=51)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '1',
                         },
                         {
-                            'opened_at': (NOW - timedelta(minutes=50)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=45)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '2'
                         },
                         {
-                            'opened_at': (NOW - timedelta(minutes=39)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP)- timedelta(hours=7, minutes=44)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '3'
                         }
@@ -548,7 +608,9 @@ class TestFetchIncidentsWithLookBack:
                 {
                     'result': [
                         {
-                            'opened_at': (NOW - timedelta(minutes=37)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=44)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '4',
                         }
@@ -557,7 +619,9 @@ class TestFetchIncidentsWithLookBack:
                 {
                     'result': [
                         {
-                            'opened_at': (NOW - timedelta(minutes=34)).strftime(API_TIME_FORMAT),
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=1, minutes=34)
+                            ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '5',
                         }
@@ -572,6 +636,8 @@ class TestFetchIncidentsWithLookBack:
         """
         Given
         - fetch incidents parameters with any look back according to their opened time (normal fetch incidents).
+        - first scenario - fetching with minutes when look_back=0
+        - second scenario - fetching with hours when look_back=0
 
         When
         - trying to fetch incidents for 3 rounds.
@@ -580,7 +646,7 @@ class TestFetchIncidentsWithLookBack:
         - first fetch - should fetch incidents 1, 2, 3 (because only them match the query)
         - second fetch - should fetch incident 4
         - third fetch - should fetch incident 5
-        - forth fetch - should fetch nothing as there are not new incidents who match the query
+        - fourth fetch - should fetch nothing as there are not new incidents who match the query
         """
         client = Client(
             server_url='', sc_server_url='', cr_server_url='', username='', password='', verify=False,

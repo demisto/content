@@ -2975,7 +2975,7 @@ RESPONSE_FETCH = {
                 'active': 'true',
                 'work_notes_list': '', 'business_service': '', 'priority': '4', 'sys_domain_path': '/', 'rfc': '',
                 'time_worked': '', 'expected_start': '',
-                'opened_at': (datetime.utcnow() - timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S'),
+                'opened_at': '',
                 'business_duration': '',
                 'group_list': '', 'work_end': '', 'caller_id': {'link': 'demisto.com', 'value': 'test'},
                 'reopened_time': '', 'resolved_at': '', 'approval_set': '', 'subcategory': '', 'work_notes': '',
@@ -3008,7 +3008,7 @@ RESPONSE_FETCH = {
                 'active': 'true',
                 'work_notes_list': '', 'business_service': '', 'priority': '4', 'sys_domain_path': '/', 'rfc': '',
                 'time_worked': '', 'expected_start': '',
-                'opened_at': (datetime.utcnow() - timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S'),
+                'opened_at': '',
                 'business_duration': '',
                 'group_list': '', 'work_end': '', 'caller_id': {'link': 'demisto.com', 'value': 'test'},
                 'reopened_time': '', 'resolved_at': '', 'approval_set': '', 'subcategory': '', 'work_notes': '',
@@ -3098,7 +3098,7 @@ RESPONSE_FETCH_ATTACHMENTS_TICKET = {
             "made_sla": "true",
             "notify": "1",
             "number": "INC0000060",
-            "opened_at": (datetime.utcnow() - timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S'),
+            "opened_at": '',
             "opened_by": {
                 "link": "https://dev61466.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7",
                 "value": "681ccaf9c0a8016400b98a06818d57c7"
