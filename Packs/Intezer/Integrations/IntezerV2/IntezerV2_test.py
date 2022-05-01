@@ -4,6 +4,7 @@ from http import HTTPStatus
 
 from CommonServerPython import outputPaths
 from IntezerV2 import analyze_by_hash_command
+from IntezerV2 import analyze_url_command
 from IntezerV2 import analyze_by_uploaded_file_command
 from IntezerV2 import check_analysis_status_and_get_results_command
 from IntezerV2 import get_analysis_code_reuse_command
@@ -213,6 +214,65 @@ def test_check_analysis_status_and_get_results_command_single_success(requests_m
 
     first_result = command_results_list[0]
     assert first_result.outputs[outputPaths['dbotscore']]['Indicator'] == sha256
+
+
+def test_check_analysis_status_and_get_results_url_command_single_success(requests_mock):
+    # Arrange
+    url = 'https://intezer.com'
+    analysis_id = 'analysis_id'
+    _setup_access_token(requests_mock)
+    file_analysis_id = '8db9a401-a142-41be-9a31-8e5f3642db62'
+    requests_mock.get(
+        f'{full_url}/url/{analysis_id}',
+        json={
+            'result': {
+                'analysis_id': analysis_id,
+                'summary': {
+                    'title': 'malicious',
+                    'verdict_name': 'malicious'
+                },
+                'submitted_url': url,
+                'downloaded_file': {
+                    'analysis_id': file_analysis_id,
+                    'analysis_summary': {
+                        'verdict_description':
+                            "This file contains code from malicious s"
+                            "oftware, therefore it's very likely that it's malicious.",
+                        'verdict_name': 'malicious',
+                        'verdict_title': 'Malicious',
+                        'verdict_type': 'malicious'
+                    },
+                    'sha256': '4293c1d8574dc87c58360d6bac3daa182f64f7785c9d41da5e0741d2b1817fc7'
+                },
+                'analysis_url': 'bla'
+            },
+            'status': 'succeeded'
+        }
+    )
+
+    requests_mock.get(
+        f'{full_url}/analyses/{file_analysis_id}',
+        json={
+            'result': {
+                'analysis_id': file_analysis_id,
+                'sub_verdict': 'trusted',
+                'sha256': 'a' * 64,
+                'verdict': 'trusted',
+                'analysis_url': 'bla'
+            },
+            'status': 'succeeded'
+        })
+
+    args = dict(analysis_id=analysis_id, analysis_type='Url')
+
+    # Act
+    command_results_list = check_analysis_status_and_get_results_command(intezer_api, args)
+
+    # Assert
+    assert len(command_results_list) == 1
+
+    first_result = command_results_list[0]
+    assert first_result.outputs[outputPaths['dbotscore']]['Indicator'] == url
 
 
 def test_check_analysis_status_and_get_results_command_single_success_endpoint(requests_mock):
@@ -625,4 +685,47 @@ def test_get_family_info_command_analysis_doesnt_exist(requests_mock):
     # Assert
     assert command_results.readable_output == f'The Family {family_id} was not found on Intezer Analyze'
 
+
 # endregion
+
+
+# region analyze_by_hash_command
+def test_analyze_by_url_command_success(requests_mock):
+    # Arrange
+    analysis_id = 'analysis-id'
+
+    _setup_access_token(requests_mock)
+    requests_mock.post(
+        f'{full_url}/url/',
+        status_code=HTTPStatus.CREATED,
+        json=dict(result_url=f'/url/{analysis_id}')
+    )
+
+    args = dict(url='https://intezer.com')
+
+    # Act
+    command_results = analyze_url_command(intezer_api, args)
+
+    # Assert
+    assert command_results.outputs['ID'] == analysis_id
+
+
+def test_analyze_by_url_command_missing_url(requests_mock):
+    # Arrange
+
+    _setup_access_token(requests_mock)
+    requests_mock.post(
+        f'{full_url}/url/',
+        status_code=HTTPStatus.BAD_REQUEST,
+        json=dict(error='Bad url')
+    )
+
+    url = '123test'
+    args = dict(url=url, analysis_type='Url')
+
+    # Act
+    command_results = analyze_url_command(intezer_api, args)
+
+    # Assert
+    assert command_results.readable_output == ('The Url 123test was not found on Intezer. '
+                                               'Error Server returned bad request error: Bad url. Error:Bad url')

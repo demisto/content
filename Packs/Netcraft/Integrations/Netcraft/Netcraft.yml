@@ -18,12 +18,10 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -31,7 +29,7 @@ script:
   type: python
   dockerimage: demisto/python3:3.10.1.26972
   commands:
-  - name: netcraft-report-attack
+  - name: netcraft-report-attackyo
     arguments:
     - name: attack
       required: true
