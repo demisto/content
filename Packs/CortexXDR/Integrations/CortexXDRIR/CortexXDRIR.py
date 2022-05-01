@@ -791,7 +791,7 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
         raw_response=raw_res)
 
 
-def main():
+def main():  # pragma: no cover
     """
     Executes an integration command
     """

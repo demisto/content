@@ -69,7 +69,7 @@ def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     )
 
 
-def main():
+def main():  # pragma: no cover
     """
     Executes an integration command
     """
