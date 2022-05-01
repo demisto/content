@@ -5109,6 +5109,11 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": "Azure Firewall",
+            "playbookID": "playbook-AzureFirewall_Test",
+            "fromversion": "6.2.0"
+        },
+        {
             "playbookID": "HttpV2-test",
             "fromversion": "6.5.0",
             "scripts": [
@@ -5278,6 +5283,7 @@
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
         "FortiSIEMV2": "No instance",
+        "Azure Firewall": "No instance",
         "Vertica": "No insance issue 45719",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
