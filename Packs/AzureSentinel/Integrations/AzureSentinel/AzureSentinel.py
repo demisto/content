@@ -286,7 +286,8 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
     :param args: The args for the command.
     """
     fetched_incident_data = get_incident_by_id_command(client, args).raw_response
-
+    print(fetched_incident_data)
+    owner = demisto.get(fetched_incident_data, 'properties.owner')
     title = args.get('title')
     description = args.get('description')
     severity = args.get('severity')
@@ -305,8 +306,8 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
         severity = demisto.get(fetched_incident_data, 'properties.severity')
     if not status:
         status = demisto.get(fetched_incident_data, 'properties.status')
-    if not assignee_email:
-        assignee_email = demisto.get(fetched_incident_data, 'properties.owner.email')
+    if assignee_email:
+        owner['email'] = assignee_email
 
     existing_labels = demisto.get(fetched_incident_data, 'properties.labels')
     if not labels:  # not provided as arg
@@ -326,7 +327,7 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
             'classificationComment': classification_comment,
             'classificationReason': classification_reason,
             'labels': labels_formatted,
-            'owner': {'email': assignee_email}
+            'owner': owner
         }
     }
     remove_nulls_from_dictionary(incident_data['properties'])
