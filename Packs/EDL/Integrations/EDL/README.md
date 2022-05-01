@@ -76,7 +76,7 @@ The default value for `Exclude top level domainGlobs` is off. If enabled, the ex
 
 ### DomainGlobs
 
-When parsing DomainGlobs the parser will create two different inputs as that is usually how DNS Firewalls work. For example if the DomainGlob `*.bad.com` will be parsed it will output two lines to the list:
+When parsing domainGlob indicator types the parser will create two different inputs as that is usually how DNS Firewalls work. For example if the DomainGlob `*.bad.com` will be parsed it will output two lines to the list:
 1. *.bad.com
 2. bad.com
 
