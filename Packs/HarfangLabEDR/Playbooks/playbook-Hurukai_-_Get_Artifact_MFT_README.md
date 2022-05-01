@@ -13,9 +13,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* harfanglab-result-artefact-evtx
+* harfanglab-result-artifact-mft
 * harfanglab-get-endpoint-info
-* harfanglab-job-artefact-evtx
+* harfanglab-job-artifact-mft
 
 ## Playbook Inputs
 ---
@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Artefact Evtx](./doc_files/Hurukai_-_Get_Artefact_Evtx.png)
+![Hurukai - Get Artifact MFT](./doc_files/Hurukai_-_Get_Artifact_MFT.png)

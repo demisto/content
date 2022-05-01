@@ -2,14 +2,15 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-id: Hurukai - Get Artefact Logs
+description: Get a RAM dump from Windows and Linux endpoints.
+id: Hurukai - Get Artifact RAM Dump
 inputs:
 - description: ''
   key: agentid
   playbookInputQuery:
   required: true
   value: {}
-name: Hurukai - Get Artefact Logs
+name: Hurukai - Get Artifact RAM Dump
 outputs: []
 starttaskid: '0'
 tasks:
@@ -27,12 +28,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 909f4ed1-337d-4fb8-8049-f1a9886c6821
+      id: 6e1c6d65-146d-4717-8b58-bf6c9db34312
       iscommand: false
       name: ''
       version: -1
       description: ''
-    taskid: 909f4ed1-337d-4fb8-8049-f1a9886c6821
+    taskid: 6e1c6d65-146d-4717-8b58-bf6c9db34312
     timertriggers: []
     type: start
     view: |-
@@ -82,13 +83,13 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      id: 08667dae-3eb1-4e2a-86c4-9037ef3ff285
+      id: b321e3d1-1b36-4175-8b30-2344a5ac41ef
       iscommand: false
       name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
-    taskid: 08667dae-3eb1-4e2a-86c4-9037ef3ff285
+    taskid: b321e3d1-1b36-4175-8b30-2344a5ac41ef
     timertriggers: []
     type: playbook
     view: |-
@@ -109,13 +110,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: bb9a1782-9971-42cc-876a-a7c57777697d
+      id: 579ef529-3e91-49e8-8883-d121df821425
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: bb9a1782-9971-42cc-876a-a7c57777697d
+    taskid: 579ef529-3e91-49e8-8883-d121df821425
     timertriggers: []
     type: title
     view: |-
@@ -142,14 +143,14 @@ tasks:
     skipunavailable: false
     task:
       brand: Hurukai
-      description: Start a job to download Linux log files from a host (Linux)
-      id: ed8cdc21-b524-4b46-80b8-aa7628bce215
+      description: Start a job to get the entine RAM from a host (Windows / Linux)
+      id: dbd59e2d-288a-44c2-8e99-73ddbd1e325b
       iscommand: true
-      name: harfanglab-job-artefact-logs
-      script: Hurukai|||harfanglab-job-artefact-logs
+      name: harfanglab-job-artifact-ramdump
+      script: Hurukai|||harfanglab-job-artifact-ramdump
       type: regular
       version: -1
-    taskid: ed8cdc21-b524-4b46-80b8-aa7628bce215
+    taskid: dbd59e2d-288a-44c2-8e99-73ddbd1e325b
     timertriggers: []
     type: regular
     view: |-
@@ -163,7 +164,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Raw Linux log files
+        simple: Raw RAM dump file
     id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -180,14 +181,14 @@ tasks:
     skipunavailable: false
     task:
       brand: Hurukai
-      description: Get a hostname's log files from job results
-      id: e32fe571-28c3-4c24-8edc-7642ad4bed52
+      description: Get a hostname's RAM dump from job results
+      id: e9117369-a8cb-41d9-8863-a8c50cd2371a
       iscommand: true
-      name: harfanglab-result-artefact-logs
-      script: Hurukai|||harfanglab-result-artefact-logs
+      name: harfanglab-result-artifact-ramdump
+      script: Hurukai|||harfanglab-result-artifact-ramdump
       type: regular
       version: -1
-    taskid: e32fe571-28c3-4c24-8edc-7642ad4bed52
+    taskid: e9117369-a8cb-41d9-8863-a8c50cd2371a
     timertriggers: []
     type: regular
     view: |-
@@ -215,8 +216,24 @@ tasks:
           operator: isEqualString
           right:
             value:
+              simple: windows
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Agent
+                root: Harfanglab
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: ostype
+                  operator: getField
+          operator: isEqualString
+          right:
+            value:
               simple: linux
-      label: linux
+      label: windows/linux
     id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -224,7 +241,7 @@ tasks:
     nexttasks:
       '#default#':
       - '5'
-      linux:
+      windows/linux:
       - '6'
     note: false
     quietmode: 0
@@ -232,13 +249,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 55fb113d-ea6b-418e-843b-8772550639a3
+      id: d4f68e9d-475a-4008-8bd5-9b869e4f3a43
       iscommand: false
       name: Which platform is the agent running on ?
       type: condition
       version: -1
       description: ''
-    taskid: 55fb113d-ea6b-418e-843b-8772550639a3
+    taskid: d4f68e9d-475a-4008-8bd5-9b869e4f3a43
     timertriggers: []
     type: condition
     view: |-
@@ -266,13 +283,13 @@ tasks:
     task:
       brand: Hurukai
       description: Get endpoint information from agent_id
-      id: 5b114b33-ab5c-43c7-8c76-caf4f50d70e7
+      id: f7bc2ebb-fd99-4bbc-88cb-525b1f5de0d5
       iscommand: true
       name: harfanglab-get-endpoint-info
       script: Hurukai|||harfanglab-get-endpoint-info
       type: regular
       version: -1
-    taskid: 5b114b33-ab5c-43c7-8c76-caf4f50d70e7
+    taskid: f7bc2ebb-fd99-4bbc-88cb-525b1f5de0d5
     timertriggers: []
     type: regular
     view: |-
@@ -298,4 +315,3 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0
-description: "Get all the log files"

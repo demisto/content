@@ -1,11 +1,4 @@
-Build a global archive with:
-- MFT (Windows)
-- Hives (Windows)
-- USN logs (Windows)
-- Prefetch files (Windows)
-- EVT/EVTX files (Windows)
-- Log files (Linux)
-- Filesystem content (Linux)
+
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -20,9 +13,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* harfanglab-result-artefact-all
-* harfanglab-job-artefact-all
+* harfanglab-result-artifact-logs
 * harfanglab-get-endpoint-info
+* harfanglab-job-artifact-logs
 
 ## Playbook Inputs
 ---
@@ -37,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get All Artefacts](./doc_files/Hurukai_-_Get_All_Artefacts.png)
+![Hurukai - Get Artifact Logs](./doc_files/Hurukai_-_Get_Artifact_Logs.png)

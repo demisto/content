@@ -219,7 +219,7 @@ class Client(BaseClient):
             'wmi': '/api/data/investigation/hunting/Wmi/',
             'networkshare': '/api/data/investigation/hunting/NetworkShare/',
             'session': '/api/data/investigation/hunting/Session/',
-            'artefact': '/api/data/investigation/artefact/Artefact/',
+            'artifact': '/api/data/investigation/artefact/Artefact/',
             'ioc': '/api/data/investigation/ioc/IOC/',
         }
         url_suffix = f'{job_types[job_type]}?limit=10000&job_id={job_id}'
@@ -1325,7 +1325,7 @@ def result_ioc(client, args):
     return output
 
 
-def global_job_artefact(client, args, parameters, artefact_type):
+def global_job_artifact(client, args, parameters, artifact_type):
     args['action'] = 'collectRAWEvidences'
     ret, job_id = job_create(client, args, parameters, can_use_previous_job=False)
 
@@ -1335,7 +1335,7 @@ def global_job_artefact(client, args, parameters, artefact_type):
     return common_job(job_id, args['action'])
 
 
-def global_result_artefact(client, args, artefact_type):
+def global_result_artifact(client, args, artifact_type):
     job_id = args.get('job_id', None)
     common_result()
 
@@ -1345,8 +1345,8 @@ def global_result_artefact(client, args, artefact_type):
 
     if info['Status'] != 'finished':
         ec = {
-            'Harfanglab.Artefact(val.agent_id && val.agent_id === obj.agent_id)': {
-                f'{artefact_type}': {},
+            'Harfanglab.Artifact(val.agent_id && val.agent_id === obj.agent_id)': {
+                f'{artifact_type}': {},
                 'data': ''
             }
         }
@@ -1361,7 +1361,7 @@ def global_result_artefact(client, args, artefact_type):
         return result
 
     base_url = demisto.params().get('url').rstrip('/')
-    data = client.job_data(job_id, 'artefact')
+    data = client.job_data(job_id, 'artifact')
     api_token = None
     token = client.get_api_token()
     if 'api_token' in token:
@@ -1383,12 +1383,12 @@ def global_result_artefact(client, args, artefact_type):
             'download link': result['download_link']
         })
 
-    readable_output = tableToMarkdown(f'{artefact_type} download list', output, headers=[
+    readable_output = tableToMarkdown(f'{artifact_type} download list', output, headers=[
                                       'hostname', 'msg', 'size', 'download link'])
 
     ec = {
-        'Harfanglab.Artefact(val.agent_id && val.agent_id === obj.agent_id)': {
-            f'{artefact_type}': data['results'],
+        'Harfanglab.Artifact(val.agent_id && val.agent_id === obj.agent_id)': {
+            f'{artifact_type}': data['results'],
             'data': data['results'][0]['download_link'] if len(data['results']) > 0 else ''
         }
     }
@@ -1405,61 +1405,61 @@ def global_result_artefact(client, args, artefact_type):
     return result
 
 
-def job_artefact_mft(client, args):
+def job_artifact_mft(client, args):
     parameters = {'hives': False, 'evt': False, 'mft': True, 'prefetch': False, 'usn': False, 'logs': False, 'fs': False}
-    return global_job_artefact(client, args, parameters, 'MFT')
+    return global_job_artifact(client, args, parameters, 'MFT')
 
 
-def result_artefact_mft(client, args):
-    return global_result_artefact(client, args, 'MFT')
+def result_artifact_mft(client, args):
+    return global_result_artifact(client, args, 'MFT')
 
 
-def job_artefact_evtx(client, args):
+def job_artifact_evtx(client, args):
     parameters = {'hives': False, 'evt': True, 'mft': False, 'prefetch': False, 'usn': False, 'logs': False, 'fs': False}
-    return global_job_artefact(client, args, parameters, 'EVTX')
+    return global_job_artifact(client, args, parameters, 'EVTX')
 
 
-def result_artefact_evtx(client, args):
-    return global_result_artefact(client, args, 'EVTX')
+def result_artifact_evtx(client, args):
+    return global_result_artifact(client, args, 'EVTX')
 
 
-def job_artefact_logs(client, args):
+def job_artifact_logs(client, args):
     parameters = {'hives': False, 'evt': False, 'mft': False, 'prefetch': False, 'usn': False, 'logs': True, 'fs': False}
-    return global_job_artefact(client, args, parameters, 'LOGS')
+    return global_job_artifact(client, args, parameters, 'LOGS')
 
 
-def result_artefact_logs(client, args):
-    return global_result_artefact(client, args, 'LOGS')
+def result_artifact_logs(client, args):
+    return global_result_artifact(client, args, 'LOGS')
 
 
-def job_artefact_fs(client, args):
+def job_artifact_fs(client, args):
     parameters = {'hives': False, 'evt': False, 'mft': False, 'prefetch': False, 'usn': False, 'logs': False, 'fs': True}
-    return global_job_artefact(client, args, parameters, 'FS')
+    return global_job_artifact(client, args, parameters, 'FS')
 
 
-def result_artefact_fs(client, args):
-    return global_result_artefact(client, args, 'FS')
+def result_artifact_fs(client, args):
+    return global_result_artifact(client, args, 'FS')
 
 
-def job_artefact_hives(client, args):
+def job_artifact_hives(client, args):
     parameters = {'hives': True, 'evt': False, 'mft': False, 'prefetch': False, 'usn': False, 'logs': False, 'fs': False}
-    return global_job_artefact(client, args, parameters, 'HIVES')
+    return global_job_artifact(client, args, parameters, 'HIVES')
 
 
-def result_artefact_hives(client, args):
-    return global_result_artefact(client, args, 'HIVES')
+def result_artifact_hives(client, args):
+    return global_result_artifact(client, args, 'HIVES')
 
 
-def job_artefact_all(client, args):
+def job_artifact_all(client, args):
     parameters = {'hives': True, 'evt': True, 'mft': True, 'prefetch': True, 'usn': True, 'logs': True, 'fs': True}
-    return global_job_artefact(client, args, parameters, 'ALL')
+    return global_job_artifact(client, args, parameters, 'ALL')
 
 
-def result_artefact_all(client, args):
-    return global_result_artefact(client, args, 'ALL')
+def result_artifact_all(client, args):
+    return global_result_artifact(client, args, 'ALL')
 
 
-def job_artefact_downloadfile(client, args):
+def job_artifact_downloadfile(client, args):
     args['action'] = 'downloadFile'
     filename = args.get('filename', None)
     parameters = {'filename': filename}
@@ -1471,12 +1471,12 @@ def job_artefact_downloadfile(client, args):
     return common_job(job_id, args['action'])
 
 
-def result_artefact_downloadfile(client, args):
+def result_artifact_downloadfile(client, args):
     job_id = args.get('job_id', None)
     common_result()
 
     base_url = demisto.params().get('url').rstrip('/')
-    data = client.job_data(job_id, 'artefact', ordering='name')
+    data = client.job_data(job_id, 'artifact', ordering='name')
 
     api_token = None
     token = client.get_api_token()
@@ -1518,7 +1518,7 @@ def result_artefact_downloadfile(client, args):
     return data
 
 
-def job_artefact_ramdump(client, args):
+def job_artifact_ramdump(client, args):
     args['action'] = 'memoryDumper'
 
     ret, job_id = job_create(client, args, can_use_previous_job=False)
@@ -1528,12 +1528,12 @@ def job_artefact_ramdump(client, args):
     return common_job(job_id, args['action'])
 
 
-def result_artefact_ramdump(client, args):
+def result_artifact_ramdump(client, args):
     job_id = args.get('job_id', None)
     common_result()
 
     base_url = demisto.params().get('url').rstrip('/')
-    data = client.job_data(job_id, 'artefact', ordering='name')
+    data = client.job_data(job_id, 'artifact', ordering='name')
 
     api_token = None
     token = client.get_api_token()
@@ -2047,29 +2047,29 @@ def get_function_from_command_name(command):
         'harfanglab-job-wmilist': job_wmilist,
         'harfanglab-result-wmilist': result_wmilist,
 
-        'harfanglab-job-artefact-mft': job_artefact_mft,
-        'harfanglab-result-artefact-mft': result_artefact_mft,
+        'harfanglab-job-artifact-mft': job_artifact_mft,
+        'harfanglab-result-artifact-mft': result_artifact_mft,
 
-        'harfanglab-job-artefact-hives': job_artefact_hives,
-        'harfanglab-result-artefact-hives': result_artefact_hives,
+        'harfanglab-job-artifact-hives': job_artifact_hives,
+        'harfanglab-result-artifact-hives': result_artifact_hives,
 
-        'harfanglab-job-artefact-evtx': job_artefact_evtx,
-        'harfanglab-result-artefact-evtx': result_artefact_evtx,
+        'harfanglab-job-artifact-evtx': job_artifact_evtx,
+        'harfanglab-result-artifact-evtx': result_artifact_evtx,
 
-        'harfanglab-job-artefact-logs': job_artefact_logs,
-        'harfanglab-result-artefact-logs': result_artefact_logs,
+        'harfanglab-job-artifact-logs': job_artifact_logs,
+        'harfanglab-result-artifact-logs': result_artifact_logs,
 
-        'harfanglab-job-artefact-filesystem': job_artefact_fs,
-        'harfanglab-result-artefact-filesystem': result_artefact_fs,
+        'harfanglab-job-artifact-filesystem': job_artifact_fs,
+        'harfanglab-result-artifact-filesystem': result_artifact_fs,
 
-        'harfanglab-job-artefact-all': job_artefact_all,
-        'harfanglab-result-artefact-all': result_artefact_all,
+        'harfanglab-job-artifact-all': job_artifact_all,
+        'harfanglab-result-artifact-all': result_artifact_all,
 
-        'harfanglab-job-artefact-downloadfile': job_artefact_downloadfile,
-        'harfanglab-result-artefact-downloadfile': result_artefact_downloadfile,
+        'harfanglab-job-artifact-downloadfile': job_artifact_downloadfile,
+        'harfanglab-result-artifact-downloadfile': result_artifact_downloadfile,
 
-        'harfanglab-job-artefact-ramdump': job_artefact_ramdump,
-        'harfanglab-result-artefact-ramdump': result_artefact_ramdump,
+        'harfanglab-job-artifact-ramdump': job_artifact_ramdump,
+        'harfanglab-result-artifact-ramdump': result_artifact_ramdump,
 
         'harfanglab-telemetry-processes': TelemetryProcesses().telemetry,
         'harfanglab-telemetry-network': TelemetryNetwork().telemetry,

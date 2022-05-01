@@ -140,7 +140,7 @@ script:
       description: Path of the file to download
       required: true
     description: Start a job to download a file from a host (Windows / Linux)
-    name: harfanglab-job-artefact-downloadfile
+    name: harfanglab-job-artifact-downloadfile
     outputs:
     - contextPath: Harfanglab.Job.ID
       description: id
@@ -322,10 +322,10 @@ script:
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
       required: true
     description: Start a job to download the MFT from a host (Windows)
-    name: harfanglab-job-artefact-mft
+    name: harfanglab-job-artifact-mft
     outputs:
-    - contextPath: Harfanglab.artefact.download_link
-      description: URL to download the artefact
+    - contextPath: Harfanglab.artifact.download_link
+      description: URL to download the artifact
       type: string
     - contextPath: Harfanglab.Job.ID
       description: id
@@ -335,10 +335,10 @@ script:
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
       required: true
     description: Start a job to download the hives from a host (Windows)
-    name: harfanglab-job-artefact-hives
+    name: harfanglab-job-artifact-hives
     outputs:
-    - contextPath: Harfanglab.artefact.download_link
-      description: URL to download the artefact
+    - contextPath: Harfanglab.artifact.download_link
+      description: URL to download the artifact
       type: string
     - contextPath: Harfanglab.Job.ID
       description: id
@@ -348,10 +348,10 @@ script:
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
       required: true
     description: Start a job to download the event logs from a host (Windows)
-    name: harfanglab-job-artefact-evtx
+    name: harfanglab-job-artifact-evtx
     outputs:
-    - contextPath: Harfanglab.artefact.download_link
-      description: URL to download the artefact
+    - contextPath: Harfanglab.artifact.download_link
+      description: URL to download the artifact
       type: string
     - contextPath: Harfanglab.Job.ID
       description: id
@@ -361,10 +361,10 @@ script:
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
       required: true
     description: Start a job to download Linux log files from a host (Linux)
-    name: harfanglab-job-artefact-logs
+    name: harfanglab-job-artifact-logs
     outputs:
-    - contextPath: Harfanglab.artefact.download_link
-      description: URL to download the artefact
+    - contextPath: Harfanglab.artifact.download_link
+      description: URL to download the artifact
       type: string
     - contextPath: Harfanglab.Job.ID
       description: id
@@ -374,10 +374,10 @@ script:
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
       required: true
     description: Start a job to download Linux filesystem entries from a host (Linux)
-    name: harfanglab-job-artefact-filesystem
+    name: harfanglab-job-artifact-filesystem
     outputs:
-    - contextPath: Harfanglab.artefact.download_link
-      description: URL to download the artefact
+    - contextPath: Harfanglab.artifact.download_link
+      description: URL to download the artifact
       type: string
     - contextPath: Harfanglab.Job.ID
       description: id
@@ -386,11 +386,11 @@ script:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
       required: true
-    description: Start a job to download all artefacts from a host (Windows MFT, Hives, evt/evtx, Prefetch, USN, Linux logs and file list)
-    name: harfanglab-job-artefact-all
+    description: Start a job to download all artifacts from a host (Windows MFT, Hives, evt/evtx, Prefetch, USN, Linux logs and file list)
+    name: harfanglab-job-artifact-all
     outputs:
-    - contextPath: Harfanglab.artefact.download_link
-      description: URL to download the artefact
+    - contextPath: Harfanglab.artifact.download_link
+      description: URL to download the artifact
       type: string
     - contextPath: Harfanglab.Job.ID
       description: id
@@ -400,10 +400,10 @@ script:
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
       required: true
     description: Start a job to get the entine RAM from a host (Windows / Linux)
-    name: harfanglab-job-artefact-ramdump
+    name: harfanglab-job-artifact-ramdump
     outputs:
-    - contextPath: Harfanglab.artefact.download_link
-      description: URL to download the artefact
+    - contextPath: Harfanglab.artifact.download_link
+      description: URL to download the artifact
       type: string
     - contextPath: Harfanglab.Job.ID
       description: id
@@ -584,57 +584,57 @@ script:
       description: Job id as returned by the job submission commands
       required: true
     description: Get a hostname's MFT from job results
-    name: harfanglab-result-artefact-mft
+    name: harfanglab-result-artifact-mft
     outputs:
-    - contextPath: Harfanglab.Artefact.data
+    - contextPath: Harfanglab.Artifact.data
       description: Provides a link to download the raw MFT
   - arguments:
     - name: job_id
       description: Job id as returned by the job submission commands
       required: true
     description: Get a hostname's hives from job results
-    name: harfanglab-result-artefact-hives
+    name: harfanglab-result-artifact-hives
     outputs:
-    - contextPath: Harfanglab.Artefact.data
+    - contextPath: Harfanglab.Artifact.data
       description: Provides a link to download the raw hives
   - arguments:
     - name: job_id
       description: Job id as returned by the job submission commands
     description: Get a hostname's log files from job results
-    name: harfanglab-result-artefact-evtx
+    name: harfanglab-result-artifact-evtx
     outputs:
-    - contextPath: Harfanglab.Artefact.data
+    - contextPath: Harfanglab.Artifact.data
       description: Provides a link to download the evt/evtx files
   - arguments:
     - name: job_id
       description: Job id as returned by the job submission commands
     description: Get a hostname's log files from job results
-    name: harfanglab-result-artefact-logs
+    name: harfanglab-result-artifact-logs
     outputs:
-    - contextPath: Harfanglab.Artefact.data
+    - contextPath: Harfanglab.Artifact.data
       description: Provides a link to download the log files
   - arguments:
     - name: job_id
       description: Job id as returned by the job submission commands
     description: Get a hostname's filesystem entries from job results
-    name: harfanglab-result-artefact-filesystem
+    name: harfanglab-result-artifact-filesystem
     outputs:
-    - contextPath: Harfanglab.Artefact.data
+    - contextPath: Harfanglab.Artifact.data
       description: Provides a link to download the CSV file with filesystem entries
   - arguments:
     - name: job_id
       description: Job id as returned by the job submission commands
-    description: Get all artefacts from a hostname from job results
-    name: harfanglab-result-artefact-all
+    description: Get all artifacts from a hostname from job results
+    name: harfanglab-result-artifact-all
     outputs:
-    - contextPath: Harfanglab.Artefact.data
-      description: Provides a link to download an archive with all raw artefacts
+    - contextPath: Harfanglab.Artifact.data
+      description: Provides a link to download an archive with all raw artifacts
   - arguments:
     - name: job_id
       description: Job id as returned by the job submission commands
       required: true
     description: Get a hostname's file from job results
-    name: harfanglab-result-artefact-downloadfile
+    name: harfanglab-result-artifact-downloadfile
     outputs:
     - contextPath: Harfanglab.DownloadFile.data
       description: Provides a link to download the file
@@ -643,7 +643,7 @@ script:
       description: Job id as returned by the job submission commands
       required: true
     description: Get a hostname's RAM dump from job results
-    name: harfanglab-result-artefact-ramdump
+    name: harfanglab-result-artifact-ramdump
     outputs:
     - contextPath: Harfanglab.Ramdump.data
       description: Provides a link to download the raw RAM dump

@@ -13,9 +13,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* harfanglab-result-artefact-logs
 * harfanglab-get-endpoint-info
-* harfanglab-job-artefact-logs
+* harfanglab-job-artifact-hives
+* harfanglab-result-artifact-hives
 
 ## Playbook Inputs
 ---
@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Artefact Logs](./doc_files/Hurukai_-_Get_Artefact_Logs.png)
+![Hurukai - Get Artifact Hives](./doc_files/Hurukai_-_Get_Artifact_Hives.png)

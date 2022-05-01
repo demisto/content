@@ -2,14 +2,14 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-id: Hurukai - Get Artefact Hives
+id: Hurukai - Get Artifact Logs
 inputs:
 - description: ''
   key: agentid
   playbookInputQuery:
   required: true
   value: {}
-name: Hurukai - Get Artefact Hives
+name: Hurukai - Get Artifact Logs
 outputs: []
 starttaskid: '0'
 tasks:
@@ -27,12 +27,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 02d74837-0a4b-4ef0-8b9b-624f73b0ad3a
+      id: 909f4ed1-337d-4fb8-8049-f1a9886c6821
       iscommand: false
       name: ''
       version: -1
       description: ''
-    taskid: 02d74837-0a4b-4ef0-8b9b-624f73b0ad3a
+    taskid: 909f4ed1-337d-4fb8-8049-f1a9886c6821
     timertriggers: []
     type: start
     view: |-
@@ -82,13 +82,13 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      id: 9a567351-2803-4c99-864c-0e1e9abee69f
+      id: 08667dae-3eb1-4e2a-86c4-9037ef3ff285
       iscommand: false
       name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
-    taskid: 9a567351-2803-4c99-864c-0e1e9abee69f
+    taskid: 08667dae-3eb1-4e2a-86c4-9037ef3ff285
     timertriggers: []
     type: playbook
     view: |-
@@ -109,13 +109,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: afafcc66-b38e-4568-819f-5b1ad168ad62
+      id: bb9a1782-9971-42cc-876a-a7c57777697d
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: afafcc66-b38e-4568-819f-5b1ad168ad62
+    taskid: bb9a1782-9971-42cc-876a-a7c57777697d
     timertriggers: []
     type: title
     view: |-
@@ -142,14 +142,14 @@ tasks:
     skipunavailable: false
     task:
       brand: Hurukai
-      description: Start a job to download the hives from a host (Windows)
-      id: 5221c694-b4c1-44c2-8fb4-771adc0d86fa
+      description: Start a job to download Linux log files from a host (Linux)
+      id: ed8cdc21-b524-4b46-80b8-aa7628bce215
       iscommand: true
-      name: harfanglab-job-artefact-hives
-      script: Hurukai|||harfanglab-job-artefact-hives
+      name: harfanglab-job-artifact-logs
+      script: Hurukai|||harfanglab-job-artifact-logs
       type: regular
       version: -1
-    taskid: 5221c694-b4c1-44c2-8fb4-771adc0d86fa
+    taskid: ed8cdc21-b524-4b46-80b8-aa7628bce215
     timertriggers: []
     type: regular
     view: |-
@@ -163,7 +163,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Raw hive files
+        simple: Raw Linux log files
     id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -180,14 +180,14 @@ tasks:
     skipunavailable: false
     task:
       brand: Hurukai
-      description: Get a hostname's hives from job results
-      id: cb5c08d8-8473-449c-8581-6c2dc138aa0b
+      description: Get a hostname's log files from job results
+      id: e32fe571-28c3-4c24-8edc-7642ad4bed52
       iscommand: true
-      name: harfanglab-result-artefact-hives
-      script: Hurukai|||harfanglab-result-artefact-hives
+      name: harfanglab-result-artifact-logs
+      script: Hurukai|||harfanglab-result-artifact-logs
       type: regular
       version: -1
-    taskid: cb5c08d8-8473-449c-8581-6c2dc138aa0b
+    taskid: e32fe571-28c3-4c24-8edc-7642ad4bed52
     timertriggers: []
     type: regular
     view: |-
@@ -215,8 +215,8 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: windows
-      label: windows
+              simple: linux
+      label: linux
     id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -224,7 +224,7 @@ tasks:
     nexttasks:
       '#default#':
       - '5'
-      windows:
+      linux:
       - '6'
     note: false
     quietmode: 0
@@ -232,13 +232,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: c3268dff-73dc-4a2e-889a-4344ba2015e3
+      id: 55fb113d-ea6b-418e-843b-8772550639a3
       iscommand: false
       name: Which platform is the agent running on ?
       type: condition
       version: -1
       description: ''
-    taskid: c3268dff-73dc-4a2e-889a-4344ba2015e3
+    taskid: 55fb113d-ea6b-418e-843b-8772550639a3
     timertriggers: []
     type: condition
     view: |-
@@ -266,13 +266,13 @@ tasks:
     task:
       brand: Hurukai
       description: Get endpoint information from agent_id
-      id: 42e0deec-dc18-4cef-88bd-c849ea4a7ecd
+      id: 5b114b33-ab5c-43c7-8c76-caf4f50d70e7
       iscommand: true
       name: harfanglab-get-endpoint-info
       script: Hurukai|||harfanglab-get-endpoint-info
       type: regular
       version: -1
-    taskid: 42e0deec-dc18-4cef-88bd-c849ea4a7ecd
+    taskid: 5b114b33-ab5c-43c7-8c76-caf4f50d70e7
     timertriggers: []
     type: regular
     view: |-
@@ -298,4 +298,4 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0
-description: Get the RAW hives
+description: "Get all the log files"

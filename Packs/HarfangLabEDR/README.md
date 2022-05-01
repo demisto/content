@@ -12,6 +12,6 @@ The alert management playbook illustrates several steps of a typical incident re
 
   1. Endpoint isolation
   2. Forensics data collection 
-  3. Raw artefacts collection
+  3. Raw artifacts collection
   4. Agent reconnection
   5. Case closing

@@ -1,4 +1,4 @@
-Get a RAM dump from Windows and Linux endpoints.
+
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -13,9 +13,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
+* harfanglab-result-artifact-evtx
 * harfanglab-get-endpoint-info
-* harfanglab-result-artefact-ramdump
-* harfanglab-job-artefact-ramdump
+* harfanglab-job-artifact-evtx
 
 ## Playbook Inputs
 ---
@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Artefact RAM Dump](./doc_files/Hurukai_-_Get_Artefact_RAM_Dump.png)
+![Hurukai - Get Artifact Evtx](./doc_files/Hurukai_-_Get_Artifact_Evtx.png)

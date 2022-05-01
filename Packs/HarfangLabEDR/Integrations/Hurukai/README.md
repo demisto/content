@@ -21,14 +21,14 @@ The following commands are implemented in the connector:
 |harfanglab-hunt-search-runned-process-hash|Command used to search runned process associated with Hash|
 |harfanglab-hunt-search-running-process-hash|Command used to search running process associated with Hash|
 |harfanglab-isolate-endpoint|Command used to isolate an endpoint from the network while remaining connected to the EDR manager|
-|harfanglab-job-artefact-all|Start a job to download all artefacts from a host (Windows MFT, Hives, evt/evtx, Prefetch, USN, Linux logs and file list)|
-|harfanglab-job-artefact-downloadfile|Start a job to download a file from a host (Windows / Linux)|
-|harfanglab-job-artefact-evtx|Start a job to download the event logs from a host (Windows)|
-|harfanglab-job-artefact-filesystem|Start a job to download Linux filesystem entries from a host (Linux)|
-|harfanglab-job-artefact-hives|Start a job to download the hives from a host (Windows)|
-|harfanglab-job-artefact-logs|Start a job to download Linux log files from a host (Linux)|
-|harfanglab-job-artefact-mft|Start a job to download the MFT from a host (Windows)|
-|harfanglab-job-artefact-ramdump|Start a job to get the entine RAM from a host (Windows / Linux)|
+|harfanglab-job-artifact-all|Start a job to download all artifacts from a host (Windows MFT, Hives, evt/evtx, Prefetch, USN, Linux logs and file list)|
+|harfanglab-job-artifact-downloadfile|Start a job to download a file from a host (Windows / Linux)|
+|harfanglab-job-artifact-evtx|Start a job to download the event logs from a host (Windows)|
+|harfanglab-job-artifact-filesystem|Start a job to download Linux filesystem entries from a host (Linux)|
+|harfanglab-job-artifact-hives|Start a job to download the hives from a host (Windows)|
+|harfanglab-job-artifact-logs|Start a job to download Linux log files from a host (Linux)|
+|harfanglab-job-artifact-mft|Start a job to download the MFT from a host (Windows)|
+|harfanglab-job-artifact-ramdump|Start a job to get the entine RAM from a host (Windows / Linux)|
 |harfanglab-job-driverlist|Start a job to get the list of drivers from a host (Windows)|
 |harfanglab-job-info|Get job status information|
 |harfanglab-job-ioc|Start a job to search for IOCs on a host (Windows / Linux)|
@@ -45,14 +45,14 @@ The following commands are implemented in the connector:
 |harfanglab-job-sessionlist|Start a job to get the list of sessions from a host (Windows)|
 |harfanglab-job-startuplist|Start a job to get the list of startup items from a host (Windows)|
 |harfanglab-job-wmilist|Start a job to get the list of WMI items from a host (Windows)|
-|harfanglab-result-artefact-all|Get all artefacts from a hostname from job results|
-|harfanglab-result-artefact-downloadfile|Get a hostname's file from job results|
-|harfanglab-result-artefact-evtx|Get a hostname's log files from job results|
-|harfanglab-result-artefact-filesystem|Get a hostname's filesystem entries from job results|
-|harfanglab-result-artefact-hives|Get a hostname's hives from job results|
-|harfanglab-result-artefact-logs|Get a hostname's log files from job results|
-|harfanglab-result-artefact-mft|Get a hostname's MFT from job results|
-|harfanglab-result-artefact-ramdump|Get a hostname's RAM dump from job results|
+|harfanglab-result-artifact-all|Get all artifacts from a hostname from job results|
+|harfanglab-result-artifact-downloadfile|Get a hostname's file from job results|
+|harfanglab-result-artifact-evtx|Get a hostname's log files from job results|
+|harfanglab-result-artifact-filesystem|Get a hostname's filesystem entries from job results|
+|harfanglab-result-artifact-hives|Get a hostname's hives from job results|
+|harfanglab-result-artifact-logs|Get a hostname's log files from job results|
+|harfanglab-result-artifact-mft|Get a hostname's MFT from job results|
+|harfanglab-result-artifact-ramdump|Get a hostname's RAM dump from job results|
 |harfanglab-result-driverlist|Get a hostname's loaded drivers from job results|
 |harfanglab-result-ioc|Get the list of items matching IOCs searched in an IOC job|
 |harfanglab-result-networkconnectionlist|Get a hostname's network connections from job results|

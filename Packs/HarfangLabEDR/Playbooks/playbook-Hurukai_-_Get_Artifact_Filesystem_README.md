@@ -1,4 +1,4 @@
-
+Get a CSV list of files in a Linux filesystem
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -13,9 +13,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
+* harfanglab-result-artifact-filesystem
+* harfanglab-job-artifact-filesystem
 * harfanglab-get-endpoint-info
-* harfanglab-job-artefact-hives
-* harfanglab-result-artefact-hives
 
 ## Playbook Inputs
 ---
@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Artefact Hives](./doc_files/Hurukai_-_Get_Artefact_Hives.png)
+![Hurukai - Get Artifact Filesystem](./doc_files/Hurukai_-_Get_Artifact_Filesystem.png)

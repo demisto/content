@@ -505,7 +505,7 @@ tasks:
       brand: ''
       id: df1158e3-0b12-4b1b-8bed-123f27d3ffc7
       iscommand: false
-      name: 042223f8-f804-40db-807e-98ffe9edd936
+      name: Get Driver List
       playbookId: Hurukai - Get Driver List
       type: playbook
       version: -1
@@ -546,7 +546,7 @@ tasks:
       brand: ''
       id: f51f45dc-342c-443a-8d8c-27337dffdac1
       iscommand: false
-      name: f8dba8cd-4309-496b-8065-c75f7b905ebf
+      name: Get Process List
       playbookId: Hurukai - Get Process List
       type: playbook
       version: -1
@@ -599,7 +599,7 @@ tasks:
     message:
       bcc:
       body:
-        simple: Should I collect raw forensics artefacts ?
+        simple: Should I collect raw forensics artifacts ?
       cc:
       format: ''
       methods: []
@@ -695,7 +695,7 @@ tasks:
       brand: ''
       id: 9d9811ca-83a4-43fc-886c-c255955da4ec
       iscommand: false
-      name: ad6d6eb6-f904-4844-8a92-8fa66047d25a
+      name: Get Pipe List
       playbookId: Hurukai - Get Pipe List
       type: playbook
       version: -1
@@ -734,7 +734,7 @@ tasks:
       brand: ''
       id: 746b0128-0f13-4f51-8441-ea3a5e5502bf
       iscommand: false
-      name: 260672bf-fe36-48ae-8a42-173b3f173c85
+      name: Get Prefect List
       playbookId: Hurukai - Get Prefetch List
       type: playbook
       version: -1
@@ -773,7 +773,7 @@ tasks:
       brand: ''
       id: daf1e8f9-5ea6-43ef-872e-77937255760b
       iscommand: false
-      name: 30d429f7-07bf-402e-812b-f2534b5fd7d9
+      name: Get Runkey List
       playbookId: Hurukai - Get Runkey List
       type: playbook
       version: -1
@@ -812,7 +812,7 @@ tasks:
       brand: ''
       id: 092cd0de-c17e-409a-82cb-46be6a6cbd1b
       iscommand: false
-      name: fe6bd901-e90b-48a9-819b-23d6d100fc6a
+      name: Get Scheduled Task List
       playbookId: Hurukai - Get Scheduled Task List
       type: playbook
       version: -1
@@ -851,7 +851,7 @@ tasks:
       brand: ''
       id: 5e3706c9-0c0a-434e-8a46-e7b8cfb8c7c4
       iscommand: false
-      name: cf18c33f-939f-46d8-89e7-3e64a40f2fd5
+      name: Get Service List
       playbookId: Hurukai - Get Service List
       type: playbook
       version: -1
@@ -890,8 +890,8 @@ tasks:
       brand: ''
       id: 86948d43-a623-465d-80fb-4debbf764b2c
       iscommand: false
-      name: 8df35d93-1182-4b79-852f-9dd357277cfa
-      playbookId: Hurukai - Get Artefact RAM Dump
+      name: Get RAM Dump
+      playbookId: Hurukai - Get Artifact RAM Dump
       type: playbook
       version: -1
       description: ''
@@ -929,7 +929,7 @@ tasks:
       brand: ''
       id: a5538716-c8d0-48c5-8b33-e33a0264f8f4
       iscommand: false
-      name: 7176b0fc-ea58-46dc-8c7a-042f4590a386
+      name: Get Startup List
       playbookId: Hurukai - Get Startup List
       type: playbook
       version: -1
@@ -968,7 +968,7 @@ tasks:
       brand: ''
       id: cc9fc87f-6ccd-4b83-84ba-d1f13b38ccb2
       iscommand: false
-      name: 5ca4d0eb-7f20-480a-8e3d-3b1fc890de47
+      name: Get WMI List
       playbookId: Hurukai - Get WMI List
       type: playbook
       version: -1
@@ -1007,7 +1007,7 @@ tasks:
       brand: ''
       id: beab5b53-a23d-4aa6-8f76-789de3d1e646
       iscommand: false
-      name: cc5dbf4d-05f0-426c-8cea-644841d8b9b9
+      name: Get Persistence List
       playbookId: Hurukai - Get Persistence List
       type: playbook
       version: -1
@@ -1046,8 +1046,8 @@ tasks:
       brand: ''
       id: 6bcb81e7-3e05-481e-8eec-60e4b4044db5
       iscommand: false
-      name: Hurukai - Get All Artefacts
-      playbookId: Hurukai - Get All Artefacts
+      name: Hurukai - Get All Artifacts
+      playbookId: Hurukai - Get All Artifacts
       type: playbook
       version: -1
       description: ''
@@ -1085,7 +1085,7 @@ tasks:
       brand: ''
       id: e8def961-bfac-481d-8f87-ef6720eb17d9
       iscommand: false
-      name: cea9e3d1-0df0-4c95-8789-01a995080789
+      name: Get Network Share List
       playbookId: Hurukai - Get Network Share List
       type: playbook
       version: -1
@@ -1124,7 +1124,7 @@ tasks:
       brand: ''
       id: d47cec4a-ceee-4fa7-8260-5a302bbc365f
       iscommand: false
-      name: 616b37ba-3f17-49c3-88c9-e1b0853c8014
+      name: Get Session List
       playbookId: Hurukai - Get Session List
       type: playbook
       version: -1
@@ -1163,7 +1163,7 @@ tasks:
       brand: ''
       id: 6548e31d-c107-4c45-83f9-276c3cfb6898
       iscommand: false
-      name: 1b8d5fd8-e141-4846-8571-b9c98e643c69
+      name: Get Network Connection List
       playbookId: Hurukai - Get Network Connection List
       type: playbook
       version: -1
@@ -1319,7 +1319,7 @@ tasks:
     message:
       bcc:
       body:
-        simple: Should I collect raw forensics artefacts ?
+        simple: Should I collect raw forensics artifacts ?
       cc:
       format: ''
       methods: []
@@ -1405,7 +1405,7 @@ tasks:
     message:
       bcc:
       body:
-        simple: Should I collect raw forensics artefacts ?
+        simple: Should I collect raw forensics artifacts ?
       cc:
       format: ''
       methods: []
