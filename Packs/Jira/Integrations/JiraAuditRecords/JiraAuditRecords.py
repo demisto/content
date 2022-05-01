@@ -202,7 +202,7 @@ def main():
         if events:
             demisto.setLastRun(get_events.set_next_run(events[0]))
             if command == 'fetch-events':
-                send_events_to_xsiam(events)
+                send_events_to_xsiam(events, 'Jira', 'Audit Records')
             else:
                 get_events.events_to_incidents(events)
                 command_results = CommandResults(
