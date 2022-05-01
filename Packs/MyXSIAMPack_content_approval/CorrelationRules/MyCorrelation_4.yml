@@ -1,4 +1,4 @@
--alert_category: User Defined
+alert_category: User Defined
 alert_description: alert_desc UNION/JOIN eyal legacy correlation user mapping
 alert_fields:
   actor_image: null
