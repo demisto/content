@@ -6950,6 +6950,9 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
+        required: false
     deprecated: false
     description: Gets all ARP tables from all firewalls in the topology.
     name: pan-os-platform-get-arp-tables
@@ -6997,6 +7000,9 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
+        required: false
     deprecated: false
     description: Pulls all route summary information from the topology.
     name: pan-os-platform-get-route-summary
@@ -7020,6 +7026,9 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
+        required: false
     deprecated: false
     description: Pulls all route summary information from the topology.
     name: pan-os-platform-get-routes
@@ -7067,6 +7076,9 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
+        required: false
     deprecated: false
     description: Gets information from all PAN-OS systems in the topology.
     name: pan-os-platform-get-system-info
@@ -7223,6 +7235,9 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
+        required: false
     deprecated: false
     description: Gets global counter information from all the PAN-OS firewalls in the topology.
     name: pan-os-platform-get-global-counters
@@ -7276,6 +7291,9 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
+        required: false
     deprecated: false
     description: Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
     name: pan-os-platform-get-bgp-peers
@@ -7338,6 +7356,9 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
+        required: false
     deprecated: false
     description: Check the devices for software that is available to be installed.
     name: pan-os-platform-get-available-software
@@ -7379,6 +7400,9 @@ script:
         name: device_filter_string
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
+        required: false
     deprecated: false
     description: Get the HA state and associated details from the given device and any other details.
     name: pan-os-platform-get-ha-state
@@ -7420,6 +7444,9 @@ script:
       name: id
       required: false
       secret: false
+    - description: Target number of the firewall. Use only on a Panorama instance.
+      name: target
+      required: false
     deprecated: false
     description: Get all the jobs from the devices in the environment, or a single job when the ID is specified.
     name: pan-os-platform-get-jobs
@@ -7483,6 +7510,9 @@ script:
         name: sync
         required: false
         secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
+        required: false
     deprecated: false
     description: Download the provided software version onto the device.
     name: pan-os-platform-download-software
@@ -7493,7 +7523,204 @@ script:
       - contextPath: PANOS.DownloadStatus.Summary.started
         description: Whether the download process started.
         type: String
-  dockerimage: demisto/pan-os-python:1.0.0.28307
+  - arguments:
+    - default: false
+      description: Serial number, or IP address if Panorama Instance, to reboot.
+      isArray: false
+      name: target
+      required: true
+      secret: false
+    deprecated: false
+    execution: true
+    description: >
+      Reboot the given device by hostid. Warning: This command has no confirmation and the device
+      will immediately reboot. This command can be disruptive.
+    name: pan-os-platform-reboot
+    outputs:
+    - contextPath: PANOS.RestartStatus.Summary.hostid
+      type: String
+      description: Host ID
+    - contextPath: PANOS.RestartStatus.Summary.started
+      description: Whether the download process has started.
+      type: String
+  - arguments:
+    - default: false
+      description: Serial number, or IP address if Panorama Instance, to reboot.
+      isArray: false
+      name: target
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks the status of the given device, checking whether it's up or
+      down and if the operational mode is normal.
+    name: pan-os-platform-get-system-status
+    outputs:
+    - contextPath: PANOS.SystemStatus.hostid
+      type: String
+      description: Host ID.
+    - contextPath: PANOS.SystemStatus.up
+      description: Whether the host device is up or still unavailable.
+      type: String
+  - arguments:
+    - default: false
+      description: Serial number, or IP address if Panorama Instance, to reboot.
+      isArray: false
+      name: target
+      required: true
+      secret: false
+    - default: false
+      description: New state.
+      isArray: false
+      name: state
+      required: true
+      secret: false
+      auto: PREDEFINED
+      predefined:
+        - functional
+        - peer
+        - suspend
+    deprecated: false
+    description: Checks the status of the given device, checking whether it's up or
+      down and if the operational mode is normal.
+    name: pan-os-platform-update-ha-state
+    outputs:
+    - contextPath: PANOS.HAStateUpdate.hostid
+      type: String
+      description: Host ID
+    - contextPath: PANOS.HAStateUpdate.state
+      description: New HA state.
+      type: String
+  - arguments:
+    - default: false
+      description: String by which to filter so that only the given device is checked.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks that at least one log forwarding profile is configured according to best practices.
+    name: pan-os-hygiene-check-log-forwarding
+    outputs:
+    - contextPath: PANOS.ConfigurationHygiene.Summary.description
+      description: The description of the hygiene check.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
+      description: The shorthand code for this hygiene check.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.result
+      description: Whether the check passed or failed.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
+      description: Total number of matching issues.
+      type: Number
+    - contextPath: PANOS.ConfigurationHygiene.Result.hostid
+      type: String
+      description: Host ID.
+    - contextPath: PANOS.ConfigurationHygiene.Result.container_name
+      description: The parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.issue_code
+      description: The shorthand code for the issue.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.description
+      description: Human readable description of the issue.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.name
+      description: The affected object name.
+      type: String
+  - arguments:
+    - default: false
+      description: String by which to filter so that only the given device is checked.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    - default: false
+      defaultValue: critical,high
+      description: Comma-separated list of severities that must be in drop/reset/block-ip mode.
+      isArray: true
+      name: minimum_block_severities
+      required: false
+      secret: false
+    - default: false
+      defaultValue: medium,low
+      description: Comma-separated list of severities that must be in alert/default or higher
+        mode.
+      isArray: true
+      name: minimum_alert_severities
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks the configured vulnerability profiles to ensure at least one meets best practices.
+    name: pan-os-hygiene-check-vulnerability-profiles
+    outputs:
+    - contextPath: PANOS.ConfigurationHygiene.Summary.description
+      description: The description of the hygiene check.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
+      description: The shorthand code for this hygiene check.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.result
+      description: Whether the check passed or failed.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
+      description: Total number of matching issues.
+      type: Number
+    - contextPath: PANOS.ConfigurationHygiene.Result.hostid
+      type: String
+      description: Host ID.
+    - contextPath: PANOS.ConfigurationHygiene.Result.container_name
+      description: The parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.issue_code
+      description: The shorthand code for the issue.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.description
+      description: Human readable description of the issue.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.name
+      description: The affected object name.
+      type: String
+  - arguments:
+      - default: false
+        description: 'Software version to upgrade to, for example: 9.1.2.'
+        isArray: false
+        name: version
+        required: true
+        secret: false
+      - default: false
+        defaultValue: null
+        description: String by which to filter to only install to specific devices or 
+          serial numbers
+        isArray: false
+        name: device_filter_string
+        required: false
+        secret: false
+      - default: false
+        defaultValue: false
+        description: If provided, runs the download synchronously. Make sure 'execution-timeout'
+          is increased.
+        isArray: false
+        name: sync
+        required: false
+        secret: false
+      - description: Target number of the firewall. Use only on a Panorama instance.
+        name: target
+        required: false
+    deprecated: false
+    description: Install the given software version onto the device. Download the
+      software first with panorama-download-panos-version.
+    name: pan-os-platform-install-software
+    outputs:
+      - contextPath: PANOS.InstallStatus.Summary.hostid
+        description: Host ID.
+        type: String
+      - contextPath: PANOS.InstallStatus.Summary.started
+        description: Whether the download process has started.
+        type: String
+  dockerimage: demisto/pan-os-python:1.0.0.29113
   feed: false
   isfetch: false
   longRunning: false
