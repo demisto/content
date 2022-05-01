@@ -131,11 +131,25 @@ args:
   description: Include the current incident in EmailCampaign path in context.
   isArray: false
   name: includeSelf
-  required: false
-  secret: false
   predefined:
   - 'true'
   - 'false'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  description: 'Whether to plot incidents-indicators relations to canvas. Default
+    is "true". Skipping canvas ploting stage would improve runtime. Canvas skipping
+    would be skipped anyway if number of incidents exceeds a certain threshold to
+    avoid perofrmance issues.  '
+  isArray: false
+  name: plotCanvas
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
 comment: Find a campaign of emails based on their textual similarity.
 commonfields:
   id: FindEmailCampaign
