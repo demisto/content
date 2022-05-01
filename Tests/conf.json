@@ -5124,6 +5124,16 @@
             "fromversion": "6.1.0"
         },
         {
+            "scripts": "CheckIfSubdomain",
+            "playbookID": "CheckIfSubdomain_Test",
+            "fromversion": "6.0.0"
+        },
+        {
+            "scripts": "CIDRBiggerThanPrefix",
+            "playbookID": "CIDRBiggerThanPrefix_Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": [
                 "ForescoutEyeInspect"
             ],
