@@ -2036,13 +2036,11 @@ def fetch_incidents(client: Client) -> list:
     last_run = demisto.getLastRun()
     date_format = '%Y-%m-%d %H:%M:%S'
 
-    start_snow_time, _ = get_fetch_run_time_range(
+    start_snow_time, end_snow_time = get_fetch_run_time_range(
         last_run=last_run, first_fetch=client.fetch_time, look_back=client.look_back, date_format=date_format
     )
+    demisto.info(f'start-time {start_snow_time}')
     snow_time_as_date = datetime.strptime(start_snow_time, date_format)
-
-    # if we didn't fetch anything, make sure the end time is the same as initial time
-    end_snow_time = start_snow_time
 
     fetch_limit = last_run.get('limit') or client.sys_param_limit
 
@@ -2058,6 +2056,8 @@ def fetch_incidents(client: Client) -> list:
 
     demisto.info(f'Fetching ServiceNow incidents. with the query params: {str(query_params)}')
     tickets_response = client.send_request(f'table/{client.ticket_type}', 'GET', params=query_params).get('result', [])
+
+    demisto.info(f'----tickets number {len(tickets_response)}----')
 
     count = 0
 
@@ -2092,12 +2092,27 @@ def fetch_incidents(client: Client) -> list:
             'rawJSON': json.dumps(ticket)
         })
         count += 1
-        end_snow_time = ticket.get(client.timestamp_field)
+
+    incidents_names = [incident.get('name') for incident in incidents]
+    demisto.info(f'----before filtering {incidents_names}----')
 
     # remove duplicate incidents which were already fetched
     incidents = filter_incidents_by_duplicates_and_limit(
-        incidents_res=incidents, last_run=last_run, fetch_limit=fetch_limit, id_field='name'
+        incidents_res=incidents, last_run=last_run, fetch_limit=client.sys_param_limit, id_field='name'
     )
+    # INC0019760, INC0019767, INC0019784, INC0019821, INC0019833
+    incidents_names = [incident.get('name') for incident in incidents]
+    demisto.info(f'----after filtering {incidents_names}----')
+
+    # it means that all the incidents that we got from the api were already fetched since they are on the cache.
+    # adding limit to the api call would prevent from the last run to get stuck on the same timestamp forever
+    # if len(incidents) == 0 and len(tickets_response) > 0 and client.look_back > 0:
+    #     demisto.info(f'entered to increase the limit')
+    #     client.sys_param_limit += len(last_run.get('found_incident_ids', 0))
+
+    # if there is not look-back anymore, make the limit the default value of the integration parameter.
+    # if client.look_back == 0:
+    #     client.sys_param_limit = default_fetch_limit
 
     last_run = update_last_run_object(
         last_run=last_run,
@@ -2110,13 +2125,13 @@ def fetch_incidents(client: Client) -> list:
         id_field='name',
         date_format=date_format
     )
-
     demisto.info(f'last run at the end of the incidents fetching {last_run}')
 
     for ticket in incidents:
         # the occurred time requires to be in ISO format.
         ticket['occurred'] = f"{datetime.strptime(ticket.get('occurred'), date_format).isoformat()}Z"
 
+    demisto.info(f'final incidents {incidents}')
     demisto.setLastRun(last_run)
     return incidents
 
