@@ -47,16 +47,6 @@ configuration:
   name: max_fetch
   required: true
   type: 0
-- display: Alerts Fetch Interval
-  name: alertFetchInterval
-  defaultvalue: "1"
-  type: 19
-  required: false
-- display: Events Fetch Interval
-  name: eventFetchInterval
-  defaultvalue: "1"
-  type: 19
-  required: false
 description: '[Enter a comprehensive, yet concise, description of what the integration
   does, what use cases it is designed for, etc.]'
 display: Jira Audit Records
@@ -113,8 +103,6 @@ script:
       description: 'The list of items associated with the changed record'
       type: Unknown
   isfetchevents: true
-  isfetch: true
-  isFetchSamples: true
   runonce: false
   script: '-'
   type: python
