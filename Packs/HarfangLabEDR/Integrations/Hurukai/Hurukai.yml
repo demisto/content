@@ -78,6 +78,9 @@ script:
   - name: test-module
     arguments: []
     description: Allows to test that the HarfangLab EDR API is reachable
+  - name: fetch-incidents
+    arguments: []
+    description: Allows to retrieve incidents from the HarfangLab EDR API
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
