@@ -638,7 +638,8 @@ class Pack(object):
             Metadata.INTEGRATIONS: self._related_integration_images,
             Metadata.USE_CASES: self._use_cases,
             Metadata.KEY_WORDS: self._keywords,
-            Metadata.DEPENDENCIES: self._parsed_dependencies
+            Metadata.DEPENDENCIES: self._parsed_dependencies,
+            Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS, ''),
         }
 
         if self._is_private_pack:
