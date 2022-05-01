@@ -3408,7 +3408,7 @@ def prettify_applications_arr(applications_arr: Union[List[dict], dict]):
 
 
 @logger
-def panorama_list_applications(predefined: bool):
+def panorama_list_applications(predefined: bool) -> Union[List[dict], dict]:
     major_version = get_pan_os_major_version()
     params = {
         'type': 'config',
@@ -3428,17 +3428,15 @@ def panorama_list_applications(predefined: bool):
         'POST',
         body=params
     )
-    applications = result['response']['result']
+    applications_api_response = result['response']['result']
     if predefined:
-        return applications.get('application', {}).get('entry')
+        applications = applications_api_response.get('application', {}).get('entry') or []
     else:
-        if applications := applications.get('entry') or []:
-            return applications
+        applications = applications_api_response.get('entry') or []
+        if not applications and major_version > 9:
+            applications = applications_api_response.get('application') or []
 
-        if major_version > 9:
-            return applications.get('application') or []
-
-        return []
+    return applications
 
 
 def panorama_list_applications_command(predefined: Optional[str] = None):
