@@ -1,5 +1,5 @@
-The playbook accepts as an input MITRE techniques ID's
-provides the MITRE technique name and grabs all the technique data using the MITRE integration.
+This playbook accepts as input MITRE techniques IDs.  
+It returns the MITRE technique name and full technique data using the MITRE integration.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -8,7 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* FeedMitreAttackv2
+FeedMitreAttackv2
 
 ### Scripts
 This playbook does not use any scripts.
@@ -22,14 +22,14 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| TechniqueID | Accepts a single or array of MITRE technique ID's such as <br/>T1210 etc. |  | Optional |
+| TechniqueID | Accepts a single MITRE technique ID or array of technique IDs, for example: <br/>T1210 |  | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| AttackPattern | Array of attack patterns name and ID's. | string |
+| AttackPattern | Array of attack pattern names and IDs. | string |
 | MITREATTACK | Full MITRE data for the attack pattern. | string |
 
 ## Playbook Image
