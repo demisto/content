@@ -11,7 +11,7 @@
     "id": "incident_ostype",
     "isReadOnly": false,
     "locked": false,
-    "name": "OS Type",
+    "name": "HarfangLab EDR OS Type",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

@@ -696,6 +696,32 @@ script:
       required: true
     description: Assign a policy to an agent
     name: harfanglab-assign-policy-to-agent
+  - arguments:
+    - name: ioc_value
+      description: IOC value
+      required: true
+    - name: ioc_type
+      description: IOC type (hash, filename, filepath)
+      required: true
+    - name: ioc_comment
+      description: Comment associated to IOC
+    - name: ioc_status
+      description: IOC status (stable, testing)
+      required: true
+    - name: source_name
+      description: IOC Source Name
+      required: true
+    description: Add an IOC to a Threat Intelligence source
+    name: harfanglab-add-ioc-to-source
+  - arguments:
+    - name: ioc_value
+      description: IOC value
+      required: true
+    - name: source_name
+      description: IOC Source Name
+      required: true
+    description: Delete an IOC from a Threat Intelligence source
+    name: harfanglab-delete-ioc-from-source
   dockerimage: demisto/python3:3.10.4.28442
   isfetch: true
   longRunning: true

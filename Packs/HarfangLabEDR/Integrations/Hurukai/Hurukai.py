@@ -284,10 +284,76 @@ class Client(BaseClient):
             json_data=data
         )
 
-    def list_policies(self):
+    def list_policies(self, policy_name=None):
+        data = {}
+
+        if policy_name:
+            data['search'] = policy_name
+
         return self._http_request(
             method='GET',
             url_suffix='/api/data/endpoint/Policy/',
+            params=data
+        )
+
+    def list_sources(self, source_type='ioc', source_name=None):
+        data = {}
+
+        if source_name:
+            data['search'] = source_name
+
+        if source_type == 'yara':
+            url_suffix = '/api/data/threat_intelligence/YaraSource/'
+        elif source_type == 'sigma':
+            url_suffix = '/api/data/threat_intelligence/SigmaSource/'
+        elif source_type == 'ioc':
+            url_suffix = '/api/data/threat_intelligence/IOCSource/'
+
+        return self._http_request(
+            method='GET',
+            url_suffix=url_suffix,
+            params=data
+        )
+
+    def search_ioc(self, ioc_value, source_id):
+        data = {
+            'source_id': source_id,
+            'search': ioc_value
+        }
+
+        return self._http_request(
+            method='GET',
+            url_suffix='/api/data/threat_intelligence/IOCIndicator/',
+            params=data
+        )
+
+    def add_ioc_to_source(self, ioc_value, ioc_type, ioc_comment, ioc_status, source_id):
+
+        testing_status = None
+
+        if ioc_status == 'testing':
+            testing_status = 'in_progress'
+
+        data = {
+            'type': ioc_type,
+            'value': ioc_value,
+            'comment': ioc_comment,
+            'source_id': source_id,
+            'hl_status': ioc_status,
+            'hl_local_testing_status': testing_status
+        }
+
+        return self._http_request(
+            method='POST',
+            url_suffix='/api/data/threat_intelligence/IOCIndicator/',
+            json_data=data
+        )
+
+    def delete_ioc(self, ioc_id):
+        return self._http_request(
+            method='DELETE',
+            url_suffix=f'/api/data/threat_intelligence/IOCIndicator/{ioc_id}/',
+            return_empty_response=True
         )
 
     def assign_policy_to_agent(self, policyid, agentid):
@@ -304,7 +370,9 @@ class Client(BaseClient):
 
 def assign_policy_to_agent(client, args):
 
-    results = client.list_policies()
+    policy_name = args.get('policy', None)
+
+    results = client.list_policies(policy_name)
     policyid = None
     for policy in results['results']:
         if args['policy'] == policy['name']:
@@ -1798,6 +1866,70 @@ def change_security_event_status(client, args):
     return context
 
 
+def add_ioc_to_source(client, args):
+    ioc_value = args.get('ioc_value', None)
+    ioc_type = args.get('ioc_type', None)
+    ioc_comment = args.get('ioc_comment', '')
+    ioc_status = args.get('ioc_status', '')
+    source_name = args.get('source_name', None)
+
+    results = client.list_sources(source_type='ioc', source_name=source_name)
+
+    source_id = None
+
+    for source in results['results']:
+        if source['name'] == source_name:
+            source_id = source['id']
+
+    results = client.search_ioc(ioc_value, source_id)
+
+    context = {}
+    if results['count'] > 0:
+        context['Message'] = f'IOC {ioc_value} already exists in source {source_name}'
+    else:
+        client.add_ioc_to_source(ioc_value, ioc_type, ioc_comment, ioc_status, source_id)
+        context['Message'] = f'IOC {ioc_value} of type {ioc_type} added to source {source_name} with {ioc_status} status'
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': context,
+        'ContentsFormat': formats['json'],
+    })
+
+    return context
+
+
+def delete_ioc_from_source(client, args):
+    ioc_value = args.get('ioc_value', None)
+    source_name = args.get('source_name', None)
+
+    results = client.list_sources(source_type='ioc', source_name=source_name)
+
+    source_id = None
+
+    for source in results['results']:
+        if source['name'] == source_name:
+            source_id = source['id']
+
+    results = client.search_ioc(ioc_value=ioc_value, source_id=source_id)
+
+    context = {}
+    if results['count'] > 0:
+        ioc_id = results['results'][0]['id']
+        client.delete_ioc(ioc_id)
+        context['Message'] = f'IOC {ioc_value} removed from source {source_name}'
+    else:
+        context['Message'] = f'IOC {ioc_value} does not exist in source {source_name}'
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': context,
+        'ContentsFormat': formats['json'],
+    })
+
+    return context
+
+
 class Telemetry:
 
     def __init__(self):
@@ -2086,6 +2218,8 @@ def get_function_from_command_name(command):
         'harfanglab-change-security-event-status': change_security_event_status,
 
         'harfanglab-assign-policy-to-agent': assign_policy_to_agent,
+        'harfanglab-add-ioc-to-source': add_ioc_to_source,
+        'harfanglab-delete-ioc-from-source': delete_ioc_from_source,
 
         'fetch-incidents': fetch_incidents,
         'test-module': test_module
