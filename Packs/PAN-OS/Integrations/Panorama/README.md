@@ -6137,9 +6137,6 @@ Install the given software version onto the device. Download the software first 
 >|---|---|
 >| 1111111111111 | true |
 >| 192.168.1.145 | true |
-
-
-
 ### pan-os-get-version
 ***
 Get the pan-os version information.
@@ -6150,7 +6147,9 @@ Get the pan-os version information.
 `pan-os-get-version`
 #### Input
 
-There is no input for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
 
 #### Context Output
 
@@ -6161,27 +6160,26 @@ There is no input for this command.
 | PANOS.Version.model | String | The firewall/panorama model. | 
 | PANOS.Version.serial | String | The firewall/panorama serial number. | 
 
-
-#### Command Example
+#### Command example
 ```!pan-os-get-version```
-
 #### Context Example
-
 ```json
 {
-  "Panorama": {
-    "Version": {
-      "model": "Panorama",
-      "sw-version": "9.1.11",
-      "serial": "1234",
-      "multi-vsys": "off"
+    "Panorama": {
+        "Version": {
+            "model": "Panorama",
+            "multi-vsys": "off",
+            "serial": "1234",
+            "sw-version": "9.1.11"
+        }
     }
-  }
 }
 ```
 
 #### Human Readable Output
-### PAN-OS version information
-|sw-version|multi-vsys|model|serial|
-|---|---|---|---|
-| 9.1.11 | off | Panorama | 1234 |
+
+>### PAN-OS version information
+>|sw-version|multi-vsys|model|serial|
+>|---|---|---|---|
+>| 9.1.11 | off | Panorama | 1234 |
+
