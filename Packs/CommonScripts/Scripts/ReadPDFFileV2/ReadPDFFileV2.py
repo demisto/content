@@ -281,7 +281,7 @@ def extract_url_from_annot_object(annot_object):
         annot_object (PyPDF2.generic.DictionaryObject): An object contains annotations of a PDF.
 
     Returns:
-         (PyPDF2.generic.TextStringObject): The extracted url.
+         (PyPDF2.generic.TextStringObject): The extracted url if exists, else - None.
 
     """
 
@@ -293,7 +293,7 @@ def extract_url_from_annot_object(annot_object):
         if url := a.get('/URI'):
             if isinstance(url, PyPDF2.generic.IndirectObject):
                 url = url.getObject()
-    return url
+            return url
 
 
 def get_urls_and_emails_from_pdf_annots(file_path):
@@ -332,14 +332,13 @@ def get_urls_and_emails_from_pdf_annots(file_path):
                         annot_object = annot_object.getObject()
 
                     url = extract_url_from_annot_object(annot_object)
-
-                    # Separates URLs and Emails:
-                    matched_url = re.findall(URL_EXTRACTION_REGEX, url)
-                    if len(matched_url) != 0:
-                        urls_set.add(matched_url[0])
-                    matched_email = re.findall(EMAIL_REGXEX, url)
-                    if len(matched_email) != 0:
-                        emails_set.add(matched_email[0])
+                    if url:  # Separates URLs and Emails:
+                        matched_url = re.findall(URL_EXTRACTION_REGEX, url)
+                        if len(matched_url) != 0:
+                            urls_set.add(matched_url[0])
+                        matched_email = re.findall(EMAIL_REGXEX, url)
+                        if len(matched_email) != 0:
+                            emails_set.add(matched_email[0])
 
     # Logging:
     if len(urls_set) == 0:
