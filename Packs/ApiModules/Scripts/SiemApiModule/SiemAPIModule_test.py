@@ -1,5 +1,5 @@
 from typing import Any
-from SiemAPIModule import (
+from SiemApiModule import (
     IntegrationEventsClient,
     IntegrationHTTPRequest,
     IntegrationOptions,

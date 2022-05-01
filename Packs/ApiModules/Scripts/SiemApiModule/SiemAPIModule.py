@@ -2,7 +2,7 @@
 # pylint: disable=no-self-argument
 
 from abc import ABC
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -117,7 +117,7 @@ class IntegrationEventsClient(ABC):
             raise DemistoException(msg) from exc
 
     def _skip_cert_verification(
-        self, skip_cert_verification=skip_cert_verification
+        self, skip_cert_verification: Callable = skip_cert_verification
     ):
         if not self.request.verify:
             skip_cert_verification()
