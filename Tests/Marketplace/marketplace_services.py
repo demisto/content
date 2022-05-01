@@ -110,7 +110,7 @@ class Pack(object):
         self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
         self._is_modified = None  # initialized in detect_modified function
         self._is_siem = False  # initialized in collect_content_items function
-        self.error = ""
+        self.errors = []  # all errors occurred during TODO
         # Dependencies attributes - these contain only packs that are a part of this marketplace
         self._first_level_dependencies = {}  # initialized in set_pack_dependencies function
         self._all_levels_dependencies = []  # initialized in set_pack_dependencies function
@@ -804,8 +804,8 @@ class Pack(object):
                 output, err = signing_process.communicate()
 
                 if err:
-                    logging.error(f"Failed to sign pack for {self._pack_name} - {str(err)}")
-                    error = err
+                    error = f"Failed to sign pack for {self._pack_name} - {str(err)}"
+                    logging.error(error)
                     return
 
                 logging.info(f"Signed {self._pack_name} pack successfully")
@@ -813,10 +813,10 @@ class Pack(object):
                 logging.info(f"No signature provided. Skipped signing {self._pack_name} pack")
             task_status = True
         except Exception:
-            logging.exception(f"Failed to sign pack for {self._pack_name}")
-            error = err
+            error = f"Failed to sign pack for {self._pack_name}"
+            logging.exception(error)
         finally:
-            self.error = error
+            self.errors.append(error) if error else None
             return task_status
 
     @staticmethod
@@ -917,7 +917,9 @@ class Pack(object):
             if stdout:
                 logging.info(str(stdout))
             if stderr:
-                logging.error(f"Error: Premium pack {self._pack_name} should be encrypted, but isn't.")
+                error = f"Error: Premium pack {self._pack_name} should be encrypted, but isn't."
+                logging.error(error)
+                self.errors.append(error)
                 return False
             return True
 
@@ -1142,8 +1144,10 @@ class Pack(object):
         # Verifying that the latest version of the pack has been uploaded to the build bucket
         existing_bucket_version_files = [f.name for f in build_bucket.list_blobs(prefix=build_version_pack_path)]
         if not existing_bucket_version_files:
-            logging.error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
-                          f"path {build_version_pack_path}.")
+            error = f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at " \
+                    f"path {build_version_pack_path}."
+            logging.error(error)
+            self.errors.append(error)
             return False, False
 
         # We upload the pack zip object taken from the build bucket into the production bucket
@@ -1165,7 +1169,9 @@ class Pack(object):
             return False, False
 
         if not task_status:
-            logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
+            error = f"Failed in uploading {self._pack_name} pack to production gcs."
+            logging.error(error)
+            self.errors.append(error)
         else:
             # Determine if pack versions were aggregated during upload
             pack_uploaded_in_prepare_content = not pack_not_uploaded_in_prepare_content
@@ -1208,10 +1214,14 @@ class Pack(object):
                 self.public_storage_path = copied_blob.public_url
                 dep_task_status = copied_blob.exists()
                 if not dep_task_status:
-                    logging.error(f"Failed in uploading {self._pack_name} pack with dependencies to production gcs.")
+                    error = f"Failed in uploading {self._pack_name} pack with dependencies to production gcs."
+                    logging.error(error)
+                    self.errors.append(error)
             except Exception as e:
                 pack_deps_zip_suffix = os.path.join(self._pack_name, pack_with_deps_name)
-                logging.exception(f"Failed copying {pack_deps_zip_suffix}. Additional Info: {str(e)}")
+                error = f"Failed copying {pack_deps_zip_suffix}. Additional Info: {str(e)}"
+                logging.exception(error)
+                self.errors.append(error)
 
     def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, Version, str]:
         """
@@ -1457,7 +1467,7 @@ class Pack(object):
                                 f"pack_metadata.json: {self._current_version} and latest release notes " \
                                 f"version: {latest_release_notes}."
                         logging.error(error)
-                        self.error = error
+                        self.errors.append(error)
                         task_status = False
                         return task_status, not_updated_build
                     else:
@@ -1542,7 +1552,7 @@ class Pack(object):
         except Exception as e:
             error = f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n Additional info: {e}"
             logging.error(error)
-            self.error = error
+            self.errors.append(error)
         finally:
             return task_status, not_updated_build
 
@@ -1568,13 +1578,17 @@ class Pack(object):
                                 f" to {pack_changelog_path}.")
             except shutil.Error as e:
                 task_status = False
-                logging.error(f"Failed copying changelog.json file from {build_changelog_index_path} to "
-                              f"{pack_changelog_path}. Additional info: {str(e)}")
+                error = f"Failed copying changelog.json file from {build_changelog_index_path} to " \
+                        f"{pack_changelog_path}. Additional info: {str(e)}"
+                logging.error(error)
+                self.errors.append(error)
                 return task_status
         else:
             task_status = False
-            logging.error(
-                f"{self._pack_name} index changelog file is missing in build bucket path: {build_changelog_index_path}")
+            error = f"{self._pack_name} index changelog file is missing in build bucket path:" \
+                    f" {build_changelog_index_path}"
+            logging.error(error)
+            self.errors.append(error)
 
         return task_status and self.is_changelog_exists()
 
@@ -1899,7 +1913,9 @@ class Pack(object):
         try:
             user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
             if not os.path.exists(user_metadata_path):
-                logging.error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
+                error = f"{self._pack_name} pack is missing {Pack.USER_METADATA} file."
+                logging.error(error)
+                self.errors.append(error)
                 return task_status
 
             with open(user_metadata_path, "r") as user_metadata_file:
@@ -2302,7 +2318,9 @@ class Pack(object):
 
         try:
             if not os.path.exists(index_folder_path):
-                logging.error(f"{GCPConfig.INDEX_NAME} does not exists.")
+                error = f"{GCPConfig.INDEX_NAME} does not exists."
+                logging.error(error)
+                self.errors.append(error)
                 return task_status, exists_in_index
 
             exists_in_index = os.path.exists(os.path.join(index_folder_path, self._pack_name))
@@ -2455,10 +2473,11 @@ class Pack(object):
         for image_name in pc_uploaded_integration_images:
             build_bucket_image_path = os.path.join(build_bucket_base_path, self._pack_name, image_name)
             build_bucket_image_blob = build_bucket.blob(build_bucket_image_path)
-
+            error = ''
             if not build_bucket_image_blob.exists():
-                logging.error(f"Found changed/added integration image {image_name} in content repo but "
-                              f"{build_bucket_image_path} does not exist in build bucket")
+                error = f"Found changed/added integration image {image_name} in content repo but " \
+                        f"{build_bucket_image_path} does not exist in build bucket"
+                logging.error(error)
                 task_status = False
             else:
                 logging.info(f"Copying {self._pack_name} pack integration image: {image_name}")
@@ -2468,18 +2487,22 @@ class Pack(object):
                         new_name=os.path.join(storage_base_path, self._pack_name, image_name)
                     )
                     if not copied_blob.exists():
-                        logging.error(f"Copy {self._pack_name} integration image: {build_bucket_image_blob.name} "
-                                      f"blob to {copied_blob.name} blob failed.")
+                        error = f"Copy {self._pack_name} integration image: {build_bucket_image_blob.name} " \
+                                f"blob to {copied_blob.name} blob failed."
+                        logging.error(error)
                         task_status = False
                     else:
                         num_copied_images += 1
 
                 except Exception as e:
-                    logging.exception(f"{err_msg}. Additional Info: {str(e)}")
+                    error = f"{err_msg}. Additional Info: {str(e)}"
+                    logging.exception(error)
                     return False
+            self.errors.append(error) if error else None
 
         if not task_status:
             logging.error(err_msg)
+            self.errors.append(err_msg)
         else:
             if num_copied_images == 0:
                 logging.info(f"No added/modified integration images were detected in {self._pack_name} pack.")
@@ -2580,20 +2603,26 @@ class Pack(object):
                         new_name=os.path.join(storage_base_path, self._pack_name,
                                               Pack.AUTHOR_IMAGE_NAME))
                     if not copied_blob.exists():
-                        logging.error(f"Failed copying {self._pack_name} pack author image.")
+                        error = f"Failed copying {self._pack_name} pack author image."
+                        logging.error(error)
+                        self.errors.append(error)
                         return False
                     else:
                         logging.success(f"Copied successfully {self._pack_name} pack author image.")
                         return True
 
                 except Exception as e:
-                    logging.exception(f"Failed copying {Pack.AUTHOR_IMAGE_NAME} for {self._pack_name} pack. "
-                                      f"Additional Info: {str(e)}")
+                    error = f"Failed copying {Pack.AUTHOR_IMAGE_NAME} for {self._pack_name} pack. " \
+                            f"Additional Info: {str(e)}"
+                    logging.exception(error)
+                    self.errors.append(error)
                     return False
 
             else:
-                logging.error(f"Found changed/added author image in content repo for {self._pack_name} pack but "
-                              f"image does not exist in build bucket in path {build_author_image_path}.")
+                error = f"Found changed/added author image in content repo for {self._pack_name} pack but " \
+                        f"image does not exist in build bucket in path {build_author_image_path}."
+                logging.error(error)
+                self.errors.append(error)
                 return False
 
         else:
@@ -2764,8 +2793,10 @@ class Pack(object):
                                       bc_version in bc_versions_without_text]
         other_rn_text: str = self._get_release_notes_concat_str(release_notes_dir, rn_file_names_without_text)
         if not other_rn_text:
-            logging.error('No RN text, although text was expected to be found for versions'
-                          f' {rn_file_names_without_text}.')
+            error = 'No RN text, although text was expected to be found for versions ' \
+                    f' {rn_file_names_without_text}.'
+            logging.error(error)
+            self.errors.append(error)
         return f'{bc_with_text_str}{other_rn_text}'
 
     @staticmethod

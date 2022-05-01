@@ -1,5 +1,6 @@
 import json
 import os
+from junit_xml import TestSuite, TestCase
 # import re
 from demisto_sdk.commands.test_content.execute_test_content import _add_pr_comment
 from demisto_sdk.commands.test_content.execute_test_content import ParallelLoggingManager
@@ -49,15 +50,21 @@ def build_summary_report(validate_summary,
                          server_6_1_summary,
                          server_6_2_summary,
                          server_master_summary):
-    json_summary = {
-        'Validate': validate_summary,
-        'Unit tests': unit_tests_summary,
-        'Create instances': create_instances_summary,
-        'server 6.1': server_6_1_summary,
-        'server 6.2': server_6_2_summary,
-        'server master': server_master_summary,
-    }
-    convert_json_to_html(json_summary)
+    # json_summary = {
+    #     'Validate': validate_summary,
+    #     'Unit tests': unit_tests_summary,
+    #     'Create instances': create_instances_summary,
+    #     'server 6.1': server_6_1_summary,
+    #     'server 6.2': server_6_2_summary,
+    #     'server master': server_master_summary,
+    # }
+
+    # convert_json_to_html(json_summary)
+    for file, failing_validation in validate_summary.items():
+        # test_case = TestCase('Test1', 'some.class.name', 123.345, 'I am stdout!', 'I am stderr!')
+        test_case = [TestCase('Test1', f'validate.{file}', 123.345, 'I am stdout!', failing_validation)]
+        continue
+
 
 
 def test_get_failing_ut():
@@ -87,6 +94,15 @@ def test_get_failing_validations():
     else:
         pr_message = 'No failing validations in this push!\n'
     return pr_message, validate_summary
+
+
+def test_get_failing_create_instances():
+    failed_create_instances = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'packs_results.json'))
+    # file = open('validate_outputs.json', 'r')
+    # failed_validations = json.load(file)
+    create_instances_summary = {}
+
+    return pr_message, create_instances_summary
 
 
 def generate_build_report(logging_manager):
