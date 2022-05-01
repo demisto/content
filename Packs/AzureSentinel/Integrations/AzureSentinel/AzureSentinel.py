@@ -286,7 +286,6 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
     :param args: The args for the command.
     """
     fetched_incident_data = get_incident_by_id_command(client, args).raw_response
-    print(fetched_incident_data)
     owner = demisto.get(fetched_incident_data, 'properties.owner')
     title = args.get('title')
     description = args.get('description')
@@ -675,7 +674,6 @@ def list_watchlist_items_command(client, args):
 def update_incident_command(client: AzureSentinelClient, args: Dict[str, Any]):
     inc_id = args.get('incident_id')
     inc_data = get_update_incident_request_data(client, args)
-
     url_suffix = f'incidents/{inc_id}'
     result = client.http_request('PUT', url_suffix, data=inc_data)
     incident = incident_data_to_xsoar_format(result)
