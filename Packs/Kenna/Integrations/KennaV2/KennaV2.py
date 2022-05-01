@@ -425,10 +425,9 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
         tags = argToList(args.get('tags'))
     else:
         tags = args.get('tags')
-    if hostnames:
-        hostnames_query = f'hostname:({hostnames.replace(",", " ")})'
-    else:
-        hostnames_query = ""
+
+    hostnames_query = f'hostname:({hostnames.replace(",", " ")})' if hostnames else hostnames
+
     params = {
         'id[]': argToList(args.get('id')),
         'q': hostnames_query,
