@@ -9,7 +9,7 @@ import re
 import errno
 import shutil
 import json
-from typing import List
+from typing import List, Set
 from pikepdf import Pdf
 
 URL_EXTRACTION_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+' \
@@ -372,10 +372,8 @@ def get_urls_and_emails_from_pdf_annots(file_path):
         Tuple[set, set]: A set includes the URLs that were found, A set includes the Emails that were found.
 
     """
-    urls_set = set()
-    emails_set = set()
-    all_urls = set()
-    all_emails = set()
+    all_urls: Set[str] = set()
+    all_emails: Set[str] = set()
 
     pdf_file = open(file_path, 'rb')
     pdf = PyPDF2.PdfFileReader(pdf_file)
