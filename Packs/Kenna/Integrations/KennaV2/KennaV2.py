@@ -420,7 +420,7 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
     limit: int = int(args.get('limit', 500))
     to_context = args.get('to_context')
     context: Dict[str, Any] = {}
-    hostnames: str = args.get('hostname')
+    hostnames = args.get('hostname')
     if args.get('tags'):
         tags = argToList(args.get('tags'))
     else:
