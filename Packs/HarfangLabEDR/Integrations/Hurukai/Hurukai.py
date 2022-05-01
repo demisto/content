@@ -1622,7 +1622,7 @@ def result_artifact_ramdump(client, args):
     readable_output = tableToMarkdown('Ramdump list', output, headers=['hostname', 'msg', 'size', 'download link'])
 
     ec = {
-        'Harfanglab.Ramdump(val.agent_id && val.agent_id === obj.agent_id': {
+        'Harfanglab.Ramdump(val.agent_id && val.agent_id === obj.agent_id)': {
             'data': output,
         }
     }
@@ -1674,7 +1674,7 @@ def hunt_search_hash(client, args):
                                           'process associated to hash was previously executed'])
 
         ec = {
-            'Harfanglab.HuntHashSearch': {
+            'Harfanglab.HuntHashSearch(val.hash && val.hash === obj.hash)': {
                 'data': contextData,
             }
         }
@@ -1735,7 +1735,7 @@ def hunt_search_running_process_hash(client, args):
                                           "Is maybe hollow"])
 
         ec = {
-            'Harfanglab.HuntRunningProcessSearch': {
+            'Harfanglab.HuntRunningProcessSearch(val.hash && val.hash === obj.hash)': {
                 'data': contextData,
             }
         }
@@ -1788,7 +1788,7 @@ def hunt_search_runned_process_hash(client, args):
                                           "Hostname", "Domain", "Username", "OS", "Binary Path", "Create timestamp"])
 
         ec = {
-            'Harfanglab.HuntRunnedProcessSearch': {
+            'Harfanglab.HuntRunnedProcessSearch(val.hash && val.hash === obj.hash)': {
                 'data': contextData,
             }
         }

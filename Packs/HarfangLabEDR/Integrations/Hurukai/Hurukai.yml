@@ -651,18 +651,27 @@ script:
     - name: hash
       description: filehash to search (md5, sha1, sha256)
       required: true
-    description: Command used to search IOC in database
+    outputs:
+    - contextPath: Harfanglab.HuntHashSearch.data
+      description: Provides statistics associated to currently running processes and previously executed processes associated to hash
+    description: Command used to search a hash IOC in database
     name: harfanglab-hunt-search-hash
   - arguments:
     - name: hash
-      description: filehash to search (md5, sha1, sha256)
+      description: filehash to search (sha256)
       required: true
+    outputs:
+    - contextPath: Harfanglab.HuntRunningProcessSearch.data
+      description: List of all systems where processes associated to hash are running
     description: Command used to search running process associated with Hash
     name: harfanglab-hunt-search-running-process-hash
   - arguments:
     - name: hash
-      description: filehash to search (md5, sha1, sha256)
+      description: filehash to search (sha256)
       required: true
+    outputs:
+    - contextPath: Harfanglab.HuntRunnedProcessSearch.data
+      description: List of all systems where processes associated to hash have been previously running
     description: Command used to search runned process associated with Hash
     name: harfanglab-hunt-search-runned-process-hash
   - arguments:
