@@ -285,7 +285,10 @@ def main():
             return_results(commands[command](client, **args))  # type: ignore[operator]
 
     except Exception as e:
-        err_msg = f"Failed to execute {command} command. Error: {str(e)}\n\ntraceback: {traceback.format_exc()}"
+        try:
+            demisto.error(f'TAXII 2 Server Error - \n\n{e.__context__.doc}\n\n')
+        except:
+            pass
         if isinstance(e, requests.exceptions.SSLError):
             LOG(err_msg)
             err_msg = (
