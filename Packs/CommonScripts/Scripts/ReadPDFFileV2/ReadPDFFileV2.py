@@ -296,17 +296,86 @@ def extract_url_from_annot_object(annot_object):
             return url
 
 
+def extract_url(extracted_object):
+    """
+    Extracts URL (if exists) from the extracted object, according to the URL_EXTRACTION_REGEX.
+
+    Args:
+        extracted_object (PyPDF2.generic.TextStringObject): A TextStringObject object contains a url or an email.
+
+    Returns:
+         (str): The extracted url.
+    """
+    match = ''
+    matched_url = re.findall(URL_EXTRACTION_REGEX, extracted_object)
+    if len(matched_url) != 0:
+        match = matched_url[0]
+
+    return match
+
+
+def extract_email(extracted_object):
+    """
+    Extracts Email (if exists) from the extracted object, according to the EMAIL_REGXEX.
+
+    Args:
+        extracted_object (PyPDF2.generic.TextStringObject): A TextStringObject object contains a url or an email.
+
+    Returns:
+         (str): The extracted email.
+    """
+    match = ''
+    matched_email = re.findall(EMAIL_REGXEX, extracted_object)
+    if len(matched_email) != 0:
+        match = matched_email[0]
+
+    return match
+
+
+def extract_urls_and_emails_from_annot_objects(annot_objects):
+    """
+    Extracts URLs and Emails from the Annot objects, and separate them into two different sets.
+
+    Args:
+        annot_objects (List): A list of objects that contain annotations of a PDF.
+
+    Returns:
+         Tuple[set, set]: A set includes the extracted urls, A set includes the extracted emails.
+
+    """
+
+    urls = set()
+    emails = set()
+
+    for annot_object in annot_objects:
+        if isinstance(annot_object, PyPDF2.generic.IndirectObject):
+            annot_object = annot_object.getObject()
+
+        extracted_object = extract_url_from_annot_object(annot_object)
+        # Separates URLs and Emails:
+        if extracted_object:
+            if url := extract_url(extracted_object):
+                urls.add(url)
+            if email := extract_email(extracted_object):
+                emails.add(email)
+
+    return urls, emails
+
+
 def get_urls_and_emails_from_pdf_annots(file_path):
     """
     Extracts the URLs and Emails from the pdf's Annots (Annotations and Commenting) using PyPDF2 package.
     Args:
         file_path (str): The path of the PDF file.
 
-    Returns: A set includes the URLs that were found, A set includes the Emails that were found
+    Returns:
+        Tuple[set, set]: A set includes the URLs that were found, A set includes the Emails that were found.
 
     """
     urls_set = set()
     emails_set = set()
+    all_urls = set()
+    all_emails = set()
 
     pdf_file = open(file_path, 'rb')
     pdf = PyPDF2.PdfFileReader(pdf_file)
@@ -327,26 +396,18 @@ def get_urls_and_emails_from_pdf_annots(file_path):
                 if not isinstance(annot_objects, PyPDF2.generic.ArrayObject):
                     annot_objects = [annot_objects]
 
-                for annot_object in annot_objects:
-                    if isinstance(annot_object, PyPDF2.generic.IndirectObject):
-                        annot_object = annot_object.getObject()
-
-                    url = extract_url_from_annot_object(annot_object)
-                    if url:  # Separates URLs and Emails:
-                        matched_url = re.findall(URL_EXTRACTION_REGEX, url)
-                        if len(matched_url) != 0:
-                            urls_set.add(matched_url[0])
-                        matched_email = re.findall(EMAIL_REGXEX, url)
-                        if len(matched_email) != 0:
-                            emails_set.add(matched_email[0])
+                # Extracts URLs and Emails:
+                urls_set, emails_set = extract_urls_and_emails_from_annot_objects(annot_objects)
+                all_urls = all_urls.union(urls_set)
+                all_emails = all_emails.union(emails_set)
 
     # Logging:
-    if len(urls_set) == 0:
+    if len(all_urls) == 0:
         demisto.debug('No URLs were extracted from the PDF.')
-    if len(emails_set) == 0:
+    if len(all_emails) == 0:
         demisto.debug('No Emails were extracted from the PDF.')
 
-    return urls_set, emails_set
+    return all_urls, all_emails
 
 
 def extract_urls_and_emails_from_pdf_file(file_path, output_folder):
