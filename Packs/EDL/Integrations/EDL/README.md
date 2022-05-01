@@ -146,9 +146,9 @@ There is no context output for this command.
 Memory issue can happen in CSV / JSON format over 150,000 if all fields are selected.
 
 #### In terms of times
-10,000 indicators can take 10 - 20 seconds
-100,000 indicators can take 1 - 3 minutes
-1,000,000: takes over half an hour
-In 5 minutes (the default timeout of the integration) it does export between 200,000 - 400,000[[]]
-depending on the load on the server. the existing indicators in the server, and the query.
-For more than that need to set *NGINX Read Timeout* 
+* 10,000 indicators can take 10 - 20 seconds.
+* 100,000 indicators can take 1 - 3 minutes.
+* 1,000,000 indicators can takes over half an hour.
+In 5 minutes (the default timeout of the integration) the integration can export between 200,000 to 400,000 indicators,
+depending on the load of the server, the existing indicators in the server, and the query used.
+The *NGINX Read Timeout* can be set to increase the timeout.
