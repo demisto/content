@@ -1293,17 +1293,53 @@ def set_user_password(default_base_dn, port):
     demisto.results(demisto_entry)
 
 
-def enable_user(default_base_dn):
+def restore_user(default_base_dn, page_size):
+
     args = demisto.args()
 
+    # default query - list all users
+    query = "(&(objectClass=User)(objectCategory=person))"
+
+    # query by sAMAccountName
+    if args.get('username') or args.get('sAMAccountName'):
+        if args.get('username'):
+            username = escape_filter_chars(args['username'])
+        else:
+            username = escape_filter_chars(args['sAMAccountName'])
+        query = "(&(objectClass=User)(objectCategory=person)(sAMAccountName={}))".format(username)
+
+    attributes = list(set(DEFAULT_PERSON_ATTRIBUTES))
+
+    entries = search_with_paging(
+        query,
+        default_base_dn,
+        attributes=attributes,
+        size_limit=0,
+        page_size=page_size
+    )
+    if entries['flat']:
+        return entries['flat'][0].get('userAccountControl')[0]
+    return 0
+
+
+def turn_enable_bit_on(num):
+    return num & ~(1 << (2 - 1))
+
+
+def enable_user(default_base_dn, default_page_size):
+    args = demisto.args()
+    account_options = NORMAL_ACCOUNT
     # get user DN
     sam_account_name = args.get('username')
     search_base = args.get('base-dn') or default_base_dn
     dn = user_dn(sam_account_name, search_base)
 
+    if args.get('restore_user'):
+        account_options = restore_user(search_base, default_page_size)
+
     # modify user
     modification = {
-        'userAccountControl': [('MODIFY_REPLACE', NORMAL_ACCOUNT)]
+        'userAccountControl': [('MODIFY_REPLACE', turn_enable_bit_on(account_options))]
     }
     modify_object(dn, modification)
 
@@ -1315,17 +1351,18 @@ def enable_user(default_base_dn):
     demisto.results(demisto_entry)
 
 
-def disable_user(default_base_dn):
+def disable_user(default_base_dn, default_page_size):
     args = demisto.args()
 
     # get user DN
     sam_account_name = args.get('username')
     search_base = args.get('base-dn') or default_base_dn
     dn = user_dn(sam_account_name, search_base)
+    account_options = restore_user(search_base, default_page_size)
 
     # modify user
     modification = {
-        'userAccountControl': [('MODIFY_REPLACE', DISABLED_ACCOUNT)]
+        'userAccountControl': [('MODIFY_REPLACE', (account_options | DISABLED_ACCOUNT))]
     }
     modify_object(dn, modification)
 
@@ -1677,10 +1714,10 @@ def main():
             unlock_account(DEFAULT_BASE_DN)
 
         if command == 'ad-disable-account':
-            disable_user(DEFAULT_BASE_DN)
+            disable_user(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
         if command == 'ad-enable-account':
-            enable_user(DEFAULT_BASE_DN)
+            enable_user(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
         if command == 'ad-remove-from-group':
             remove_member_from_group(DEFAULT_BASE_DN)
