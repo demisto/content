@@ -78,12 +78,13 @@ The default value for `Exclude top level domainGlobs` is off. If enabled, the ex
 
 #### domainGlob
 
-When parsing ***domainGlob*** indicator types, the parser will create two different inputs as that is usually how DNS Firewalls work. For example if the ***domainGlob*** `*.bad.com` is parsed it will output two lines to the list:
+
+When parsing ***domainGlob*** indicator types, the parser creates two different inputs (usually how DNS Firewalls work). For example if the ***domainGlob*** `*.bad.com` is  parsed, it outputs two lines to the list:
 1. `*.bad.com`
 2. `bad.com`
 
 
-This is so the DNS will also block `bad.com` which will not happen if only `*.bad.com` is listed.
+The DNS also blocks `bad.com` which does not happen if only `*.bad.com` is listed.
 
 #### IP Collapsing
 
@@ -125,7 +126,7 @@ Use the following arguments in the URL to change the request:
 | ca                | Only with `proxysg` format. The categories which are exported. Indicators not falling into these categories are classified as the default category.                 | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&ca=category1,category2`           |
 | tx                | Whether to output `CSV` format as textual web pages.                                                                                                                | `https://{server_host}/instance/execute/{instance_name}?v=CSV&tx`                                   |
 | mc                | Configure max CIDR size.                                                                                                                                            | `https://{server_host}/instance/execute/{instance_name}?mc=10`                                      |
-| nt                 | Configure if to exclude top level domainGlobs.                                                                                                                         | `https://{server_host}/instance/execute/{instance_name}?nt=true`                                    |
+| nt                 | Configure whether to exclude top level domainGlobs.                                                                                                                         | `https://{server_host}/instance/execute/{instance_name}?nt=true`                                    |
 
 
 ## Commands
