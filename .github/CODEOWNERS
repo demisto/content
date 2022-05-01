@@ -44,7 +44,7 @@
 /Packs/MISP/* @abaumgarten
 
 # Important Scripts
-/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS
+/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS @altmannyarden
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
 
