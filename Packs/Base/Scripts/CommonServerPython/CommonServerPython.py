@@ -6385,12 +6385,14 @@ def return_error(message, error='', outputs=None):
                                                              'fetch-credentials',
                                                              'long-running-execution',
                                                              'fetch-indicators')
-    if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
-        message = "{}\n\n{}".format(message, fix_traceback_line_numbers(traceback.format_exc()))
-
     message = LOG(message)
     if error:
         LOG(str(error))
+    if any(sys.exc_info()):  # Checking that an exception occurred
+        fixed_traceback = fix_traceback_line_numbers(traceback.format_exc())
+        LOG('\n{}'.format(fixed_traceback))
+        if is_debug_mode():
+            message = '{}\n\n{}'.format(message, fixed_traceback)
 
     LOG.print_log()
     if not isinstance(message, str):
@@ -6407,7 +6409,7 @@ def return_error(message, error='', outputs=None):
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
             'Contents': message,
-            'EntryContext': outputs
+            'EntryContext': outputs,
         })
         sys.exit(0)
 
