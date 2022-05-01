@@ -201,8 +201,8 @@ class Client(BaseClient):
                 if (not os) or os.lower() == 'unknown':
                     os = 'Unknown OS'
                 device = log.get('client', {}).get('device')
-            if (not device) or device.lower() == 'unknown':
-                device = 'Unknown device'
+                if (not device) or device.lower() == 'unknown':
+                    device = 'Unknown device'
             targets = ''
             if log.get('target'):
                 for target in log.get('target'):
