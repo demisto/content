@@ -73,4 +73,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Cortex XDR Alerts Handling](Insert the link to your image here)
+![Cortex XDR Alerts Handling](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexXDR/doc_files/Cortex_XDR_Alerts_Handling.png)
