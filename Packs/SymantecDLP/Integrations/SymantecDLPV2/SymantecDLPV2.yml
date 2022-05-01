@@ -111,7 +111,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The limit for number of incidents listed per page. Defaut is 50.
+      description: The limit for number of incidents listed per page. 
       isArray: false
       name: limit
       required: false
@@ -120,7 +120,6 @@ script:
       defaultValue: '1'
       description: |-
         The page number you would like to view. Each page contains page_size values. Must be used along with page_size.
-        Default is 1.
       isArray: false
       name: page
       required: false
@@ -538,7 +537,7 @@ script:
       secret: false
     - default: true
       defaultValue: '50'
-      description: The limit of the incident history list per page. Default is 50.
+      description: The limit of the incident history list per page. 
       isArray: false
       name: limit
       required: false
