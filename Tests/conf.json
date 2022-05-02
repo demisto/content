@@ -5129,6 +5129,13 @@
             ],
             "playbookID": "playbook-ForescoutEyeInspect_Test",
             "fromversion": "6.1.0"
+        },
+        {
+            "integrations": [
+                "Github Event Collector"
+            ],
+            "playbookID": "Github Event Collector-test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {

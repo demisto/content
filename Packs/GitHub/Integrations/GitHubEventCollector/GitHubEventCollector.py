@@ -48,9 +48,6 @@ class ReqParams(BaseModel):
         get_github_timestamp_format
     )
 
-    def set_since_value(self, since: 'dateTime as ISO string') -> None:
-        self.since = since
-
 
 class Request(BaseModel):
     """
