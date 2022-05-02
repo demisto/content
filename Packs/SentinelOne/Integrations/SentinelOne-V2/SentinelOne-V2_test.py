@@ -1,7 +1,6 @@
 import io
 import json
 import pytest
-from CommonServerPython import CommandResults, fileResult
 import demistomock as demisto
 from importlib import import_module
 
@@ -126,12 +125,13 @@ def test_fetch_file(mocker, requests_mock):
     mocker.patch.object(demisto, 'args', return_value={
         'agent_id': agent_id,
         'file_path': "/does/not/matter/for/test",
-        'password' : "doesnotmatterfortest"
+        'password': "doesnotmatterfortest"
     })
     mocker.patch.object(sentinelone_v2, "return_results")
     main()
 
-    sentinelone_v2.return_results.assert_called_once_with(f"Intiated fetch-file action for /does/not/matter/for/test on Agent {agent_id}")
+    sentinelone_v2.return_results.assert_called_once_with(
+        f"Intiated fetch-file action for /does/not/matter/for/test on Agent {agent_id}")
 
 
 def test_download_fetched_file(mocker, requests_mock, capfd):
@@ -145,7 +145,6 @@ def test_download_fetched_file(mocker, requests_mock, capfd):
     with open('test_data/download_fetched_file.zip', 'rb') as f:
         dffzip_contents = f.read()
 
-    
     requests_mock.get(f'https://usea1.sentinelone.net/web/api/v2.1/agents/{agent_id}/uploads/1', content=dffzip_contents)
 
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
@@ -156,19 +155,17 @@ def test_download_fetched_file(mocker, requests_mock, capfd):
     mocker.patch.object(demisto, 'args', return_value={
         'agent_id': agent_id,
         'activity_id': "1",
-        'password' : "password"  # This matches the password of the `download_fetched_file.zip` file in test_data
+        'password': "password"  # This matches the password of the `download_fetched_file.zip` file in test_data
     })
     mocker.patch.object(sentinelone_v2, "return_results")
     main()
 
-    path = "download_fetch_file/test.txt"
 
     call = sentinelone_v2.return_results.call_args_list
     command_results, file_result = call[0].args[0]
-    
+
     assert command_results.outputs['Path'] == "download_fetched_file/"
-    
-    
+
 
 def test_get_blocklist(mocker, requests_mock):
     """
@@ -179,9 +176,10 @@ def test_get_blocklist(mocker, requests_mock):
     """
     raw_blockist_response = util_load_json('test_data/get_blocklist.json')
     blocklist_results = util_load_json('test_data/get_blocklist_results.json')
-    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/restrictions?tenant=True&groupIds=group_id&siteIds=site_id&accountIds=account_id&skip=0&limit=1&sortBy=updatedAt&sortOrder=desc",                       
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/restrictions?tenant=True&groupIds=group_id&siteIds=site_id"\
+                           "&accountIds=account_id&skip=0&limit=1&sortBy=updatedAt&sortOrder=desc",
                       json=raw_blockist_response)
-    
+
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',
                                                          'api_version': '2.1',
@@ -190,7 +188,7 @@ def test_get_blocklist(mocker, requests_mock):
     mocker.patch.object(demisto, 'args', return_value={
         'offset': "0",
         'limit': "1",
-        'group_ids' : ["group_id"],
+        'group_ids': ["group_id"],
         'site_ids': ["site_id"],
         'account_ids': ["account_id"],
         'global': "true"
@@ -213,9 +211,10 @@ def test_remove_hash_from_blocklist(mocker, requests_mock):
         Status that it has been removed from the blocklist
     """
     raw_blockist_response = util_load_json('test_data/remove_hash_from_blocklist.json')
-    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/restrictions?tenant=True&skip=0&limit=4&sortBy=updatedAt&sortOrder=asc&value__contains=f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2",                       
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/restrictions?tenant=True&skip=0&limit=4&sortBy=updatedAt&" \
+                           "sortOrder=asc&value__contains=f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2",
                       json=raw_blockist_response)
-    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data":[]})
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
 
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',
@@ -229,7 +228,7 @@ def test_remove_hash_from_blocklist(mocker, requests_mock):
     mocker.patch.object(sentinelone_v2, "return_results")
 
     main()
-    
+
     call = sentinelone_v2.return_results.call_args_list
     outputs = call[0].args[0].outputs
 
@@ -244,7 +243,7 @@ def test_add_hash_to_blocklist(mocker, requests_mock):
     Return:
         CommandResults with outputs set to a dict that has the hash and a response message
     """
-    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data":[]})
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
 
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',
@@ -258,10 +257,9 @@ def test_add_hash_to_blocklist(mocker, requests_mock):
     mocker.patch.object(sentinelone_v2, "return_results")
 
     main()
-    
+
     call = sentinelone_v2.return_results.call_args_list
     outputs = call[0].args[0].outputs
 
     assert outputs['hash'] == 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
     assert outputs['status'] == 'Added to blocklist'
-    
