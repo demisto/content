@@ -35,6 +35,7 @@ class BucketUploadFlow(object):
     SUCCESSFUL_PRIVATE_PACKS = "successful_private_packs"
     FAILED_PACKS = "failed_packs"
     STATUS = "status"
+    ERRORS = "errors"
     AGGREGATED = "aggregated"
     IMAGES = 'images'
     AUTHOR = 'author'

@@ -1,10 +1,8 @@
 import json
 import os
 from junit_xml import TestSuite, TestCase
-# import re
 from demisto_sdk.commands.test_content.execute_test_content import _add_pr_comment
 from demisto_sdk.commands.test_content.execute_test_content import ParallelLoggingManager
-# from json2html import *
 
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 JOB_ID = os.environ.get('CI_JOB_ID')
@@ -26,8 +24,8 @@ def get_file_data(file_path: str) -> dict:
         else:
             print(f'Did not find {file_path} file')
             return {}
-    except Exception:
-        print(f'Error getting {file_path} file')
+    except Exception as e:
+        print(f'Error getting {file_path} file, error: {str(e)}')
         return {}
 
 
@@ -43,13 +41,8 @@ def create_pr_comment(validate_pr_comment, unit_tests_pr_comment) -> str:
 def convert_json_to_html(json_obj):
     return json_obj
 
-
-def build_summary_report(validate_summary,
-                         unit_tests_summary,
-                         create_instances_summary,
-                         server_6_1_summary,
-                         server_6_2_summary,
-                         server_master_summary):
+validate_summary = {'Packs/Tripwire/pack_metadata.json': ['PA114 - The pack version (currently: 1.0.9) needs to be raised - make sure you are merged from master and update the "currentVersion" field in the pack_metadata.json or in case release notes are required run:\n`demisto-sdk update-release-notes -i Packs/Tripwire -u (major|minor|revision|documentation)` to generate them according to the new standard.', 'RN106 - Release notes were not found. Please run `demisto-sdk update-release-notes -i Packs/Tripwire -u (major|minor|revision|documentation)` to generate release notes according to the new standard. You can refer to the documentation found here: https://xsoar.pan.dev/docs/integrations/changelog for more information.']}
+def test_build_summary_report():
     # json_summary = {
     #     'Validate': validate_summary,
     #     'Unit tests': unit_tests_summary,
@@ -60,10 +53,15 @@ def build_summary_report(validate_summary,
     # }
 
     # convert_json_to_html(json_summary)
-    for file, failing_validation in validate_summary.items():
+    for file, failing_validations in validate_summary.items():
         # test_case = TestCase('Test1', 'some.class.name', 123.345, 'I am stdout!', 'I am stderr!')
-        test_case = [TestCase('Test1', f'validate.{file}', 123.345, 'I am stdout!', failing_validation)]
-        continue
+        test_cases = []
+        for failing_validation in failing_validations:
+            test_cases.append(TestCase('Validate', f'validate.{file}', stdout='I am stdout!', stderr=failing_validation))
+    ts = TestSuite("Validate", test_cases)
+    with open('output.xml', 'a') as f:
+        TestSuite.to_file(f, [ts], prettyprint=False)
+
 
 
 
@@ -79,9 +77,9 @@ def test_get_failing_ut():
 
 
 def test_get_failing_validations():
-    failed_validations = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'validate_outputs.json'))
-    # file = open('validate_outputs.json', 'r')
-    # failed_validations = json.load(file)
+    # failed_validations = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'validate_outputs.json'))
+    file = open('validate_outputs.json', 'r')
+    failed_validations = json.load(file)
     validate_summary = {}
     if failed_validations:
         pr_message = f'You have {len(failed_validations)} failing validations in this push.\n'
@@ -110,7 +108,12 @@ def generate_build_report(logging_manager):
     unit_tests_pr_comment, unit_tests_summary = test_get_failing_ut()
     pr_comment = create_pr_comment(validate_pr_comment, unit_tests_pr_comment)
     _add_pr_comment(pr_comment, logging_manager, 'here is a link to the full report')
-    build_summary_report(validate_summary, unit_tests_summary)
+    build_summary_report(validate_summary,
+                         unit_tests_summary,
+                         create_instances_summary,
+                         server_6_1_summary,
+                         server_6_2_summary,
+                         server_master_summary)
 
 
 def main():

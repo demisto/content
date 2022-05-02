@@ -2937,7 +2937,9 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
                 pack.name: {
                     BucketUploadFlow.STATUS: pack.status,
                     BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
-                    else "False"
+                    else "False",
+                    BucketUploadFlow.ERRORS: pack.errors,
+
                 } for pack in failed_packs
             }
         }
