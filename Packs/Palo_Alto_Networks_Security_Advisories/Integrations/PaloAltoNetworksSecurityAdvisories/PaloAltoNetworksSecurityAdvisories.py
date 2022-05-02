@@ -125,7 +125,6 @@ def locals_to_dict(locals_data: dict) -> dict:
 
 def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
     """Given a dictionary advisory, return an `Advisory` object"""
-    affects_dict = {}
 
     return Advisory(
         data_type=advisory_dict.get("data_type", ""),
@@ -138,7 +137,6 @@ def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
         cvss_severity=advisory_dict.get("impact", {}).get("cvss", {}).get("baseSeverity", ""),
         cvss_vector_string=advisory_dict.get("impact", {}).get("cvss", {}).get("vectorString", ""),
         affected_version_list=advisory_dict.get("x_affectedList", ""),
-        **affects_dict
     )
 
 
@@ -160,11 +158,12 @@ def get_advisories(client: Client, product: str, sort: str = "-date", severity: 
     :param q: Text search query
     """
     params_dict = {
-        "q": f"\"{q}\"",
         "severity": severity,
         "sort": sort,
         "product": product
     }
+    if q:
+        params_dict["q"] = f"\"{q}\""
 
     advisory_data = client.get_advisories(product, params_dict).get("data", {})
 
