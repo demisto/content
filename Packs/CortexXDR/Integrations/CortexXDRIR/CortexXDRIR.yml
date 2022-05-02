@@ -886,16 +886,16 @@ script:
       required: false
       secret: false
   - arguments:
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: The status of the endpoint to filter.
       isArray: false
       name: status
+      auto: PREDEFINED
       predefined:
-        - connected
-        - disconnected
-        - lost
-        - uninstalled
+      - connected
+      - disconnected
+      - lost
+      - uninstalled
     - default: false
       description: A comma-separated list of endpoint IDs.
       isArray: true
@@ -903,7 +903,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
+      description: |-
+        A comma-separated list of distribution package names or installation package names. 
+        Example: dist_name1,dist_name2
       isArray: true
       name: dist_name
       required: false
