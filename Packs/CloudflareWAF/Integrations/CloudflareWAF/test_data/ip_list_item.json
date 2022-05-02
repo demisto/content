@@ -1,6 +1,6 @@
 {
     "result": {
-        "id": "list_id"
+        "operation_id": "operation_id"
     },
     "success": true,
     "errors": [],

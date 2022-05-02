@@ -1,7 +1,7 @@
 {
     "result": [
         {
-            "id": "69e0db278f4b465ab72cdef5ff3eccd8",
+            "id": "list_id_1",
             "name": "d",
             "kind": "ip",
             "num_items": 0,
@@ -10,7 +10,7 @@
             "modified_on": "2022-04-26T11:42:55Z"
         },
         {
-            "id": "82963f46e892446e99ae3ff9fe1b6524",
+            "id": "list_id_2",
             "name": "my_first_list",
             "kind": "ip",
             "num_items": 10,

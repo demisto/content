@@ -1,29 +1,14 @@
 {
     "result": [
         {
-            "id": "c8bf98553afd4522bde108f600d8a794",
+            "id": "filter_id_1",
             "paused": false,
-            "expression": "(ip.src eq 181.18.9.11)"
+            "expression": "(ip.src eq 120.2.2.8)"
         },
         {
-            "id": "296dfbc2f10c4ea6bf524e28ef80e707",
+            "id": "filter_id_2",
             "paused": false,
-            "expression": "(ip.src eq 111.8.9.11)"
-        },
-        {
-            "id": "939904b25c28435da176aeccbeb97831",
-            "paused": false,
-            "expression": "(ip.src eq 115.8.9.12)"
-        },
-        {
-            "id": "5248f86419a9400b94212a10d53f09cd",
-            "paused": false,
-            "expression": "(ip.src in $demo_list2)"
-        },
-        {
-            "id": "6e3b1eb8e62a462d8e6530992ea5757d",
-            "paused": false,
-            "expression": "(ip.src eq 181.8.79.27)"
+            "expression": "(ip.src eq 120.2.2.8)"
         }
     ],
     "success": true,
@@ -31,9 +16,9 @@
     "messages": [],
     "result_info": {
         "page": 1,
-        "per_page": 5,
-        "count": 5,
-        "total_count": 62,
-        "total_pages": 13
+        "per_page": 2,
+        "count": 2,
+        "total_count": 2,
+        "total_pages": 1
     }
 }

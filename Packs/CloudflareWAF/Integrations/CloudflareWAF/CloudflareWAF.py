@@ -1,21 +1,18 @@
-# type: ignore
-# pylint: disable=no-member
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Any, Dict, Callable
-from requests import Response
+from typing import Any, Dict, Callable, Tuple
 
 
 class Client(BaseClient):
     """Client class to interact with CloudFlare WAF API."""
 
-    def __init__(self, credentials: str, account_id: str, zone_id: str = None):
+    def __init__(self, credentials: str, account_id: str, proxy: bool, insecure: bool, zone_id: str = None):
         self.account_id = account_id
         self.zone_id = zone_id
         self.base_url = 'https://api.cloudflare.com/client/v4/'
         headers = {'Authorization': f'Bearer {credentials}', 'Content-Type': 'application/json'}
-        super().__init__(base_url=self.base_url, headers=headers)
+        super().__init__(base_url=self.base_url, headers=headers, proxy=proxy, verify=insecure)
 
     def cloudflare_waf_firewall_rule_create_request(self, action: str, zone_id: str, description: str = None, products: list = None,
                                                     paused: bool = None, priority: int = None, ref: str = None,
@@ -100,8 +97,7 @@ class Client(BaseClient):
             url_suffix=f'zones/{zone_id}/firewall/rules',
             params={'id': rule_id})
 
-    def cloudflare_waf_firewall_rule_list_request(self, zone_id: str, rule_id: str = None, description: str = None, action: str = None,
-                                                  paused: bool = None, page: int = None, page_size: int = None) -> Dict[str, Any]:
+    def cloudflare_waf_firewall_rule_list_request(self, args: dict, page: int = None, page_size: int = None) -> Dict[str, Any]:
         """ List of firewall rules or details of individual rule by ID.
 
         Args:
@@ -115,21 +111,22 @@ class Client(BaseClient):
         Returns:
             dict: API response from Cloudflare.
         """
+
         params = remove_empty_elements({
-            'id': rule_id,
-            'description': description,
-            'action': action,
-            'paused': paused,
+            'id': args.get('rule_id'),
+            'description': args.get('description'),
+            'action': args.get('action'),
+            'paused': args.get('paused'),
             'page': page,
             'per_page': page_size
         })
+        zone_id = args.get('zone_id')
         return self._http_request(
             method='GET',
             url_suffix=f'zones/{zone_id}/firewall/rules',
             params=params)
 
-    def cloudflare_waf_zone_list_request(self, match: str = None, name: str = None, account_name: str = None, order: str = None,
-                                         status: str = None, account_id: str = None, direction: str = None, page: int = None, page_size: int = None) -> Dict[str, Any]:
+    def cloudflare_waf_zone_list_request(self, args: dict, page: int = None, page_size: int = None) -> Dict[str, Any]:
         """ List account's zones or details of individual zone by ID.
 
         Args:
@@ -147,13 +144,13 @@ class Client(BaseClient):
             dict: API response from Cloudflare.
         """
         params = remove_empty_elements({
-            'match': match,
-            'name': name,
-            'account_name': account_name,
-            'order': order,
-            'status': status,
-            'account_id': account_id,
-            'direction': direction,
+            'match': args.get('match'),
+            'name': args.get('name'),
+            'account_name': args.get('account_name'),
+            'order': args.get('order'),
+            'status': args.get('status'),
+            'account_id': args.get('account_id'),
+            'direction': args.get('direction'),
             'page': page,
             'per_page': page_size
         })
@@ -229,8 +226,7 @@ class Client(BaseClient):
             url_suffix=f'zones/{zone_id}/filters',
             params={'id': filter_id})
 
-    def cloudflare_waf_filter_list_request(self, zone_id: str, filter_id: str = None, expression: str = None, ref: str = None, paused: bool = None,
-                                           description: str = None, page: int = None, page_size: int = None) -> Dict[str, Any]:
+    def cloudflare_waf_filter_list_request(self, args: dict, page: int = None, page_size: int = None) -> Dict[str, Any]:
         """ List filters or details of individual filter by ID.
 
         Args:
@@ -247,15 +243,15 @@ class Client(BaseClient):
             dict: API response from Cloudflare.
         """
         params = remove_empty_elements({
-            'id': filter_id,
-            'expression': expression,
-            'ref': ref,
-            'paused': paused,
-            'description': description,
-            'zone_id': zone_id,
+            'id': args.get('filter_id'),
+            'expression': args.get('expression'),
+            'ref': args.get('ref'),
+            'paused': args.get('paused'),
+            'description': args.get('description'),
             'page': page,
             'per_page': page_size
         })
+        zone_id = args.get('zone_id')
         return self._http_request(
             method='GET',
             url_suffix=f'zones/{zone_id}/filters',
@@ -397,7 +393,17 @@ class Client(BaseClient):
             url_suffix=f'accounts/{self.account_id}/rules/lists/bulk_operations/{operation_id}')
 
 
-def validate_pagination_arguments(page: int = None, page_size: int = None, limit: int = None):
+def validate_pagination_arguments(page: int, page_size: int, limit: int):
+    """ Validate pagination arguments according to their default.
+
+    Args:
+        page (int, optional): Page number of paginated results.
+        page_size (int, optional): Number of ip-list per page.
+        limit (int, optional): The maximum number of records to retrieve.
+
+    Raises:
+        ValueError: Appropriate error message.
+    """
     if page_size:
         if page_size < 5 or page_size > 100:
             raise ValueError('page size argument must be greater than 5 and smaller than 100.')
@@ -406,12 +412,81 @@ def validate_pagination_arguments(page: int = None, page_size: int = None, limit
         if page < 1:
             raise ValueError('page argument must be greater than 0.')
 
-    if limit < 5 or limit > 100:
-        raise ValueError('limit argument must be greater than 5.')
+    if limit:
+        if limit < 5 or limit > 100:
+            raise ValueError('limit argument must be greater than 5.')
+
+
+@logger
+def pagination(request_command: Callable, args: list, pagination_args: dict) -> dict:
+    """ Executing Manual Pagination (using the page and page size arguments)
+        or Automatic Pagination (display a number of total results).
+    Args:
+        request_command (Callable): The command to execute.
+        args (list): The command arguments.
+        pagination_args (dict): page, page_size and limit arguments.
+
+    Returns:
+        dict: response, output, pagination message for Command Results.
+    """
+
+    page = pagination_args.get('page')
+    page_size = pagination_args.get('page_size')
+    limit = pagination_args.get('limit')
+    output = []
+    response = []
+
+    if page and page_size:
+        response = request_command(
+            args, page=page, page_size=page_size)
+
+        output = response['result']
+        total_num_item = dict_safe_get(response, ['result_info', 'count'])
+        page_num = dict_safe_get(response, ['result_info', 'page'])
+        total_pages = dict_safe_get(response, ['result_info', 'total_pages'])
+        pagination_message = f'Showing page {page_num} out of {total_pages}. \n Current page size: {total_num_item}'
+    else:
+        while limit > 0:
+            page_size = 100 if limit > 100 else limit
+            response = request_command(args, page_size=page_size)
+            total_count = dict_safe_get(response, ['result_info', 'total_count'])
+            output.extend(response['result'])
+            limit = limit - 100
+        pagination_message = f'Showing {len(output)} rows out of {total_count}.'
+
+    return response, output, pagination_message
+
+
+def ip_list_pagination(response: dict, page: int, page_size: int, limit: int) -> dict:
+    """ Executing Manual Pagination (using the page and page size arguments)
+        or Automatic Pagination (display a number of total results) for the ip-list commands.
+
+    Args:
+        response (dict): API response.
+        page (int, optional): Page number of paginated results.
+        page_size (int, optional): Number of ip-list per page.
+        limit (int, optional): The maximum number of records to retrieve.
+
+    Returns:
+        dict: output and pagination message for Command Results.
+    """
+    output = response
+    if page and page_size:
+        if page_size < len(response):
+            first_item = page_size * (page - 1)
+            output = response[first_item:first_item + page_size]
+        else:
+            output = response[:page_size]
+        pagination_message = f'Showing page {page} out of others that may exist. \n Current page size: {page_size}'
+    else:
+        output = response[:limit]
+        pagination_message = f'Showing {len(output)} rows out of {len(response)}.'
+
+    return output, pagination_message
 
 
 def cloudflare_waf_firewall_rule_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """ Create a new firewall rule by new filter (if filter_expression is specified)
+    """ Create a new firewall rule by a new filter (if filter_expression is specified)
         or an already exist filter (if filter_id is specified).
 
     Args:
@@ -421,22 +496,24 @@ def cloudflare_waf_firewall_rule_create_command(client: Client, args: Dict[str, 
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
+    action = args['action']
+    zone_id = args.get('zone_id', client.zone_id)
+    filter_id = args.get('filter_id')
+    filter_expression = args.get('filter_expression')
     products = argToList(args.get('products'))
     description = args.get('description')
-    action = args['action']
     paused = args.get('paused')
     paused = argToBoolean(paused) if paused else None
     priority = arg_to_number(args.get('priority'))
     ref = args.get('ref')
-    filter_id = args.get('filter_id')
-    filter_expression = args.get('filter_expression')
-    zone_id = args.get('zone_id', client.zone_id)
 
-    firewall_rule_item = client.cloudflare_waf_firewall_rule_create_request(
-        description=description, products=products, action=action, paused=paused, priority=priority, ref=ref,
-        filter_id=filter_id, filter_expression=filter_expression, zone_id=zone_id)
+    response = client.cloudflare_waf_firewall_rule_create_request(
+        action, zone_id,
+        description=description, products=products, paused=paused, priority=priority, ref=ref,
+        filter_id=filter_id, filter_expression=filter_expression)
 
-    output = firewall_rule_item['result']
+    output = response['result']
+    print(response)
     firewall_rule_output = output[0]
 
     firewall_rule = [{'id': dict_safe_get(firewall_rule_output, ['id']),
@@ -447,9 +524,8 @@ def cloudflare_waf_firewall_rule_create_command(client: Client, args: Dict[str, 
                       'filter_expression': dict_safe_get(firewall_rule_output, ['filter', 'expression']),
                       'products': dict_safe_get(firewall_rule_output, ['products']),
                       'ref': dict_safe_get(firewall_rule_output, ['ref']),
-                      'priority': dict_safe_get(firewall_rule_output, ['priority'])}]
-
-    output['zone_id'] = zone_id
+                      'priority': dict_safe_get(firewall_rule_output, ['priority']),
+                      'zone_id': zone_id}]
 
     readable_output = tableToMarkdown(
         name='Firewall rule was successfully created.',
@@ -462,7 +538,7 @@ def cloudflare_waf_firewall_rule_create_command(client: Client, args: Dict[str, 
         outputs_prefix='CloudflareWAF.FirewallRule',
         outputs_key_field='id',
         outputs=output,
-        raw_response=output
+        raw_response=response
     )
 
 
@@ -478,29 +554,28 @@ def cloudflare_waf_firewall_rule_update_command(client: Client, args: Dict[str, 
         CommandResults: readable outputs for XSOAR.
     """
     rule_id = args['id']
+    zone_id = args.get('zone_id', client.zone_id)
+    action = args.get('action')
+    filter_id = args.get('filter_id')
     products = args.get('products')
     description = args.get('description')
-    action = args.get('action')
     paused = args.get('paused')
     paused = argToBoolean(paused) if paused else None
     priority = arg_to_number(args.get('priority'))
     ref = args.get('ref')
-    filter_id = args.get('filter_id')
-    zone_id = args.get('zone_id', client.zone_id)
 
-    firewall_rule_item = client.cloudflare_waf_firewall_rule_update_request(
-        rule_id=rule_id, description=description, products=products, action=action, paused=paused, priority=priority, ref=ref,
-        filter_id=filter_id, zone_id=zone_id)
+    response = client.cloudflare_waf_firewall_rule_update_request(
+        rule_id, filter_id, zone_id, action, description=description,
+        products=products, paused=paused, priority=priority, ref=ref)
 
-    output = firewall_rule_item['result']
-    output['zone_id'] = zone_id
+    output = response['result']
 
     return CommandResults(
         readable_output=f'Firewall rule {rule_id} was successfully updated.',
         outputs_prefix='CloudflareWAF.FirewallRule',
         outputs_key_field='id',
         outputs=output,
-        raw_response=output
+        raw_response=response
     )
 
 
@@ -517,10 +592,11 @@ def cloudflare_waf_firewall_rule_delete_command(client: Client, args: Dict[str, 
     rule_id = args['id']
     zone_id = args.get('zone_id', client.zone_id)
 
-    client.cloudflare_waf_firewall_rule_delete_request(rule_id=rule_id, zone_id=zone_id)
+    output = client.cloudflare_waf_firewall_rule_delete_request(rule_id, zone_id)
 
     return CommandResults(
-        readable_output=f'Firewall rule {rule_id} was successfully deleted.'
+        readable_output=f'Firewall rule {rule_id} was successfully deleted.',
+        raw_response=output
     )
 
 
@@ -535,50 +611,32 @@ def cloudflare_waf_firewall_rule_list_command(client: Client, args: Dict[str, An
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
+    zone_id = args.get('zone_id', client.zone_id)
     rule_id = args.get('id')
     description = args.get('description')
     action = args.get('action')
     paused = args.get('paused')
     paused = argToBoolean(paused) if paused else None
+
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
-    zone_id = args.get('zone_id', client.zone_id)
 
-    validate_pagination_arguments(page=page, page_size=page_size, limit=limit)
+    validate_pagination_arguments(page, page_size, limit)
 
-    firewall_rule_lists = []
-
-    if page and page_size:
-        firewall_rule_list = client.cloudflare_waf_firewall_rule_list_request(
-            rule_id=rule_id, description=description, action=action, paused=paused, page=page, page_size=page_size, zone_id=zone_id)
-
-        firewall_rule_lists.extend(firewall_rule_list['result'])
-        total_num_item = dict_safe_get(firewall_rule_list, ['result_info', 'count'])
-        page_num = dict_safe_get(firewall_rule_list, ['result_info', 'page'])
-        total_pages = dict_safe_get(firewall_rule_list, ['result_info', 'total_pages'])
-        pagination_message = f'Showing page {page_num} out of {total_pages}. \n Current page size: {total_num_item}'
-    else:
-        while limit > 0:
-            if limit > 100:
-                page_size = 100
-            else:
-                page_size = limit
-            firewall_rule_list = client.cloudflare_waf_firewall_rule_list_request(
-                rule_id=rule_id, description=description, action=action, paused=paused, page=page, page_size=page_size, zone_id=zone_id)
-            total_count = dict_safe_get(firewall_rule_list, ['result_info', 'total_count'])
-            firewall_rule_lists.extend(firewall_rule_list['result'])
-            limit = limit - 100
-        pagination_message = f'Showing {len(firewall_rule_lists)} rows out of {total_count}.'
-
-    output = firewall_rule_lists
     firewall_rules = []
+
+    command_args = {'zone_id': zone_id, 'rule_id': rule_id, 'description': description, 'action': action, 'paused': paused}
+    pagination_args = {'limit': limit, 'page': page, 'page_size': page_size}
+    response, output, pagination_message = pagination(
+        client.cloudflare_waf_firewall_rule_list_request, command_args, pagination_args)
 
     for fr in output:
         firewall_rules.append({'id': fr['id'], 'action': fr['action'], 'paused': fr['paused'],
                                'description': dict_safe_get(fr, ['description']), 'filter_id': fr['filter']['id'],
-                               'filter_expression': fr['filter']['expression'], 'zone_id': zone_id
+                               'filter_expression': fr['filter']['expression']
                                })
+        fr['zone_id'] = zone_id
 
     readable_output = tableToMarkdown(
         name='Firewall rule list',
@@ -587,12 +645,13 @@ def cloudflare_waf_firewall_rule_list_command(client: Client, args: Dict[str, An
         headers=['id', 'action', 'paused', 'description', 'filter_id', 'filter_expression'],
         headerTransform=string_to_table_header
     )
+
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='CloudflareWAF.FirewallRule',
         outputs_key_field='id',
-        outputs=firewall_rules,
-        raw_response=output
+        outputs=output,
+        raw_response=response
     )
 
 
@@ -618,34 +677,13 @@ def cloudflare_waf_zone_list_command(client: Client, args: Dict[str, Any]) -> Co
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
-    validate_pagination_arguments(page=page, page_size=page_size, limit=limit)
+    validate_pagination_arguments(page, page_size, limit)
 
-    zone_lists = []
-    if page and page_size:
-        zone_list = client.cloudflare_waf_zone_list_request(match=match, name=name, account_name=account_name, order=order,
-                                                            status=status, account_id=account_id, direction=direction, page=page,
-                                                            page_size=page_size)
-
-        zone_lists.extend(zone_list['result'])
-        total_num_item = dict_safe_get(zone_list, ['result_info', 'count'])
-        page_num = dict_safe_get(zone_list, ['result_info', 'page'])
-        total_pages = dict_safe_get(zone_list, ['result_info', 'total_pages'])
-        pagination_message = f'Showing page {page_num} out of {total_pages}. \n Current page size: {total_num_item}'
-    else:
-        while limit > 0:
-            if limit > 100:
-                page_size = 100
-            else:
-                page_size = limit
-            zone_list = client.cloudflare_waf_zone_list_request(match=match, name=name, account_name=account_name, order=order,
-                                                                status=status, account_id=account_id, direction=direction, page=page,
-                                                                page_size=page_size)
-            total_count = dict_safe_get(zone_list, ['result_info', 'total_count'])
-            zone_lists.extend(zone_list['result'])
-            limit = limit - 100
-        pagination_message = f'Showing {len(zone_lists)} rows out of {total_count}'
-
-    output = zone_lists
+    command_args = {'match': match, 'name': name, 'account_name': account_name, 'order': order,
+                    'status': status, 'account_id': account_id, 'direction': direction}
+    pagination_args = {'limit': limit, 'page': page, 'page_size': page_size}
+    response, output, pagination_message = pagination(
+        client.cloudflare_waf_zone_list_request, command_args, pagination_args)
 
     readable_output = tableToMarkdown(
         name='Zone list',
@@ -660,7 +698,7 @@ def cloudflare_waf_zone_list_command(client: Client, args: Dict[str, Any]) -> Co
         outputs_prefix='CloudflareWAF.Zone',
         outputs_key_field='id',
         outputs=output,
-        raw_response=output
+        raw_response=response
     )
 
 
@@ -676,17 +714,18 @@ def cloudflare_waf_filter_create_command(client: Client, args: Dict[str, Any]) -
     """
 
     expression = args['expression']
+    zone_id = args.get('zone_id', client.zone_id)
+
     ref = args.get('ref')
     description = args.get('description')
     paused = args.get('paused')
     paused = argToBoolean(paused) if paused else None
-    zone_id = args.get('zone_id', client.zone_id)
 
-    filter_item = client.cloudflare_waf_filter_create_request(description=description, paused=paused, ref=ref,
-                                                              expression=expression, zone_id=zone_id)
+    response = client.cloudflare_waf_filter_create_request(
+        expression, zone_id, description=description, paused=paused, ref=ref)
 
-    output = filter_item['result']
-    output['zone_id'] = zone_id
+    output = response['result']
+    output.append({'zone_id': zone_id})
 
     readable_output = tableToMarkdown(
         name='Filter was successfully created.',
@@ -699,7 +738,7 @@ def cloudflare_waf_filter_create_command(client: Client, args: Dict[str, Any]) -
         outputs_prefix='CloudflareWAF.Filter',
         outputs_key_field='id',
         outputs=output,
-        raw_response=output
+        raw_response=response
     )
 
 
@@ -716,25 +755,26 @@ def cloudflare_waf_filter_update_command(client: Client, args: Dict[str, Any]) -
 
     filter_id = args['id']
     expression = args.get('expression')
+    zone_id = args.get('zone_id', client.zone_id)
     ref = args.get('ref')
     description = args.get('description')
     paused = args.get('paused')
     paused = argToBoolean(paused) if paused else None
-    zone_id = args.get('zone_id', client.zone_id)
 
-    filter_item = client.cloudflare_waf_filter_update_request(filter_id=filter_id, description=description, paused=paused, ref=ref,
-                                                              expression=expression, zone_id=zone_id)
+    response = client.cloudflare_waf_filter_update_request(
+        filter_id, expression, zone_id, description=description,
+        paused=paused, ref=ref)
 
-    output = filter_item['result']
-    output['zone_id'] = zone_id
+    output = response['result']
 
     return CommandResults(
         readable_output=f'Filter {filter_id} was successfully updated.',
         outputs_prefix='CloudflareWAF.Filter',
         outputs_key_field='id',
         outputs=output,
-        raw_response=output
+        raw_response=response
     )
+
 
 def cloudflare_waf_filter_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Delete filter by the specified filter ID.
@@ -750,11 +790,12 @@ def cloudflare_waf_filter_delete_command(client: Client, args: Dict[str, Any]) -
     filter_id = args['filter_id']
     zone_id = args.get('zone_id', client.zone_id)
 
-    l=client.cloudflare_waf_filter_delete_request(filter_id=filter_id, zone_id=zone_id)
-    print(l)
+    output = client.cloudflare_waf_filter_delete_request(filter_id, zone_id)
     return CommandResults(
         readable_output=f'Filter {filter_id} was successfully deleted.',
+        raw_response=output
     )
+
 
 def cloudflare_waf_filter_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ List of filters under the specified filter information includes the paused, ref and description.
@@ -767,49 +808,28 @@ def cloudflare_waf_filter_list_command(client: Client, args: Dict[str, Any]) -> 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-
+    zone_id = args.get('zone_id', client.zone_id)
     filter_id = args.get('id')
     expression = args.get('expression')
     ref = args.get('ref')
     description = args.get('description')
     paused = args.get('paused')
     paused = argToBoolean(paused) if paused else None
-    zone_id = args.get('zone_id', client.zone_id)
+
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
-    validate_pagination_arguments(page=page, page_size=page_size, limit=limit)
+    validate_pagination_arguments(page, page_size, limit)
 
-    filter_lists = []
-    if page and page_size:
-        filter_list = client.cloudflare_waf_filter_list_request(filter_id=filter_id, description=description, paused=paused, ref=ref,
-                                                                expression=expression, zone_id=zone_id, page=page,
-                                                                page_size=page_size)
-        filter_lists.extend(filter_list['result'])
-        total_num_item = dict_safe_get(filter_list, ['result_info', 'count'])
-        page_num = dict_safe_get(filter_list, ['result_info', 'page'])
-        total_pages = dict_safe_get(filter_list, ['result_info', 'total_pages'])
-        pagination_message = f'Showing page {page_num} out of {total_pages}. \n  Current page size: {total_num_item}'
-    else:
-        while limit > 0:
-            if limit > 100:
-                page_size = 100
-            else:
-                page_size = limit
-            filter_list = client.cloudflare_waf_filter_list_request(filter_id=filter_id, description=description, paused=paused, ref=ref,
-                                                                    expression=expression, zone_id=zone_id, page=page,
-                                                                    page_size=page_size)
-            total_count = dict_safe_get(filter_list, ['result_info', 'total_count'])
-            filter_lists.extend(filter_list['result'])
-            limit = limit - 100
+    command_args = {'zone_id': zone_id, 'filter_id': filter_id,
+                    'description': description, 'ref': ref, 'paused': paused, 'expression': expression}
+    pagination_args = {'limit': limit, 'page': page, 'page_size': page_size}
+    response, output, pagination_message = pagination(
+        client.cloudflare_waf_filter_list_request, command_args, pagination_args)
 
-        pagination_message = f'Showing {len(filter_lists)} rows out of {total_count}.'
-
-    for f in filter_lists:
+    for f in output:
         f['zone_id'] = zone_id
-
-    output = filter_lists
 
     readable_output = tableToMarkdown(
         name='Filter list',
@@ -824,7 +844,7 @@ def cloudflare_waf_filter_list_command(client: Client, args: Dict[str, Any]) -> 
         outputs_prefix='CloudflareWAF.Filter',
         outputs_key_field='id',
         outputs=output,
-        raw_response=output
+        raw_response=response
     )
 
 
@@ -846,30 +866,16 @@ def cloudflare_waf_ip_lists_list_command(client: Client, args: Dict[str, Any]) -
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
-    validate_pagination_arguments(page=page, page_size=page_size, limit=limit)
-    ip_lists = client.cloudflare_waf_ip_lists_list_request(list_id=list_id, page=page, page_size=page_size)
-    response = ip_lists['result']
+    validate_pagination_arguments(page, page_size, limit)
+
+    response = client.cloudflare_waf_ip_lists_list_request(
+        list_id, page=page, page_size=page_size)
+    response = response['result']
 
     if isinstance(response, dict):
         response = [response]
 
-    output = response
-
-    if page and page_size:
-        if page_size < len(response):
-            first_item = page_size * (page - 1)
-            output = response[first_item:]
-            output = output[:page_size]
-        else:
-            output = response[:page_size]
-        pagination_message = f'Showing page {page} out of others that may exist. \n Current page size: {page_size}'
-    else:
-        output = response[:limit]
-        pagination_message = f'Showing {len(output)} rows out of {len(response)}.'
-
-    ip_lists_lists = output
-
-    output = ip_lists_lists
+    output, pagination_message = ip_list_pagination(response, page, page_size, limit)
 
     readable_output = tableToMarkdown(
         name='IP lists list',
@@ -902,9 +908,10 @@ def cloudflare_waf_ip_list_create_command(client: Client, args: Dict[str, Any]) 
     name = args['name']
     description = args.get('description')
 
-    new_list = client.cloudflare_waf_ip_list_create_request(name=name, description=description)
+    response = client.cloudflare_waf_ip_list_create_request(
+        name, description=description)
 
-    output = new_list['result']
+    output = response['result']
     readable_output = tableToMarkdown(
         name='IP list was successfully created.',
         t=output,
@@ -916,7 +923,7 @@ def cloudflare_waf_ip_list_create_command(client: Client, args: Dict[str, Any]) 
         outputs_prefix='CloudflareWAF.IpList',
         outputs_key_field='id',
         outputs=output,
-        raw_response=output
+        raw_response=response
     )
 
 
@@ -933,10 +940,11 @@ def cloudflare_waf_ip_list_delete_command(client: Client, args: Dict[str, Any]) 
 
     list_id = args['id']
 
-    client.cloudflare_waf_ip_list_delete_request(list_id=list_id)
+    output = client.cloudflare_waf_ip_list_delete_request(list_id)
 
     return CommandResults(
-        readable_output=f'IP list {list_id} was successfully deleted'
+        readable_output=f'IP list {list_id} was successfully deleted',
+        raw_response=output
     )
 
 
@@ -954,14 +962,14 @@ def cloudflare_waf_ip_list_item_create_command(client: Client, args: Dict[str, A
     list_id = args['list_id']
     items = [{'ip': item} for item in argToList(args.get('items'))]
 
-    updated_list = client.cloudflare_waf_ip_list_item_create_request(list_id=list_id, items=items)
+    response = client.cloudflare_waf_ip_list_item_create_request(list_id, items)
 
-    output = updated_list['result']
+    output = response['result']
 
     return CommandResults(
         readable_output=f'Adding items to the ip-list {list_id} is executing',
         outputs=output,
-        raw_response=output
+        raw_response=response
     )
 
 
@@ -980,14 +988,14 @@ def cloudflare_waf_ip_list_item_update_command(client: Client, args: Dict[str, A
 
     items = [{'ip': item} for item in argToList(args.get('items'))]
 
-    updated_list = client.cloudflare_waf_ip_list_item_update_request(list_id=list_id, items=items)
+    response = client.cloudflare_waf_ip_list_item_update_request(list_id, items)
 
-    output = updated_list['result']
+    output = response['result']
 
     return CommandResults(
         readable_output=f'Replacing items in the IP List {list_id} is executing',
         outputs=output,
-        raw_response=output
+        raw_response=response
     )
 
 
@@ -1005,14 +1013,14 @@ def cloudflare_waf_ip_list_item_delete_command(client: Client, args: Dict[str, A
     list_id = args['list_id']
     items = [{'id': item} for item in argToList(args.get('items_id'))]
 
-    updated_list = client.cloudflare_waf_ip_list_item_delete_request(list_id=list_id, items=items)
+    response = client.cloudflare_waf_ip_list_item_delete_request(list_id, items)
 
-    output = updated_list['result']
+    output = response['result']
 
     return CommandResults(
         readable_output=f'Deleting items from ip-list {list_id} is executing',
         outputs=output,
-        raw_response=output
+        raw_response=response
     )
 
 
@@ -1033,24 +1041,15 @@ def cloudflare_waf_ip_list_item_list_command(client: Client, args: Dict[str, Any
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
-    validate_pagination_arguments(page=page, page_size=page_size, limit=limit)
+    validate_pagination_arguments(page, page_size, limit)
 
-    updated_list = client.cloudflare_waf_ip_list_item_list_request(list_id=list_id, item=item)
-    response = updated_list['result']
-    output = response
-    if page and page_size:
-        if page_size < len(response):
-            first_item = page_size * (page - 1)
-            output = response[first_item:]
-            output = output[:page_size]
-        else:
-            output = response[:page_size]
-        pagination_message = f'Showing page {page} out of others that may exist. \n Current page size: {page_size}'
-    else:
-        output = response[:limit]
-        pagination_message = f'Showing {len(output)} rows out of {len(response)}.'
+    item_list = client.cloudflare_waf_ip_list_item_list_request(list_id, item=item)
+    response = item_list['result']
+
+    output, pagination_message = ip_list_pagination(response, page, page_size, limit)
 
     new_output = {'list_id': list_id, 'items': output}
+
     readable_output = tableToMarkdown(
         name=f'ip-list {list_id}',
         metadata=pagination_message,
@@ -1060,26 +1059,25 @@ def cloudflare_waf_ip_list_item_list_command(client: Client, args: Dict[str, Any
     )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='CloudflareWAF.IpListItems',
+        outputs_prefix='CloudflareWAF.IpListItem',
         outputs_key_field='list_id',
         outputs=new_output,
-        raw_response=new_output
+        raw_response=item_list
     )
 
 
 def cloudflare_waf_get_operation_command(client: Client, operation_id) -> CommandResults:
-    """_summary_
+    """ Get operation command status.
 
     Args:
-        client (Client): _description_
-        operation_id (_type_): _description_
+        client (Client): ClouDflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
-        CommandResults: _description_
+        CommandResults: status, outputs, readable outputs and raw response for XSOAR.
     """
     response = client.cloudflare_waf_get_operation_request(operation_id)
     output = response['result']
-    status = output['status']
 
     readable_output = 'The command was executed successfully'
     return CommandResults(
@@ -1088,7 +1086,7 @@ def cloudflare_waf_get_operation_command(client: Client, operation_id) -> Comman
         outputs_key_field='id',
         outputs=output,
         raw_response=output
-    ), status
+    )
 
 
 def test_module(client: Client) -> None:
@@ -1102,9 +1100,36 @@ def test_module(client: Client) -> None:
     return 'ok'
 
 
-def run_polling_command(client: Client, cmd: str, command: Callable, args: Dict[str, Any]) -> None:
-    """_summary_
+def scheduled_commands(operation_id: str, interval: int, timeout: int, cmd: Callable, args: Dict[str, Any]) -> ScheduledCommand:
+    """ Build scheduled command if operation status is not completed.
 
+    Args:
+        operation_id (str): The command operation ID.
+        interval (int): _description_
+        timeout (int): _description_
+        cmd (Callable): The command to execute.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        ScheduledCommand: Command, args, timeout and interval for CommandResults.
+    """
+
+    polling_args = {
+        'operation_id': operation_id,
+        'interval': interval,
+        'polling': True,
+        **args
+    }
+    scheduled_command = ScheduledCommand(
+        command=cmd,
+        next_run_in_seconds=interval,
+        args=polling_args,
+        timeout_in_seconds=timeout)
+    return scheduled_command
+
+
+def run_polling_command(client: Client, cmd: str, command_function: Callable, args: Dict[str, Any]) -> CommandResults:
+    """ Run a pipline.
     Args:
         cmd (str): The command name.
         command (Callable): The command.
@@ -1112,48 +1137,29 @@ def run_polling_command(client: Client, cmd: str, command: Callable, args: Dict[
         args (Dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
-        _type_: _description_
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     ScheduledCommand.raise_error_if_not_supported()
-    interval = arg_to_number(args.get('interval'), 30)
+    interval = arg_to_number(args.get('interval'), 10)
     timeout = arg_to_number(args.get('timeout'), 60)
 
     if 'operation_id' not in args:
-        command_results: Dict[str, Any] = command(client, args)
+        command_results = command_function(client, args)
         outputs = command_results.outputs
         operation_id = outputs.get('operation_id')
+
         if outputs.get('status') != 'completed':
-            polling_args = {
-                'operation_id': operation_id,
-                'interval': interval,
-                'polling': True,
-                **args
-            }
-            scheduled_command = ScheduledCommand(
-                command=cmd,
-                next_run_in_seconds=interval,
-                args=polling_args,
-                timeout_in_seconds=timeout)
+            scheduled_command = scheduled_commands(operation_id, interval, timeout, cmd, args)
             command_results.scheduled_command = scheduled_command
             return command_results
         else:
             args['operation_id'] = operation_id
+
     operation_id = args.get('operation_id')
-    command_results, status = cloudflare_waf_get_operation_command(client, operation_id)
+    command_results = cloudflare_waf_get_operation_command(client, operation_id)
 
-    if status != 'completed':
-        polling_args = {
-            'operation_id': args.get('operation_id'),
-            'interval': interval,
-            'polling': True,
-            **args
-        }
-        scheduled_command = ScheduledCommand(
-            command=cmd,
-            next_run_in_seconds=interval,
-            args=polling_args,
-            timeout_in_seconds=timeout)
-
+    if command_results.outputs['status'] != 'completed':
+        scheduled_command = scheduled_commands(operation_id, interval, timeout, cmd, args)
         command_results = CommandResults(scheduled_command=scheduled_command)
     return command_results
 
@@ -1165,6 +1171,8 @@ def main() -> None:
     credentials = params.get('credentials', {}).get('identifier')
     account_id = params.get('account_id', {}).get('identifier')
     zone_id = params.get('zone_id', {}).get('identifier')
+    proxy = params.get('proxy')
+    insecure = params.get('insecure')
 
     polling = args.get('polling')
 
@@ -1188,7 +1196,7 @@ def main() -> None:
         'cloudflare-waf-ip-list-item-list': cloudflare_waf_ip_list_item_list_command
     }
     try:
-        client: Client = Client(credentials, account_id, zone_id)
+        client: Client = Client(credentials, account_id, proxy, insecure, zone_id)
 
         if command == 'test-module':
             return_results(test_module(client))

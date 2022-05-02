@@ -4,25 +4,25 @@ commonfields:
   version: -1
 configuration:
 - name: credentials
-  display: User Token
+  display: The API user Token.
+  displaypassword: User Token
   required: true
-  defaultvalue:
   type: 9
-  hiddenusername: false
+  hiddenusername: true
 - name: account_id
-  display: Account ID
+  displaypassword: Account ID
   required: true
-  defaultvalue:
   type: 9
   additionalinfo: Account identifier.
-  hiddenusername: false
-- name: zone_id
+  hiddenusername: true
+- displaypassword: zone_id
   display: Default Zone ID
   required: false
-  defaultvalue:
   type: 9
-  additionalinfo: The domain identifier. Zone ID can be override when executing commands.The domain identifier. Zone ID can be override when executing commands.
-  hiddenusername: false
+  additionalinfo: The domain identifier. Zone ID can be override when executing
+    commands.The domain identifier. Zone ID can be override when executing
+    commands.
+  hiddenusername: true
 - name: proxy
   display: Use system proxy settings
   required: false
@@ -58,7 +58,7 @@ script:
       isArray: false
       name: filter_id
       required: false
-    - description: 'Filter expression when creating a filter for a new rule. Required if filter_id is unspecified. Expression example: "(ip.src eq 192.0.0.4) or (ip.src in $list_name)"'
+    - description: 'Filter expression when creating a filter for a new rule. Required if filter_id is unspecified. Expression example: "(ip.src eq 192.0.0.4) or (ip.src in $list_name)". For syntax explanations and more examples: https://developers.cloudflare.com/ruleset-engine/rules-language/expressions/'
       isArray: false
       name: filter_expression
       required: false
@@ -111,17 +111,19 @@ script:
     execution: false
     name: cloudflare-waf-firewall-rule-create
     outputs:
-    - contextPath: CloudflareWAF.FirewallRule.Id
+    - contextPath: CloudflareWAF.FirewallRule.id
       description: Firewall rule ID.
       type: String
-    - contextPath: 'CloudflareWAF.FirewallRule.priority '
+    - contextPath: CloudflareWAF.FirewallRule.priority
       description: The priority of the rule to allow control of processing order.
-    - contextPath: 'CloudflareWAF.FirewallRule.products '
+    - contextPath: CloudflareWAF.FirewallRule.action
+      description: The action of the rule.
+    - contextPath: CloudflareWAF.FirewallRule.products
       description: List of products to bypass for a request when the bypass action is used.
     - contextPath: CloudflareWAF.FirewallRule.paused
       description: Whether this firewall rule is currently paused.
       type: Boolean
-    - contextPath: 'CloudflareWAF.FirewallRule.description '
+    - contextPath: CloudflareWAF.FirewallRule.description
       description: A description of the rule to help identify it.
       type: String
     - contextPath: CloudflareWAF.FirewallRule.ref
@@ -211,7 +213,10 @@ script:
     description: Delete firewall rule by the specified rule ID.
     execution: false
     name: cloudflare-waf-firewall-rule-delete
-    outputs: []
+    outputs:
+    - contextPath: CloudflareWAF.FirewallRule.id
+      description: Firewall rule ID.
+      type: String
   - arguments:
     - description: 'Firewall Rule identifier. '
       isArray: false
@@ -294,7 +299,7 @@ script:
       description: Short reference tag.
       type: String
   - arguments:
-    - description: 'The filter expression to be used. Expression example: "(ip.src eq 192.0.0.4) or (ip.src in $list_name)"'
+    - description: 'The filter expression to be used. Expression example: "(ip.src eq 192.0.0.4) or (ip.src in $list_name)". For syntax explanations and more examples: https://developers.cloudflare.com/ruleset-engine/rules-language/expressions/'
       isArray: false
       name: expression
       required: true
@@ -346,7 +351,7 @@ script:
       defaultValue: ''
       predefined:
       - ''
-    - description: 'The filter expression to be used. Expression example: "(ip.src eq 192.0.0.4) or (ip.src in $list_name)"'
+    - description: 'The filter expression to be used. Expression example: "(ip.src eq 192.0.0.4) or (ip.src in $list_name)". For syntax explanations and more examples: https://developers.cloudflare.com/ruleset-engine/rules-language/expressions/'
       isArray: false
       name: expression
       required: true
@@ -702,7 +707,7 @@ script:
       - 'false'
       required: false
     - defaultValue: '10'
-      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30.
+      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10.
       isArray: false
       name: interval
       required: false
@@ -741,7 +746,7 @@ script:
       - 'false'
       required: false
     - defaultValue: '10'
-      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30.
+      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10.
       isArray: false
       name: interval
       required: false
@@ -780,7 +785,7 @@ script:
       - 'false'
       required: false
     - defaultValue: '10'
-      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30.
+      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10.
       isArray: false
       name: interval
       required: false
@@ -829,21 +834,12 @@ script:
     execution: false
     name: cloudflare-waf-ip-list-item-list
     outputs:
-    - contextPath: CloudflareWAF.IpListItem.id
-      description: The item ID.
+    - contextPath: CloudflareWAF.IpListItem.items
+      description: The list items.
+      type: Unknown
+    - contextPath: CloudflareWAF.IpListItem.list_id
+      description: The list ID.
       type: String
-    - contextPath: CloudflareWAF.IpListItem.ip
-      description: The IP address.
-      type: String
-    - contextPath: CloudflareWAF.IpListItem.comment
-      description: Item comment.
-      type: String
-    - contextPath: CloudflareWAF.IpListItem.created_on
-      description: Item created date.
-      type: Date
-    - contextPath: CloudflareWAF.IpListItem.modified_on
-      description: Item modified date.
-      type: Date
   dockerimage: demisto/python3:3.10.4.28442
   feed: false
   isfetch: false
