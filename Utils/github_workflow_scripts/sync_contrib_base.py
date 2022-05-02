@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import sys
 import urllib3
@@ -25,6 +26,18 @@ def get_master_commit_sha(repo: Repository) -> str:  # noqa: E999
     return commit_sha
 
 
+def arguments_handler() -> argparse.Namespace:
+    """
+    Validates and parses script arguments.
+    Returns:
+        Namespace: Parsed arguments object.
+
+     """
+    parser = argparse.ArgumentParser(description='Run update for base branch of the external PR.')
+    parser.add_argument('-b', '--branch_name', help='The branch name.')
+    return parser.parse_args()
+
+
 def get_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa: E999
     '''Return the list of branches that have the prefix of "contrib/" and that are base branches of open PRs
 
@@ -45,6 +58,7 @@ def get_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa: E999
 
 
 def main():
+    ref_branch = arguments_handler()
     debug_mode = len(sys.argv) >= 2 and 'debug' in sys.argv[1].casefold()
     if debug_mode:
         enable_console_debug_logging()

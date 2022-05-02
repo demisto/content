@@ -1,7 +1,9 @@
-name: Sync contributor base branch on push
+name: Sync contributor base branch on change
 on:
   pull_request_target:
-    types: [opened, edited]
+    types: [edited]
+    branches:
+      - 'contrib/**'
 
 jobs:
   sync_contributor_base_branch:
