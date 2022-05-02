@@ -5693,3 +5693,22 @@ Detect if there was any evidence of MSDE agent/sensor manipulation.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.HuntTampering.Result | String | The query results. |
+### microsoft-atp-live-response-cancel-action
+***
+Cancels an action with an unfinished status.
+
+
+#### Base Command
+
+`microsoft-atp-live-response-cancel-action`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_action_id | Action ID to retrieve status and data for. | Required | 
+| comment | A comment to associate with the action. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.

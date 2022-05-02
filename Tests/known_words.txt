@@ -162,3 +162,6 @@ ipstack
 SNDBOX
 C
 integrationReliability
+Mapper
+Mappers
+EDL
