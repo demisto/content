@@ -437,13 +437,14 @@ def test_parse_params(params, full_url, url, port, username, password):
        Then:
            - Make sure that parameters parsed correctly.
    """
-    full_url_from_func, url_from_func, port_from_func, user_name_from_func, password_from_func = VMware.parse_params(
+    full_url_from_func, url_from_func, port_from_func, user_name_from_func, password_from_func, test = VMware.parse_params(
         params)
     assert full_url_from_func == full_url
     assert url_from_func == url
     assert port_from_func == port
     assert user_name_from_func == username
     assert password_from_func == password
+    assert test == 'not test'
 
 
 @pytest.mark.parametrize('args, limit, is_manual, page_size', ARG_LIST)

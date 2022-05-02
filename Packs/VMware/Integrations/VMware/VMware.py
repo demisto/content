@@ -50,7 +50,7 @@ def get_limit(args):
 
 
 def login(params):  # pragma: no cover
-    full_url, url, port, user_name, password = parse_params(params)
+    full_url, url, port, user_name, password, _ = parse_params(params)
 
     # Preparations for SDKs connections
     s = ssl.SSLContext(ssl.PROTOCOL_TLS)
