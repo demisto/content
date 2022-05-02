@@ -2,7 +2,7 @@
 
 from CommonServerPython import *
 import collections
-from dateutil import parser
+from dateutil import parser  # type: ignore[import]
 
 EXACT_MATCH = 0
 CONTAINS = '*'
