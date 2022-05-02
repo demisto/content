@@ -115,7 +115,7 @@ configuration:
   name: disable_caching
   required: false
   type: 8
-  defaultvalue: false
+  defaultvalue: 'false'
 - display: Common Channels
   name: common_channels
   type: 12
