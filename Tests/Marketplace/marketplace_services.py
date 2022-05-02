@@ -638,7 +638,8 @@ class Pack(object):
             Metadata.INTEGRATIONS: self._related_integration_images,
             Metadata.USE_CASES: self._use_cases,
             Metadata.KEY_WORDS: self._keywords,
-            Metadata.DEPENDENCIES: self._parsed_dependencies
+            Metadata.DEPENDENCIES: self._parsed_dependencies,
+            Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS, ''),
         }
 
         if self._is_private_pack:
@@ -3276,3 +3277,21 @@ def underscore_file_name_to_dotted_version(file_name: str) -> str:
         (str): Dotted version of file name
     """
     return os.path.splitext(file_name)[0].replace('_', '.')
+
+
+def get_last_commit_from_index(service_account):
+    """ Downloading index.json from GCP and extract last upload commit.
+
+    Args:
+        service_account: service account to connect to GCP
+
+    Returns: last upload commit.
+
+    """
+    storage_client = init_storage_client(service_account)
+    storage_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
+    index_storage_path = os.path.join('content/packs/', f"{GCPConfig.INDEX_NAME}.json")
+    index_blob = storage_bucket.blob(index_storage_path)
+    index_string = index_blob.download_as_string()
+    index_json = json.loads(index_string)
+    return index_json.get('commit')
