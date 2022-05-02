@@ -38,21 +38,18 @@ def create_pr_comment(validate_pr_comment, unit_tests_pr_comment) -> str:
     return comment
 
 
-def convert_json_to_html(json_obj):
-    return json_obj
+def build_summary_report(validate_summary, unit_tests_summary, create_instances_summary,server_6_1_summary,
+                         server_6_2_summary,
+                         server_master_summary):
+    json_summary = {
+        'Validate': validate_summary,
+        'Unit tests': unit_tests_summary,
+        'Create instances': create_instances_summary,
+        'server 6.1': server_6_1_summary,
+        'server 6.2': server_6_2_summary,
+        'server master': server_master_summary,
+    }
 
-validate_summary = {'Packs/Tripwire/pack_metadata.json': ['PA114 - The pack version (currently: 1.0.9) needs to be raised - make sure you are merged from master and update the "currentVersion" field in the pack_metadata.json or in case release notes are required run:\n`demisto-sdk update-release-notes -i Packs/Tripwire -u (major|minor|revision|documentation)` to generate them according to the new standard.', 'RN106 - Release notes were not found. Please run `demisto-sdk update-release-notes -i Packs/Tripwire -u (major|minor|revision|documentation)` to generate release notes according to the new standard. You can refer to the documentation found here: https://xsoar.pan.dev/docs/integrations/changelog for more information.']}
-def test_build_summary_report():
-    # json_summary = {
-    #     'Validate': validate_summary,
-    #     'Unit tests': unit_tests_summary,
-    #     'Create instances': create_instances_summary,
-    #     'server 6.1': server_6_1_summary,
-    #     'server 6.2': server_6_2_summary,
-    #     'server master': server_master_summary,
-    # }
-
-    # convert_json_to_html(json_summary)
     for file, failing_validations in validate_summary.items():
         # test_case = TestCase('Test1', 'some.class.name', 123.345, 'I am stdout!', 'I am stderr!')
         test_cases = []
@@ -61,8 +58,6 @@ def test_build_summary_report():
     ts = TestSuite("Validate", test_cases)
     with open('output.xml', 'a') as f:
         TestSuite.to_file(f, [ts], prettyprint=False)
-
-
 
 
 def test_get_failing_ut():
@@ -100,7 +95,7 @@ def test_get_failing_create_instances():
     # failed_validations = json.load(file)
     create_instances_summary = {}
 
-    return pr_message, create_instances_summary
+    return 'pr_message', create_instances_summary
 
 
 def generate_build_report(logging_manager):
@@ -110,10 +105,10 @@ def generate_build_report(logging_manager):
     _add_pr_comment(pr_comment, logging_manager, 'here is a link to the full report')
     build_summary_report(validate_summary,
                          unit_tests_summary,
-                         create_instances_summary,
-                         server_6_1_summary,
-                         server_6_2_summary,
-                         server_master_summary)
+                         create_instances_summary = {},
+                         server_6_1_summary = {},
+                         server_6_2_summary = {},
+                         server_master_summary = {})
 
 
 def main():
