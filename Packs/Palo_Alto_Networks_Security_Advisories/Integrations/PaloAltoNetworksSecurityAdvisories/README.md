@@ -46,7 +46,6 @@ Gets all the advisories for the given product.
 | PANSecurityAdvisory.Advisory.cve_id | Unknown | The ID of the CVE described by this advisory | 
 | PANSecurityAdvisory.Advisory.cve_date_public | Unknown | The date this CVE was released | 
 | PANSecurityAdvisory.Advisory.cve_title | Unknown | The name of this CVE | 
-| PANSecurityAdvisory.Advisory.affects_vendor_name | Unknown | The list of Vendors this CVE affects | 
 | PANSecurityAdvisory.Advisory.description | Unknown | Human readable description of Advisory | 
 | PANSecurityAdvisory.Advisory.cvss_score | Unknown | The CVSS Score | 
 | PANSecurityAdvisory.Advisory.cvss_severity | Unknown | The CVSS Severity | 
@@ -198,7 +197,6 @@ Gets all the advisories for the given product.
                     "GlobalProtect App",
                     "Cortex XDR Agent"
                 ],
-                "affects_vendor_name": "Palo Alto Networks",
                 "cve_date_public": "2022-03-31T02:30:00.000Z",
                 "cve_id": "CVE-2022-0778",
                 "cve_title": "Impact of the OpenSSL Infinite Loop Vulnerability CVE-2022-0778",
