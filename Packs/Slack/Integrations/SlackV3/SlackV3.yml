@@ -66,7 +66,7 @@ configuration:
   name: mirroring
   required: false
   type: 8
-  defaultvalue: true
+  defaultvalue: 'true'
 - defaultvalue: 'true'
   additionalinfo: "If your organization does not require incident mirroring, or data collection, it is possible to
   disable the `longRunning` parameter. For those organizations who do wish to use these features, the parameter should
