@@ -28,5 +28,4 @@ suppression_enabled: false
 suppression_fields: null
 user_defined_category: null
 user_defined_severity: null
-xql_query: 'dataset = xdr_data | filter agent_hostname contains "FED" | limit 2'
-
+xql_query: 'dataset = xdr_data | filter event_type = ENUM.LOGIN_EVENT and agent_hostname contains "DC0"'
