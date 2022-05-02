@@ -15,7 +15,8 @@ configuration:
   type: 9
   additionalinfo: Account identifier.
   hiddenusername: true
-- displaypassword: zone_id
+- name: zone_id
+  displaypassword: Default Zone ID
   display: Default Zone ID
   required: false
   type: 9
@@ -213,10 +214,7 @@ script:
     description: Delete firewall rule by the specified rule ID.
     execution: false
     name: cloudflare-waf-firewall-rule-delete
-    outputs:
-    - contextPath: CloudflareWAF.FirewallRule.id
-      description: Firewall rule ID.
-      type: String
+    outputs: []
   - arguments:
     - description: 'Firewall Rule identifier. '
       isArray: false

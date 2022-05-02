@@ -513,7 +513,6 @@ def cloudflare_waf_firewall_rule_create_command(client: Client, args: Dict[str, 
         filter_id=filter_id, filter_expression=filter_expression)
 
     output = response['result']
-    print(response)
     firewall_rule_output = output[0]
 
     firewall_rule = [{'id': dict_safe_get(firewall_rule_output, ['id']),
