@@ -1,5 +1,5 @@
 Github logs event collector integration for XSIAM.
-This integration was integrated and tested with version xx of Github Event Collector
+This integration was integrated and tested with Github REST API V3
 
 ## Configure Github Event Collector on Cortex XSOAR
 
