@@ -24,6 +24,117 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | Incident Statuses to Fetch | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Configuration
+---
+You need to collect several pieces of information in order to configure the integration on Cortex XSOAR.
+
+#### Generate an API Key and API Key ID
+1. In your Cortex XDR platform, go to **Settings**.
+2. Click the **+New Key** button in the top right corner.
+3. Generate a key of type **Advanced**.
+4. Copy and paste the key.
+5. From the ID column, copy the Key ID.
+
+#### URL
+1. In your Cortex XDR platform, go to **Settings**.
+2. Click the **Copy URL** button in the top right corner.
+
+## Playbooks
+---
+#### Cortex XDR Incident Handling
+The playbook syncs and updates new XDR alerts that construct the incident.
+It enriches indicators using Threat Intelligence integrations and Palo Alto Networks
+AutoFocus. The incident's severity is then updated based on the indicators reputation
+and an analyst is assigned for manual investigation. If chosen, automated remediation
+with Palo Alto Networks FireWall is initiated. After a manual review by the
+SOC analyst, the XDR incident is closed automatically.
+
+
+## Use Cases
+---
+- Fetch incidents from XDR
+- Enrich incident with alerts and incident from XDR
+- Update incident in XDR
+- Search for endpoints
+- Isolate/unisolate endpoints
+- Insert parsed alerts into XDR
+- Insert CEF alerts into XDR
+- Query for agent audit reports
+- Query for audit management logs
+- Create distribution
+- Get distribution download URL
+- Get distribution versions
+
+## Automation
+---
+To sync incidents between Cortex XSOAR and Cortex XDR, you should use the **XDRSyncScript** script, which you can find in the automation page.
+
+## Fetched Incidents Data
+---
+```
+incident_id:31
+creation_time:1564594008755
+modification_time:1566339537617
+detection_time:null
+status:new
+severity:low
+description:6 'Microsoft Windows RPC Fragment Evasion Attempt' alerts detected by PAN NGFW on 6 hosts
+assigned_user_mail:null
+assigned_user_pretty_name:null
+alert_count:6
+low_severity_alert_count:0
+med_severity_alert_count:6
+high_severity_alert_count:0
+user_count:1
+host_count:6
+notes:null
+resolve_comment:null
+manual_severity:low
+manual_description:null
+xdr_url:https://1111.paloaltonetworks.com/incident-view/31
+```
+
+* Note: By checking the **Fetch incident alerts and artifacts** integration configuration parameter, fetched incidents will include additional data.
+
+## XDR Incident Mirroring
+**Note this feature is available from Cortex XSOAR version 6.0.0**
+
+You can enable incident mirroring between Cortex XSOAR incidents and Cortex XDR incidents.
+To setup the mirroring follow these instructions:
+1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+2. Search for Cortex XDR - IR and select your integration instance.
+3. Enable **Fetches incidents**.
+4. Under **Mapper (incoming)**, select `XDR - Incoming Mapper`.
+5. Under **Mapper (outgoing)**, select `Cortex XDR - Outgoing Mapper`.
+6. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+  * Incoming - Any changes in XDR incidents will be reflected in XSOAR incidents.
+  * Outgoing - Any changes in XSOAR incidents will be reflected in XDR incidents.
+  * Both - Changes in XSOAR and XDR incidents will be reflected in both directions.
+  * None - Choose this to turn off incident mirroring.
+7. Optional: Check the *Sync Incident Owners* integration parameter to sync the incident owners in both XDR and XSOAR.
+  * Note: This feature will only work if the same users are registered in both Cortex XSOAR and Cortex XDR.
+8. Newly fetched incidents will be mirrored in the chosen direction.
+  * Note: This will not effect existing incidents.
+
+### XDR Mirroring Notes, limitations and Troubleshooting
+
+* While you can mirror changes in incident fields both in and out in each incident, you can only mirror in a single direction at a time. For example:
+  If we have an incident with two fields (A and B) in XDR and XSOAR while *Incoming And Outgoing* mirroring is selected: 
+   * I can mirror field A from XDR to XSOAR and field B from XSOAR to XDR.
+   * I cannot mirror changes from field A in both directions.
+
+  Initially all fields are mirrored in from XDR to XSOAR. Once they are changed in XSOAR, they can only be mirrored out.
+* **Do not use the `XDRSyncScript` automation nor any playbook that uses this automation** 
+  (e.g `Cortex XDR Incident Sync` or `Cortex XDR incident handling v2`), as it impairs the mirroring functionality.
+
+* When migrating an existing instance to the mirroring feature, or in case the mirroring does not work as expected, make sure that:
+   * The default playbook of the *Cortex XDR Incident* incident type is not *Cortex XDR Incident Sync*, change it to a 
+     different playbook that does not use `XDRSyncScript`.
+   * The XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
+
+* The API includes a limit rate of 10 API requests per minute. Therefore, in a case of a limit rate exception, the sync loop will stop and will resume from the last incident. 
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -82,8 +193,98 @@ If you pass multiple filtering arguments, they will be concatenated using the AN
 | PaloAltoNetworksXDR.Incident.detection_time | date | Date and time that the first alert occurred in the incident. | 
 | PaloAltoNetworksXDR.Incident.modification_time | date | Date and time that the incident was last modified. | 
 
+
+##### Command Example
+```!xdr-get-incidents gte_creation_time=2010-10-10T00:00:00 limit=3 sort_by_creation_time=desc```
+
+##### Context Example
+```
+{
+    "PaloAltoNetworksXDR.Incident": [
+        {
+            "host_count": 1, 
+            "incident_id": "4", 
+            "manual_severity": "medium", 
+            "description": "5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast  ", 
+            "severity": "medium", 
+            "modification_time": 1579290004178, 
+            "assigned_user_pretty_name": null, 
+            "notes": null, 
+            "creation_time": 1577276587937, 
+            "alert_count": 5, 
+            "med_severity_alert_count": 1, 
+            "detection_time": null, 
+            "assigned_user_mail": null, 
+            "resolve_comment": "This issue was solved in Incident number 192304", 
+            "status": "new", 
+            "user_count": 1, 
+            "xdr_url": "https://some.xdr.url.com/incident-view/4", 
+            "starred": false, 
+            "low_severity_alert_count": 0, 
+            "high_severity_alert_count": 4, 
+            "manual_description": null
+        }, 
+        {
+            "host_count": 1, 
+            "incident_id": "3", 
+            "manual_severity": "medium", 
+            "description": "'test 1' generated by Virus Total - Firewall", 
+            "severity": "medium", 
+            "modification_time": 1579237974014, 
+            "assigned_user_pretty_name": "woo@demisto.com", 
+            "notes": null, 
+            "creation_time": 1576100096594, 
+            "alert_count": 1, 
+            "med_severity_alert_count": 0, 
+            "detection_time": null, 
+            "assigned_user_mail": "woo@demisto.com", 
+            "resolve_comment": null, 
+            "status": "new", 
+            "user_count": 1, 
+            "xdr_url": "https://some.xdr.url.com/incident-view/3", 
+            "starred": false, 
+            "low_severity_alert_count": 0, 
+            "high_severity_alert_count": 1, 
+            "manual_description": null
+        }, 
+        {
+            "host_count": 1, 
+            "incident_id": "2", 
+            "manual_severity": "high", 
+            "description": "'Alert Name Example 333' along with 1 other alert generated by Virus Total - VPN & Firewall-3 and Checkpoint - SandBlast", 
+            "severity": "high", 
+            "modification_time": 1579288790259, 
+            "assigned_user_pretty_name": null, 
+            "notes": null, 
+            "creation_time": 1576062816474, 
+            "alert_count": 2, 
+            "med_severity_alert_count": 0, 
+            "detection_time": null, 
+            "assigned_user_mail": null, 
+            "resolve_comment": null, 
+            "status": "under_investigation", 
+            "user_count": 1, 
+            "xdr_url": "https://some.xdr.url.com/incident-view/2", 
+            "starred": false, 
+            "low_severity_alert_count": 0, 
+            "high_severity_alert_count": 2, 
+            "manual_description": null
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+>### Incidents
+>|alert_count|assigned_user_mail|assigned_user_pretty_name|creation_time|description|detection_time|high_severity_alert_count|host_count|incident_id|low_severity_alert_count|manual_description|manual_severity|med_severity_alert_count|modification_time|notes|resolve_comment|severity|starred|status|user_count|xdr_url|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 5 |  |  | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/4` |
+>| 1 | woo@demisto.com | woo@demisto.com | 1576100096594 | 'test 1' generated by Virus Total - Firewall |  | 1 | 1 | 3 | 0 |  | medium | 0 | 1579237974014 |  |  | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/3` |
+>| 2 |  |  | 1576062816474 | 'Alert Name Example 333' along with 1 other alert generated by Virus Total - VPN & Firewall-3 and Checkpoint - SandBlast |  | 2 | 1 | 2 | 0 |  | high | 0 | 1579288790259 |  |  | high | false | under_investigation | 1 | `https://some.xdr.url.com/incident-view/2` |
+
+
 ### xdr-get-incident-extra-data
-***
+---
 Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
 
 
@@ -202,10 +403,329 @@ Returns additional data for the specified incident, for example, related alerts,
 | IP.Geo.Country | String | The country in which the IP address is located. | 
 | Domain.Name | String | The domain name, for example: "google.com". | 
 
-### xdr-update-incident
-***
-Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
+##### Command Example
+```!xdr-get-incident-extra-data incident_id=4 alerts_limit=10```
 
+##### Context Example
+```
+{
+    "Account": {
+        "Username": [
+            null
+        ]
+    },
+    "Endpoint": {
+        "Hostname": [
+            null
+        ]
+    },
+    "PaloAltoNetworksXDR.Incident": {
+        "host_count": 1, 
+        "manual_severity": "medium", 
+        "xdr_url": "https://some.xdr.url.com/incident-view/4", 
+        "assigned_user_pretty_name": null, 
+        "alert_count": 5, 
+        "med_severity_alert_count": 1, 
+        "detection_time": null, 
+        "user_count": 1, 
+        "severity": "medium", 
+        "alerts": [
+            {
+                "action_process_signature_status": "N/A", 
+                "action_pretty": [
+                    "VALUE_NA", 
+                    "N/A"
+                ], 
+                "event_type": "Network Event", 
+                "alert_id": "6", 
+                "action_file_sha256": null, 
+                "action_external_hostname": null, 
+                "causality_actor_process_command_line": null, 
+                "description": "Test - alert generated by Test XDR Playbook", 
+                "category": null, 
+                "severity": "medium", 
+                "source": "Cisco - Sandblast", 
+                "action_remote_port": 8000, 
+                "causality_actor_process_signature_status": "N/A", 
+                "fw_app_id": null, 
+                "is_whitelisted": "No", 
+                "action_local_ip": "196.168.0.1", 
+                "action_registry_data": null, 
+                "action_process_image_sha256": null, 
+                "user_name": null, 
+                "action_remote_ip": "2.2.2.2", 
+                "action_process_signature_vendor": "N/A", 
+                "actor_process_signature_status": "N/A", 
+                "name": "Test - alert generated by Test XDR Playbook", 
+                "causality_actor_causality_id": null, 
+                "host_ip": null,
+                "host_ip_list": [], 
+                "action_process_image_name": null, 
+                "detection_timestamp": 1577276586921, 
+                "action_file_md5": null, 
+                "causality_actor_process_image_name": null, 
+                "action_file_path": null, 
+                "action_process_image_command_line": null, 
+                "action_local_port": 7000, 
+                "actor_process_image_name": null, 
+                "action_registry_full_key": null, 
+                "actor_process_signature_vendor": "N/A", 
+                "actor_process_command_line": null, 
+                "host_name": null, 
+                "action": [
+                    "VALUE_NA", 
+                    "N/A"
+                ], 
+                "starred": false, 
+                "causality_actor_process_signature_vendor": "N/A"
+            }, 
+            {
+                "action_process_signature_status": "N/A", 
+                "action_pretty": [
+                    "VALUE_NA", 
+                    "N/A"
+                ], 
+                "event_type": "Network Event", 
+                "alert_id": "7", 
+                "action_file_sha256": null, 
+                "action_external_hostname": null, 
+                "causality_actor_process_command_line": null, 
+                "description": "This alert from content  TestXDRPlaybook description", 
+                "category": null, 
+                "severity": "high", 
+                "source": "Checkpoint - SandBlast", 
+                "action_remote_port": 6000, 
+                "causality_actor_process_signature_status": "N/A", 
+                "fw_app_id": null, 
+                "is_whitelisted": "No", 
+                "action_local_ip": "196.168.0.111", 
+                "action_registry_data": null, 
+                "action_process_image_sha256": null, 
+                "user_name": null, 
+                "action_remote_ip": "2.2.2.2", 
+                "action_process_signature_vendor": "N/A", 
+                "actor_process_signature_status": "N/A", 
+                "name": "This alert from content  TestXDRPlaybook", 
+                "causality_actor_causality_id": null, 
+                "host_ip": null,
+                "host_ip_list": [], 
+                "action_process_image_name": null, 
+                "detection_timestamp": 1577776701589, 
+                "action_file_md5": null, 
+                "causality_actor_process_image_name": null, 
+                "action_file_path": null, 
+                "action_process_image_command_line": null, 
+                "action_local_port": 2000, 
+                "actor_process_image_name": null, 
+                "action_registry_full_key": null, 
+                "actor_process_signature_vendor": "N/A", 
+                "actor_process_command_line": null, 
+                "host_name": null, 
+                "action": [
+                    "VALUE_NA", 
+                    "N/A"
+                ], 
+                "starred": false, 
+                "causality_actor_process_signature_vendor": "N/A"
+            }, 
+            {
+                "action_process_signature_status": "N/A", 
+                "action_pretty": [
+                    "VALUE_NA", 
+                    "N/A"
+                ], 
+                "event_type": "Network Event", 
+                "alert_id": "8", 
+                "action_file_sha256": null, 
+                "action_external_hostname": null, 
+                "causality_actor_process_command_line": null, 
+                "description": "This alert from content  TestXDRPlaybook description", 
+                "category": null, 
+                "severity": "high", 
+                "source": "Checkpoint - SandBlast", 
+                "action_remote_port": 6000, 
+                "causality_actor_process_signature_status": "N/A", 
+                "fw_app_id": null, 
+                "is_whitelisted": "No", 
+                "action_local_ip": "196.168.0.111", 
+                "action_registry_data": null, 
+                "action_process_image_sha256": null, 
+                "user_name": null, 
+                "action_remote_ip": "2.2.2.2", 
+                "action_process_signature_vendor": "N/A", 
+                "actor_process_signature_status": "N/A", 
+                "name": "This alert from content  TestXDRPlaybook", 
+                "causality_actor_causality_id": null, 
+                "host_ip": null, 
+                "host_ip_list": [],
+                "action_process_image_name": null, 
+                "detection_timestamp": 1577958479843, 
+                "action_file_md5": null, 
+                "causality_actor_process_image_name": null, 
+                "action_file_path": null, 
+                "action_process_image_command_line": null, 
+                "action_local_port": 2000, 
+                "actor_process_image_name": null, 
+                "action_registry_full_key": null, 
+                "actor_process_signature_vendor": "N/A", 
+                "actor_process_command_line": null, 
+                "host_name": null, 
+                "action": [
+                    "VALUE_NA", 
+                    "N/A"
+                ], 
+                "starred": false, 
+                "causality_actor_process_signature_vendor": "N/A"
+            }, 
+            {
+                "action_process_signature_status": "N/A", 
+                "action_pretty": [
+                    "VALUE_NA", 
+                    "N/A"
+                ], 
+                "event_type": "Network Event", 
+                "alert_id": "9", 
+                "action_file_sha256": null, 
+                "action_external_hostname": null, 
+                "causality_actor_process_command_line": null, 
+                "description": "This alert from content  TestXDRPlaybook description", 
+                "category": null, 
+                "severity": "high", 
+                "source": "Checkpoint - SandBlast", 
+                "action_remote_port": 6000, 
+                "causality_actor_process_signature_status": "N/A", 
+                "fw_app_id": null, 
+                "is_whitelisted": "No", 
+                "action_local_ip": "196.168.0.111", 
+                "action_registry_data": null, 
+                "action_process_image_sha256": null, 
+                "user_name": null, 
+                "action_remote_ip": "2.2.2.2", 
+                "action_process_signature_vendor": "N/A", 
+                "actor_process_signature_status": "N/A", 
+                "name": "This alert from content  TestXDRPlaybook", 
+                "causality_actor_causality_id": null, 
+                "host_ip": null, 
+                "host_ip_list": [],
+                "action_process_image_name": null, 
+                "detection_timestamp": 1578123895414, 
+                "action_file_md5": null, 
+                "causality_actor_process_image_name": null, 
+                "action_file_path": null, 
+                "action_process_image_command_line": null, 
+                "action_local_port": 2000, 
+                "actor_process_image_name": null, 
+                "action_registry_full_key": null, 
+                "actor_process_signature_vendor": "N/A", 
+                "actor_process_command_line": null, 
+                "host_name": null, 
+                "action": [
+                    "VALUE_NA", 
+                    "N/A"
+                ], 
+                "starred": false, 
+                "causality_actor_process_signature_vendor": "N/A"
+            }, 
+            {
+                "action_process_signature_status": "N/A", 
+                "action_pretty": [
+                    "VALUE_NA", 
+                    "N/A"
+                ], 
+                "event_type": "Network Event", 
+                "alert_id": "10", 
+                "action_file_sha256": null, 
+                "action_external_hostname": null, 
+                "causality_actor_process_command_line": null, 
+                "description": "This alert from content  TestXDRPlaybook description", 
+                "category": null, 
+                "severity": "high", 
+                "source": "Checkpoint - SandBlast", 
+                "action_remote_port": 6000, 
+                "causality_actor_process_signature_status": "N/A", 
+                "fw_app_id": null, 
+                "is_whitelisted": "No", 
+                "action_local_ip": "196.168.0.111", 
+                "action_registry_data": null, 
+                "action_process_image_sha256": null, 
+                "user_name": null, 
+                "action_remote_ip": "2.2.2.2", 
+                "action_process_signature_vendor": "N/A", 
+                "actor_process_signature_status": "N/A", 
+                "name": "This alert from content  TestXDRPlaybook", 
+                "causality_actor_causality_id": null, 
+                "host_ip": null, 
+                "host_ip_list": [],
+                "action_process_image_name": null, 
+                "detection_timestamp": 1578927443615, 
+                "action_file_md5": null, 
+                "causality_actor_process_image_name": null, 
+                "action_file_path": null, 
+                "action_process_image_command_line": null, 
+                "action_local_port": 2000, 
+                "actor_process_image_name": null, 
+                "action_registry_full_key": null, 
+                "actor_process_signature_vendor": "N/A", 
+                "actor_process_command_line": null, 
+                "host_name": null, 
+                "action": [
+                    "VALUE_NA", 
+                    "N/A"
+                ], 
+                "starred": false, 
+                "causality_actor_process_signature_vendor": "N/A"
+            }
+        ], 
+        "low_severity_alert_count": 0, 
+        "status": "new", 
+        "description": "5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast  ", 
+        "resolve_comment": "This issue was solved in Incident number 192304", 
+        "creation_time": 1577276587937, 
+        "modification_time": 1579290004178, 
+        "network_artifacts": [
+            {
+                "network_remote_port": 8000, 
+                "alert_count": 5, 
+                "network_remote_ip": "2.2.2.2", 
+                "is_manual": false, 
+                "network_domain": null, 
+                "type": "IP", 
+                "network_country": null
+            }
+        ], 
+        "file_artifacts": [], 
+        "manual_description": null, 
+        "incident_id": "4", 
+        "notes": null, 
+        "assigned_user_mail": null, 
+        "starred": false, 
+        "high_severity_alert_count": 4
+    }
+}
+```
+
+##### Human Readable Output
+>### Incident 4
+>|alert_count|assigned_user_mail|assigned_user_pretty_name|creation_time|description|detection_time|high_severity_alert_count|host_count|incident_id|low_severity_alert_count|manual_description|manual_severity|med_severity_alert_count|modification_time|notes|resolve_comment|severity|starred|status|user_count|xdr_url|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 5 |  |  | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/4` |
+>
+>### Alerts
+>|action|action_external_hostname|action_file_md5|action_file_path|action_file_sha256|action_local_ip|action_local_port|action_pretty|action_process_image_command_line|action_process_image_name|action_process_image_sha256|action_process_signature_status|action_process_signature_vendor|action_registry_data|action_registry_full_key|action_remote_ip|action_remote_port|actor_process_command_line|actor_process_image_name|actor_process_signature_status|actor_process_signature_vendor|alert_id|category|causality_actor_causality_id|causality_actor_process_command_line|causality_actor_process_image_name|causality_actor_process_signature_status|causality_actor_process_signature_vendor|description|detection_timestamp|event_type|fw_app_id|host_ip_list|host_name|is_whitelisted|name|severity|source|starred|user_name|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| VALUE_NA,<br/>N/A |  |  |  |  | 196.168.0.1 | 7000 | VALUE_NA,<br/>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 8000 |  |  | N/A | N/A | 6 |  |  |  |  | N/A | N/A | Test - alert generated by Test XDR Playbook | 1577276586921 | Network Event |  |  |  | No | Test - alert generated by Test XDR Playbook | medium | Cisco - Sandblast | false |  |
+>| VALUE_NA,<br/>N/A |  |  |  |  | 196.168.0.111 | 2000 | VALUE_NA,<br/>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 6000 |  |  | N/A | N/A | 7 |  |  |  |  | N/A | N/A | This alert from content  TestXDRPlaybook description | 1577776701589 | Network Event |  |  |  | No | This alert from content  TestXDRPlaybook | high | Checkpoint - SandBlast | false |  |
+>| VALUE_NA,<br/>N/A |  |  |  |  | 196.168.0.111 | 2000 | VALUE_NA,<br/>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 6000 |  |  | N/A | N/A | 8 |  |  |  |  | N/A | N/A | This alert from content  TestXDRPlaybook description | 1577958479843 | Network Event |  |  |  | No | This alert from content  TestXDRPlaybook | high | Checkpoint - SandBlast | false |  |
+>| VALUE_NA,<br/>N/A |  |  |  |  | 196.168.0.111 | 2000 | VALUE_NA,<br/>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 6000 |  |  | N/A | N/A | 9 |  |  |  |  | N/A | N/A | This alert from content  TestXDRPlaybook description | 1578123895414 | Network Event |  |  |  | No | This alert from content  TestXDRPlaybook | high | Checkpoint - SandBlast | false |  |
+>| VALUE_NA,<br/>N/A |  |  |  |  | 196.168.0.111 | 2000 | VALUE_NA,<br/>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 6000 |  |  | N/A | N/A | 10 |  |  |  |  | N/A | N/A | This alert from content  TestXDRPlaybook description | 1578927443615 | Network Event |  |  |  | No | This alert from content  TestXDRPlaybook | high | Checkpoint - SandBlast | false |  |
+>
+>### Network Artifacts
+>|alert_count|is_manual|network_country|network_domain|network_remote_ip|network_remote_port|type|
+>|---|---|---|---|---|---|---|
+>| 5 | false |  |  | 2.2.2.2 | 8000 | IP |
+>
+>### File Artifacts
+>**No entries.**
 
 #### Base Command
 
@@ -322,6 +842,12 @@ Isolates the specified endpoint. This command will be deprecated soon, use `xdr-
 | --- | --- | --- |
 | PaloAltoNetworksXDR.Isolation.endpoint_id | String | The endpoint ID. | 
 
+##### Command Example
+```!xdr-isolate-endpoint endpoint_id="f8a2f58846b542579c12090652e79f3d"```
+
+##### Human Readable Output
+Endpoint f8a2f58846b542579c12090652e79f3d has isolated successfully
+
 ### xdr-endpoint-unisolate
 ***
 Reverses the isolation of an endpoint.
@@ -437,8 +963,101 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 | Endpoint.MACAddress | String | The endpoint's MAC address. | 
 | Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
+##### Command Example
+```!xdr-get-endpoints isolate="unisolated" first_seen_gte="3 month" page="0" limit="30" sort_order="asc"```
+
+##### Context Example
+```
+{
+    "Endpoint": [
+        {
+            "Domain": "WORKGROUP",
+            "Hostname": "aaaaa.compute.internal",
+            "ID": "ea303670c76e4ad09600c8b346f7c804",
+            "IPAddress": [
+                "172.31.11.11"
+            ],
+            "OS": "Windows",
+            "Status" : "Online",
+            "IsIsolated" : "No",
+            "Vendor": "Cortex XDR - IR"
+        },
+        {
+            "Domain": "WORKGROUP",
+            "Hostname": "EC2AMAZ-P7PPOI4",
+            "ID": "f8a2f58846b542579c12090652e79f3d",
+            "IPAddress": [
+                "2.2.2.2"
+            ],
+            "OS": "Windows",
+            "Status" : "Online",
+            "IsIsolated" : "No",
+            "Vendor": "Cortex XDR - IR"
+        }
+    ],
+    "PaloAltoNetworksXDR.Endpoint": [
+        {
+            "domain": "", 
+            "users": [
+                "ec2-user"
+            ], 
+            "endpoint_name": "aaaaa.compute.internal", 
+            "ip": [
+                "172.31.11.11"
+            ], 
+            "install_date": 1575795969644, 
+            "endpoint_version": "7.0.0.1915", 
+            "group_name": null, 
+            "installation_package": "linux", 
+            "alias": "", 
+            "active_directory": null, 
+            "endpoint_status": "CONNECTED", 
+            "os_type": "AGENT_OS_LINUX", 
+            "endpoint_id": "ea303670c76e4ad09600c8b346f7c804", 
+            "content_version": "111-17757", 
+            "first_seen": 1575795969644, 
+            "endpoint_type": "AGENT_TYPE_SERVER", 
+            "is_isolated": "AGENT_UNISOLATED", 
+            "last_seen": 1579290023629
+        }, 
+        {
+            "domain": "WORKGROUP", 
+            "users": [
+                "Administrator"
+            ], 
+            "endpoint_name": "EC2AMAZ-P7PPOI4", 
+            "ip": [
+                "2.2.2.2"
+            ], 
+            "install_date": 1575796381739, 
+            "endpoint_version": "7.0.0.27797", 
+            "group_name": null, 
+            "installation_package": "Windows Server 2016", 
+            "alias": "", 
+            "active_directory": null, 
+            "endpoint_status": "CONNECTED", 
+            "os_type": "AGENT_OS_WINDOWS", 
+            "endpoint_id": "f8a2f58846b542579c12090652e79f3d", 
+            "content_version": "111-17757", 
+            "first_seen": 1575796381739, 
+            "endpoint_type": "AGENT_TYPE_SERVER", 
+            "is_isolated": "AGENT_UNISOLATED", 
+            "last_seen": 1579289957412
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+>### Endpoints
+>|active_directory|alias|content_version|domain|endpoint_id|endpoint_name|endpoint_status|endpoint_type|endpoint_version|first_seen|group_name|install_date|installation_package|ip|is_isolated|last_seen|os_type|users|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  |  | 111-17757 |  | ea303670c76e4ad09600c8b346f7c804 | aaaaa.compute.internal | CONNECTED | AGENT_TYPE_SERVER | 7.0.0.1915 | 1575795969644 |  | 1575795969644 | linux | 172.31.11.11 | AGENT_UNISOLATED | 1579290023629 | AGENT_OS_LINUX | ec2-user |
+>|  |  | 111-17757 | WORKGROUP | f8a2f58846b542579c12090652e79f3d | EC2AMAZ-P7PPOI4 | CONNECTED | AGENT_TYPE_SERVER | 7.0.0.27797 | 1575796381739 |  | 1575796381739 | Windows Server 2016 | 2.2.2.2 | AGENT_UNISOLATED | 1579289957412 | AGENT_OS_WINDOWS | Administrator |
+
+
 ### xdr-get-distribution-versions
-***
+---
 Gets a list of all the agent versions to use for creating a distribution list.
 
 
@@ -457,8 +1076,58 @@ There are no input arguments for this command.
 | PaloAltoNetworksXDR.DistributionVersions.linux | Unknown | A list of Linux agent versions. | 
 | PaloAltoNetworksXDR.DistributionVersions.macos | Unknown | A list of Mac agent versions. | 
 
+
+##### Command Example
+```!xdr-get-distribution-versions```
+
+##### Context Example
+```
+{
+    "PaloAltoNetworksXDR.DistributionVersions": {
+        "windows": [
+            "5.0.8.29673", 
+            "5.0.9.30963", 
+            "6.1.4.28751", 
+            "7.0.0.28644"
+        ], 
+        "macos": [
+            "6.1.4.1681", 
+            "7.0.0.1914"
+        ], 
+        "linux": [
+            "6.1.4.1680", 
+            "7.0.0.1916"
+        ]
+    }
+}
+```
+
+##### Human Readable Output
+>### windows
+>|versions|
+>|---|
+>| 5.0.8.29673 |
+>| 5.0.9.30963 |
+>| 6.1.4.28751 |
+>| 7.0.0.28644 |
+>
+>
+>### linux
+>|versions|
+>|---|
+>| 6.1.4.1680 |
+>| 7.0.0.1916 |
+>
+>
+>### macos
+>|versions|
+>|---|
+>| 6.1.4.1681 |
+>| 7.0.0.1914 |
+
+
 ### xdr-create-distribution
-***
+---
 Creates an installation package. This is an asynchronous call that returns the distribution ID. This does not mean that the creation succeeded. To confirm that the package has been created, check the status of the distribution by running the Get Distribution Status API.
 
 
@@ -486,8 +1155,29 @@ Creates an installation package. This is an asynchronous call that returns the d
 | PaloAltoNetworksXDR.Distribution.agent_version | String | Agent version. | 
 | PaloAltoNetworksXDR.Distribution.description | String | Information about the package. | 
 
+
+##### Command Example
+```!xdr-create-distribution agent_version=6.1.4.1680 name="dist_1" package_type=standalone platform=linux description="some description"```
+
+##### Context Example
+```
+{
+    "PaloAltoNetworksXDR.Distribution": {
+        "description": "some description", 
+        "package_type": "standalone", 
+        "platform": "linux", 
+        "agent_version": "6.1.4.1680", 
+        "id": "43aede7f846846fa92b50149663fbb25", 
+        "name": "dist_1"
+    }
+}
+```
+
+##### Human Readable Output
+Distribution 43aede7f846846fa92b50149663fbb25 created successfully
+
 ### xdr-get-distribution-url
-***
+---
 Gets the distribution URL for downloading the installation package.
 
 
@@ -508,6 +1198,10 @@ Gets the distribution URL for downloading the installation package.
 | --- | --- | --- |
 | PaloAltoNetworksXDR.Distribution.id | String | Distribution ID. | 
 | PaloAltoNetworksXDR.Distribution.url | String | URL for downloading the installation package. | 
+
+##### Command Example
+```!xdr-get-distribution-url distribution_id=2c74c11b63074653aa01d575a82bf52a package_type=sh```
+
 
 ### xdr-get-create-distribution-status
 ***
@@ -531,10 +1225,30 @@ Gets the status of the installation package.
 | PaloAltoNetworksXDR.Distribution.id | String | Distribution ID. | 
 | PaloAltoNetworksXDR.Distribution.status | String | The status of installation package. | 
 
+##### Command Example
+```!xdr-get-create-distribution-status distribution_ids=2c74c11b63074653aa01d575a82bf52a```
+
 ### xdr-get-audit-management-logs
 ***
 Gets management logs. You can filter by multiple fields, which will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of management logs from the start of the result set (start by counting from 0).
 
+##### Context Example
+```
+{
+    "PaloAltoNetworksXDR.Distribution": [
+        {
+            "status": "Completed", 
+            "id": "2c74c11b63074653aa01d575a82bf52a"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+>### Distribution Status
+>|id|status|
+>|---|---|
+>| 2c74c11b63074653aa01d575a82bf52a | Completed |
 
 #### Base Command
 
@@ -1117,6 +1831,29 @@ Retrieves files from selected endpoints. This command will be deprecated soon, u
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.RetrievedFiles.action_id | string | ID of the action to retrieve files from selected endpoints. | 
+
+#### Command Examples
+```!xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 windows_file_paths="C:\Users\demisto\Desktop\demisto.txt"```
+```!xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 generic_file_path="C:\Users\demisto\Desktop\demisto.txt"```
+
+#### Context Example
+```
+{
+    "PaloAltoNetworksXDR": {
+        "retrievedFiles": {
+            "actionId": 2056
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Retrieve files
+>|Action Id|
+>|---|
+>| 2056 |
+
 
 ### xdr-retrieve-file-details
 ***
