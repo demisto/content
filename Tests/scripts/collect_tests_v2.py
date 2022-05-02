@@ -2,7 +2,6 @@ import os
 import sys
 from abc import ABC, abstractmethod
 from dataclasses import field, dataclass
-from distutils.version import Version
 from enum import Enum
 from itertools import chain, islice
 from pathlib import Path
@@ -12,7 +11,7 @@ from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.common.git_util import GitUtil
 from demisto_sdk.commands.common.tools import get_file
 from git import Repo
-from packaging import version
+from packaging.version import Version
 
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -24,6 +23,9 @@ CONTENT_PATH = Path(__file__).absolute().parent.parent
 ARTIFACTS_PATH = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
 ARTIFACTS_ID_SET_PATH = ARTIFACTS_PATH / 'id_set.json'
 ARTIFACTS_CONF_PATH = ARTIFACTS_PATH / 'conf.json'
+
+DEBUG_ID_SET_PATH = Path('id_set.json')
+DEBUG_CONF_PATH = Path('conf.json')
 
 
 class CollectionReason(Enum):
@@ -109,9 +111,9 @@ class TestConf(DictFileBased):
     __test__ = False  # prevents pytest from running it
 
     def __init__(self):
-        super().__init__(ARTIFACTS_CONF_PATH)
-        self.tests = tuple(TestConfItem(value) for value in self['scripts'])  # todo is used?
-        self.tests_to_integrations = {test['playbookID']: to_tuple(test['integrations']) for test in self.tests}
+        super().__init__(DEBUG_CONF_PATH)  # todo not use debug
+        self.tests = tuple(TestConfItem(value) for value in self['tests'])  # todo is used?
+        self.tests_to_integrations = {test['playbookID']: to_tuple(test.get('integrations')) for test in self.tests}
 
         # Attributes
         self.skipped_tests: dict = self['skipped_tests']
@@ -121,7 +123,7 @@ class TestConf(DictFileBased):
         self.parallel_integrations: list[str] = self['parallel_integrations']
         self.private_tests: list[str] = self['private_tests']
 
-    def get_skipped_integrations(self):
+    def get_skipped_integrations(self):  # todo delete
         return tuple(self.get('skipped_integrations', {}).keys())
 
     def get_skipped_tests(self):
@@ -143,7 +145,9 @@ class IdSetItem(DictBased):
         self.id_ = id_
         self.name = self.content['name']
         self.file_path = self.content['file_path']
-        self.pack = self.content['pack']
+        self.pack = self.content.get('pack')
+        if 'pack' not in self.content:
+            logging.debug(f'content item with id={id_} and name={self.name} has no pack value')  # todo debug? info?
 
     @property
     def marketplaces(self):
@@ -168,7 +172,7 @@ class IdSetItem(DictBased):
 class CollectedTests:
     tests: set[str] = field(default_factory=set)
     packs: set[str] = field(default_factory=set)
-    machines: Optional[tuple[Machine]] = None
+    machines: Optional[tuple[Machine]] = None  # todo optional?
 
     @property
     def not_empty(self):
@@ -177,35 +181,35 @@ class CollectedTests:
     def __or__(self, other: 'CollectedTests') -> 'CollectedTests':
         self.tests.update(other.tests)
         self.packs.update(other.packs)
-        if self.machines is not None or other.machines is not None:
-            self.machines = (self.machines or set()) | (other.machines or set())
+        if self.machines or other.machines:
+            self.machines = set().union((self.machines or (), other.machines or ())) or None
+        return self  # todo test
 
-        return self
-
-    @staticmethod
-    def union(collected_tests: tuple['CollectedTests']):
+    @classmethod
+    def union(cls, collected_tests: tuple['CollectedTests']):
         result = CollectedTests()
         for other in collected_tests:
             result |= other
         return result
 
     def add(
-            self, test_name: Optional[str],
+            self,
+            test_name: Optional[str],
             pack_id: Optional[str],
             reason: CollectionReason,
             reason_description: str = '',
             add_pack: bool = True,
             add_test: bool = True,
     ):
-        logging.info(f'collected {pack_id=} {test_name=}, {reason.value=} {reason_description}')
+        logging.info(f'collecting {pack_id=} {test_name=}, {reason.value=} {reason_description}')
         if add_test:
             if not test_name:
-                raise ValueError('cannot add a test without its name')
+                raise ValueError('cannot add a test without a name')
             self.tests.add(test_name)
 
         if add_pack:
             if not pack_id:
-                raise ValueError('cannot add pack without its id')
+                raise ValueError('cannot add a pack without an id')
             self.packs.add(pack_id)
 
     def add_iterable(
@@ -217,14 +221,12 @@ class CollectedTests:
             add_pack: bool = True,
             add_test: bool = True,
     ):
-        if tests and pack_ids:
-            if len(tests) != len(pack_ids):
-                raise ValueError(f'if both have values, {len(tests)=} must be equal to {len(pack_ids)=}')
+        if tests and pack_ids and len(tests) != len(pack_ids):
+            raise ValueError(f'if both have values, {len(tests)=} must be equal to {len(pack_ids)=}')
         elif tests:
-            # so accessors get a None
-            pack_ids = (None,) * len(pack_ids)
+            pack_ids = (None,) * len(pack_ids)  # so accessors get a None
         elif pack_ids:
-            tests = (None,) * len(pack_ids)
+            tests = (None,) * len(pack_ids)  # so accessors get a None
 
         for i in range(len(tests)):
             self.add(tests[i], pack_ids[i], reason, reason_description, add_pack, add_test)
@@ -232,7 +234,7 @@ class CollectedTests:
 
 class IdSet(DictFileBased):
     def __init__(self, version_range: VersionRange, marketplace: MarketplaceVersions):
-        super().__init__(ARTIFACTS_ID_SET_PATH)
+        super().__init__(DEBUG_ID_SET_PATH)
         self.version_range = version_range
         self.marketplace = marketplace
 
@@ -243,7 +245,7 @@ class IdSet(DictFileBased):
 
         # one place to access all IdSetItem objets
         # todo reconsider, perhaps getter that searches in each and returns instead of another dict?
-        self.id_to_item = self.id_to_script | self.id_to_integration | self.id_to_test_playbook
+        self.id_to_item = self.id_to_script | self.id_to_integration | self.id_to_test_playbook  # todo
 
     @property
     def integrations(self) -> Iterable[IdSetItem]:
@@ -257,32 +259,27 @@ class IdSet(DictFileBased):
     def scripts(self) -> Iterable[IdSetItem]:
         return self.id_to_script.values()
 
-    def get_test_playbooks_by_marketplace_section(self):
-        """  returns test playbooks by the section under which they're saved in conf.json, regardless of their value """
-        # todo consider changing to get_xsoar_tests, get_xsiam_tests, or to a `get_by_marketplace(marketplace)`
-        match self.marketplace:
-            case MarketplaceVersions.XSOAR:
-                tests = self['tests']
-            case MarketplaceVersions.MarketplaceV2:
-                tests = self['test_marketplacev2']
-            case _:
-                raise NotImplementedError(f'Unexpected Marketplace value {self.marketplace.value}')
-
+    def get_marketplace_v2_tests(self):
         collected = CollectedTests()
-        collected.add_iterable(tests, None, CollectionReason.MARKETPLACE_VERSION_SECTION, self.marketplace.value)
+        collected.add_iterable(self['test_parketplacev2'],
+                               None,
+                               CollectionReason.MARKETPLACE_VERSION_SECTION,
+                               self.marketplace.value)
         return collected
 
     def _parse_items(self, dictionaries: list[dict[str, dict]]) -> dict[str, IdSetItem]:
         result = {}
         for dict_ in dictionaries:
             for id_, values in dict_.items():
+                if isinstance(values, dict):
+                    values = (values,)
                 for value in values:  # multiple values possible, for different server versions
                     item = IdSetItem(id_, value)
 
-                    if item.from_version and item.from_version not in self.version_range:
+                    if item.from_version and item.from_version > self.version_range.max_version:
                         logging.debug(f'skipping {id_=} as {item.from_version} not in {self.version_range=}')
                         continue
-                    if item.to_version and item.to_version not in self.version_range:
+                    if item.to_version and item.to_version < self.version_range.min_version:
                         logging.debug(f'skipping {id_=} as {item.to_version=} not in {self.version_range=}')
                         continue
 
@@ -292,13 +289,13 @@ class IdSet(DictFileBased):
                      """
                     if id_ in result:
                         raise ValueError(f'{id_=} already parsed')
-                    if id_ in self.id_to_item:
-                        raise ValueError(f'{id_=} already in self.id_to_item')
                     result[id_] = item
         return result
 
 
-def to_tuple(value: Optional[str | list]) -> tuple:
+def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
+    if value is None:
+        return value
     if not value:
         return ()
     if isinstance(value, str):
@@ -363,7 +360,7 @@ class TestCollector(ABC):
     def collect(self, run_nightly: bool, run_master: bool):
         collected = self._collect()
 
-        collected.machines = Machine.get_suitable_machines(
+        collected.machines = Machine.get_suitable_machines(  # todo
             run_nightly,
             run_master,
         )
@@ -410,7 +407,7 @@ class NightlyTestCollector(TestCollector):
         by_marketplace_value = self.tests_matching_marketplace_value()
         by_marketplace_section = self.id_set.get_test_playbooks_by_marketplace_section()  # todo does this belong here or in id_set?
 
-        return by_marketplace_value | by_marketplace_section
+        return CollectedTests.union((by_marketplace_value, by_marketplace_section))
 
     def tests_matching_marketplace_value(self) -> CollectedTests:
         marketplace_string = self.marketplace.value  # todo is necessary?
@@ -439,7 +436,9 @@ class NoTestsException(Exception):
 
 if __name__ == '__main__':
     sys.path.append(str(CONTENT_PATH))
-    version_range = VersionRange(Machine.V6_2.value,
-                                 Machine.V6_6.value)
-    collector = NightlyTestCollector(marketplace=MarketplaceVersions.XSOAR, version_range=version_range)
-    conf = TestConf()
+    collector = NightlyTestCollector(
+        marketplace=MarketplaceVersions.XSOAR,
+        version_range=VersionRange(Machine.V6_2.value,
+                                   Machine.V6_6.value)
+    )
+    collector.collect(True, True)
