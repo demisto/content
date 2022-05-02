@@ -176,151 +176,58 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
-SEARCH_FIELD = 'search_field'
-SEARCH_TYPE = 'search_type'
-SEARCH_VALUE = 'search_value'
-ARRAY = 'array'
-TIMEFRAME = 'timeframe'
-ALERT_FILTER_SEARCH_FIELDS_AND_VALUES = {
-    'alert_id': {
-        SEARCH_FIELD: 'internal_id',
-        SEARCH_TYPE: 'EQ',
-        'type': ARRAY,
-    },
-    'severity': {
-        SEARCH_FIELD: 'severity',
-        SEARCH_TYPE: 'EQ',
-        SEARCH_VALUE: {
+
+class AlertFilterArg:
+    def __init__(self, search_field: str, search_type: Optional[str], arg_type: str, option_mapper: dict = None):
+        self.search_field = search_field
+        self.search_type = search_type
+        self.arg_type = arg_type
+        self.option_mapper = option_mapper
+
+
+def init_filter_args_options():
+    array = 'array'
+    dropdown = 'dropdown'
+    time_frame = 'time_frame'
+
+    return {
+        'alert_id': AlertFilterArg('internal_id', 'EQ', array),
+        'severity': AlertFilterArg('severity', 'EQ', dropdown, {
             'low': 'SEV_020_LOW',
             'medium': 'SEV_030_MEDIUM',
             'high': 'SEV_040_HIGH'
-        },
-    },
-    'Identity_type': {
-        SEARCH_FIELD: 'Identity_type',
-        SEARCH_TYPE: 'EQ',
-    },
-    'agent_id': {
-        SEARCH_FIELD: 'agent_id',
-        SEARCH_TYPE: 'EQ',
-        'type': ARRAY,
-    },
-    'action_external_hostname': {
-        SEARCH_FIELD: 'action_external_hostname',
-        SEARCH_TYPE: 'CONTAINS',
-        'type': ARRAY,
-    },
-    'rule_id': {
-        SEARCH_FIELD: 'matching_service_rule_id',
-        SEARCH_TYPE: 'EQ',
-        'type': ARRAY,
-    },
-    'rule_name': {
-        SEARCH_FIELD: 'fw_rule',
-        SEARCH_TYPE: 'EQ',
-        'type': ARRAY,
-    },
-    'alert_name': {
-        SEARCH_FIELD: 'alert_name',
-        SEARCH_TYPE: 'CONTAINS',
-        'type': ARRAY,
-    },
-    'alert_source': {
-        SEARCH_FIELD: 'alert_source',
-        SEARCH_TYPE: 'CONTAINS',
-        'type': ARRAY,
-    },
-    'timeframe': {
-        SEARCH_FIELD: 'source_insert_ts',
-        SEARCH_TYPE: 'RELATIVE_TIMESTAMP',
-        'type': TIMEFRAME,
-    },
-    'user_name': {
-        SEARCH_FIELD: 'actor_effective_username',
-        SEARCH_TYPE: 'CONTAINS',
-        'type': ARRAY,
-    },
-    'actor_process_image_name': {
-        SEARCH_FIELD: 'actor_process_image_name',
-        SEARCH_TYPE: 'CONTAINS',
-        'type': ARRAY,
-    },
-    'causality_actor_process_image_command_line': {
-        SEARCH_FIELD: 'causality_actor_process_command_line',
-        SEARCH_TYPE: 'EQ',
-        'type': ARRAY,
-    },
-    'actor_process_image_command_line': {
-        SEARCH_FIELD: 'actor_process_command_line',
-        SEARCH_TYPE: 'EQ',
-        'type': ARRAY,
-    },
-    'action_process_image_command_line': {
-        SEARCH_FIELD: 'action_process_image_command_line',
-        SEARCH_TYPE: 'EQ',
-        'type': ARRAY,
-    },
-    'actor_process_image_sha256': {
-        SEARCH_FIELD: 'actor_process_image_sha256',
-        SEARCH_TYPE: 'EQ',
-        'type': ARRAY,
-    },
-    'causality_actor_process_image_sha256': {
-        SEARCH_FIELD: 'causality_actor_process_image_sha256',
-        SEARCH_TYPE: 'EQ',
-        'type': ARRAY,
-    },
-    'action_process_image_sha256': {
-        SEARCH_FIELD: 'action_process_image_sha256',
-        SEARCH_TYPE: 'EQ',
-        'type': ARRAY,
-    },
-    'action_file_image_sha256': {
-        SEARCH_FIELD: 'action_file_sha256',
-        SEARCH_TYPE: 'EQ',
-        'type': ARRAY,
-    },
-    'action_registry_name': {
-        SEARCH_FIELD: 'action_registry_key_name',
-        SEARCH_TYPE: 'EQ',
-        'type': ARRAY,
-    },
-    'action_registry_key_data': {
-        SEARCH_FIELD: 'action_registry_data',
-        SEARCH_TYPE: 'CONTAINS',
-        'type': ARRAY,
-    },
-    'host_ip': {
-        SEARCH_FIELD: 'agent_ip_addresses',
-        SEARCH_TYPE: 'IPLIST_MATCH',
-        'type': ARRAY,
-    },
-    'action_local_ip': {
-        SEARCH_FIELD: 'action_local_ip',
-        SEARCH_TYPE: 'IP_MATCH',
-        'type': ARRAY,
-    },
-    'action_remote_ip': {
-        SEARCH_FIELD: 'action_remote_ip',
-        SEARCH_TYPE: 'IP_MATCH',
-        'type': ARRAY,
-    },
-    'action_local_port': {
-        SEARCH_FIELD: 'action_local_port',
-        SEARCH_TYPE: 'EQ',
-        'type': ARRAY,
-    },
-    'action_remote_port': {
-        SEARCH_FIELD: 'action_remote_port',
-        SEARCH_TYPE: 'EQ',
-        'type': ARRAY,
-    },
-    'dst_action_external_hostname': {
-        SEARCH_FIELD: 'dst_action_external_hostname',
-        SEARCH_TYPE: 'CONTAINS',
-        'type': ARRAY,
-    },
-}
+        }),
+        'starred': AlertFilterArg('starred', 'EQ', dropdown, {
+            'true': True,
+            'False': False,
+        }),
+        'Identity_type': AlertFilterArg('Identity_type', 'EQ', dropdown),
+        'agent_id': AlertFilterArg('agent_id', 'EQ', array),
+        'action_external_hostname': AlertFilterArg('action_external_hostname', 'CONTAINS', array),
+        'rule_id': AlertFilterArg('matching_service_rule_id', 'EQ', array),
+        'rule_name': AlertFilterArg('fw_rule', 'EQ', array),
+        'alert_name': AlertFilterArg('alert_name', 'CONTAINS', array),
+        'alert_source': AlertFilterArg('alert_source', 'CONTAINS', array),
+        'time_frame': AlertFilterArg('source_insert_ts', None, time_frame),
+        'user_name': AlertFilterArg('actor_effective_username', 'CONTAINS', array),
+        'actor_process_image_name': AlertFilterArg('actor_process_image_name', 'CONTAINS', array),
+        'causality_actor_process_image_command_line': AlertFilterArg('causality_actor_process_command_line', 'EQ',
+                                                                     array),
+        'actor_process_image_command_line': AlertFilterArg('actor_process_command_line', 'EQ', array),
+        'action_process_image_command_line': AlertFilterArg('action_process_image_command_line', 'EQ', array),
+        'actor_process_image_sha256': AlertFilterArg('actor_process_image_sha256', 'EQ', array),
+        'causality_actor_process_image_sha256': AlertFilterArg('causality_actor_process_image_sha256', 'EQ', array),
+        'action_process_image_sha256': AlertFilterArg('action_process_image_sha256', 'EQ', array),
+        'action_file_image_sha256': AlertFilterArg('action_file_sha256', 'EQ', array),
+        'action_registry_name': AlertFilterArg('action_registry_key_name', 'EQ', array),
+        'action_registry_key_data': AlertFilterArg('action_registry_data', 'CONTAINS', array),
+        'host_ip': AlertFilterArg('agent_ip_addresses', 'IPLIST_MATCH', array),
+        'action_local_ip': AlertFilterArg('action_local_ip', 'IP_MATCH', array),
+        'action_remote_ip': AlertFilterArg('action_remote_ip', 'IP_MATCH', array),
+        'action_local_port': AlertFilterArg('action_local_port', 'EQ', array),
+        'action_remote_port': AlertFilterArg('action_remote_port', 'EQ', array),
+        'dst_action_external_hostname': AlertFilterArg('dst_action_external_hostname', 'CONTAINS', array),
+    }
 
 
 def convert_epoch_to_milli(timestamp):
@@ -370,6 +277,71 @@ def clear_trailing_whitespace(res):
                 res[index][key] = value.rstrip()
         index += 1
     return res
+
+
+def create_filter_from_args(args: dict) -> dict:
+    """
+    Builds an XDR format filter dict for the xdr-get-alert command.
+    :param args: The arguments provided by the user
+    :return: The filter format built from args
+    """
+    valid_args = init_filter_args_options()
+    and_operator_list = []
+    if ('start_time' or 'end_time' in args) and ('time_frame' not in args):
+        raise DemistoException('Please choose "custom" under time_frame argument when using start_time and end_time '
+                               'arguments')
+
+    for arg_name, arg_value in args.items():
+        if arg_name not in valid_args:
+            raise DemistoException('Argument is not valid')
+        arg_properties = valid_args.get(arg_name)
+
+        # handle time frame
+        if arg_name == 'time_frame':
+            # custom time frame
+            if arg_value == 'custom':
+                if 'start_time' not in args or 'end_time' not in args:
+                    raise DemistoException(
+                        'Please provide start_time and end_time arguments when using time_frame as custom.')
+                start_time = int(date_to_timestamp(args.get('start_time')))
+                end_time = int(date_to_timestamp(args.get('start_time')))
+                search_type = 'RANGE'
+                search_value: Union[dict, int] = {
+                    'from': start_time,
+                    'to': end_time
+                }
+
+            # relative time frame
+            else:
+                date_time = dateparser.parse(arg_value, settings={'TIMEZONE': 'UTC'})
+                search_type = 'RELATIVE_TIMESTAMP'
+                search_value = int(round(date_time.timestamp()))
+
+            and_operator_list.append({
+                'SEARCH_FIELD': arg_properties.search_field,
+                'SEARCH_TYPE': search_type,
+                'SEARCH_VALUE': search_value
+            })
+
+        # handle array args, array elements should be seperated with 'or' op
+        elif arg_properties.arg_type == 'array':
+            or_operator_list = []
+            arg_list = argToList(arg_value)
+            for arg_item in arg_list:
+                or_operator_list.append({
+                    'SEARCH_FIELD': arg_properties.search_field,
+                    'SEARCH_TYPE': arg_properties.search_type,
+                    'SEARCH_VALUE': arg_item
+                })
+            and_operator_list.append({'OR': or_operator_list})
+        else:
+            and_operator_list.append({
+                'SEARCH_FIELD': arg_properties.search_field,
+                'SEARCH_TYPE': arg_properties.search_type,
+                'SEARCH_VALUE': arg_properties.option_mapper.get(arg_value) if arg_properties.option_mapper else arg_value
+            })
+
+    return {'AND': and_operator_list}
 
 
 class Client(BaseClient):
@@ -1414,7 +1386,8 @@ class Client(BaseClient):
 
     @logger
     def run_script(self,
-                   script_uid: str, endpoint_ids: list, parameters: Dict[str, Any], timeout: int, incident_id: Optional[int],
+                   script_uid: str, endpoint_ids: list, parameters: Dict[str, Any], timeout: int,
+                   incident_id: Optional[int],
                    ) -> Dict[str, Any]:
         filters: list = [{
             'field': 'endpoint_id_list',
@@ -2578,7 +2551,8 @@ def blacklist_files_command(client, args):
     incident_id = arg_to_number(args.get('incident_id'))
 
     res = client.blacklist_files(hash_list=hash_list, comment=comment, incident_id=incident_id)
-    if isinstance(res, dict) and res.get('err_extra') != "All hashes have already been added to the allow or block list":
+    if isinstance(res, dict) and res.get(
+            'err_extra') != "All hashes have already been added to the allow or block list":
         raise ValueError(res)
     markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
 
@@ -3461,7 +3435,8 @@ def run_snippet_code_script_command(client: Client, args: Dict) -> CommandResult
     snippet_code = args.get('snippet_code')
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
-    response = client.run_snippet_code_script(snippet_code=snippet_code, endpoint_ids=endpoint_ids, incident_id=incident_id)
+    response = client.run_snippet_code_script(snippet_code=snippet_code, endpoint_ids=endpoint_ids,
+                                              incident_id=incident_id)
     reply = response.get('reply')
     return CommandResults(
         readable_output=tableToMarkdown('Run Snippet Code Script', reply),
@@ -3623,66 +3598,42 @@ def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
 
 
 def get_alerts_by_filter_command(client: Client, args: Dict) -> CommandResults:
-    request_data = {'filter_data': {}}
+    # get arguments
+    request_data: dict = {'filter_data': {}}
     filter_data = request_data['filter_data']
-    sort_field = args.pop('sort_field')
-    if sort_field:
-        sort_order = args.pop('sort_order', 'DESC')
-        filter_data['sort'] = [{
-            'FIELD': sort_field,
-            'ORDER': sort_order
-        }]
+    sort_field = args.pop('sort_field', 'source_insert_ts')
+    sort_order = args.pop('sort_order', 'DESC')
+    filter_data['sort'] = [{
+        'FIELD': sort_field,
+        'ORDER': sort_order
+    }]
     offset = args.pop('offset', 0)
     limit = args.pop('limit', 50)
     filter_data['paging'] = {
-        'from': offset,
-        'to': limit
+        'from': int(offset),
+        'to': int(limit)
     }
     if not args:
-        raise DemistoException('Please provide at least one argument')
+        raise DemistoException('Please provide at least one filter argument.')
 
-    custom_filter = args.pop('custom_filter')
+    # handle custom filter
+    custom_filter = args.pop('custom_filter', None)
 
     if custom_filter:
         if args:
-            raise DemistoException('Please provide either "custom_filter" argument or other filter arguments but not both.')
-        filter_data['filter'] = args['custom_filter']
+            raise DemistoException(
+                'Please provide either "custom_filter" argument or other filter arguments but not both.')
+        try:
+            filter_res = json.loads(custom_filter)
+        except Exception as e:
+            raise DemistoException('custom_filter format is not valid.') from e
 
     # if custom filter was not given, we should create the filter from the given arguments.
     else:
-        and_list = []
+        filter_res = create_filter_from_args(args)
 
-        for arg_name, arg_value in args.items():
-            if arg_name not in ALERT_FILTER_SEARCH_FIELDS_AND_VALUES:
-                raise ValueError
-
-            arg_props = ALERT_FILTER_SEARCH_FIELDS_AND_VALUES[arg_name]
-            if arg_props.get('type') == ARRAY:
-                or_list = []
-                arg_list = argToList(arg_value)
-                for arg_item in arg_list:
-                    or_list.append({
-                        'SEARCH_FIELD': arg_props[SEARCH_FIELD],
-                        'SEARCH_TYPE': arg_props[SEARCH_TYPE],
-                        'SEARCH_VALUE': arg_item
-                    })
-                and_list.append({'OR': or_list})
-            elif arg_props.get('type') == TIMEFRAME:
-                and_list.append({
-                    'SEARCH_FIELD': arg_props[SEARCH_FIELD],
-                    'SEARCH_TYPE': arg_props[SEARCH_TYPE],
-                    'SEARCH_VALUE': arg_to_timestamp(arg_value, arg_name)
-                })
-            else:
-
-                and_list.append({
-                    'SEARCH_FIELD': arg_props[SEARCH_FIELD],
-                    'SEARCH_TYPE': arg_props[SEARCH_TYPE],
-                    'SEARCH_VALUE': arg_props[SEARCH_VALUE][arg_value] if SEARCH_VALUE in arg_props else arg_value
-                })
-
-            filter_data['filter'] = {'AND': and_list}
-
+    filter_data['filter'] = filter_res
+    demisto.debug(f'sending the following request data: {request_data}')
     raw_response = client.get_alerts_by_filter_data(request_data)
 
     context = [alert.get('alert_fields') for alert in raw_response.get('alerts', [])]
@@ -3798,7 +3749,8 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
         arg_name='last_seen_lte'
     )
 
-    endpoints_count, raw_res = client.get_endpoints_by_status(status, last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte)
+    endpoints_count, raw_res = client.get_endpoints_by_status(status, last_seen_gte=last_seen_gte,
+                                                              last_seen_lte=last_seen_lte)
 
     ec = {'status': status, 'count': endpoints_count}
 
