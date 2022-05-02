@@ -1,7 +1,7 @@
-id: AzureRiskyUsers
+id: AzureRiskyUsers_Test
 version: 0
 vcShouldKeepItemLegacyProdMachine: false
-name: AzureRiskyUsers
+name: AzureRiskyUsers_Test
 starttaskid: "0"
 tasks:
   "0":
