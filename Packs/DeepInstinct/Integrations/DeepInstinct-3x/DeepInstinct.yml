@@ -51,6 +51,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Get device information from its ID
     name: deepinstinct-get-device
     outputs:
     - contextPath: DeepInstinct.devices.ID
@@ -152,6 +153,7 @@ script:
       secret: false
       defaultValue: '0'
     deprecated: false
+    description: Get all events after given event ID
     name: deepinstinct-get-events
     outputs:
     - contextPath: DeepInstinct.Events.events.id
@@ -252,6 +254,7 @@ script:
       secret: false
       defaultValue: '0'
     deprecated: false
+    description: Get all suspicious events after given event ID
     name: deepinstinct-get-suspicious-events
     outputs:
     - contextPath: DeepInstinct.Suspicious-Events.events.ID
@@ -341,7 +344,7 @@ script:
     - contextPath: DeepInstinct.Groups.policy_id
       description: group policy ID
       type: number
-    description: get all groups
+    description: Get all groups
   - arguments:
     - default: false
       description: Get All policies
@@ -369,7 +372,7 @@ script:
     - contextPath: DeepInstinct.Policies.msp_name
       description: msp name
       type: string
-    description: get all policies
+    description: Get list of all policies
   - arguments:
     - default: false
       description: Policy ID

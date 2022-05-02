@@ -136,7 +136,10 @@ def remove_hash_from_denylist():
     """
     policy_id = demisto.args().get('policy_id')
     file_hash = demisto.args().get('file_hash')
-    http_request('DELETE', '/policies/%s/deny-list/hashes/%s' % (str(policy_id), file_hash))
+
+    item_list = [{'item': file_hash}]
+
+    http_request('DELETE', '/policies/%s/deny-list/hashes' % (str(policy_id)), json={"items": item_list})
     demisto.results('ok')
 
 
@@ -146,7 +149,10 @@ def remove_hash_from_allowlist():
     """
     policy_id = demisto.args().get('policy_id')
     file_hash = demisto.args().get('file_hash')
-    http_request('DELETE', '/policies/%s/allow-list/hashes/%s' % (str(policy_id), file_hash))
+
+    item_list = [{'item': file_hash}]
+
+    http_request('DELETE', '/policies/%s/allow-list/hashes' % (str(policy_id)), json={"items": item_list})
     demisto.results('ok')
 
 
