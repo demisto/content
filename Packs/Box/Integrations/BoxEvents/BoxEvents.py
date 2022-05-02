@@ -70,7 +70,7 @@ class BoxEventsParams(BaseModel):
     _normalize_after = validator('created_after', pre=True, allow_reuse=True)(
         get_box_events_timestamp_format
     )
-    
+
     class Config:
         validate_assignment = True
 
@@ -111,8 +111,8 @@ class BoxEventsClient(IntegrationEventsClient):
 
     def _create_authorization_body(self):
         claims = Claims(
-            client_id=self.box_credentials.boxAppSettings.clientID, 
-            id=self.box_credentials.enterpriseID
+            client_id=self.box_credentials.boxAppSettings.clientID,
+            id=self.box_credentials.enterpriseID,
         )
 
         decrypted_private_key = _decrypt_private_key(
@@ -124,7 +124,7 @@ class BoxEventsClient(IntegrationEventsClient):
             algorithm='RS512',
             headers={
                 'kid': self.box_credentials.boxAppSettings.appAuth.publicKeyID
-                },
+            },
         )
         body = {
             'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
@@ -133,6 +133,8 @@ class BoxEventsClient(IntegrationEventsClient):
             'client_secret': self.box_credentials.boxAppSettings.clientSecret,
         }
         return body
+
+
 class BoxEventsGetEvents(IntegrationGetEvents):
     def get_last_run(self: Any) -> dict:  # type: ignore
         demisto.debug(f'setting {self.client.request.params.stream_position=}')
@@ -143,7 +145,6 @@ class BoxEventsGetEvents(IntegrationGetEvents):
         demisto.debug('authenticated succesfully')
         # region First Call
         events = self.client.call(self.client.request).json()
-        self.client.set_request_filter(events['next_stream_position'])
         # endregion
         # region Yield Response
         while True:  # Run as long there are logs
@@ -206,15 +207,11 @@ def main(demisto_params: dict):
         events = get_events.run()
         demisto.debug(f'got {len(events)=} from api')
         if events:
-            demisto.setIntegrationContext(
-                get_events.get_last_run()
-            )
+            demisto.setLastRun(get_events.get_last_run())
             send_events_to_xsiam(events, 'box', 'box')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     # Args is always stronger. Get getIntegrationContext even stronger
-    demisto_params = (
-        demisto.params() | demisto.args() | demisto.getLastRun()
-    )
+    demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
     main(demisto_params)
