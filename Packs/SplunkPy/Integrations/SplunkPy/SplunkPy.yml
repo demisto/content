@@ -51,7 +51,7 @@ configuration:
   name: parseNotableEventsRaw
   required: false
   type: 8
-- defaultvalue: false
+- defaultvalue: 'false'
   display: Replace with Underscore in Incident Fields
   name: replaceKeys
   required: false
@@ -194,7 +194,7 @@ configuration:
   additionalinfo: Use this parameter to specify a list of comma separated fields, which
     together are a unique identifier for the events you wish to fetch.
 - display: Enable user mapping
-  defaultvalue: false
+  defaultvalue: 'false'
   name: userMapping
   required: false
   type: 8
