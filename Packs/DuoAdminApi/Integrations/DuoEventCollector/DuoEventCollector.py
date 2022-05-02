@@ -10,7 +10,7 @@ import duo_client
 
 HOST = 'api-a1fdb00d.duosecurity.com'#demisto.getParam('hostname')
 INTEGRATION_KEY = 'DI47E4733YUXJZUWRYV2'#demisto.getParam('integration_key')
-SECRET_KEY = 'NELRvv7s23hEgGmVefJrVmoehvUJBT9amIejzT30'#demisto.getParam('secret_key')
+SECRET_KEY = 'YK6mtSzO5qTdeVjqvEqs7rmnc40Zw8fTsEw3heft'#demisto.getParam('secret_key')
 USE_SSL = False#not demisto.params().get('insecure', False)
 USE_PROXY = demisto.params().get('proxy', False)
 
@@ -185,8 +185,13 @@ def get_user_id(username):
 # Duo client return 2 different known structures of error messages
 def test_instance():
     try:
-        aa = admin_api.get_users()
+        # aa = admin_api.get_users()
+        aa= admin_api.get_authentication_log(api_version=2)
+        aa= admin_api.get_administrator_log()
+        aa= admin_api.get_telephony_log()
         demisto.results('ok')
+        # aa = json.dumps(aa)
+        print(aa)
 
     except Exception as e:
         if hasattr(e, 'data'):
