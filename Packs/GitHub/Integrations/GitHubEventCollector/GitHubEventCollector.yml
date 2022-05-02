@@ -81,3 +81,5 @@ script:
   dockerimage: demisto/fastapi:1.0.0.28667
   runonce: false
   subtype: python3
+tests:
+  - Github Event Collector-test
