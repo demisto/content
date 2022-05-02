@@ -9989,11 +9989,11 @@ def pan_os_get_version_command() -> CommandResults:
     pan_os_version_info = raw_response.get('response', {}).get('result', {})
 
     return CommandResults(
-            outputs_prefix='Panorama.Version',
+            outputs_prefix='PANOS.Version',
             outputs_key_field='sw-version',
             outputs=pan_os_version_info,
             readable_output=tableToMarkdown(
-                name='PAN-OS version information',
+                name='PAN-OS Version Information',
                 t=pan_os_version_info,
                 headers=['sw-version', 'multi-vsys', 'model', 'serial']
             ),
