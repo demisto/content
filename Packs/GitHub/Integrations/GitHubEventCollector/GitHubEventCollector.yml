@@ -77,7 +77,7 @@ script:
   - description: Command that is activated by the engine to fetch event.
     name: fetch-events
   - description: Manual command to fetch events and display them.
-    name: github-get-audit-logs
+    name: github-get-events
   dockerimage: demisto/fastapi:1.0.0.28667
   runonce: false
   subtype: python3

@@ -165,7 +165,7 @@ def main():
     if command == 'test-module':
         get_events.aggregated_results(limit=1)
         demisto.results('ok')
-    elif command == 'github-get-audit-logs' or command == 'fetch-events':
+    elif command == 'github-get-events' or command == 'fetch-events':
         events = get_events.aggregated_results(limit=int(demisto_params.get('limit')))
 
         if command == 'fetch-events':
@@ -174,7 +174,7 @@ def main():
             while len(events) > 0:
                 send_events_to_xsiam(events[:events_to_add_per_request], 'github-audit', 'github-audit')
                 events = events[events_to_add_per_request:]
-        elif command == 'github-get-audit-logs':
+        elif command == 'github-get-events':
             command_results = CommandResults(
                 readable_output=tableToMarkdown('Github Logs', events, headerTransform=pascalToSpace),
                 outputs_prefix='Github.Logs',
