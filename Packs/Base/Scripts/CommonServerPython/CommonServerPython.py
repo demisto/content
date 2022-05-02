@@ -9467,7 +9467,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     :rtype: ``Tuple``
     """
     last_run_time = last_run and 'time' in last_run and last_run['time']
-    now = datetime.utcnow() + timedelta(hours=timezone)
+    now = get_current_time(timezone)
     if not last_run_time:
         last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}) + timedelta(hours=timezone)
     else:
@@ -9478,6 +9478,19 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
             last_run_time = now - timedelta(minutes=look_back)
 
     return last_run_time.strftime(date_format), now.strftime(date_format)
+
+
+def get_current_time(time_zone=0):
+    """
+    Gets the current time in a given timezone.
+
+    :type time_zone: ``int``
+    :param time_zone: The time zone offset in hours.
+
+    :return: The current time.
+    :rtype: ``datetime``
+    """
+    return datetime.utcnow() + timedelta(hours=time_zone)
 
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
