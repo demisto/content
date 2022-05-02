@@ -65,7 +65,7 @@ configuration:
 - display: Suppress Errors for Non Found Groups
   name: handle_error
   required: false
-  defaultvalue: true
+  defaultvalue: 'true'
   type: 8
 description: Microsoft Graph Groups enables you to create and manage different types
   of groups and group functionality according to your requirements.
