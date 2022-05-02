@@ -5,6 +5,7 @@ from CommonServerPython import *
 import demistomock as demisto
 from pydantic import BaseModel, AnyUrl, Json, validator
 import dateparser
+from collections.abc import Generator
 
 
 def get_github_timestamp_format(value):
@@ -88,7 +89,7 @@ class GetEvents:
     def __init__(self, client: Client) -> None:
         self.client = client
 
-    def _iter_events(self) -> List:
+    def _iter_events(self) -> Generator:
         """
         Function that responsible for the iteration over the events returned from github api
         """
