@@ -63,7 +63,8 @@ def update_branch(content_repo, branch_name, master_sha):
 
 
 def main():
-    ref_branch = arguments_handler()
+    args = arguments_handler()
+    ref_branch = args.branch_name
     debug_mode = len(sys.argv) >= 2 and 'debug' in sys.argv[1].casefold()
     if debug_mode:
         enable_console_debug_logging()
