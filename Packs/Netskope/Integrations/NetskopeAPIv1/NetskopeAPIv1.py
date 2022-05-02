@@ -446,6 +446,7 @@ def list_events_command(client: Client, args: Dict[str, str]) -> CommandResults:
     outputs = deepcopy(response['data'])
     for event in outputs:
         event['event_id'] = event['_id']
+        event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
 
     readable_output = tableToMarkdown(
         get_pagination_readable_message('Events List:', page=page, limit=limit),
@@ -504,6 +505,7 @@ def list_alerts_command(client: Client, args: Dict[str, str]) -> CommandResults:
     outputs = deepcopy(response['data'])
     for alert in outputs:
         alert['alert_id'] = alert['_id']
+        alert['timestamp'] = timestamp_to_datestring(alert['timestamp'] * 1000)
 
     readable_output = tableToMarkdown(
         get_pagination_readable_message('Alerts List:', page=page, limit=limit),
