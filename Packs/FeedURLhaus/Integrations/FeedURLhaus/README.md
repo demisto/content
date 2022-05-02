@@ -2,6 +2,6 @@
 ---
 
 
-Fetch indicators from URLhaus api.
+Fetch indicators from the URLhaus API.
 
 
