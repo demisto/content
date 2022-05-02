@@ -3433,7 +3433,7 @@ def panorama_list_applications(predefined: bool) -> Union[List[dict], dict]:
         applications = applications_api_response.get('application', {}).get('entry') or []
     else:
         applications = applications_api_response.get('entry') or []
-        if not applications and major_version > 9:
+        if not applications and major_version >= 9:
             applications = applications_api_response.get('application') or []
 
     return applications
