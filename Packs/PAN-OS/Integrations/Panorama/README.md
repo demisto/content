@@ -4699,7 +4699,9 @@ Gets all ARP tables from all firewalls in the topology.
 #### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -4838,7 +4840,9 @@ Pulls all route summary information from the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -4889,7 +4893,9 @@ Pulls all route information from the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -5016,7 +5022,9 @@ Gets information from all PAN-OS systems in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -5181,7 +5189,8 @@ Gets the operational information of the template stacks in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+
 
 
 #### Context Output
@@ -5244,7 +5253,9 @@ Gets global counter information from all the PAN-OS firewalls in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -5416,7 +5427,9 @@ Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -5498,7 +5511,9 @@ Check the devices for software that is available to be installed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -5563,7 +5578,9 @@ Get the HA state and associated details from the given device and any other deta
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -5620,7 +5637,8 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional |
 | status | Filter to return jobs by status. | Optional | 
 | job_type | Filter to return jobs by type. | Optional | 
 | id | Filter by ID. | Optional | 
@@ -5732,6 +5750,7 @@ Download the provided software version onto the device.
 | --- | --- | --- |
 | version | The software version to upgrade to, for example, 9.1.2. | Required | 
 | device_filter_string | String by which to filter the results to only install to sepecific devices or serial numbers. | Optional | 
+| target | Single serial number to target with this command | Optional | 
 | sync | If provided, runs the download synchronously. Make sure 'execution-timeout' is increased. | Optional | 
 
 
@@ -5797,3 +5816,325 @@ There is no context output for this command.
 #### Human Readable Output
 
 **success**
+### pan-os-platform-reboot
+***
+Reboot the given device by hostid. Warning: This command has no confirmation and the device
+will immediately reboot.
+
+
+#### Base Command
+
+`pan-os-platform-reboot`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | ID of host (serial or hostname) to reboot. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.RestartStatus.Summary.hostid | String | Host ID. | 
+| PANOS.RestartStatus.Summary.started | String | Whether the system reboot has started. | 
+
+#### Command example
+```!pan-os-platform-reboot target=11111111111111```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "RestartStatus": {
+            "Summary": [
+                {
+                    "hostid": "11111111111111",
+                    "started": true
+                }
+            ]
+        }
+    }
+}
+```
+
+### pan-os-platform-get-system-status
+***
+Checks the status of the given device, checking whether it's up or down and if the operational mode is normal.
+
+
+#### Base Command
+
+`pan-os-platform-get-system-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | ID of host (serial or hostname) to check. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.SystemStatus.hostid | String | Host ID. | 
+| PANOS.SystemStatus.up | String | Whether the host device is up or still unavailable. | 
+
+#### Command example
+```!pan-os-platform-get-system-status target=11111111111111```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "SystemStatus": {
+          "hostid": "11111111111111",
+          "up": true
+        }
+    }
+}
+```
+
+### pan-os-platform-update-ha-state
+***
+Checks the status of the given device, checking whether it's up or down and the operational mode normal.
+
+
+#### Base Command
+
+`pan-os-platform-update-ha-state`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostid | ID of host (serial or hostname) to update the state. | Required | 
+| state | New state. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.HAStateUpdate.hostid | String | Host ID. | 
+| PANOS.HAStateUpdate.state | String | New HA state. | 
+
+#### Command example
+```!pan-os-platform-update-ha-state hostid=11111111111111 state=functional```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "HAStateUpdate": {
+          "hostid": "11111111111111",
+          "state": "functional"
+        }
+    }
+}
+```
+
+### pan-os-hygiene-check-log-forwarding
+***
+Checks that at least one log forwarding profile is configured according to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-log-forwarding`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter so that only the given device is checked. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
+
+#### Command example
+```!pan-os-hygiene-check-log-forwarding```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Result": [
+                {
+                    "container_name": "LAB",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile-1"
+                },
+                {
+                    "container_name": "LAB",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile-1-1"
+                },
+                {
+                    "container_name": "shared",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile"
+                }
+            ],
+            "Summary": [
+                {
+                    "description": "Fails if there are no valid log forwarding profiles configured.",
+                    "issue_code": "BP-V-1",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                },
+                {
+                    "description": "Fails if the configured log forwarding profile has no match list.",
+                    "issue_code": "BP-V-2",
+                    "issue_count": 3,
+                    "result": "\u274c"
+                },
+                {
+                    "description": "Fails if enhanced application logging is not configured.",
+                    "issue_code": "BP-V-3",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if there are no valid log forwarding profiles configured. | BP-V-1 | 0 | ✔️ |
+>| Fails if the configured log forwarding profile has no match list. | BP-V-2 | 3 | ❌ |
+>| Fails if enhanced application logging is not configured. | BP-V-3 | 0 | ✔️ |
+
+
+### pan-os-hygiene-check-vulnerability-profiles
+***
+Checks the configured vulnerability profiles to ensure at least one meets best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-vulnerability-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter so that only the given device is checked. | Optional | 
+| minimum_block_severities | Comma-separated list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | Comma-separated list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | Nunber | Total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-vulnerability-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Summary": [
+                {
+                    "description": "Fails if no vulnerability profile is configured for visibility.",
+                    "issue_code": "BP-V-4",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if no vulnerability profile is configured for visibility. | BP-V-4 | 0 | ✔️ |
+
+
+### pan-os-platform-install-software
+***
+Install the given software version onto the device. Download the software first with panorama-download-panos-version.
+
+
+#### Base Command
+
+`pan-os-platform-install-software`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| version | Software version to upgrade to, for example: 9.1.2. | Required | 
+| device_filter_string | SString by which to filter to only install to specific devices or  serial numbers. | Optional | 
+| sync | If provided, runs the download synchronously. Make sure 'execution-timeout' is increased. | Optional | 
+| target | Single serial number to target with this command | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.InstallStatus.Summary.hostid | String | Host ID, | 
+| PANOS.InstallStatus.Summary.started | String | Whether the download process has started. | 
+
+#### Command example
+```!pan-os-platform-install-software version=9.1.0```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "InstallStatus": {
+            "Summary": [
+                {
+                    "hostid": "1111111111111",
+                    "started": true
+                },
+                {
+                    "hostid": "192.168.1.145",
+                    "started": true
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Software Install request Status
+>|hostid|started|
+>|---|---|
+>| 1111111111111 | true |
+>| 192.168.1.145 | true |
+
