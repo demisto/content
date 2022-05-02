@@ -27,7 +27,6 @@ class Advisory:
     cve_id: str
     cve_date_public: str
     cve_title: str
-    affects_vendor_name: str
     description: str
     cvss_score: int
     cvss_severity: str

@@ -146,9 +146,6 @@ script:
     - contextPath: PANSecurityAdvisory.Advisory.cve_title
       description: The name of this CVE
       type: Unknown
-    - contextPath: PANSecurityAdvisory.Advisory.affects_vendor_name
-      description: The list of Vendors this CVE affects
-      type: Unknown
     - contextPath: PANSecurityAdvisory.Advisory.description
       description: Human readable description of Advisory
       type: Unknown

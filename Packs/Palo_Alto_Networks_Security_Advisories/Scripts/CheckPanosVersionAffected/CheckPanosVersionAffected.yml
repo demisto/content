@@ -34,9 +34,6 @@ outputs:
 - contextPath: MatchingSecurityAdvisory.cve_title
   description: The name of this CVE
   type: String
-- contextPath: MatchingSecurityAdvisory.affects_vendor_name
-  description: The name of the product this affects, such as PAN-OS
-  type: String
 - contextPath: MatchingSecurityAdvisory.description
   description: Human readable description of Advisory
   type: String

@@ -118,11 +118,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: PANSecurityAdvisory.Advisory.affects_vendor_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: PANSecurityAdvisory.Advisory.description
             iscontext: true
       - - operator: isNotEmpty

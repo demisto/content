@@ -65,7 +65,6 @@
             "PAN-OS 9.0.1",
             "PAN-OS 9.0.0"
         ],
-        "affects_vendor_name": "Palo Alto Networks",
         "cve_date_public": "2022-04-13T16:00:00.000Z",
         "cve_id": "CVE-2022-0023",
         "cve_title": "PAN-OS: Denial-of-Service (DoS) Vulnerability in DNS Proxy",

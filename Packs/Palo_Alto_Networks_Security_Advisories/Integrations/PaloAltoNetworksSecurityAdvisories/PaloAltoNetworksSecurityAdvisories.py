@@ -95,7 +95,6 @@ class Advisory:
     cve_id: str
     cve_date_public: str
     cve_title: str
-    affects_vendor_name: str
     description: str
     cvss_score: int
     cvss_severity: str
@@ -127,9 +126,6 @@ def locals_to_dict(locals_data: dict) -> dict:
 def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
     """Given a dictionary advisory, return an `Advisory` object"""
     affects_dict = {}
-
-    for vendor_data_dict in advisory_dict.get("affects", {}).get("vendor", {}).get("vendor_data", []):
-        affects_dict["affects_vendor_name"] = vendor_data_dict.get("vendor_name")
 
     return Advisory(
         data_type=advisory_dict.get("data_type", ""),
