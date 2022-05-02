@@ -52,7 +52,7 @@ def dataclass_to_command_results(result: Any, raw_response: Union[List, Dict]) -
         return command_result
 
     outputs: Union[List[Dict], Dict, Any]
-    if type(result) is list:
+    if isinstance(result, list):
         outputs = [vars(x) for x in result]
         summary_list = [vars(x) for x in result]
         title = result[0]._title

@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 """
 This automation compares a given PAN-OS version (ex. 9.1.1) with a list of PAN-OS advisories from the
 pan-advisories-get-advisors command to see if it is affected by any in the list.
