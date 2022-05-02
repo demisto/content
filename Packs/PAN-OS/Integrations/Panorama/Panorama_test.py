@@ -807,7 +807,7 @@ def test_panorama_list_applications_command(mocker, panorama_version):
        - panorama version 8 & 9.
 
     When
-       - getting a list of all the application in panorama 9.
+       - getting a list of all the applications in panorama 8/9.
 
     Then
        - a valid context output is returned.
