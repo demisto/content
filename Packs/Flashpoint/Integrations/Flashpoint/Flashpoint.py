@@ -923,9 +923,9 @@ def prepare_incidents_from_compromised_credentials_data(response: dict, next_run
 
 def remove_space_from_args(args):
     """Remove space from args."""
-    for arg in args:
-        if isinstance(args[arg], str):
-            args[arg] = args[arg].strip()
+    for key in args.keys():
+        if isinstance(args[key], str):
+            args[key] = args[key].strip()
     return args
 
 
