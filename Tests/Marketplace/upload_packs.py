@@ -1072,18 +1072,10 @@ def main():
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs, previous_commit_hash)
-    logging.info("*********************************************\n\n\n\n\n")
-    logging.info(f'index_folder_path')
-    logging.info(f"pack_names: {pack_names}\n\n\n\n\n")
-
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
-    logging.info(f"packs_list: {packs_list}\n\n\n\n\n")
-
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
-    logging.info(f"diff_files_list: {diff_files_list}\n\n\n\n\n")
-    logging.info("**********************************************\n\n\n\n\n")
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
@@ -1136,15 +1128,12 @@ def main():
             pack.cleanup()
             continue
 
+        # upload images when it's the first time uploading an existing pack to a new marketplace (#46785)
         detect_changes = True
-        # upload images when it's the first time uploading a pack to a new marketplace
-        logging.info(f'Pack path: {os.path.join(index_folder_path, pack.name, Pack.METADATA)}')
-        if not os.path.exists(os.path.join(index_folder_path, pack.name, Pack.METADATA)):
-            if 'Wiz' in pack.name:
-                logging.info('Not uploading images for Wiz pack!')
-            else:
-                logging.info(f'Found a pack that was not uploaded before: {pack.name}. Uploading images!')
-                detect_changes = False
+        # upload the images if the pack doesn't exist in the index, and it isn't deprecated
+        if not os.path.exists(os.path.join(index_folder_path, pack.name, Pack.METADATA)) and not pack.hidden:
+            logging.info(f'Uploading images of pack {pack.name} which did not exist in this marketplace before')
+            detect_changes = False
 
         task_status = pack.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, detect_changes)
         if not task_status:
