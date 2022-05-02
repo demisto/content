@@ -1073,6 +1073,7 @@ def main():
     # detect packs to upload
     pack_names = get_packs_names(target_packs, previous_commit_hash)
     logging.info("*********************************************\n\n\n\n\n")
+    logging.info(f'index_folder_path')
     logging.info(f"pack_names: {pack_names}\n\n\n\n\n")
 
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
@@ -1135,13 +1136,23 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, False)
+        detect_changes = True
+        # upload images when it's the first time uploading a pack to a new marketplace
+        logging.info(f'Pack path: {os.path.join(index_folder_path, pack.name, Pack.METADATA)}')
+        if not os.path.exists(os.path.join(index_folder_path, pack.name, Pack.METADATA)):
+            if 'Wiz' in pack.name:
+                logging.info('Not uploading images for Wiz pack!')
+            else:
+                logging.info(f'Found a pack that was not uploaded before: {pack.name}. Uploading images!')
+                detect_changes = False
+
+        task_status = pack.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, detect_changes)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status = pack.upload_author_image(storage_bucket, storage_base_path, diff_files_list, False)
+        task_status = pack.upload_author_image(storage_bucket, storage_base_path, diff_files_list, detect_changes)
 
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
