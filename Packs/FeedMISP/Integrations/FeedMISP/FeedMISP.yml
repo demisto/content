@@ -30,7 +30,7 @@ configuration:
     new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
-  defaultvalue: true
+  defaultvalue: 'true'
   required: false
   type: 8
   hidden: true
