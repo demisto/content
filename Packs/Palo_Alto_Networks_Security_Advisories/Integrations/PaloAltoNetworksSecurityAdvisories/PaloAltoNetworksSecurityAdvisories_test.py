@@ -42,19 +42,6 @@ def test_client_get_pan_os_advisories():
     assert len(result.get("data")) == 1
 
 
-def test_locals_to_dict():
-    """Unit test: Tests locals_to_dict"""
-    from PaloAltoNetworksSecurityAdvisories import locals_to_dict
-    test_local_dict = {
-        "arg1": "value1",
-        "arg2": None
-    }
-    assert_dict = {
-        "arg1": "value1"
-    }
-    assert locals_to_dict(test_local_dict) == assert_dict
-
-
 @patch("PaloAltoNetworksSecurityAdvisories.Client.get_advisories")
 def test_get_advisories_command(patched_get_advisories):
     patched_get_advisories.return_value = json.load(open("test_data" + os.sep + "advisories.json"))

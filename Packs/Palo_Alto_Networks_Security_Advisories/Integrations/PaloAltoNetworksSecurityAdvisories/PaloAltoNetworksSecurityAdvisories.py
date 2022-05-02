@@ -113,16 +113,6 @@ class SeverityEnum(enum.Enum):
     NONE = "NONE"
 
 
-def locals_to_dict(locals_data: dict) -> dict:
-    """Removes all arguments with None values from the dictionary returned by locals()"""
-    result_dict = {}
-    for key, value in locals_data.items():
-        if value:
-            result_dict[key] = value
-
-    return result_dict
-
-
 def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
     """Given a dictionary advisory, return an `Advisory` object"""
 
