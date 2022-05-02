@@ -1,0 +1,343 @@
+category: IT Services
+commonfields:
+  id: BoxEvents
+  version: -1
+configuration:
+- display: Verify SSL Certificate
+  hidden: false
+  name: verify
+  required: false
+  defaultvalue: true
+  type: 8
+- display: Credentials JSON
+  name: credentials_json
+  required: true
+  type: 4
+- display: Types of Events to Ingest as Incidents
+  hidden: false
+  name: event_type
+  options:
+  - ACCESS_GRANTED
+  - ACCESS_REVOKED
+  - ADD_DEVICE_ASSOCIATION
+  - ADD_LOGIN_ACTIVITY_DEVICE
+  - ADMIN_LOGIN
+  - APPLICATION_CREATED
+  - APPLICATION_PUBLIC_KEY_ADDED
+  - APPLICATION_PUBLIC_KEY_DELETED
+  - CHANGE_ADMIN_ROLE
+  - CHANGE_FOLDER_PERMISSION
+  - COLLABORATION_ACCEPT
+  - COLLABORATION_EXPIRATION
+  - COLLABORATION_INVITE
+  - COLLABORATION_REMOVE
+  - COLLABORATION_ROLE_CHANGE
+  - COMMENT_CREATE
+  - COMMENT_DELETE
+  - CONTENT_ACCESS
+  - CONTENT_WORKFLOW_ABNORMAL_DOWNLOAD_ACTIVITY
+  - CONTENT_WORKFLOW_AUTOMATION_ADD
+  - CONTENT_WORKFLOW_AUTOMATION_DELETE
+  - CONTENT_WORKFLOW_POLICY_ADD
+  - CONTENT_WORKFLOW_SHARING_POLICY_VIOLATION
+  - CONTENT_WORKFLOW_UPLOAD_POLICY_VIOLATION
+  - COPY
+  - DATA_RETENTION_CREATE_RETENTION
+  - DATA_RETENTION_REMOVE_RETENTION
+  - DELETE
+  - DELETE_USER
+  - DEVICE_TRUST_CHECK_FAILED
+  - DOWNLOAD
+  - EDIT
+  - EDIT_USER
+  - EMAIL_ALIAS_CONFIRM
+  - EMAIL_ALIAS_REMOVE
+  - ENTERPRISE_APP_AUTHORIZATION_UPDATE
+  - EXTERNAL_COLLAB_SECURITY_SETTINGS
+  - FAILED_LOGIN
+  - FILE_MARKED_MALICIOUS
+  - FILE_WATERMARKED_DOWNLOAD
+  - GROUP_ADD_ITEM
+  - GROUP_ADD_USER
+  - GROUP_CREATION
+  - GROUP_DELETION
+  - GROUP_EDITED
+  - GROUP_REMOVE_ITEM
+  - GROUP_REMOVE_USER
+  - ITEM_MODIFY
+  - ITEM_OPEN
+  - ITEM_SHARED_UPDATE
+  - ITEM_SYNC
+  - ITEM_UNSYNC
+  - LEGAL_HOLD_ASSIGNMENT_CREATE
+  - LEGAL_HOLD_ASSIGNMENT_DELETE
+  - LEGAL_HOLD_POLICY_CREATE
+  - LEGAL_HOLD_POLICY_DELETE
+  - LEGAL_HOLD_POLICY_UPDATE
+  - LOCK
+  - LOGIN
+  - METADATA_INSTANCE_CREATE
+  - METADATA_INSTANCE_DELETE
+  - METADATA_INSTANCE_UPDATE
+  - METADATA_TEMPLATE_CREATE
+  - METADATA_TEMPLATE_UPDATE
+  - METADATA_TEMPLATE_DELETE
+  - MOVE
+  - NEW_USER
+  - OAUTH2_ACCESS_TOKEN_REVOKE
+  - PREVIEW
+  - REMOVE_DEVICE_ASSOCIATION
+  - REMOVE_LOGIN_ACTIVITY_DEVICE
+  - RENAME
+  - RETENTION_POLICY_ASSIGNMENT_ADD
+  - SHARE
+  - SHARE_EXPIRATION
+  - SHIELD_ALERT
+  - STORAGE_EXPIRATION
+  - TASK_ASSIGNMENT_UPDATE
+  - TASK_ASSIGNMENT_CREATE
+  - TASK_ASSIGNMENT_DELETE
+  - TASK_CREATE
+  - TASK_UPDATE
+  - TERMS_OF_SERVICE_ACCEPT
+  - TERMS_OF_SERVICE_REJECT
+  - UNDELETE
+  - UNLOCK
+  - UNSHARE
+  - UPDATE_COLLABORATION_EXPIRATION
+  - UPDATE_SHARE_EXPIRATION
+  - UPLOAD
+  - USER_AUTHENTICATE_OAUTH2_ACCESS_TOKEN_CREATE
+  - WATERMARK_LABEL_CREATE
+  - WATERMARK_LABEL_DELETE
+  required: false
+  type: 16
+- display: Fetch Events
+  name: isfetchevents
+  required: false
+  type: 8
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: created_after
+  required: false
+  type: 0
+- defaultvalue: '500'
+  display: The maximum amount of events to fetch at once. 500 is maximum
+  name: limit
+  required: false
+  type: 0
+description: Manage Box users.
+display: BoxEvents
+name: BoxEvents
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The ID of the user who currently owns the folder.
+      isArray: false
+      name: from_user_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the user who will receive the folders.
+      isArray: false
+      name: to_user_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Determines if users should receive email notification for the action
+        performed.
+      isArray: false
+      name: notify
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Move all of the items (files, folders and workflows) owned by a user
+      into another user's account.
+    execution: false
+    name: box-move-folder
+    outputs:
+    - contextPath: Box.Folder.id
+      description: The ID of the folder created.
+      type: Number
+    - contextPath: Box.Folder.etag
+      description: The entry tag for the folder created.
+      type: Number
+    - contextPath: Box.Folder.type
+      description: The type of folder.
+      type: String
+    - contextPath: Box.Folder.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the folder.
+      type: Number
+    - contextPath: Box.Folder.name
+      description: The name of the folder.
+      type: String
+    - contextPath: Box.Folder.sha1
+      description: The SHA1 hash of the folder.
+      type: String
+    - contextPath: Box.Folder.file_version.id
+      description: The unique identifier that represents a file version.
+      type: Number
+    - contextPath: Box.Folder.file_version.type
+      description: Value is always file_version.
+      type: String
+    - contextPath: Box.Folder.file_version.sha1
+      description: The SHA1 hash of this version of the file.
+      type: String
+    - contextPath: Box.Folder.description
+      description: The description of the item.
+      type: String
+    - contextPath: Box.Folder.size
+      description: The folder size in bytes.
+      type: Number
+    - contextPath: Box.Folder.path_collection.total_count
+      description: The number of folders in the list.
+      type: Number
+    - contextPath: Box.Folder.path_collection.entries.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.Folder.path_collection.entries.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.Folder.path_collection.entries.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.Folder.path_collection.entries.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.Folder.path_collection.entries.name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.Folder.created_at
+      description: The date and time when the item was created on Box.
+      type: Date
+    - contextPath: Box.Folder.modified_at
+      description: The date and time when the item was last updated on Box.
+      type: Date
+    - contextPath: Box.Folder.trashed_at
+      description: The time at which the item was put in the trash.
+      type: Date
+    - contextPath: Box.Folder.purged_at
+      description: The time at which the item is expected to be purged from the trash.
+      type: Date
+    - contextPath: Box.Folder.content_created_at
+      description: The date and time at which the item was originally created, which
+        might be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.Folder.content_modified_at
+      description: The date and time at which the item was last updated, which might
+        be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.Folder.created_by.id
+      description: The unique identifier for the user who created the item.
+      type: Number
+    - contextPath: Box.Folder.created_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Folder.created_by.name
+      description: The display name of the user who created the item.
+      type: String
+    - contextPath: Box.Folder.created_by.login
+      description: The primary email address of the user who created the item.
+      type: String
+    - contextPath: Box.Folder.modified_by.id
+      description: The unique identifier for the user who modified the item.
+      type: Number
+    - contextPath: Box.Folder.modified_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Folder.modified_by.name
+      description: The display name of the user who modified the item.
+      type: String
+    - contextPath: Box.Folder.modified_by.login
+      description: The primary email address of the user who modified the item.
+      type: String
+    - contextPath: Box.Folder.owned_by.id
+      description: The unique identifier for the user who owns the item.
+      type: Number
+    - contextPath: Box.Folder.owned_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Folder.owned_by.name
+      description: The display name of the user who owns the item.
+      type: String
+    - contextPath: Box.Folder.owned_by.login
+      description: The primary email address of the user who owns the item.
+      type: String
+    - contextPath: Box.Folder.shared_link.url
+      description: The URL that can be used to access the item on Box.
+      type: String
+    - contextPath: Box.Folder.shared_link.download_url
+      description: The URL that can be used to download the item from Box.
+      type: String
+    - contextPath: Box.Folder.shared_link.vanity_url
+      description: The "Custom URL" that can also be used to preview the item on Box.
+      type: String
+    - contextPath: Box.Folder.shared_link.vanity_name
+      description: The custom name of a shared link, as used in the vanity_url field.
+      type: String
+    - contextPath: Box.Folder.shared_link.access
+      description: The access level for the shared link.
+      type: String
+    - contextPath: Box.Folder.shared_link.effective_access
+      description: The effective access level for the shared link.
+      type: String
+    - contextPath: Box.Folder.shared_link.effective_permission
+      description: The effective permissions for this shared link.
+      type: String
+    - contextPath: Box.Folder.shared_link.unshared_at
+      description: The date and time when the link will be unshared.
+      type: Date
+    - contextPath: Box.Folder.shared_link.is_password_enabled
+      description: Defines if the shared link requires a password to access the item.
+      type: Boolean
+    - contextPath: Box.Folder.shared_link.permissions.can_download
+      description: Defines if the shared link allows for the item to be downloaded.
+      type: Boolean
+    - contextPath: Box.Folder.shared_link.permissions.can_preview
+      description: Defines if the shared link allows for the item to be previewed.
+      type: Boolean
+    - contextPath: Box.Folder.shared_link.download_count
+      description: The number of times the item has been downloaded.
+      type: Number
+    - contextPath: Box.Folder.shared_link.preview_count
+      description: The number of times the item has been previewed.
+      type: Number
+    - contextPath: Box.Folder.parent.id
+      description: The ID of the parent for the item found.
+      type: Number
+    - contextPath: Box.Folder.parent.etag
+      description: The entry tag for the parent of the item found.
+      type: Number
+    - contextPath: Box.Folder.parent.type
+      description: The type for the parent of the item found.
+      type: String
+    - contextPath: Box.Folder.parent.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the parent of the item.
+      type: Number
+    - contextPath: Box.Folder.parent.name
+      description: The name of the parent of the item.
+      type: String
+    - contextPath: Box.Folder.item_status
+      description: The status of the parent of the item.
+      type: String
+  dockerimage: demisto/pydantic-jwt3:1.0.0.29203
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- NoTest
+fromversion: 5.0.0
