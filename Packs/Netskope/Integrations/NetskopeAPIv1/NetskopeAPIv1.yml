@@ -589,7 +589,7 @@ script:
         - default: false
           description:
             'Free query on the clients, based on the client fields. For example, "host_info.hostname eq xxx".
-            For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-client-data.html'.
+            For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-client-data.html.'
           isArray: false
           name: query
           required: false
