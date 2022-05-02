@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import argparse
 import os
 import sys
@@ -57,6 +56,12 @@ def get_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa: E999
     return branch_names
 
 
+def update_branch(content_repo, branch_name, master_sha):
+    git_ref = content_repo.get_git_ref(f'heads/{branch_name}')
+    print(f'Updating branch "{branch_name}" to sha "{master_sha}"')
+    git_ref.edit(master_sha, force=True)
+
+
 def main():
     ref_branch = arguments_handler()
     debug_mode = len(sys.argv) >= 2 and 'debug' in sys.argv[1].casefold()
@@ -69,13 +74,13 @@ def main():
 
     master_sha = get_master_commit_sha(content_repo)
     contrib_base_branches = get_branch_names_with_contrib(content_repo)
-    for branch_name in contrib_base_branches:
-        git_ref = content_repo.get_git_ref(f'heads/{branch_name}')
-        print(f'Updating branch "{branch_name}" to sha "{master_sha}"')
-        git_ref.edit(master_sha, force=True)
+    if ref_branch:
+        update_branch(content_repo, ref_branch, master_sha)
+        return
 
-    if debug_mode:
-        print(f'{contrib_base_branches=}')
+    print(f'updating {contrib_base_branches=}')
+    for branch_name in contrib_base_branches:
+        update_branch(content_repo, branch_name, master_sha)
 
 
 if __name__ == "__main__":
